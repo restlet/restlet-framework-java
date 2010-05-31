@@ -27,6 +27,9 @@ Changes log
       - The status name is now returned to clients for display instead
         of the description, in order to not expose internal information
         by default for security reasons. Reported by Marc Knaup.
+      - Added the System property "org.restlet.engine.io.buffer.size"
+        that allows to set the buffer size for all instances of the 
+        BufferedReader class.
     - Bugs fixed
       - Fixed character encoding issues (XStream, Jackson, JAXB, etc.)
       - Adjusted Jackson configuration as it was automatically closing 

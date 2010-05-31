@@ -38,7 +38,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.restlet.Response;
-import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.IoUtils;
 
 /**
  * A network connection way though which messages are exchanged. Messages can be
@@ -76,7 +76,7 @@ public abstract class Way {
      *            The parent connection.
      */
     public Way(Connection<?> connection) {
-        this.byteBuffer = ByteBuffer.allocate(NioUtils.BUFFER_SIZE);
+        this.byteBuffer = ByteBuffer.allocate(IoUtils.BUFFER_SIZE);
         this.lineBuilder = new StringBuilder();
         this.connection = connection;
         this.messageState = MessageState.IDLE;

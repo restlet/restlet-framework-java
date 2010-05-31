@@ -34,7 +34,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.IoUtils;
 
 // [excludes gwt]
 /**
@@ -51,7 +51,7 @@ public class InboundStream extends BufferedInputStream {
      *            The source input stream.
      */
     public InboundStream(InputStream source) {
-        super(source, NioUtils.BUFFER_SIZE);
+        super(source, IoUtils.BUFFER_SIZE);
     }
 
     /**

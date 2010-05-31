@@ -34,7 +34,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.IoUtils;
 
 // [excludes gwt]
 /**
@@ -51,7 +51,7 @@ public class OutboundStream extends BufferedOutputStream {
      *            The decorated source stream.
      */
     public OutboundStream(OutputStream source) {
-        super(source, NioUtils.BUFFER_SIZE);
+        super(source, IoUtils.BUFFER_SIZE);
     }
 
     /**

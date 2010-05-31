@@ -73,7 +73,7 @@ public class NbChannelInputStream extends InputStream {
             this.selectableChannel = null;
         }
 
-        this.bb = ByteBuffer.allocate(NioUtils.BUFFER_SIZE);
+        this.bb = ByteBuffer.allocate(IoUtils.BUFFER_SIZE);
         this.bb.flip();
         this.endReached = false;
     }

@@ -49,6 +49,7 @@ import org.restlet.Connector;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.ConnectorHelper;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.io.NioUtils;
 import org.restlet.engine.log.LoggingThreadFactory;
 
@@ -308,7 +309,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getInboundBufferSize() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "inboundBufferSize", Integer.toString(NioUtils.BUFFER_SIZE)));
+                "inboundBufferSize", Integer.toString(IoUtils.BUFFER_SIZE)));
     }
 
     /**
@@ -369,7 +370,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getOutboundBufferSize() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "outboundBufferSize", Integer.toString(NioUtils.BUFFER_SIZE)));
+                "outboundBufferSize", Integer.toString(IoUtils.BUFFER_SIZE)));
     }
 
     /**
