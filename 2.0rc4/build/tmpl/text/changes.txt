@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.0 Release Candidate 4 (2010-05-31)
     - API changes
       - Changed character oriented subclasses of OutputRepresentation
         to extend WriterRepresentation instead for consistent character
