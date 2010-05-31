@@ -60,7 +60,7 @@ public class IoUtils {
         } catch (NumberFormatException nfe) {
             result = BUFFER_SIZE;
         }
-        // [enddef gwt]
+        // [enddef]
 
         return result;
     }
