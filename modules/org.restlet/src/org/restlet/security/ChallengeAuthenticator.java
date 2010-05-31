@@ -181,7 +181,9 @@ public class ChallengeAuthenticator extends Authenticator {
                             "Authentication failed. No credentials provided.");
                 }
 
-                challenge(response, false);
+                if (!isOptional()) {
+                    challenge(response, false);
+                }
                 break;
             case Verifier.RESULT_INVALID:
                 // Invalid credentials provided
@@ -191,10 +193,12 @@ public class ChallengeAuthenticator extends Authenticator {
                                     "Authentication failed. Invalid credentials provided.");
                 }
 
-                if (isRechallenging()) {
-                    challenge(response, false);
-                } else {
-                    forbid(response);
+                if (!isOptional()) {
+                    if (isRechallenging()) {
+                        challenge(response, false);
+                    } else {
+                        forbid(response);
+                    }
                 }
                 break;
             case Verifier.RESULT_STALE:
@@ -204,7 +208,9 @@ public class ChallengeAuthenticator extends Authenticator {
                                     "Authentication failed. Stale credentials provided.");
                 }
 
-                challenge(response, true);
+                if (!isOptional()) {
+                    challenge(response, true);
+                }
                 break;
             case Verifier.RESULT_UNKNOWN:
                 if (loggable) {
@@ -212,10 +218,12 @@ public class ChallengeAuthenticator extends Authenticator {
                             "Authentication failed. Identifier is unknown.");
                 }
 
-                if (isRechallenging()) {
-                    challenge(response, false);
-                } else {
-                    forbid(response);
+                if (!isOptional()) {
+                    if (isRechallenging()) {
+                        challenge(response, false);
+                    } else {
+                        forbid(response);
+                    }
                 }
                 break;
             }

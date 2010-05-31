@@ -67,6 +67,7 @@ Changes log
       - Fixed instantiation of BufferedInputStream and 
         BufferedOutputStream using the constructor with size. 
         Reported by Matthew Drooker.
+      - Fixed optional Authenticator. Reported by Jean-Philippe Steinmetz.
 
     - Misc
       - Server connectors now display the port they are listening on

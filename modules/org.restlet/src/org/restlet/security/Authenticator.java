@@ -33,6 +33,7 @@ package org.restlet.security;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Status;
 import org.restlet.routing.Filter;
 
 /**
@@ -115,7 +116,7 @@ public abstract class Authenticator extends Filter {
      */
     @Override
     protected int beforeHandle(Request request, Response response) {
-        if (authenticate(request, response)) {
+        if (authenticate(request, response) || isOptional()) {
             return authenticated(request, response);
         }
 
@@ -171,6 +172,7 @@ public abstract class Authenticator extends Filter {
     @SuppressWarnings("deprecation")
     protected int unauthenticated(Request request, Response response) {
         if (isOptional()) {
+            response.setStatus(Status.SUCCESS_OK);
             return CONTINUE;
         }
 
