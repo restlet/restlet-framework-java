@@ -59,6 +59,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.data.Form;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.test.jaxrs.services.others.Person;
@@ -77,7 +78,8 @@ public class ProviderTestService {
     /**
      * 
      */
-    public static final String STRING2 = "Rom"+'\u00E4'+"n"; // avoid UTF-8 bugs
+    public static final String STRING2 = "Rom" + '\u00E4' + "n"; // avoid UTF-8
+                                                                 // bugs
 
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -98,7 +100,7 @@ public class ProviderTestService {
     @Path("BufferedReader")
     @Produces("application/octet-stream")
     public BufferedReader bufferedReaderGet() {
-        return new BufferedReader(readerGet());
+        return new BufferedReader(readerGet(), IoUtils.getBufferSize());
     }
 
     @POST

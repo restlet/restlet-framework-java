@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 
 /**
@@ -54,7 +55,8 @@ public class RepresentationHelper {
         String line;
 
         try {
-            bufferedReader = new BufferedReader(new FileReader(file));
+            bufferedReader = new BufferedReader(new FileReader(file), IoUtils
+                    .getBufferSize());
             stringWriter = new StringWriter();
 
             while ((line = bufferedReader.readLine()) != null) {

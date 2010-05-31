@@ -56,6 +56,7 @@ import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.PreferenceReader;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.routing.Filter;
 import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
@@ -174,7 +175,8 @@ public class TunnelFilter extends Filter {
                         try {
                             reader = new BufferedReader(new InputStreamReader(
                                     userAgentPropertiesUrl.openStream(),
-                                    CharacterSet.UTF_8.getName()));
+                                    CharacterSet.UTF_8.getName()), IoUtils
+                                    .getBufferSize());
 
                             AcceptReplacer acceptReplacer = new AcceptReplacer();
 

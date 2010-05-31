@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Reference;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.Link;
 import org.restlet.ext.rdf.Literal;
@@ -90,7 +91,8 @@ public class RdfNTriplesReader extends RdfReader {
         this.scoutIndex = 2 * BUFFER_SIZE;
         this.startTokenIndex = 0;
 
-        this.br = new BufferedReader(getRdfRepresentation().getReader());
+        this.br = new BufferedReader(getRdfRepresentation().getReader(),
+                IoUtils.getBufferSize());
     }
 
     /**

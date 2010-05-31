@@ -39,6 +39,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.util.StringUtils;
 
 /**
@@ -91,7 +92,7 @@ public class IdentClient {
 
                 // Read the response
                 in = new BufferedReader(new InputStreamReader(socket
-                        .getInputStream()));
+                        .getInputStream()), IoUtils.getBufferSize());
                 final String response = in.readLine();
 
                 // Parse the response

@@ -50,6 +50,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.HttpProtocolHelper;
 import org.restlet.engine.http.WebDavProtocolHelper;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.log.LoggerFacade;
 
 /**
@@ -790,7 +791,7 @@ public class Engine {
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader(new InputStreamReader(configUrl
-                        .openStream(), "utf-8"));
+                        .openStream(), "utf-8"), IoUtils.getBufferSize());
                 String line = reader.readLine();
 
                 while (line != null) {

@@ -40,6 +40,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Context;
 import org.restlet.engine.Engine;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Variant;
 
 /**
@@ -161,7 +162,8 @@ public final class ClientInfo {
                         try {
                             reader = new BufferedReader(new InputStreamReader(
                                     userAgentPropertiesUrl.openStream(),
-                                    CharacterSet.UTF_8.getName()));
+                                    CharacterSet.UTF_8.getName()), IoUtils
+                                    .getBufferSize());
                             String line = reader.readLine();
                             for (; line != null; line = reader.readLine()) {
                                 if ((line.trim().length() > 0)

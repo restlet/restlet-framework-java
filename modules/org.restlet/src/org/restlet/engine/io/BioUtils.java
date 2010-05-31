@@ -540,7 +540,7 @@ public final class BioUtils {
             try {
                 StringBuilder sb = new StringBuilder();
                 BufferedReader br = (reader instanceof BufferedReader) ? (BufferedReader) reader
-                        : new BufferedReader(reader);
+                        : new BufferedReader(reader, IoUtils.getBufferSize());
                 char[] buffer = new char[2048];
                 int charsRead = br.read(buffer);
 

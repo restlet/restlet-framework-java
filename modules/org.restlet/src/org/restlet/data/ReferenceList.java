@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.util.WrapperList;
@@ -85,7 +86,8 @@ public class ReferenceList extends WrapperList<Reference> {
     public ReferenceList(Representation uriList) throws IOException {
         BufferedReader br = null;
         try {
-            br = new BufferedReader(uriList.getReader());
+            br = new BufferedReader(uriList.getReader(), IoUtils
+                    .getBufferSize());
 
             String line = br.readLine();
 

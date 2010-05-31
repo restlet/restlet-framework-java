@@ -41,6 +41,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
+import org.restlet.engine.io.IoUtils;
+
 /**
  * This {@link MessageBodyReader} is used to read data from the network to a
  * {@link BufferedReader}.
@@ -65,6 +67,7 @@ public class BufferedReaderProvider implements
             Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        return new BufferedReader(ReaderProvider.getReader(entityStream));
+        return new BufferedReader(ReaderProvider.getReader(entityStream),
+                IoUtils.getBufferSize());
     }
 }
