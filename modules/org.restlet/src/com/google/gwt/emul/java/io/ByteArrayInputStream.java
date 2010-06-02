@@ -27,10 +27,12 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
+
 package com.google.gwt.emul.java.io;
 
 /**
- * Emulate the ByteArrayInputStream class, especially for the GWT module.
+ * Emulation of the {@link java.io.ByteArrayInputStream} class for the GWT
+ * edition.
  * 
  * @author Thierry Boileau
  */

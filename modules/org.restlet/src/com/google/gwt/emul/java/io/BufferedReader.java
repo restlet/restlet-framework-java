@@ -33,7 +33,7 @@ package com.google.gwt.emul.java.io;
 import java.io.IOException;
 
 /**
- * Emulate the BufferedReader class, especially for the GWT module.
+ * Emulation of the {@link java.io.BufferedReader} class for the GWT edition.
  * 
  * @author Jerome Louvel
  */
@@ -67,7 +67,7 @@ public class BufferedReader extends Reader {
         this.source = source;
         this.savedNextChar = -2;
     }
-    
+
     /**
      * 
      */

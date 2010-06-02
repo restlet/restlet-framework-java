@@ -32,6 +32,11 @@ package com.google.gwt.emul.java.io;
 
 import java.io.IOException;
 
+/**
+ * Emulation of the {@link java.io.StringWriter} class for the GWT edition.
+ * 
+ * @author Jerome Louvel
+ */
 public abstract class StringWriter implements Appendable {
 
     private StringBuilder sb;
@@ -53,7 +58,7 @@ public abstract class StringWriter implements Appendable {
     public Appendable append(CharSequence csq) {
         return sb.append(csq);
     }
-    
+
     @Override
     public String toString() {
         return sb.toString();

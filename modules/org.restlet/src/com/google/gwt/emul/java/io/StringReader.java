@@ -33,7 +33,7 @@ package com.google.gwt.emul.java.io;
 import java.io.IOException;
 
 /**
- * Emulate the StringReader class, especially for the GWT module.
+ * Emulation of the {@link java.io.StringReader} class for the GWT edition.
  * 
  * @author Jerome Louvel
  */

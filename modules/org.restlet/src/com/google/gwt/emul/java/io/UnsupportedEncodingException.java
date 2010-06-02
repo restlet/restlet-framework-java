@@ -33,8 +33,7 @@ package com.google.gwt.emul.java.io;
 import java.io.IOException;
 
 /**
- * Emulate the UnsupportedEncodingException class, especially for the GWT
- * module.
+ * Emulation of the {@link java.io.UnsupportedEncodingException} class for the GWT edition.
  * 
  * @author Thierry Boileau
  */

@@ -33,7 +33,7 @@ package com.google.gwt.emul.java.io;
 import java.io.IOException;
 
 /**
- * Emulate the UnknownHostException class, especially for the GWT module.
+ * Emulation of the {@link java.io.UnknownHostException} class for the GWT edition.
  * 
  * @author Thierry Boileau
  */

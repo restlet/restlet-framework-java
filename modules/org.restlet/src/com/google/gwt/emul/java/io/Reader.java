@@ -32,6 +32,11 @@ package com.google.gwt.emul.java.io;
 
 import java.io.IOException;
 
+/**
+ * Emulation of the {@link java.io.Reader} class for the GWT edition.
+ * 
+ * @author Jerome Louvel
+ */
 public abstract class Reader {
 
     public abstract void close() throws IOException;
