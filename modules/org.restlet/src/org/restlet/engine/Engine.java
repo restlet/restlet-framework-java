@@ -41,6 +41,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -52,6 +53,7 @@ import org.restlet.engine.http.HttpProtocolHelper;
 import org.restlet.engine.http.WebDavProtocolHelper;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.log.LoggerFacade;
+import org.restlet.routing.VirtualHost;
 
 /**
  * Engine supporting the Restlet API. The engine acts as a registry of various
@@ -116,6 +118,16 @@ public class Engine {
 
     /** Complete version header. */
     public static final String VERSION_HEADER = "Restlet-Framework/" + VERSION;
+
+    /**
+     * Clears the thread local variables set by the Restlet API and engine.
+     */
+    public static void clearThreadLocalVariables() {
+        Response.setCurrent(null);
+        Context.setCurrent(null);
+        VirtualHost.setCurrent(null);
+        Application.setCurrent(null);
+    }
 
     /**
      * Returns an anonymous logger. By default it calls

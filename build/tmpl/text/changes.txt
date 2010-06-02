@@ -5,6 +5,14 @@ Changes log
 
 - @version-full@ (@release-date@)
     - API changes
+    - Bugs fixed
+      - Thread local variables are now cleared correctly.
+        Reported by Felix Leipold, Dustin Jenkins and
+        Rickard Oberg.
+    - Misc
+
+- 2.0 Release Candidate 4 (2010-06-01)
+    - API changes
       - Changed character oriented subclasses of OutputRepresentation
         to extend WriterRepresentation instead for consistent character
         set handling.
@@ -21,7 +29,7 @@ Changes log
         properties are no longer static. A createClassLoader() method
         was added as well as a static getResource(String) : URL one. 
         Reported by Bruno Harbulot.
-      - Deprecated WedlResource. Use WadlServerResource instead.        
+      - Deprecated WadlResource. Use WadlServerResource instead.        
       - Added get/setRouter methods and deprecated getSpringBeanRouter
         in the SpringBeanFinder class. Reported by Thierry Templier.
       - The status name is now returned to clients for display instead
@@ -64,11 +72,12 @@ Changes log
         Reported by Roger Heim.
       - Fixed Generator class in OData extension when the service URI 
         is actually to be redirected.
+      - Fixed bug causing several starts of the HTTP client connector.
+        Reported by Matthew Drooker and Arun Kumar Sharma.
       - Fixed instantiation of BufferedInputStream and 
         BufferedOutputStream using the constructor with size. 
         Reported by Matthew Drooker.
       - Fixed optional Authenticator. Reported by Jean-Philippe Steinmetz.
-
     - Misc
       - Server connectors now display the port they are listening on
         in their start message.  

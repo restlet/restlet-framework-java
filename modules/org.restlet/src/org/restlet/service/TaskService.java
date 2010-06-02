@@ -46,6 +46,7 @@ import java.util.concurrent.TimeoutException;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Response;
+import org.restlet.engine.Engine;
 import org.restlet.routing.VirtualHost;
 
 /**
@@ -125,11 +126,7 @@ public class TaskService extends Service implements ExecutorService {
                             // Run the user task
                             runnable.run();
                         } finally {
-                            // Reset the thread local variables
-                            Response.setCurrent(null);
-                            Context.setCurrent(null);
-                            VirtualHost.setCurrent(-1);
-                            Application.setCurrent(null);
+                            Engine.clearThreadLocalVariables();
                         }
                     }
                 });

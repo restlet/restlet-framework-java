@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 
 import org.restlet.Response;
+import org.restlet.engine.Engine;
 
 /**
  * Controls the state of the server helper and its managed connections.
@@ -117,7 +118,11 @@ public class Controller extends BaseTask {
             if (response != null) {
                 execute(new Runnable() {
                     public void run() {
-                        getHelper().handleInbound(response);
+                        try {
+                            getHelper().handleInbound(response);
+                        } finally {
+                            Engine.clearThreadLocalVariables();
+                        }
                     }
 
                     @Override

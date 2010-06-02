@@ -30,12 +30,9 @@
 
 package org.restlet.test;
 
-import org.restlet.Application;
-import org.restlet.Context;
-import org.restlet.Response;
-import org.restlet.routing.VirtualHost;
-
 import junit.framework.TestCase;
+
+import org.restlet.engine.Engine;
 
 /**
  * Marker class. All Restlet tests should be derived from this class.
@@ -61,22 +58,12 @@ public abstract class RestletTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
-        // Reset the thread local variables
-        Response.setCurrent(null);
-        Context.setCurrent(null);
-        VirtualHost.setCurrent(-1);
-        Application.setCurrent(null);
+        Engine.clearThreadLocalVariables();
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-
-        // Reset the thread local variables
-        Response.setCurrent(null);
-        Context.setCurrent(null);
-        VirtualHost.setCurrent(-1);
-        Application.setCurrent(null);
+        Engine.clearThreadLocalVariables();
     }
 }
