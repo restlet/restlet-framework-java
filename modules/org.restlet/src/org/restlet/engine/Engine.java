@@ -41,7 +41,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -119,6 +118,7 @@ public class Engine {
     /** Complete version header. */
     public static final String VERSION_HEADER = "Restlet-Framework/" + VERSION;
 
+    // [ifndef gwt] method
     /**
      * Clears the thread local variables set by the Restlet API and engine.
      */
@@ -126,7 +126,7 @@ public class Engine {
         Response.setCurrent(null);
         Context.setCurrent(null);
         VirtualHost.setCurrent(null);
-        Application.setCurrent(null);
+        org.restlet.Application.setCurrent(null);
     }
 
     /**
