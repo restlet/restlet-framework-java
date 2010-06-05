@@ -52,7 +52,6 @@ import org.restlet.engine.http.HttpProtocolHelper;
 import org.restlet.engine.http.WebDavProtocolHelper;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.log.LoggerFacade;
-import org.restlet.routing.VirtualHost;
 
 /**
  * Engine supporting the Restlet API. The engine acts as a registry of various
@@ -125,7 +124,7 @@ public class Engine {
     public static void clearThreadLocalVariables() {
         Response.setCurrent(null);
         Context.setCurrent(null);
-        VirtualHost.setCurrent(null);
+        org.restlet.routing.VirtualHost.setCurrent(null);
         org.restlet.Application.setCurrent(null);
     }
 
