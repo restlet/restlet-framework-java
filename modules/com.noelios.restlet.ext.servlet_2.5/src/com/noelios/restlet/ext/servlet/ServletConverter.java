@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Reference;
+import org.restlet.util.Engine;
 
 import com.noelios.restlet.http.HttpRequest;
 import com.noelios.restlet.http.HttpResponse;
@@ -142,7 +143,7 @@ public class ServletConverter extends HttpServerConverter {
         }
 
         result.normalize();
-        
+
         return result;
     }
 
@@ -179,25 +180,30 @@ public class ServletConverter extends HttpServerConverter {
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (getTarget() != null) {
-            // Set the current context
-            Context.setCurrent(getContext());
+            try {
+                // Set the current context
+                Context.setCurrent(getContext());
 
-            // Convert the Servlet call to a Restlet call
-            final ServletCall servletCall = new ServletCall(request
-                    .getLocalAddr(), request.getLocalPort(), request, response);
-            final HttpRequest httpRequest = toRequest(servletCall);
-            final HttpResponse httpResponse = new HttpResponse(servletCall,
-                    httpRequest);
+                // Convert the Servlet call to a Restlet call
+                final ServletCall servletCall = new ServletCall(request
+                        .getLocalAddr(), request.getLocalPort(), request,
+                        response);
+                final HttpRequest httpRequest = toRequest(servletCall);
+                final HttpResponse httpResponse = new HttpResponse(servletCall,
+                        httpRequest);
 
-            // Adjust the relative reference
-            httpRequest.getResourceRef().setBaseRef(getBaseRef(request));
+                // Adjust the relative reference
+                httpRequest.getResourceRef().setBaseRef(getBaseRef(request));
 
-            // Adjust the root reference
-            httpRequest.setRootRef(getRootRef(request));
+                // Adjust the root reference
+                httpRequest.setRootRef(getRootRef(request));
 
-            // Handle the request and commit the response
-            getTarget().handle(httpRequest, httpResponse);
-            commit(httpResponse);
+                // Handle the request and commit the response
+                getTarget().handle(httpRequest, httpResponse);
+                commit(httpResponse);
+            } finally {
+                Engine.clearThreadLocalVariables();
+            }
         } else {
             getLogger().warning("Unable to find the Restlet target");
         }

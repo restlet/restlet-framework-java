@@ -152,6 +152,8 @@ public class HttpServerHelper extends ServerHelper {
                     e.getMessage());
             getLogger().log(Level.INFO,
                     "Error while handling an HTTP server call", e);
+        } finally {
+            Engine.clearThreadLocalVariables();
         }
     }
 

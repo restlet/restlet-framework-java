@@ -5,6 +5,14 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
+        - Fixed generation of XML header according to the character 
+          set of the DomRepresentation.
+        - Thread local variables are now cleared correctly.
+          Reported by Felix Leipold, Dustin Jenkins and
+          Rickard Oberg.
+
+- 1.1.10 (2010-04-23)
+    - Bugs fixed
         - Removed debug trace when using the Basic authentication.
         - Fixed generation of the Content-length header in requests 
           when using ranges.
@@ -12,8 +20,6 @@ Changes log
           according to the 2009 WADL RNC (generate the Parameter 
           elements before the Method ones).
           Reported by Leigh Klotz.
-        - Fixed generation of XML header according to the character 
-          set of the DomRepresentation.
 
 - 1.1.9 (2010-03-30)
     - Bugs fixed

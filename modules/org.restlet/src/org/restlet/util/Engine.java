@@ -43,6 +43,7 @@ import org.restlet.Directory;
 import org.restlet.Guard;
 import org.restlet.Restlet;
 import org.restlet.Server;
+import org.restlet.VirtualHost;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Cookie;
@@ -88,6 +89,16 @@ public abstract class Engine {
     /** Complete version. */
     public static final String VERSION = MAJOR_NUMBER + '.' + MINOR_NUMBER
             + RELEASE_NUMBER;
+
+    /**
+     * Clears the thread local variables set by the Restlet API and engine.
+     */
+    public static void clearThreadLocalVariables() {
+        VirtualHost.setCurrent(-1);
+        Response.setCurrent(null);
+        Context.setCurrent(null);
+        Application.setCurrent(null);
+    }
 
     /**
      * Returns the best class loader, first the engine class loader if available

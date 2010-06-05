@@ -29,6 +29,8 @@ package org.restlet.test;
 
 import junit.framework.TestCase;
 
+import org.restlet.util.Engine;
+
 /**
  * Marker class. All Restlet tests should be derived from this class.
  * 
@@ -36,5 +38,17 @@ import junit.framework.TestCase;
  *         href="http://www.semagia.com/">Semagia</a>
  */
 public abstract class RestletTestCase extends TestCase {
-    // Currently emtpy.
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        Engine.clearThreadLocalVariables();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        Engine.clearThreadLocalVariables();
+    }
+
 }

@@ -44,6 +44,7 @@ import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.VirtualHost;
 import org.restlet.data.Response;
+import org.restlet.util.Engine;
 
 /**
  * Service capable of running tasks asynchronously. The service instance
@@ -122,11 +123,7 @@ public class TaskService extends Service implements ExecutorService {
                             // Run the user task
                             runnable.run();
                         } finally {
-                            // Reset the thread local variables
-                            Response.setCurrent(null);
-                            Context.setCurrent(null);
-                            VirtualHost.setCurrent(-1);
-                            Application.setCurrent(null);
+                            Engine.clearThreadLocalVariables();
                         }
                     }
                 });
