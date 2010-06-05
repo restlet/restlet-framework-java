@@ -8,8 +8,9 @@ Changes log
         - Fixed generation of XML header according to the character 
           set of the DomRepresentation.
         - Thread local variables are now cleared correctly.
-          Reported by Felix Leipold, Dustin Jenkins and
-          Rickard Oberg.
+          Prevented unloading of WAR files or OSGi bundles
+          using Restlet. Reported by Felix Leipold, 
+          Dustin Jenkins and Rickard Oberg.
 
 - 1.1.10 (2010-04-23)
     - Bugs fixed
