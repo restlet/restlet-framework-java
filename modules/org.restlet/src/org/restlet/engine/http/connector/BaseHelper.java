@@ -50,7 +50,6 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.io.IoUtils;
-import org.restlet.engine.io.NioUtils;
 import org.restlet.engine.log.LoggingThreadFactory;
 
 /**
@@ -79,7 +78,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>inboundBufferSize</td>
  * <td>int</td>
- * <td>{@link NioUtils#BUFFER_SIZE}</td>
+ * <td>{@link IoUtils#BUFFER_SIZE}</td>
  * <td>The size of the buffer when reading messages.</td>
  * </tr>
  * <tr>
@@ -109,7 +108,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>outboundBufferSize</td>
  * <td>int</td>
- * <td>{@link NioUtils#BUFFER_SIZE}</td>
+ * <td>{@link IoUtils#BUFFER_SIZE}</td>
  * <td>The size of the buffer when writing messages.</td>
  * </tr>
  * <tr>
