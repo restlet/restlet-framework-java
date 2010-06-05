@@ -54,6 +54,18 @@ public class InputStreamReader extends Reader {
     public InputStreamReader(InputStream stream) {
         this(stream.getText());
     }
+    
+    /**
+     * Constructor.
+     * 
+     * @param stream
+     *            The source text to read.
+     * @param  charsetName
+     *         The name of a supported charset.
+     */
+    public InputStreamReader(InputStream stream, String charsetName) {
+        this(stream.getText());
+    }
 
     /**
      * Constructor.

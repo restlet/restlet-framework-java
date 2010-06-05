@@ -28,24 +28,49 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package com.google.gwt.emul.java.io;
+package org.restlet.engine.io;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * Emulation of the {@link java.io.StringBufferInputStream} class for the GWT edition.
+ * Input stream in which the bytes read are supplied by the contents of a string
+ * based on the default character set.
  * 
- * @author Jerome Louvel
+ * @author Thierry Boileau
  */
-public class StringBufferInputStream extends InputStream {
+public class StringInputStream extends InputStream {
 
-    protected int position;
+    /** The next position to read. */
+    private int position;
 
-    public StringBufferInputStream(String text) {
+    /** The text to stream. */
+    protected String text;
+
+    /**
+     * Constructor.
+     */
+    public StringInputStream() {
+        super();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param text
+     */
+    public StringInputStream(String text) {
+        super();
+        this.position = 0;
         this.text = text;
     }
 
-    public synchronized int available() throws IOException {
+    /**
+     * 
+     * @return
+     * @throws IOException
+     */
+    public int available() throws IOException {
         if (text != null) {
             return text.length();
         }
@@ -53,21 +78,54 @@ public class StringBufferInputStream extends InputStream {
         return 0;
     }
 
-    public synchronized int read() {
+    public void close() throws IOException {
+
+    }
+
+    /**
+     * Returns the text to stream.
+     * 
+     * @return The text to stream.
+     */
+    public String getText() {
+        return text;
+    }
+
+    /**
+     * Reads the next character in the source text.
+     * 
+     * @return The next character or -1 if end of text is reached.
+     * @throws IOException
+     */
+    public int read() throws IOException {
         return (this.position == this.text.length()) ? -1 : this.text
                 .charAt(this.position++);
     }
 
-    public int read(char[] b, int off, int len) {
+    /**
+     * 
+     * @param cbuf
+     * @return
+     * @throws IOException
+     */
+    public int read(char[] cbuf) throws IOException {
+        return read(cbuf, 0, cbuf.length);
+    }
+
+    /**
+     * 
+     * @param cbuf
+     * @param off
+     * @param len
+     * @return
+     * @throws IOException
+     */
+    public int read(char[] cbuf, int off, int len) throws IOException {
         if (position >= text.length())
             return -1;
         int n = Math.min(text.length() - position, len);
-        text.getChars(position, position + n, b, off);
+        text.getChars(position, position + n, cbuf, off);
         position += n;
         return n;
-    }
-
-    public synchronized void reset() {
-        position = 0;
     }
 }

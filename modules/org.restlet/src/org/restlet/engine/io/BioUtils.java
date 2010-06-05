@@ -31,25 +31,17 @@
 package org.restlet.engine.io;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.engine.Edition;
 import org.restlet.representation.Representation;
-import org.restlet.representation.WriterRepresentation;
 
 /**
  * Basic IO manipulation utilities.
@@ -58,9 +50,11 @@ import org.restlet.representation.WriterRepresentation;
  */
 public final class BioUtils {
 
+    // [ifndef gwt] member
     /** Support for byte to hexa conversions. */
     private static final char[] HEXDIGITS = "0123456789ABCDEF".toCharArray();
 
+    // [ifndef gwt] method
     /**
      * Copies an input stream to an output stream. When the reading is done, the
      * input stream is closed.
@@ -71,8 +65,8 @@ public final class BioUtils {
      *            The output stream.
      * @throws IOException
      */
-    public static void copy(InputStream inputStream, OutputStream outputStream)
-            throws IOException {
+    public static void copy(InputStream inputStream,
+            java.io.OutputStream outputStream) throws IOException {
         int bytesRead;
         byte[] buffer = new byte[2048];
 
@@ -84,6 +78,7 @@ public final class BioUtils {
         inputStream.close();
     }
 
+    // [ifndef gwt] method
     /**
      * Copies an input stream to a random access file. When the reading is done,
      * the input stream is closed.
@@ -95,7 +90,7 @@ public final class BioUtils {
      * @throws IOException
      */
     public static void copy(InputStream inputStream,
-            RandomAccessFile randomAccessFile) throws IOException {
+            java.io.RandomAccessFile randomAccessFile) throws IOException {
         int bytesRead;
         byte[] buffer = new byte[2048];
 
@@ -106,6 +101,7 @@ public final class BioUtils {
         inputStream.close();
     }
 
+    // [ifndef gwt] method
     /**
      * Copies characters from a reader to a writer. When the reading is done,
      * the reader is closed.
@@ -116,7 +112,8 @@ public final class BioUtils {
      *            The writer.
      * @throws IOException
      */
-    public static void copy(Reader reader, Writer writer) throws IOException {
+    public static void copy(Reader reader, java.io.Writer writer)
+            throws IOException {
         int charsRead;
         char[] buffer = new char[2048];
 
@@ -128,6 +125,7 @@ public final class BioUtils {
         reader.close();
     }
 
+    // [ifndef gwt] method
     /**
      * Deletes an individual file or an empty directory.
      * 
@@ -135,10 +133,11 @@ public final class BioUtils {
      *            The individual file or directory to delete.
      * @return True if the deletion was successful.
      */
-    public static boolean delete(File file) {
+    public static boolean delete(java.io.File file) {
         return delete(file, false);
     }
 
+    // [ifndef gwt] method
     /**
      * Deletes an individual file or a directory. A recursive deletion can be
      * forced as well. Under Windows operating systems, the garbage collector
@@ -153,11 +152,12 @@ public final class BioUtils {
      * @return True if the deletion was successful or if the file or directory
      *         didn't exist.
      */
-    public static boolean delete(File file, boolean recursive) {
+    public static boolean delete(java.io.File file, boolean recursive) {
         String osName = System.getProperty("os.name").toLowerCase();
         return delete(file, recursive, osName.startsWith("windows"));
     }
 
+    // [ifndef gwt] method
     /**
      * Deletes an individual file or a directory. A recursive deletion can be
      * forced as well. The garbage collector can be run once before attempting
@@ -173,14 +173,14 @@ public final class BioUtils {
      * @return True if the deletion was successful or if the file or directory
      *         didn't exist.
      */
-    public static boolean delete(File file, boolean recursive,
+    public static boolean delete(java.io.File file, boolean recursive,
             boolean garbageCollect) {
         boolean result = true;
         boolean runGC = garbageCollect;
 
         if (file.exists()) {
             if (file.isDirectory()) {
-                File[] entries = file.listFiles();
+                java.io.File[] entries = file.listFiles();
 
                 // Check if the directory is empty
                 if (entries.length > 0) {
@@ -210,6 +210,7 @@ public final class BioUtils {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Exhaust the content of the representation by reading it and silently
      * discarding anything read.
@@ -255,6 +256,7 @@ public final class BioUtils {
         return new InputStreamReader(stream);
     }
 
+    // [ifndef gwt] method
     /**
      * Returns a reader from a writer representation.Internally, it uses a
      * writer thread and a pipe stream.
@@ -264,7 +266,8 @@ public final class BioUtils {
      * @return The character reader.
      * @throws IOException
      */
-    public static Reader getReader(final WriterRepresentation representation)
+    public static Reader getReader(
+            final org.restlet.representation.WriterRepresentation representation)
             throws IOException {
         Reader result = null;
         if (Edition.CURRENT != Edition.GAE) {
@@ -307,6 +310,7 @@ public final class BioUtils {
 
     }
 
+    // [ifndef gwt] method
     /**
      * Returns an input stream based on a given character reader.
      * 
@@ -329,13 +333,15 @@ public final class BioUtils {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns an input stream based on the given representation's content and
      * its write(OutputStream) method. Internally, it uses a writer thread and a
      * pipe stream.
      * 
      * @param representation
-     *            the representation to get the {@link OutputStream} from.
+     *            the representation to get the {@link java.io.OutputStream}
+     *            from.
      * @return A stream with the representation's content.
      */
     public static InputStream getStream(final Representation representation) {
@@ -357,7 +363,7 @@ public final class BioUtils {
             taskService.execute(new Runnable() {
                 public void run() {
                     try {
-                        OutputStream os = pipe.getOutputStream();
+                        java.io.OutputStream os = pipe.getOutputStream();
                         representation.write(os);
                         os.write(-1);
                         os.close();
@@ -385,6 +391,7 @@ public final class BioUtils {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns an output stream based on a given writer.
      * 
@@ -392,10 +399,11 @@ public final class BioUtils {
      *            The writer.
      * @return the output stream of the writer
      */
-    public static OutputStream getStream(Writer writer) {
+    public static java.io.OutputStream getStream(java.io.Writer writer) {
         return new WriterOutputStream(writer);
     }
 
+    // [ifndef gwt] method
     /**
      * Converts a char array into a byte array using the default character set.
      * 
@@ -404,9 +412,11 @@ public final class BioUtils {
      * @return The result bytes.
      */
     public static byte[] toByteArray(char[] chars) {
-        return toByteArray(chars, Charset.defaultCharset().name());
+        return toByteArray(chars, java.nio.charset.Charset.defaultCharset()
+                .name());
     }
 
+    // [ifndef gwt] method
     /**
      * Converts a char array into a byte array using the default character set.
      * 
@@ -417,13 +427,15 @@ public final class BioUtils {
      * @return The result bytes.
      */
     public static byte[] toByteArray(char[] chars, String charsetName) {
-        CharBuffer cb = CharBuffer.wrap(chars);
-        ByteBuffer bb = Charset.forName(charsetName).encode(cb);
+        java.nio.CharBuffer cb = java.nio.CharBuffer.wrap(chars);
+        java.nio.ByteBuffer bb = java.nio.charset.Charset.forName(charsetName)
+                .encode(cb);
         byte[] r = new byte[bb.remaining()];
         bb.get(r);
         return r;
     }
 
+    // [ifndef gwt] method
     /**
      * Converts a byte array into a character array using the default character
      * set.
@@ -433,9 +445,11 @@ public final class BioUtils {
      * @return The result characters.
      */
     public static char[] toCharArray(byte[] bytes) {
-        return toCharArray(bytes, Charset.defaultCharset().name());
+        return toCharArray(bytes, java.nio.charset.Charset.defaultCharset()
+                .name());
     }
 
+    // [ifndef gwt] method
     /**
      * Converts a byte array into a character array using the default character
      * set.
@@ -447,13 +461,15 @@ public final class BioUtils {
      * @return The result characters.
      */
     public static char[] toCharArray(byte[] bytes, String charsetName) {
-        ByteBuffer bb = ByteBuffer.wrap(bytes);
-        CharBuffer cb = Charset.forName(charsetName).decode(bb);
+        java.nio.ByteBuffer bb = java.nio.ByteBuffer.wrap(bytes);
+        java.nio.CharBuffer cb = java.nio.charset.Charset.forName(charsetName)
+                .decode(bb);
         char[] r = new char[cb.remaining()];
         cb.get(r);
         return r;
     }
 
+    // [ifndef gwt] method
     /**
      * Converts a byte array into an hexadecimal string.
      * 
@@ -508,6 +524,7 @@ public final class BioUtils {
         String result = null;
 
         if (inputStream != null) {
+            // [ifndef gwt]
             try {
                 if (characterSet != null) {
                     result = toString(new InputStreamReader(inputStream,
@@ -518,6 +535,23 @@ public final class BioUtils {
             } catch (Exception e) {
                 // Returns an empty string
             }
+            // [enddef]
+            // [ifdef gwt] uncomment
+            // if (inputStream instanceof StringInputStream) {
+            // return ((StringInputStream) inputStream).getText();
+            // } else {
+            // try {
+            // if (characterSet != null) {
+            // result = toString(new InputStreamReader(inputStream,
+            // characterSet.getName()));
+            // } else {
+            // result = toString(new InputStreamReader(inputStream));
+            // }
+            // } catch (Exception e) {
+            // // Returns an empty string
+            // }
+            // }
+            // [enddef]
         }
 
         return result;

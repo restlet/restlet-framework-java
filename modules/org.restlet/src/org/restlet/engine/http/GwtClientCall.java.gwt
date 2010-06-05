@@ -32,12 +32,12 @@ package org.restlet.engine.http;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringBufferInputStream;
 
 import org.restlet.Uniform;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.io.StringInputStream;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -169,7 +169,7 @@ public class GwtClientCall extends ClientCall {
 
     @Override
     public InputStream getResponseEntityStream(long size) {
-        return (getResponse() == null) ? null : new StringBufferInputStream(
+        return (getResponse() == null) ? null : new StringInputStream(
                 getResponse().getText());
     }
 

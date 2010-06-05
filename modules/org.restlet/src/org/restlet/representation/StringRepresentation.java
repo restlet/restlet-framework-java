@@ -141,7 +141,7 @@ public class StringRepresentation extends CharacterRepresentation {
                 .getBytes(charset.getName()));
         // [enddef]
         // [ifdef gwt] instruction uncomment
-        // InputStream result = new java.io.StringBufferInputStream(getText());
+        // InputStream result = new org.restlet.engine.io.StringInputStream(getText());
         return result;
     }
 
