@@ -9,6 +9,9 @@ Changes log
       - Thread local variables are now cleared correctly.
         Reported by Felix Leipold, Dustin Jenkins and
         Rickard Oberg.
+      - Fixed generation of client proxies in the GWT edition, when the
+        annotated method declares an entity as a Representation instance.
+
     - Misc
 
 - 2.0 Release Candidate 4 (2010-06-01)

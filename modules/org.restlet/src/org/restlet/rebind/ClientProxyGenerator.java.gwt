@@ -136,6 +136,25 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
     }
 
     /**
+     * Add a new type to be serialized.
+     * 
+     * @param type
+     *            The type to add.
+     */
+    private void addRootType(JType type) {
+        try {
+            if (!(type.isClass() != null && getTypeOracle().getType(
+                    Representation.class.getName()).isAssignableFrom(
+                    type.isClass()))) {
+                // Do not render Representation instances
+                getStob().addRootType(getLogger(), type);
+            }
+        } catch (Exception e) {
+            getStob().addRootType(getLogger(), type);
+        }
+    }
+
+    /**
      * Generates the name of the given type into the given StringBuilder.
      * 
      * @param type
@@ -307,17 +326,22 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
             println("){");
             indent();
-            println("Representation requestEntity = null;");
             if (parameterTypes.length > 1) {
                 // By convention, only the first parameter can be passed as
                 // single parameter of the callback method.
                 parameterType = parameterTypes[0];
-                println("requestEntity = new ObjectRepresentation<"
-                        + parameterType.getName()
-                        + ">(param1,(SerializationStreamFactory) "
-                        + getClassName() + ".this);");
+                if(!Representation.class.isAssignableFrom(parameterType)){
+                    println("Representation requestEntity = new ObjectRepresentation<"
+                            + parameterType.getName()
+                            + ">(param1,(SerializationStreamFactory) "
+                            + getClassName() + ".this);");
+                    println("getClientResource().getRequest().setEntity(requestEntity);");
+                } else {
+                    println("getClientResource().getRequest().setEntity(param1);");
+                }
+            } else {
+                println("getClientResource().getRequest().setEntity(null);");
             }
-            println("getClientResource().getRequest().setEntity(requestEntity);");
 
             println("getClientResource().setMethod(Method."
                     + info.getRestletMethod().toString() + ");");
@@ -470,11 +494,11 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                                 .isParameterized();
                         if (parameterizedType == null) {
                             // Non generic type.
-                            getStob().addRootType(getLogger(), parameterType);
+                            addRootType(parameterType);
                         } else if (((parameterizedType.getBaseType() != asyncType) && (parameterizedType
                                 .getBaseType() != cbType))) {
                             // Generic type but not a callback.
-                            getStob().addRootType(getLogger(), parameterType);
+                            addRootType(parameterType);
                         } else {
                             // Callback type, inspect the "inner" type.
                             if (parameterizedType.getTypeArgs().length > 0) {
@@ -485,7 +509,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                                         && !("Void".equals(t.getName()) && "java.lang"
                                                 .equals(t.getPackage()
                                                         .getName()))) {
-                                    getStob().addRootType(getLogger(), t);
+                                    addRootType(t);
                                 }
                             }
                         }
@@ -500,8 +524,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                                         .log(Type.WARN,
                                                 "Only checked exceptions are supported");
                             }
-
-                            getStob().addRootType(getLogger(), exception);
+                            addRootType(exception);
                         }
                     }
                 }
