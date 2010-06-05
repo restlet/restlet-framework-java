@@ -38,22 +38,23 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 
-import org.restlet.Client;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Uniform;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
-import org.restlet.engine.resource.GwtClientProxy;
-import org.restlet.representation.ObjectRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientProxy;
-import org.restlet.resource.Delete;
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
-import org.restlet.resource.Put;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.Result;
+import org.restlet.client.Client;
+import org.restlet.client.Request;
+import org.restlet.client.Response;
+import org.restlet.client.Uniform;
+import org.restlet.client.data.Form;
+import org.restlet.client.data.Method;
+import org.restlet.client.data.Protocol;
+import org.restlet.client.engine.resource.GwtClientProxy;
+import org.restlet.client.representation.ObjectRepresentation;
+import org.restlet.client.representation.Representation;
+import org.restlet.client.resource.ClientProxy;
+import org.restlet.client.resource.Delete;
+import org.restlet.client.resource.Get;
+import org.restlet.client.resource.Post;
+import org.restlet.client.resource.Put;
+import org.restlet.client.resource.ResourceException;
+import org.restlet.client.resource.Result;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.ext.GeneratorContext;
@@ -143,10 +144,11 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
      */
     private void addRootType(JType type) {
         try {
-            if (!(type.isClass() != null && getTypeOracle().getType(
+            if (!(type.isClass() != null && (getTypeOracle().getType(
                     Representation.class.getName()).isAssignableFrom(
-                    type.isClass()))) {
-                // Do not render Representation instances
+                    type.isClass()) || getTypeOracle().getType(
+                    Form.class.getName()).isAssignableFrom(type.isClass())))) {
+                // Do not render Representation  and Form instances
                 getStob().addRootType(getLogger(), type);
             }
         } catch (Exception e) {
@@ -330,14 +332,17 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 // By convention, only the first parameter can be passed as
                 // single parameter of the callback method.
                 parameterType = parameterTypes[0];
-                if(!Representation.class.isAssignableFrom(parameterType)){
+
+                if (Representation.class.isAssignableFrom(parameterType)) {
+                    println("getClientResource().getRequest().setEntity(param1);");
+                } else if (Form.class.isAssignableFrom(parameterType)) {
+                    println("getClientResource().getRequest().setEntity((param1 == null) ? null : param1.getWebRepresentation());");
+                } else {
                     println("Representation requestEntity = new ObjectRepresentation<"
                             + parameterType.getName()
                             + ">(param1,(SerializationStreamFactory) "
                             + getClassName() + ".this);");
                     println("getClientResource().getRequest().setEntity(requestEntity);");
-                } else {
-                    println("getClientResource().getRequest().setEntity(param1);");
                 }
             } else {
                 println("getClientResource().getRequest().setEntity(null);");
