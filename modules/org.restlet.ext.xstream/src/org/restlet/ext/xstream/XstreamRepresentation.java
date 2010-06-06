@@ -233,8 +233,11 @@ public class XstreamRepresentation<T> extends WriterRepresentation {
             CharacterSet charSet = (getCharacterSet() == null) ? CharacterSet.ISO_8859_1
                     : getCharacterSet();
 
-            writer.append("<?xml version=\"1.0\" encoding=\""
-                    + charSet.getName() + "\" ?>\n");
+            if (!MediaType.APPLICATION_JSON.isCompatible(getMediaType())) {
+                writer.append("<?xml version=\"1.0\" encoding=\""
+                        + charSet.getName() + "\" ?>\n");
+            }
+
             getXstream().toXML(object, writer);
         }
     }

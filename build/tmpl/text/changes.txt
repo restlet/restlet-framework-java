@@ -7,11 +7,16 @@ Changes log
     - API changes
     - Bugs fixed
       - Thread local variables are now cleared correctly.
-        Reported by Felix Leipold, Dustin Jenkins and
-        Rickard Oberg.
+        Prevented unloading of WAR files or OSGi bundles
+        using Restlet. Reported by Felix Leipold, 
+        Dustin Jenkins and Rickard Oberg.
       - Fixed generation of client proxies in the GWT edition, when the
         annotated method declares an entity as a Representation instance.
-
+      - Fixed handling of non ASCII characters in the GWT edition 
+        when running in hosted mode.
+        Reported by Giovani Pieri.
+      - Removed XML header in JSON documents produced by XStream.
+        Reported by Louis Huh. 
     - Misc
 
 - 2.0 Release Candidate 4 (2010-06-01)
