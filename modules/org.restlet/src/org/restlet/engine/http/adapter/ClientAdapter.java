@@ -165,7 +165,7 @@ public class ClientAdapter extends Adapter {
             HeaderUtils.addGeneralHeaders(request, result.getRequestHeaders());
             HeaderUtils.addRequestHeaders(request, result.getRequestHeaders());
 
-            if (request.isEntityAvailable()) {
+            if (request.getEntity() != null) {
                 HeaderUtils.addEntityHeaders(request.getEntity(), result
                         .getRequestHeaders());
             }

@@ -273,10 +273,7 @@ public abstract class InboundWay extends Way {
                                         getHelper().getController().wakeup();
                                     }
 
-                                    if ((request.getEntity() == null)
-                                            || !request.getEntity()
-                                                    .isAvailable()
-                                            || (request.getEntity().getSize() == 0)) {
+                                    if (!request.isEntityAvailable()) {
                                         // The request has been completely read
                                         onCompleted(getMessage());
                                     }

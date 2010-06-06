@@ -70,6 +70,31 @@ public class HeaderUtils {
 
     /**
      * Adds the entity headers based on the {@link Representation} to the
+     * {@link Series} when a 304 (Not Modified) status is returned.
+     * 
+     * @param entity
+     *            The source entity {@link Representation}.
+     * @param headers
+     *            The target headers {@link Series}.
+     */
+    public static void addNotModifiedEntityHeaders(Representation entity,
+            Series<Parameter> headers) {
+        if (entity != null) {
+            if (entity.getTag() != null) {
+                HeaderUtils.addHeader(HeaderConstants.HEADER_ETAG, TagWriter
+                        .write(entity.getTag()), headers);
+            }
+
+            if (entity.getLocationRef() != null) {
+                HeaderUtils.addHeader(HeaderConstants.HEADER_CONTENT_LOCATION,
+                        entity.getLocationRef().getTargetRef().toString(),
+                        headers);
+            }
+        }
+    }
+
+    /**
+     * Adds the entity headers based on the {@link Representation} to the
      * {@link Series}.
      * 
      * @param entity
@@ -81,16 +106,16 @@ public class HeaderUtils {
             Series<Parameter> headers) {
         if (entity == null || !entity.isAvailable()) {
             addHeader(HeaderConstants.HEADER_CONTENT_LENGTH, "0", headers);
-        } else {
+        } else if (entity.getAvailableSize() != Representation.UNKNOWN_SIZE) {
+            addHeader(HeaderConstants.HEADER_CONTENT_LENGTH, Long
+                    .toString(entity.getAvailableSize()), headers);
+        }
+
+        if (entity != null) {
             addHeader(HeaderConstants.HEADER_CONTENT_ENCODING, EncodingWriter
                     .write(entity.getEncodings()), headers);
             addHeader(HeaderConstants.HEADER_CONTENT_LANGUAGE, LanguageWriter
                     .write(entity.getLanguages()), headers);
-
-            if (entity.getAvailableSize() != Representation.UNKNOWN_SIZE) {
-                addHeader(HeaderConstants.HEADER_CONTENT_LENGTH, Long
-                        .toString(entity.getAvailableSize()), headers);
-            }
 
             if (entity.getLocationRef() != null) {
                 addHeader(HeaderConstants.HEADER_CONTENT_LOCATION, entity

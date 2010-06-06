@@ -146,7 +146,11 @@ public class Controller implements Runnable {
             if (response != null) {
                 execute(new Runnable() {
                     public void run() {
-                        getHelper().handleOutbound(response);
+                        try {
+                            getHelper().handleOutbound(response);
+                        } finally {
+                            Engine.clearThreadLocalVariables();
+                        }
                     }
 
                     @Override

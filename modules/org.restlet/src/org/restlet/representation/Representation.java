@@ -86,7 +86,7 @@ public abstract class Representation extends RepresentationInfo {
         return new EmptyRepresentation();
     }
 
-    /** Indicates if the representation's content is available. */
+    /** Indicates if the representation's content is potentially available. */
     private volatile boolean available;
 
     // [ifndef gwt] member
@@ -498,16 +498,21 @@ public abstract class Representation extends RepresentationInfo {
     }
 
     /**
-     * Indicates if some fresh content is available, without having to actually
-     * call one of the content manipulation method like getStream() that would
-     * actually consume it. This is especially useful for transient
-     * representation whose content can only be accessed once and also when the
-     * size of the representation is not known in advance.
+     * Indicates if some fresh content is potentially available, without having
+     * to actually call one of the content manipulation method like getStream()
+     * that would actually consume it. Note that when the size of a
+     * representation is 0 is a not considered available. However, sometimes the
+     * size isn't known until a read attempt is made, so availability doesn't
+     * guarantee a non empty content.<br>
+     * <br>
+     * This is especially useful for transient representation whose content can
+     * only be accessed once and also when the size of the representation is not
+     * known in advance.
      * 
      * @return True if some fresh content is available.
      */
     public boolean isAvailable() {
-        return this.available;
+        return this.available && (getSize() != 0);
     }
 
     // [ifdef gwt] method uncomment

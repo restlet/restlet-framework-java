@@ -294,13 +294,9 @@ public class ServerConnection extends Connection<Server> {
                 }
             } else if (response.getStatus().equals(
                     Status.REDIRECTION_NOT_MODIFIED)) {
-                addEntityHeaders(response.getEntity(), headers);
-
-                if (response.isEntityAvailable()) {
-                    getLogger()
-                            .warning(
-                                    "Responses with a 304 (Not modified) status can't have an entity. Only adding entity headers for resource \""
-                                            + request.getResourceRef() + "\".");
+                if (response.getEntity() != null) {
+                    HeaderUtils.addNotModifiedEntityHeaders(response
+                            .getEntity(), headers);
                     response.setEntity(null);
                 }
             } else if (response.getStatus().isInformational()) {
@@ -319,13 +315,16 @@ public class ServerConnection extends Connection<Server> {
                 addResponseHeaders(response, headers);
                 addEntityHeaders(response.getEntity(), headers);
 
-                if ((response.getEntity() != null)
-                        && !response.getEntity().isAvailable()) {
-                    // An entity was returned but isn't really available
-                    getLogger()
-                            .warning(
-                                    "A response with an unavailable entity was returned. Ignoring the entity for resource \""
-                                            + request.getResourceRef() + "\".");
+                if (!response.isEntityAvailable()) {
+                    if (response.getEntity().getSize() != 0) {
+                        getLogger()
+                                .warning(
+                                        "A response with an unavailable and non empty entity was returned. Ignoring the entity for resource \""
+                                                + response.getRequest()
+                                                        .getResourceRef()
+                                                + "\".");
+                    }
+
                     response.setEntity(null);
                 }
             }

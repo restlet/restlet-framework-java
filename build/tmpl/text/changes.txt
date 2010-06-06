@@ -16,7 +16,11 @@ Changes log
         when running in hosted mode.
         Reported by Giovani Pieri.
       - Removed XML header in JSON documents produced by XStream.
-        Reported by Louis Huh. 
+        Reported by Louis Huh.
+      - Empty representations (with a size of 0) are considered again
+        as not available. Reported by David Fogel.
+      - The log service now logs "0" instead of the entity size when this
+        entity isn't effectively sent (204 or 304 status).
     - Misc
 
 - 2.0 Release Candidate 4 (2010-06-01)

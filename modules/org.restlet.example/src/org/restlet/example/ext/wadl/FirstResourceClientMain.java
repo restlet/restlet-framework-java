@@ -63,7 +63,7 @@ public class FirstResourceClientMain {
             ResourceException {
         clientResource.get();
         if (clientResource.getStatus().isSuccess()
-                && clientResource.getResponseEntity().isAvailable()) {
+                && clientResource.getResponse().isEntityAvailable()) {
             clientResource.getResponseEntity().write(System.out);
         }
     }

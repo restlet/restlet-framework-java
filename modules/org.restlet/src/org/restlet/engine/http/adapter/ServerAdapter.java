@@ -157,14 +157,10 @@ public class ServerAdapter extends Adapter {
                 }
             } else if (response.getStatus().equals(
                     Status.REDIRECTION_NOT_MODIFIED)) {
-                addEntityHeaders(response);
-
-                if (response.isEntityAvailable()) {
-                    getLogger()
-                            .warning(
-                                    "Responses with a 304 (Not modified) status can't have an entity. Only adding entity headers for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + "\".");
+                if (response.getEntity() != null) {
+                    HeaderUtils.addNotModifiedEntityHeaders(response
+                            .getEntity(), response.getHttpCall()
+                            .getResponseHeaders());
                     response.setEntity(null);
                 }
             } else if (response.getStatus().isInformational()) {
@@ -179,14 +175,16 @@ public class ServerAdapter extends Adapter {
             } else {
                 addEntityHeaders(response);
 
-                if ((response.getEntity() != null)
-                        && !response.getEntity().isAvailable()) {
-                    // An entity was returned but isn't really available
-                    getLogger()
-                            .warning(
-                                    "A response with an unavailable entity was returned. Ignoring the entity for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + "\".");
+                if (!response.isEntityAvailable()) {
+                    if (response.getEntity().getSize() != 0) {
+                        getLogger()
+                                .warning(
+                                        "A response with an unavailable and potentially non empty entity was returned. Ignoring the entity for resource \""
+                                                + response.getRequest()
+                                                        .getResourceRef()
+                                                + "\".");
+                    }
+
                     response.setEntity(null);
                 }
             }

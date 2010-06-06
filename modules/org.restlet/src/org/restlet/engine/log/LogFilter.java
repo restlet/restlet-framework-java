@@ -36,6 +36,8 @@ import java.util.logging.Logger;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Method;
+import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.component.ChildContext;
 import org.restlet.routing.Filter;
@@ -233,7 +235,10 @@ public class LogFilter extends Filter {
         // Append the returned size
         sb.append('\t');
 
-        if (response.getEntity() == null) {
+        if (!response.isEntityAvailable()
+                || Status.REDIRECTION_NOT_MODIFIED.equals(response.getStatus())
+                || Status.SUCCESS_NO_CONTENT.equals(response.getStatus())
+                || Method.HEAD.equals(request.getMethod())) {
             sb.append('0');
         } else {
             sb.append((response.getEntity().getSize() == -1) ? "-" : Long

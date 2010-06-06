@@ -36,7 +36,9 @@ import java.io.OutputStream;
 import java.io.Reader;
 
 /**
- * Empty representation with no content.
+ * Empty representation with no content. It is always considered available but
+ * calling the {@link #getText()} method for example will return an empty
+ * string. It can also have regular metadata available.
  * 
  * @author Jerome Louvel
  */
@@ -46,7 +48,7 @@ public class EmptyRepresentation extends Representation {
      * Constructor.
      */
     public EmptyRepresentation() {
-        setAvailable(true);
+        setAvailable(false);
         setTransient(true);
         setSize(0);
     }
@@ -67,7 +69,7 @@ public class EmptyRepresentation extends Representation {
     public InputStream getStream() throws IOException {
         return null;
     }
-    
+
     // [ifndef gwt] method
     @Override
     public String getText() throws IOException {
