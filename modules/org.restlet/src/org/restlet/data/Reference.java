@@ -1551,17 +1551,19 @@ public class Reference {
                                 // We need to add enough ".." in the relative
                                 // path
                                 final StringBuilder sb = new StringBuilder();
-                                sb.append("..");
-                                boolean canAdd = false;
 
-                                for (int j = i + 1; j < basePath.length(); j++) {
-                                    if (basePath.charAt(j) == '/') {
-                                        canAdd = true;
-                                    } else if (canAdd) {
-                                        sb.append("/..");
-                                        canAdd = false;
-                                    }
-                                }
+                        		// Count segments
+                        		int segments = 0;
+                        		for(int j = basePath.indexOf('/', i); j != -1; j = basePath.indexOf('/', j + 1))
+                        			segments++;
+
+                        		// Build relative path
+                        		for(int j = 0; j < segments; j++)
+                        			sb.append( "../" );
+
+                        		int lastLocalSlash = localPath.lastIndexOf('/');
+                                sb.append(localPath
+                                    .substring(lastLocalSlash + 1));
 
                                 relativePath = sb.toString();
                             }
@@ -1571,31 +1573,18 @@ public class Reference {
                             // But that is longer. Situation similar to a
                             // junction
                             final StringBuilder sb = new StringBuilder();
-                            boolean firstAdd = true;
-                            boolean canAdd = false;
 
-                            for (int j = i; j < basePath.length(); j++) {
-                                if (basePath.charAt(j) == '/') {
-                                    canAdd = true;
-                                } else if (canAdd) {
-                                    if (firstAdd) {
-                                        firstAdd = false;
-                                    } else {
-                                        sb.append("/");
-                                    }
+                    		// Count segments
+                    		int segments = 0;
+                    		for(int j = basePath.indexOf('/', i); j != -1; j = basePath.indexOf('/', j + 1))
+                    			segments++;
 
-                                    sb.append("..");
-                                    canAdd = false;
-                                }
-                            }
-
-                            if (lastSlashIndex + 1 < localPath.length()) {
-                                if (!firstAdd) {
-                                    sb.append('/');
-                                }
-                                sb.append(localPath
-                                        .substring(lastSlashIndex + 1));
-                            }
+                    		// Build relative path
+                    		for(int j = 0; j < segments; j++)
+                    			if(j > 0)
+                    				sb.append( "/.." );
+                    			else
+                    				sb.append( ".." );
 
                             relativePath = sb.toString();
 
@@ -1629,30 +1618,19 @@ public class Reference {
                     // the relative path and append the rest of the local path
                     // the local path is a direct subpath of the base path
                     final StringBuilder sb = new StringBuilder();
-                    boolean canAdd = false;
-                    boolean firstAdd = true;
 
-                    for (int j = i; j < basePath.length(); j++) {
-                        if (basePath.charAt(j) == '/') {
-                            canAdd = true;
-                        } else if (canAdd) {
-                            if (firstAdd) {
-                                firstAdd = false;
-                            } else {
-                                sb.append("/");
-                            }
+            		// Count segments
+            		int segments = 0;
+            		for(int j = basePath.indexOf('/', i); j != -1; j = basePath.indexOf('/', j + 1))
+            			segments++;
 
-                            sb.append("..");
-                            canAdd = false;
-                        }
-                    }
+            		// Build relative path
+            		for(int j = 0; j < segments; j++)
+            			sb.append( "../" );
 
-                    if (!firstAdd) {
-                        sb.append('/');
-                    }
-                    sb.append(localPath.substring(lastSlashIndex + 1));
-                    relativePath = sb.toString();
-                }
+            		sb.append(localPath.substring(lastSlashIndex + 1));
+
+                    relativePath = sb.toString();                }
             }
 
             // Build the result reference

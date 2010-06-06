@@ -390,8 +390,8 @@ public class ReferenceTestCase extends RestletTestCase {
         testRef2(base, uri120, uri20);
         testRef2(base, uri121, uri21);
         testRef2(base, uri123, uri23);
-        // testRef2(uri104, uri116, uri18);
-        // testRef2(uri104, uri118, uri21);
+        testRef2(uri104, uri116, uri18);
+        testRef2(uri104, uri118, uri21);
 
         // Test the toString method with or without query/fragment
         testRef3("http://localhost/path#fragment", true, true,

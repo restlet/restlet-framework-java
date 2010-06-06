@@ -26,6 +26,8 @@ Changes log
         entity isn't effectively sent (204 or 304 status).
       - Atom feed and entry readers now set the media type of the inline
         content. Reported by Martin Svensson.
+      - Fixed bug in relative references computation.
+        Contributed by Tal Liron.
     - Misc
 
 - 2.0 Release Candidate 4 (2010-06-01)
