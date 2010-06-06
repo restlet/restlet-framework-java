@@ -905,9 +905,16 @@ public class Template {
      * @param variables
      *            The modifiable map of variables.
      */
-    public synchronized void setVariables(Map<String, Variable> variables) {
-        this.variables.clear();
-        this.variables.putAll(variables);
+    public void setVariables(Map<String, Variable> variables) {
+        synchronized (this.variables) {
+            if (variables != this.variables) {
+                this.variables.clear();
+
+                if (variables != null) {
+                    this.variables.putAll(variables);
+                }
+            }
+        }
     }
 
 }

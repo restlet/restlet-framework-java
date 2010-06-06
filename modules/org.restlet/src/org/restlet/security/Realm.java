@@ -172,11 +172,15 @@ public abstract class Realm {
      * @param parameters
      *            The modifiable series of parameters.
      */
-    public synchronized void setParameters(Series<Parameter> parameters) {
-        this.parameters.clear();
+    public  void setParameters(Series<Parameter> parameters) {
+        synchronized (this.parameters) {
+            if (parameters != this.parameters) {
+                this.parameters.clear();
 
-        if (parameters != null) {
-            this.parameters.addAll(parameters);
+                if (parameters != null) {
+                    this.parameters.addAll(parameters);
+                }
+            }
         }
     }
 

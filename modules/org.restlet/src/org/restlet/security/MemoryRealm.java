@@ -336,11 +336,15 @@ public class MemoryRealm extends Realm {
      * @param rootGroups
      *            The list of root groups.
      */
-    public synchronized void setRootGroups(List<Group> rootGroups) {
-        this.rootGroups.clear();
+    public void setRootGroups(List<Group> rootGroups) {
+        synchronized (this.rootGroups) {
+            if (rootGroups != this.rootGroups) {
+                this.rootGroups.clear();
 
-        if (rootGroups != null) {
-            this.rootGroups.addAll(rootGroups);
+                if (rootGroups != null) {
+                    this.rootGroups.addAll(rootGroups);
+                }
+            }
         }
     }
 
@@ -350,11 +354,15 @@ public class MemoryRealm extends Realm {
      * @param users
      *            The list of users.
      */
-    public synchronized void setUsers(List<User> users) {
-        this.users.clear();
+    public void setUsers(List<User> users) {
+        synchronized (this.users) {
+            if (users != this.users) {
+                this.users.clear();
 
-        if (users != null) {
-            this.users.addAll(users);
+                if (users != null) {
+                    this.users.addAll(users);
+                }
+            }
         }
     }
 

@@ -120,10 +120,15 @@ public abstract class Connector extends Restlet {
      * @param protocols
      *            The protocols simultaneously supported.
      */
-    public synchronized void setProtocols(List<Protocol> protocols) {
-        this.protocols.clear();
-        if (protocols != null) {
-            this.protocols.addAll(protocols);
+    public void setProtocols(List<Protocol> protocols) {
+        synchronized (this.protocols) {
+            if (protocols != this.protocols) {
+                this.protocols.clear();
+
+                if (protocols != null) {
+                    this.protocols.addAll(protocols);
+                }
+            }
         }
     }
 

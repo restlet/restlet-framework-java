@@ -506,10 +506,14 @@ public class Application extends Restlet {
      *            The list of roles.
      */
     public void setRoles(List<Role> roles) {
-        this.roles.clear();
+        synchronized (this.roles) {
+            if (roles != this.roles) {
+                this.roles.clear();
 
-        if (roles != null) {
-            this.roles.addAll(roles);
+                if (roles != null) {
+                    this.roles.addAll(roles);
+                }
+            }
         }
     }
 

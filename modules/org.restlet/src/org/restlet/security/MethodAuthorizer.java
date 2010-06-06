@@ -46,10 +46,10 @@ import org.restlet.data.Method;
 public class MethodAuthorizer extends Authorizer {
 
     /** The modifiable list of methods authorized for anonymous users. */
-    private final List<Method> anonymousMethods;
+    private List<Method> anonymousMethods;
 
     /** The modifiable list of methods authorized for authenticated users. */
-    private final List<Method> authenticatedMethods;
+    private List<Method> authenticatedMethods;
 
     /**
      * Default constructor.
@@ -120,6 +120,43 @@ public class MethodAuthorizer extends Authorizer {
      */
     public List<Method> getAuthenticatedMethods() {
         return authenticatedMethods;
+    }
+
+    /**
+     * Sets the modifiable list of methods authorized for anonymous users.
+     * 
+     * @param anonymousMethods
+     *            The modifiable list of methods authorized for anonymous users.
+     */
+    public void setAnonymousMethods(List<Method> anonymousMethods) {
+        synchronized (this.anonymousMethods) {
+            if (anonymousMethods != this.anonymousMethods) {
+                this.anonymousMethods.clear();
+
+                if (anonymousMethods != null) {
+                    this.anonymousMethods.addAll(anonymousMethods);
+                }
+            }
+        }
+    }
+
+    /**
+     * Sets the modifiable list of methods authorized for authenticated users.
+     * 
+     * @param authenticatedMethods
+     *            The modifiable list of methods authorized for authenticated
+     *            users.
+     */
+    public void setAuthenticatedMethods(List<Method> authenticatedMethods) {
+        synchronized (this.authenticatedMethods) {
+            if (authenticatedMethods != this.authenticatedMethods) {
+                this.authenticatedMethods.clear();
+
+                if (authenticatedMethods != null) {
+                    this.authenticatedMethods.addAll(authenticatedMethods);
+                }
+            }
+        }
     }
 
 }

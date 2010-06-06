@@ -295,9 +295,16 @@ public class Context {
      * @param attributes
      *            The modifiable map of attributes.
      */
-    public synchronized void setAttributes(Map<String, Object> attributes) {
-        this.attributes.clear();
-        this.attributes.putAll(attributes);
+    public void setAttributes(Map<String, Object> attributes) {
+        synchronized (this.attributes) {
+            if (attributes != this.attributes) {
+                this.attributes.clear();
+
+                if (attributes != null) {
+                    this.attributes.putAll(attributes);
+                }
+            }
+        }
     }
 
     /**
@@ -360,11 +367,15 @@ public class Context {
      * @param parameters
      *            The modifiable series of parameters.
      */
-    public synchronized void setParameters(Series<Parameter> parameters) {
-        this.parameters.clear();
+    public void setParameters(Series<Parameter> parameters) {
+        synchronized (this.parameters) {
+            if (parameters != this.parameters) {
+                this.parameters.clear();
 
-        if (parameters != null) {
-            this.parameters.addAll(parameters);
+                if (parameters != null) {
+                    this.parameters.addAll(parameters);
+                }
+            }
         }
     }
 

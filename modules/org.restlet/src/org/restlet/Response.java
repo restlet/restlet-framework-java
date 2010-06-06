@@ -528,9 +528,13 @@ public class Response extends Message {
      */
     public void setAllowedMethods(Set<Method> allowedMethods) {
         synchronized (this) {
-            Set<Method> am = getAllowedMethods();
-            am.clear();
-            am.addAll(allowedMethods);
+            if (allowedMethods != this.allowedMethods) {
+                this.allowedMethods.clear();
+
+                if (allowedMethods != null) {
+                    this.allowedMethods.addAll(allowedMethods);
+                }
+            }
         }
     }
 
@@ -583,15 +587,19 @@ public class Response extends Message {
      * Note that when used with HTTP connectors, this property maps to the
      * "WWW-Authenticate" header.
      * 
-     * @param requests
+     * @param challengeRequests
      *            The list of authentication requests sent by an origin server
      *            to a client.
      */
-    public void setChallengeRequests(List<ChallengeRequest> requests) {
+    public void setChallengeRequests(List<ChallengeRequest> challengeRequests) {
         synchronized (this) {
-            List<ChallengeRequest> cr = getChallengeRequests();
-            cr.clear();
-            cr.addAll(requests);
+            if (challengeRequests != this.challengeRequests) {
+                this.challengeRequests.clear();
+
+                if (challengeRequests != null) {
+                    this.challengeRequests.addAll(challengeRequests);
+                }
+            }
         }
     }
 
@@ -615,9 +623,13 @@ public class Response extends Message {
      */
     public void setCookieSettings(Series<CookieSetting> cookieSettings) {
         synchronized (this) {
-            Series<CookieSetting> c = getCookieSettings();
-            c.clear();
-            c.addAll(cookieSettings);
+            if (cookieSettings != this.cookieSettings) {
+                this.cookieSettings.clear();
+
+                if (cookieSettings != null) {
+                    this.cookieSettings.addAll(cookieSettings);
+                }
+            }
         }
     }
 
@@ -634,9 +646,13 @@ public class Response extends Message {
      */
     public void setDimensions(Set<Dimension> dimensions) {
         synchronized (this) {
-            Set<Dimension> d = getDimensions();
-            d.clear();
-            d.addAll(dimensions);
+            if (dimensions != this.dimensions) {
+                this.dimensions.clear();
+
+                if (dimensions != null) {
+                    this.dimensions.addAll(dimensions);
+                }
+            }
         }
     }
 
@@ -688,15 +704,19 @@ public class Response extends Message {
      * Note that when used with HTTP connectors, this property maps to the
      * "Proxy-Authenticate" header.
      * 
-     * @param requests
+     * @param proxyChallengeRequests
      *            The list of authentication requests sent by a proxy to a
      *            client.
      */
-    public void setProxyChallengeRequests(List<ChallengeRequest> requests) {
+    public void setProxyChallengeRequests(List<ChallengeRequest> proxyChallengeRequests) {
         synchronized (this) {
-            List<ChallengeRequest> cr = getProxyChallengeRequests();
-            cr.clear();
-            cr.addAll(requests);
+            if (proxyChallengeRequests != this.proxyChallengeRequests) {
+                this.proxyChallengeRequests.clear();
+
+                if (proxyChallengeRequests != null) {
+                    this.proxyChallengeRequests.addAll(proxyChallengeRequests);
+                }
+            }
         }
     }
 

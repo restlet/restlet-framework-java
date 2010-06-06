@@ -951,10 +951,13 @@ public class Engine {
     public void setRegisteredAuthenticators(
             List<org.restlet.engine.security.AuthenticatorHelper> registeredAuthenticators) {
         synchronized (this.registeredAuthenticators) {
-            this.registeredAuthenticators.clear();
+            if (registeredAuthenticators != this.registeredAuthenticators) {
+                this.registeredAuthenticators.clear();
 
-            if (registeredAuthenticators != null) {
-                this.registeredAuthenticators.addAll(registeredAuthenticators);
+                if (registeredAuthenticators != null) {
+                    this.registeredAuthenticators
+                            .addAll(registeredAuthenticators);
+                }
             }
         }
     }
@@ -965,12 +968,15 @@ public class Engine {
      * @param registeredClients
      *            The list of available client helpers.
      */
-    public void setRegisteredClients(List<ClientHelper> registeredClients) {
+    public void setRegisteredClients(
+            List<ConnectorHelper<Client>> registeredClients) {
         synchronized (this.registeredClients) {
-            this.registeredClients.clear();
+            if (registeredClients != this.registeredClients) {
+                this.registeredClients.clear();
 
-            if (registeredClients != null) {
-                this.registeredClients.addAll(registeredClients);
+                if (registeredClients != null) {
+                    this.registeredClients.addAll(registeredClients);
+                }
             }
         }
     }
@@ -985,10 +991,12 @@ public class Engine {
     public void setRegisteredConverters(
             List<org.restlet.engine.converter.ConverterHelper> registeredConverters) {
         synchronized (this.registeredConverters) {
-            this.registeredConverters.clear();
+            if (registeredConverters != this.registeredConverters) {
+                this.registeredConverters.clear();
 
-            if (registeredConverters != null) {
-                this.registeredConverters.addAll(registeredConverters);
+                if (registeredConverters != null) {
+                    this.registeredConverters.addAll(registeredConverters);
+                }
             }
         }
     }
@@ -1001,10 +1009,12 @@ public class Engine {
      */
     public void setRegisteredProtocols(List<ProtocolHelper> registeredProtocols) {
         synchronized (this.registeredProtocols) {
-            this.registeredProtocols.clear();
+            if (registeredProtocols != this.registeredProtocols) {
+                this.registeredProtocols.clear();
 
-            if (registeredProtocols != null) {
-                this.registeredProtocols.addAll(registeredProtocols);
+                if (registeredProtocols != null) {
+                    this.registeredProtocols.addAll(registeredProtocols);
+                }
             }
         }
     }
@@ -1016,12 +1026,15 @@ public class Engine {
      * @param registeredServers
      *            The list of available server helpers.
      */
-    public void setRegisteredServers(List<ServerHelper> registeredServers) {
+    public void setRegisteredServers(
+            List<ConnectorHelper<org.restlet.Server>> registeredServers) {
         synchronized (this.registeredServers) {
-            this.registeredServers.clear();
+            if (registeredServers != this.registeredServers) {
+                this.registeredServers.clear();
 
-            if (registeredServers != null) {
-                this.registeredServers.addAll(registeredServers);
+                if (registeredServers != null) {
+                    this.registeredServers.addAll(registeredServers);
+                }
             }
         }
     }

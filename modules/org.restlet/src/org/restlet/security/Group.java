@@ -165,10 +165,14 @@ public class Group {
      *            The list of member groups.
      */
     public void setMemberGroups(List<Group> memberGroups) {
-        this.memberGroups.clear();
+        synchronized (this.memberGroups) {
+            if (memberGroups != this.memberGroups) {
+                this.memberGroups.clear();
 
-        if (memberGroups != null) {
-            this.memberGroups.addAll(memberGroups);
+                if (memberGroups != null) {
+                    this.memberGroups.addAll(memberGroups);
+                }
+            }
         }
     }
 
@@ -179,10 +183,14 @@ public class Group {
      *            The list of member user references.
      */
     public void setMemberUsers(List<User> memberUsers) {
-        this.memberUsers.clear();
+        synchronized (this.memberUsers) {
+            if (memberUsers != this.memberUsers) {
+                this.memberUsers.clear();
 
-        if (memberUsers != null) {
-            this.memberUsers.addAll(memberUsers);
+                if (memberUsers != null) {
+                    this.memberUsers.addAll(memberUsers);
+                }
+            }
         }
     }
 

@@ -122,14 +122,18 @@ public class Role implements Principal {
     /**
      * Sets the list of child roles.
      * 
-     * @param children
+     * @param childRoles
      *            The list of child roles.
      */
-    public void setChildRoles(List<Role> children) {
-        this.childRoles.clear();
+    public void setChildRoles(List<Role> childRoles) {
+        synchronized (this.childRoles) {
+            if (childRoles != this.childRoles) {
+                this.childRoles.clear();
 
-        if (children != null) {
-            this.childRoles.addAll(children);
+                if (childRoles != null) {
+                    this.childRoles.addAll(childRoles);
+                }
+            }
         }
     }
 

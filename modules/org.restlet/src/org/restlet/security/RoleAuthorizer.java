@@ -46,10 +46,10 @@ import org.restlet.Response;
 public class RoleAuthorizer extends Authorizer {
 
     /** The modifiable list of authorized roles. */
-    private final List<Role> authorizedRoles;
+    private List<Role> authorizedRoles;
 
     /** The modifiable list of forbidden roles. */
-    private final List<Role> forbiddenRoles;
+    private List<Role> forbiddenRoles;
 
     /**
      * Default constructor.
@@ -123,6 +123,42 @@ public class RoleAuthorizer extends Authorizer {
      */
     public List<Role> getForbiddenRoles() {
         return forbiddenRoles;
+    }
+
+    /**
+     * Sets the modifiable list of authorized roles.
+     * 
+     * @param authorizedRoles
+     *            The
+     */
+    public void setAuthorizedRoles(List<Role> authorizedRoles) {
+        synchronized (this.authorizedRoles) {
+            if (authorizedRoles != this.authorizedRoles) {
+                this.authorizedRoles.clear();
+
+                if (authorizedRoles != null) {
+                    this.authorizedRoles.addAll(authorizedRoles);
+                }
+            }
+        }
+    }
+
+    /**
+     * Sets the modifiable list of forbidden roles.
+     * 
+     * @param forbiddenRoles
+     *            The modifiable list of forbidden roles.
+     */
+    public void setForbiddenRoles(List<Role> forbiddenRoles) {
+        synchronized (this.forbiddenRoles) {
+            if (forbiddenRoles != this.forbiddenRoles) {
+                this.forbiddenRoles.clear();
+
+                if (forbiddenRoles != null) {
+                    this.forbiddenRoles.addAll(forbiddenRoles);
+                }
+            }
+        }
     }
 
 }

@@ -335,9 +335,13 @@ public abstract class Message {
      */
     public void setAttributes(Map<String, Object> attributes) {
         synchronized (this) {
-            Map<String, Object> atts = getAttributes();
-            atts.clear();
-            atts.putAll(attributes);
+            if (attributes != this.attributes) {
+                this.attributes.clear();
+
+                if (attributes != null) {
+                    this.attributes.putAll(attributes);
+                }
+            }
         }
     }
 
@@ -352,9 +356,13 @@ public abstract class Message {
      */
     public void setCacheDirectives(List<CacheDirective> cacheDirectives) {
         synchronized (this) {
-            List<CacheDirective> cds = getCacheDirectives();
-            cds.clear();
-            cds.addAll(cacheDirectives);
+            if (cacheDirectives != this.cacheDirectives) {
+                this.cacheDirectives.clear();
+
+                if (cacheDirectives != null) {
+                    this.cacheDirectives.addAll(cacheDirectives);
+                }
+            }
         }
     }
 
@@ -404,14 +412,18 @@ public abstract class Message {
      * Sets the intermediary recipients. Note that when used with HTTP
      * connectors, this property maps to the "Via" headers.
      * 
-     * @param recipients
+     * @param recipientsInfo
      *            The intermediary recipients.
      */
-    public void setRecipientsInfo(List<RecipientInfo> recipients) {
+    public void setRecipientsInfo(List<RecipientInfo> recipientsInfo) {
         synchronized (this) {
-            List<RecipientInfo> cds = getRecipientsInfo();
-            cds.clear();
-            cds.addAll(recipients);
+            if (recipientsInfo != this.recipientsInfo) {
+                this.recipientsInfo.clear();
+
+                if (recipientsInfo != null) {
+                    this.recipientsInfo.addAll(recipientsInfo);
+                }
+            }
         }
     }
 
@@ -424,9 +436,13 @@ public abstract class Message {
      */
     public void setWarnings(List<Warning> warnings) {
         synchronized (this) {
-            List<Warning> cds = getWarnings();
-            cds.clear();
-            cds.addAll(warnings);
+            if (warnings != this.warnings) {
+                this.warnings.clear();
+
+                if (warnings != null) {
+                    this.warnings.addAll(warnings);
+                }
+            }
         }
     }
 

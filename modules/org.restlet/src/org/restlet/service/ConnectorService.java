@@ -54,10 +54,10 @@ import org.restlet.representation.Representation;
  */
 public class ConnectorService extends Service {
     /** The list of required client protocols. */
-    private volatile List<Protocol> clientProtocols;
+    private final List<Protocol> clientProtocols;
 
     /** The list of required server protocols. */
-    private volatile List<Protocol> serverProtocols;
+    private final List<Protocol> serverProtocols;
 
     /**
      * Constructor.
@@ -121,7 +121,15 @@ public class ConnectorService extends Service {
      *            The list of required client protocols.
      */
     public void setClientProtocols(List<Protocol> clientProtocols) {
-        this.clientProtocols = clientProtocols;
+        synchronized (this.clientProtocols) {
+            if (clientProtocols != this.clientProtocols) {
+                this.clientProtocols.clear();
+
+                if (clientProtocols != null) {
+                    this.clientProtocols.addAll(clientProtocols);
+                }
+            }
+        }
     }
 
     /**
@@ -131,7 +139,15 @@ public class ConnectorService extends Service {
      *            The list of required server protocols.
      */
     public void setServerProtocols(List<Protocol> serverProtocols) {
-        this.serverProtocols = serverProtocols;
+        synchronized (this.serverProtocols) {
+            if (serverProtocols != this.serverProtocols) {
+                this.serverProtocols.clear();
+
+                if (serverProtocols != null) {
+                    this.serverProtocols.addAll(serverProtocols);
+                }
+            }
+        }
     }
 
 }

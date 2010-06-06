@@ -393,11 +393,15 @@ public class Component extends Restlet {
      * @param clients
      *            A modifiable list of client connectors.
      */
-    public synchronized void setClients(ClientList clients) {
-        this.clients.clear();
+    public void setClients(ClientList clients) {
+        synchronized (this.clients) {
+            if (clients != this.clients) {
+                this.clients.clear();
 
-        if (clients != null) {
-            this.clients.addAll(clients);
+                if (clients != null) {
+                    this.clients.addAll(clients);
+                }
+            }
         }
     }
 
@@ -418,13 +422,15 @@ public class Component extends Restlet {
      * @param hosts
      *            The modifiable list of virtual hosts.
      */
-    public synchronized void setHosts(List<VirtualHost> hosts) {
-        // Method synchronized to make compound action (clear, addAll) atomic,
-        // not for visibility.
-        this.hosts.clear();
+    public void setHosts(List<VirtualHost> hosts) {
+        synchronized (this.hosts) {
+            if (hosts != this.hosts) {
+                this.hosts.clear();
 
-        if (hosts != null) {
-            this.hosts.addAll(hosts);
+                if (hosts != null) {
+                    this.hosts.addAll(hosts);
+                }
+            }
         }
     }
 
@@ -456,11 +462,15 @@ public class Component extends Restlet {
      * @param realms
      *            The list of realms.
      */
-    public synchronized void setRealms(List<Realm> realms) {
-        this.realms.clear();
+    public void setRealms(List<Realm> realms) {
+        synchronized (this.realms) {
+            if (realms != this.realms) {
+                this.realms.clear();
 
-        if (realms != null) {
-            this.realms.addAll(realms);
+                if (realms != null) {
+                    this.realms.addAll(realms);
+                }
+            }
         }
     }
 
@@ -471,11 +481,15 @@ public class Component extends Restlet {
      * @param servers
      *            A modifiable list of server connectors.
      */
-    public synchronized void setServers(ServerList servers) {
-        this.servers.clear();
+    public void setServers(ServerList servers) {
+        synchronized (this.servers) {
+            if (servers != this.servers) {
+                this.servers.clear();
 
-        if (servers != null) {
-            this.servers.addAll(servers);
+                if (servers != null) {
+                    this.servers.addAll(servers);
+                }
+            }
         }
     }
 

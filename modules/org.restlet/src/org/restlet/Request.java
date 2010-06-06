@@ -633,9 +633,13 @@ public class Request extends Message {
      */
     public void setCookies(Series<Cookie> cookies) {
         synchronized (this) {
-            Series<Cookie> c = getCookies();
-            c.clear();
-            c.addAll(cookies);
+            if (cookies != this.cookies) {
+                this.cookies.clear();
+
+                if (cookies != null) {
+                    this.cookies.addAll(cookies);
+                }
+            }
         }
     }
 
@@ -736,9 +740,13 @@ public class Request extends Message {
      */
     public void setRanges(List<Range> ranges) {
         synchronized (this) {
-            List<Range> r = getRanges();
-            r.clear();
-            r.addAll(ranges);
+            if (ranges != this.ranges) {
+                this.ranges.clear();
+
+                if (ranges != null) {
+                    this.ranges.addAll(ranges);
+                }
+            }
         }
     }
 
