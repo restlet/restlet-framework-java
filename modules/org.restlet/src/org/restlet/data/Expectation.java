@@ -36,10 +36,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.restlet.engine.http.header.HeaderConstants;
 
 /**
- * Particular server behavior that is required by a client.<br>
- * <br>
- * Note that when used with HTTP connectors, this class maps to the "Expect"
- * header.
+ * Particular server behavior that is required by a client. Note that when used
+ * with HTTP connectors, this class maps to the "Expect" header.
  * 
  * @author Jerome Louvel
  */

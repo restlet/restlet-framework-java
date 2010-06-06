@@ -82,6 +82,10 @@ import org.restlet.util.Series;
  * this life cycle, if any exception is caught, then the
  * {@link #doCatch(Throwable)} method is invoked.<br>
  * <br>
+ * Note that when an annotated method manually sets the response entity, if this
+ * entity is available then it will be preserved and the result of the annotated
+ * method ignored.<br>
+ * <br>
  * Concurrency note: contrary to the {@link org.restlet.Uniform} class and its
  * main {@link Restlet} subclass where a single instance can handle several
  * calls concurrently, one instance of {@link ServerResource} is created for
@@ -807,7 +811,8 @@ public abstract class ServerResource extends UniformResource {
                     result = doHandle();
                 }
 
-                if (getResponse() != null) {
+                if (!getResponse().isEntityAvailable()) {
+                    // If the user manually set the entity, keep it
                     getResponse().setEntity(result);
                 }
 
