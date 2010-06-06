@@ -24,6 +24,8 @@ Changes log
         as not available. Reported by David Fogel.
       - The log service now logs "0" instead of the entity size when this
         entity isn't effectively sent (204 or 304 status).
+      - Atom feed and entry readers now set the media type of the inline
+        content. Reported by Martin Svensson.
     - Misc
 
 - 2.0 Release Candidate 4 (2010-06-01)

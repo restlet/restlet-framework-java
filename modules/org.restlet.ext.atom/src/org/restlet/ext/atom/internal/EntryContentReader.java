@@ -66,6 +66,9 @@ public class EntryContentReader extends EntryReader {
     /** Buffer for the current text content of the current tag. */
     private StringBuilder contentBuffer;
 
+    /** The media type of the Content (for inline cases). */
+    private MediaType contentType;
+
     /** Mark the Content depth. */
     private int contentDepth;
 
@@ -255,7 +258,7 @@ public class EntryContentReader extends EntryReader {
                         } else {
                             currentContent
                                     .setInlineContent(new StringRepresentation(
-                                            content));
+                                            content, contentType));
                         }
                     }
                     this.currentContentWriter = null;
@@ -279,6 +282,7 @@ public class EntryContentReader extends EntryReader {
                         String content = this.currentContentWriter.getWriter()
                                 .toString().trim();
                         contentDepth = -1;
+
                         if ("".equals(content)) {
                             this.currentEntry.setContent(null);
                         } else {
@@ -290,6 +294,7 @@ public class EntryContentReader extends EntryReader {
 
                     this.state = State.FEED_ENTRY;
                 }
+
                 this.currentContentWriter = null;
                 endContent(this.currentContent);
             }
@@ -451,9 +456,8 @@ public class EntryContentReader extends EntryReader {
                 }
             } else if (localName.equalsIgnoreCase("content")) {
                 if (this.state == State.FEED_ENTRY) {
-                    final MediaType type = getMediaType(attrs.getValue("",
-                            "type"));
-                    final String srcAttr = attrs.getValue("", "src");
+                    contentType = getMediaType(attrs.getValue("", "type"));
+                    String srcAttr = attrs.getValue("", "src");
                     this.currentContent = new Content();
 
                     if (srcAttr == null) {
@@ -463,12 +467,13 @@ public class EntryContentReader extends EntryReader {
                         // Content available externally
                         this.currentContent.setExternalRef(new Reference(
                                 srcAttr));
-                        this.currentContent.setExternalType(type);
+                        this.currentContent.setExternalType(contentType);
                     }
 
                     this.currentEntry.setContent(currentContent);
                     this.state = State.FEED_ENTRY_CONTENT;
                 }
+
                 startContent(this.currentContent);
             }
         }

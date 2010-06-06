@@ -63,6 +63,9 @@ public class FeedContentReader extends FeedReader {
         FEED, FEED_AUTHOR, FEED_AUTHOR_EMAIL, FEED_AUTHOR_NAME, FEED_AUTHOR_URI, FEED_CATEGORY, FEED_CONTRIBUTOR, FEED_CONTRIBUTOR_EMAIL, FEED_CONTRIBUTOR_NAME, FEED_CONTRIBUTOR_URI, FEED_ENTRY, FEED_ENTRY_AUTHOR, FEED_ENTRY_AUTHOR_EMAIL, FEED_ENTRY_AUTHOR_NAME, FEED_ENTRY_AUTHOR_URI, FEED_ENTRY_CATEGORY, FEED_ENTRY_CONTENT, FEED_ENTRY_CONTRIBUTOR, FEED_ENTRY_ID, FEED_ENTRY_LINK, FEED_ENTRY_PUBLISHED, FEED_ENTRY_RIGHTS, FEED_ENTRY_SOURCE, FEED_ENTRY_SOURCE_AUTHOR, FEED_ENTRY_SOURCE_AUTHOR_EMAIL, FEED_ENTRY_SOURCE_AUTHOR_NAME, FEED_ENTRY_SOURCE_AUTHOR_URI, FEED_ENTRY_SOURCE_CATEGORY, FEED_ENTRY_SOURCE_CONTRIBUTOR, FEED_ENTRY_SOURCE_GENERATOR, FEED_ENTRY_SOURCE_ICON, FEED_ENTRY_SOURCE_ID, FEED_ENTRY_SOURCE_LINK, FEED_ENTRY_SOURCE_LOGO, FEED_ENTRY_SOURCE_RIGHTS, FEED_ENTRY_SOURCE_SUBTITLE, FEED_ENTRY_SOURCE_TITLE, FEED_ENTRY_SOURCE_UPDATED, FEED_ENTRY_SUMMARY, FEED_ENTRY_TITLE, FEED_ENTRY_UPDATED, FEED_GENERATOR, FEED_ICON, FEED_ID, FEED_LINK, FEED_LOGO, FEED_RIGHTS, FEED_SUBTITLE, FEED_TITLE, FEED_UPDATED, NONE
     }
 
+    /** The media type of the Content (for inline cases). */
+    private MediaType contentType;
+
     /** Buffer for the current text content of the current tag. */
     private StringBuilder contentBuffer;
 
@@ -183,6 +186,7 @@ public class FeedContentReader extends FeedReader {
             if (this.currentContentWriter != null) {
                 this.currentContentWriter.endElement(uri, localName, qName);
             }
+
             contentDepth--;
         } else if (uri.equalsIgnoreCase(Feed.ATOM_NAMESPACE)) {
             if (localName.equals("feed")) {
@@ -261,6 +265,7 @@ public class FeedContentReader extends FeedReader {
                             this.currentLink);
                     this.state = State.FEED_ENTRY_SOURCE;
                 }
+
                 // Set the inline content, if any
                 if (this.currentContentWriter != null) {
                     String content = this.currentContentWriter.getWriter()
@@ -281,12 +286,14 @@ public class FeedContentReader extends FeedReader {
                     }
                     this.currentContentWriter = null;
                 }
+
                 endLink(this.currentLink);
             } else if (localName.equalsIgnoreCase("entry")) {
                 if (this.state == State.FEED_ENTRY) {
                     this.currentFeed.getEntries().add(this.currentEntry);
                     this.state = State.FEED;
                 }
+
                 endEntry(this.currentEntry);
             } else if (localName.equals("category")) {
                 if (this.state == State.FEED_CATEGORY) {
@@ -311,7 +318,7 @@ public class FeedContentReader extends FeedReader {
                         } else {
                             currentContent
                                     .setInlineContent(new StringRepresentation(
-                                            content));
+                                            content, contentType));
                         }
                     }
 
@@ -505,9 +512,8 @@ public class FeedContentReader extends FeedReader {
                 }
             } else if (localName.equalsIgnoreCase("content")) {
                 if (this.state == State.FEED_ENTRY) {
-                    final MediaType type = getMediaType(attrs.getValue("",
-                            "type"));
-                    final String srcAttr = attrs.getValue("", "src");
+                    contentType = getMediaType(attrs.getValue("", "type"));
+                    String srcAttr = attrs.getValue("", "src");
                     this.currentContent = new Content();
 
                     if (srcAttr == null) {
@@ -517,7 +523,7 @@ public class FeedContentReader extends FeedReader {
                         // Content available externally
                         this.currentContent.setExternalRef(new Reference(
                                 srcAttr));
-                        this.currentContent.setExternalType(type);
+                        this.currentContent.setExternalType(contentType);
                     }
 
                     this.currentEntry.setContent(currentContent);
