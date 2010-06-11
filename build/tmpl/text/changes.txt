@@ -21,13 +21,16 @@ Changes log
       - Removed XML header in JSON documents produced by XStream.
         Reported by Louis Huh.
       - Empty representations (with a size of 0) are considered again
-        as not available. Reported by David Fogel.
+        as not available. Reported by David Fogel and Eric Hough.
       - The log service now logs "0" instead of the entity size when this
         entity isn't effectively sent (204 or 304 status).
       - Atom feed and entry readers now set the media type of the inline
         content. Reported by Martin Svensson.
       - Fixed bug in relative references computation.
         Contributed by Tal Liron.
+      - Client connectors automatically created by the ClientResource
+        are now automatically stopped upon garbage collection to prevent
+        dormant threads. Reported by Dustin Jenkins and TK Kocheran.
     - Misc
 
 - 2.0 Release Candidate 4 (2010-06-01)

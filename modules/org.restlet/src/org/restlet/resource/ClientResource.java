@@ -133,6 +133,9 @@ public class ClientResource extends UniformResource {
     /** The next Restlet. */
     private volatile Uniform next;
 
+    /** Indicates if the next Restlet has been created. */
+    private volatile boolean nextCreated;
+
     /** Number of retry attempts before reporting an error. */
     private volatile int retryAttempts;
 
@@ -351,6 +354,36 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Creates a next Restlet is no one is set. By default, it creates a new
+     * {@link Client} based on the protocol of the resource's URI reference.
+     * 
+     * @return The created next Restlet or null.
+     */
+    protected Uniform createNext() {
+        Uniform result = null;
+
+        // [ifdef gwt] uncomment
+        // if (getReference().isRelative()) {
+        // getReference().setBaseRef(
+        // com.google.gwt.core.client.GWT.getHostPageBaseURL());
+        // setReference(getReference().getTargetRef());
+        // request.setResourceRef(getReference());
+        // }
+        // [enddef]
+
+        Protocol rProtocol = getProtocol();
+        Reference rReference = getReference();
+        Protocol protocol = (rProtocol != null) ? rProtocol
+                : (rReference != null) ? rReference.getSchemeProtocol() : null;
+
+        if (protocol != null) {
+            result = new Client(protocol);
+        }
+
+        return result;
+    }
+
+    /**
      * Deletes the target resource and all its representations. If a success
      * status is not returned, then a resource exception is thrown.
      * 
@@ -395,6 +428,26 @@ public class ClientResource extends UniformResource {
      */
     public Representation delete(MediaType mediaType) throws ResourceException {
         return handle(Method.DELETE, mediaType);
+    }
+
+    @Override
+    protected void doRelease() throws ResourceException {
+        if ((getNext() != null) && this.nextCreated) {
+            if (getNext() instanceof Restlet) {
+                try {
+                    ((Restlet) getNext()).stop();
+                } catch (Exception e) {
+                    throw new ResourceException(e);
+                }
+            }
+
+            setNext(null);
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        release();
     }
 
     /**
@@ -800,26 +853,11 @@ public class ClientResource extends UniformResource {
         Uniform next = getNext();
 
         if (next == null) {
-            // [ifdef gwt] uncomment
-            // if (getReference().isRelative()) {
-            // getReference().setBaseRef(
-            // com.google.gwt.core.client.GWT.getHostPageBaseURL());
-            // setReference(getReference().getTargetRef());
-            // request.setResourceRef(getReference());
-            // }
-            // [enddef]
+            next = createNext();
 
-            Protocol rProtocol = request.getProtocol();
-            Reference rReference = request.getResourceRef();
-            Protocol protocol = (rProtocol != null) ? rProtocol
-                    : (rReference != null) ? rReference.getSchemeProtocol()
-                            : null;
-
-            if (protocol != null) {
-                next = new Client(protocol);
-
-                // Set the next handler for reuse
+            if (next != null) {
                 setNext(next);
+                this.nextCreated = true;
             }
         }
 
