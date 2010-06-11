@@ -30,37 +30,21 @@
 
 package org.restlet.test.resource;
 
-import org.restlet.resource.ServerResource;
+import org.restlet.data.Form;
+import org.restlet.resource.Get;
+import org.restlet.resource.Put;
 
 /**
- * Sample server resource.
+ * Sample annotated interface.
  * 
  * @author Jerome Louvel
  */
-public class MyServerResource extends ServerResource implements MyResource1 {
+public interface MyResource12 {
 
-    private volatile MyBean myBean = new MyBean("myName", "myDescription");
+    @Get
+    public Form represent();
 
-    public boolean accept(MyBean bean) {
-        return bean.equals(myBean);
-    }
-
-    public String describe() {
-        return "MyDescription";
-    }
-
-    public String remove() {
-        myBean = null;
-        return "Done";
-    }
-
-    public MyBean represent() {
-        return myBean;
-    }
-
-    public String store(MyBean bean) {
-        myBean = bean;
-        return "Done";
-    }
+    @Put
+    public void store(Form form);
 
 }

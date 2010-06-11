@@ -54,7 +54,7 @@ public class AnnotatedResource1TestCase extends TestCase {
 
     protected void setUp() throws Exception {
         Finder finder = new Finder();
-        finder.setTargetClass(MyServerResource.class);
+        finder.setTargetClass(MyServerResource1.class);
 
         this.clientResource = new ClientResource("http://local");
         this.clientResource.setNext(finder);
