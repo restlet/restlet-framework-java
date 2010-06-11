@@ -331,36 +331,38 @@ public class MemoryRealm extends Realm {
     }
 
     /**
-     * Sets the list of root groups.
+     * Sets the modifiable list of root groups. This method clears the current
+     * list and adds all entries in the parameter list.
      * 
      * @param rootGroups
-     *            The list of root groups.
+     *            A list of root groups.
      */
     public void setRootGroups(List<Group> rootGroups) {
-        synchronized (this.rootGroups) {
-            if (rootGroups != this.rootGroups) {
-                this.rootGroups.clear();
+        synchronized (getRootGroups()) {
+            if (rootGroups != getRootGroups()) {
+                getRootGroups().clear();
 
                 if (rootGroups != null) {
-                    this.rootGroups.addAll(rootGroups);
+                    getRootGroups().addAll(rootGroups);
                 }
             }
         }
     }
 
     /**
-     * Sets the list of users.
+     * Sets the modifiable list of users. This method clears the current list
+     * and adds all entries in the parameter list.
      * 
      * @param users
-     *            The list of users.
+     *            A list of users.
      */
     public void setUsers(List<User> users) {
-        synchronized (this.users) {
-            if (users != this.users) {
-                this.users.clear();
+        synchronized (getUsers()) {
+            if (users != getUsers()) {
+                getUsers().clear();
 
                 if (users != null) {
-                    this.users.addAll(users);
+                    getUsers().addAll(users);
                 }
             }
         }

@@ -159,36 +159,38 @@ public class Group {
     }
 
     /**
-     * Sets the list of member groups.
+     * Sets the modifiable list of member groups. This method clears the current
+     * list and adds all entries in the parameter list.
      * 
      * @param memberGroups
-     *            The list of member groups.
+     *            A list of member groups.
      */
     public void setMemberGroups(List<Group> memberGroups) {
-        synchronized (this.memberGroups) {
-            if (memberGroups != this.memberGroups) {
-                this.memberGroups.clear();
+        synchronized (getMemberGroups()) {
+            if (memberGroups != getMemberGroups()) {
+                getMemberGroups().clear();
 
                 if (memberGroups != null) {
-                    this.memberGroups.addAll(memberGroups);
+                    getMemberGroups().addAll(memberGroups);
                 }
             }
         }
     }
 
     /**
-     * Sets the list of member user references.
+     * Sets the modifiable list of member user references. This method clears
+     * the current list and adds all entries in the parameter list.
      * 
      * @param memberUsers
-     *            The list of member user references.
+     *            A list of member user references.
      */
     public void setMemberUsers(List<User> memberUsers) {
-        synchronized (this.memberUsers) {
-            if (memberUsers != this.memberUsers) {
-                this.memberUsers.clear();
+        synchronized (getMemberUsers()) {
+            if (memberUsers != getMemberUsers()) {
+                getMemberUsers().clear();
 
                 if (memberUsers != null) {
-                    this.memberUsers.addAll(memberUsers);
+                    getMemberUsers().addAll(memberUsers);
                 }
             }
         }

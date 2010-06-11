@@ -167,18 +167,19 @@ public abstract class Realm {
     }
 
     /**
-     * Sets the modifiable series of parameters.
+     * Sets the modifiable series of parameters. This method clears the current
+     * series and adds all entries in the parameter series.
      * 
      * @param parameters
-     *            The modifiable series of parameters.
+     *            A series of parameters.
      */
-    public  void setParameters(Series<Parameter> parameters) {
-        synchronized (this.parameters) {
-            if (parameters != this.parameters) {
-                this.parameters.clear();
+    public void setParameters(Series<Parameter> parameters) {
+        synchronized (getParameters()) {
+            if (parameters != getParameters()) {
+                getParameters().clear();
 
                 if (parameters != null) {
-                    this.parameters.addAll(parameters);
+                    getParameters().addAll(parameters);
                 }
             }
         }

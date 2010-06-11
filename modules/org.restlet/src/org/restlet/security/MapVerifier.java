@@ -77,18 +77,19 @@ public class MapVerifier extends LocalVerifier {
     }
 
     /**
-     * Sets the map of local secrets.
+     * Sets the modifiable map of local secrets. This method clears the current
+     * map and puts all entries in the parameter map.
      * 
      * @param localSecrets
-     *            The map of local secrets.
+     *            A map of local secrets.
      */
     public void setLocalSecrets(Map<String, char[]> localSecrets) {
-        synchronized (this.localSecrets) {
-            if (localSecrets != this.localSecrets) {
-                this.localSecrets.clear();
+        synchronized (getLocalSecrets()) {
+            if (localSecrets != getLocalSecrets()) {
+                getLocalSecrets().clear();
 
                 if (localSecrets != null) {
-                    this.localSecrets.putAll(localSecrets);
+                    getLocalSecrets().putAll(localSecrets);
                 }
             }
         }

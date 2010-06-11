@@ -149,10 +149,9 @@ public class Application extends Restlet {
             this.helper = new ApplicationHelper(this);
         }
 
-        this.roles = new CopyOnWriteArrayList<Role>();
-
         this.outboundRoot = null;
         this.inboundRoot = null;
+        this.roles = new CopyOnWriteArrayList<Role>();
         this.services = new ServiceList(context);
         this.services.add(new TunnelService(true, true));
         this.services.add(new StatusService());
@@ -500,18 +499,19 @@ public class Application extends Restlet {
     }
 
     /**
-     * Sets the list of roles.
+     * Sets the modifiable list of roles. This method clears the current list
+     * and adds all entries in the parameter list.
      * 
      * @param roles
-     *            The list of roles.
+     *            A list of roles.
      */
     public void setRoles(List<Role> roles) {
-        synchronized (this.roles) {
-            if (roles != this.roles) {
-                this.roles.clear();
+        synchronized (getRoles()) {
+            if (roles != getRoles()) {
+                getRoles().clear();
 
                 if (roles != null) {
-                    this.roles.addAll(roles);
+                    getRoles().addAll(roles);
                 }
             }
         }

@@ -179,7 +179,8 @@ public final class ChallengeRequest extends ChallengeMessage {
 
     /**
      * Sets the URI references that define the protection domains for the digest
-     * authentication.
+     * authentication. Note that the parameters are copied into a new
+     * {@link CopyOnWriteArrayList} instance.
      * 
      * @param domainUris
      *            The base URI references.

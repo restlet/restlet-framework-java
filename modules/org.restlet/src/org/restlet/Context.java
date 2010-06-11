@@ -290,18 +290,19 @@ public class Context {
     }
 
     /**
-     * Sets the modifiable map of attributes.
+     * Sets the modifiable map of attributes. This method clears the current map
+     * and puts all entries in the parameter map.
      * 
      * @param attributes
-     *            The modifiable map of attributes.
+     *            A map of attributes.
      */
     public void setAttributes(Map<String, Object> attributes) {
-        synchronized (this.attributes) {
-            if (attributes != this.attributes) {
-                this.attributes.clear();
+        synchronized (getAttributes()) {
+            if (attributes != getAttributes()) {
+                getAttributes().clear();
 
                 if (attributes != null) {
-                    this.attributes.putAll(attributes);
+                    getAttributes().putAll(attributes);
                 }
             }
         }
@@ -362,18 +363,19 @@ public class Context {
     }
 
     /**
-     * Sets the modifiable series of parameters.
+     * Sets the modifiable series of parameters. This method clears the current
+     * series and adds all entries in the parameter series.
      * 
      * @param parameters
-     *            The modifiable series of parameters.
+     *            A series of parameters.
      */
     public void setParameters(Series<Parameter> parameters) {
-        synchronized (this.parameters) {
-            if (parameters != this.parameters) {
-                this.parameters.clear();
+        synchronized (getParameters()) {
+            if (parameters != getParameters()) {
+                getParameters().clear();
 
                 if (parameters != null) {
-                    this.parameters.addAll(parameters);
+                    getParameters().addAll(parameters);
                 }
             }
         }

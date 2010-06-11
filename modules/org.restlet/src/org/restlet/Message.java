@@ -328,39 +328,39 @@ public abstract class Message {
     }
 
     /**
-     * Sets the modifiable map of attributes
+     * Sets the modifiable map of attributes. This method clears the current map
+     * and puts all entries in the parameter map.
      * 
      * @param attributes
-     *            The modifiable map of attributes
+     *            A map of attributes
      */
     public void setAttributes(Map<String, Object> attributes) {
-        synchronized (this) {
-            if (attributes != this.attributes) {
-                this.attributes.clear();
+        synchronized (getAttributes()) {
+            if (attributes != getAttributes()) {
+                getAttributes().clear();
 
                 if (attributes != null) {
-                    this.attributes.putAll(attributes);
+                    getAttributes().putAll(attributes);
                 }
             }
         }
     }
 
     /**
-     * Sets the cache directives.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Cache-Control" header.
+     * Sets the cache directives. Note that when used with HTTP connectors, this
+     * property maps to the "Cache-Control" header. This method clears the
+     * current list and adds all entries in the parameter list.
      * 
      * @param cacheDirectives
      *            The cache directives.
      */
     public void setCacheDirectives(List<CacheDirective> cacheDirectives) {
-        synchronized (this) {
-            if (cacheDirectives != this.cacheDirectives) {
-                this.cacheDirectives.clear();
+        synchronized (getCacheDirectives()) {
+            if (cacheDirectives != getCacheDirectives()) {
+                getCacheDirectives().clear();
 
                 if (cacheDirectives != null) {
-                    this.cacheDirectives.addAll(cacheDirectives);
+                    getCacheDirectives().addAll(cacheDirectives);
                 }
             }
         }
@@ -409,19 +409,21 @@ public abstract class Message {
     }
 
     /**
-     * Sets the intermediary recipients. Note that when used with HTTP
-     * connectors, this property maps to the "Via" headers.
+     * Sets the modifiable list of intermediary recipients. Note that when used
+     * with HTTP connectors, this property maps to the "Via" headers. This
+     * method clears the current list and adds all entries in the parameter
+     * list.
      * 
      * @param recipientsInfo
-     *            The intermediary recipients.
+     *            A list of intermediary recipients.
      */
     public void setRecipientsInfo(List<RecipientInfo> recipientsInfo) {
-        synchronized (this) {
-            if (recipientsInfo != this.recipientsInfo) {
-                this.recipientsInfo.clear();
+        synchronized (getRecipientsInfo()) {
+            if (recipientsInfo != getRecipientsInfo()) {
+                getRecipientsInfo().clear();
 
                 if (recipientsInfo != null) {
-                    this.recipientsInfo.addAll(recipientsInfo);
+                    getRecipientsInfo().addAll(recipientsInfo);
                 }
             }
         }
@@ -429,18 +431,19 @@ public abstract class Message {
 
     /**
      * Sets the additional warnings information. Note that when used with HTTP
-     * connectors, this property maps to the "Warning" headers.
+     * connectors, this property maps to the "Warning" headers. This method
+     * clears the current list and adds all entries in the parameter list.
      * 
      * @param warnings
      *            The warnings.
      */
     public void setWarnings(List<Warning> warnings) {
-        synchronized (this) {
-            if (warnings != this.warnings) {
-                this.warnings.clear();
+        synchronized (getWarnings()) {
+            if (warnings != getWarnings()) {
+                getWarnings().clear();
 
                 if (warnings != null) {
-                    this.warnings.addAll(warnings);
+                    getWarnings().addAll(warnings);
                 }
             }
         }

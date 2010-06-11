@@ -625,19 +625,23 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the cookies provided by the client. Note that when used with HTTP
-     * connectors, this property maps to the "Cookie" header.
+     * Sets the modifiable series of cookies provided by the client. Note that
+     * when used with HTTP connectors, this property maps to the "Cookie"
+     * header. This method clears the current series and adds all entries in the
+     * parameter series.
      * 
      * @param cookies
-     *            The cookies provided by the client.
+     *            A series of cookies provided by the client.
      */
     public void setCookies(Series<Cookie> cookies) {
-        synchronized (this) {
-            if (cookies != this.cookies) {
-                this.cookies.clear();
+        synchronized (getCookies()) {
+            if (cookies != getCookies()) {
+                if (getCookies() != null) {
+                    getCookies().clear();
+                }
 
                 if (cookies != null) {
-                    this.cookies.addAll(cookies);
+                    getCookies().addAll(cookies);
                 }
             }
         }
@@ -731,20 +735,21 @@ public class Request extends Message {
     }
 
     /**
-     * Sets the ranges to return from the target resource's representation. Note
-     * that when used with HTTP connectors, this property maps to the "Range"
-     * header.
+     * Sets the modifiable list of ranges to return from the target resource's
+     * representation. Note that when used with HTTP connectors, this property
+     * maps to the "Range" header. This method clears the current list and adds
+     * all entries in the parameter list.
      * 
      * @param ranges
-     *            The ranges.
+     *            A list of ranges.
      */
     public void setRanges(List<Range> ranges) {
-        synchronized (this) {
-            if (ranges != this.ranges) {
-                this.ranges.clear();
+        synchronized (getRanges()) {
+            if (ranges != getRanges()) {
+                getRanges().clear();
 
                 if (ranges != null) {
-                    this.ranges.addAll(ranges);
+                    getRanges().addAll(ranges);
                 }
             }
         }

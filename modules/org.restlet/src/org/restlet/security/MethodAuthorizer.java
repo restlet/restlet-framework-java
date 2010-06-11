@@ -123,18 +123,20 @@ public class MethodAuthorizer extends Authorizer {
     }
 
     /**
-     * Sets the modifiable list of methods authorized for anonymous users.
+     * Sets the modifiable list of methods authorized for anonymous users. This
+     * method clears the current list and adds all entries in the parameter
+     * list.
      * 
      * @param anonymousMethods
-     *            The modifiable list of methods authorized for anonymous users.
+     *            A list of methods authorized for anonymous users.
      */
     public void setAnonymousMethods(List<Method> anonymousMethods) {
-        synchronized (this.anonymousMethods) {
-            if (anonymousMethods != this.anonymousMethods) {
-                this.anonymousMethods.clear();
+        synchronized (getAnonymousMethods()) {
+            if (anonymousMethods != getAnonymousMethods()) {
+                getAnonymousMethods().clear();
 
                 if (anonymousMethods != null) {
-                    this.anonymousMethods.addAll(anonymousMethods);
+                    getAnonymousMethods().addAll(anonymousMethods);
                 }
             }
         }
@@ -142,18 +144,19 @@ public class MethodAuthorizer extends Authorizer {
 
     /**
      * Sets the modifiable list of methods authorized for authenticated users.
+     * This method clears the current list and adds all entries in the parameter
+     * list.
      * 
      * @param authenticatedMethods
-     *            The modifiable list of methods authorized for authenticated
-     *            users.
+     *            A list of methods authorized for authenticated users.
      */
     public void setAuthenticatedMethods(List<Method> authenticatedMethods) {
-        synchronized (this.authenticatedMethods) {
-            if (authenticatedMethods != this.authenticatedMethods) {
-                this.authenticatedMethods.clear();
+        synchronized (getAuthenticatedMethods()) {
+            if (authenticatedMethods != getAuthenticatedMethods()) {
+                getAuthenticatedMethods().clear();
 
                 if (authenticatedMethods != null) {
-                    this.authenticatedMethods.addAll(authenticatedMethods);
+                    getAuthenticatedMethods().addAll(authenticatedMethods);
                 }
             }
         }

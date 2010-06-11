@@ -452,7 +452,6 @@ public class Finder extends Restlet {
             Handler targetHandler = findTarget(request, response);
 
             if (targetHandler != null) {
-
                 if (!response.getStatus().equals(Status.SUCCESS_OK)) {
                     // Probably during the instantiation of the target
                     // handler, or earlier the status was changed from the

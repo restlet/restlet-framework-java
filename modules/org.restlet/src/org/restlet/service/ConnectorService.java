@@ -115,36 +115,38 @@ public class ConnectorService extends Service {
     }
 
     /**
-     * Sets the list of required client protocols.
+     * Sets the modifiable list of required client protocols. This method clears
+     * the current list and adds all entries in the parameter list.
      * 
      * @param clientProtocols
-     *            The list of required client protocols.
+     *            A list of required client protocols.
      */
     public void setClientProtocols(List<Protocol> clientProtocols) {
-        synchronized (this.clientProtocols) {
-            if (clientProtocols != this.clientProtocols) {
-                this.clientProtocols.clear();
+        synchronized (getClientProtocols()) {
+            if (clientProtocols != getClientProtocols()) {
+                getClientProtocols().clear();
 
                 if (clientProtocols != null) {
-                    this.clientProtocols.addAll(clientProtocols);
+                    getClientProtocols().addAll(clientProtocols);
                 }
             }
         }
     }
 
     /**
-     * Sets he list of required server protocols.
+     * Sets the modifiable list of required server protocols. This method clears
+     * the current list and adds all entries in the parameter list.
      * 
      * @param serverProtocols
-     *            The list of required server protocols.
+     *            A list of required server protocols.
      */
     public void setServerProtocols(List<Protocol> serverProtocols) {
-        synchronized (this.serverProtocols) {
-            if (serverProtocols != this.serverProtocols) {
-                this.serverProtocols.clear();
+        synchronized (getServerProtocols()) {
+            if (serverProtocols != getServerProtocols()) {
+                getServerProtocols().clear();
 
                 if (serverProtocols != null) {
-                    this.serverProtocols.addAll(serverProtocols);
+                    getServerProtocols().addAll(serverProtocols);
                 }
             }
         }

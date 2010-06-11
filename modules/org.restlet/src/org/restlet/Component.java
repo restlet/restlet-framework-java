@@ -387,19 +387,19 @@ public class Component extends Restlet {
     }
 
     /**
-     * Sets a modifiable list of client connectors. Method synchronized to make
-     * compound action (clear, addAll) atomic, not for visibility.
+     * Sets the modifiable list of client connectors. This method clears the
+     * current list and adds all entries in the parameter list.
      * 
      * @param clients
-     *            A modifiable list of client connectors.
+     *            A list of client connectors.
      */
     public void setClients(ClientList clients) {
-        synchronized (this.clients) {
-            if (clients != this.clients) {
-                this.clients.clear();
+        synchronized (getClients()) {
+            if (clients != getClients()) {
+                getClients().clear();
 
                 if (clients != null) {
-                    this.clients.addAll(clients);
+                    getClients().addAll(clients);
                 }
             }
         }
@@ -417,18 +417,20 @@ public class Component extends Restlet {
 
     /**
      * Sets the modifiable list of virtual hosts. Note that the order of virtual
-     * hosts in this list will be used to check the first one that matches.
+     * hosts in this list will be used to check the first one that matches. This
+     * method clears the current list and adds all entries in the parameter
+     * list.
      * 
      * @param hosts
-     *            The modifiable list of virtual hosts.
+     *            A list of virtual hosts.
      */
     public void setHosts(List<VirtualHost> hosts) {
-        synchronized (this.hosts) {
-            if (hosts != this.hosts) {
-                this.hosts.clear();
+        synchronized (getHosts()) {
+            if (hosts != getHosts()) {
+                getHosts().clear();
 
                 if (hosts != null) {
-                    this.hosts.addAll(hosts);
+                    getHosts().addAll(hosts);
                 }
             }
         }
@@ -457,37 +459,38 @@ public class Component extends Restlet {
     }
 
     /**
-     * Sets the list of realms.
+     * Sets the list of realms. This method clears the current list and adds all
+     * entries in the parameter list.
      * 
      * @param realms
-     *            The list of realms.
+     *            A list of realms.
      */
     public void setRealms(List<Realm> realms) {
-        synchronized (this.realms) {
-            if (realms != this.realms) {
-                this.realms.clear();
+        synchronized (getRealms()) {
+            if (realms != getRealms()) {
+                getRealms().clear();
 
                 if (realms != null) {
-                    this.realms.addAll(realms);
+                    getRealms().addAll(realms);
                 }
             }
         }
     }
 
     /**
-     * Sets a modifiable list of server connectors. Method synchronized to make
-     * compound action (clear, addAll) atomic, not for visibility.
+     * Sets the modifiable list of server connectors. This method clears the
+     * current list and adds all entries in the parameter list.
      * 
      * @param servers
-     *            A modifiable list of server connectors.
+     *            A list of server connectors.
      */
     public void setServers(ServerList servers) {
-        synchronized (this.servers) {
-            if (servers != this.servers) {
-                this.servers.clear();
+        synchronized (getServers()) {
+            if (servers != getServers()) {
+                getServers().clear();
 
                 if (servers != null) {
-                    this.servers.addAll(servers);
+                    getServers().addAll(servers);
                 }
             }
         }

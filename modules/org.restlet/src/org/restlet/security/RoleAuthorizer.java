@@ -126,36 +126,38 @@ public class RoleAuthorizer extends Authorizer {
     }
 
     /**
-     * Sets the modifiable list of authorized roles.
+     * Sets the modifiable list of authorized roles. This method clears the
+     * current list and adds all entries in the parameter list.
      * 
      * @param authorizedRoles
-     *            The
+     *            A list of authorized roles.
      */
     public void setAuthorizedRoles(List<Role> authorizedRoles) {
-        synchronized (this.authorizedRoles) {
-            if (authorizedRoles != this.authorizedRoles) {
-                this.authorizedRoles.clear();
+        synchronized (getAuthorizedRoles()) {
+            if (authorizedRoles != getAuthorizedRoles()) {
+                getAuthorizedRoles().clear();
 
                 if (authorizedRoles != null) {
-                    this.authorizedRoles.addAll(authorizedRoles);
+                    getAuthorizedRoles().addAll(authorizedRoles);
                 }
             }
         }
     }
 
     /**
-     * Sets the modifiable list of forbidden roles.
+     * Sets the modifiable list of forbidden roles. This method clears the
+     * current list and adds all entries in the parameter list.
      * 
      * @param forbiddenRoles
-     *            The modifiable list of forbidden roles.
+     *            A list of forbidden roles.
      */
     public void setForbiddenRoles(List<Role> forbiddenRoles) {
-        synchronized (this.forbiddenRoles) {
-            if (forbiddenRoles != this.forbiddenRoles) {
-                this.forbiddenRoles.clear();
+        synchronized (getForbiddenRoles()) {
+            if (forbiddenRoles != getForbiddenRoles()) {
+                getForbiddenRoles().clear();
 
                 if (forbiddenRoles != null) {
-                    this.forbiddenRoles.addAll(forbiddenRoles);
+                    getForbiddenRoles().addAll(forbiddenRoles);
                 }
             }
         }

@@ -120,18 +120,19 @@ public class Role implements Principal {
     }
 
     /**
-     * Sets the list of child roles.
+     * Sets the modifiable list of child roles. This method clears the current
+     * list and adds all entries in the parameter list.
      * 
      * @param childRoles
-     *            The list of child roles.
+     *            A list of child roles.
      */
     public void setChildRoles(List<Role> childRoles) {
-        synchronized (this.childRoles) {
-            if (childRoles != this.childRoles) {
-                this.childRoles.clear();
+        synchronized (getChildRoles()) {
+            if (childRoles != getChildRoles()) {
+                getChildRoles().clear();
 
                 if (childRoles != null) {
-                    this.childRoles.addAll(childRoles);
+                    getChildRoles().addAll(childRoles);
                 }
             }
         }

@@ -527,7 +527,7 @@ public class Response extends Message {
      *            The set of methods allowed on the requested resource.
      */
     public void setAllowedMethods(Set<Method> allowedMethods) {
-        synchronized (this) {
+        synchronized (getAllowedMethods()) {
             if (allowedMethods != this.allowedMethods) {
                 this.allowedMethods.clear();
 
@@ -581,23 +581,21 @@ public class Response extends Message {
 
     /**
      * Sets the list of authentication requests sent by an origin server to a
-     * client. The list instance set must be thread-safe (use
-     * {@link CopyOnWriteArrayList} for example.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "WWW-Authenticate" header.
+     * client. Note that when used with HTTP connectors, this property maps to
+     * the "WWW-Authenticate" header. This method clears the current list and
+     * adds all entries in the parameter list.
      * 
      * @param challengeRequests
-     *            The list of authentication requests sent by an origin server
-     *            to a client.
+     *            A list of authentication requests sent by an origin server to
+     *            a client.
      */
     public void setChallengeRequests(List<ChallengeRequest> challengeRequests) {
-        synchronized (this) {
-            if (challengeRequests != this.challengeRequests) {
-                this.challengeRequests.clear();
+        synchronized (getChallengeRequests()) {
+            if (challengeRequests != getChallengeRequests()) {
+                getChallengeRequests().clear();
 
                 if (challengeRequests != null) {
-                    this.challengeRequests.addAll(challengeRequests);
+                    getChallengeRequests().addAll(challengeRequests);
                 }
             }
         }
@@ -614,43 +612,42 @@ public class Response extends Message {
     }
 
     /**
-     * Sets the cookie settings provided by the server. Note that when used with
-     * HTTP connectors, this property maps to the "Set-Cookie" and "Set-Cookie2"
-     * headers.
+     * Sets the modifiable series of cookie settings provided by the server.
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Set-Cookie" and "Set-Cookie2" headers. This method clears the current
+     * series and adds all entries in the parameter series.
      * 
      * @param cookieSettings
-     *            The cookie settings provided by the server.
+     *            A series of cookie settings provided by the server.
      */
     public void setCookieSettings(Series<CookieSetting> cookieSettings) {
-        synchronized (this) {
-            if (cookieSettings != this.cookieSettings) {
-                this.cookieSettings.clear();
+        synchronized (getCookieSettings()) {
+            if (cookieSettings != getCookieSettings()) {
+                getCookieSettings().clear();
 
                 if (cookieSettings != null) {
-                    this.cookieSettings.addAll(cookieSettings);
+                    getCookieSettings().addAll(cookieSettings);
                 }
             }
         }
     }
 
     /**
-     * Sets the set of dimensions on which the response entity may vary. The set
-     * instance set must be thread-safe (use {@link CopyOnWriteArraySet} for
-     * example.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Vary" header.
+     * Sets the set of dimensions on which the response entity may vary. Note
+     * that when used with HTTP connectors, this property maps to the "Vary"
+     * header. This method clears the current set and adds all entries in the
+     * parameter set.
      * 
      * @param dimensions
      *            The set of dimensions on which the response entity may vary.
      */
     public void setDimensions(Set<Dimension> dimensions) {
-        synchronized (this) {
-            if (dimensions != this.dimensions) {
-                this.dimensions.clear();
+        synchronized (getDimensions()) {
+            if (dimensions != getDimensions()) {
+                getDimensions().clear();
 
                 if (dimensions != null) {
-                    this.dimensions.addAll(dimensions);
+                    getDimensions().addAll(dimensions);
                 }
             }
         }
@@ -697,24 +694,24 @@ public class Response extends Message {
     }
 
     /**
-     * Sets the list of authentication requests sent by a proxy to a client. The
-     * list instance set must be thread-safe (use {@link CopyOnWriteArrayList}
-     * for example.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Proxy-Authenticate" header.
+     * Sets the modifiable list of authentication requests sent by a proxy to a
+     * client. The list instance set must be thread-safe (use
+     * {@link CopyOnWriteArrayList} for example. Note that when used with HTTP
+     * connectors, this property maps to the "Proxy-Authenticate" header. This
+     * method clears the current list and adds all entries in the parameter
+     * list.
      * 
      * @param proxyChallengeRequests
-     *            The list of authentication requests sent by a proxy to a
-     *            client.
+     *            A list of authentication requests sent by a proxy to a client.
      */
-    public void setProxyChallengeRequests(List<ChallengeRequest> proxyChallengeRequests) {
-        synchronized (this) {
-            if (proxyChallengeRequests != this.proxyChallengeRequests) {
-                this.proxyChallengeRequests.clear();
+    public void setProxyChallengeRequests(
+            List<ChallengeRequest> proxyChallengeRequests) {
+        synchronized (getProxyChallengeRequests()) {
+            if (proxyChallengeRequests != getProxyChallengeRequests()) {
+                getProxyChallengeRequests().clear();
 
                 if (proxyChallengeRequests != null) {
-                    this.proxyChallengeRequests.addAll(proxyChallengeRequests);
+                    getProxyChallengeRequests().addAll(proxyChallengeRequests);
                 }
             }
         }
