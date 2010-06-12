@@ -46,8 +46,11 @@ import org.restlet.service.MetadataService;
  * @author Jerome Louvel
  */
 public class AnnotationInfo {
+
     /** The annotated Java method. */
     private final java.lang.reflect.Method javaMethod;
+
+    private final Class<?> resourceInterface;
 
     /** The matching Restlet method. */
     private final Method restletMethod;
@@ -58,6 +61,8 @@ public class AnnotationInfo {
     /**
      * Constructor.
      * 
+     * @param resourceInterface
+     *            The interface that hosts the annotated Java method.
      * @param restletMethod
      *            The matching Restlet method.
      * @param javaMethod
@@ -65,9 +70,10 @@ public class AnnotationInfo {
      * @param value
      *            The annotation value.
      */
-    public AnnotationInfo(Method restletMethod,
+    public AnnotationInfo(Class<?> resourceInterface, Method restletMethod,
             java.lang.reflect.Method javaMethod, String value) {
         super();
+        this.resourceInterface = resourceInterface;
         this.restletMethod = restletMethod;
         this.javaMethod = javaMethod;
         this.value = value;
@@ -79,7 +85,13 @@ public class AnnotationInfo {
      * @return The input types of the Java method.
      */
     public Class<?>[] getJavaInputTypes() {
-        return getJavaMethod().getParameterTypes();
+        int count = getJavaMethod().getParameterTypes().length;
+        Class<?>[] classes = new Class[count];
+        for (int i = 0; i < count; i++) {
+            classes[i] = GenericTypeResolver.resolveParameterType(
+                    getJavaMethod(), i, resourceInterface);
+        }
+        return classes;
     }
 
     /**
@@ -97,7 +109,8 @@ public class AnnotationInfo {
      * @return The output type of the Java method.
      */
     public Class<?> getJavaOutputType() {
-        return getJavaMethod().getReturnType();
+        return GenericTypeResolver.resolveReturnType(getJavaMethod(),
+                resourceInterface);
     }
 
     /**
@@ -141,6 +154,15 @@ public class AnnotationInfo {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the resource interface value.
+     * 
+     * @return The resource interface value.
+     */
+    public Class<?> getResourceInterface() {
+        return resourceInterface;
     }
 
     // [ifndef gwt] method
@@ -234,4 +256,12 @@ public class AnnotationInfo {
     private String getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "AnnotationInfo [javaMethod=" + javaMethod
+                + ", resourceInterface=" + resourceInterface
+                + ", restletMethod=" + restletMethod + ", value=" + value + "]";
+    }
+
 }

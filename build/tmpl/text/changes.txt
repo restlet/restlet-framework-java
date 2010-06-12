@@ -43,6 +43,8 @@ Changes log
         Reported by Guillermo Vega and fixed by Vassilis Touloumtzoglou.
       - Made JaasUtils.createSubject(ClientInfo) static.
         Reported by Bruno Harbulot.
+      - Fix ClientResource#wrap generics support.
+        Contributed by Valdis Rigdon.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.

@@ -56,12 +56,14 @@ public class AnnotationUtils {
      * @param descriptors
      *            The annotation descriptors to update or null to create a new
      *            one.
+     * @param resourceInterface
+     *            The interface that hosts the javaMethod.
      * @param javaMethod
      *            The Java method to inspect.
      * @return The annotation descriptors.
      */
     private static List<AnnotationInfo> addAnnotationDescriptors(
-            List<AnnotationInfo> descriptors,
+            List<AnnotationInfo> descriptors, Class<?> resourceInterface,
             java.lang.reflect.Method javaMethod) {
         List<AnnotationInfo> result = descriptors;
 
@@ -93,9 +95,9 @@ public class AnnotationUtils {
                     }
                 }
 
-                result
-                        .add(new AnnotationInfo(restletMethod, javaMethod,
-                                value));
+                result.add(new AnnotationInfo(resourceInterface, restletMethod,
+                        javaMethod, value));
+
             }
         }
 
@@ -122,9 +124,17 @@ public class AnnotationUtils {
                 result = new CopyOnWriteArrayList<AnnotationInfo>();
             }
 
-            for (java.lang.reflect.Method javaMethod : clazz
-                    .getDeclaredMethods()) {
-                addAnnotationDescriptors(result, javaMethod);
+            // Inspect the current class
+            if(clazz.isInterface()){
+                for (java.lang.reflect.Method javaMethod : clazz
+                        .getMethods()) {
+                    addAnnotationDescriptors(result, clazz, javaMethod);
+                }
+            } else {
+                for (java.lang.reflect.Method javaMethod : clazz
+                        .getDeclaredMethods()) {
+                    addAnnotationDescriptors(result, clazz, javaMethod);
+                }
             }
 
             // Inspect the implemented interfaces for annotations
@@ -229,9 +239,9 @@ public class AnnotationUtils {
      *            The Java method.
      * @return The list of annotation descriptors.
      */
-    public static List<AnnotationInfo> getAnnotations(
+    public static List<AnnotationInfo> getAnnotations(Class<?> clazz,
             java.lang.reflect.Method javaMethod) {
-        return addAnnotationDescriptors(null, javaMethod);
+        return addAnnotationDescriptors(null, clazz, javaMethod);
     }
 
     /**
