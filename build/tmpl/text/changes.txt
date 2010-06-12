@@ -41,6 +41,8 @@ Changes log
         Reported by Alex Milowski.
       - Atom feed parser wasn't parsing "summary" elements.
         Reported by Guillermo Vega and fixed by Vassilis Touloumtzoglou.
+      - Made JaasUtils.createSubject(ClientInfo) static.
+        Reported by Bruno Harbulot.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.

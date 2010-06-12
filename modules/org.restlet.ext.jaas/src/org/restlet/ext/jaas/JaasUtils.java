@@ -54,7 +54,7 @@ public final class JaasUtils {
      *            The client info to expose as a subject.
      * @return The populated JAAS subject.
      */
-    public Subject createSubject(ClientInfo clientInfo) {
+    public static Subject createSubject(ClientInfo clientInfo) {
         Subject result = new Subject();
 
         if (clientInfo != null) {
