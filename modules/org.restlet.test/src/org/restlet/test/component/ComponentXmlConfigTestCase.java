@@ -323,7 +323,7 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
                 "The first Attach element of the Default Host MUST NOT be null",
                 route);
         String msg = "[" + ATTACH + " #1] ";
-        Context ctx = route.getContext();
+        Context ctx = route.getNext().getContext();
 
         checkNegativeParam(msg, ctx, CON_PARAM_NAME + "1");
         checkNegativeParam(msg, ctx, CON_PARAM_NAME + "2");
@@ -354,7 +354,7 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
                 "The second Attach element of the Default Host MUST NOT be null",
                 route);
         String msg = "[" + ATTACH + " #2] ";
-        Context ctx = route.getContext();
+        Context ctx = route.getNext().getContext();
 
         checkNegativeParam(msg, ctx, CON_PARAM_NAME + "1");
         checkNegativeParam(msg, ctx, CON_PARAM_NAME + "2");
@@ -385,7 +385,7 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
                 "The single Attach element of the Single Host MUST NOT be null",
                 route);
         String msg = "[" + ATTACH + "] ";
-        Context ctx = route.getContext();
+        Context ctx = route.getNext().getContext();
 
         checkNegativeParam(msg, ctx, CON_PARAM_NAME + "1");
         checkNegativeParam(msg, ctx, CON_PARAM_NAME + "2");
