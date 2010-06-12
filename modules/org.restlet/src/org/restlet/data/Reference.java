@@ -147,7 +147,8 @@ public class Reference {
 
             // [ifdef gwt] uncomment
             // try {
-            // result = com.google.gwt.http.client.URL.decodeComponent(toDecode);
+            // result =
+            // com.google.gwt.http.client.URL.decodeComponent(toDecode);
             // } catch (NullPointerException npe) {
             // System.err
             // .println("Unable to decode the string with the UTF-8 character set.");
@@ -237,7 +238,8 @@ public class Reference {
 
             // [ifdef gwt] uncomment
             // try {
-            // result = com.google.gwt.http.client.URL.encodeComponent(toEncode);
+            // result =
+            // com.google.gwt.http.client.URL.encodeComponent(toEncode);
             // } catch (NullPointerException npe) {
             // System.err
             // .println("Unable to encode the string with the UTF-8 character set.");
@@ -1552,18 +1554,19 @@ public class Reference {
                                 // path
                                 final StringBuilder sb = new StringBuilder();
 
-                        		// Count segments
-                        		int segments = 0;
-                        		for(int j = basePath.indexOf('/', i); j != -1; j = basePath.indexOf('/', j + 1))
-                        			segments++;
+                                // Count segments
+                                int segments = 0;
+                                for (int j = basePath.indexOf('/', i); j != -1; j = basePath
+                                        .indexOf('/', j + 1))
+                                    segments++;
 
-                        		// Build relative path
-                        		for(int j = 0; j < segments; j++)
-                        			sb.append( "../" );
+                                // Build relative path
+                                for (int j = 0; j < segments; j++)
+                                    sb.append("../");
 
-                        		int lastLocalSlash = localPath.lastIndexOf('/');
+                                int lastLocalSlash = localPath.lastIndexOf('/');
                                 sb.append(localPath
-                                    .substring(lastLocalSlash + 1));
+                                        .substring(lastLocalSlash + 1));
 
                                 relativePath = sb.toString();
                             }
@@ -1574,17 +1577,18 @@ public class Reference {
                             // junction
                             final StringBuilder sb = new StringBuilder();
 
-                    		// Count segments
-                    		int segments = 0;
-                    		for(int j = basePath.indexOf('/', i); j != -1; j = basePath.indexOf('/', j + 1))
-                    			segments++;
+                            // Count segments
+                            int segments = 0;
+                            for (int j = basePath.indexOf('/', i); j != -1; j = basePath
+                                    .indexOf('/', j + 1))
+                                segments++;
 
-                    		// Build relative path
-                    		for(int j = 0; j < segments; j++)
-                    			if(j > 0)
-                    				sb.append( "/.." );
-                    			else
-                    				sb.append( ".." );
+                            // Build relative path
+                            for (int j = 0; j < segments; j++)
+                                if (j > 0)
+                                    sb.append("/..");
+                                else
+                                    sb.append("..");
 
                             relativePath = sb.toString();
 
@@ -1619,18 +1623,20 @@ public class Reference {
                     // the local path is a direct subpath of the base path
                     final StringBuilder sb = new StringBuilder();
 
-            		// Count segments
-            		int segments = 0;
-            		for(int j = basePath.indexOf('/', i); j != -1; j = basePath.indexOf('/', j + 1))
-            			segments++;
+                    // Count segments
+                    int segments = 0;
+                    for (int j = basePath.indexOf('/', i); j != -1; j = basePath
+                            .indexOf('/', j + 1))
+                        segments++;
 
-            		// Build relative path
-            		for(int j = 0; j < segments; j++)
-            			sb.append( "../" );
+                    // Build relative path
+                    for (int j = 0; j < segments; j++)
+                        sb.append("../");
 
-            		sb.append(localPath.substring(lastSlashIndex + 1));
+                    sb.append(localPath.substring(lastSlashIndex + 1));
 
-                    relativePath = sb.toString();                }
+                    relativePath = sb.toString();
+                }
             }
 
             // Build the result reference
@@ -1879,11 +1885,13 @@ public class Reference {
         // Step 1 - Resolve relative reference against their base reference
         if (isRelative() && (this.baseRef != null)) {
             Reference baseReference = null;
+
             if (this.baseRef.isAbsolute()) {
                 baseReference = this.baseRef;
             } else {
                 baseReference = this.baseRef.getTargetRef();
             }
+
             if (baseReference.isRelative()) {
                 throw new IllegalArgumentException(
                         "The base reference must have an absolute hierarchical path component");

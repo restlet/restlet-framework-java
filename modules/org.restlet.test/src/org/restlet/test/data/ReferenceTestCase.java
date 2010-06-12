@@ -586,6 +586,13 @@ public class ReferenceTestCase extends RestletTestCase {
         assertEquals(reference.getRelativePart(), relativePart);
     }
 
+    public void testRiap() throws Exception {
+        Reference baseRef = new Reference("riap://component/exist/db/");
+        Reference ref = new Reference(baseRef, "something.xq");
+        assertEquals("riap://component/exist/db/something.xq", ref
+                .getTargetRef().toString());
+    }
+
     /**
      * Test scheme getting/setting.
      */

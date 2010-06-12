@@ -40,7 +40,7 @@ Changes log
         attachments in the Component XML configuration.
         Reported by Alex Milowski.
       - Atom feed parser wasn't parsing "summary" elements.
-        Contributed by Vassilis Touloumtzoglou.
+        Reported by Guillermo Vega and fixed by Vassilis Touloumtzoglou.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.

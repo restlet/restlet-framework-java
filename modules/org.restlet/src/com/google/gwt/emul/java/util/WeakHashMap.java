@@ -42,11 +42,10 @@ import java.util.Set;
  * @author Thierry Boileau
  * 
  */
-@SuppressWarnings("serial")
 public class WeakHashMap<K, V> extends AbstractMap<K, V> implements Map<K, V> {
 
     private Map<K, V> map;
-    
+
     public WeakHashMap() {
         super();
         this.map = new HashMap<K, V>();
