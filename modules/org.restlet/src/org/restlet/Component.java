@@ -30,6 +30,8 @@
 
 package org.restlet;
 
+import java.io.File;
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
@@ -116,6 +118,7 @@ public class Component extends Restlet {
     /**
      * Used as bootstrap for configuring and running a component in command
      * line. Just provide as first and unique parameter the URI to the XML file.
+     * Note that relative paths are accepted.
      * 
      * @param args
      *            The list of in-line parameters.
@@ -128,7 +131,9 @@ public class Component extends Restlet {
                         .println("Can't launch the component. Requires the path to an XML configuration file.\n");
             } else {
                 // Create and start the component
-                new Component(args[0]).start();
+                URI currentDirURI = (new File(".")).toURI();
+                URI confURI = currentDirURI.resolve(args[0]);
+                new Component(confURI.toString()).start();
             }
         } catch (Exception e) {
             System.err
@@ -155,14 +160,14 @@ public class Component extends Restlet {
      */
     private volatile Router internalRouter;
 
+    /** The modifiable list of security realms. */
+    private final List<Realm> realms;
+
     /** The modifiable list of server connectors. */
     private final ServerList servers;
 
     /** The list of services. */
     private final ServiceList services;
-
-    /** The modifiable list of security realms. */
-    private final List<Realm> realms;
 
     /**
      * Constructor.

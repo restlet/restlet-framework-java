@@ -40,6 +40,8 @@ Changes log
         attachments in the Component XML configuration.
         Reported by Alex Milowski.
     - Misc
+      - Component#main() now accepts related XML configuration file 
+        paths. Contributed by Alex Milowski.
 
 - 2.0 Release Candidate 4 (2010-06-01)
     - API changes
