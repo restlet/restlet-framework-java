@@ -205,7 +205,11 @@ public class FeedContentReader extends FeedReader {
                 }
             } else if (localName.equals("summary")) {
                 if (this.state == State.FEED_ENTRY_SUMMARY) {
-                    this.currentEntry.setSummary(this.currentText.getContent());
+                    if (this.currentText != null) {
+                        this.currentEntry.setSummary(this.currentText
+                                .getContent());
+                    }
+                    
                     this.state = State.FEED_ENTRY;
                 }
             } else if (localName.equals("updated")) {
@@ -423,7 +427,7 @@ public class FeedContentReader extends FeedReader {
                     this.state = State.FEED_ENTRY_SOURCE_TITLE;
                 }
             } else if (localName.equals("summary")) {
-            	startTextElement(attrs);
+                startTextElement(attrs);
 
                 if (this.state == State.FEED_ENTRY) {
                     this.state = State.FEED_ENTRY_SUMMARY;

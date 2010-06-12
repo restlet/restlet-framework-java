@@ -524,6 +524,7 @@ public class ComponentXmlParser {
 
                             // Look for Restlet's attributes
                             parseRestlet(client, childNode);
+
                             // Look for parameters
                             for (int j = 0; j < childNode.getChildNodes()
                                     .getLength(); j++) {
@@ -617,6 +618,7 @@ public class ComponentXmlParser {
                         }
                     } else if (isParameter(childNode)) {
                         Parameter p = parseParameter(childNode);
+
                         if (p != null) {
                             getComponent().getContext().getParameters().add(p);
                         }
@@ -847,8 +849,10 @@ public class ComponentXmlParser {
 
         for (int i = 0; i < childNodes.getLength(); i++) {
             final Node childNode = childNodes.item(i);
+
             if (isParameter(childNode)) {
                 Parameter p = parseParameter(childNode);
+
                 if (p != null) {
                     router.getContext().getParameters().add(p);
                 }
@@ -909,7 +913,8 @@ public class ComponentXmlParser {
                         if (isParameter(aNode)) {
                             Parameter p = parseParameter(aNode);
                             if (p != null) {
-                                route.getNext().getContext().getParameters().add(p);
+                                route.getNext().getContext().getParameters()
+                                        .add(p);
                             }
                         }
                     }

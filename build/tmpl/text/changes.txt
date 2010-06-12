@@ -46,6 +46,7 @@ Changes log
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.
+      - Updated jSSLutils to version 1.0.5.
 
 - 2.0 Release Candidate 4 (2010-06-01)
     - API changes
