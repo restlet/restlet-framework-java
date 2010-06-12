@@ -203,6 +203,11 @@ public class FeedContentReader extends FeedReader {
                     this.currentEntry.getSource().setTitle(this.currentText);
                     this.state = State.FEED_ENTRY_SOURCE;
                 }
+            } else if (localName.equals("summary")) {
+                if (this.state == State.FEED_ENTRY_SUMMARY) {
+                    this.currentEntry.setSummary(this.currentText.getContent());
+                    this.state = State.FEED_ENTRY;
+                }
             } else if (localName.equals("updated")) {
                 if (this.state == State.FEED_UPDATED) {
                     this.currentFeed.setUpdated(this.currentDate);
@@ -416,6 +421,12 @@ public class FeedContentReader extends FeedReader {
                     this.state = State.FEED_ENTRY_TITLE;
                 } else if (this.state == State.FEED_ENTRY_SOURCE) {
                     this.state = State.FEED_ENTRY_SOURCE_TITLE;
+                }
+            } else if (localName.equals("summary")) {
+            	startTextElement(attrs);
+
+                if (this.state == State.FEED_ENTRY) {
+                    this.state = State.FEED_ENTRY_SUMMARY;
                 }
             } else if (localName.equals("updated")) {
                 this.currentDate = new Date();
