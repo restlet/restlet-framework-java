@@ -50,8 +50,7 @@
 		<attribute name="targetClass" type="string" use="optional" />
 		<attribute name="targetDescriptor" type="string" use="optional" />
 		<attribute name="default" type="boolean" use="optional" />
-		<attribute name="matchingMode" type="int" use="optional"
-			default="1" />
+		<attribute name="matchingMode" type="int" use="optional" />
 		<attribute name="defaultVariableType" type="int" use="optional" />
 	</complexType>
 

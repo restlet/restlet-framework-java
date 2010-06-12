@@ -36,6 +36,9 @@ Changes log
       - Fixed bug avoiding the usage of HashMap in annotated interfaces
         in the GWT edition. 
         Reported by Greg Hengeli and  Christopher Gokey.
+      - Removed the "default" attribute for the matching mode of 
+        attachments in the Component XML configuration.
+        Reported by Alex Milowski.
     - Misc
 
 - 2.0 Release Candidate 4 (2010-06-01)
