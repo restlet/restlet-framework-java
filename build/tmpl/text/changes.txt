@@ -31,8 +31,11 @@ Changes log
       - Client connectors automatically created by the ClientResource
         are now automatically stopped upon garbage collection to prevent
         dormant threads. Reported by Dustin Jenkins and TK Kocheran.
+      - Parameters on Attachments in Component's XML configuration were
+        not taken into account. Contributed by Alex Milowski.
       - Fixed bug avoiding the usage of HashMap in annotated interfaces
-        in the GWT edition.
+        in the GWT edition. 
+        Reported by Greg Hengeli and  Christopher Gokey.
     - Misc
 
 - 2.0 Release Candidate 4 (2010-06-01)

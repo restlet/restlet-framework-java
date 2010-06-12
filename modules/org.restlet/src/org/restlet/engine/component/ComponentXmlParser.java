@@ -909,7 +909,7 @@ public class ComponentXmlParser {
                         if (isParameter(aNode)) {
                             Parameter p = parseParameter(aNode);
                             if (p != null) {
-                                route.getContext().getParameters().add(p);
+                                route.getNext().getContext().getParameters().add(p);
                             }
                         }
                     }
