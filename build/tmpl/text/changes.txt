@@ -31,6 +31,8 @@ Changes log
       - Client connectors automatically created by the ClientResource
         are now automatically stopped upon garbage collection to prevent
         dormant threads. Reported by Dustin Jenkins and TK Kocheran.
+      - Fixed bug avoiding the usage of HashMap in annotated interfaces
+        in the GWT edition.
     - Misc
 
 - 2.0 Release Candidate 4 (2010-06-01)
