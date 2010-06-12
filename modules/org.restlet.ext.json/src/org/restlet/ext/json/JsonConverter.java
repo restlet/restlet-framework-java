@@ -46,7 +46,9 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
 /**
- * Converter between the JSON API and Representation classes.
+ * Converter between the JSON API (more precisely {@link JSONArray},
+ * {@link JSONObject} and {@link JSONTokener} instances) and Representation
+ * classes.
  * 
  * @author Jerome Louvel
  */
