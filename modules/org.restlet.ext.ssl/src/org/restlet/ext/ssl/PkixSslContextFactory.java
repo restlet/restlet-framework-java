@@ -38,11 +38,11 @@ import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 
 import javax.net.ssl.SSLContext;
+import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.jsslutils.keystores.KeyStoreLoader;
 import org.jsslutils.sslcontext.PKIXSSLContextFactory;
 import org.jsslutils.sslcontext.SSLContextFactory.SSLContextFactoryException;
-import org.jsslutils.sslcontext.X509SSLContextFactory.LockedSettingsException;
 import org.jsslutils.sslcontext.keymanagers.FixedServerAliasKeyManager;
 
 import org.restlet.data.Parameter;
@@ -250,6 +250,8 @@ public class PkixSslContextFactory extends SslContextFactory {
                     this.sslProtocol = sslProtocol;
                 }
             }
+        } catch (SSLContextFactoryException e) {
+            throw new RuntimeException(e);
         } catch (KeyStoreException e) {
             throw new RuntimeException(e);
         } catch (NoSuchProviderException e) {
@@ -260,9 +262,7 @@ public class PkixSslContextFactory extends SslContextFactory {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } catch (SSLContextFactoryException e) {
-            throw new RuntimeException(e);
-        } catch (LockedSettingsException e) {
+        } catch (UnsupportedCallbackException e) {
             throw new RuntimeException(e);
         }
     }

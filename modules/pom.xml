@@ -96,7 +96,7 @@
 		<lib-jruby-version>1.4.0</lib-jruby-version>
 		<lib-jruby-version>1.4.0</lib-jruby-version>
 		<lib-json-version>2.0</lib-json-version>
-		<lib-jsslutils-version>0.5.1</lib-jsslutils-version>
+		<lib-jsslutils-version>1.0.5</lib-jsslutils-version>
 		<lib-junit-version>4.8</lib-junit-version>
 		<lib-jxta-version>2.5</lib-jxta-version>
 		<lib-jxta-configuration-version>2.5</lib-jxta-configuration-version>

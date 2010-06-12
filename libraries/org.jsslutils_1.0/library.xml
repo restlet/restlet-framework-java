@@ -4,8 +4,8 @@
 			<artifactId>jsslutils</artifactId>
 		</maven>
 	</package>
-	<version>0.5</version>
-	<release>1</release>
+	<version>1.0</version>
+	<release>5</release>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>

@@ -1,5 +1,5 @@
 --------------------------------------
-jsslutils - set of utilisties for Java
+jsslutils - set of utilities for Java
 --------------------------------------
 
 "This project aims to provide a set of utilities regarding the use of SSL in Java."
