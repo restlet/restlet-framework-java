@@ -127,7 +127,7 @@ public class TemplateDispatcher extends Client {
         if ((response.getEntity() != null)
                 && (response.getEntity().getLocationRef() == null)) {
             response.getEntity().setLocationRef(
-                    request.getResourceRef().toString());
+                    request.getResourceRef().getTargetRef().toString());
         }
     }
 

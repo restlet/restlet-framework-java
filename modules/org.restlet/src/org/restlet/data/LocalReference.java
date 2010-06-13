@@ -193,8 +193,8 @@ public final class LocalReference extends Reference {
      */
     public static LocalReference createJarReference(Reference jarFile,
             String entryPath) {
-        return new LocalReference("jar:" + jarFile.toString() + "!/"
-                + entryPath);
+        return new LocalReference("jar:" + jarFile.getTargetRef().toString()
+                + "!/" + entryPath);
     }
 
     /**
@@ -221,8 +221,8 @@ public final class LocalReference extends Reference {
      */
     public static LocalReference createZipReference(Reference zipFile,
             String entryPath) {
-        return new LocalReference("zip:" + zipFile.toString() + "!/"
-                + entryPath);
+        return new LocalReference("zip:" + zipFile.getTargetRef().toString()
+                + "!/" + entryPath);
     }
 
     /**
@@ -321,7 +321,7 @@ public final class LocalReference extends Reference {
      *            The local reference.
      */
     public LocalReference(Reference localRef) {
-        super(localRef.toString());
+        super(localRef.getTargetRef().toString());
     }
 
     /**

@@ -220,7 +220,8 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                     // Return the directory listing
                     Collection<Entity> children = entity.getChildren();
                     ReferenceList rl = new ReferenceList(children.size());
-                    String directoryUri = request.getResourceRef().toString();
+                    String directoryUri = request.getResourceRef()
+                            .getTargetRef().toString();
 
                     // Ensures that the directory URI ends with a slash
                     if (!directoryUri.endsWith("/")) {
