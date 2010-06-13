@@ -6,7 +6,8 @@ SetCompressor lzma
 
 # Defines
 !define VERSION "@version-full@"
-!define REGKEY "SOFTWARE\Restlet Framework\Edition @edition-medium-label@"
+!define BASEREGKEY "SOFTWARE\Restlet Framework\Edition @edition-medium-label@"
+!define REGKEY "SOFTWARE\Restlet Framework\Edition @edition-medium-label@\@version-full@"
 !define COMPANY "Noelios Technologies"
 !define URL http://www.restlet.org
 
@@ -46,7 +47,6 @@ BrandingText " "
 Var StartMenuGroup
 
 # Installer pages
-!insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE @license-dir@/license.txt
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuGroup
@@ -134,7 +134,7 @@ Section -Main SEC0000
 SectionEnd
 
 Section -post SEC0001
-    WriteRegStr HKLM "${REGKEY}" Version "${VERSION}"
+    WriteRegStr HKLM "${BASEREGKEY}" Version "${VERSION}"
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -186,9 +186,14 @@ Section un.post UNSEC0001
     Delete /REBOOTOK $INSTDIR\uninstall.exe
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
     DeleteRegValue HKLM "${REGKEY}" Path
-    DeleteRegValue HKLM "${REGKEY}" Version
+
+    ReadRegStr $0 HKLM "${BASEREGKEY}" Version
+    StrCmp $0 "${VERSION}" 0 +1
+        DeleteRegValue HKLM "${BASEREGKEY}" Version
+
     DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
     DeleteRegKey /IfEmpty HKLM "${REGKEY}"
+    DeleteRegKey /IfEmpty HKLM "${BASEREGKEY}"
     RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
 
     ; Remove files. If we don't have a log file skip
