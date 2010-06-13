@@ -30,12 +30,12 @@
 
 package org.restlet.ext.xml;
 
-import java.io.StringBufferInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
 import org.restlet.data.MediaType;
+import org.restlet.engine.io.StringInputStream;
 import org.restlet.representation.Representation;
 
 import com.google.gwt.xml.client.Document;
@@ -118,7 +118,7 @@ public class DomRepresentation extends Representation {
 
     @Override
     public InputStream getStream() throws IOException {
-        return new StringBufferInputStream(getText());
+        return new StringInputStream(getText());
     }
 
     @Override
