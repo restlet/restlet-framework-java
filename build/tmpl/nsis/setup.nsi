@@ -190,7 +190,7 @@ Section un.post UNSEC0001
     DeleteRegValue HKLM "${REGKEY}" Path
 
     ReadRegStr $0 HKLM "${BASEREGKEY}" Version
-    StrCmp $0 "${VERSION}" 0 +1
+    StrCmp $0 "${VERSION}" 0 +2
         DeleteRegValue HKLM "${BASEREGKEY}" Version
 
     DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
