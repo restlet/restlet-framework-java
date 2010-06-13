@@ -6,6 +6,7 @@ SetCompressor lzma
 
 # Defines
 !define VERSION "@version-full@"
+!define RESTLETREGKEY "SOFTWARE\Restlet Framework"
 !define BASEREGKEY "SOFTWARE\Restlet Framework\Edition @edition-medium-label@"
 !define REGKEY "SOFTWARE\Restlet Framework\Edition @edition-medium-label@\@version-full@"
 !define COMPANY "Noelios Technologies"
@@ -47,6 +48,7 @@ BrandingText " "
 Var StartMenuGroup
 
 # Installer pages
+!insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE @license-dir@/license.txt
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuGroup
@@ -194,6 +196,7 @@ Section un.post UNSEC0001
     DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
     DeleteRegKey /IfEmpty HKLM "${REGKEY}"
     DeleteRegKey /IfEmpty HKLM "${BASEREGKEY}"
+    DeleteRegKey /IfEmpty HKLM "${RESTLETREGKEY}"
     RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
 
     ; Remove files. If we don't have a log file skip
