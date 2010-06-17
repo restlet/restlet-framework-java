@@ -31,20 +31,17 @@ package org.restlet.example.book.restlet.ch06.sec4;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.security.Principal;
 import java.security.PrivilegedAction;
-
-import javax.security.auth.Subject;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.ext.jaas.JaasUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-import org.restlet.security.Role;
 
 /**
  * @author Bruno Harbulot (bruno/distributedmatter.net)
@@ -53,15 +50,6 @@ import org.restlet.security.Role;
 public class ListHomeDirResource extends ServerResource {
     @Get("txt")
     public Representation echoPrincipals() throws ResourceException {
-        Subject subject = new Subject();
-        subject.getPrincipals().add(getRequest().getClientInfo().getUser());
-        for (Role role : getRequest().getClientInfo().getRoles()) {
-            subject.getPrincipals().add(role);
-        }
-        for (Principal principal : getRequest().getClientInfo().getPrincipals()) {
-            subject.getPrincipals().add(principal);
-        }
-
         PrivilegedAction<StringBuilder> action = new PrivilegedAction<StringBuilder>() {
             public StringBuilder run() {
                 File dir = new File(System.getProperty("user.home"));
@@ -81,8 +69,8 @@ public class ListHomeDirResource extends ServerResource {
             }
         };
 
-        StringBuilder sb = null; // TO FIX
-        Subject.doAsPrivileged(subject, action, null);
+        StringBuilder sb = JaasUtils.doAsPriviledged(getRequest()
+                .getClientInfo(), action);
 
         Representation rep = new StringRepresentation(sb, MediaType.TEXT_PLAIN,
                 Language.ALL, CharacterSet.UTF_8);
