@@ -86,6 +86,10 @@ import org.restlet.util.Series;
  * entity is available then it will be preserved and the result of the annotated
  * method ignored.<br>
  * <br>
+ * In addition, there are two ways to declare representation variants, one is
+ * based on the {@link #getVariants()} method and another one on the annotated
+ * methods. Both approaches can't however be used at the same time for now.<br>
+ * <br>
  * Concurrency note: contrary to the {@link org.restlet.Uniform} class and its
  * main {@link Restlet} subclass where a single instance can handle several
  * calls concurrently, one instance of {@link ServerResource} is created for
