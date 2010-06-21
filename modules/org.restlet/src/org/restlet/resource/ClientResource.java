@@ -246,10 +246,6 @@ public class ClientResource extends UniformResource {
             context = Context.getCurrent();
         }
 
-        if (context != null) {
-            this.next = context.getClientDispatcher();
-        }
-
         // Don't remove this line.
         // See other constructor ClientResource(Context, Method, Reference)
         response.setRequest(request);
@@ -362,21 +358,35 @@ public class ClientResource extends UniformResource {
     protected Uniform createNext() {
         Uniform result = null;
 
-        // [ifdef gwt] uncomment
-        // if (getReference().isRelative()) {
-        // getReference().setBaseRef(
-        // com.google.gwt.core.client.GWT.getHostPageBaseURL());
-        // setReference(getReference().getTargetRef());
-        // }
+        // [ifndef gwt]
+        // Prefer the outbound root
+        result = getApplication().getOutboundRoot();
         // [enddef]
 
-        Protocol rProtocol = getProtocol();
-        Reference rReference = getReference();
-        Protocol protocol = (rProtocol != null) ? rProtocol
-                : (rReference != null) ? rReference.getSchemeProtocol() : null;
+        if ((result == null) && (getContext() != null)) {
+            // Try using directly the client dispatcher
+            result = getContext().getClientDispatcher();
+        }
 
-        if (protocol != null) {
-            result = new Client(protocol);
+        if (result == null) {
+            // As a final option, try creating a client connector
+            // [ifdef gwt] uncomment
+            // if (getReference().isRelative()) {
+            // getReference().setBaseRef(
+            // com.google.gwt.core.client.GWT.getHostPageBaseURL());
+            // setReference(getReference().getTargetRef());
+            // }
+            // [enddef]
+
+            Protocol rProtocol = getProtocol();
+            Reference rReference = getReference();
+            Protocol protocol = (rProtocol != null) ? rProtocol
+                    : (rReference != null) ? rReference.getSchemeProtocol()
+                            : null;
+
+            if (protocol != null) {
+                result = new Client(protocol);
+            }
         }
 
         return result;
@@ -609,7 +619,22 @@ public class ClientResource extends UniformResource {
      * @return The next Restlet or null.
      */
     public Uniform getNext() {
-        return this.next;
+        Uniform result = this.next;
+
+        if (result == null) {
+            synchronized (this) {
+                if (result == null) {
+                    result = createNext();
+
+                    if (result != null) {
+                        setNext(result);
+                        this.nextCreated = true;
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -850,15 +875,6 @@ public class ClientResource extends UniformResource {
     private Response handle(Request request) {
         Response response = new Response(request);
         Uniform next = getNext();
-
-        if (next == null) {
-            next = createNext();
-
-            if (next != null) {
-                setNext(next);
-                this.nextCreated = true;
-            }
-        }
 
         if (next != null) {
             // Effectively handle the call
@@ -1368,6 +1384,9 @@ public class ClientResource extends UniformResource {
         }
 
         this.next = next;
+
+        // If true, it must be updated after calling this method
+        this.nextCreated = false;
     }
 
     /**

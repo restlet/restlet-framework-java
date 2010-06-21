@@ -49,6 +49,8 @@ Changes log
         Contributed by Valdis Rigdon.
       - Fixed NPE when requesting via the RIAP protocol.
         Reported by Alex Milowski.
+      - Application#outboundRoot wasn't properly taken into account by
+        the ClientResource class. Reported by Kristoffer Gronowski.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.

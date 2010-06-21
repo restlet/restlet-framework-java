@@ -257,9 +257,13 @@ public class Application extends Restlet {
      * 
      * @return The inbound root Restlet.
      */
-    public synchronized Restlet getInboundRoot() {
+    public Restlet getInboundRoot() {
         if (this.inboundRoot == null) {
-            this.inboundRoot = createRoot();
+            synchronized (this) {
+                if (this.inboundRoot == null) {
+                    this.inboundRoot = createRoot();
+                }
+            }
         }
 
         return this.inboundRoot;
@@ -279,9 +283,13 @@ public class Application extends Restlet {
      * 
      * @return The outbound root Restlet.
      */
-    public synchronized Restlet getOutboundRoot() {
+    public Restlet getOutboundRoot() {
         if (this.outboundRoot == null) {
-            this.outboundRoot = createOutboundRoot();
+            synchronized (this) {
+                if (this.outboundRoot == null) {
+                    this.outboundRoot = createOutboundRoot();
+                }
+            }
         }
 
         return this.outboundRoot;
