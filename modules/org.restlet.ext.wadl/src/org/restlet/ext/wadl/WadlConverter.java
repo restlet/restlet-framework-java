@@ -41,8 +41,8 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
 /**
- * A converter helper to convert from ApplicationInfo objects to
- * WadlRepresentation and vice versa
+ * A converter helper to convert between {@link ApplicationInfo} objects and
+ * {@link WadlRepresentation} ones.
  * 
  * @author Thierry Boileau
  */

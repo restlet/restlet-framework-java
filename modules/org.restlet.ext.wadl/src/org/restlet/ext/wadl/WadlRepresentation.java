@@ -111,7 +111,7 @@ public class WadlRepresentation extends SaxRepresentation {
         /** The current parsed "param" tag. */
         private ParameterInfo currentParameter;
 
-        /** The current parsed "representaiton" tag. */
+        /** The current parsed "representation" tag. */
         private RepresentationInfo currentRepresentation;
 
         /** The current parsed "request" tag. */
@@ -176,11 +176,13 @@ public class WadlRepresentation extends SaxRepresentation {
             this.currentResources = null;
             this.currentResourceType = null;
             this.currentResponse = null;
+
             try {
                 this.mixedContentDocument = new DomRepresentation(
                         MediaType.TEXT_XML).getDocument();
             } catch (IOException e) {
             }
+
             this.currentMixedContentCDataSection = null;
             this.namespaces = new HashMap<String, String>();
             this.wadlRepresentation = wadlRepresentation;
@@ -909,12 +911,12 @@ public class WadlRepresentation extends SaxRepresentation {
      */
     public Representation getHtmlRepresentation() {
         Representation representation = null;
-        final URL wadlHtmlXsltUrl = Engine
+        URL wadlHtmlXsltUrl = Engine
                 .getResource("org/restlet/ext/wadl/htmlConvert.xsl");
 
         if (wadlHtmlXsltUrl != null) {
             try {
-                final InputRepresentation xslRep = new InputRepresentation(
+                InputRepresentation xslRep = new InputRepresentation(
                         wadlHtmlXsltUrl.openStream(),
                         MediaType.APPLICATION_W3C_XSLT);
                 representation = new TransformRepresentation(Context

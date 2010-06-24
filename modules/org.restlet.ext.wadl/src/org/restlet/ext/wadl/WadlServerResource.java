@@ -53,8 +53,8 @@ import org.restlet.util.Series;
 /**
  * Resource that is able to automatically describe itself with WADL. This
  * description can be customized by overriding the {@link #describe()} and
- * {@link #describeMethod(Method, MethodInfo)} methods.
- * 
+ * {@link #describeMethod(Method, MethodInfo)} methods.<br>
+ * <br>
  * When used to describe a class of resources in the context of a parent
  * application, a special instance will be created using the default constructor
  * (with no request, response associated). In this case, the resource should do
@@ -290,7 +290,7 @@ public class WadlServerResource extends ServerResource {
      * @param method
      *            The Method to document
      */
-    @SuppressWarnings({ "unchecked", "deprecation" })
+    @SuppressWarnings( { "unchecked", "deprecation" })
     private void discoverAnnotations(MethodInfo info) {
         ResponseInfo response = info.getResponse();
 

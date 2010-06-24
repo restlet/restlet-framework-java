@@ -38,19 +38,11 @@ import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 
 /**
- * Component that can automatically configure itself given a list of WADL
- * documents. First, it creates the server connectors and the virtual hosts if
- * needed, trying to reuse existing ones if available.<br>
+ * Component that can configure itself given a WADL document. First, it creates
+ * the server connectors and the virtual hosts if needed, trying to reuse
+ * existing ones if available. Then it creates a {@link WadlApplication} using
+ * this {@link WadlApplication#WadlApplication(Representation)} constructor.<br>
  * <br>
- * Then it creates a Restlet Application with a router as root. For each
- * resource found in the WADL document, it tries to attach a Restlet Resource
- * class to the router using the WADL path. It looks up the qualified name of
- * the Resource class using the WADL "id" attribute of the "resource" elements.
- * This is the only Restlet specific constraint on the WADL document.<br>
- * <br>
- * Finally, it attaches the Restlet Application to the virtual host using the
- * "base" attribute of the WADL "resources" element.
- * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.

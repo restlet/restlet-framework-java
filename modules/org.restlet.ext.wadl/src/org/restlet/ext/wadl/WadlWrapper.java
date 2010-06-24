@@ -27,15 +27,16 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
+
 package org.restlet.ext.wadl;
 
 import org.restlet.Restlet;
+import org.restlet.resource.Directory;
 import org.restlet.util.WrapperRestlet;
 
 /**
- * Restlet WADL wrapper. Useful for application developer who need to provide
- * the WADL documentation for a Restlet instance like a Directory.
+ * WADL wrapper for {@link Restlet} instances. Useful if you need to provide the
+ * WADL documentation for instances of classes such as {@link Directory}.
  * 
  * @author Thierry Boileau
  */

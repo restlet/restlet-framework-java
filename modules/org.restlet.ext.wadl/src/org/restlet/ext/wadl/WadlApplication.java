@@ -63,28 +63,34 @@ import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
 
 /**
- * WADL configured application. Can automatically configure itself given a WADL
- * description document.<br>
+ * WADL enabled application. This {@link Application} subclass can describe
+ * itself in WADL by introspecting its content, supporting the standard WADL/XML
+ * format or a WADL/HTML one based on a built-in XSLT transformation. You can
+ * obtain this representation with an OPTIONS request addressed exactly to the
+ * application URI (e.g. "http://host:port/path/to/application"). By default,
+ * the returned representation gleans the list of all attached
+ * {@link ServerResource} classes. This default behavior can be customized by
+ * overriding the {@link #getApplicationInfo(Request, Response)} method.<br>
  * <br>
- * It creates a root router and for each resource found in the WADL document, it
- * tries to attach a Restlet Resource class to the router using its WADL path.<br>
+ * In case you want to customize the XSLT stylesheet, you can override the
+ * {@link #createWadlRepresentation(ApplicationInfo)} method and return an
+ * instance of an {@link WadlRepresentation} subclass overriding the
+ * {@link WadlRepresentation#getHtmlRepresentation()} method.<br>
  * <br>
- * It looks up the qualified name of the Resource class using the WADL "id"
- * attribute of the "resource" elements. This is the only Restlet specific
- * constraint on the WADL document.<br>
+ * In addition, this class can create an instance and configure it with an
+ * user-provided WADL/XML document. In this case, it creates a root
+ * {@link Router} and for each resource found in the WADL document, it tries to
+ * attach a {@link ServerResource} class to the router using its WADL path. For
+ * this, it looks up the qualified name of the {@link ServerResource} subclass
+ * using the WADL's "id" attribute of the "resource" elements. This is the only
+ * Restlet specific convention on the original WADL document.<br>
  * <br>
- * Also, it has an {@link #attachToComponent(Component)} to attach the
- * application to an existing component and a {@link #attachToHost(VirtualHost)}
- * to attach it to an existing virtual host using the "base" attribute of the
- * WADL "resources" element.<br>
- * Such application is also able to generate a description of itself under two
- * formats: WADL or HTML (the latter is actually a transformation of the
- * former). You can obtain this representation with an OPTIONS request addressed
- * exactly to the application URI (e.g. "http://host:port/path/to/application").
- * By default, the returned representation gleans the list of all attached
- * Resources. This default behaviour can be customized by overriding the
- * getApplicationInfo() method.<br>
- * 
+ * To attach an application configured in this way to an existing component, you
+ * can call the {@link #attachToComponent(Component)} or the
+ * {@link #attachToHost(VirtualHost)} methods. In this case, it uses the "base"
+ * attribute of the WADL "resources" element as the URI attachment path to the
+ * virtual host.<br>
+ * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables. <br>
@@ -160,6 +166,7 @@ public class WadlApplication extends Application {
         try {
             // Instantiates a WadlRepresentation of the WADL document
             WadlRepresentation wadlRep = null;
+
             if (wadl instanceof WadlRepresentation) {
                 wadlRep = (WadlRepresentation) wadl;
             } else {
@@ -381,9 +388,22 @@ public class WadlApplication extends Application {
     }
 
     /**
+     * Creates a new {@link WadlRepresentation} for a given
+     * {@link ApplicationInfo} instance describing an application.
+     * 
+     * @param applicationInfo
+     *            The application description.
+     * @return The created {@link WadlRepresentation}.
+     */
+    protected WadlRepresentation createWadlRepresentation(
+            ApplicationInfo applicationInfo) {
+        return new WadlRepresentation(applicationInfo);
+    }
+
+    /**
      * Returns a WADL description of the current application. By default, this
      * method discovers all the resources attached to this application. It can
-     * be overriden to add documentation, list of representations, etc.
+     * be overridden to add documentation, list of representations, etc.
      * 
      * @param request
      *            The current request.
@@ -887,9 +907,9 @@ public class WadlApplication extends Application {
             }
 
             if (MediaType.APPLICATION_WADL.equals(variant.getMediaType())) {
-                result = new WadlRepresentation(applicationInfo);
+                result = createWadlRepresentation(applicationInfo);
             } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-                result = new WadlRepresentation(applicationInfo)
+                result = createWadlRepresentation(applicationInfo)
                         .getHtmlRepresentation();
             }
         }
