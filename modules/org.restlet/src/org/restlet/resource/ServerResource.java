@@ -289,6 +289,8 @@ public abstract class ServerResource extends UniformResource {
                 // Conditions were passed successfully, continue the normal
                 // processing.
                 if (isNegotiated()) {
+                    // Reset the list of variants, as the method differs.
+                    getVariants().clear();
                     result = doNegotiatedHandle();
                 } else {
                     result = doHandle();
