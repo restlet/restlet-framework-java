@@ -616,6 +616,7 @@ public class Engine {
         return loggerFacade;
     }
 
+    // [ifndef gwt] method
     /**
      * Parses a line to extract the provider class name.
      * 

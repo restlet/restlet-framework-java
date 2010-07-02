@@ -90,7 +90,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>maxThreads</td>
  * <td>int</td>
- * <td>255</td>
+ * <td>10</td>
  * <td>Maximum threads that will service requests.</td>
  * </tr>
  * <tr>
@@ -178,6 +178,7 @@ public abstract class BaseHelper<T extends Connector> extends
         this.inboundMessages = new ConcurrentLinkedQueue<Response>();
         this.outboundMessages = new ConcurrentLinkedQueue<Response>();
         this.controller = createController();
+        this.workerService = null;
     }
 
     /**
@@ -338,7 +339,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getMaxThreads() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxThreads", "255"));
+                "maxThreads", "10"));
     }
 
     /**
@@ -514,12 +515,15 @@ public abstract class BaseHelper<T extends Connector> extends
 
     @Override
     public void stop() throws Exception {
+        // For atomicity purpose
+        ThreadPoolExecutor workerService = getWorkerService();
+
         // Stop accepting connections
         super.stop();
 
         // Gracefully shutdown the workers
-        if (this.workerService != null) {
-            this.workerService.shutdown();
+        if (workerService != null) {
+            workerService.shutdown();
         }
 
         // Close the open connections
@@ -530,9 +534,9 @@ public abstract class BaseHelper<T extends Connector> extends
         }
 
         // Await for completion of pending workers
-        if (this.workerService != null) {
+        if (workerService != null) {
             try {
-                this.workerService.awaitTermination(30, TimeUnit.SECONDS);
+                workerService.awaitTermination(30, TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
                 getLogger().log(Level.FINE,
                         "Interruption while shutting down the worker service",

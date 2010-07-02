@@ -82,7 +82,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>maxThreads</td>
  * <td>int</td>
- * <td>255</td>
+ * <td>10</td>
  * <td>Maximum threads that will service requests.</td>
  * </tr>
  * <tr>
@@ -351,7 +351,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getMaxThreads() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxThreads", "255"));
+                "maxThreads", "10"));
     }
 
     /**
