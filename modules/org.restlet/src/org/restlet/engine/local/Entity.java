@@ -159,7 +159,7 @@ public abstract class Entity {
     public static void updateMetadata(String entryName, Variant variant,
             boolean applyDefault, MetadataService metadataService) {
         if (variant != null) {
-            final String[] tokens = entryName.split("\\.");
+            String[] tokens = entryName.split("\\.");
             Metadata current;
 
             // We found a potential variant

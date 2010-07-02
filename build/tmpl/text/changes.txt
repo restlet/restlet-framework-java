@@ -52,6 +52,8 @@ Changes log
         Reported by Alex Milowski.
       - Application#outboundRoot wasn't properly taken into account by
         the ClientResource class. Reported by Kristoffer Gronowski.
+      - JAX-RS extension wasn't setting new cookies properly.
+        Reported by Sriram Chavali.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.

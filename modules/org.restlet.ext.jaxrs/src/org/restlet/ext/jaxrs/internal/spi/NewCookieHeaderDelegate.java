@@ -35,7 +35,7 @@ import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
 import org.restlet.engine.http.header.CookieSettingReader;
-import org.restlet.engine.http.header.CookieWriter;
+import org.restlet.engine.http.header.CookieSettingWriter;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 
 /**
@@ -78,6 +78,7 @@ public class NewCookieHeaderDelegate implements HeaderDelegate<NewCookie> {
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#toString(java.lang.Object)
      */
     public String toString(NewCookie newCookie) {
-        return CookieWriter.write(Converter.toRestletCookieSetting(newCookie));
+        return CookieSettingWriter.write(Converter
+                .toRestletCookieSetting(newCookie));
     }
 }
