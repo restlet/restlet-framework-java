@@ -388,36 +388,44 @@ public class Redirector extends Restlet {
      */
     protected void serverRedirect(Restlet next, Reference targetRef,
             Request request, Response response) {
-        // Save the base URI if it exists as we might need it for redirections
-        Reference resourceRef = request.getResourceRef();
-        Reference baseRef = resourceRef.getBaseRef();
+        if (next == null) {
+            getLogger().warning(
+                    "No next Restlet provided for server redirection to "
+                            + targetRef);
+        } else {
+            // Save the base URI if it exists as we might need it for
+            // redirections
+            Reference resourceRef = request.getResourceRef();
+            Reference baseRef = resourceRef.getBaseRef();
 
-        // Reset the protocol and let the dispatcher handle the protocol
-        request.setProtocol(null);
+            // Reset the protocol and let the dispatcher handle the protocol
+            request.setProtocol(null);
 
-        // Update the request to cleanly go to the target URI
-        request.setResourceRef(targetRef);
-        request.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
-        next.handle(request, response);
+            // Update the request to cleanly go to the target URI
+            request.setResourceRef(targetRef);
+            request.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
+            next.handle(request, response);
 
-        // Allow for response rewriting and clean the headers
-        response.setEntity(rewrite(response.getEntity()));
-        response.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
-        request.setResourceRef(resourceRef);
+            // Allow for response rewriting and clean the headers
+            response.setEntity(rewrite(response.getEntity()));
+            response.getAttributes().remove(HeaderConstants.ATTRIBUTE_HEADERS);
+            request.setResourceRef(resourceRef);
 
-        // In case of redirection, we may have to rewrite the redirect URI
-        if (response.getLocationRef() != null) {
-            Template rt = new Template(this.targetTemplate);
-            rt.setLogger(getLogger());
-            int matched = rt.parse(response.getLocationRef().toString(),
-                    request);
+            // In case of redirection, we may have to rewrite the redirect URI
+            if (response.getLocationRef() != null) {
+                Template rt = new Template(this.targetTemplate);
+                rt.setLogger(getLogger());
+                int matched = rt.parse(response.getLocationRef().toString(),
+                        request);
 
-            if (matched > 0) {
-                String remainingPart = (String) request.getAttributes().get(
-                        "rr");
+                if (matched > 0) {
+                    String remainingPart = (String) request.getAttributes()
+                            .get("rr");
 
-                if (remainingPart != null) {
-                    response.setLocationRef(baseRef.toString() + remainingPart);
+                    if (remainingPart != null) {
+                        response.setLocationRef(baseRef.toString()
+                                + remainingPart);
+                    }
                 }
             }
         }

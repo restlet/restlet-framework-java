@@ -69,9 +69,9 @@ public class Encoder extends Filter {
     public static final int ENCODE_ALL_SIZES = -1;
 
     /**
-     * Returns the list of default encoded media types. This can be overriden by
-     * subclasses. By default, all media types are encoded (except those
-     * explicitely ignored).
+     * Returns the list of default encoded media types. This can be overridden
+     * by subclasses. By default, all media types are encoded (except those
+     * explicitly ignored).
      * 
      * @return The list of default encoded media types.
      */
@@ -82,9 +82,9 @@ public class Encoder extends Filter {
     }
 
     /**
-     * Returns the list of default ignored media types. This can be overriden by
-     * subclasses. By default, all archive, audio, image and video media types
-     * are ignored.
+     * Returns the list of default ignored media types. This can be overridden
+     * by subclasses. By default, all archive, audio, image and video media
+     * types are ignored.
      * 
      * @return The list of default ignored media types.
      */
@@ -302,11 +302,11 @@ public class Encoder extends Filter {
         Preference<Encoding> currentPref = null;
         float bestScore = 0F;
 
-        for (final Iterator<Encoding> iter = EncodeRepresentation
-                .getSupportedEncodings().iterator(); iter.hasNext();) {
+        for (Iterator<Encoding> iter = getSupportedEncodings().iterator(); iter
+                .hasNext();) {
             currentEncoding = iter.next();
 
-            for (final Iterator<Preference<Encoding>> iter2 = client
+            for (Iterator<Preference<Encoding>> iter2 = client
                     .getAcceptedEncodings().iterator(); iter2.hasNext();) {
                 currentPref = iter2.next();
 
@@ -342,6 +342,16 @@ public class Encoder extends Filter {
      */
     public long getMinimumSize() {
         return this.mininumSize;
+    }
+
+    /**
+     * Returns the list of supported encodings. By default it calls
+     * {@link EncodeRepresentation#getSupportedEncodings()} static method.
+     * 
+     * @return The list of supported encodings.
+     */
+    public List<Encoding> getSupportedEncodings() {
+        return EncodeRepresentation.getSupportedEncodings();
     }
 
     /**

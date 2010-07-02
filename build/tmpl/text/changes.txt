@@ -10,6 +10,7 @@ Changes log
         annotated method ignored. Suggested by David Fogel.
       - Added missing JaasUtils#doAsPriviledged(..) methods.
         Contributed by Bruno Harbulot.
+      - Added Encoder#getSupportedEncodings() method to allow customization.
     - Bugs fixed
       - Thread local variables are now cleared correctly.
         Prevented unloading of WAR files or OSGi bundles
