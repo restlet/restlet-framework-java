@@ -56,6 +56,8 @@ Changes log
         Reported by Sriram Chavali.
       - Fixed issue with services which weren't getting their context
         properly set and updated. Reported by Iestyn Evans.
+      - Fixed regression in WadlApplication that prevented the retrieval
+        of WADL description when OPTIONS was called on "/" or "" URIs.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.

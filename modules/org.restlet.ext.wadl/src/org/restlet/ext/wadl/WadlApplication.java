@@ -781,7 +781,7 @@ public class WadlApplication extends Application {
      * WADL representation based on the result of the
      * {@link #getApplicationInfo(Request, Response)} method.<br>
      * The automatic introspection happens only if the request hasn't already
-     * been successfully handled. That is to say, it lets users to provide their
+     * been successfully handled. That is to say, it lets users provide their
      * own handling of OPTIONS requests.
      * 
      * @param request
@@ -803,7 +803,7 @@ public class WadlApplication extends Application {
         String rp = rr.getRemainingPart(false, false);
         if (isAutoDescribed()
                 && Method.OPTIONS.equals(request.getMethod())
-                && (Status.CLIENT_ERROR_NOT_FOUND.equals(response.getStatus()) || !response
+                && (response.getStatus().isClientError() || !response
                         .isEntityAvailable())
                 && ("/".equals(rp) || "".equals(rp))) {
             // Make sure that the base of the "resources" element ends with a
