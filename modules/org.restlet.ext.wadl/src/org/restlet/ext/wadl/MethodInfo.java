@@ -241,6 +241,7 @@ public class MethodInfo extends DocumentedInfo {
         if (getResponses().isEmpty()) {
             getResponses().add(new ResponseInfo());
         }
+
         return getResponses().get(getResponses().size() - 1);
     }
 
@@ -307,8 +308,8 @@ public class MethodInfo extends DocumentedInfo {
      * 
      * @param response
      *            The output of the method.
-     * @deprecated Use the {@link #getResponses()} or {@link #setResponses(List)}
-     *             methods instead.
+     * @deprecated Use the {@link #getResponses()} or
+     *             {@link #setResponses(List)} methods instead.
      */
     @Deprecated
     public void setResponsee(ResponseInfo response) {
@@ -344,8 +345,10 @@ public class MethodInfo extends DocumentedInfo {
             getRequest().updateNamespaces(namespaces);
         }
 
-        if (getResponse() != null) {
-            getResponse().updateNamespaces(namespaces);
+        if (!getResponses().isEmpty()) {
+            for (ResponseInfo response : getResponses()) {
+                response.updateNamespaces(namespaces);
+            }
         }
     }
 
@@ -359,6 +362,7 @@ public class MethodInfo extends DocumentedInfo {
     @SuppressWarnings("deprecation")
     public void writeElement(XmlWriter writer) throws SAXException {
         final AttributesImpl attributes = new AttributesImpl();
+
         if ((getIdentifier() != null) && !getIdentifier().equals("")) {
             attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
         }
@@ -389,17 +393,20 @@ public class MethodInfo extends DocumentedInfo {
             if (!getResponses().isEmpty()) {
                 for (ResponseInfo response : getResponses()) {
                     response.writeElement(writer);
+
                     // TODO to be removed with the FaultInfo class
                     // Each response's fault generates a new Response
                     if (!response.getFaults().isEmpty()) {
                         for (FaultInfo faultInfo : response.getFaults()) {
                             ResponseInfo r = new ResponseInfo();
+
                             // Get the statuses from the faults
                             for (Status status : faultInfo.getStatuses()) {
                                 if (!r.getStatuses().contains(status)) {
                                     r.getStatuses().add(status);
                                 }
                             }
+
                             r.getRepresentations().add(faultInfo);
                             r.writeElement(writer);
                         }

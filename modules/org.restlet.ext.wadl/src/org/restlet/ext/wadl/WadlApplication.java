@@ -507,10 +507,12 @@ public class WadlApplication extends Application {
 
         // Save the current application
         Application.setCurrent(this);
+
         // The handler instance targeted by this finder.
         Object handler = finder.findTarget(request, response);
         if (handler == null) {
             ServerResource sr = finder.find(request, response);
+
             if (sr != null) {
                 sr.init(getContext(), request, response);
                 sr.updateAllowedMethods();
@@ -564,17 +566,24 @@ public class WadlApplication extends Application {
                 for (Method method : methods) {
                     MethodInfo methodInfo = new MethodInfo();
                     methodInfo.setName(method);
+
                     // Can document the list of supported variants.
                     if (Method.GET.equals(method)) {
-                        ResponseInfo responseInfo = new ResponseInfo();
+                        ResponseInfo responseInfo = null;
+
                         for (Variant variant : resource.getVariants()) {
                             RepresentationInfo representationInfo = new RepresentationInfo();
                             representationInfo.setMediaType(variant
                                     .getMediaType());
+
+                            if (responseInfo == null) {
+                                responseInfo = new ResponseInfo();
+                                methodInfo.getResponses().add(responseInfo);
+                            }
+
                             responseInfo.getRepresentations().add(
                                     representationInfo);
                         }
-                        methodInfo.getResponses().add(responseInfo);
                     }
 
                     result.getMethods().add(methodInfo);
@@ -585,17 +594,24 @@ public class WadlApplication extends Application {
                 for (Method method : methods) {
                     MethodInfo methodInfo = new MethodInfo();
                     methodInfo.setName(method);
+
                     // Can document the list of supported variants.
                     if (Method.GET.equals(method)) {
-                        ResponseInfo responseInfo = new ResponseInfo();
+                        ResponseInfo responseInfo = null;
+
                         for (Variant variant : resource.getVariants()) {
                             RepresentationInfo representationInfo = new RepresentationInfo();
                             representationInfo.setMediaType(variant
                                     .getMediaType());
+
+                            if (responseInfo == null) {
+                                responseInfo = new ResponseInfo();
+                                methodInfo.getResponses().add(responseInfo);
+                            }
+
                             responseInfo.getRepresentations().add(
                                     representationInfo);
                         }
-                        methodInfo.getResponses().add(responseInfo);
                     }
 
                     result.getMethods().add(methodInfo);
@@ -692,6 +708,7 @@ public class WadlApplication extends Application {
         for (final Route route : router.getRoutes()) {
             ResourceInfo resourceInfo = getResourceInfo(route, "/", request,
                     response);
+
             if (resourceInfo != null) {
                 result.add(resourceInfo);
             }

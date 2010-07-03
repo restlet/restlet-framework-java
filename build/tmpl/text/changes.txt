@@ -58,6 +58,8 @@ Changes log
         properly set and updated. Reported by Iestyn Evans.
       - Fixed regression in WadlApplication that prevented the retrieval
         of WADL description when OPTIONS was called on "/" or "" URIs.
+      - Fixed WADL generation to not add an empty response element when 
+        no WADL response info is provided.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.
