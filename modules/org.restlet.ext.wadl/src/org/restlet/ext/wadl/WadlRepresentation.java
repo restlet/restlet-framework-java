@@ -62,7 +62,12 @@ import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * Root of a WADL description document.
+ * Root of a WADL description document. For the {@link #getHtmlRepresentation()}
+ * method to work properly, you will certainly have to update your classpath
+ * with a recent version of <a href="http://xml.apache.org/xalan-j/"> Apache
+ * Xalan XSLT engine</a> (version 2.7.1 has been successfully tested). This is
+ * due to the <a href="http://github.com/mnot/wadl_stylesheets/">XSLT
+ * stylesheet</a> bundled which relies on EXSLT features.<br>
  * 
  * @author Jerome Louvel
  */

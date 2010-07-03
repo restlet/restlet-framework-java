@@ -91,6 +91,13 @@ import org.restlet.routing.VirtualHost;
  * attribute of the WADL "resources" element as the URI attachment path to the
  * virtual host.<br>
  * <br>
+ * For the HTML description to work properly, you will certainly have to update
+ * your classpath with a recent version of <a
+ * href="http://xml.apache.org/xalan-j/"> Apache Xalan XSLT engine</a> (version
+ * 2.7.1 has been successfully tested). This is due to the <a
+ * href="http://github.com/mnot/wadl_stylesheets/">XSLT stylesheet</a> bundled
+ * which relies on EXSLT features.<br>
+ * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables. <br>
