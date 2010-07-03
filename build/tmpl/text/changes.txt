@@ -54,6 +54,8 @@ Changes log
         the ClientResource class. Reported by Kristoffer Gronowski.
       - JAX-RS extension wasn't setting new cookies properly.
         Reported by Sriram Chavali.
+      - Fixed issue with services which weren't getting their context
+        properly set and updated. Reported by Iestyn Evans.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.

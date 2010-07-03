@@ -176,13 +176,18 @@ public final class ServiceList extends WrapperList<Service> {
     }
 
     /**
-     * Sets the context.
+     * Sets the context. By default, it also updates the context of already
+     * registered services.
      * 
      * @param context
      *            The context.
      */
     public void setContext(Context context) {
         this.context = context;
+
+        for (Service service : this) {
+            service.setContext(context);
+        }
     }
 
     /**

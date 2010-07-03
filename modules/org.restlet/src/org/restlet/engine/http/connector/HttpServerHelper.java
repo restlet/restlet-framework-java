@@ -64,14 +64,14 @@ public class HttpServerHelper extends BaseServerHelper {
     @Override
     public synchronized void start() throws Exception {
         getLogger().info(
-                "Starting the default " + getProtocols() + " server on port "
-                        + getHelped().getPort());
+                "Starting the internal " + getProtocols().get(0).getName()
+                        + " server on port " + getHelped().getPort());
         super.start();
     }
 
     @Override
     public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the default HTTP server");
+        getLogger().info("Stopping the internal HTTP server");
         super.stop();
     }
 
