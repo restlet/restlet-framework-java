@@ -31,8 +31,6 @@
 package org.restlet.ext.wadl;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.restlet.Context;
@@ -137,32 +135,7 @@ public class WadlResource extends Resource {
      *            WADL description of the current resource to update.
      */
     public void describe(String path, ResourceInfo info) {
-        info.setPath(path);
-
-        // Introspect the current resource to detect the allowed methods
-        final List<Method> methodsList = new ArrayList<Method>();
-        methodsList.addAll(getAllowedMethods());
-
-        // Sort the allowed methods alphabetically
-        Collections.sort(methodsList, new Comparator<Method>() {
-            public int compare(Method m1, Method m2) {
-                return m1.getName().compareTo(m2.getName());
-            }
-        });
-
-        // Update the resource info with the description
-        // of the allowed methods
-        final List<MethodInfo> methods = info.getMethods();
-        MethodInfo methodInfo;
-        for (final Method method : methodsList) {
-            if (isDescribable(method)) {
-                methodInfo = new MethodInfo();
-                describeMethod(method, methodInfo);
-                methods.add(methodInfo);
-            }
-        }
-
-        info.setParameters(getParametersInfo());
+        ResourceInfo.describe(info, this, path);
     }
 
     /**

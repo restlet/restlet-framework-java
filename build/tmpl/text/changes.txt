@@ -17,6 +17,19 @@ Changes log
         to allow for customization of HTML representation.
       - WadlApplication#getApplicationInfo and #wadlRepresent methods are 
         now protected instead of public.
+      - WadlApplication#title property is now deprecated. Use the common
+        Application#name and #description property instead which are now
+        used by default.
+      - Renamed "htmlConvert.xsl" file into "wadl2html.xslt" in WADL
+        extension JAR.
+      - Added static ResourceInfo#describe(ResourceInfo, Object, String)
+        method in WADL extension to factorize logic.
+      - Status service now logs exceptions caughts.
+      - Added static Method#sort(List<Method>) method.
+      - Renamed WadlServerResource#title into "name" property and added
+        "description" property.
+      - Added WadlServerResource#createWadlRepresentation(...) and
+        createHtmlRepresentation(...) methods.
     - Bugs fixed
       - Thread local variables are now cleared correctly.
         Prevented unloading of WAR files or OSGi bundles

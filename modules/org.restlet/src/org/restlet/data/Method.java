@@ -30,6 +30,9 @@
 
 package org.restlet.data;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -260,6 +263,20 @@ public final class Method implements Comparable<Method> {
         if ((name != null) && !name.equals("")) {
             _methods.put(name, method);
         }
+    }
+
+    /**
+     * Sorts the given list of methods by name.
+     * 
+     * @param methods
+     *            The methods to sort.
+     */
+    public static void sort(List<Method> methods) {
+        Collections.sort(methods, new Comparator<Method>() {
+            public int compare(Method m1, Method m2) {
+                return m1.getName().compareTo(m2.getName());
+            }
+        });
     }
 
     /**

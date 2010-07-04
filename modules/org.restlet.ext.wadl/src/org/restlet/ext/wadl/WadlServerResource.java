@@ -31,8 +31,6 @@
 package org.restlet.ext.wadl;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.restlet.data.Form;
@@ -72,17 +70,46 @@ public class WadlServerResource extends ServerResource {
     private volatile boolean autoDescribed;
 
     /**
-     * The title of this documented resource. Is seen as the title of the first
-     * "doc" tag of the "application" tag in a WADL document or as the title of
-     * the HTML representation.
+     * The description of this documented resource. Is seen as the text content
+     * of the "doc" tag of the "resource" element in a WADL document.
      */
-    private volatile String title;
+    private volatile String description;
+
+    /**
+     * The name of this documented resource. Is seen as the title of the "doc"
+     * tag of the "resource" element in a WADL document.
+     */
+    private volatile String name;
 
     /**
      * Constructor.
      */
     public WadlServerResource() {
         this.autoDescribed = true;
+    }
+
+    /**
+     * Creates a new HTML representation for a given {@link ResourceInfo}
+     * instance describing a resource.
+     * 
+     * @param resourceInfo
+     *            The resource description.
+     * @return The created {@link WadlRepresentation}.
+     */
+    protected Representation createHtmlRepresentation(ResourceInfo resourceInfo) {
+        return new WadlRepresentation(resourceInfo).getHtmlRepresentation();
+    }
+
+    /**
+     * Creates a new WADL representation for a given {@link ResourceInfo}
+     * instance describing a resource.
+     * 
+     * @param resourceInfo
+     *            The resource description.
+     * @return The created {@link WadlRepresentation}.
+     */
+    protected Representation createWadlRepresentation(ResourceInfo resourceInfo) {
+        return new WadlRepresentation(resourceInfo);
     }
 
     /**
@@ -114,32 +141,7 @@ public class WadlServerResource extends ServerResource {
      *            WADL description of the current resource to update.
      */
     public void describe(String path, ResourceInfo info) {
-        info.setPath(path);
-
-        // Introspect the current resource to detect the allowed methods
-        final List<Method> methodsList = new ArrayList<Method>();
-        methodsList.addAll(getAllowedMethods());
-
-        // Sort the allowed methods alphabetically
-        Collections.sort(methodsList, new Comparator<Method>() {
-            public int compare(Method m1, Method m2) {
-                return m1.getName().compareTo(m2.getName());
-            }
-        });
-
-        // Update the resource info with the description
-        // of the allowed methods
-        final List<MethodInfo> methods = info.getMethods();
-        MethodInfo methodInfo;
-        for (final Method method : methodsList) {
-            if (isDescribable(method)) {
-                methodInfo = new MethodInfo();
-                describeMethod(method, methodInfo);
-                methods.add(methodInfo);
-            }
-        }
-
-        info.setParameters(getParametersInfo());
+        ResourceInfo.describe(info, this, path);
     }
 
     /**
@@ -156,23 +158,10 @@ public class WadlServerResource extends ServerResource {
             ResourceInfo resourceInfo = new ResourceInfo();
             describe(resourceInfo);
 
-            if (getTitle() != null && !"".equals(getTitle())) {
-                DocumentationInfo doc = null;
-                if (resourceInfo.getDocumentations().isEmpty()) {
-                    doc = new DocumentationInfo();
-                    resourceInfo.getDocumentations().add(doc);
-                } else {
-                    doc = resourceInfo.getDocumentations().get(0);
-                }
-
-                doc.setTitle(getTitle());
-            }
-
             if (MediaType.APPLICATION_WADL.equals(variant.getMediaType())) {
-                result = new WadlRepresentation(resourceInfo);
+                result = createWadlRepresentation(resourceInfo);
             } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-                result = new WadlRepresentation(resourceInfo)
-                        .getHtmlRepresentation();
+                result = createHtmlRepresentation(resourceInfo);
             }
         }
 
@@ -198,11 +187,10 @@ public class WadlServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    @SuppressWarnings("deprecation")
     protected void describeGet(MethodInfo info) {
         if (getVariants() != null) {
             // Describe each variant
-            for (final Variant variant : getVariants()) {
+            for (Variant variant : getVariants()) {
                 info.addResponseRepresentation(variant);
             }
         }
@@ -230,7 +218,6 @@ public class WadlServerResource extends ServerResource {
      */
     protected void describeMethod(Method method, MethodInfo info) {
         info.setName(method);
-        info.setRequest(new RequestInfo());
 
         if (Method.GET.equals(method)) {
             describeGet(info);
@@ -253,10 +240,9 @@ public class WadlServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    @SuppressWarnings("deprecation")
     protected void describeOptions(MethodInfo info) {
         // Describe each variant
-        for (final Variant variant : getWadlVariants()) {
+        for (Variant variant : getWadlVariants()) {
             info.addResponseRepresentation(variant);
         }
     }
@@ -290,7 +276,7 @@ public class WadlServerResource extends ServerResource {
      * @param method
      *            The Method to document
      */
-    @SuppressWarnings( { "unchecked", "deprecation" })
+    @SuppressWarnings("unchecked")
     private void discoverAnnotations(MethodInfo info) {
         ResponseInfo response = info.getResponse();
 
@@ -307,8 +293,10 @@ public class WadlServerResource extends ServerResource {
                                         null);
                         if (variants != null) {
                             for (Variant variant : variants) {
-                                if (!info.getRequest().getRepresentations()
-                                        .contains(variant)) {
+                                if ((info.getRequest() != null)
+                                        && !info.getRequest()
+                                                .getRepresentations().contains(
+                                                        variant)) {
                                     info.addRequestRepresentation(variant);
                                 }
                             }
@@ -350,6 +338,16 @@ public class WadlServerResource extends ServerResource {
     }
 
     /**
+     * Returns the description of this documented resource. Is seen as the text
+     * content of the "doc" tag of the "resource" element in a WADL document.
+     * 
+     * @return The description of this documented resource.
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
      * Returns the set of headers as a collection of {@link Parameter} objects.
      * 
      * @return The set of headers as a collection of {@link Parameter} objects.
@@ -357,6 +355,16 @@ public class WadlServerResource extends ServerResource {
     private Form getHeader() {
         return (Form) getRequestAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
+    }
+
+    /**
+     * Returns the name of this documented resource. Is seen as the title of the
+     * "doc" tag of the "resource" element in a WADL document.
+     * 
+     * @return The name of this documented resource.
+     */
+    public String getName() {
+        return name;
     }
 
     /**
@@ -477,8 +485,8 @@ public class WadlServerResource extends ServerResource {
      * @return The resource's relative path.
      */
     protected String getResourcePath() {
-        final Reference ref = new Reference(getRequest().getRootRef(),
-                getRequest().getResourceRef());
+        Reference ref = new Reference(getRequest().getRootRef(), getRequest()
+                .getResourceRef());
         return ref.getRemainingPart();
     }
 
@@ -492,21 +500,12 @@ public class WadlServerResource extends ServerResource {
     }
 
     /**
-     * Returns the title of this documented resource.
-     * 
-     * @return The title of this documented resource.
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
      * Returns the available WADL variants.
      * 
      * @return The available WADL variants.
      */
     protected List<Variant> getWadlVariants() {
-        final List<Variant> result = new ArrayList<Variant>();
+        List<Variant> result = new ArrayList<Variant>();
         result.add(new Variant(MediaType.APPLICATION_WADL));
         result.add(new Variant(MediaType.TEXT_HTML));
         return result;
@@ -556,13 +555,25 @@ public class WadlServerResource extends ServerResource {
     }
 
     /**
-     * Sets the title of this documented resource.
+     * Sets the description of this documented resource. Is seen as the text
+     * content of the "doc" tag of the "resource" element in a WADL document.
      * 
-     * @param title
-     *            The title of this documented resource.
+     * @param description
+     *            The description of this documented resource.
      */
-    public void setTitle(String title) {
-        this.title = title;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * Sets the name of this documented resource. Is seen as the title of the
+     * "doc" tag of the "resource" element in a WADL document.
+     * 
+     * @param name
+     *            The name of this documented resource.
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

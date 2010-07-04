@@ -916,13 +916,13 @@ public class WadlRepresentation extends SaxRepresentation {
      */
     public Representation getHtmlRepresentation() {
         Representation representation = null;
-        URL wadlHtmlXsltUrl = Engine
-                .getResource("org/restlet/ext/wadl/htmlConvert.xsl");
+        URL wadl2htmlXsltUrl = Engine
+                .getResource("org/restlet/ext/wadl/wadl2html.xslt");
 
-        if (wadlHtmlXsltUrl != null) {
+        if (wadl2htmlXsltUrl != null) {
             try {
                 InputRepresentation xslRep = new InputRepresentation(
-                        wadlHtmlXsltUrl.openStream(),
+                        wadl2htmlXsltUrl.openStream(),
                         MediaType.APPLICATION_W3C_XSLT);
                 representation = new TransformRepresentation(Context
                         .getCurrent(), this, xslRep);
@@ -961,7 +961,7 @@ public class WadlRepresentation extends SaxRepresentation {
             writer.processingInstruction("xml",
                     "version=\"1.0\" standalone=\"yes\"");
             writer.processingInstruction("xml-stylesheet",
-                    "type=\"text/xsl\" href=\"wadl_documentation.xsl\"");
+                    "type=\"text/xsl\" href=\"wadl2html.xslt\"");
             this.application.writeElement(writer);
             writer.endDocument();
         } catch (SAXException e) {

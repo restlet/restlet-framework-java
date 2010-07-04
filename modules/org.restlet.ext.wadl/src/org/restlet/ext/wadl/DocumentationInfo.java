@@ -74,17 +74,6 @@ public class DocumentationInfo {
     }
 
     /**
-     * Constructor with text content.
-     * 
-     * @param textContent
-     *            The text content.
-     */
-    public DocumentationInfo(String textContent) {
-        super();
-        setTextContent(textContent);
-    }
-
-    /**
      * Constructor with mixed content.
      * 
      * @param mixedContent
@@ -93,6 +82,17 @@ public class DocumentationInfo {
     public DocumentationInfo(Node mixedContent) {
         super();
         this.mixedContent = mixedContent;
+    }
+
+    /**
+     * Constructor with text content.
+     * 
+     * @param textContent
+     *            The text content.
+     */
+    public DocumentationInfo(String textContent) {
+        super();
+        setTextContent(textContent);
     }
 
     /**

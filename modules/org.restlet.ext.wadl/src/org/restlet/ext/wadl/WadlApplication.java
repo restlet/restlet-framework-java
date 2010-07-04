@@ -31,8 +31,6 @@
 package org.restlet.ext.wadl;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -54,8 +52,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Directory;
 import org.restlet.resource.Finder;
-import org.restlet.resource.Handler;
-import org.restlet.resource.Resource;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Route;
@@ -394,19 +390,6 @@ public class WadlApplication extends Application {
     }
 
     /**
-     * Creates a new WADL representation for a given {@link ApplicationInfo}
-     * instance describing an application.
-     * 
-     * @param applicationInfo
-     *            The application description.
-     * @return The created {@link WadlRepresentation}.
-     */
-    protected Representation createWadlRepresentation(
-            ApplicationInfo applicationInfo) {
-        return new WadlRepresentation(applicationInfo);
-    }
-
-    /**
      * Creates a new HTML representation for a given {@link ApplicationInfo}
      * instance describing an application.
      * 
@@ -417,6 +400,19 @@ public class WadlApplication extends Application {
     protected Representation createHtmlRepresentation(
             ApplicationInfo applicationInfo) {
         return new WadlRepresentation(applicationInfo).getHtmlRepresentation();
+    }
+
+    /**
+     * Creates a new WADL representation for a given {@link ApplicationInfo}
+     * instance describing an application.
+     * 
+     * @param applicationInfo
+     *            The application description.
+     * @return The created {@link WadlRepresentation}.
+     */
+    protected Representation createWadlRepresentation(
+            ApplicationInfo applicationInfo) {
+        return new WadlRepresentation(applicationInfo);
     }
 
     /**
@@ -523,127 +519,31 @@ public class WadlApplication extends Application {
     private ResourceInfo getResourceInfo(Finder finder, String path,
             Request request, Response response) {
         ResourceInfo result = null;
+        Object resource = null;
 
         // Save the current application
         Application.setCurrent(this);
 
-        // The handler instance targeted by this finder.
-        Object handler = finder.findTarget(request, response);
-        if (handler == null) {
-            ServerResource sr = finder.find(request, response);
+        if (finder instanceof Directory) {
+            resource = finder;
+        } else {
+            // The handler instance targeted by this finder.
+            resource = finder.findTarget(request, response);
 
-            if (sr != null) {
-                sr.init(getContext(), request, response);
-                sr.updateAllowedMethods();
-                handler = sr;
+            if (resource == null) {
+                ServerResource sr = finder.find(request, response);
+
+                if (sr != null) {
+                    sr.init(getContext(), request, response);
+                    sr.updateAllowedMethods();
+                    resource = sr;
+                }
             }
         }
 
-        if (handler instanceof WadlResource) {
-            // This kind of resource gives more information
-            final WadlResource resource = (WadlResource) handler;
+        if (resource != null) {
             result = new ResourceInfo();
-            resource.describe(path, result);
-        } else if (handler instanceof WadlServerResource) {
-            // This kind of resource gives more information
-            final WadlServerResource resource = (WadlServerResource) handler;
-            result = new ResourceInfo();
-            resource.describe(path, result);
-        } else {
-            result = new ResourceInfo();
-            result.setPath(path);
-
-            // The set of allowed methods
-            final List<Method> methods = new ArrayList<Method>();
-            if (handler != null) {
-                if (handler instanceof ServerResource) {
-                    methods.addAll(((ServerResource) handler)
-                            .getAllowedMethods());
-                } else if (handler instanceof Handler) {
-                    methods.addAll(((Handler) handler).getAllowedMethods());
-                }
-            } else {
-                if (finder instanceof Directory) {
-                    Directory directory = (Directory) finder;
-                    methods.add(Method.GET);
-                    if (directory.isModifiable()) {
-                        methods.add(Method.DELETE);
-                        methods.add(Method.PUT);
-                    }
-                }
-            }
-
-            Collections.sort(methods, new Comparator<Method>() {
-                public int compare(Method m1, Method m2) {
-                    return m1.getName().compareTo(m2.getName());
-                }
-            });
-
-            if (handler instanceof Resource) {
-                Resource resource = (Resource) handler;
-
-                for (Method method : methods) {
-                    MethodInfo methodInfo = new MethodInfo();
-                    methodInfo.setName(method);
-
-                    // Can document the list of supported variants.
-                    if (Method.GET.equals(method)) {
-                        ResponseInfo responseInfo = null;
-
-                        for (Variant variant : resource.getVariants()) {
-                            RepresentationInfo representationInfo = new RepresentationInfo();
-                            representationInfo.setMediaType(variant
-                                    .getMediaType());
-
-                            if (responseInfo == null) {
-                                responseInfo = new ResponseInfo();
-                                methodInfo.getResponses().add(responseInfo);
-                            }
-
-                            responseInfo.getRepresentations().add(
-                                    representationInfo);
-                        }
-                    }
-
-                    result.getMethods().add(methodInfo);
-                }
-            } else if (handler instanceof ServerResource) {
-                ServerResource resource = (ServerResource) handler;
-
-                for (Method method : methods) {
-                    MethodInfo methodInfo = new MethodInfo();
-                    methodInfo.setName(method);
-
-                    // Can document the list of supported variants.
-                    if (Method.GET.equals(method)) {
-                        ResponseInfo responseInfo = null;
-
-                        for (Variant variant : resource.getVariants()) {
-                            RepresentationInfo representationInfo = new RepresentationInfo();
-                            representationInfo.setMediaType(variant
-                                    .getMediaType());
-
-                            if (responseInfo == null) {
-                                responseInfo = new ResponseInfo();
-                                methodInfo.getResponses().add(responseInfo);
-                            }
-
-                            responseInfo.getRepresentations().add(
-                                    representationInfo);
-                        }
-                    }
-
-                    result.getMethods().add(methodInfo);
-                }
-            } else {
-                // Can only give information about the list of allowed
-                // methods.
-                for (final Method method : methods) {
-                    final MethodInfo methodInfo = new MethodInfo();
-                    methodInfo.setName(method);
-                    result.getMethods().add(methodInfo);
-                }
-            }
+            ResourceInfo.describe(result, resource, path);
         }
 
         return result;
@@ -678,6 +578,7 @@ public class WadlApplication extends Application {
         } else if (restlet instanceof Filter) {
             result = getResourceInfo((Filter) restlet, path, request, response);
         }
+
         return result;
     }
 
@@ -703,8 +604,8 @@ public class WadlApplication extends Application {
             path = path.substring(1);
         }
 
-        final ResourceInfo result = getResourceInfo(route.getNext(), path,
-                request, response);
+        ResourceInfo result = getResourceInfo(route.getNext(), path, request,
+                response);
         return result;
     }
 

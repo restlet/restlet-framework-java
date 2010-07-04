@@ -58,7 +58,7 @@ public class ItemsResource extends BaseResource {
 
     @Override
     protected Representation describe() {
-        setTitle("List of items.");
+        setName("List of items.");
         return super.describe();
     }
 

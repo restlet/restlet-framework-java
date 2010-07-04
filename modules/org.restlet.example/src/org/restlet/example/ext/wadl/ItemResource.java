@@ -29,7 +29,7 @@ public class ItemResource extends BaseResource {
 
     @Override
     public Representation describe() {
-        setTitle("Representation of a single item");
+        setName("Representation of a single item");
         return super.describe();
     }
 

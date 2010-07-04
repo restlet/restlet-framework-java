@@ -30,6 +30,8 @@
 
 package org.restlet.engine.application;
 
+import java.util.logging.Level;
+
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -151,6 +153,8 @@ public class StatusFilter extends Filter {
         try {
             super.doHandle(request, response);
         } catch (Throwable t) {
+            getLogger().log(Level.WARNING,
+                    "Exception or error caught in status service", t);
             response.setStatus(getStatus(t, request, response));
         }
 

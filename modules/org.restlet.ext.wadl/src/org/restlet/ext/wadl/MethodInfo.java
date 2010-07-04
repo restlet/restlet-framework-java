@@ -146,6 +146,11 @@ public class MethodInfo extends DocumentedInfo {
             String type, ParameterStyle style, String documentation) {
         ParameterInfo result = new ParameterInfo(name, required, type, style,
                 documentation);
+
+        if (getRequest() == null) {
+            setRequest(new RequestInfo());
+        }
+
         getRequest().getParameters().add(result);
         return result;
     }
@@ -159,6 +164,11 @@ public class MethodInfo extends DocumentedInfo {
      */
     public RepresentationInfo addRequestRepresentation(Variant variant) {
         RepresentationInfo result = new RepresentationInfo(variant);
+
+        if (getRequest() == null) {
+            setRequest(new RequestInfo());
+        }
+
         getRequest().getRepresentations().add(result);
         return result;
     }
@@ -194,10 +204,7 @@ public class MethodInfo extends DocumentedInfo {
      * @param variant
      *            The variant to describe.
      * @return The created representation description.
-     * @deprecated Use the {@link ResponseInfo#getRepresentations()} method
-     *             instead.
      */
-    @Deprecated
     public RepresentationInfo addResponseRepresentation(Variant variant) {
         RepresentationInfo result = new RepresentationInfo(variant);
         getResponse().getRepresentations().add(result);

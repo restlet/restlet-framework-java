@@ -38,8 +38,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.ext.xml.XmlWriter;
+import org.restlet.representation.Variant;
+import org.restlet.resource.Directory;
+import org.restlet.resource.ServerResource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -69,6 +73,122 @@ public class ResourceInfo extends DocumentedInfo {
 
     /** List of references to resource type elements. */
     private List<Reference> type;
+
+    /**
+     * Returns a WADL description of the current resource.
+     * 
+     * @param resource
+     *            The resource to describe.
+     * @param path
+     *            Path of the current resource.
+     * @param info
+     *            WADL description of the current resource to update.
+     */
+    @SuppressWarnings("deprecation")
+    public static void describe(ResourceInfo info, Object resource, String path) {
+        info.setPath(path);
+
+        // Introspect the current resource to detect the allowed methods
+        List<Method> methodsList = new ArrayList<Method>();
+
+        if (resource instanceof ServerResource) {
+            methodsList.addAll(((ServerResource) resource).getAllowedMethods());
+        } else if (resource instanceof org.restlet.resource.Resource) {
+            methodsList.addAll(((org.restlet.resource.Resource) resource)
+                    .getAllowedMethods());
+        } else if (resource instanceof Directory) {
+            Directory directory = (Directory) resource;
+            methodsList.add(Method.GET);
+
+            if (directory.isModifiable()) {
+                methodsList.add(Method.DELETE);
+                methodsList.add(Method.PUT);
+            }
+        }
+
+        Method.sort(methodsList);
+
+        // Update the resource info with the description of the allowed methods
+        List<MethodInfo> methods = info.getMethods();
+        MethodInfo methodInfo;
+
+        for (Method method : methodsList) {
+            methodInfo = new MethodInfo();
+            methods.add(methodInfo);
+            methodInfo.setName(method);
+
+            if (resource instanceof ServerResource) {
+                if (resource instanceof WadlServerResource) {
+                    WadlServerResource wsResource = (WadlServerResource) resource;
+
+                    if (wsResource.isDescribable(method)) {
+                        methodInfo = new MethodInfo();
+                        wsResource.describeMethod(method, methodInfo);
+                        methods.add(methodInfo);
+                    }
+
+                    info.setParameters(wsResource.getParametersInfo());
+                }
+            } else if (resource instanceof org.restlet.resource.Resource) {
+                if (resource instanceof WadlResource) {
+                    WadlResource wsResource = (WadlResource) resource;
+
+                    if (wsResource.isDescribable(method)) {
+                        methodInfo = new MethodInfo();
+                        wsResource.describeMethod(method, methodInfo);
+                        methods.add(methodInfo);
+                    }
+
+                    info.setParameters(wsResource.getParametersInfo());
+                } else {
+                    // Can document the list of supported variants.
+                    if (Method.GET.equals(method)) {
+                        ResponseInfo responseInfo = null;
+
+                        for (Variant variant : ((org.restlet.resource.Resource) resource)
+                                .getVariants()) {
+                            RepresentationInfo representationInfo = new RepresentationInfo();
+                            representationInfo.setMediaType(variant
+                                    .getMediaType());
+
+                            if (responseInfo == null) {
+                                responseInfo = new ResponseInfo();
+                                methodInfo.getResponses().add(responseInfo);
+                            }
+
+                            responseInfo.getRepresentations().add(
+                                    representationInfo);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Document the resource
+        String title = null;
+        String textContent = null;
+
+        if (resource instanceof WadlServerResource) {
+            title = ((WadlServerResource) resource).getName();
+            textContent = ((WadlServerResource) resource).getDescription();
+        } else if (resource instanceof WadlResource) {
+            title = ((WadlResource) resource).getTitle();
+        }
+
+        if ((title != null) && !"".equals(title)) {
+            DocumentationInfo doc = null;
+
+            if (info.getDocumentations().isEmpty()) {
+                doc = new DocumentationInfo();
+                info.getDocumentations().add(doc);
+            } else {
+                info.getDocumentations().get(0);
+            }
+
+            doc.setTitle(title);
+            doc.setTextContent(textContent);
+        }
+    }
 
     /**
      * Constructor.
