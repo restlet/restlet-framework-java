@@ -93,9 +93,19 @@ public class ResourceInfo extends DocumentedInfo {
 
         if (resource instanceof ServerResource) {
             methodsList.addAll(((ServerResource) resource).getAllowedMethods());
+
+            if (resource instanceof WadlServerResource) {
+                info.setParameters(((WadlServerResource) resource)
+                        .getParametersInfo());
+            }
         } else if (resource instanceof org.restlet.resource.Resource) {
             methodsList.addAll(((org.restlet.resource.Resource) resource)
                     .getAllowedMethods());
+
+            if (resource instanceof WadlResource) {
+                info.setParameters(((WadlResource) resource)
+                        .getParametersInfo());
+            }
         } else if (resource instanceof Directory) {
             Directory directory = (Directory) resource;
             methodsList.add(Method.GET);
@@ -122,24 +132,16 @@ public class ResourceInfo extends DocumentedInfo {
                     WadlServerResource wsResource = (WadlServerResource) resource;
 
                     if (wsResource.isDescribable(method)) {
-                        methodInfo = new MethodInfo();
                         wsResource.describeMethod(method, methodInfo);
-                        methods.add(methodInfo);
                     }
-
-                    info.setParameters(wsResource.getParametersInfo());
                 }
             } else if (resource instanceof org.restlet.resource.Resource) {
                 if (resource instanceof WadlResource) {
                     WadlResource wsResource = (WadlResource) resource;
 
                     if (wsResource.isDescribable(method)) {
-                        methodInfo = new MethodInfo();
                         wsResource.describeMethod(method, methodInfo);
-                        methods.add(methodInfo);
                     }
-
-                    info.setParameters(wsResource.getParametersInfo());
                 } else {
                     // Can document the list of supported variants.
                     if (Method.GET.equals(method)) {
