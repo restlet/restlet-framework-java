@@ -69,8 +69,10 @@ import org.restlet.routing.VirtualHost;
  * obtain this representation with an OPTIONS request addressed exactly to the
  * application URI (e.g. "http://host:port/path/to/application"). By default,
  * the returned representation gleans the list of all attached
- * {@link ServerResource} classes. This default behavior can be customized by
- * overriding the {@link #getApplicationInfo(Request, Response)} method.<br>
+ * {@link ServerResource} classes and calls {@link #getName()} to get the title
+ * and {@link #getDescription()} the textual content of the WADL document
+ * generated. This default behavior can be customized by overriding the
+ * {@link #getApplicationInfo(Request, Response)} method.<br>
  * <br>
  * In case you want to customize the XSLT stylesheet, you can override the
  * {@link #createWadlRepresentation(ApplicationInfo)} method and return an
@@ -116,7 +118,7 @@ public class WadlApplication extends Application {
     /** The WADL base reference. */
     private volatile Reference baseRef;
 
-    /** The router to Resource classes. */
+    /** The router to {@link ServerResource} classes. */
     private volatile Router router;
 
     /**
@@ -231,12 +233,12 @@ public class WadlApplication extends Application {
      */
     private void addConnectors(Component component) {
         // Create the server connector
-        final Protocol protocol = getBaseRef().getSchemeProtocol();
-        final int port = getBaseRef().getHostPort();
+        Protocol protocol = getBaseRef().getSchemeProtocol();
+        int port = getBaseRef().getHostPort();
         boolean exists = false;
 
         if (port == -1) {
-            for (final Server server : component.getServers()) {
+            for (Server server : component.getServers()) {
                 if (server.getProtocols().contains(protocol)
                         && (server.getPort() == protocol.getDefaultPort())) {
                     exists = true;
@@ -247,7 +249,7 @@ public class WadlApplication extends Application {
                 component.getServers().add(protocol);
             }
         } else {
-            for (final Server server : component.getServers()) {
+            for (Server server : component.getServers()) {
                 if (server.getProtocols().contains(protocol)
                         && (server.getPort() == port)) {
                     exists = true;
@@ -304,8 +306,7 @@ public class WadlApplication extends Application {
         }
 
         // Attach children of the resource
-        for (final ResourceInfo childResource : currentResource
-                .getChildResources()) {
+        for (ResourceInfo childResource : currentResource.getChildResources()) {
             attachResource(childResource, currentResource, router);
         }
     }
@@ -380,9 +381,7 @@ public class WadlApplication extends Application {
 
         if (resourceInfo.getIdentifier() != null) {
             // The "id" attribute conveys the target class name
-            final Class targetClass = Engine.loadClass(resourceInfo
-                    .getIdentifier());
-
+            Class targetClass = Engine.loadClass(resourceInfo.getIdentifier());
             result = router.createFinder(targetClass);
         } else {
             getLogger()
@@ -395,16 +394,29 @@ public class WadlApplication extends Application {
     }
 
     /**
-     * Creates a new {@link WadlRepresentation} for a given
-     * {@link ApplicationInfo} instance describing an application.
+     * Creates a new WADL representation for a given {@link ApplicationInfo}
+     * instance describing an application.
      * 
      * @param applicationInfo
      *            The application description.
      * @return The created {@link WadlRepresentation}.
      */
-    protected WadlRepresentation createWadlRepresentation(
+    protected Representation createWadlRepresentation(
             ApplicationInfo applicationInfo) {
         return new WadlRepresentation(applicationInfo);
+    }
+
+    /**
+     * Creates a new HTML representation for a given {@link ApplicationInfo}
+     * instance describing an application.
+     * 
+     * @param applicationInfo
+     *            The application description.
+     * @return The created {@link WadlRepresentation}.
+     */
+    protected Representation createHtmlRepresentation(
+            ApplicationInfo applicationInfo) {
+        return new WadlRepresentation(applicationInfo).getHtmlRepresentation();
     }
 
     /**
@@ -418,9 +430,9 @@ public class WadlApplication extends Application {
      *            The current response.
      * @return An application description.
      */
-    public ApplicationInfo getApplicationInfo(Request request, Response response) {
-        final ApplicationInfo applicationInfo = new ApplicationInfo();
-
+    protected ApplicationInfo getApplicationInfo(Request request,
+            Response response) {
+        ApplicationInfo applicationInfo = new ApplicationInfo();
         applicationInfo.getResources().setBaseRef(
                 request.getResourceRef().getBaseRef());
         applicationInfo.getResources().setResources(
@@ -733,8 +745,8 @@ public class WadlApplication extends Application {
     }
 
     /**
-     * Returns the router where the Resources created from the WADL description
-     * document are attached.
+     * Returns the router where the {@link ServerResource} classes created from
+     * the WADL description document are attached.
      * 
      * @return The root router.
      */
@@ -746,7 +758,9 @@ public class WadlApplication extends Application {
      * Returns the title of this documented application.
      * 
      * @return The title of this documented application.
+     * @deprecated Use {@link #getName()} instead
      */
+    @Deprecated
     public String getTitle() {
         return title;
     }
@@ -818,6 +832,7 @@ public class WadlApplication extends Application {
         // Preserve the resource reference.
         Reference rr = request.getResourceRef().clone();
 
+        // Do the regular handling
         super.handle(request, response);
 
         // Restore the resource reference
@@ -825,6 +840,7 @@ public class WadlApplication extends Application {
 
         // Handle OPTIONS requests.
         String rp = rr.getRemainingPart(false, false);
+
         if (isAutoDescribed()
                 && Method.OPTIONS.equals(request.getMethod())
                 && (response.getStatus().isClientError() || !response
@@ -838,6 +854,7 @@ public class WadlApplication extends Application {
 
             // Returns a WADL representation of the application.
             response.setEntity(wadlRepresent(request, response));
+
             if (response.isEntityAvailable()) {
                 response.setStatus(Status.SUCCESS_OK);
             }
@@ -882,7 +899,9 @@ public class WadlApplication extends Application {
      * 
      * @param title
      *            The title of this documented application.
+     * @deprecated Use {@link #setName(String)} instead
      */
+    @Deprecated
     public void setTitle(String title) {
         this.title = title;
     }
@@ -912,29 +931,44 @@ public class WadlApplication extends Application {
      *            The current response.
      * @return The WADL description.
      */
-    public Representation wadlRepresent(Variant variant, Request request,
+    protected Representation wadlRepresent(Variant variant, Request request,
             Response response) {
         Representation result = null;
 
         if (variant != null) {
             ApplicationInfo applicationInfo = getApplicationInfo(request,
                     response);
-            if (getTitle() != null && !"".equals(getTitle())) {
-                DocumentationInfo doc = null;
+            DocumentationInfo doc = null;
+
+            if ((getTitle() != null) && !"".equals(getTitle())) {
                 if (applicationInfo.getDocumentations().isEmpty()) {
                     doc = new DocumentationInfo();
                     applicationInfo.getDocumentations().add(doc);
                 } else {
                     doc = applicationInfo.getDocumentations().get(0);
                 }
+
                 doc.setTitle(getTitle());
+            } else if ((getName() != null) && !"".equals(getName())) {
+                if (applicationInfo.getDocumentations().isEmpty()) {
+                    doc = new DocumentationInfo();
+                    applicationInfo.getDocumentations().add(doc);
+                } else {
+                    doc = applicationInfo.getDocumentations().get(0);
+                }
+
+                doc.setTitle(getName());
+            }
+
+            if ((doc != null) && (getDescription() != null)
+                    && !"".equals(getDescription())) {
+                doc.setTextContent(getDescription());
             }
 
             if (MediaType.APPLICATION_WADL.equals(variant.getMediaType())) {
                 result = createWadlRepresentation(applicationInfo);
             } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-                result = createWadlRepresentation(applicationInfo)
-                        .getHtmlRepresentation();
+                result = createHtmlRepresentation(applicationInfo);
             }
         }
 

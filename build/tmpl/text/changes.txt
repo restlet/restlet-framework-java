@@ -5,12 +5,18 @@ Changes log
 
 - @version-full@ (@release-date@)
     - API changes
-      - When an annotated method manually sets the response entity, if this
-        entity is available then it will be preserved and the result of the 
-        annotated method ignored. Suggested by David Fogel.
+      - When an annotated method manually sets the response entity, if 
+        this entity is available then it will be preserved and the 
+        result of the annotated method ignored. 
+        Suggested by David Fogel.
       - Added missing JaasUtils#doAsPriviledged(..) methods.
         Contributed by Bruno Harbulot.
-      - Added Encoder#getSupportedEncodings() method to allow customization.
+      - Added Encoder#getSupportedEncodings() method to allow 
+        customization.
+      - Added WadlApplication#createHtmlRepresentation(ApplicationInfo) 
+        to allow for customization of HTML representation.
+      - WadlApplication#getApplicationInfo and #wadlRepresent methods are 
+        now protected instead of public.
     - Bugs fixed
       - Thread local variables are now cleared correctly.
         Prevented unloading of WAR files or OSGi bundles
