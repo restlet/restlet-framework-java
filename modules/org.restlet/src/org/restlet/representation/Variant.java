@@ -155,7 +155,7 @@ public class Variant {
     public boolean equals(Object other) {
         boolean result = (other instanceof Variant);
 
-        if (result) {
+        if (result && (other != this)) {
             Variant otherVariant = (Variant) other;
 
             // Compare the character set
@@ -181,6 +181,14 @@ public class Variant {
             // Compare the encodings
             if (result) {
                 result = getEncodings().equals(otherVariant.getEncodings());
+            }
+
+            // Compare the location URI
+            if (result) {
+                result = ((getLocationRef() == null)
+                        && (otherVariant.getLocationRef() == null) || (getLocationRef() != null)
+                        && getLocationRef().equals(
+                                otherVariant.getLocationRef()));
             }
         }
 

@@ -59,6 +59,55 @@ public class AnnotationInfo {
     private final String value;
 
     /**
+     * Indicates if the current variant is equal to the given variant.
+     * 
+     * @param other
+     *            The other variant.
+     * @return True if the current variant includes the other.
+     */
+    @Override
+    public boolean equals(Object other) {
+        boolean result = (other instanceof AnnotationInfo);
+
+        if (result && (other != this)) {
+            AnnotationInfo otherAnnotation = (AnnotationInfo) other;
+
+            // Compare the method
+            if (result) {
+                result = ((getJavaMethod() == null)
+                        && (otherAnnotation.getJavaMethod() == null) || (getJavaMethod() != null)
+                        && getJavaMethod().equals(
+                                otherAnnotation.getJavaMethod()));
+            }
+
+            // Compare the resource interface
+            if (result) {
+                result = ((getResourceInterface() == null)
+                        && (otherAnnotation.getResourceInterface() == null) || (getResourceInterface() != null)
+                        && getResourceInterface().equals(
+                                otherAnnotation.getResourceInterface()));
+            }
+
+            // Compare the Restlet method
+            if (result) {
+                result = ((getRestletMethod() == null)
+                        && (otherAnnotation.getRestletMethod() == null) || (getRestletMethod() != null)
+                        && getRestletMethod().equals(
+                                otherAnnotation.getRestletMethod()));
+            }
+
+            // Compare the value
+            if (result) {
+                result = ((getValue() == null)
+                        && (otherAnnotation.getValue() == null) || (getValue() != null)
+                        && getValue().equals(otherAnnotation.getValue()));
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Constructor.
      * 
      * @param resourceInterface

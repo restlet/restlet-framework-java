@@ -75,13 +75,16 @@ public class ConverterUtils {
                         if (result == null) {
                             result = new ArrayList<VariantInfo>();
                         }
-                        
+
                         // Detected a more generic variant, but still consider
                         // the conversion is possible to the target variant.
                         // TODO: Add support for the other kind of metadata
-                        result
-                                .add(new VariantInfo(targetVariant
-                                        .getMediaType()));
+                        VariantInfo newVariant = new VariantInfo(targetVariant
+                                .getMediaType());
+
+                        if (!result.contains(newVariant)) {
+                            result.add(newVariant);
+                        }
                     } else if (targetVariant == null
                             || targetVariant.includes(helperVariant)) {
                         // Add this variant for content negotiation.
@@ -89,7 +92,9 @@ public class ConverterUtils {
                             result = new ArrayList<VariantInfo>();
                         }
 
-                        result.add(helperVariant);
+                        if (!result.contains(helperVariant)) {
+                            result.add(helperVariant);
+                        }
                     }
                 }
             }

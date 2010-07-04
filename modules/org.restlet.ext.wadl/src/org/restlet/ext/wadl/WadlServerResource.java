@@ -188,12 +188,7 @@ public class WadlServerResource extends ServerResource {
      *            The method description to update.
      */
     protected void describeGet(MethodInfo info) {
-        if (getVariants() != null) {
-            // Describe each variant
-            for (Variant variant : getVariants()) {
-                info.addResponseRepresentation(variant);
-            }
-        }
+        discoverAnnotations(info);
     }
 
     /**
@@ -278,39 +273,48 @@ public class WadlServerResource extends ServerResource {
      */
     @SuppressWarnings("unchecked")
     private void discoverAnnotations(MethodInfo info) {
-        ResponseInfo response = info.getResponse();
-
         // Loop over the annotated Java methods
         MetadataService metadataService = getMetadataService();
         List<AnnotationInfo> annotations = getAnnotations();
+
         if (annotations != null && metadataService != null) {
             for (AnnotationInfo annotationInfo : annotations) {
                 if (info.getName().equals(annotationInfo.getRestletMethod())) {
                     Class<?>[] classes = annotationInfo.getJavaInputTypes();
+
                     if (classes != null && classes.length == 1) {
                         List<Variant> variants = (List<Variant>) getApplication()
                                 .getConverterService().getVariants(classes[0],
                                         null);
+
                         if (variants != null) {
                             for (Variant variant : variants) {
-                                if ((info.getRequest() != null)
-                                        && !info.getRequest()
+                                if ((variant.getMediaType() != null)
+                                        && variant.getMediaType().isConcrete()
+                                        && ((info.getRequest() == null) || !info
+                                                .getRequest()
                                                 .getRepresentations().contains(
-                                                        variant)) {
+                                                        variant))) {
                                     info.addRequestRepresentation(variant);
                                 }
                             }
                         }
                     }
+
                     if (annotationInfo.getJavaOutputType() != null) {
                         List<Variant> variants = (List<Variant>) getApplication()
                                 .getConverterService().getVariants(
                                         annotationInfo.getJavaOutputType(),
                                         null);
+
                         if (variants != null) {
                             for (Variant variant : variants) {
-                                if (!response.getRepresentations().contains(
-                                        variant)) {
+                                if ((variant.getMediaType() != null)
+                                        && variant.getMediaType().isConcrete()
+                                        && ((info.getResponse() == null) || !info
+                                                .getResponse()
+                                                .getRepresentations().contains(
+                                                        variant))) {
                                     info.addResponseRepresentation(variant);
                                 }
                             }

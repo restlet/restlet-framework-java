@@ -55,6 +55,32 @@ public class VariantInfo extends Variant {
     }
 
     /**
+     * Indicates if the current variant is equal to the given variant.
+     * 
+     * @param other
+     *            The other variant.
+     * @return True if the current variant includes the other.
+     */
+    @Override
+    public boolean equals(Object other) {
+        boolean result = super.equals(other) && (other instanceof VariantInfo);
+
+        if (result && (other != this)) {
+            VariantInfo otherVariant = (VariantInfo) other;
+
+            // Compare the annotation info
+            if (result) {
+                result = ((getAnnotationInfo() == null)
+                        && (otherVariant.getAnnotationInfo() == null) || (getAnnotationInfo() != null)
+                        && getAnnotationInfo().equals(
+                                otherVariant.getAnnotationInfo()));
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Constructor.
      * 
      * @param mediaType

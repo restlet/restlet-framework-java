@@ -1,13 +1,13 @@
 package org.restlet.example.book.restlet.ch07.sec2.server;
 
 import org.restlet.example.book.restlet.ch03.sect5.sub5.common.AccountResource;
+import org.restlet.ext.wadl.WadlServerResource;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.ServerResource;
 
 /**
  * Implementation of a mail account resource.
  */
-public class AccountServerResource extends ServerResource implements
+public class AccountServerResource extends WadlServerResource implements
         AccountResource {
 
     /** The account identifier. */
@@ -20,11 +20,18 @@ public class AccountServerResource extends ServerResource implements
      */
     @Override
     protected void doInit() throws ResourceException {
+
         String accountIdAttribute = (String) getRequestAttributes().get(
                 "accountId");
 
         if (accountIdAttribute != null) {
             this.accountId = Integer.parseInt(accountIdAttribute);
+            setName("Resource for mail account \"" + this.accountId + "\"");
+            setDescription("The resource describing the mail account number \""
+                    + this.accountId + "\"");
+        } else {
+            setName("Mail account resource");
+            setDescription("The resource describing a mail account");
         }
     }
 
