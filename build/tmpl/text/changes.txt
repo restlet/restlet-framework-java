@@ -30,6 +30,8 @@ Changes log
         "description" property.
       - Added WadlServerResource#createWadlRepresentation(...) and
         createHtmlRepresentation(...) methods.
+      - Added RepresentationInfo#reference property to support 
+        representation "href" attributes.
     - Bugs fixed
       - Thread local variables are now cleared correctly.
         Prevented unloading of WAR files or OSGi bundles
@@ -79,6 +81,10 @@ Changes log
         of WADL description when OPTIONS was called on "/" or "" URIs.
       - Fixed WADL generation to not add an empty response element when 
         no WADL response info is provided.
+      - Fixed Variant#equals(), VariantInfo#equals(), 
+        AnnotationInfo#equals().
+      - Removed duplicate representations in WADL description and
+        representation with abstract media types.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.

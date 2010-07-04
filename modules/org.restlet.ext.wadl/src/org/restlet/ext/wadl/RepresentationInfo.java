@@ -46,7 +46,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Describres a variant representation for a target resource.
+ * Describes a variant representation for a target resource.
  * 
  * @author Jerome Louvel
  */
@@ -63,6 +63,9 @@ public class RepresentationInfo extends DocumentedInfo {
 
     /** List of locations of one or more meta data profiles. */
     private List<Reference> profiles;
+
+    /** Reference to an representation identifier. */
+    private String reference;
 
     /**
      * List of statuses associated with this response representation.
@@ -190,6 +193,15 @@ public class RepresentationInfo extends DocumentedInfo {
     }
 
     /**
+     * Returns the reference to an representation identifier.
+     * 
+     * @return The reference to an representation identifier.
+     */
+    public String getReference() {
+        return reference;
+    }
+
+    /**
      * Returns the list of statuses associated with this response
      * representation.
      * 
@@ -265,6 +277,16 @@ public class RepresentationInfo extends DocumentedInfo {
     }
 
     /**
+     * Sets the reference to an representation identifier.
+     * 
+     * @param reference
+     *            The reference to an representation identifier.
+     */
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+    /**
      * Sets the list of statuses associated with this response representation.
      * 
      * @param statuses
@@ -307,14 +329,22 @@ public class RepresentationInfo extends DocumentedInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        final AttributesImpl attributes = new AttributesImpl();
+        AttributesImpl attributes = new AttributesImpl();
+
+        if ((getReference() != null) && !getReference().equals("")) {
+            attributes.addAttribute("", "href", null, "xs:anyURI", "#"
+                    + getReference());
+        }
+
         if ((getIdentifier() != null) && !getIdentifier().equals("")) {
             attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
         }
+
         if (getMediaType() != null) {
             attributes.addAttribute("", "mediaType", null, "xs:string",
                     getMediaType().toString());
         }
+
         if ((getProfiles() != null) && !getProfiles().isEmpty()) {
             final StringBuilder builder = new StringBuilder();
             for (final Iterator<Reference> iterator = getProfiles().iterator(); iterator
@@ -328,6 +358,7 @@ public class RepresentationInfo extends DocumentedInfo {
             attributes.addAttribute("", "profile", null, "xs:string", builder
                     .toString());
         }
+
         if ((getXmlElement() != null) && !getXmlElement().equals("")) {
             attributes.addAttribute("", "element", null, "xs:QName",
                     getXmlElement());
