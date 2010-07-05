@@ -71,6 +71,7 @@ public class ResourceInfo extends DocumentedInfo {
         List<Method> methodsList = new ArrayList<Method>();
 
         if (resource instanceof ServerResource) {
+            ((ServerResource) resource).updateAllowedMethods();
             methodsList.addAll(((ServerResource) resource).getAllowedMethods());
 
             if (resource instanceof WadlServerResource) {

@@ -260,8 +260,10 @@ public class ResponseInfo extends DocumentedInfo {
      */
     public void writeElement(XmlWriter writer) throws SAXException {
         AttributesImpl attributes = new AttributesImpl();
+
         if ((getStatuses() != null) && !getStatuses().isEmpty()) {
             StringBuilder builder = new StringBuilder();
+
             for (Iterator<Status> iterator = getStatuses().iterator(); iterator
                     .hasNext();) {
                 Status status = iterator.next();
@@ -270,6 +272,7 @@ public class ResponseInfo extends DocumentedInfo {
                     builder.append(" ");
                 }
             }
+
             attributes.addAttribute("", "status", null, "xs:string", builder
                     .toString());
         }

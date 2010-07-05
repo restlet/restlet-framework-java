@@ -1498,7 +1498,9 @@ public abstract class ServerResource extends UniformResource {
      * methods.
      */
     public void updateAllowedMethods() {
+        getAllowedMethods().clear();
         List<AnnotationInfo> annotations = getAnnotations();
+
         if (annotations != null) {
             for (AnnotationInfo annotationInfo : annotations) {
                 if (!getAllowedMethods().contains(

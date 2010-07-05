@@ -89,6 +89,9 @@ Changes log
         AnnotationInfo#equals().
       - Removed duplicate representations in WADL description and
         representation with abstract media types.
+      - ServerResource#updateAllowedMethods() now clears the response
+        property before updating it. Caused troubles with the
+        WadlApplication discovery logic.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.

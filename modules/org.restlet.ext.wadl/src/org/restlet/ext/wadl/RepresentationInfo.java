@@ -346,15 +346,18 @@ public class RepresentationInfo extends DocumentedInfo {
         }
 
         if ((getProfiles() != null) && !getProfiles().isEmpty()) {
-            final StringBuilder builder = new StringBuilder();
-            for (final Iterator<Reference> iterator = getProfiles().iterator(); iterator
+            StringBuilder builder = new StringBuilder();
+
+            for (Iterator<Reference> iterator = getProfiles().iterator(); iterator
                     .hasNext();) {
-                final Reference reference = iterator.next();
+                Reference reference = iterator.next();
                 builder.append(reference.toString());
+
                 if (iterator.hasNext()) {
                     builder.append(" ");
                 }
             }
+
             attributes.addAttribute("", "profile", null, "xs:string", builder
                     .toString());
         }
@@ -371,11 +374,11 @@ public class RepresentationInfo extends DocumentedInfo {
             writer.startElement(APP_NAMESPACE, "representation", null,
                     attributes);
 
-            for (final DocumentationInfo documentationInfo : getDocumentations()) {
+            for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
 
-            for (final ParameterInfo parameterInfo : getParameters()) {
+            for (ParameterInfo parameterInfo : getParameters()) {
                 parameterInfo.writeElement(writer);
             }
 

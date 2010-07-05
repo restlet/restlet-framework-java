@@ -20,8 +20,13 @@ public class AccountServerResource extends ServerResource implements
      */
     @Override
     protected void doInit() throws ResourceException {
-        this.accountId = Integer.parseInt((String) getRequestAttributes().get(
-                "accountId"));
+        String accountIdAttribute = (String) getRequestAttributes().get(
+                "accountId");
+
+        if (accountIdAttribute != null) {
+            this.accountId = Integer.parseInt((String) getRequestAttributes()
+                    .get("accountId"));
+        }
     }
 
     public String represent() {
