@@ -109,7 +109,7 @@ public class WadlApplication extends Application {
      * Indicates if the application should be automatically described via WADL
      * when an OPTIONS request handles a "*" target URI.
      */
-    private volatile boolean autoDescribed;
+    private volatile boolean autoDescribing;
 
     /** The WADL base reference. */
     private volatile Reference baseRef;
@@ -146,7 +146,7 @@ public class WadlApplication extends Application {
      */
     public WadlApplication(Context context) {
         super(context);
-        this.autoDescribed = true;
+        this.autoDescribing = true;
     }
 
     /**
@@ -154,7 +154,7 @@ public class WadlApplication extends Application {
      * where Resource classes are attached and set it as the root Restlet.
      * 
      * By default the application is not automatically described. If you want
-     * to, you can call {@link #setAutoDescribed(boolean)}.
+     * to, you can call {@link #setAutoDescribing(boolean)}.
      * 
      * @param context
      *            The context to use based on parent component context. This
@@ -166,7 +166,7 @@ public class WadlApplication extends Application {
      */
     public WadlApplication(Context context, Representation wadl) {
         super(context);
-        this.autoDescribed = false;
+        this.autoDescribing = false;
 
         try {
             // Instantiates a WadlRepresentation of the WADL document
@@ -212,7 +212,7 @@ public class WadlApplication extends Application {
      * where Resource classes are attached and set it as the root Restlet.
      * 
      * By default the application is not automatically described. If you want
-     * to, you can call {@link #setAutoDescribed(boolean)}.
+     * to, you can call {@link #setAutoDescribing(boolean)}.
      * 
      * @param wadl
      *            The WADL description document.
@@ -756,7 +756,7 @@ public class WadlApplication extends Application {
         // Handle OPTIONS requests.
         String rp = rr.getRemainingPart(false, false);
 
-        if (isAutoDescribed()
+        if (isAutoDescribing()
                 && Method.OPTIONS.equals(request.getMethod())
                 && (response.getStatus().isClientError() || !response
                         .isEntityAvailable())
@@ -783,8 +783,8 @@ public class WadlApplication extends Application {
      * @return True if the application should be automatically described via
      *         WADL.
      */
-    public boolean isAutoDescribed() {
-        return autoDescribed;
+    public boolean isAutoDescribing() {
+        return autoDescribing;
     }
 
     /**
@@ -795,8 +795,8 @@ public class WadlApplication extends Application {
      *            True if the application should be automatically described via
      *            WADL.
      */
-    public void setAutoDescribed(boolean autoDescribed) {
-        this.autoDescribed = autoDescribed;
+    public void setAutoDescribing(boolean autoDescribed) {
+        this.autoDescribing = autoDescribed;
     }
 
     /**
