@@ -53,27 +53,6 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Jerome Louvel
  */
 public class ResourceInfo extends DocumentedInfo {
-    /** List of child resources. */
-    private List<ResourceInfo> childResources;
-
-    /** Identifier for that element. */
-    private String identifier;
-
-    /** List of supported methods. */
-    private List<MethodInfo> methods;
-
-    /** List of parameters. */
-    private List<ParameterInfo> parameters;
-
-    /** URI template for the identifier of the resource. */
-    private String path;
-
-    /** Media type for the query component of the resource URI. */
-    private MediaType queryType;
-
-    /** List of references to resource type elements. */
-    private List<Reference> type;
-
     /**
      * Returns a WADL description of the current resource.
      * 
@@ -134,6 +113,9 @@ public class ResourceInfo extends DocumentedInfo {
                     if (wsResource.isDescribable(method)) {
                         wsResource.describeMethod(method, methodInfo);
                     }
+                } else {
+                    MethodInfo.describeAnnotations(methodInfo,
+                            (ServerResource) resource);
                 }
             } else if (resource instanceof org.restlet.resource.Resource) {
                 if (resource instanceof WadlResource) {
@@ -191,6 +173,27 @@ public class ResourceInfo extends DocumentedInfo {
             doc.setTextContent(textContent);
         }
     }
+
+    /** List of child resources. */
+    private List<ResourceInfo> childResources;
+
+    /** Identifier for that element. */
+    private String identifier;
+
+    /** List of supported methods. */
+    private List<MethodInfo> methods;
+
+    /** List of parameters. */
+    private List<ParameterInfo> parameters;
+
+    /** URI template for the identifier of the resource. */
+    private String path;
+
+    /** Media type for the query component of the resource URI. */
+    private MediaType queryType;
+
+    /** List of references to resource type elements. */
+    private List<Reference> type;
 
     /**
      * Constructor.

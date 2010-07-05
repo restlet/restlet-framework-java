@@ -39,13 +39,10 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.resource.AnnotationInfo;
-import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-import org.restlet.service.MetadataService;
 import org.restlet.util.Series;
 
 /**
@@ -122,6 +119,22 @@ public class WadlServerResource extends ServerResource {
     }
 
     /**
+     * Describes a representation class and variant couple as WADL information.
+     * The variant contains the target media type that can be converted to by
+     * one of the available Restlet converters.
+     * 
+     * @param representationClass
+     *            The representation bean class.
+     * @param variant
+     *            The target variant.
+     * @return The WADL representation information.
+     */
+    protected RepresentationInfo describe(Class<?> representationClass,
+            Variant variant) {
+        return new RepresentationInfo(variant);
+    }
+
+    /**
      * Returns a WADL description of the current resource, leveraging the
      * {@link #getResourcePath()} method.
      * 
@@ -175,7 +188,7 @@ public class WadlServerResource extends ServerResource {
      *            The method description to update.
      */
     protected void describeDelete(MethodInfo info) {
-        discoverAnnotations(info);
+        MethodInfo.describeAnnotations(info, this);
     }
 
     /**
@@ -188,7 +201,7 @@ public class WadlServerResource extends ServerResource {
      *            The method description to update.
      */
     protected void describeGet(MethodInfo info) {
-        discoverAnnotations(info);
+        MethodInfo.describeAnnotations(info, this);
     }
 
     /**
@@ -199,7 +212,6 @@ public class WadlServerResource extends ServerResource {
     protected MethodInfo describeMethod() {
         MethodInfo result = new MethodInfo();
         describeMethod(getMethod(), result);
-
         return result;
     }
 
@@ -238,7 +250,8 @@ public class WadlServerResource extends ServerResource {
     protected void describeOptions(MethodInfo info) {
         // Describe each variant
         for (Variant variant : getWadlVariants()) {
-            info.addResponseRepresentation(variant);
+            RepresentationInfo result = new RepresentationInfo(variant);
+            info.getResponse().getRepresentations().add(result);
         }
     }
 
@@ -249,7 +262,7 @@ public class WadlServerResource extends ServerResource {
      *            The method description to update.
      */
     protected void describePost(MethodInfo info) {
-        discoverAnnotations(info);
+        MethodInfo.describeAnnotations(info, this);
     }
 
     /**
@@ -259,86 +272,13 @@ public class WadlServerResource extends ServerResource {
      *            The method description to update.
      */
     protected void describePut(MethodInfo info) {
-        discoverAnnotations(info);
-    }
-
-    /**
-     * Automatically describe a method by discovering the resource's
-     * annotations.
-     * 
-     * @param info
-     *            The method description to update.
-     * @param method
-     *            The Method to document
-     */
-    @SuppressWarnings("unchecked")
-    private void discoverAnnotations(MethodInfo info) {
-        // Loop over the annotated Java methods
-        MetadataService metadataService = getMetadataService();
-        List<AnnotationInfo> annotations = getAnnotations();
-
-        if (annotations != null && metadataService != null) {
-            for (AnnotationInfo annotationInfo : annotations) {
-                if (info.getName().equals(annotationInfo.getRestletMethod())) {
-                    Class<?>[] classes = annotationInfo.getJavaInputTypes();
-
-                    if (classes != null && classes.length == 1) {
-                        List<Variant> variants = (List<Variant>) getApplication()
-                                .getConverterService().getVariants(classes[0],
-                                        null);
-
-                        if (variants != null) {
-                            for (Variant variant : variants) {
-                                if ((variant.getMediaType() != null)
-                                        && variant.getMediaType().isConcrete()
-                                        && ((info.getRequest() == null) || !info
-                                                .getRequest()
-                                                .getRepresentations().contains(
-                                                        variant))) {
-                                    info.addRequestRepresentation(variant);
-                                }
-                            }
-                        }
-                    }
-
-                    if (annotationInfo.getJavaOutputType() != null) {
-                        List<Variant> variants = (List<Variant>) getApplication()
-                                .getConverterService().getVariants(
-                                        annotationInfo.getJavaOutputType(),
-                                        null);
-
-                        if (variants != null) {
-                            for (Variant variant : variants) {
-                                if ((variant.getMediaType() != null)
-                                        && variant.getMediaType().isConcrete()
-                                        && ((info.getResponse() == null) || !info
-                                                .getResponse()
-                                                .getRepresentations().contains(
-                                                        variant))) {
-                                    info.addResponseRepresentation(variant);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        MethodInfo.describeAnnotations(info, this);
     }
 
     @Override
     protected void doInit() throws ResourceException {
         super.doInit();
         this.autoDescribed = true;
-    }
-
-    /**
-     * Returns the annotation descriptors.
-     * 
-     * @return The annotation descriptors.
-     */
-    private List<AnnotationInfo> getAnnotations() {
-        return isAnnotated() ? AnnotationUtils.getAnnotations(getClass())
-                : null;
     }
 
     /**

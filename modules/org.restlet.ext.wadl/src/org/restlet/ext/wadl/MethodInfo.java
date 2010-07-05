@@ -40,8 +40,12 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.resource.AnnotationInfo;
+import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.Variant;
+import org.restlet.resource.ServerResource;
+import org.restlet.service.MetadataService;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -51,6 +55,97 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Jerome Louvel
  */
 public class MethodInfo extends DocumentedInfo {
+
+    /**
+     * Automatically describe a method by discovering the resource's
+     * annotations.
+     * 
+     * @param info
+     *            The method description to update.
+     * @param method
+     *            The Method to document
+     */
+    public static void describeAnnotations(MethodInfo info,
+            ServerResource resource) {
+        // Loop over the annotated Java methods
+        MetadataService metadataService = resource.getMetadataService();
+        List<AnnotationInfo> annotations = resource.isAnnotated() ? AnnotationUtils
+                .getAnnotations(resource.getClass())
+                : null;
+
+        if (annotations != null && metadataService != null) {
+            for (AnnotationInfo annotationInfo : annotations) {
+                if (info.getName().equals(annotationInfo.getRestletMethod())) {
+                    // Describe the request
+                    Class<?>[] classes = annotationInfo.getJavaInputTypes();
+
+                    List<Variant> requestVariants = annotationInfo
+                            .getRequestVariants(resource.getMetadataService(),
+                                    resource.getConverterService());
+
+                    if (requestVariants != null) {
+                        for (Variant variant : requestVariants) {
+                            if ((variant.getMediaType() != null)
+                                    && variant.getMediaType().isConcrete()
+                                    && ((info.getRequest() == null) || !info
+                                            .getRequest().getRepresentations()
+                                            .contains(variant))) {
+                                RepresentationInfo representationInfo = null;
+
+                                if (resource instanceof WadlServerResource) {
+                                    representationInfo = ((WadlServerResource) resource)
+                                            .describe(classes[0], variant);
+                                } else {
+                                    representationInfo = new RepresentationInfo(
+                                            variant);
+                                }
+
+                                if (info.getRequest() == null) {
+                                    info.setRequest(new RequestInfo());
+                                }
+
+                                info.getRequest().getRepresentations().add(
+                                        representationInfo);
+                            }
+                        }
+                    }
+
+                    // Describe the response
+                    Class<?> outputClass = annotationInfo.getJavaOutputType();
+
+                    if (outputClass != null) {
+                        List<Variant> responseVariants = annotationInfo
+                                .getResponseVariants(null, resource
+                                        .getMetadataService(), resource
+                                        .getConverterService());
+
+                        if (responseVariants != null) {
+                            for (Variant variant : responseVariants) {
+                                if ((variant.getMediaType() != null)
+                                        && variant.getMediaType().isConcrete()
+                                        && !info.getResponse()
+                                                .getRepresentations().contains(
+                                                        variant)) {
+                                    RepresentationInfo representationInfo = null;
+
+                                    if (resource instanceof WadlServerResource) {
+                                        representationInfo = ((WadlServerResource) resource)
+                                                .describe(outputClass, variant);
+                                    } else {
+                                        representationInfo = new RepresentationInfo(
+                                                variant);
+                                    }
+
+                                    info.getResponse().getRepresentations()
+                                            .add(representationInfo);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     /** Identifier for the method. */
     private String identifier;
@@ -141,7 +236,9 @@ public class MethodInfo extends DocumentedInfo {
      * @param documentation
      *            A single documentation element.
      * @return The created parameter description.
+     * @deprecated Use {@link RequestInfo#getParameters()} instead.
      */
+    @Deprecated
     public ParameterInfo addRequestParameter(String name, boolean required,
             String type, ParameterStyle style, String documentation) {
         ParameterInfo result = new ParameterInfo(name, required, type, style,
@@ -161,7 +258,9 @@ public class MethodInfo extends DocumentedInfo {
      * @param variant
      *            The variant to describe.
      * @return The created representation description.
+     * @deprecated Use {@link RequestInfo#getRepresentations()} instead.
      */
+    @Deprecated
     public RepresentationInfo addRequestRepresentation(Variant variant) {
         RepresentationInfo result = new RepresentationInfo(variant);
 
@@ -204,7 +303,9 @@ public class MethodInfo extends DocumentedInfo {
      * @param variant
      *            The variant to describe.
      * @return The created representation description.
+     * @deprecated Use {@link ResponseInfo#getRepresentations()} instead.
      */
+    @Deprecated
     public RepresentationInfo addResponseRepresentation(Variant variant) {
         RepresentationInfo result = new RepresentationInfo(variant);
         getResponse().getRepresentations().add(result);

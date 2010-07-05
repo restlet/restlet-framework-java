@@ -162,6 +162,7 @@ public class AnnotationInfo {
                 resourceInterface);
     }
 
+    // [ifndef gwt] method
     /**
      * Returns a list of request variants based on the annotation value.
      * 
@@ -169,16 +170,14 @@ public class AnnotationInfo {
      *            The metadata service to use.
      * @return A list of request variants.
      */
-    public List<Variant> getRequestVariants(MetadataService metadataService) {
+    @SuppressWarnings("unchecked")
+    public List<Variant> getRequestVariants(MetadataService metadataService,
+            org.restlet.service.ConverterService converterService) {
         List<Variant> result = null;
-        String value = getValue();
+        Class<?>[] classes = getJavaInputTypes();
 
-        if (value != null) {
-            int colonIndex = value.indexOf(':');
-
-            if (colonIndex != -1) {
-                value = getValue().substring(0, colonIndex);
-            }
+        if (classes != null && classes.length >= 1) {
+            String value = getInputValue();
 
             if (value != null) {
                 String[] extensions = value.split("\\|");
@@ -199,6 +198,12 @@ public class AnnotationInfo {
                         }
                     }
                 }
+            }
+
+            if (result == null) {
+                Class<?> inputClass = classes[0];
+                result = (List<Variant>) converterService.getVariants(
+                        inputClass, null);
             }
         }
 
@@ -231,19 +236,17 @@ public class AnnotationInfo {
             MetadataService metadataService,
             org.restlet.service.ConverterService converterService) {
         List<Variant> result = null;
-        String value = getValue();
-        boolean compatibleRequestEntity = true;
 
-        if (value != null) {
-            int colonIndex = value.indexOf(':');
-
-            if (colonIndex != -1) {
-                value = getValue().substring(colonIndex + 1);
-            }
+        if ((getJavaOutputType() != null)
+                && (getJavaOutputType() != void.class)
+                && (getJavaOutputType() != Void.class)) {
+            String value = getOutputValue();
+            boolean compatibleRequestEntity = true;
 
             if (value != null) {
                 if (requestEntity != null) {
-                    List<Variant> requestVariants = getRequestVariants(metadataService);
+                    List<Variant> requestVariants = getRequestVariants(
+                            metadataService, converterService);
 
                     if ((requestVariants != null) && !requestVariants.isEmpty()) {
                         // Check that the compatibility
@@ -278,11 +281,11 @@ public class AnnotationInfo {
                     }
                 }
             }
-        }
 
-        if (compatibleRequestEntity && (result == null)) {
-            result = (List<Variant>) converterService.getVariants(
-                    getJavaOutputType(), null);
+            if (compatibleRequestEntity && (result == null)) {
+                result = (List<Variant>) converterService.getVariants(
+                        getJavaOutputType(), null);
+            }
         }
 
         return result;
@@ -298,11 +301,49 @@ public class AnnotationInfo {
     }
 
     /**
+     * Returns the input part of the annotation value.
+     * 
+     * @return The input part of the annotation value.
+     */
+    public String getInputValue() {
+        String result = getValue();
+
+        if (result != null) {
+            int colonIndex = result.indexOf(':');
+
+            if (colonIndex != -1) {
+                result = result.substring(0, colonIndex);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the output part of the annotation value.
+     * 
+     * @return The output part of the annotation value.
+     */
+    public String getOutputValue() {
+        String result = getValue();
+
+        if (result != null) {
+            int colonIndex = result.indexOf(':');
+
+            if (colonIndex != -1) {
+                result = result.substring(colonIndex + 1);
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the annotation value.
      * 
      * @return The annotation value.
      */
-    private String getValue() {
+    public String getValue() {
         return value;
     }
 

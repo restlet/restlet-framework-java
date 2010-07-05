@@ -32,6 +32,10 @@ Changes log
         createHtmlRepresentation(...) methods.
       - Added RepresentationInfo#reference property to support 
         representation "href" attributes.
+      - Added describe(Class<?>, Variant) method on WadlServerResource
+        to allow for custom documentation.
+      - Added describeAnnotations(MethodInfo, ServerResource) static
+        method on MethodInfo.
     - Bugs fixed
       - Thread local variables are now cleared correctly.
         Prevented unloading of WAR files or OSGi bundles
@@ -92,6 +96,11 @@ Changes log
       - Clarified Javadocs of the WADL extension.
       - Reduced max threads default value from "255" to "10".
         Suggested by Tim Peierls.
+      - Improved precision of variants detection of annotated methods.
+        Positive impact on WADL descriptions.
+      - WadlApplication is now capable of describing more precisely
+        ServerResource subclasses and not just WadlServerResource ones. 
+        Request and response representation variants are described.
 
 - 2.0 Release Candidate 4 (2010-06-01)
     - API changes
