@@ -111,7 +111,7 @@ public class ResourceInfo extends DocumentedInfo {
                 if (resource instanceof WadlServerResource) {
                     WadlServerResource wsResource = (WadlServerResource) resource;
 
-                    if (wsResource.isDescribable(method)) {
+                    if (wsResource.canDescribe(method)) {
                         wsResource.describeMethod(method, methodInfo);
                     }
                 } else {

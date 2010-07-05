@@ -86,6 +86,19 @@ public class WadlServerResource extends ServerResource {
     }
 
     /**
+     * Indicates if the given method exposes its WADL description. By default,
+     * HEAD and OPTIONS are not exposed. This method is called by
+     * {@link #describe(String, ResourceInfo)}.
+     * 
+     * @param method
+     *            The method
+     * @return True if the method exposes its description, false otherwise.
+     */
+    public boolean canDescribe(Method method) {
+        return !(Method.HEAD.equals(method) || Method.OPTIONS.equals(method));
+    }
+
+    /**
      * Creates a new HTML representation for a given {@link ResourceInfo}
      * instance describing a resource.
      * 
@@ -463,19 +476,6 @@ public class WadlServerResource extends ServerResource {
      */
     public boolean isAutoDescribing() {
         return this.autoDescribing;
-    }
-
-    /**
-     * Indicates if the given method exposes its WADL description. By default,
-     * HEAD and OPTIONS are not exposed. This method is called by
-     * {@link #describe(String, ResourceInfo)}.
-     * 
-     * @param method
-     *            The method
-     * @return True if the method exposes its description, false otherwise.
-     */
-    public boolean isDescribable(Method method) {
-        return !(Method.HEAD.equals(method) || Method.OPTIONS.equals(method));
     }
 
     @Override

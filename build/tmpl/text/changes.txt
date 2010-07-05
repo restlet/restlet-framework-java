@@ -39,7 +39,8 @@ Changes log
       - Renamed WadlServerResource#autoDescribed into autoDescribing.
       - The private WadlServerResource#describe(ResourceInfo) method is
         now protected. Also renamed getParametersInfo() method into
-        describeParameters() for naming consistency.
+        describeParameters(), and isDescribable(Method) into
+        canDescribe(Method) for naming consistency. 
     - Bugs fixed
       - Thread local variables are now cleared correctly.
         Prevented unloading of WAR files or OSGi bundles
