@@ -867,26 +867,7 @@ public class WadlRepresentation extends SaxRepresentation {
      */
     public WadlRepresentation(ResourceInfo resource) {
         super(MediaType.APPLICATION_WADL);
-
-        this.application = new ApplicationInfo();
-        if (!resource.getDocumentations().isEmpty()) {
-            String titleResource = resource.getDocumentations().get(0)
-                    .getTitle();
-            if (titleResource != null && !"".equals(titleResource)) {
-                DocumentationInfo doc = null;
-                if (application.getDocumentations().isEmpty()) {
-                    doc = new DocumentationInfo();
-                    application.getDocumentations().add(doc);
-                } else {
-                    doc = application.getDocumentations().get(0);
-                }
-                doc.setTitle(titleResource);
-            }
-        }
-
-        final ResourcesInfo resources = new ResourcesInfo();
-        this.application.setResources(resources);
-        resources.getResources().add(resource);
+        this.application = resource.createApplication();
     }
 
     // [ifndef android] method

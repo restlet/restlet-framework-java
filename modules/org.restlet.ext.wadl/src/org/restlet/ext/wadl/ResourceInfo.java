@@ -53,6 +53,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Jerome Louvel
  */
 public class ResourceInfo extends DocumentedInfo {
+
     /**
      * Returns a WADL description of the current resource.
      * 
@@ -68,6 +69,10 @@ public class ResourceInfo extends DocumentedInfo {
     @SuppressWarnings("deprecation")
     public static void describe(ApplicationInfo applicationInfo,
             ResourceInfo info, Object resource, String path) {
+        if ((path != null) && path.startsWith("/")) {
+            path = path.substring(1);
+        }
+
         info.setPath(path);
 
         // Introspect the current resource to detect the allowed methods
@@ -238,6 +243,39 @@ public class ResourceInfo extends DocumentedInfo {
      */
     public ResourceInfo(String documentation) {
         super(documentation);
+    }
+
+    /**
+     * Creates an application descriptor that wraps this resource descriptor.
+     * The title of the resource, that is to say the title of its first
+     * documentation tag is transfered to the title of the first documentation
+     * tag of the main application tag.
+     * 
+     * @return The new application descriptor.
+     */
+    public ApplicationInfo createApplication() {
+        ApplicationInfo result = new ApplicationInfo();
+
+        if (!getDocumentations().isEmpty()) {
+            String titleResource = getDocumentations().get(0).getTitle();
+            if (titleResource != null && !"".equals(titleResource)) {
+                DocumentationInfo doc = null;
+
+                if (result.getDocumentations().isEmpty()) {
+                    doc = new DocumentationInfo();
+                    result.getDocumentations().add(doc);
+                } else {
+                    doc = result.getDocumentations().get(0);
+                }
+
+                doc.setTitle(titleResource);
+            }
+        }
+
+        ResourcesInfo resources = new ResourcesInfo();
+        result.setResources(resources);
+        resources.getResources().add(this);
+        return result;
     }
 
     /**

@@ -99,31 +99,33 @@ public class WadlServerResource extends ServerResource {
     }
 
     /**
-     * Creates a new HTML representation for a given {@link ResourceInfo}
-     * instance describing a resource.
+     * Creates a new HTML representation for a given {@link ApplicationInfo}
+     * instance describing an application.
      * 
-     * @param resourceInfo
-     *            The resource description.
+     * @param applicationInfo
+     *            The application description.
      * @return The created {@link WadlRepresentation}.
      */
-    protected Representation createHtmlRepresentation(ResourceInfo resourceInfo) {
-        return new WadlRepresentation(resourceInfo).getHtmlRepresentation();
+    protected Representation createHtmlRepresentation(
+            ApplicationInfo applicationInfo) {
+        return new WadlRepresentation(applicationInfo).getHtmlRepresentation();
     }
 
     /**
-     * Creates a new WADL representation for a given {@link ResourceInfo}
-     * instance describing a resource.
+     * Creates a new WADL representation for a given {@link ApplicationInfo}
+     * instance describing an application.
      * 
-     * @param resourceInfo
-     *            The resource description.
+     * @param applicationInfo
+     *            The application description.
      * @return The created {@link WadlRepresentation}.
      */
-    protected Representation createWadlRepresentation(ResourceInfo resourceInfo) {
-        return new WadlRepresentation(resourceInfo);
+    protected Representation createWadlRepresentation(
+            ApplicationInfo applicationInfo) {
+        return new WadlRepresentation(applicationInfo);
     }
 
     /**
-     * Describes the resource as a WADL document.
+     * Describes the resource as a standalone WADL document.
      * 
      * @return The WADL description.
      */
@@ -240,13 +242,15 @@ public class WadlServerResource extends ServerResource {
         Representation result = null;
 
         if (variant != null) {
-            ResourceInfo resourceInfo = new ResourceInfo();
-            describe(resourceInfo);
+            ResourceInfo resource = new ResourceInfo();
+            describe(resource);
+            ApplicationInfo application = resource.createApplication();
+            describe(application);
 
             if (MediaType.APPLICATION_WADL.equals(variant.getMediaType())) {
-                result = createWadlRepresentation(resourceInfo);
+                result = createWadlRepresentation(application);
             } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-                result = createHtmlRepresentation(resourceInfo);
+                result = createHtmlRepresentation(application);
             }
         }
 
