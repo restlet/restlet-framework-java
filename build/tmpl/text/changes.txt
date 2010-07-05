@@ -40,7 +40,10 @@ Changes log
       - The private WadlServerResource#describe(ResourceInfo) method is
         now protected. Also renamed getParametersInfo() method into
         describeParameters(), and isDescribable(Method) into
-        canDescribe(Method) for naming consistency. 
+        canDescribe(Method) for naming consistency. Also added the 
+        describe(ApplicationInfo) method to allow updating the parent
+        application description, to add global representations for 
+        example.
     - Bugs fixed
       - Thread local variables are now cleared correctly.
         Prevented unloading of WAR files or OSGi bundles

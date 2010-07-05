@@ -86,22 +86,22 @@ public class MethodInfo extends DocumentedInfo {
                     if (requestVariants != null) {
                         for (Variant variant : requestVariants) {
                             if ((variant.getMediaType() != null)
-                                    && variant.getMediaType().isConcrete()
                                     && ((info.getRequest() == null) || !info
                                             .getRequest().getRepresentations()
                                             .contains(variant))) {
                                 RepresentationInfo representationInfo = null;
 
+                                if (info.getRequest() == null) {
+                                    info.setRequest(new RequestInfo());
+                                }
+
                                 if (resource instanceof WadlServerResource) {
                                     representationInfo = ((WadlServerResource) resource)
-                                            .describe(classes[0], variant);
+                                            .describe(info, info.getRequest(),
+                                                    classes[0], variant);
                                 } else {
                                     representationInfo = new RepresentationInfo(
                                             variant);
-                                }
-
-                                if (info.getRequest() == null) {
-                                    info.setRequest(new RequestInfo());
                                 }
 
                                 info.getRequest().getRepresentations().add(
@@ -122,7 +122,6 @@ public class MethodInfo extends DocumentedInfo {
                         if (responseVariants != null) {
                             for (Variant variant : responseVariants) {
                                 if ((variant.getMediaType() != null)
-                                        && variant.getMediaType().isConcrete()
                                         && !info.getResponse()
                                                 .getRepresentations().contains(
                                                         variant)) {
@@ -130,7 +129,9 @@ public class MethodInfo extends DocumentedInfo {
 
                                     if (resource instanceof WadlServerResource) {
                                         representationInfo = ((WadlServerResource) resource)
-                                                .describe(outputClass, variant);
+                                                .describe(info, info
+                                                        .getResponse(),
+                                                        outputClass, variant);
                                     } else {
                                         representationInfo = new RepresentationInfo(
                                                 variant);

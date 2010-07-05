@@ -132,19 +132,78 @@ public class WadlServerResource extends ServerResource {
     }
 
     /**
+     * Updates the description of the parent application. This is typically used
+     * to add documentation on global representations used by several methods or
+     * resources. Does nothing by default.
+     * 
+     * @param applicationInfo
+     *            The parent application.
+     */
+    protected void describe(ApplicationInfo applicationInfo) {
+    }
+
+    /**
      * Describes a representation class and variant couple as WADL information.
      * The variant contains the target media type that can be converted to by
      * one of the available Restlet converters.
      * 
+     * @param methodInfo
+     *            The parent method description.
      * @param representationClass
      *            The representation bean class.
      * @param variant
      *            The target variant.
      * @return The WADL representation information.
      */
-    protected RepresentationInfo describe(Class<?> representationClass,
-            Variant variant) {
+    protected RepresentationInfo describe(MethodInfo methodInfo,
+            Class<?> representationClass, Variant variant) {
         return new RepresentationInfo(variant);
+    }
+
+    /**
+     * Describes a representation class and variant couple as WADL information
+     * for the given method and request. The variant contains the target media
+     * type that can be converted to by one of the available Restlet converters.<br>
+     * <br>
+     * By default, it calls {@link #describe(MethodInfo, Class, Variant)}.
+     * 
+     * @param methodInfo
+     *            The parent method description.
+     * @param requestInfo
+     *            The parent request description.
+     * @param representationClass
+     *            The representation bean class.
+     * @param variant
+     *            The target variant.
+     * @return The WADL representation information.
+     */
+    protected RepresentationInfo describe(MethodInfo methodInfo,
+            RequestInfo requestInfo, Class<?> representationClass,
+            Variant variant) {
+        return describe(methodInfo, representationClass, variant);
+    }
+
+    /**
+     * Describes a representation class and variant couple as WADL information
+     * for the given method and response. The variant contains the target media
+     * type that can be converted to by one of the available Restlet converters.<br>
+     * <br>
+     * By default, it calls {@link #describe(MethodInfo, Class, Variant)}.
+     * 
+     * @param methodInfo
+     *            The parent method description.
+     * @param responseInfo
+     *            The parent response description.
+     * @param representationClass
+     *            The representation bean class.
+     * @param variant
+     *            The target variant.
+     * @return The WADL representation information.
+     */
+    protected RepresentationInfo describe(MethodInfo methodInfo,
+            ResponseInfo responseInfo, Class<?> representationClass,
+            Variant variant) {
+        return describe(methodInfo, representationClass, variant);
     }
 
     /**
@@ -154,7 +213,7 @@ public class WadlServerResource extends ServerResource {
      * @param info
      *            WADL description of the current resource to update.
      */
-    protected void describe(ResourceInfo info) {
+    public void describe(ResourceInfo info) {
         describe(getResourcePath(), info);
     }
 
@@ -167,7 +226,7 @@ public class WadlServerResource extends ServerResource {
      *            WADL description of the current resource to update.
      */
     public void describe(String path, ResourceInfo info) {
-        ResourceInfo.describe(info, this, path);
+        ResourceInfo.describe(null, info, this, path);
     }
 
     /**

@@ -135,7 +135,7 @@ public class WadlResource extends Resource {
      *            WADL description of the current resource to update.
      */
     public void describe(String path, ResourceInfo info) {
-        ResourceInfo.describe(info, this, path);
+        ResourceInfo.describe(null, info, this, path);
     }
 
     /**

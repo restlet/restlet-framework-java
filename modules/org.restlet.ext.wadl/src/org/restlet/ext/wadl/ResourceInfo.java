@@ -56,6 +56,8 @@ public class ResourceInfo extends DocumentedInfo {
     /**
      * Returns a WADL description of the current resource.
      * 
+     * @param applicationInfo
+     *            The parent application.
      * @param resource
      *            The resource to describe.
      * @param path
@@ -64,7 +66,8 @@ public class ResourceInfo extends DocumentedInfo {
      *            WADL description of the current resource to update.
      */
     @SuppressWarnings("deprecation")
-    public static void describe(ResourceInfo info, Object resource, String path) {
+    public static void describe(ApplicationInfo applicationInfo,
+            ResourceInfo info, Object resource, String path) {
         info.setPath(path);
 
         // Introspect the current resource to detect the allowed methods
@@ -77,6 +80,10 @@ public class ResourceInfo extends DocumentedInfo {
             if (resource instanceof WadlServerResource) {
                 info.setParameters(((WadlServerResource) resource)
                         .describeParameters());
+
+                if (applicationInfo != null) {
+                    ((WadlServerResource) resource).describe(applicationInfo);
+                }
             }
         } else if (resource instanceof org.restlet.resource.Resource) {
             methodsList.addAll(((org.restlet.resource.Resource) resource)

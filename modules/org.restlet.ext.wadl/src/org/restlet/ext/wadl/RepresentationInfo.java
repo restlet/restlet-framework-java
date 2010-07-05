@@ -334,55 +334,58 @@ public class RepresentationInfo extends DocumentedInfo {
         if ((getReference() != null) && !getReference().equals("")) {
             attributes.addAttribute("", "href", null, "xs:anyURI", "#"
                     + getReference());
-        }
-
-        if ((getIdentifier() != null) && !getIdentifier().equals("")) {
-            attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
-        }
-
-        if (getMediaType() != null) {
-            attributes.addAttribute("", "mediaType", null, "xs:string",
-                    getMediaType().toString());
-        }
-
-        if ((getProfiles() != null) && !getProfiles().isEmpty()) {
-            StringBuilder builder = new StringBuilder();
-
-            for (Iterator<Reference> iterator = getProfiles().iterator(); iterator
-                    .hasNext();) {
-                Reference reference = iterator.next();
-                builder.append(reference.toString());
-
-                if (iterator.hasNext()) {
-                    builder.append(" ");
-                }
-            }
-
-            attributes.addAttribute("", "profile", null, "xs:string", builder
-                    .toString());
-        }
-
-        if ((getXmlElement() != null) && !getXmlElement().equals("")) {
-            attributes.addAttribute("", "element", null, "xs:QName",
-                    getXmlElement());
-        }
-
-        if (getDocumentations().isEmpty() && getParameters().isEmpty()) {
             writer.emptyElement(APP_NAMESPACE, "representation", null,
                     attributes);
         } else {
-            writer.startElement(APP_NAMESPACE, "representation", null,
-                    attributes);
-
-            for (DocumentationInfo documentationInfo : getDocumentations()) {
-                documentationInfo.writeElement(writer);
+            if ((getIdentifier() != null) && !getIdentifier().equals("")) {
+                attributes.addAttribute("", "id", null, "xs:ID",
+                        getIdentifier());
             }
 
-            for (ParameterInfo parameterInfo : getParameters()) {
-                parameterInfo.writeElement(writer);
+            if (getMediaType() != null) {
+                attributes.addAttribute("", "mediaType", null, "xs:string",
+                        getMediaType().toString());
             }
 
-            writer.endElement(APP_NAMESPACE, "representation");
+            if ((getProfiles() != null) && !getProfiles().isEmpty()) {
+                StringBuilder builder = new StringBuilder();
+
+                for (Iterator<Reference> iterator = getProfiles().iterator(); iterator
+                        .hasNext();) {
+                    Reference reference = iterator.next();
+                    builder.append(reference.toString());
+
+                    if (iterator.hasNext()) {
+                        builder.append(" ");
+                    }
+                }
+
+                attributes.addAttribute("", "profile", null, "xs:string",
+                        builder.toString());
+            }
+
+            if ((getXmlElement() != null) && !getXmlElement().equals("")) {
+                attributes.addAttribute("", "element", null, "xs:QName",
+                        getXmlElement());
+            }
+
+            if (getDocumentations().isEmpty() && getParameters().isEmpty()) {
+                writer.emptyElement(APP_NAMESPACE, "representation", null,
+                        attributes);
+            } else {
+                writer.startElement(APP_NAMESPACE, "representation", null,
+                        attributes);
+
+                for (DocumentationInfo documentationInfo : getDocumentations()) {
+                    documentationInfo.writeElement(writer);
+                }
+
+                for (ParameterInfo parameterInfo : getParameters()) {
+                    parameterInfo.writeElement(writer);
+                }
+
+                writer.endElement(APP_NAMESPACE, "representation");
+            }
         }
     }
 

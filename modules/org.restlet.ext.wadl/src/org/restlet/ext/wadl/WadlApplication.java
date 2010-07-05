@@ -432,8 +432,8 @@ public class WadlApplication extends Application {
         applicationInfo.getResources().setBaseRef(
                 request.getResourceRef().getBaseRef());
         applicationInfo.getResources().setResources(
-                getResourceInfos(getFirstRouter(getInboundRoot()), request,
-                        response));
+                getResourceInfos(applicationInfo,
+                        getFirstRouter(getInboundRoot()), request, response));
         return applicationInfo;
     }
 
@@ -489,6 +489,8 @@ public class WadlApplication extends Application {
     /**
      * Completes the data available about a given Filter instance.
      * 
+     * @param applicationInfo
+     *            The parent application.
      * @param filter
      *            The Filter instance to document.
      * @param path
@@ -499,14 +501,17 @@ public class WadlApplication extends Application {
      *            The current response.
      * @return The resource description.
      */
-    private ResourceInfo getResourceInfo(Filter filter, String path,
-            Request request, Response response) {
-        return getResourceInfo(filter.getNext(), path, request, response);
+    private ResourceInfo getResourceInfo(ApplicationInfo applicationInfo,
+            Filter filter, String path, Request request, Response response) {
+        return getResourceInfo(applicationInfo, filter.getNext(), path,
+                request, response);
     }
 
     /**
      * Completes the data available about a given Finder instance.
      * 
+     * @param applicationInfo
+     *            The parent application.
      * @param resourceInfo
      *            The ResourceInfo object to complete.
      * @param finder
@@ -516,8 +521,8 @@ public class WadlApplication extends Application {
      * @param response
      *            The current response.
      */
-    private ResourceInfo getResourceInfo(Finder finder, String path,
-            Request request, Response response) {
+    private ResourceInfo getResourceInfo(ApplicationInfo applicationInfo,
+            Finder finder, String path, Request request, Response response) {
         ResourceInfo result = null;
         Object resource = null;
 
@@ -543,7 +548,7 @@ public class WadlApplication extends Application {
 
         if (resource != null) {
             result = new ResourceInfo();
-            ResourceInfo.describe(result, resource, path);
+            ResourceInfo.describe(applicationInfo, result, resource, path);
         }
 
         return result;
@@ -552,6 +557,8 @@ public class WadlApplication extends Application {
     /**
      * Completes the data available about a given Restlet instance.
      * 
+     * @param applicationInfo
+     *            The parent application.
      * @param resourceInfo
      *            The ResourceInfo object to complete.
      * @param restlet
@@ -561,22 +568,24 @@ public class WadlApplication extends Application {
      * @param response
      *            The current response.
      */
-    private ResourceInfo getResourceInfo(Restlet restlet, String path,
-            Request request, Response response) {
+    private ResourceInfo getResourceInfo(ApplicationInfo applicationInfo,
+            Restlet restlet, String path, Request request, Response response) {
         ResourceInfo result = null;
 
         if (restlet instanceof WadlDescribable) {
             result = ((WadlDescribable) restlet).getResourceInfo();
             result.setPath(path);
         } else if (restlet instanceof Finder) {
-            result = getResourceInfo((Finder) restlet, path, request, response);
+            result = getResourceInfo(applicationInfo, (Finder) restlet, path,
+                    request, response);
         } else if (restlet instanceof Router) {
             result = new ResourceInfo();
             result.setPath(path);
-            result.setChildResources(getResourceInfos((Router) restlet,
-                    request, response));
+            result.setChildResources(getResourceInfos(applicationInfo,
+                    (Router) restlet, request, response));
         } else if (restlet instanceof Filter) {
-            result = getResourceInfo((Filter) restlet, path, request, response);
+            result = getResourceInfo(applicationInfo, (Filter) restlet, path,
+                    request, response);
         }
 
         return result;
@@ -585,6 +594,8 @@ public class WadlApplication extends Application {
     /**
      * Returns the WADL data about the given Route instance.
      * 
+     * @param applicationInfo
+     *            The parent application.
      * @param route
      *            The Route instance to document.
      * @param basePath
@@ -595,8 +606,8 @@ public class WadlApplication extends Application {
      *            The current response.
      * @return The WADL data about the given Route instance.
      */
-    private ResourceInfo getResourceInfo(Route route, String basePath,
-            Request request, Response response) {
+    private ResourceInfo getResourceInfo(ApplicationInfo applicationInfo,
+            Route route, String basePath, Request request, Response response) {
         String path = route.getTemplate().getPattern();
 
         // WADL requires resource paths to be relative to parent path
@@ -604,8 +615,8 @@ public class WadlApplication extends Application {
             path = path.substring(1);
         }
 
-        ResourceInfo result = getResourceInfo(route.getNext(), path, request,
-                response);
+        ResourceInfo result = getResourceInfo(applicationInfo, route.getNext(),
+                path, request, response);
         return result;
     }
 
@@ -613,6 +624,8 @@ public class WadlApplication extends Application {
      * Completes the list of ResourceInfo instances for the given Router
      * instance.
      * 
+     * @param applicationInfo
+     *            The parent application.
      * @param router
      *            The router to document.
      * @param request
@@ -621,13 +634,14 @@ public class WadlApplication extends Application {
      *            The current response.
      * @return The list of ResourceInfo instances to complete.
      */
-    private List<ResourceInfo> getResourceInfos(Router router, Request request,
+    private List<ResourceInfo> getResourceInfos(
+            ApplicationInfo applicationInfo, Router router, Request request,
             Response response) {
         List<ResourceInfo> result = new ArrayList<ResourceInfo>();
 
         for (final Route route : router.getRoutes()) {
-            ResourceInfo resourceInfo = getResourceInfo(route, "/", request,
-                    response);
+            ResourceInfo resourceInfo = getResourceInfo(applicationInfo, route,
+                    "/", request, response);
 
             if (resourceInfo != null) {
                 result.add(resourceInfo);
@@ -635,7 +649,7 @@ public class WadlApplication extends Application {
         }
 
         if (router.getDefaultRoute() != null) {
-            ResourceInfo resourceInfo = getResourceInfo(router
+            ResourceInfo resourceInfo = getResourceInfo(applicationInfo, router
                     .getDefaultRoute(), "/", request, response);
             if (resourceInfo != null) {
                 result.add(resourceInfo);
