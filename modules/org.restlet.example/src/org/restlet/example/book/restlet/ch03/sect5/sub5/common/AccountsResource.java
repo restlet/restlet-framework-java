@@ -13,7 +13,7 @@ public interface AccountsResource {
      * 
      * @return The list of accounts.
      */
-    @Get
+    @Get("txt")
     public String represent();
 
     /**
@@ -24,7 +24,7 @@ public interface AccountsResource {
      *            The account to add.
      * @return The account identifier.
      */
-    @Post
+    @Post("txt")
     public String add(String account);
 
 }

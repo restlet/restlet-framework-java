@@ -12,7 +12,7 @@ public interface RootResource {
      * 
      * @return The root representation.
      */
-    @Get
+    @Get("txt")
     public String represent();
 
 }

@@ -8,10 +8,10 @@ import org.restlet.resource.Options;
  */
 public interface RootResource {
 
-    @Get
+    @Get("txt")
     public String represent();
 
-    @Options
+    @Options("txt")
     public String describe();
 
 }

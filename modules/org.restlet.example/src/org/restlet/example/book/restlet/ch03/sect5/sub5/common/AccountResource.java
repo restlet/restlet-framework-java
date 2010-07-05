@@ -14,7 +14,7 @@ public interface AccountResource {
      * 
      * @return The account representation.
      */
-    @Get
+    @Get("txt")
     public String represent();
 
     /**
@@ -23,7 +23,7 @@ public interface AccountResource {
      * @param account
      *            The identified account.
      */
-    @Put
+    @Put("txt")
     public void store(String account);
 
     /**
