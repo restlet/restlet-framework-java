@@ -12,7 +12,7 @@ public class RootServerResource extends WadlServerResource implements
 
     @Override
     protected void doInit() throws ResourceException {
-        setAutoDescribed(false);
+        setAutoDescribing(false);
         setName("Root resource");
         setDescription("The root resource of the mail server application");
     }

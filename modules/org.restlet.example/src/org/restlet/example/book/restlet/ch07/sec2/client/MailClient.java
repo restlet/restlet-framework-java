@@ -20,6 +20,9 @@ public class MailClient {
 
         System.out.println("\n2) Describe the application\n");
         System.out.println(service.options().getText());
+
+        System.out.println("\n3) Describe the accounts resource\n");
+        System.out.println(service.getChild("/accounts/").options().getText());
     }
 
 }

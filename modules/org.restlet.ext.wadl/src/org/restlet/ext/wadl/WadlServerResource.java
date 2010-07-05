@@ -64,7 +64,7 @@ public class WadlServerResource extends ServerResource {
      * Indicates if the resource should be automatically described via WADL when
      * an OPTIONS request is handled.
      */
-    private volatile boolean autoDescribed;
+    private volatile boolean autoDescribing;
 
     /**
      * The description of this documented resource. Is seen as the text content
@@ -82,7 +82,7 @@ public class WadlServerResource extends ServerResource {
      * Constructor.
      */
     public WadlServerResource() {
-        this.autoDescribed = true;
+        this.autoDescribing = true;
     }
 
     /**
@@ -141,7 +141,7 @@ public class WadlServerResource extends ServerResource {
      * @param info
      *            WADL description of the current resource to update.
      */
-    private void describe(ResourceInfo info) {
+    protected void describe(ResourceInfo info) {
         describe(getResourcePath(), info);
     }
 
@@ -256,6 +256,16 @@ public class WadlServerResource extends ServerResource {
     }
 
     /**
+     * Returns the description of the parameters of this resource. Returns null
+     * by default.
+     * 
+     * @return The description of the parameters.
+     */
+    protected List<ParameterInfo> describeParameters() {
+        return null;
+    }
+
+    /**
      * Describes the POST method.
      * 
      * @param info
@@ -278,7 +288,7 @@ public class WadlServerResource extends ServerResource {
     @Override
     protected void doInit() throws ResourceException {
         super.doInit();
-        this.autoDescribed = true;
+        this.autoDescribing = true;
     }
 
     /**
@@ -296,7 +306,7 @@ public class WadlServerResource extends ServerResource {
      * 
      * @return The set of headers as a collection of {@link Parameter} objects.
      */
-    private Form getHeader() {
+    private Form getHeaders() {
         return (Form) getRequestAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
     }
@@ -321,8 +331,8 @@ public class WadlServerResource extends ServerResource {
      */
     protected Parameter getParameter(String name) {
         Parameter result = null;
-
         Series<Parameter> set = getParameters(name);
+
         if (set != null) {
             result = set.getFirst(name);
         }
@@ -345,7 +355,7 @@ public class WadlServerResource extends ServerResource {
             result = new Form();
             result.add(parameterInfo.getName(), parameterInfo.getFixed());
         } else if (ParameterStyle.HEADER.equals(parameterInfo.getStyle())) {
-            result = getHeader().subList(parameterInfo.getName());
+            result = getHeaders().subList(parameterInfo.getName());
         } else if (ParameterStyle.TEMPLATE.equals(parameterInfo.getStyle())) {
             Object parameter = getRequest().getAttributes().get(
                     parameterInfo.getName());
@@ -384,8 +394,8 @@ public class WadlServerResource extends ServerResource {
     protected Series<Parameter> getParameters(String name) {
         Series<Parameter> result = null;
 
-        if (getParametersInfo() != null) {
-            for (ParameterInfo parameter : getParametersInfo()) {
+        if (describeParameters() != null) {
+            for (ParameterInfo parameter : describeParameters()) {
                 if (name.equals(parameter.getName())) {
                     result = getParameters(parameter);
                 }
@@ -393,16 +403,6 @@ public class WadlServerResource extends ServerResource {
         }
 
         return result;
-    }
-
-    /**
-     * Returns the description of the parameters of this resource. Returns null
-     * by default.
-     * 
-     * @return The description of the parameters.
-     */
-    protected List<ParameterInfo> getParametersInfo() {
-        return null;
     }
 
     /**
@@ -461,8 +461,8 @@ public class WadlServerResource extends ServerResource {
      * 
      * @return True if the resource should be automatically described via WADL.
      */
-    public boolean isAutoDescribed() {
-        return this.autoDescribed;
+    public boolean isAutoDescribing() {
+        return this.autoDescribing;
     }
 
     /**
@@ -480,9 +480,10 @@ public class WadlServerResource extends ServerResource {
 
     @Override
     public Representation options() {
-        if (isAutoDescribed()) {
+        if (isAutoDescribing()) {
             return describe();
         }
+
         return null;
     }
 
@@ -494,8 +495,8 @@ public class WadlServerResource extends ServerResource {
      *            True if the resource should be automatically described via
      *            WADL.
      */
-    public void setAutoDescribed(boolean autoDescribed) {
-        this.autoDescribed = autoDescribed;
+    public void setAutoDescribing(boolean autoDescribed) {
+        this.autoDescribing = autoDescribed;
     }
 
     /**

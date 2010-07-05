@@ -76,7 +76,7 @@ public class ResourceInfo extends DocumentedInfo {
 
             if (resource instanceof WadlServerResource) {
                 info.setParameters(((WadlServerResource) resource)
-                        .getParametersInfo());
+                        .describeParameters());
             }
         } else if (resource instanceof org.restlet.resource.Resource) {
             methodsList.addAll(((org.restlet.resource.Resource) resource)

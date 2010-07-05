@@ -36,6 +36,10 @@ Changes log
         to allow for custom documentation.
       - Added describeAnnotations(MethodInfo, ServerResource) static
         method on MethodInfo.
+      - Renamed WadlServerResource#autoDescribed into autoDescribing.
+      - The private WadlServerResource#describe(ResourceInfo) method is
+        now protected. Also renamed getParametersInfo() method into
+        describeParameters() for naming consistency.
     - Bugs fixed
       - Thread local variables are now cleared correctly.
         Prevented unloading of WAR files or OSGi bundles
