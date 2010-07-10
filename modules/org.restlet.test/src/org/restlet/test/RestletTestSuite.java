@@ -52,6 +52,7 @@ import org.restlet.test.data.StatusTestCase;
 import org.restlet.test.engine.EngineTestSuite;
 import org.restlet.test.ext.atom.AtomTestCase;
 import org.restlet.test.ext.freemarker.FreeMarkerTestCase;
+import org.restlet.test.ext.gwt.GwtConverterTest;
 import org.restlet.test.ext.jaxb.JaxbBasicConverterTest;
 import org.restlet.test.ext.jaxb.JaxbIntegrationConverterTestCase;
 import org.restlet.test.ext.odata.ODataTestSuite;
@@ -105,6 +106,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(FileReferenceTestCase.class);
         addTestSuite(FilterTestCase.class);
         addTestSuite(FreeMarkerTestCase.class);
+        addTestSuite(GwtConverterTest.class);
         addTestSuite(JaxbBasicConverterTest.class);
         addTestSuite(JaxbIntegrationConverterTestCase.class);
         addTestSuite(LanguageTestCase.class);
