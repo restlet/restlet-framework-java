@@ -195,7 +195,8 @@ public abstract class OutboundWay extends Way {
             addEntityHeaders(response.getEntity(), headers);
 
             if (!response.isEntityAvailable()) {
-                if (response.getEntity().getSize() != 0) {
+                if ((response.getEntity() != null)
+                        && response.getEntity().getSize() != 0) {
                     getLogger()
                             .warning(
                                     "A response with an unavailable and potentially non empty entity was returned. Ignoring the entity for resource \""

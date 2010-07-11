@@ -100,6 +100,8 @@ Changes log
       - ServerResource#updateAllowedMethods() now clears the response
         property before updating it. Caused troubles with the
         WadlApplication discovery logic.
+      - Fixed potential NPE in ServerConnection#writeMessage.
+        Reported by Tim Kuntz.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.
