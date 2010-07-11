@@ -30,7 +30,6 @@
 
 package org.restlet.test.security;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.After;
@@ -143,7 +142,7 @@ public class HttpBasicTestCase extends RestletTestCase {
                 WRONG_USERNAME, SHORT_PASSWORD.toCharArray()));
     }
 
-    public void HTTPBasicLong() throws IOException {
+    public void HTTPBasicLong() throws Exception {
         final Request request = new Request(Method.GET, this.uri);
         final Client client = new Client(Protocol.HTTP);
 
@@ -155,9 +154,11 @@ public class HttpBasicTestCase extends RestletTestCase {
         assertEquals("Long username did not return 200 OK", Status.SUCCESS_OK,
                 response.getStatus());
         assertEquals(AUTHENTICATED_MSG, response.getEntity().getText());
+        
+        client.stop();
     }
 
-    public void HTTPBasicLongWrong() {
+    public void HTTPBasicLongWrong() throws Exception {
         final Request request = new Request(Method.GET, this.uri);
         final Client client = new Client(Protocol.HTTP);
 
@@ -169,18 +170,21 @@ public class HttpBasicTestCase extends RestletTestCase {
 
         assertEquals("Long username w/wrong pw did not throw 403",
                 Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
+        
+        client.stop();
     }
 
     // Test various HTTP Basic auth connections
-    public void HTTPBasicNone() throws IOException {
+    public void HTTPBasicNone() throws Exception {
         final Request request = new Request(Method.GET, this.uri);
         final Client client = new Client(Protocol.HTTP);
         final Response response = client.handle(request);
         assertEquals("No user did not throw 401",
                 Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
+        client.stop();
     }
 
-    public void HTTPBasicShort() throws IOException {
+    public void HTTPBasicShort() throws Exception {
         final Request request = new Request(Method.GET, this.uri);
         final Client client = new Client(Protocol.HTTP);
 
@@ -192,9 +196,11 @@ public class HttpBasicTestCase extends RestletTestCase {
         assertEquals("Short username did not return 200 OK", Status.SUCCESS_OK,
                 response.getStatus());
         assertEquals(AUTHENTICATED_MSG, response.getEntity().getText());
+        
+        client.stop();
     }
 
-    public void HTTPBasicShortWrong() {
+    public void HTTPBasicShortWrong() throws Exception {
         final Request request = new Request(Method.GET, this.uri);
         final Client client = new Client(Protocol.HTTP);
 
@@ -206,9 +212,11 @@ public class HttpBasicTestCase extends RestletTestCase {
 
         assertEquals("Short username did not throw 401",
                 Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
+        
+        client.stop();
     }
 
-    public void HTTPBasicWrongUser() {
+    public void HTTPBasicWrongUser() throws Exception {
         final Request request = new Request(Method.GET, this.uri);
         final Client client = new Client(Protocol.HTTP);
 
@@ -220,6 +228,8 @@ public class HttpBasicTestCase extends RestletTestCase {
 
         assertEquals("Wrong username did not throw 401",
                 Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
+        
+        client.stop();
     }
 
     @Before

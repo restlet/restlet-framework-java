@@ -135,6 +135,7 @@ public class FileRepresentationTestCase extends RestletTestCase {
         assertEquals("abc", entity.getText());
         assertEquals(getClass().getName(), entity.getDisposition()
                 .getFilename());
+        client.stop();
     }
 
 }

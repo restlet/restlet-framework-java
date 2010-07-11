@@ -92,5 +92,6 @@ public class ComponentXmlTestCase extends RestletTestCase {
         assertTrue(response.getStatus().isClientError());
 
         component.stop();
+        client.stop();
     }
 }

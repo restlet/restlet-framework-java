@@ -178,10 +178,10 @@ public class RangeTestCase extends RestletTestCase {
     /**
      * Tests partial Get requests.
      * 
-     * @throws IOException
+     * @throws Exception
      */
     @Test
-    public void testGet() throws IOException {
+    public void testGet() throws Exception {
         Client client = new Client(Protocol.HTTP);
         // Test partial Get.
         Request request = new Request(Method.GET, "http://localhost:"
@@ -240,15 +240,17 @@ public class RangeTestCase extends RestletTestCase {
         assertEquals(9, response.getEntity().getSize());
         assertEquals(1, response.getEntity().getRange().getIndex());
         assertEquals(9, response.getEntity().getRange().getSize());
+
+        client.stop();
     }
 
     /**
      * Tests conditional ranges requests.
      * 
-     * @throws IOException
+     * @throws Exception
      */
     @Test
-    public void testConditionalRanges() throws IOException {
+    public void testConditionalRanges() throws Exception {
         Client client = new Client(Protocol.HTTP);
         // Test partial Get.
         Request request = new Request(Method.GET, "http://localhost:"
@@ -271,6 +273,7 @@ public class RangeTestCase extends RestletTestCase {
         response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("1234567890", response.getEntity().getText());
+        client.stop();
     }
 
     /**
@@ -384,10 +387,11 @@ public class RangeTestCase extends RestletTestCase {
 
     /**
      * Tests ranges.
+     * 
+     * @throws Exception
      */
     @Test
-    public void testRanges() {
-
+    public void testRanges() throws Exception {
         Client client = new Client(Protocol.HTTP);
 
         // Test "range" header.
@@ -417,5 +421,6 @@ public class RangeTestCase extends RestletTestCase {
                 Range.SIZE_MAX)));
         assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
 
+        client.stop();
     }
 }

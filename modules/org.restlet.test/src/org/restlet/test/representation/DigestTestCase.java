@@ -121,6 +121,7 @@ public class DigestTestCase extends RestletTestCase {
     @Test
     public void testGet() throws IOException, NoSuchAlgorithmException {
         Client client = new Client(Protocol.HTTP);
+        
         // Test partial Get.
         Request request = new Request(Method.PUT, "http://localhost:"
                 + TEST_PORT + "/");
@@ -140,6 +141,8 @@ public class DigestTestCase extends RestletTestCase {
             digester = new DigesterRepresentation(response.getEntity());
             digester.exhaust();
             assertTrue(digester.checkDigest());
+            
+            client.stop();
         } catch (Exception e) {
             fail(e.getMessage());
         }

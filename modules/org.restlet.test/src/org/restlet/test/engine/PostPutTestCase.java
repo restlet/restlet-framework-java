@@ -53,6 +53,7 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
         Client client = new Client(Protocol.HTTP);
         testCall(client, Method.POST, uri);
         testCall(client, Method.PUT, uri);
+        client.stop();
     }
 
     @Override

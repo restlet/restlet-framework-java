@@ -153,5 +153,7 @@ public class RiapTestCase extends TestCase {
                 ECHO_TEST_MSG);
         assertEquals("expected specific aggregated message", expectedResult,
                 aggRep.getText());
+
+        dispatcher.stop();
     }
 }

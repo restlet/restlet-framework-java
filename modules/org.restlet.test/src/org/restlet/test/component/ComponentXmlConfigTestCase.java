@@ -311,6 +311,7 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
 
     @Override
     protected void tearDown() throws Exception {
+        c.stop();
         c = null;
         super.tearDown();
     }

@@ -226,6 +226,7 @@ public class TemplateFilterTestCase extends RestletTestCase {
 
             // Now, let's stop the component!
             component.stop();
+            client.stop();
         } catch (Exception e) {
             e.printStackTrace();
         }

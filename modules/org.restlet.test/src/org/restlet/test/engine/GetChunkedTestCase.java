@@ -97,6 +97,7 @@ public class GetChunkedTestCase extends BaseConnectorsTestCase {
         assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
                 .getStatus());
         assertEquals("Hello world", r.getEntity().getText());
+        c.stop();
     }
 
     @Override

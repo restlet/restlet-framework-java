@@ -139,7 +139,9 @@ public class JaxbIntegrationConverterTestCase extends RestletTestCase {
         resultRepresentation = new JaxbRepresentation<Sample>(response
                 .getEntity(), Sample.class);
         sample = resultRepresentation.getObject();
-        assertEquals(IN_STRING, sample.getVal());     
+        assertEquals(IN_STRING, sample.getVal());  
+        
+        client.stop();
     }
 
     /**

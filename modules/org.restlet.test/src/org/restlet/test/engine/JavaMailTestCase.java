@@ -105,7 +105,8 @@ public class JavaMailTestCase extends RestletTestCase {
         System.out.println();
     }
 
-    private void sendMail(Protocol protocol, Request request, boolean startTls) {
+    private void sendMail(Protocol protocol, Request request, boolean startTls)
+            throws Exception {
         final Client client = new Client(protocol);
         client.getContext().getParameters().add("debug", DEBUG);
         client.getContext().getParameters().add("startTls",
@@ -114,6 +115,7 @@ public class JavaMailTestCase extends RestletTestCase {
         request.setEntity(MAIL, MediaType.APPLICATION_XML);
         final Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
+        client.stop();
     }
 
     @Override
@@ -126,7 +128,7 @@ public class JavaMailTestCase extends RestletTestCase {
         }
     }
 
-    public void testPop() {
+    public void testPop() throws Exception {
         final Client client = new Client(Protocol.POP);
         client.getContext().getParameters().add("debug", DEBUG);
 
@@ -162,9 +164,11 @@ public class JavaMailTestCase extends RestletTestCase {
                 assertEquals(Status.SUCCESS_OK, response.getStatus());
             }
         }
+
+        client.stop();
     }
 
-    public void testPops() throws IOException {
+    public void testPops() throws Exception {
         final Client client = new Client(Protocol.POPS);
         client.getContext().getParameters().add("debug", DEBUG);
 
@@ -185,23 +189,25 @@ public class JavaMailTestCase extends RestletTestCase {
             final String href = attrs.getNamedItem("href").getNodeValue();
             printMail(client, baseUri, href);
         }
+
+        client.stop();
     }
 
-    public void testSmtp() {
+    public void testSmtp() throws Exception {
         final Request request = new Request(Method.POST, YAHOO_SMTP);
         request.setChallengeResponse(new ChallengeResponse(
                 ChallengeScheme.SMTP_PLAIN, YAHOO_ID, YAHOO_PASSWORD));
         sendMail(Protocol.SMTP, request, false);
     }
 
-    public void testSmtps() {
+    public void testSmtps() throws Exception {
         final Request request = new Request(Method.POST, GMAIL_SMTPS);
         request.setChallengeResponse(new ChallengeResponse(
                 ChallengeScheme.SMTP_PLAIN, GMAIL_LOGIN, GMAIL_PASSWORD));
         sendMail(Protocol.SMTPS, request, false);
     }
 
-    public void testSmtpStartTls() {
+    public void testSmtpStartTls() throws Exception {
         final Request request = new Request(Method.POST, NOELIOS_SMTP);
         request.setChallengeResponse(new ChallengeResponse(
                 ChallengeScheme.SMTP_PLAIN, NOELIOS_LOGIN, NOELIOS_PASSWORD));

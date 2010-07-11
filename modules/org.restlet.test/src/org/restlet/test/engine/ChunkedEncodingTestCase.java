@@ -156,7 +156,8 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
         Representation rep = null;
         try {
-            rep = new StringRepresentation(new DomRepresentation(MediaType.TEXT_XML, doc).getText());
+            rep = new StringRepresentation(new DomRepresentation(
+                    MediaType.TEXT_XML, doc).getText());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -198,6 +199,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
             assertXML(new DomRepresentation(r.getEntity()));
         } finally {
             r.release();
+            c.stop();
         }
     }
 
@@ -215,6 +217,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
             assertXML(new DomRepresentation(r.getEntity()));
         } finally {
             r.release();
+            c.stop();
         }
 
     }

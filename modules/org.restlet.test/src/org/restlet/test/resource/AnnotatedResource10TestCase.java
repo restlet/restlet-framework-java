@@ -91,7 +91,6 @@ public class AnnotatedResource10TestCase extends TestCase {
      * @throws ResourceException
      */
     public void test() throws IOException, ResourceException {
-
         client = new Client(Protocol.HTTP);
         Request request = new Request(Method.GET, "http://localhost:8182/test");
         Response response = client.handle(request);

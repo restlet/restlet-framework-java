@@ -98,8 +98,9 @@ public class HeaderTestCase extends RestletTestCase {
      * @param parameters
      *            The list of parameters used to build the request.
      * @return The response of the request.
+     * @throws Exception
      */
-    private Response getWithParams(Parameter... parameters) {
+    private Response getWithParams(Parameter... parameters) throws Exception {
         final Client client = new Client(Protocol.HTTP);
         final Request request = new Request(Method.GET, "http://localhost:"
                 + TEST_PORT);
@@ -109,6 +110,7 @@ public class HeaderTestCase extends RestletTestCase {
         }
 
         Response result = client.handle(request);
+        client.stop();
         return result;
     }
 
