@@ -105,6 +105,9 @@ Changes log
         WadlApplication discovery logic.
       - Fixed potential NPE in ServerConnection#writeMessage.
         Reported by Tim Kuntz.
+      - When selecting an annotated method, if the request has an
+        available entity, now the Java methods without an input
+        parameter are rejected.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.

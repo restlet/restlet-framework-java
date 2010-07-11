@@ -265,7 +265,7 @@ public class AnnotatedResource9TestCase extends TestCase {
                 new Preference<MediaType>(MediaType.TEXT_HTML));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
-        assertEquals("usi-string", response.getEntity().getText());
+        assertEquals("usi-string+text", response.getEntity().getText());
 
         request = new Request(method, "http://localhost:8182/test");
         request.setEntity(form.getWebRepresentation());
@@ -281,7 +281,7 @@ public class AnnotatedResource9TestCase extends TestCase {
                 new Preference<MediaType>(MediaType.TEXT_PLAIN));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
-        assertEquals("usi-string", response.getEntity().getText());
+        assertEquals("usi-string+text", response.getEntity().getText());
 
         request = new Request(AnnotatedResource9TestCase.USI,
                 "http://localhost:8182/test");

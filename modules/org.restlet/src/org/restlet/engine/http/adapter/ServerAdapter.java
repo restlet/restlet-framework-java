@@ -239,7 +239,7 @@ public class ServerAdapter extends Adapter {
      */
     @SuppressWarnings("deprecation")
     public HttpRequest toRequest(ServerCall httpCall) {
-        final HttpRequest result = new HttpRequest(getContext(), httpCall);
+        HttpRequest result = new HttpRequest(getContext(), httpCall);
         result.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
                 httpCall.getRequestHeaders());
 

@@ -244,7 +244,7 @@ public class AnnotationInfo {
             boolean compatibleRequestEntity = true;
 
             if (value != null) {
-                if (requestEntity != null) {
+                if ((requestEntity != null) && requestEntity.isAvailable()) {
                     List<Variant> requestVariants = getRequestVariants(
                             metadataService, converterService);
 
@@ -257,6 +257,8 @@ public class AnnotationInfo {
                             compatibleRequestEntity = (requestVariants.get(i)
                                     .isCompatible(requestEntity));
                         }
+                    } else {
+                        compatibleRequestEntity = false;
                     }
                 }
 
