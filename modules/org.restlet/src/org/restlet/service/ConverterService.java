@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.data.MediaType;
 import org.restlet.engine.Engine;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.converter.ConverterUtils;
@@ -237,8 +238,18 @@ public class ConverterService extends Service {
                         result.setCharacterSet(target.getCharacterSet());
                     }
 
-                    if (result.getMediaType() == null) {
-                        result.setMediaType(target.getMediaType());
+                    if ((result.getMediaType() == null)
+                            || !result.getMediaType().isConcrete()) {
+                        if ((target.getMediaType() != null)
+                                && target.getMediaType().isConcrete()) {
+                            result.setMediaType(target.getMediaType());
+                        } else if (resource != null) {
+                            result.setMediaType(resource.getMetadataService()
+                                    .getDefaultMediaType());
+                        } else {
+                            result
+                                    .setMediaType(MediaType.APPLICATION_OCTET_STREAM);
+                        }
                     }
 
                     if (result.getEncodings().isEmpty()) {

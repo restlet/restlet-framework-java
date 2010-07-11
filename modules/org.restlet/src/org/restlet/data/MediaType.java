@@ -340,7 +340,7 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_OPENOFFICE_OTG = register(
             "application/vnd.oasis.opendocument.graphics-template",
             "OpenDocument Drawing Template");
-    
+
     // [ifndef gwt] member
     public static final MediaType APPLICATION_OPENOFFICE_OTH = register(
             "application/vnd.oasis.opendocument.text-web",
@@ -680,15 +680,15 @@ public final class MediaType extends Metadata {
             "Windows movie");
 
     /**
-     * Returns the first of the most specific MediaTypes of the given array of
-     * MediaTypes.
+     * Returns the first of the most specific media type of the given array of
+     * {@link MediaType}s.
      * <p>
      * Examples:
      * <ul>
      * <li>"text/plain" is more specific than "text/*" or "image/*"</li>
      * <li>"text/html" is same specific as "application/pdf" or "image/jpg"</li>
      * <li>"text/*" is same specific than "application/*" or "image/*"</li>
-     * <li>"*<!----->/*" is the must unspecific MediaType</li>
+     * <li>"*<!---->/*" is the most unspecific MediaType</li>
      * </ul>
      * 
      * @param mediaTypes
@@ -708,23 +708,25 @@ public final class MediaType extends Metadata {
             return mediaTypes[0];
         }
 
-        MediaType mostSpecific = mediaTypes[mediaTypes.length - 1];
+        MediaType mostSpecific = mediaTypes[0];
 
-        for (int i = mediaTypes.length - 2; i >= 0; i--) {
+        for (int i = 1; i < mediaTypes.length; i++) {
             MediaType mediaType = mediaTypes[i];
 
-            if (mediaType.getMainType().equals("*")) {
-                continue;
-            }
+            if (mediaType != null) {
+                if (mediaType.getMainType().equals("*")) {
+                    continue;
+                }
 
-            if (mostSpecific.getMainType().equals("*")) {
-                mostSpecific = mediaType;
-                continue;
-            }
+                if (mostSpecific.getMainType().equals("*")) {
+                    mostSpecific = mediaType;
+                    continue;
+                }
 
-            if (mostSpecific.getSubType().contains("*")) {
-                mostSpecific = mediaType;
-                continue;
+                if (mostSpecific.getSubType().contains("*")) {
+                    mostSpecific = mediaType;
+                    continue;
+                }
             }
         }
 

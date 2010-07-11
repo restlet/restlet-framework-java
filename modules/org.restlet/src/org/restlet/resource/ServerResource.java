@@ -30,7 +30,6 @@
 
 package org.restlet.resource;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +58,6 @@ import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.Variant;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
-import org.restlet.service.ConverterService;
 import org.restlet.service.MetadataService;
 import org.restlet.util.Series;
 
@@ -387,7 +385,8 @@ public abstract class ServerResource extends UniformResource {
                 } else if (method.equals(Method.OPTIONS)) {
                     result = options();
                 } else {
-                    AnnotationInfo annotationInfo = getAnnotation(method);
+                    AnnotationInfo annotationInfo = getAnnotation(method,
+                            getRequestEntity());
 
                     if (annotationInfo != null) {
                         result = doHandle(annotationInfo, null);
@@ -418,7 +417,6 @@ public abstract class ServerResource extends UniformResource {
             Variant variant) throws ResourceException {
         Representation result = null;
         Class<?>[] parameterTypes = annotationInfo.getJavaInputTypes();
-        ConverterService cs = getConverterService();
 
         // Invoke the annotated method and get the resulting object.
         Object resultObject = null;
@@ -437,12 +435,8 @@ public abstract class ServerResource extends UniformResource {
                             // Assume there is content to be read.
                             // NB: it does not handle the case where the size is
                             // unknown, but there is no content.
-                            try {
-                                parameter = cs.toObject(getRequestEntity(),
-                                        parameterType, this);
-                            } catch (IOException e) {
-                                parameter = null;
-                            }
+                            parameter = toObject(getRequestEntity(),
+                                    parameterType);
 
                             if (parameter == null) {
                                 throw new ResourceException(
@@ -474,7 +468,7 @@ public abstract class ServerResource extends UniformResource {
         }
 
         if (resultObject != null) {
-            result = cs.toRepresentation(resultObject, variant, this);
+            result = toRepresentation(resultObject, variant);
         }
 
         return result;
@@ -641,8 +635,22 @@ public abstract class ServerResource extends UniformResource {
      * @return The annotation descriptor.
      */
     private AnnotationInfo getAnnotation(Method method) {
+        return getAnnotation(method, null);
+    }
+
+    /**
+     * Returns the first annotation descriptor matching the given method.
+     * 
+     * @param method
+     *            The method to match.
+     * @param entity
+     *            The request entity or null.
+     * @return The annotation descriptor.
+     */
+    private AnnotationInfo getAnnotation(Method method, Representation entity) {
         if (isAnnotated()) {
-            return AnnotationUtils.getAnnotation(getAnnotations(), method);
+            return AnnotationUtils.getAnnotation(getAnnotations(), method,
+                    entity, getMetadataService(), getConverterService());
         }
 
         return null;
@@ -763,10 +771,10 @@ public abstract class ServerResource extends UniformResource {
                 List<Variant> annoVariants = null;
 
                 for (AnnotationInfo annotationInfo : getAnnotations()) {
-                    if (method.equals(annotationInfo.getRestletMethod())) {
+                    if (annotationInfo.isCompatible(method, getRequestEntity(),
+                            getMetadataService(), getConverterService())) {
                         annoVariants = annotationInfo.getResponseVariants(
-                                getRequestEntity(), getMetadataService(),
-                                getConverterService());
+                                getMetadataService(), getConverterService());
 
                         if (annoVariants != null) {
                             for (Variant v : annoVariants) {
@@ -1046,7 +1054,7 @@ public abstract class ServerResource extends UniformResource {
     protected Representation post(Representation entity)
             throws ResourceException {
         Representation result = null;
-        AnnotationInfo annotationInfo = getAnnotation(Method.POST);
+        AnnotationInfo annotationInfo = getAnnotation(Method.POST, entity);
 
         if (annotationInfo != null) {
             result = doHandle(annotationInfo, null);
@@ -1113,7 +1121,8 @@ public abstract class ServerResource extends UniformResource {
     protected Representation put(Representation representation)
             throws ResourceException {
         Representation result = null;
-        AnnotationInfo annotationInfo = getAnnotation(Method.PUT);
+        AnnotationInfo annotationInfo = getAnnotation(Method.PUT,
+                representation);
 
         if (annotationInfo != null) {
             result = doHandle(annotationInfo, null);

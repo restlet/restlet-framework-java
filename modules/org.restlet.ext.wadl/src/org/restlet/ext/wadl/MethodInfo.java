@@ -115,7 +115,7 @@ public class MethodInfo extends DocumentedInfo {
 
                     if (outputClass != null) {
                         List<Variant> responseVariants = annotationInfo
-                                .getResponseVariants(null, resource
+                                .getResponseVariants(resource
                                         .getMetadataService(), resource
                                         .getConverterService());
 

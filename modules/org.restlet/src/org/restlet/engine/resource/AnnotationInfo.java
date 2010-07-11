@@ -59,6 +59,27 @@ public class AnnotationInfo {
     private final String value;
 
     /**
+     * Constructor.
+     * 
+     * @param resourceInterface
+     *            The interface that hosts the annotated Java method.
+     * @param restletMethod
+     *            The matching Restlet method.
+     * @param javaMethod
+     *            The annotated Java method.
+     * @param value
+     *            The annotation value.
+     */
+    public AnnotationInfo(Class<?> resourceInterface, Method restletMethod,
+            java.lang.reflect.Method javaMethod, String value) {
+        super();
+        this.resourceInterface = resourceInterface;
+        this.restletMethod = restletMethod;
+        this.javaMethod = javaMethod;
+        this.value = value;
+    }
+
+    /**
      * Indicates if the current variant is equal to the given variant.
      * 
      * @param other
@@ -108,24 +129,22 @@ public class AnnotationInfo {
     }
 
     /**
-     * Constructor.
+     * Returns the input part of the annotation value.
      * 
-     * @param resourceInterface
-     *            The interface that hosts the annotated Java method.
-     * @param restletMethod
-     *            The matching Restlet method.
-     * @param javaMethod
-     *            The annotated Java method.
-     * @param value
-     *            The annotation value.
+     * @return The input part of the annotation value.
      */
-    public AnnotationInfo(Class<?> resourceInterface, Method restletMethod,
-            java.lang.reflect.Method javaMethod, String value) {
-        super();
-        this.resourceInterface = resourceInterface;
-        this.restletMethod = restletMethod;
-        this.javaMethod = javaMethod;
-        this.value = value;
+    public String getInputValue() {
+        String result = getValue();
+
+        if (result != null) {
+            int colonIndex = result.indexOf(':');
+
+            if (colonIndex != -1) {
+                result = result.substring(0, colonIndex);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -160,6 +179,25 @@ public class AnnotationInfo {
     public Class<?> getJavaOutputType() {
         return GenericTypeResolver.resolveReturnType(getJavaMethod(),
                 resourceInterface);
+    }
+
+    /**
+     * Returns the output part of the annotation value.
+     * 
+     * @return The output part of the annotation value.
+     */
+    public String getOutputValue() {
+        String result = getValue();
+
+        if (result != null) {
+            int colonIndex = result.indexOf(':');
+
+            if (colonIndex != -1) {
+                result = result.substring(colonIndex + 1);
+            }
+        }
+
+        return result;
     }
 
     // [ifndef gwt] method
@@ -223,8 +261,6 @@ public class AnnotationInfo {
     /**
      * Returns a list of response variants based on the annotation value.
      * 
-     * @param requestEntity
-     *            Optional request entity.
      * @param metadataService
      *            The metadata service to use.
      * @param converterService
@@ -232,8 +268,7 @@ public class AnnotationInfo {
      * @return A list of response variants.
      */
     @SuppressWarnings("unchecked")
-    public List<Variant> getResponseVariants(Representation requestEntity,
-            MetadataService metadataService,
+    public List<Variant> getResponseVariants(MetadataService metadataService,
             org.restlet.service.ConverterService converterService) {
         List<Variant> result = null;
 
@@ -241,50 +276,29 @@ public class AnnotationInfo {
                 && (getJavaOutputType() != void.class)
                 && (getJavaOutputType() != Void.class)) {
             String value = getOutputValue();
-            boolean compatibleRequestEntity = true;
 
             if (value != null) {
-                if ((requestEntity != null) && requestEntity.isAvailable()) {
-                    List<Variant> requestVariants = getRequestVariants(
-                            metadataService, converterService);
+                String[] extensions = value.split("\\|");
+                for (String extension : extensions) {
+                    List<MediaType> mediaTypes = metadataService
+                            .getAllMediaTypes(extension);
 
-                    if ((requestVariants != null) && !requestVariants.isEmpty()) {
-                        // Check that the compatibility
-                        compatibleRequestEntity = false;
-
-                        for (int i = 0; (!compatibleRequestEntity)
-                                && (i < requestVariants.size()); i++) {
-                            compatibleRequestEntity = (requestVariants.get(i)
-                                    .isCompatible(requestEntity));
-                        }
-                    } else {
-                        compatibleRequestEntity = false;
-                    }
-                }
-
-                if (compatibleRequestEntity) {
-                    String[] extensions = value.split("\\|");
-                    for (String extension : extensions) {
-                        List<MediaType> mediaTypes = metadataService
-                                .getAllMediaTypes(extension);
-
-                        if (mediaTypes != null) {
-                            for (MediaType mediaType : mediaTypes) {
-                                if ((result == null)
-                                        || (!result.contains(mediaType))) {
-                                    if (result == null) {
-                                        result = new ArrayList<Variant>();
-                                    }
-
-                                    result.add(new Variant(mediaType));
+                    if (mediaTypes != null) {
+                        for (MediaType mediaType : mediaTypes) {
+                            if ((result == null)
+                                    || (!result.contains(mediaType))) {
+                                if (result == null) {
+                                    result = new ArrayList<Variant>();
                                 }
+
+                                result.add(new Variant(mediaType));
                             }
                         }
                     }
                 }
             }
 
-            if (compatibleRequestEntity && (result == null)) {
+            if (result == null) {
                 result = (List<Variant>) converterService.getVariants(
                         getJavaOutputType(), null);
             }
@@ -303,50 +317,71 @@ public class AnnotationInfo {
     }
 
     /**
-     * Returns the input part of the annotation value.
-     * 
-     * @return The input part of the annotation value.
-     */
-    public String getInputValue() {
-        String result = getValue();
-
-        if (result != null) {
-            int colonIndex = result.indexOf(':');
-
-            if (colonIndex != -1) {
-                result = result.substring(0, colonIndex);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the output part of the annotation value.
-     * 
-     * @return The output part of the annotation value.
-     */
-    public String getOutputValue() {
-        String result = getValue();
-
-        if (result != null) {
-            int colonIndex = result.indexOf(':');
-
-            if (colonIndex != -1) {
-                result = result.substring(colonIndex + 1);
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the annotation value.
      * 
      * @return The annotation value.
      */
     public String getValue() {
         return value;
+    }
+
+    /**
+     * Indicates if the annotated method described is compatible with the given
+     * parameters.
+     * 
+     * @param restletMethod
+     *            The Restlet method to match.
+     * @param requestEntity
+     *            Optional request entity.
+     * @param metadataService
+     *            The metadata service to use.
+     * @param converterService
+     *            The converter service to use.
+     * @return True if the annotated method is compatible.
+     */
+    public boolean isCompatible(Method restletMethod,
+            Representation requestEntity, MetadataService metadataService,
+            org.restlet.service.ConverterService converterService) {
+        return getRestletMethod().equals(restletMethod)
+                && isCompatibleRequestEntity(requestEntity, metadataService,
+                        converterService);
+    }
+
+    /**
+     * Indicates if the given request entity is compatible with the annotated
+     * method described.
+     * 
+     * @param requestEntity
+     *            Optional request entity.
+     * @param metadataService
+     *            The metadata service to use.
+     * @param converterService
+     *            The converter service to use.
+     * @return
+     */
+    public boolean isCompatibleRequestEntity(Representation requestEntity,
+            MetadataService metadataService,
+            org.restlet.service.ConverterService converterService) {
+        boolean result = true;
+
+        if ((requestEntity != null) && requestEntity.isAvailable()) {
+            List<Variant> requestVariants = getRequestVariants(metadataService,
+                    converterService);
+
+            if ((requestVariants != null) && !requestVariants.isEmpty()) {
+                // Check that the compatibility
+                result = false;
+
+                for (int i = 0; (!result) && (i < requestVariants.size()); i++) {
+                    result = (requestVariants.get(i)
+                            .isCompatible(requestEntity));
+                }
+            } else {
+                result = false;
+            }
+        }
+
+        return result;
     }
 
     @Override

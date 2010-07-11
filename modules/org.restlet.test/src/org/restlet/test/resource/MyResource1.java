@@ -46,7 +46,7 @@ public interface MyResource1 {
     @Get
     public MyBean represent();
 
-    @Put("txt")
+    @Put
     public String store(MyBean bean);
 
     @Post

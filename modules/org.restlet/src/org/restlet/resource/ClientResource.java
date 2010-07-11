@@ -805,7 +805,7 @@ public class ClientResource extends UniformResource {
                 .getVariants(resultClass, null));
 
         result = toObject(handle(method, (entity == null) ? null
-                : toRepresentation(entity), clientInfo), resultClass);
+                : toRepresentation(entity, null), clientInfo), resultClass);
 
         return result;
     }
@@ -1131,7 +1131,7 @@ public class ClientResource extends UniformResource {
      *      POST method</a>
      */
     public Representation post(Object entity) throws ResourceException {
-        return post(toRepresentation(entity));
+        return post(toRepresentation(entity, null));
     }
 
     // [ifndef gwt] method
@@ -1170,7 +1170,7 @@ public class ClientResource extends UniformResource {
      */
     public Representation post(Object entity, MediaType mediaType)
             throws ResourceException {
-        return handle(Method.POST, toRepresentation(entity), mediaType);
+        return handle(Method.POST, toRepresentation(entity, null), mediaType);
     }
 
     /**
@@ -1202,7 +1202,7 @@ public class ClientResource extends UniformResource {
      *      PUT method</a>
      */
     public Representation put(Object entity) throws ResourceException {
-        return put(toRepresentation(entity));
+        return put(toRepresentation(entity, null));
     }
 
     // [ifndef gwt] method
@@ -1241,7 +1241,7 @@ public class ClientResource extends UniformResource {
      */
     public Representation put(Object entity, MediaType mediaType)
             throws ResourceException {
-        return handle(Method.PUT, toRepresentation(entity), mediaType);
+        return handle(Method.PUT, toRepresentation(entity, null), mediaType);
     }
 
     /**
@@ -1523,56 +1523,6 @@ public class ClientResource extends UniformResource {
 
     // [ifndef gwt] method
     /**
-     * Converts a representation into a Java object. Leverages the
-     * {@link org.restlet.service.ConverterService}.
-     * 
-     * @param <T>
-     *            The expected class of the Java object.
-     * @param source
-     *            The source representation to convert.
-     * @param target
-     *            The target class of the Java object.
-     * @return The converted Java object.
-     * @throws ResourceException
-     */
-    protected <T> T toObject(Representation source, Class<T> target)
-            throws ResourceException {
-        T result = null;
-
-        if (source != null) {
-            try {
-                org.restlet.service.ConverterService cs = getConverterService();
-                result = cs.toObject(source, target, this);
-            } catch (Exception e) {
-                throw new ResourceException(e);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Converts an object into a representation based on client preferences.
-     * 
-     * @param source
-     *            The object to convert.
-     * @return The wrapper representation.
-     */
-    protected Representation toRepresentation(Object source) {
-        Representation result = null;
-
-        if (source != null) {
-            // [ifndef gwt]
-            org.restlet.service.ConverterService cs = getConverterService();
-            result = cs.toRepresentation(source);
-            // [enddef]
-        }
-
-        return result;
-    }
-
-    // [ifndef gwt] method
-    /**
      * Wraps the client resource to proxy calls to the given Java interface into
      * Restlet method calls.
      * 
@@ -1664,7 +1614,8 @@ public class ClientResource extends UniformResource {
 
                                     setOnResponse(callback);
                                 } else {
-                                    requestEntity = toRepresentation(args[i]);
+                                    requestEntity = toRepresentation(args[i],
+                                            null);
                                 }
                             }
                         }
@@ -1680,8 +1631,7 @@ public class ClientResource extends UniformResource {
 
                         // Updates the client preferences
                         List<org.restlet.representation.Variant> responseVariants = annotation
-                                .getResponseVariants(requestEntity,
-                                        getMetadataService(),
+                                .getResponseVariants(getMetadataService(),
                                         getConverterService());
 
                         if (responseVariants != null) {

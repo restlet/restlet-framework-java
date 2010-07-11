@@ -37,7 +37,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.Method;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ServerResource;
+import org.restlet.service.MetadataService;
 
 // [excludes gwt]
 /**
@@ -125,9 +127,8 @@ public class AnnotationUtils {
             }
 
             // Inspect the current class
-            if(clazz.isInterface()){
-                for (java.lang.reflect.Method javaMethod : clazz
-                        .getMethods()) {
+            if (clazz.isInterface()) {
+                for (java.lang.reflect.Method javaMethod : clazz.getMethods()) {
                     addAnnotationDescriptors(result, clazz, javaMethod);
                 }
             } else {
@@ -191,13 +192,22 @@ public class AnnotationUtils {
      *            The list of annotations.
      * @param restletMethod
      *            The method to match.
+     * @param entity
+     *            The request entity to match or null if no entity is provided.
+     * @param metadataService
+     *            The metadata service to use.
+     * @param converterService
+     *            The converter service to use.
      * @return The annotation descriptor.
      */
     public static AnnotationInfo getAnnotation(
-            List<AnnotationInfo> annotations, Method restletMethod) {
+            List<AnnotationInfo> annotations, Method restletMethod,
+            Representation entity, MetadataService metadataService,
+            org.restlet.service.ConverterService converterService) {
         if (annotations != null) {
             for (AnnotationInfo annotationInfo : annotations) {
-                if (annotationInfo.getRestletMethod().equals(restletMethod)) {
+                if (annotationInfo.isCompatible(restletMethod, entity,
+                        metadataService, converterService)) {
                     return annotationInfo;
                 }
             }

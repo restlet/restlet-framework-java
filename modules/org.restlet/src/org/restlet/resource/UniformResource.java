@@ -55,6 +55,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
 import org.restlet.service.StatusService;
 import org.restlet.util.Series;
@@ -626,6 +627,58 @@ public abstract class UniformResource {
      */
     public void setResponse(Response response) {
         this.response = response;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Converts a representation into a Java object. Leverages the
+     * {@link org.restlet.service.ConverterService}.
+     * 
+     * @param <T>
+     *            The expected class of the Java object.
+     * @param source
+     *            The source representation to convert.
+     * @param target
+     *            The target class of the Java object.
+     * @return The converted Java object.
+     * @throws ResourceException
+     */
+    protected <T> T toObject(Representation source, Class<T> target)
+            throws ResourceException {
+        T result = null;
+
+        if (source != null) {
+            try {
+                org.restlet.service.ConverterService cs = getConverterService();
+                result = cs.toObject(source, target, this);
+            } catch (Exception e) {
+                throw new ResourceException(e);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Converts an object into a representation based on client preferences.
+     * 
+     * @param source
+     *            The object to convert.
+     * @param target
+     *            The target representation variant.
+     * @return The wrapper representation.
+     */
+    protected Representation toRepresentation(Object source, Variant target) {
+        Representation result = null;
+
+        if (source != null) {
+            // [ifndef gwt]
+            org.restlet.service.ConverterService cs = getConverterService();
+            result = cs.toRepresentation(source, target, this);
+            // [enddef]
+        }
+
+        return result;
     }
 
 }

@@ -287,24 +287,30 @@ public class DefaultConverter extends ConverterHelper {
         Representation result = null;
 
         if (source instanceof String) {
-            result = new StringRepresentation((String) source, target
-                    .getMediaType());
+            result = new StringRepresentation((String) source, MediaType
+                    .getMostSpecific(target.getMediaType(),
+                            MediaType.TEXT_PLAIN));
         } else if (source instanceof File) {
-            result = new FileRepresentation((File) source, target
-                    .getMediaType());
+            result = new FileRepresentation((File) source, MediaType
+                    .getMostSpecific(target.getMediaType(),
+                            MediaType.APPLICATION_OCTET_STREAM));
         } else if (source instanceof Form) {
             result = ((Form) source).getWebRepresentation();
         } else if (source instanceof InputStream) {
-            result = new InputRepresentation((InputStream) source, target
-                    .getMediaType());
+            result = new InputRepresentation((InputStream) source, MediaType
+                    .getMostSpecific(target.getMediaType(),
+                            MediaType.APPLICATION_OCTET_STREAM));
         } else if (source instanceof Reader) {
-            result = new ReaderRepresentation((Reader) source, target
-                    .getMediaType());
+            result = new ReaderRepresentation((Reader) source, MediaType
+                    .getMostSpecific(target.getMediaType(),
+                            MediaType.TEXT_PLAIN));
         } else if (source instanceof Representation) {
             result = (Representation) source;
         } else if (source instanceof Serializable) {
             result = new ObjectRepresentation<Serializable>(
-                    (Serializable) source, target.getMediaType());
+                    (Serializable) source, MediaType
+                            .getMostSpecific(target.getMediaType(),
+                                    MediaType.APPLICATION_OCTET_STREAM));
         }
 
         return result;
