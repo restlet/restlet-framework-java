@@ -134,7 +134,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
                     .getEntity().getText());
         } finally {
             r.release();
-           c.stop();
+            c.stop();
         }
     }
 
