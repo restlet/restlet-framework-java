@@ -44,6 +44,9 @@ Changes log
         describe(ApplicationInfo) method to allow updating the parent
         application description, to add global representations for 
         example.
+      - The WadlDescribable interface now passes an ApplicationInfo
+        instance as parameter to the getRessources() method so the
+        global properties can be updated if necessary. 
     - Bugs fixed
       - Thread local variables are now cleared correctly.
         Prevented unloading of WAR files or OSGi bundles

@@ -573,7 +573,8 @@ public class WadlApplication extends Application {
         ResourceInfo result = null;
 
         if (restlet instanceof WadlDescribable) {
-            result = ((WadlDescribable) restlet).getResourceInfo();
+            result = ((WadlDescribable) restlet)
+                    .getResourceInfo(applicationInfo);
             result.setPath(path);
         } else if (restlet instanceof Finder) {
             result = getResourceInfo(applicationInfo, (Finder) restlet, path,

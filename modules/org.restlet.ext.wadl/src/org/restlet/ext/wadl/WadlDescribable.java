@@ -46,8 +46,11 @@ public interface WadlDescribable {
     /**
      * Returns a full documented {@link ResourceInfo} instance.
      * 
+     * @param applicationInfo
+     *            The parent WADL application descriptor.
+     * 
      * @return A full documented {@link ResourceInfo} instance.
      */
-    public ResourceInfo getResourceInfo();
+    public ResourceInfo getResourceInfo(ApplicationInfo applicationInfo);
 
 }
