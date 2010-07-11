@@ -454,6 +454,9 @@ public class ClientResource extends UniformResource {
         }
     }
 
+    /**
+     * Attempts to {@link #release()} the resource.
+     */
     @Override
     protected void finalize() throws Throwable {
         release();

@@ -46,7 +46,13 @@ Changes log
         example.
       - The WadlDescribable interface now passes an ApplicationInfo
         instance as parameter to the getRessources() method so the
-        global properties can be updated if necessary. 
+        global properties can be updated if necessary.
+      - Moved ClientResource#toRepresentation(...) and toObject(...) 
+        methods up to UniformResource, so that they can be overridden 
+        in ServerResource subclasses as well.     
+      - Upon garbage collection, if a Restlet instance is still started
+        its stop() method is now automatically called for clean-up
+        purpose.    
     - Bugs fixed
       - Thread local variables are now cleared correctly.
         Prevented unloading of WAR files or OSGi bundles
@@ -108,6 +114,7 @@ Changes log
       - When selecting an annotated method, if the request has an
         available entity, now the Java methods without an input
         parameter are rejected.
+      - ConverterService don't return non concrete media types anymore.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.

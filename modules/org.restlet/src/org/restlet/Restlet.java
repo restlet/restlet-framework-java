@@ -114,6 +114,16 @@ public abstract class Restlet implements Uniform {
         // [enddef]
     }
 
+    /**
+     * Attempts to {@link #stop()} the Restlet if it is still started.
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        if (isStarted()) {
+            stop();
+        }
+    }
+
     // [ifndef gwt] method
     /**
      * Returns the parent application if it exists, or null.
