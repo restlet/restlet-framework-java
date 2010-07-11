@@ -212,11 +212,8 @@ public abstract class Connection<T extends Connector> implements Notifiable {
     /**
      * Closes the connection. By default, set the state to
      * {@link ConnectionState#CLOSED}.
-     * 
-     * @param graceful
-     *            Indicates if a graceful close should be attempted.
      */
-    public void close(boolean graceful) {
+    public void close() {
         try {
             if (!getSocket().isClosed()) {
                 // Flush the output stream
@@ -700,7 +697,7 @@ public abstract class Connection<T extends Connector> implements Notifiable {
                                 Level.FINE,
                                 "Error while reading a message. Closing the connection.",
                                 e);
-                close(false);
+                close();
             }
         }
 
@@ -971,7 +968,7 @@ public abstract class Connection<T extends Connector> implements Notifiable {
 
                 // Try to close the connection immediately.
                 if ((getState() == ConnectionState.CLOSING) && !isBusy()) {
-                    close(true);
+                    close();
                 }
             }
         } catch (Throwable e) {

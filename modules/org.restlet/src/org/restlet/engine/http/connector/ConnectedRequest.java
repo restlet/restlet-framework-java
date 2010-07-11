@@ -318,7 +318,7 @@ public class ConnectedRequest extends Request {
 
     @Override
     public boolean abort() {
-        getConnection().close(false);
+        getConnection().close();
         return true;
     }
 

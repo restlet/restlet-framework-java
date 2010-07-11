@@ -559,6 +559,12 @@ public abstract class BaseHelper<T extends Connector> extends
                                 ex);
             }
         }
+        for (Connection<T> connection : getConnections()) {
+            getLogger().log(
+                    Level.WARNING,
+                    "The controller is shutdown whereas a connection was found in the state: "
+                            + connection.getState());
+        }
     }
 
 }

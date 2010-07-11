@@ -72,7 +72,7 @@ public class Controller extends BaseTask {
                 getHelper().getConnections().remove(conn);
             } else if ((conn.getState() == ConnectionState.CLOSING)
                     && !conn.isBusy()) {
-                conn.close(true);
+                conn.close();
             } else {
                 if ((isOverloaded() && !getHelper().isClientSide())
                         || conn.canWrite()) {
@@ -222,7 +222,7 @@ public class Controller extends BaseTask {
     public void run() {
         setRunning(true);
 
-        while (isRunning()) {
+        while (isRunning() || !getHelper().getConnections().isEmpty()) {
             try {
                 if (isOverloaded()) {
                     if (!isWorkerServiceFull()) {
