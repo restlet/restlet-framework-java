@@ -30,7 +30,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.solr</groupId>
-			<artifactId>solr-common</artifactId>
+			<artifactId>solr-solrj</artifactId>
 			<version>1.4.0</version>
 		</dependency>
 		<dependency>

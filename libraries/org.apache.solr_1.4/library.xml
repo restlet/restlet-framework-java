@@ -8,7 +8,7 @@
 	<package id="solr-common" name="org.apache.solr.common">
 		<maven>
 			<groupId>org.apache.solr</groupId>
-			<artifactId>solr-common</artifactId>
+			<artifactId>solr-solrj</artifactId>
 		</maven>
 	</package>
 	<version>1.4</version>
