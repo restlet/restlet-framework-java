@@ -120,6 +120,17 @@ import org.restlet.engine.Edition;
  */
 public class Reference {
 
+    /** Helps to map characters and their validity as URI characters. */
+    private static final boolean[] charValidityMap = new boolean[127];
+
+    static {
+        // Initialize the map af valid characters.
+        for (int character = 0; character < 127; character++) {
+            charValidityMap[character] = isReserved(character) || isUnreserved(character)
+                    || (character == '%');
+        }
+    }
+
     /**
      * Decodes a given string using the standard URI encoding mechanism and the
      * UTF-8 character set.
@@ -412,8 +423,7 @@ public class Reference {
      * @return True if the given character is a valid URI character.
      */
     public static boolean isValid(int character) {
-        return isReserved(character) || isUnreserved(character)
-                || (character == '%');
+        return character >= 0 && character < 127 && charValidityMap[character];
     }
 
     /**

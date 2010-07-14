@@ -117,6 +117,9 @@ Changes log
       - ConverterService don't return non concrete media types anymore.
       - Fixed internal connectors in order to ensure that connections 
         are closed when the controller is shutdown.
+    - Enhancements
+        - Improved performance of the Reference#isValid(char) method.
+          Suggested by Guillaume Maillard.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.
