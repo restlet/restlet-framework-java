@@ -53,7 +53,8 @@
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>${dependency.module.package}</artifactId>
-			<version>${ant["version-maven"]}</version>
+<!--			<version>${ant["version-maven"]}</version> -->
+			<version><#noparse>${version}</#noparse></version>
 			<#if dependency.mavenScope??><scope>${dependency.mavenScope}</scope></#if>
 		</dependency>
 		</#list>
