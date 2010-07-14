@@ -38,9 +38,15 @@
 			<name>Restlet repository</name>
 			<url>http://maven.restlet.org</url>
 		</repository>
+		<repository>
+			<id>maven-db4o</id>
+			<name>Db4o repository</name>
+			<url>https://source.db4o.com/maven/</url>
+		</repository>
 	</repositories>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 <#list edition.libraries as library>
    <#list library.packages?sort as package>
 		<lib-${package.id}-version><#if package.mavenVersion??>${package.mavenVersion}<#else>${library.minorVersion}<#if library.versionSuffix??>.${library.versionSuffix}</#if></#if></lib-${package.id}-version>
