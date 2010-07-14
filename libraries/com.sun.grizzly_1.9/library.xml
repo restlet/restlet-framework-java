@@ -13,7 +13,7 @@
 	</package>
 
 	<version>1.9</version>
-	<release>18i</release>
+	<release>18-i</release>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
