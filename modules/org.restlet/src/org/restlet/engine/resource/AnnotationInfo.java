@@ -50,6 +50,7 @@ public class AnnotationInfo {
     /** The annotated Java method. */
     private final java.lang.reflect.Method javaMethod;
 
+    /** The interface that hosts the annotated Java method. */
     private final Class<?> resourceInterface;
 
     /** The matching Restlet method. */
@@ -148,6 +149,18 @@ public class AnnotationInfo {
     }
 
     /**
+     * Returns the generic type for the given input parameter.
+     * 
+     * @param index
+     *            The input parameter index.
+     * 
+     * @return The generic type.
+     */
+    public Class<?> getJavaInputType(int index) {
+        return getJavaMethod().getParameterTypes()[index];
+    }
+
+    /**
      * Returns the input types of the Java method.
      * 
      * @return The input types of the Java method.
@@ -155,10 +168,11 @@ public class AnnotationInfo {
     public Class<?>[] getJavaInputTypes() {
         int count = getJavaMethod().getParameterTypes().length;
         Class<?>[] classes = new Class[count];
+
         for (int i = 0; i < count; i++) {
-            classes[i] = GenericTypeResolver.resolveParameterType(
-                    getJavaMethod(), i, resourceInterface);
+            classes[i] = getJavaInputType(i);
         }
+
         return classes;
     }
 
@@ -177,8 +191,7 @@ public class AnnotationInfo {
      * @return The output type of the Java method.
      */
     public Class<?> getJavaOutputType() {
-        return GenericTypeResolver.resolveReturnType(getJavaMethod(),
-                resourceInterface);
+        return getJavaMethod().getReturnType();
     }
 
     /**

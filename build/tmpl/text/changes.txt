@@ -88,8 +88,6 @@ Changes log
         Reported by Guillermo Vega and fixed by Vassilis Touloumtzoglou.
       - Made JaasUtils.createSubject(ClientInfo) static.
         Reported by Bruno Harbulot.
-      - Fix ClientResource#wrap generics support.
-        Contributed by Valdis Rigdon.
       - Fixed NPE when requesting via the RIAP protocol.
         Reported by Alex Milowski.
       - Application#outboundRoot wasn't properly taken into account by
