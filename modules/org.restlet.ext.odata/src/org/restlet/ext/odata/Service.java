@@ -208,6 +208,11 @@ public class Service {
             Entry entry = toEntry(entity);
 
             ClientResource resource = createResource(entitySetName);
+            if (getMetadata() == null) {
+                throw new Exception("Can't add entity to this entity set "
+                        + resource.getReference()
+                        + " due to the lack of the service's metadata.");
+            }
 
             try {
                 // TODO Fix chunked request with net client connector
@@ -777,6 +782,7 @@ public class Service {
     public Reference getValueRef(Object entity) {
         if (entity != null) {
             Metadata metadata = (Metadata) getMetadata();
+
             EntityType type = metadata.getEntityType(entity.getClass());
             if (type.isBlob() && type.getBlobValueRefProperty() != null) {
                 try {

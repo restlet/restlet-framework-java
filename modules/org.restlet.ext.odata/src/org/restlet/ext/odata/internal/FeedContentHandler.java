@@ -260,7 +260,7 @@ public class FeedContentHandler<T> extends FeedReader {
         if (this.entityClass == null) {
             this.entityClass = ReflectUtils.getEntryClass(feed);
         }
-        if (this.entityType == null) {
+        if (this.entityType == null && metadata != null) {
             entityType = metadata.getEntityType(entityClass);
         }
     }

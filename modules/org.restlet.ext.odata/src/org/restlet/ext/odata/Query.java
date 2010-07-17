@@ -226,8 +226,12 @@ public class Query<T> implements Iterable<T> {
         this.count = -1;
         this.executed = false;
         this.entityClass = entityClass;
-        this.entityType = ((Metadata) service.getMetadata())
-                .getEntityType(entityClass);
+        if (service.getMetadata() != null) {
+            this.entityType = ((Metadata) service.getMetadata())
+                    .getEntityType(entityClass);
+        } else {
+            this.entityType = null;
+        }
         this.service = service;
         Reference ref = new Reference(subpath);
         if (ref.isAbsolute()) {
@@ -338,6 +342,12 @@ public class Query<T> implements Iterable<T> {
             ClientResource resource = service.createResource(new Reference(
                     targetUri));
 
+            Metadata metadata = (Metadata) service.getMetadata();
+            if (metadata == null) {
+                throw new Exception(
+                        "Can't execute the query without the service's metadata.");
+            }
+
             Representation result = null;
             try {
                 result = resource.get(MediaType.APPLICATION_ATOM);
@@ -353,16 +363,14 @@ public class Query<T> implements Iterable<T> {
                 switch (guessType(targetUri)) {
                 case TYPE_ENTITY_SET:
                     FeedContentHandler<T> feedContentHandler = new FeedContentHandler<T>(
-                            entityClass, entityType, (Metadata) service
-                                    .getMetadata(), getLogger());
+                            entityClass, entityType, metadata, getLogger());
                     setFeed(new Feed(result, feedContentHandler));
                     this.count = feedContentHandler.getCount();
                     this.entities = feedContentHandler.getEntities();
                     break;
                 case TYPE_ENTITY:
                     EntryContentHandler<T> entryContentHandler = new EntryContentHandler<T>(
-                            entityClass, entityType, (Metadata) service
-                                    .getMetadata(), getLogger());
+                            entityClass, entityType, metadata, getLogger());
                     Feed feed = new Feed();
                     feed.getEntries().add(
                             new Entry(result, entryContentHandler));
@@ -381,15 +389,13 @@ public class Query<T> implements Iterable<T> {
                             Math.min(100, rep.getText().length()));
                     if (string.contains("<feed")) {
                         feedContentHandler = new FeedContentHandler<T>(
-                                entityClass, entityType, (Metadata) service.getMetadata(),
-                                getLogger());
+                                entityClass, entityType, metadata, getLogger());
                         setFeed(new Feed(rep, feedContentHandler));
                         this.count = feedContentHandler.getCount();
                         this.entities = feedContentHandler.getEntities();
                     } else if (string.contains("<entry")) {
                         entryContentHandler = new EntryContentHandler<T>(
-                                entityClass, entityType, (Metadata) service.getMetadata(),
-                                getLogger());
+                                entityClass, entityType, metadata, getLogger());
                         feed = new Feed();
                         feed.getEntries().add(
                                 new Entry(rep, entryContentHandler));
