@@ -58,14 +58,14 @@ public class AnnotationUtils {
      * @param descriptors
      *            The annotation descriptors to update or null to create a new
      *            one.
-     * @param resourceInterface
-     *            The interface that hosts the javaMethod.
+     * @param resourceClass
+     *            The class or interface that hosts the javaMethod.
      * @param javaMethod
      *            The Java method to inspect.
      * @return The annotation descriptors.
      */
     private static List<AnnotationInfo> addAnnotationDescriptors(
-            List<AnnotationInfo> descriptors, Class<?> resourceInterface,
+            List<AnnotationInfo> descriptors, Class<?> resourceClass,
             java.lang.reflect.Method javaMethod) {
         List<AnnotationInfo> result = descriptors;
 
@@ -97,7 +97,7 @@ public class AnnotationUtils {
                     }
                 }
 
-                result.add(new AnnotationInfo(resourceInterface, restletMethod,
+                result.add(new AnnotationInfo(resourceClass, restletMethod,
                         javaMethod, value));
 
             }

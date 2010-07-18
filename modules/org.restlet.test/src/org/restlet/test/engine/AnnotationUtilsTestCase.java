@@ -48,11 +48,11 @@ import org.restlet.test.RestletTestCase;
  */
 public class AnnotationUtilsTestCase extends RestletTestCase {
 
-    public static interface IChild extends IParent<String> {
+    public static interface IChild extends IParent<Integer, String> {
 
     }
 
-    public static interface IParent<T> {
+    public static interface IParent<S, T> {
 
         @Get
         T getType();
@@ -68,7 +68,7 @@ public class AnnotationUtilsTestCase extends RestletTestCase {
         Assert.assertEquals("Wrong count: " + infos, 4, infos.size());
         boolean found = false;
         for (AnnotationInfo ai : infos) {
-            if (ai.getResourceInterface().equals(IChild.class)
+            if (ai.getResourceClass().equals(IChild.class)
                     && ai.getRestletMethod().equals(Method.PUT)) {
                 found = true;
                 Assert.assertEquals(String.class, ai.getJavaInputTypes()[0]);
@@ -85,7 +85,7 @@ public class AnnotationUtilsTestCase extends RestletTestCase {
         Assert.assertEquals("Wrong count: " + infos, 4, infos.size());
         boolean found = false;
         for (AnnotationInfo ai : infos) {
-            if (ai.getResourceInterface().equals(IChild.class)
+            if (ai.getResourceClass().equals(IChild.class)
                     && ai.getRestletMethod().equals(Method.GET)) {
                 found = true;
                 Assert.assertEquals(String.class, ai.getJavaOutputType());

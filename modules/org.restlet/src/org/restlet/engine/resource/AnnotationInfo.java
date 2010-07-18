@@ -30,6 +30,11 @@
 
 package org.restlet.engine.resource;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,11 +52,104 @@ import org.restlet.service.MetadataService;
  */
 public class AnnotationInfo {
 
+    /**
+     * Returns the actual type for a given generic type name.
+     * 
+     * @param currentClass
+     *            The current class to walk up.
+     * @param genericTypeName
+     *            The generic type name to resolve.
+     * @return The actual type.
+     */
+    private static Class<?> getJavaActualType(Class<?> currentClass,
+            String genericTypeName) {
+        Class<?> result = null;
+
+        // Lookup in the super class
+        result = getJavaActualType(currentClass.getGenericSuperclass(),
+                genericTypeName);
+
+        if (result == null) {
+            // Lookup in the implemented interfaces
+            Type[] interfaceTypes = currentClass.getGenericInterfaces();
+
+            for (int i = 0; (result == null) && (i < interfaceTypes.length); i++) {
+                result = getJavaActualType(interfaceTypes[i], genericTypeName);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the actual type for a given generic type name.
+     * 
+     * @param currentType
+     *            The current type to start with.
+     * @param genericTypeName
+     *            The generic type name to resolve.
+     * @return The actual type.
+     */
+    private static Class<?> getJavaActualType(Type currentType,
+            String genericTypeName) {
+        Class<?> result = null;
+
+        if (currentType != null) {
+            if (currentType instanceof Class<?>) {
+                // Look in the generic super class or the implemented interfaces
+                result = getJavaActualType((Class<?>) currentType,
+                        genericTypeName);
+            } else if (currentType instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType) currentType;
+                Class<?> rawType = (Class<?>) parameterizedType.getRawType();
+                Type[] actualTypeArguments = parameterizedType
+                        .getActualTypeArguments();
+                TypeVariable<?>[] typeParameters = rawType.getTypeParameters();
+
+                for (int i = 0; (result == null)
+                        && (i < actualTypeArguments.length); i++) {
+                    if (genericTypeName.equals(typeParameters[i].getName())) {
+                        result = getTypeClass(actualTypeArguments[i]);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the underlying class for a type or null.
+     * 
+     * @param type
+     *            The generic type.
+     * @return The underlying class
+     */
+    private static Class<?> getTypeClass(Type type) {
+        Class<?> result = null;
+
+        if (type instanceof Class<?>) {
+            result = (Class<?>) type;
+        } else if (type instanceof ParameterizedType) {
+            result = getTypeClass(((ParameterizedType) type).getRawType());
+        } else if (type instanceof GenericArrayType) {
+            Type componentType = ((GenericArrayType) type)
+                    .getGenericComponentType();
+            Class<?> componentClass = getTypeClass(componentType);
+
+            if (componentClass != null) {
+                result = Array.newInstance(componentClass, 0).getClass();
+            }
+        }
+
+        return result;
+    }
+
     /** The annotated Java method. */
     private final java.lang.reflect.Method javaMethod;
 
-    /** The interface that hosts the annotated Java method. */
-    private final Class<?> resourceInterface;
+    /** The class that hosts the annotated Java method. */
+    private final Class<?> resourceClass;
 
     /** The matching Restlet method. */
     private final Method restletMethod;
@@ -62,8 +160,8 @@ public class AnnotationInfo {
     /**
      * Constructor.
      * 
-     * @param resourceInterface
-     *            The interface that hosts the annotated Java method.
+     * @param resourceClass
+     *            The class or interface that hosts the annotated Java method.
      * @param restletMethod
      *            The matching Restlet method.
      * @param javaMethod
@@ -71,10 +169,10 @@ public class AnnotationInfo {
      * @param value
      *            The annotation value.
      */
-    public AnnotationInfo(Class<?> resourceInterface, Method restletMethod,
+    public AnnotationInfo(Class<?> resourceClass, Method restletMethod,
             java.lang.reflect.Method javaMethod, String value) {
         super();
-        this.resourceInterface = resourceInterface;
+        this.resourceClass = resourceClass;
         this.restletMethod = restletMethod;
         this.javaMethod = javaMethod;
         this.value = value;
@@ -104,10 +202,10 @@ public class AnnotationInfo {
 
             // Compare the resource interface
             if (result) {
-                result = ((getResourceInterface() == null)
-                        && (otherAnnotation.getResourceInterface() == null) || (getResourceInterface() != null)
-                        && getResourceInterface().equals(
-                                otherAnnotation.getResourceInterface()));
+                result = ((getResourceClass() == null)
+                        && (otherAnnotation.getResourceClass() == null) || (getResourceClass() != null)
+                        && getResourceClass().equals(
+                                otherAnnotation.getResourceClass()));
             }
 
             // Compare the Restlet method
@@ -149,6 +247,31 @@ public class AnnotationInfo {
     }
 
     /**
+     * Returns the actual type for a given generic type.
+     * 
+     * @param initialType
+     *            The initial type, which may be generic.
+     * @param genericType
+     *            The generic type information if any.
+     * @return The actual type.
+     */
+    private Class<?> getJavaActualType(Class<?> initialType, Type genericType) {
+        Class<?> result = initialType;
+
+        try {
+            if (genericType instanceof TypeVariable<?>) {
+                TypeVariable<?> genericTypeVariable = (TypeVariable<?>) genericType;
+                String genericTypeName = genericTypeVariable.getName();
+                result = getJavaActualType(getResourceClass(), genericTypeName);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the generic type for the given input parameter.
      * 
      * @param index
@@ -157,7 +280,8 @@ public class AnnotationInfo {
      * @return The generic type.
      */
     public Class<?> getJavaInputType(int index) {
-        return getJavaMethod().getParameterTypes()[index];
+        return getJavaActualType(getJavaMethod().getParameterTypes()[index],
+                getJavaMethod().getGenericParameterTypes()[index]);
     }
 
     /**
@@ -191,7 +315,8 @@ public class AnnotationInfo {
      * @return The output type of the Java method.
      */
     public Class<?> getJavaOutputType() {
-        return getJavaMethod().getReturnType();
+        return getJavaActualType(getJavaMethod().getReturnType(),
+                getJavaMethod().getGenericReturnType());
     }
 
     /**
@@ -266,8 +391,8 @@ public class AnnotationInfo {
      * 
      * @return The resource interface value.
      */
-    public Class<?> getResourceInterface() {
-        return resourceInterface;
+    public Class<?> getResourceClass() {
+        return resourceClass;
     }
 
     // [ifndef gwt] method
@@ -400,8 +525,8 @@ public class AnnotationInfo {
     @Override
     public String toString() {
         return "AnnotationInfo [javaMethod=" + javaMethod
-                + ", resourceInterface=" + resourceInterface
-                + ", restletMethod=" + restletMethod + ", value=" + value + "]";
+                + ", resourceInterface=" + resourceClass + ", restletMethod="
+                + restletMethod + ", value=" + value + "]";
     }
 
 }

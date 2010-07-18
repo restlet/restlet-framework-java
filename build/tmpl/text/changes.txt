@@ -116,8 +116,12 @@ Changes log
       - Fixed internal connectors in order to ensure that connections 
         are closed when the controller is shutdown.
     - Enhancements
-        - Improved performance of the Reference#isValid(char) method.
-          Suggested by Guillaume Maillard.
+      - Improved performance of the Reference#isValid(char) method.
+        Suggested by Guillaume Maillard.
+      - Added generics support in annotated resources, for example when
+        calling ClientResource#wrap. 
+        Suggested by Valdis Rigdon who also contributed a unit test
+        and solution ideas.
     - Misc
       - Component#main() now accepts related XML configuration file 
         paths. Contributed by Alex Milowski.
