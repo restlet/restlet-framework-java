@@ -192,9 +192,8 @@ public abstract class Authenticator extends Filter {
 
     /**
      * Returns the enroler invoked upon successful authentication to update the
-     * subject with new principals. Typically new
-     * {@link org.restlet.ext.jaas.RolePrincipal} are added based on the
-     * available {@link org.restlet.ext.jaas.UserPrincipal} instances available.
+     * subject with new principals. Typically new {@link Role} are added based
+     * on the available {@link User} instances available.
      * 
      * @return The enroler invoked upon successful authentication
      */
