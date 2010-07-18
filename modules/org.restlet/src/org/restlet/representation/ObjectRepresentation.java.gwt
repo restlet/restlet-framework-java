@@ -48,8 +48,7 @@ import com.google.gwt.user.client.rpc.SerializationStreamWriter;
  * @param <T>
  *            The class to serialize.
  */
-public class ObjectRepresentation<T> extends
-        StringRepresentation {
+public class ObjectRepresentation<T> extends StringRepresentation {
 
     /** The wrapped object. */
     private T object;
@@ -103,26 +102,26 @@ public class ObjectRepresentation<T> extends
     /**
      * Constructor for serialization.
      * 
-     * @param object
-     *            The object to serialize.
      * @param remoteService
      *            The remote service from which to obtain the serialization
      *            stream factory.
+     * @param object
+     *            The object to serialize.
      */
-    public ObjectRepresentation(T object, RemoteService remoteService) {
+    public ObjectRepresentation(RemoteService remoteService, T object) {
         this(object, (SerializationStreamFactory) remoteService);
     }
 
     /**
      * Constructor for serialization.
      * 
-     * @param object
-     *            The object to serialize.
      * @param resource
      *            The remote resource from which to obtain the serialization
      *            stream factory.
+     * @param object
+     *            The object to serialize.
      */
-    public ObjectRepresentation(T object, ClientProxy resource) {
+    public ObjectRepresentation(ClientProxy resource, T object) {
         this(object, (resource == null) ? null
                 : (SerializationStreamFactory) resource);
     }
@@ -130,13 +129,13 @@ public class ObjectRepresentation<T> extends
     /**
      * Constructor for serialization.
      * 
-     * @param object
-     *            The object to serialize.
      * @param serializationStreamFactory
      *            The serialization stream factory.
+     * @param object
+     *            The object to serialize.
      */
-    public ObjectRepresentation(T object,
-            SerializationStreamFactory serializationStreamFactory) {
+    public ObjectRepresentation(
+            SerializationStreamFactory serializationStreamFactory, T object) {
         super(null, MediaType.APPLICATION_JAVA_OBJECT_GWT);
         this.object = object;
         this.serializationStreamFactory = serializationStreamFactory;

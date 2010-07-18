@@ -340,8 +340,8 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 } else {
                     println("Representation requestEntity = new ObjectRepresentation<"
                             + parameterType.getName()
-                            + ">(param1,(SerializationStreamFactory) "
-                            + getClassName() + ".this);");
+                            + ">((SerializationStreamFactory) "
+                            + getClassName() + ".this, param1);");
                     println("getClientResource().getRequest().setEntity(requestEntity);");
                 }
             } else {

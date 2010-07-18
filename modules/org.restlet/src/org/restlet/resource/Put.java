@@ -41,7 +41,8 @@ import org.restlet.service.MetadataService;
 
 /**
  * Annotation for methods that store submitted representations. Its semantics is
- * equivalent to an HTTP PUT method.<br>
+ * equivalent to an HTTP PUT method. Note that your method must have one input
+ * parameter if you want it to be selected for requests containing an entity.<br>
  * <br>
  * Example:
  * 

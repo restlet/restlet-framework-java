@@ -41,7 +41,9 @@ import org.restlet.service.MetadataService;
 
 /**
  * Annotation for methods that accept submitted representations. Its semantics
- * is equivalent to an HTTP POST method.<br>
+ * is equivalent to an HTTP POST method. Note that your method must have one
+ * input parameter if you want it to be selected for requests containing an
+ * entity.<br>
  * <br>
  * Example:
  * 

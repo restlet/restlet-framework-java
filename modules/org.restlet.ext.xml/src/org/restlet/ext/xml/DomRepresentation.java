@@ -114,13 +114,14 @@ public class DomRepresentation extends XmlRepresentation {
     protected javax.xml.transform.Transformer createTransformer()
             throws IOException {
         try {
-            final javax.xml.transform.Transformer transformer = javax.xml.transform.TransformerFactory
+            javax.xml.transform.Transformer transformer = javax.xml.transform.TransformerFactory
                     .newInstance().newTransformer();
             transformer.setOutputProperty(
                     javax.xml.transform.OutputKeys.METHOD, "xml");
             transformer.setOutputProperty(
                     javax.xml.transform.OutputKeys.INDENT,
                     isIndenting() ? "yes" : "no");
+
             if (getCharacterSet() != null) {
                 transformer.setOutputProperty(
                         javax.xml.transform.OutputKeys.ENCODING,
@@ -132,6 +133,7 @@ public class DomRepresentation extends XmlRepresentation {
             }
 
             DocumentType docType = getDocument().getDoctype();
+
             if (docType != null) {
                 if (docType.getSystemId() != null) {
                     transformer.setOutputProperty(

@@ -52,7 +52,7 @@ Changes log
         in ServerResource subclasses as well.     
       - Upon garbage collection, if a Restlet instance is still started
         its stop() method is now automatically called for clean-up
-        purpose.    
+        purpose. 
     - Bugs fixed
       - Thread local variables are now cleared correctly.
         Prevented unloading of WAR files or OSGi bundles
@@ -119,6 +119,10 @@ Changes log
         Reported by Aleskandr Shekhter.
       - Fixed character encoding issues in JAX-RS extension.
         Reported by Alistair Dutton and Jeroen Goubert.
+      - Fixed GWT's ObjectRepresentation constructors for 
+        serialization to not conflict with deserialization
+        constructors when a string is passed as parameter.
+        Reported by Alexander J. Perez Tchernov.
     - Enhancements
       - Improved performance of the Reference#isValid(char) method.
         Suggested by Guillaume Maillard.
