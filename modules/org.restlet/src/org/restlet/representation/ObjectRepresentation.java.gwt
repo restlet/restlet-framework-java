@@ -30,8 +30,6 @@
 
 package org.restlet.representation;
 
-import java.io.Serializable;
-
 import org.restlet.data.MediaType;
 import org.restlet.resource.ClientProxy;
 
@@ -56,18 +54,49 @@ public class ObjectRepresentation<T> extends StringRepresentation {
     /** The serialization stream factory. */
     private SerializationStreamFactory serializationStreamFactory;
 
+    /** Indicates if the serialized object is a String. */
+    private boolean string;
+
     /**
-     * Constructor for deserialization.
+     * Constructor for serialization.
      * 
-     * @param serializedObject
-     *            The object serialization text.
+     * @param resource
+     *            The remote resource from which to obtain the serialization
+     *            stream factory.
+     * @param object
+     *            The object to serialize.
+     */
+    public ObjectRepresentation(ClientProxy resource, T object) {
+        this((resource == null) ? null : (SerializationStreamFactory) resource,
+                object);
+    }
+
+    /**
+     * Constructor for serialization.
+     * 
      * @param remoteService
      *            The remote service from which to obtain the serialization
      *            stream factory.
+     * @param object
+     *            The object to serialize.
      */
-    public ObjectRepresentation(String serializedObject,
-            RemoteService remoteService) {
-        this(serializedObject, (SerializationStreamFactory) remoteService);
+    public ObjectRepresentation(RemoteService remoteService, T object) {
+        this((SerializationStreamFactory) remoteService, object);
+    }
+
+    /**
+     * Constructor for serialization.
+     * 
+     * @param serializationStreamFactory
+     *            The serialization stream factory.
+     * @param object
+     *            The object to serialize.
+     */
+    public ObjectRepresentation(
+            SerializationStreamFactory serializationStreamFactory, T object) {
+        super(null, MediaType.APPLICATION_JAVA_OBJECT_GWT);
+        this.object = object;
+        this.serializationStreamFactory = serializationStreamFactory;
     }
 
     /**
@@ -89,56 +118,43 @@ public class ObjectRepresentation<T> extends StringRepresentation {
      * 
      * @param serializedObject
      *            The object serialization text.
+     * @param remoteService
+     *            The remote service from which to obtain the serialization
+     *            stream factory.
+     */
+    public ObjectRepresentation(String serializedObject,
+            RemoteService remoteService) {
+        this(serializedObject, (SerializationStreamFactory) remoteService);
+    }
+
+    /**
+     * Constructor for deserialization.
+     * 
+     * @param serializedObject
+     *            The object serialization text.
      * @param serializationStreamFactory
      *            The serialization stream factory.
      */
     public ObjectRepresentation(String serializedObject,
             SerializationStreamFactory serializationStreamFactory) {
+        this(serializedObject, serializationStreamFactory, false);
+    }
+
+    /**
+     * Constructor for deserialization.
+     * 
+     * @param serializedObject
+     *            The object serialization text.
+     * @param serializationStreamFactory
+     *            The serialization stream factory.
+     */
+    public ObjectRepresentation(String serializedObject,
+            SerializationStreamFactory serializationStreamFactory,
+            boolean string) {
         super(serializedObject, MediaType.APPLICATION_JAVA_OBJECT_GWT);
         this.serializationStreamFactory = serializationStreamFactory;
         this.object = null;
-    }
-
-    /**
-     * Constructor for serialization.
-     * 
-     * @param remoteService
-     *            The remote service from which to obtain the serialization
-     *            stream factory.
-     * @param object
-     *            The object to serialize.
-     */
-    public ObjectRepresentation(RemoteService remoteService, T object) {
-        this((SerializationStreamFactory) remoteService, object);
-    }
-
-    /**
-     * Constructor for serialization.
-     * 
-     * @param resource
-     *            The remote resource from which to obtain the serialization
-     *            stream factory.
-     * @param object
-     *            The object to serialize.
-     */
-    public ObjectRepresentation(ClientProxy resource, T object) {
-        this((resource == null) ? null
-                : (SerializationStreamFactory) resource, object);
-    }
-
-    /**
-     * Constructor for serialization.
-     * 
-     * @param serializationStreamFactory
-     *            The serialization stream factory.
-     * @param object
-     *            The object to serialize.
-     */
-    public ObjectRepresentation(
-            SerializationStreamFactory serializationStreamFactory, T object) {
-        super(null, MediaType.APPLICATION_JAVA_OBJECT_GWT);
-        this.object = object;
-        this.serializationStreamFactory = serializationStreamFactory;
+        this.string = string;
     }
 
     /**
@@ -155,12 +171,16 @@ public class ObjectRepresentation<T> extends StringRepresentation {
                         .createStreamReader(getText());
 
                 // Deserialize the object
-                this.object = (T) streamReader.readObject();
+                if (isString()) {
+                    this.object = (T) streamReader.readString();
+                } else {
+                    this.object = (T) streamReader.readObject();
+                }
+
             } catch (Exception e) {
                 this.object = null;
                 e.printStackTrace();
             }
-
         }
 
         return object;
@@ -197,6 +217,15 @@ public class ObjectRepresentation<T> extends StringRepresentation {
     }
 
     /**
+     * Indicates if the serialized object is a String.
+     * 
+     * @return True if the serialized object is a String.
+     */
+    public boolean isString() {
+        return string;
+    }
+
+    /**
      * Sets the wrapped object.
      * 
      * @param object
@@ -215,6 +244,16 @@ public class ObjectRepresentation<T> extends StringRepresentation {
     public void setSerializationStreamFactory(
             SerializationStreamFactory serializationStreamFactory) {
         this.serializationStreamFactory = serializationStreamFactory;
+    }
+
+    /**
+     * Indicates if the serialized object is a String.
+     * 
+     * @param string
+     *            True if the serialized object is a String.
+     */
+    public void setString(boolean string) {
+        this.string = string;
     }
 
 }

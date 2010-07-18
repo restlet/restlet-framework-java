@@ -148,7 +148,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                     Representation.class.getName()).isAssignableFrom(
                     type.isClass()) || getTypeOracle().getType(
                     Form.class.getName()).isAssignableFrom(type.isClass())))) {
-                // Do not render Representation  and Form instances
+                // Do not render Representation and Form instances
                 getStob().addRootType(getLogger(), type);
             }
         } catch (Exception e) {
@@ -374,8 +374,10 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 indent();
                 println("response.getEntity().getText(),");
                 println("(SerializationStreamFactory) " + getClassName()
-                        + ".this)");
+                        + ".this, "
+                        + String.class.getName().equals(sb.toString()) + ")");
                 println(".getObject();");
+
                 outdent();
                 println("callback.onSuccess(result);");
                 outdent();
