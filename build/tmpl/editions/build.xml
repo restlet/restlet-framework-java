@@ -640,7 +640,6 @@
 	<target name="stage-classic" description="Stage the packaging step of classic distribution.">
 		<!-- Prepare distribution directories -->
 		<delete dir="${dist-classic}" verbose="false" quiet="true" includeEmptyDirs="true" />
-		<mkdir dir="${dist-classic}/bin" />
 		<mkdir dir="${dist-classic}/lib" />
 		<!-- <mkdir dir="${dist-classic}/lib/poms" /> -->
 		<mkdir dir="${dist-classic}/src" />
@@ -648,10 +647,17 @@
 		<!-- Increment the build number -->
 		<buildnumber />
 
+		
 		<!-- Copy the binaries -->
-		<copy todir="${dist-classic}/bin">
-			<fileset dir="${bin}" />
-		</copy>
+		<if>
+			<equals arg1="${edition}" arg2="jse"/>
+			<then>
+				<mkdir dir="${dist-classic}/bin" />
+				<copy todir="${dist-classic}/bin">
+					<fileset dir="${bin}" />
+				</copy>
+			</then>
+		</if>
 
 		<!-- Copy the Javadoc -->
 		<if>
