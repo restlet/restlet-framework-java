@@ -1,4 +1,4 @@
-<module includes="jse" id="example" package="org.restlet.example">
+<module includes="jse, jee" id="example" package="org.restlet.example">
    <name>Restlet examples</name>
    <description>
       Various examples including those from the tutorial
@@ -17,7 +17,7 @@
       <dependency type="module" id="jackson" />
       <dependency type="module" id="jaxb" />
       <dependency type="module" id="jaxrs" />
-      <dependency type="module" id="jetty" />
+      <dependency type="module" id="jetty" includes="jse" />
       <dependency type="module" id="jibx" />
       <dependency type="module" id="json" />
       <dependency type="module" id="rdf" />
