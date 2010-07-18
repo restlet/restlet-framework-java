@@ -62,8 +62,8 @@ public class MethodInfo extends DocumentedInfo {
      * 
      * @param info
      *            The method description to update.
-     * @param method
-     *            The Method to document
+     * @param resource
+     *            The server resource to describe.
      */
     public static void describeAnnotations(MethodInfo info,
             ServerResource resource) {

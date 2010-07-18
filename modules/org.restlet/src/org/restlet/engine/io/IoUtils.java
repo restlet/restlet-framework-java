@@ -48,7 +48,7 @@ public class IoUtils {
      * property "org.restlet.engine.io.buffer.size" and if not defined, uses the
      * {@link #BUFFER_SIZE}.
      * 
-     * @return
+     * @return The size to use when instantiating buffered items.
      */
     public static int getBufferSize() {
         int result = BUFFER_SIZE;

@@ -495,7 +495,8 @@ public class AnnotationInfo {
      *            The metadata service to use.
      * @param converterService
      *            The converter service to use.
-     * @return
+     * @return True if the given request entity is compatible with the annotated
+     *         method described.
      */
     public boolean isCompatibleRequestEntity(Representation requestEntity,
             MetadataService metadataService,
