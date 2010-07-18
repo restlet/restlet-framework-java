@@ -37,6 +37,7 @@ import java.util.TreeMap;
 
 import org.jibx.runtime.BindingDirectory;
 import org.jibx.runtime.IBindingFactory;
+import org.jibx.runtime.IMarshallable;
 import org.jibx.runtime.IMarshallingContext;
 import org.jibx.runtime.IUnmarshallingContext;
 import org.jibx.runtime.JiBXException;
@@ -218,13 +219,13 @@ public class JibxRepresentation<T> extends WriterRepresentation {
     public T getObject() throws JiBXException, IOException {
         if ((this.object == null) && (this.xmlRepresentation != null)) {
             // Try to unmarshal the wrapped XML representation
-            final IBindingFactory jibxBFact = JibxRepresentation
-                    .getBindingFactory(this.bindingName, this.bindingClass);
-            final IUnmarshallingContext uctx = jibxBFact
-                    .createUnmarshallingContext();
+            IBindingFactory jibxBFact = JibxRepresentation.getBindingFactory(
+                    this.bindingName, this.bindingClass);
+            IUnmarshallingContext uctx = jibxBFact.createUnmarshallingContext();
             return (T) uctx.unmarshalDocument(this.xmlRepresentation
                     .getStream(), null);
         }
+
         return this.object;
     }
 
@@ -262,12 +263,11 @@ public class JibxRepresentation<T> extends WriterRepresentation {
     @Override
     public void write(Writer writer) throws IOException {
         try {
-            final IBindingFactory jibxBFact = JibxRepresentation
-                    .getBindingFactory(this.bindingName, this.bindingClass);
-            final IMarshallingContext mctx = jibxBFact
-                    .createMarshallingContext();
-            mctx.marshalDocument(getObject(), getCharacterSet().getName(),
-                    null, writer);
+            IBindingFactory jibxBFact = JibxRepresentation.getBindingFactory(
+                    this.bindingName, this.bindingClass);
+            IMarshallingContext mctx = jibxBFact.createMarshallingContext();
+            mctx.setOutput(writer);
+            ((IMarshallable) getObject()).marshal(mctx);
         } catch (JiBXException e) {
             throw new IOException(e.getMessage());
         }
