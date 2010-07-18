@@ -45,7 +45,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.engine.io.BioUtils;
 
 /**
  * This Provider reads or writes {@link File}s.
@@ -74,7 +74,7 @@ public class FileProvider extends AbstractProvider<File> {
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         final File file = File.createTempFile("FileProvider", ".tmp");
-        Util.copyStream(entityStream, new FileOutputStream(file));
+        BioUtils.copy(entityStream, new FileOutputStream(file));
         return file;
     }
 
@@ -96,6 +96,6 @@ public class FileProvider extends AbstractProvider<File> {
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         final InputStream inputStream = new FileInputStream(file);
-        Util.copyStream(inputStream, entityStream);
+        BioUtils.copy(inputStream, entityStream);
     }
 }

@@ -34,8 +34,6 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static org.restlet.data.CharacterSet.UTF_8;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -331,39 +329,6 @@ public class Util {
     }
 
     /**
-     * Copiees the InputStream to the OutputStream.
-     * 
-     * @param in
-     * @param out
-     * @throws IOException
-     */
-    public static void copyStream(InputStream in, OutputStream out)
-            throws IOException {
-        final byte[] buffer = new byte[512];
-        int bytesRead;
-        while ((bytesRead = in.read(buffer)) >= 0) {
-            out.write(buffer, 0, bytesRead);
-        }
-    }
-
-    /**
-     * Copies the InputStream to a StringBuilder.
-     * 
-     * @param in
-     * @return a StringBuilder with the content of the given InputStream
-     * @throws IOException
-     */
-    public static StringBuilder copyToStringBuilder(InputStream in)
-            throws IOException {
-        final StringBuilder stb = new StringBuilder();
-        int ch;
-        while ((ch = in.read()) >= 0) {
-            stb.append((char) ch);
-        }
-        return stb;
-    }
-
-    /**
      * Creates an modifiable Collection with the given Objects in it, and no
      * other objects. nulls will be ignored.
      * 
@@ -495,7 +460,7 @@ public class Util {
      *            Date to format
      * @param cookie
      *            if true, using RFC 1036 format, otherwise RFC 1123 format.
-     * @return formates the Date
+     * @return The formated date
      */
     public static String formatDate(Date date, boolean cookie) {
         if (cookie) {

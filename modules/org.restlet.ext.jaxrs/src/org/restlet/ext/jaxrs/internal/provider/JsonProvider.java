@@ -51,7 +51,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.json.JSONTokener;
-import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.Request;
+import org.restlet.data.CharacterSet;
+import org.restlet.engine.io.BioUtils;
+import org.restlet.representation.Representation;
 
 /**
  * This Provider serializes all Objects by the package org.json. It can
@@ -100,6 +103,19 @@ public class JsonProvider extends AbstractProvider<Object> {
     }
 
     /**
+     * @return the character set of the current entity, or null, if no entity or
+     *         no character set is available.
+     */
+    private CharacterSet getCurrentRequestEntityCharacterSet() {
+        Representation entity = Request.getCurrent().getEntity();
+
+        if (entity == null)
+            return null;
+
+        return entity.getCharacterSet();
+    }
+
+    /**
      * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
      *      MultivaluedMap, InputStream)
      */
@@ -109,7 +125,8 @@ public class JsonProvider extends AbstractProvider<Object> {
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         final String jsonString;
-        jsonString = Util.copyToStringBuilder(entityStream).toString();
+        jsonString = BioUtils.toString(entityStream,
+                getCurrentRequestEntityCharacterSet());
         try {
             if (JSONObject.class.isAssignableFrom(type)) {
                 return new JSONObject(jsonString);

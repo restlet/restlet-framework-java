@@ -42,7 +42,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.engine.io.BioUtils;
 
 /**
  * @author Stephan Koops
@@ -87,10 +87,12 @@ public class CharacterEntityProvider implements MessageBodyReader<Character>,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        final String str = Util.copyToStringBuilder(entityStream).toString();
+        String str = BioUtils.toString(entityStream);
+
         if (str.length() == 0) {
             return null;
         }
+
         return str.charAt(0);
     }
 

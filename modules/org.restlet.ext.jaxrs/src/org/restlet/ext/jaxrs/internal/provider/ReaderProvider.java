@@ -123,9 +123,8 @@ public class ReaderProvider extends AbstractProvider<Reader> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        final CharacterSet cs = Response.getCurrent().getEntity()
-                .getCharacterSet();
-        Util.copyStream(BioUtils.getStream(reader, cs), entityStream);
-        // NICE testen charset for ReaderProvider.writeTo(..) ?
+        CharacterSet cs = Response.getCurrent().getEntity().getCharacterSet();
+        BioUtils.copy(BioUtils.getStream(reader, cs), entityStream);
+        // NICE test charset for ReaderProvider.writeTo(..) ?
     }
 }

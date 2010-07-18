@@ -117,6 +117,8 @@ Changes log
         are closed when the controller is shutdown.
       - Fixed writing issue with JiBX extension.
         Reported by Aleskandr Shekhter.
+      - Fixed character encoding issues in JAX-RS extension.
+        Reported by Alistair Dutton and Jeroen Goubert.
     - Enhancements
       - Improved performance of the Reference#isValid(char) method.
         Suggested by Guillaume Maillard.

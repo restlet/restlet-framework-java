@@ -44,8 +44,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
+import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CharacterSet;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
 
@@ -89,14 +91,31 @@ public class StringProvider extends AbstractProvider<CharSequence> {
      * @return the character set of the current entity, or null, if no entity or
      *         no character set is available.
      */
-    private String getCurrentEntityCharset() {
-        final Representation entity = Response.getCurrent().getEntity();
+    private String getCurrentResponseEntityCharset() {
+        Representation entity = Response.getCurrent().getEntity();
+
         if (entity == null)
             return null;
-        final CharacterSet characterSet = entity.getCharacterSet();
+
+        CharacterSet characterSet = entity.getCharacterSet();
+
         if (characterSet == null)
             return null;
+
         return characterSet.toString();
+    }
+
+    /**
+     * @return the character set of the current entity, or null, if no entity or
+     *         no character set is available.
+     */
+    private CharacterSet getCurrentRequestEntityCharacterSet() {
+        Representation entity = Request.getCurrent().getEntity();
+
+        if (entity == null)
+            return null;
+
+        return entity.getCharacterSet();
     }
 
     /**
@@ -120,7 +139,7 @@ public class StringProvider extends AbstractProvider<CharSequence> {
     @Override
     public long getSize(CharSequence entity, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-        return getByteArray(entity, getCurrentEntityCharset()).length;
+        return getByteArray(entity, getCurrentResponseEntityCharset()).length;
     }
 
     @Override
@@ -140,7 +159,8 @@ public class StringProvider extends AbstractProvider<CharSequence> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        return Util.copyToStringBuilder(entityStream).toString();
+        return BioUtils.toString(entityStream,
+                getCurrentRequestEntityCharacterSet());
     }
 
     /**
@@ -152,8 +172,8 @@ public class StringProvider extends AbstractProvider<CharSequence> {
             Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        final String charset = getCurrentEntityCharset();
-        final InputStream inputStream = getInputStream(charSequence, charset);
-        Util.copyStream(inputStream, entityStream);
+        String charset = getCurrentResponseEntityCharset();
+        InputStream inputStream = getInputStream(charSequence, charset);
+        BioUtils.copy(inputStream, entityStream);
     }
 }

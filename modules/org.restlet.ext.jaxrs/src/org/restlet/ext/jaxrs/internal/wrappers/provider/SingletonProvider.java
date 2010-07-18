@@ -287,7 +287,7 @@ public class SingletonProvider extends AbstractProviderWrapper implements
      * @param genericType
      *            The generic {@link Type} to convert to.
      * @param annotations
-     *            the annotations of the artefact to convert to
+     *            the annotations of the artifact to convert to
      * @param mediaType
      * @param httpHeaders
      * @param entityStream
@@ -325,7 +325,7 @@ public class SingletonProvider extends AbstractProviderWrapper implements
      * @param genericType
      *            The generic {@link Type} to convert to.
      * @param annotations
-     *            the annotations of the artefact to convert to
+     *            the annotations of the artifact to convert to
      * @param mediaType
      *            the media type of the HTTP entity.
      * @param httpHeaders

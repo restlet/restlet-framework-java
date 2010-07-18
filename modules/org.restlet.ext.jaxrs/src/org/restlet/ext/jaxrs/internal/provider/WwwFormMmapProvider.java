@@ -45,9 +45,10 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 import org.restlet.data.Form;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
 import org.restlet.ext.jaxrs.internal.util.Converter;
-import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper;
 import org.restlet.representation.Representation;
 
 /**
@@ -91,7 +92,7 @@ public class WwwFormMmapProvider extends
             OutputStream entityStream) throws IOException {
         Form form = Converter.toForm(mmap);
         Representation formRepr = form.getWebRepresentation();
-        Util.copyStream(formRepr.getStream(), entityStream);
+        BioUtils.copy(formRepr.getStream(), entityStream);
     }
 
     /**
