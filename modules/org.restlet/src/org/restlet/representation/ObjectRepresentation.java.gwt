@@ -109,7 +109,7 @@ public class ObjectRepresentation<T> extends StringRepresentation {
      *            The object to serialize.
      */
     public ObjectRepresentation(RemoteService remoteService, T object) {
-        this(object, (SerializationStreamFactory) remoteService);
+        this((SerializationStreamFactory) remoteService, object);
     }
 
     /**
@@ -122,8 +122,8 @@ public class ObjectRepresentation<T> extends StringRepresentation {
      *            The object to serialize.
      */
     public ObjectRepresentation(ClientProxy resource, T object) {
-        this(object, (resource == null) ? null
-                : (SerializationStreamFactory) resource);
+        this((resource == null) ? null
+                : (SerializationStreamFactory) resource, object);
     }
 
     /**
