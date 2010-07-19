@@ -96,6 +96,10 @@ public class ReaderRepresentation extends CharacterRepresentation {
         return result;
     }
 
+    /**
+     * Note that this method relies on {@link #getStream()}. This stream is
+     * closed once fully read.
+     */
     @Override
     public String getText() throws IOException {
         return BioUtils.toString(getStream(), getCharacterSet());

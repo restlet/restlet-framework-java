@@ -52,7 +52,9 @@ Changes log
         in ServerResource subclasses as well.     
       - Upon garbage collection, if a Restlet instance is still started
         its stop() method is now automatically called for clean-up
-        purpose. 
+        purpose.
+      - Request and responses now call their release() method upon
+        garbage collection. It releases any associated entity.
     - Bugs fixed
       - Thread local variables are now cleared correctly.
         Prevented unloading of WAR files or OSGi bundles
@@ -123,6 +125,10 @@ Changes log
         serialization to not conflict with deserialization
         constructors when a string is passed as parameter.
         Reported by Alexander J. Perez Tchernov.
+      - InputRepresentation#getText() now closes the underlying stream.
+        Reported by David Fogel.
+      - Representation#exhaust() now closes the underlying stream
+        used. Reported by David Fogel.
     - Enhancements
       - Improved performance of the Reference#isValid(char) method.
         Suggested by Guillaume Maillard.

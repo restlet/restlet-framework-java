@@ -81,11 +81,4 @@ public abstract class OutputRepresentation extends StreamRepresentation {
         return BioUtils.getStream(this);
     }
 
-    /**
-     * Calls parent's implementation.
-     */
-    @Override
-    public void release() {
-        super.release();
-    }
 }

@@ -594,12 +594,7 @@ public abstract class UniformResource {
     }
 
     /**
-     * Releases the resource. First calls the {@link #doRelease()} method then
-     * {@link Request#release()} and finally {@link Response#release()}.
-     * 
-     * @see #doRelease()
-     * @see Request#release()
-     * @see Response#release()
+     * Releases the resource by calling {@link #doRelease()}.
      */
     public final void release() {
         try {

@@ -315,15 +315,19 @@ public abstract class Representation extends RepresentationInfo {
 
     /**
      * Exhaust the content of the representation by reading it and silently
-     * discarding anything read.
+     * discarding anything read. By default, it relies on {@link #getStream()}
+     * and closes the retrieved stream in the end.
      * 
      * @return The number of bytes consumed or -1 if unknown.
      */
     public long exhaust() throws IOException {
         long result = -1L;
+        
         // [ifndef gwt]
         if (isAvailable()) {
-            result = BioUtils.exhaust(getStream());
+            InputStream is = getStream();
+            result = BioUtils.exhaust(is);
+            is.close();
         }
         // [enddef]
 

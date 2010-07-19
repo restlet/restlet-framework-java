@@ -56,6 +56,9 @@ public abstract class Message {
     /** The caching directives. */
     private volatile List<CacheDirective> cacheDirectives;
 
+    /** The date and time at which the message was originated. */
+    private volatile Date date;
+
     /** The payload of the message. */
     private volatile Representation entity;
 
@@ -74,9 +77,6 @@ public abstract class Message {
 
     /** The additional warnings information. */
     private volatile List<Warning> warnings;
-
-    /** The date and time at which the message was originated. */
-    private volatile Date date;
 
     /**
      * Constructor.
@@ -102,6 +102,14 @@ public abstract class Message {
         this.onSent = null;
         this.recipientsInfo = null;
         this.warnings = null;
+    }
+
+    /**
+     * Attempts to {@link #release()} the message.
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        release();
     }
 
     /**

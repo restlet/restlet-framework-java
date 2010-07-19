@@ -508,7 +508,7 @@ public final class BioUtils {
 
     /**
      * Converts an input stream to a string using the specified character set
-     * for decoding the input stream.
+     * for decoding the input stream. Once read, the input stream is closed.
      * 
      * @see <a href=
      *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
@@ -532,6 +532,8 @@ public final class BioUtils {
                 } else {
                     result = toString(new InputStreamReader(inputStream));
                 }
+                
+                inputStream.close();
             } catch (Exception e) {
                 // Returns an empty string
             }
