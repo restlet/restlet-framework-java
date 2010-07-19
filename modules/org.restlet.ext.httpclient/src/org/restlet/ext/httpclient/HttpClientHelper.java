@@ -103,7 +103,7 @@ import org.restlet.ext.httpclient.internal.HttpMethodCall;
  * <tr>
  * <td>maxConnectionsPerHost</td>
  * <td>int</td>
- * <td>2 (uses HttpClient's default)</td>
+ * <td>10</td>
  * <td>The maximum number of connections that will be created for any particular
  * host.</td>
  * </tr>
@@ -346,7 +346,7 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
      */
     public int getMaxConnectionsPerHost() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxConnectionsPerHost", "2"));
+                "maxConnectionsPerHost", "10"));
     }
 
     /**

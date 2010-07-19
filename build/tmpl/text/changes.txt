@@ -55,6 +55,9 @@ Changes log
         purpose.
       - Request and responses now call their release() method upon
         garbage collection. It releases any associated entity.
+      - Increased default value for "maxConnectionsPerHost" parameter
+        of the Apache HTTP client extension.
+        Suggested by David Fogel.
     - Bugs fixed
       - Thread local variables are now cleared correctly.
         Prevented unloading of WAR files or OSGi bundles
