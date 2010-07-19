@@ -1,0 +1,18 @@
+<library id="rome">
+	<package name="com.sun.syndication">
+		<maven>
+			<groupId>rome</groupId>
+			<artifactId>rome</artifactId>
+		</maven>
+	</package>
+	<version>1.0</version>
+	<homeUri>
+		https://rome.dev.java.net/
+	</homeUri>
+	<downloadUri>
+		https://rome.dev.java.net/
+	</downloadUri>
+	<javadocs>
+		<link href="https://rome.dev.java.net/apidocs/1_0/" />
+	</javadocs>
+</library>
