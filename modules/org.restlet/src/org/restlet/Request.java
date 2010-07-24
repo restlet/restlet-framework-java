@@ -217,49 +217,66 @@ public class Request extends Message {
         // Copy client info
         ClientInfo rci = request.getClientInfo();
         clientInfo = new ClientInfo();
+
         for (Preference<CharacterSet> o : rci.getAcceptedCharacterSets()) {
             clientInfo.getAcceptedCharacterSets().add(o);
         }
+
         for (Preference<Encoding> o : rci.getAcceptedEncodings()) {
             clientInfo.getAcceptedEncodings().add(o);
         }
+
         for (Preference<Language> o : rci.getAcceptedLanguages()) {
             clientInfo.getAcceptedLanguages().add(o);
         }
+
         for (Preference<MediaType> o : rci.getAcceptedMediaTypes()) {
             clientInfo.getAcceptedMediaTypes().add(o);
         }
+
         clientInfo.setAddress(rci.getAddress());
+        clientInfo.setAgent(rci.getAgent());
+
         for (String o : rci.getForwardedAddresses()) {
             clientInfo.getForwardedAddresses().add(o);
         }
-        clientInfo.setAgent(rci.getAgent());
+
         clientInfo.setFrom(rci.getFrom());
         clientInfo.setPort(rci.getPort());
+
         // [ifndef gwt]
         clientInfo.setAgentAttributes(rci.getAgentAttributes());
         clientInfo.setAgentProducts(rci.getAgentProducts());
         clientInfo.setAuthenticated(rci.isAuthenticated());
+
         for (org.restlet.data.Expectation o : rci.getExpectations()) {
             clientInfo.getExpectations().add(o);
         }
+
         for (java.security.Principal o : rci.getPrincipals()) {
             clientInfo.getPrincipals().add(o);
         }
+
         for (org.restlet.security.Role o : rci.getRoles()) {
             clientInfo.getRoles().add(o);
         }
+
+        clientInfo.setUser(rci.getUser());
         // [enddef]
 
         // Copy conditions
         conditions = new Conditions();
+
         for (Tag o : request.getConditions().getMatch()) {
             conditions.getMatch().add(o);
         }
+
         conditions.setModifiedSince(request.getConditions().getModifiedSince());
+
         for (Tag o : request.getConditions().getNoneMatch()) {
             conditions.getNoneMatch().add(o);
         }
+
         conditions.setRangeDate(request.getConditions().getRangeDate());
         conditions.setRangeTag(request.getConditions().getRangeTag());
         conditions.setUnmodifiedSince(request.getConditions()
@@ -277,9 +294,11 @@ public class Request extends Message {
         // [ifndef gwt] instruction
         this.proxyChallengeResponse = request.getProxyChallengeResponse();
         this.protocol = request.getProtocol();
+
         for (Range o : request.getRanges()) {
             getRanges().add(o);
         }
+
         this.referrerRef = (request.getReferrerRef() == null) ? null
                 : new Reference(request.getReferrerRef());
         this.rootRef = (request.getRootRef() == null) ? null : request
@@ -288,13 +307,17 @@ public class Request extends Message {
         for (Entry<String, Object> e : request.getAttributes().entrySet()) {
             getAttributes().put(e.getKey(), e.getValue());
         }
+
         for (CacheDirective o : request.getCacheDirectives()) {
             getCacheDirectives().add(o);
         }
+
         this.setOnSent(request.getOnSent());
+
         for (Warning o : request.getWarnings()) {
             getWarnings().add(o);
         }
+
         this.setDate(request.getDate());
     }
 
