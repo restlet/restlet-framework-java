@@ -342,7 +342,7 @@ public final class LocalReference extends Reference {
     public int getClapAuthorityType() {
         int result = 0;
 
-        if (getSchemeProtocol().equals(Protocol.CLAP)) {
+        if (Protocol.CLAP.equals(getSchemeProtocol())) {
             final String authority = getAuthority();
 
             if (authority != null) {
@@ -372,7 +372,7 @@ public final class LocalReference extends Reference {
     public File getFile() {
         File result = null;
 
-        if (getSchemeProtocol().equals(Protocol.FILE)) {
+        if (Protocol.FILE.equals(getSchemeProtocol())) {
             final String hostName = getAuthority();
 
             if ((hostName == null) || hostName.equals("")
@@ -396,7 +396,7 @@ public final class LocalReference extends Reference {
     public String getJarEntryPath() {
         String result = null;
 
-        if (getSchemeProtocol().equals(Protocol.JAR)) {
+        if (Protocol.JAR.equals(getSchemeProtocol())) {
             final String ssp = getSchemeSpecificPart();
 
             if (ssp != null) {
@@ -419,7 +419,7 @@ public final class LocalReference extends Reference {
     public Reference getJarFileRef() {
         Reference result = null;
 
-        if (getSchemeProtocol().equals(Protocol.JAR)) {
+        if (Protocol.JAR.equals(getSchemeProtocol())) {
             final String ssp = getSchemeSpecificPart();
 
             if (ssp != null) {
@@ -442,7 +442,7 @@ public final class LocalReference extends Reference {
     public int getRiapAuthorityType() {
         int result = 0;
 
-        if (getSchemeProtocol().equals(Protocol.RIAP)) {
+        if (Protocol.RIAP.equals(getSchemeProtocol())) {
             final String authority = getAuthority();
 
             if (authority != null) {
