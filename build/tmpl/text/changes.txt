@@ -6,7 +6,10 @@ Changes log
 - @version-full@ (@release-date@)
     - Bugs fixed
        - When cloning the prototype request, the ClientResource wasn't
-         copying the ClientInfo#user property. 
+         copying the ClientInfo#user property.
+       - Fixed the setting of the Request's rootRef attribute when 
+         using the RIAP protocol.
+         Reported by Tal Liron and Tim Peierls. 
     - Enhancements
     - Misc
 

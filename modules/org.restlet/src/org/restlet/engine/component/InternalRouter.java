@@ -35,6 +35,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.resource.Finder;
+import org.restlet.routing.Route;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
 
@@ -58,11 +59,12 @@ public class InternalRouter extends Router {
         setRoutingMode(Router.MODE_BEST_MATCH);
     }
 
+
     @SuppressWarnings("deprecation")
     @Override
-    protected org.restlet.routing.Route createRoute(String uriPattern,
-            Restlet target) {
-        return new org.restlet.routing.Route(this, uriPattern, target) {
+    protected org.restlet.routing.Route createRoute(String uriPattern, Restlet target,
+            int matchingMode) {
+        Route result = new org.restlet.routing.Route(this, uriPattern, target) {
             @Override
             protected int beforeHandle(Request request, Response response) {
                 final int result = super.beforeHandle(request, response);
@@ -74,6 +76,10 @@ public class InternalRouter extends Router {
                 return result;
             }
         };
+        result.getTemplate().setMatchingMode(matchingMode);
+        result.setMatchingQuery(getDefaultMatchingQuery());
+        
+        return result;
     }
 
     @SuppressWarnings("deprecation")
