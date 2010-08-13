@@ -55,6 +55,7 @@ import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.StringUtils;
+import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
@@ -154,18 +155,28 @@ public abstract class ServerCall extends Call {
         Representation result = null;
         long contentLength = getContentLength();
 
-        // Create the result representation
-        InputStream requestStream = getRequestEntityStream(contentLength);
-        ReadableByteChannel requestChannel = getRequestEntityChannel(contentLength);
+        boolean chunkedEncoding = HeaderUtils.isChunkedEncoding(getRequestHeaders());
+        // In some cases there is an entity without a content-length header
+        boolean connectionClosed = HeaderUtils.isConnectionClose(getRequestHeaders());
 
-        if (requestStream != null) {
-            result = new InputRepresentation(requestStream, null, contentLength);
-        } else if (requestChannel != null) {
-            result = new ReadableRepresentation(requestChannel, null,
-                    contentLength);
+        // Create the representation
+        if ((contentLength != Representation.UNKNOWN_SIZE && contentLength != 0)
+                || chunkedEncoding || connectionClosed) {
+            // Create the result representation
+            InputStream requestStream = getRequestEntityStream(contentLength);
+            ReadableByteChannel requestChannel = getRequestEntityChannel(contentLength);
+
+            if (requestStream != null) {
+                result = new InputRepresentation(requestStream, null, contentLength);
+            } else if (requestChannel != null) {
+                result = new ReadableRepresentation(requestChannel, null,
+                        contentLength);
+            }
+
+            result.setSize(contentLength);
+        } else {
+            result = new EmptyRepresentation();
         }
-
-        result.setSize(contentLength);
 
         // Extract some interesting header values
         for (Parameter header : getRequestHeaders()) {
