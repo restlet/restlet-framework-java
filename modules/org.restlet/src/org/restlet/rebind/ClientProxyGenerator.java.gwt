@@ -43,6 +43,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.resource.GwtClientProxy;
@@ -370,6 +371,8 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 println(sb.toString() + " result;");
                 println("try {");
                 indent();
+                println("if(MediaType.APPLICATION_JAVA_OBJECT_GWT.equals(response.getEntity().getMediaType())){");
+                indent();
                 println("result = new ObjectRepresentation<" + sb.toString()
                         + ">(");
                 indent();
@@ -378,7 +381,16 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                         + ".this, "
                         + String.class.getName().equals(sb.toString()) + ")");
                 println(".getObject();");
-
+                outdent();
+                println("} else {");
+                indent();
+                if (String.class.getName().equals(sb.toString())) {
+                    println("result = response.getEntity().getText();");
+                } else {
+                    println("throw new IOException(\"Can't parse the enclosed entity\");");
+                }
+                outdent();
+                println("}");
                 outdent();
                 println("callback.onSuccess(result);");
                 outdent();
@@ -431,7 +443,8 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             composer.addImport(Result.class.getCanonicalName());
             composer.addImport(SerializationStreamFactory.class
                     .getCanonicalName());
-
+            composer.addImport(MediaType.class.getCanonicalName());
+            
             this.sourceWriter = composer.createSourceWriter(getContext(),
                     printWriter);
             println();
