@@ -11,6 +11,11 @@ Changes log
          using the RIAP protocol.
          Reported by Tal Liron and Tim Peierls. 
        - Fixed content negotiation issue in the servlet extension.  
+       - Fixed the deserialization of unavailable entities in the GWT 
+         edition.
+       - Fixed serialization of String objects in the GWT extension.
+       - Allowed to filter serialized types in the GWT client proxies
+         generated.
     - Enhancements
     - Misc
 
