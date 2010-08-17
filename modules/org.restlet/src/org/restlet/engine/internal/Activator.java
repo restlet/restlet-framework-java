@@ -62,9 +62,8 @@ public class Activator implements BundleActivator {
      * @param descriptorPath
      *            The descriptor file path.
      */
-    @SuppressWarnings("unchecked")
-    private void registerHelper(Bundle bundle, List helpers,
-            Class constructorClass, String descriptorPath) {
+    private void registerHelper(Bundle bundle, List<?> helpers,
+            Class<?> constructorClass, String descriptorPath) {
         // Discover server helpers
         URL configUrl = bundle.getEntry(descriptorPath);
 
@@ -89,9 +88,8 @@ public class Activator implements BundleActivator {
      * @param descriptorUrl
      *            The descriptor URL to inspect.
      */
-    @SuppressWarnings("unchecked")
-    private void registerHelper(final Bundle bundle, List helpers,
-            Class constructorClass, URL descriptorUrl) {
+    private void registerHelper(final Bundle bundle, List<?> helpers,
+            Class<?> constructorClass, URL descriptorUrl) {
         Engine.getInstance().registerHelpers(new ClassLoader() {
             @Override
             public Class<?> loadClass(String name)

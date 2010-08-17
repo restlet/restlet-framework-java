@@ -75,13 +75,11 @@ public class JibxRepresentation<T> extends WriterRepresentation {
      * @return A binding factory.
      * @throws JiBXException
      */
-    @SuppressWarnings("unchecked")
     private static synchronized IBindingFactory getBindingFactory(
-            String bindingName, Class bindingClass) throws JiBXException {
+            String bindingName, Class<?> bindingClass) throws JiBXException {
 
-        // All binding factory instances are guaranteed to be threadsafe and
+        // All binding factory instances are guaranteed to be thread safe and
         // reusable.
-
         IBindingFactory jibxBFact = bindingFactories.get(bindingName
                 + bindingClass.toString());
 
@@ -101,8 +99,7 @@ public class JibxRepresentation<T> extends WriterRepresentation {
     }
 
     /** Class for target binding. */
-    @SuppressWarnings("unchecked")
-    private volatile Class bindingClass;
+    private volatile Class<?> bindingClass;
 
     /** The binding name to use. */
     private volatile String bindingName;
@@ -156,9 +153,8 @@ public class JibxRepresentation<T> extends WriterRepresentation {
      * @param bindingClass
      *            The Target Java class for binding.
      */
-    @SuppressWarnings("unchecked")
     public JibxRepresentation(Representation xmlRepresentation,
-            Class bindingClass) {
+            Class<?> bindingClass) {
         this(xmlRepresentation, bindingClass, null);
     }
 
@@ -173,9 +169,8 @@ public class JibxRepresentation<T> extends WriterRepresentation {
      * @param bindingName
      *            The name of the JIBX binding to use.
      */
-    @SuppressWarnings("unchecked")
     public JibxRepresentation(Representation xmlRepresentation,
-            Class bindingClass, String bindingName) {
+            Class<?> bindingClass, String bindingName) {
         super(xmlRepresentation.getMediaType());
         this.xmlRepresentation = xmlRepresentation;
         this.bindingClass = bindingClass;

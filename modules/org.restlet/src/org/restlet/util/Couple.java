@@ -63,13 +63,12 @@ public class Couple<T, U> {
         this.second = second;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object other) {
         boolean result = (this == other);
 
         if (!result && (other instanceof Couple)) {
-            Couple couple = (Couple) other;
+            Couple<?, ?> couple = (Couple<?, ?>) other;
 
             if (((couple.getFirst() == null) && (getFirst() == null))
                     || ((getFirst() != null) && getFirst().equals(

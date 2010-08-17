@@ -166,7 +166,7 @@ public class EmfConverter extends ConverterHelper {
         Object result = null;
 
         if (source instanceof EmfRepresentation) {
-            result = ((EmfRepresentation) source).getObject();
+            result = ((EmfRepresentation<?>) source).getObject();
         } else if (VARIANT_JSON.isCompatible(source)) {
             result = create(source).getObject();
         } else if (isCompatible(source)) {
@@ -176,14 +176,13 @@ public class EmfConverter extends ConverterHelper {
         return (T) result;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Representation toRepresentation(Object source, Variant target,
             UniformResource resource) {
         Representation result = null;
 
         if (source instanceof EmfRepresentation) {
-            result = (EmfRepresentation) source;
+            result = (EmfRepresentation<?>) source;
         } else {
             if (target.getMediaType() == null) {
                 target.setMediaType(MediaType.TEXT_XML);

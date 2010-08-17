@@ -75,9 +75,9 @@ public class SpringRouter extends Router {
      * @param route
      *            The route object to attach.
      */
-    @SuppressWarnings( { "unchecked", "deprecation" })
+    @SuppressWarnings("deprecation")
     public static void setAttachment(Router router, String path, Object route) {
-        Class resourceClass;
+        Class<?> resourceClass;
 
         if (route instanceof Restlet) {
             router.attach(path, (Restlet) route);

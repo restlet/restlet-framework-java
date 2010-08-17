@@ -227,8 +227,8 @@ public class TaskService extends Service implements ExecutorService {
 
     /**
      * Executes the given tasks, returning a list of Futures holding their
-     * status and results when all complete.
-     * 
+     * status and results when all complete.<br>
+     * <br>
      * Due to a breaking change between Java SE versions 5 and 6, and in order
      * to maintain compatibility both at the source and binary level, we have
      * removed the generic information from this method. You can check the
@@ -247,11 +247,11 @@ public class TaskService extends Service implements ExecutorService {
      * Executes the given tasks, returning a list of Futures holding their
      * status and results when all complete or the timeout expires, whichever
      * happens first. Future.isDone() is true for each element of the returned
-     * list. Upon return, tasks that have not completed are cancelled. Note that
+     * list. Upon return, tasks that have not completed are canceled. Note that
      * a completed task could have terminated either normally or by throwing an
      * exception. The results of this method are undefined if the given
-     * collection is modified while this operation is in progress.
-     * 
+     * collection is modified while this operation is in progress.<br>
+     * <br>
      * Due to a breaking change between Java SE versions 5 and 6, and in order
      * to maintain compatibility both at the source and binary level, we have
      * removed the generic information from this method. You can check the

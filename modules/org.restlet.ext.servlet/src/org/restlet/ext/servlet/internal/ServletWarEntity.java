@@ -83,7 +83,6 @@ public class ServletWarEntity extends Entity {
      * @param metadataService
      *            The metadata service to use.
      */
-    @SuppressWarnings("unchecked")
     public ServletWarEntity(ServletContext servletContext, String path,
             MetadataService metadataService) {
         super(metadataService);
@@ -94,7 +93,7 @@ public class ServletWarEntity extends Entity {
         if (path.endsWith("/")) {
             this.directory = true;
             this.fullName = path.substring(0, path.length() - 1);
-            Set childPaths = getServletContext().getResourcePaths(path);
+            Set<?> childPaths = getServletContext().getResourcePaths(path);
 
             if (childPaths != null && !childPaths.isEmpty()) {
                 this.children = new ArrayList<Entity>();
@@ -109,7 +108,7 @@ public class ServletWarEntity extends Entity {
             }
         } else {
             this.fullName = path;
-            Set childPaths = getServletContext().getResourcePaths(path);
+            Set<?> childPaths = getServletContext().getResourcePaths(path);
 
             if (childPaths != null && !childPaths.isEmpty()) {
                 this.directory = true;

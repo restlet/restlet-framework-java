@@ -166,9 +166,10 @@ public class XstreamConverter extends ConverterHelper {
         Object result = null;
 
         // The source for the XStream conversion
-        XstreamRepresentation xstreamSource = null;
+        XstreamRepresentation<?> xstreamSource = null;
+        
         if (source instanceof XstreamRepresentation) {
-            xstreamSource = (XstreamRepresentation) source;
+            xstreamSource = (XstreamRepresentation<?>) source;
         } else if (VARIANT_JSON.isCompatible(source)) {
             xstreamSource = create(source);
         } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
@@ -190,14 +191,13 @@ public class XstreamConverter extends ConverterHelper {
         return (T) result;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Representation toRepresentation(Object source, Variant target,
             UniformResource resource) {
         Representation result = null;
 
         if (source instanceof XstreamRepresentation) {
-            result = (XstreamRepresentation) source;
+            result = (XstreamRepresentation<?>) source;
         } else {
             if (target.getMediaType() == null) {
                 target.setMediaType(MediaType.TEXT_XML);

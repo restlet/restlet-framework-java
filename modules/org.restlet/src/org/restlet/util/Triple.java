@@ -71,13 +71,12 @@ public class Triple<T, U, V> {
         this.third = third;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object other) {
         boolean result = (this == other);
 
         if (!result && (other instanceof Triple)) {
-            Triple triple = (Triple) other;
+            Triple<?, ?, ?> triple = (Triple<?, ?, ?>) other;
 
             if (((triple.getFirst() == null) && (getFirst() == null))
                     || ((getFirst() != null) && getFirst().equals(

@@ -71,7 +71,7 @@ public class SimpleServer implements Server {
      */
     @SuppressWarnings("unchecked")
     public void process(Socket socket) throws IOException {
-        Map map = socket.getAttributes();
+        Map<String, Object> map = socket.getAttributes();
         SSLEngine engine = socket.getEngine();
         SocketChannel channel = socket.getChannel();
 
