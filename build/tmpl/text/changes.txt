@@ -17,6 +17,7 @@ Changes log
        - Allowed to filter serialized types in the GWT client proxies
          generated.
     - Enhancements
+       - Updated Grizzly library to version 1.9.19.
     - Misc
 
 - 2.0.0 (2010-07-19)
