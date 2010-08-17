@@ -182,17 +182,14 @@ public class Component extends Restlet {
 
         if (Engine.getInstance() != null) {
             this.helper = new ComponentHelper(this);
-
-            if (this.helper != null) {
-                this.defaultHost = new VirtualHost(getContext()
-                        .createChildContext());
-                this.internalRouter = new InternalRouter(getContext()
-                        .createChildContext());
-                this.services.add(new LogService());
-                this.services.add(new StatusService());
-                this.clients.setContext(getContext());
-                this.servers.setContext(getContext());
-            }
+            this.defaultHost = new VirtualHost(getContext()
+                    .createChildContext());
+            this.internalRouter = new InternalRouter(getContext()
+                    .createChildContext());
+            this.services.add(new LogService());
+            this.services.add(new StatusService());
+            this.clients.setContext(getContext());
+            this.servers.setContext(getContext());
         }
     }
 

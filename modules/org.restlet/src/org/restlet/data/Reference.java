@@ -124,7 +124,7 @@ public class Reference {
     private static final boolean[] charValidityMap = new boolean[127];
 
     static {
-        // Initialize the map af valid characters.
+        // Initialize the map of valid characters.
         for (int character = 0; character < 127; character++) {
             charValidityMap[character] = isReserved(character) || isUnreserved(character)
                     || (character == '%');
