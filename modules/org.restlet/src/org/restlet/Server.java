@@ -138,13 +138,26 @@ public class Server extends Connector {
      *            The context.
      * @param protocol
      *            The connector protocol.
+     * @param nextClass
+     *            The next server resource.
+     */
+    public Server(Context context, Protocol protocol, Class<?> nextClass) {
+        this(context, protocol, null, (protocol == null) ? -1 : protocol
+                .getDefaultPort(), new Finder(Context.getCurrent(), nextClass));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The parent context.
+     * @param protocol
+     *            The connector protocol.
      * @param port
      *            The listening port.
-     * @param next
-     *            The next Restlet.
      */
-    public Server(Context context, Protocol protocol, int port, Restlet next) {
-        this(context, protocol, null, port, next);
+    public Server(Context context, Protocol protocol, int port) {
+        this(context, protocol, port, (Restlet) null);
     }
 
     /**
@@ -172,12 +185,13 @@ public class Server extends Connector {
      *            The context.
      * @param protocol
      *            The connector protocol.
-     * @param nextClass
-     *            The next server resource.
+     * @param port
+     *            The listening port.
+     * @param next
+     *            The next Restlet.
      */
-    public Server(Context context, Protocol protocol, Class<?> nextClass) {
-        this(context, protocol, null, (protocol == null) ? -1 : protocol
-                .getDefaultPort(), new Finder(Context.getCurrent(), nextClass));
+    public Server(Context context, Protocol protocol, int port, Restlet next) {
+        this(context, protocol, null, port, next);
     }
 
     /**
@@ -261,6 +275,19 @@ public class Server extends Connector {
     }
 
     /**
+     * Constructor using the protocol's default port.
+     * 
+     * @param protocol
+     *            The connector protocol.
+     * @param nextClass
+     *            The next server resource.
+     */
+    public Server(Protocol protocol, Class<?> nextClass) {
+        this((Context) null, protocol, new Finder(Context.getCurrent(),
+                nextClass));
+    }
+
+    /**
      * Constructor.
      * 
      * @param protocol
@@ -284,19 +311,6 @@ public class Server extends Connector {
      */
     public Server(Protocol protocol, int port, Class<?> nextClass) {
         this((Context) null, protocol, port, new Finder(Context.getCurrent(),
-                nextClass));
-    }
-
-    /**
-     * Constructor using the protocol's default port.
-     * 
-     * @param protocol
-     *            The connector protocol.
-     * @param nextClass
-     *            The next server resource.
-     */
-    public Server(Protocol protocol, Class<?> nextClass) {
-        this((Context) null, protocol, new Finder(Context.getCurrent(),
                 nextClass));
     }
 
@@ -338,6 +352,23 @@ public class Server extends Connector {
      */
     public Server(Protocol protocol, String address) {
         this((Context) null, protocol, address, protocol.getDefaultPort(), null);
+    }
+
+    /**
+     * Constructor using the protocol's default port.
+     * 
+     * @param protocol
+     *            The connector protocol.
+     * @param address
+     *            The listening IP address (useful if multiple IP addresses
+     *            available). You can also use a domain name as an alias for the
+     *            IP address to listen to.
+     * @param nextClass
+     *            The next server resource.
+     */
+    public Server(Protocol protocol, String address, Class<?> nextClass) {
+        this((Context) null, protocol, address, protocol.getDefaultPort(),
+                new Finder(Context.getCurrent(), nextClass));
     }
 
     /**
@@ -388,23 +419,6 @@ public class Server extends Connector {
      */
     public Server(Protocol protocol, String address, Restlet next) {
         this((Context) null, protocol, address, protocol.getDefaultPort(), next);
-    }
-
-    /**
-     * Constructor using the protocol's default port.
-     * 
-     * @param protocol
-     *            The connector protocol.
-     * @param address
-     *            The listening IP address (useful if multiple IP addresses
-     *            available). You can also use a domain name as an alias for the
-     *            IP address to listen to.
-     * @param nextClass
-     *            The next server resource.
-     */
-    public Server(Protocol protocol, String address, Class<?> nextClass) {
-        this((Context) null, protocol, address, protocol.getDefaultPort(),
-                new Finder(Context.getCurrent(), nextClass));
     }
 
     /**
