@@ -341,6 +341,7 @@ public class Controller implements Runnable {
      */
     public void shutdown() throws IOException {
         setRunning(false);
+        getSelector().close();
     }
 
     /**

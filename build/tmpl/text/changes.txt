@@ -16,6 +16,7 @@ Changes log
        - Fixed serialization of String objects in the GWT extension.
        - Allowed to filter serialized types in the GWT client proxies
          generated.
+       - Fixed potential entity reading issue with Grizzly HTTP server.
     - Enhancements
        - Updated Grizzly library to version 1.9.19.
     - Misc

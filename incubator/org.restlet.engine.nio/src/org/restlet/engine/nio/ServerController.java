@@ -63,12 +63,6 @@ public class ServerController extends Controller {
         this.latch = new CountDownLatch(1);
     }
 
-    @Override
-    public void shutdown() throws IOException {
-        super.shutdown();
-        getSelector().close();
-    }
-
     /**
      * Awaits for the controller to be effectively started.
      * 
