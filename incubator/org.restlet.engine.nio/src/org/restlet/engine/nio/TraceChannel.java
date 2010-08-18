@@ -30,50 +30,52 @@
 
 package org.restlet.engine.nio;
 
-import java.io.IOException;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
-
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+import java.io.OutputStream;
+import java.nio.channels.SelectableChannel;
 
 /**
- * HTTP server helper based on NIO blocking sockets.
+ * Filter byte channel that sends a copy of all data on the trace output stream.
+ * It is important to inherit from {@link SelectableChannel} as some framework
+ * classes rely on this down the processing chain.
  * 
  * @author Jerome Louvel
  */
-public class HttpServerHelper extends BaseServerHelper {
+public class TraceChannel<T extends SelectionChannel> extends
+        WrapperSelectionChannel<T> {
+
+    /** The trace output stream to use if tracing is enabled. */
+    private OutputStream traceStream;
 
     /**
      * Constructor.
      * 
-     * @param server
-     *            The server to help.
+     * @param wrappedChannel
+     *            The wrapped channel.
      */
-    public HttpServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.HTTP);
+    public TraceChannel(T wrappedChannel) {
+        this(wrappedChannel, System.out);
     }
 
-    @Override
-    protected Connection<Server> createConnection(BaseHelper<Server> helper,
-            SocketChannel socketChannel, Selector selector) throws IOException {
-        return new Connection<Server>(helper, socketChannel, selector);
+    /**
+     * Constructor.
+     * 
+     * @param wrappedChannel
+     *            The wrapped channel.
+     * @param traceStream
+     *            The trace stream.
+     */
+    public TraceChannel(T wrappedChannel, OutputStream traceStream) {
+        super(wrappedChannel);
+        this.traceStream = traceStream;
     }
 
-    @Override
-    public synchronized void start() throws Exception {
-        getLogger()
-                .info(
-                        "Starting the NIO HTTP server on port "
-                                + getHelped().getPort());
-        super.start();
-    }
-
-    @Override
-    public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the NIO HTTP server");
-        super.stop();
+    /**
+     * Returns the trace output stream to use if tracing is enabled.
+     * 
+     * @return The trace output stream to use if tracing is enabled.
+     */
+    public OutputStream getTraceStream() {
+        return this.traceStream;
     }
 
 }

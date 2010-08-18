@@ -251,7 +251,7 @@ public class Controller implements Runnable {
             throws ClosedByInterruptException {
         // Notify the selected way
         if (key.attachment() != null) {
-            ((Selectable) key.attachment()).onSelected(key);
+            ((SelectionListener) key.attachment()).onSelected(key);
         }
     }
 
@@ -277,8 +277,7 @@ public class Controller implements Runnable {
                         setOverloaded(true);
                         getHelper()
                                 .getLogger()
-                                .log(
-                                        Level.INFO,
+                                .log(Level.INFO,
                                         "Stop accepting new connections and transactions. Consider increasing the maximum number of threads.");
                     }
 

@@ -31,6 +31,8 @@
 package org.restlet.engine.nio;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
 import java.util.Set;
@@ -181,11 +183,13 @@ public abstract class BaseHelper<T extends Connector> extends
      *            The parent helper.
      * @param socketChannel
      *            The underlying NIO socket channel.
+     * @param selector
+     *            The underlying NIO selector.
      * @return The new connection.
      * @throws IOException
      */
     protected abstract Connection<T> createConnection(BaseHelper<T> helper,
-            SocketChannel socketChannel) throws IOException;
+            SocketChannel socketChannel, Selector selector) throws IOException;
 
     /**
      * Creates a new controller.
@@ -508,6 +512,15 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Returns the trace output stream to use if tracing is enabled.
+     * 
+     * @return The trace output stream to use if tracing is enabled.
+     */
+    public OutputStream getTraceStream() {
+        return System.out;
+    }
+
+    /**
      * Indicates if the worker service is busy. This state is detected by
      * checking if the number of active task running is superior or equal to the
      * maximum pool size.
@@ -562,8 +575,7 @@ public abstract class BaseHelper<T extends Connector> extends
                 this.controllerService.awaitTermination(10, TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
                 getLogger()
-                        .log(
-                                Level.FINE,
+                        .log(Level.FINE,
                                 "Interruption while shutting down the controller service",
                                 ex);
             }

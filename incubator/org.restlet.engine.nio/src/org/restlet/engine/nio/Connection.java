@@ -58,7 +58,13 @@ import org.restlet.engine.security.SslUtils;
  *            The parent connector type.
  * @author Jerome Louvel
  */
-public class Connection<T extends Connector> implements Selectable {
+public class Connection<T extends Connector> implements SelectionListener {
+
+    /** The readable selection channel. */
+    private final ReadableSelectionChannel readableSelectionChannel;
+
+    /** The writable selection channel. */
+    private final WritableSelectionChannel writableSelectionChannel;
 
     /** The parent connector helper. */
     private final BaseHelper<T> helper;
@@ -99,8 +105,8 @@ public class Connection<T extends Connector> implements Selectable {
      *            The underlying NIO socket channel.
      * @throws IOException
      */
-    public Connection(BaseHelper<T> helper, SocketChannel socketChannel)
-            throws IOException {
+    public Connection(BaseHelper<T> helper, SocketChannel socketChannel,
+            Selector selector) throws IOException {
         this.helper = helper;
         this.inboundWay = helper.createInboundWay(this);
         this.outboundWay = helper.createOutboundWay(this);
@@ -108,6 +114,19 @@ public class Connection<T extends Connector> implements Selectable {
         this.pipelining = helper.isPipeliningConnections();
         this.state = ConnectionState.OPENING;
         this.socketChannel = socketChannel;
+
+        if (helper.isTracing()) {
+            this.readableSelectionChannel = new ReadableTraceChannel(
+                    new ReadableSocketChannel(socketChannel, selector));
+            this.writableSelectionChannel = new WritableTraceChannel(
+                    new WritableSocketChannel(socketChannel, selector));
+        } else {
+            this.readableSelectionChannel = new ReadableSocketChannel(
+                    socketChannel, selector);
+            this.writableSelectionChannel = new WritableSocketChannel(
+                    socketChannel, selector);
+        }
+
         this.lastActivity = System.currentTimeMillis();
         this.socketKey = null;
     }
@@ -223,6 +242,15 @@ public class Connection<T extends Connector> implements Selectable {
     }
 
     /**
+     * Returns the underlying socket channel as a readable selection channel.
+     * 
+     * @return The underlying socket channel as a readable selection channel.
+     */
+    protected ReadableSelectionChannel getReadableSelectionChannel() {
+        return readableSelectionChannel;
+    }
+
+    /**
      * Returns the underlying socket.
      * 
      * @return The underlying socket.
@@ -328,6 +356,15 @@ public class Connection<T extends Connector> implements Selectable {
      */
     public ConnectionState getState() {
         return state;
+    }
+
+    /**
+     * Returns the underlying socket channel as a writable selection channel.
+     * 
+     * @return The underlying socket channel as a writable selection channel.
+     */
+    protected WritableSelectionChannel getWritableSelectionChannel() {
+        return writableSelectionChannel;
     }
 
     /**
@@ -449,8 +486,7 @@ public class Connection<T extends Connector> implements Selectable {
                             socketInterestOps, this));
                 } catch (ClosedChannelException cce) {
                     getLogger()
-                            .log(
-                                    Level.WARNING,
+                            .log(Level.WARNING,
                                     "Unable to register NIO interest operations for this connection",
                                     cce);
                     onError();

@@ -30,22 +30,33 @@
 
 package org.restlet.engine.nio;
 
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 
 /**
- * Callback interface when a NIO selection occurs on the selectable object.
+ * Wrapper selection channel.
  * 
  * @author Jerome Louvel
  */
-public interface Selectable {
+public class WrapperSelectionChannel<T extends SelectionChannel> extends
+        WrapperChannel<T> implements SelectionChannel {
 
     /**
-     * Callback method invoked when the connection has been selected for IO
-     * operations it registered interest in.
+     * Constructor.
      * 
-     * @param key
-     *            The registered selection key.
+     * @param wrappedChannel
+     *            The wrapped channel.
      */
-    public void onSelected(SelectionKey key);
+    public WrapperSelectionChannel(T wrappedChannel) {
+        super(wrappedChannel);
+    }
+
+    /**
+     * Delegates to the wrapped channel.
+     */
+    public SelectionKey register(int ops, SelectionListener listener)
+            throws ClosedChannelException {
+        return getWrappedChannel().register(ops, listener);
+    }
 
 }

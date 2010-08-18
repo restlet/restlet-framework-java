@@ -41,7 +41,6 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
-import org.restlet.engine.http.io.ReadableEntityChannel;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.ReadableRepresentation;
@@ -171,10 +170,10 @@ public abstract class InboundWay extends Way {
             } else {
                 // Wraps the remaining bytes into a special entity channel
                 result = new ReadableEntityChannel(getByteBuffer(),
-                        getConnection().getSocketChannel(), size);
+                        getConnection().getReadableSelectionChannel(), size);
             }
         } else {
-            result = getConnection().getSocketChannel();
+            result = getConnection().getReadableSelectionChannel();
         }
 
         return result;
@@ -285,8 +284,7 @@ public abstract class InboundWay extends Way {
             }
         } catch (Exception e) {
             getLogger()
-                    .log(
-                            Level.INFO,
+                    .log(Level.INFO,
                             "Error while reading a message. Closing the connection.",
                             e);
             getConnection().onError();
@@ -344,7 +342,8 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected int readSocketBytes() throws IOException {
-        int result = getConnection().getSocketChannel().read(getByteBuffer());
+        int result = getConnection().getReadableSelectionChannel().read(
+                getByteBuffer());
         getByteBuffer().flip();
         return result;
     }

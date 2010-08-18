@@ -106,7 +106,8 @@ public class ServerController extends Controller {
                             || (connectionsCount <= getHelper()
                                     .getMaxTotalConnections())) {
                         Connection<Server> connection = getHelper()
-                                .createConnection(getHelper(), socketChannel);
+                                .createConnection(getHelper(), socketChannel,
+                                        getSelector());
                         connection.open();
                         getHelper().getConnections().add(connection);
                         getHelper().getLogger().log(
@@ -121,8 +122,7 @@ public class ServerController extends Controller {
                         socketChannel.close();
                         getHelper()
                                 .getLogger()
-                                .info(
-                                        "Maximum number of concurrent connections reached. New connection rejected.");
+                                .info("Maximum number of concurrent connections reached. New connection rejected.");
                     }
                 }
             } catch (ClosedByInterruptException ex) {

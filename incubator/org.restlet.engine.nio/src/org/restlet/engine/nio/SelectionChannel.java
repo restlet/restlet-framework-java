@@ -30,50 +30,28 @@
 
 package org.restlet.engine.nio;
 
-import java.io.IOException;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
-
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+import java.nio.channels.Channel;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SelectionKey;
 
 /**
- * HTTP server helper based on NIO blocking sockets.
+ * NIO channel that is based on a selectable channel.
  * 
  * @author Jerome Louvel
  */
-public class HttpServerHelper extends BaseServerHelper {
+public interface SelectionChannel extends Channel {
 
     /**
-     * Constructor.
+     * Registers a selection listener with the underlying selector for the given
+     * operations and returns the selection key created.
      * 
-     * @param server
-     *            The server to help.
+     * @param ops
+     *            The operations of interest.
+     * @param listener
+     *            The listener to notify.
+     * @return The created selection key.
      */
-    public HttpServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.HTTP);
-    }
-
-    @Override
-    protected Connection<Server> createConnection(BaseHelper<Server> helper,
-            SocketChannel socketChannel, Selector selector) throws IOException {
-        return new Connection<Server>(helper, socketChannel, selector);
-    }
-
-    @Override
-    public synchronized void start() throws Exception {
-        getLogger()
-                .info(
-                        "Starting the NIO HTTP server on port "
-                                + getHelped().getPort());
-        super.start();
-    }
-
-    @Override
-    public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the NIO HTTP server");
-        super.stop();
-    }
+    public SelectionKey register(int ops, SelectionListener listener)
+            throws ClosedChannelException;
 
 }

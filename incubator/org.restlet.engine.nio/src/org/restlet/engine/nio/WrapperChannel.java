@@ -31,49 +31,49 @@
 package org.restlet.engine.nio;
 
 import java.io.IOException;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
-
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+import java.nio.channels.Channel;
 
 /**
- * HTTP server helper based on NIO blocking sockets.
+ * Wrapper channel.
  * 
  * @author Jerome Louvel
  */
-public class HttpServerHelper extends BaseServerHelper {
+public class WrapperChannel<T extends Channel> implements Channel {
+
+    /** The wrapped channel. */
+    private T wrappedChannel;
 
     /**
      * Constructor.
      * 
-     * @param server
-     *            The server to help.
+     * @param wrappedChannel
+     *            The wrapped channel.
      */
-    public HttpServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.HTTP);
+    public WrapperChannel(T wrappedChannel) {
+        this.wrappedChannel = wrappedChannel;
     }
 
-    @Override
-    protected Connection<Server> createConnection(BaseHelper<Server> helper,
-            SocketChannel socketChannel, Selector selector) throws IOException {
-        return new Connection<Server>(helper, socketChannel, selector);
+    /**
+     * Delegates to the wrapped channel.
+     */
+    public void close() throws IOException {
+        getWrappedChannel().close();
     }
 
-    @Override
-    public synchronized void start() throws Exception {
-        getLogger()
-                .info(
-                        "Starting the NIO HTTP server on port "
-                                + getHelped().getPort());
-        super.start();
+    /**
+     * Returns the wrapped channel.
+     * 
+     * @return The wrapped channel.
+     */
+    protected T getWrappedChannel() {
+        return wrappedChannel;
     }
 
-    @Override
-    public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the NIO HTTP server");
-        super.stop();
+    /**
+     * Delegates to the wrapped channel.
+     */
+    public boolean isOpen() {
+        return getWrappedChannel().isOpen();
     }
 
 }

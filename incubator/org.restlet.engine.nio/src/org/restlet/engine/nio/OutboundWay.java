@@ -159,9 +159,8 @@ public abstract class OutboundWay extends Way {
 
             if (response.isEntityAvailable()) {
                 getLogger()
-                        .fine(
-                                "Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
-                                        + request.getResourceRef() + "\".");
+                        .fine("Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
+                                + request.getResourceRef() + "\".");
                 response.setEntity(null);
             }
         } else if (response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)) {
@@ -322,7 +321,7 @@ public abstract class OutboundWay extends Way {
      * @return The response channel if it exists.
      */
     public WritableByteChannel getOutboundEntityChannel(boolean chunked) {
-        return getConnection().getSocketChannel();
+        return getConnection().getWritableSelectionChannel();
     }
 
     /**
@@ -448,22 +447,19 @@ public abstract class OutboundWay extends Way {
                                     // Put the whole builder line in the
                                     // buffer
                                     getByteBuffer()
-                                            .put(
-                                                    StringUtils
-                                                            .getLatin1Bytes(getLineBuilder()
-                                                                    .toString()));
+                                            .put(StringUtils
+                                                    .getLatin1Bytes(getLineBuilder()
+                                                            .toString()));
                                     getLineBuilder().delete(0,
                                             getLineBuilder().length());
                                 } else {
                                     // Put the maximum number of characters
                                     // into the byte buffer
                                     getByteBuffer()
-                                            .put(
-                                                    StringUtils
-                                                            .getLatin1Bytes(getLineBuilder()
-                                                                    .substring(
-                                                                            0,
-                                                                            remaining)));
+                                            .put(StringUtils
+                                                    .getLatin1Bytes(getLineBuilder()
+                                                            .substring(0,
+                                                                    remaining)));
                                     getLineBuilder().delete(0, remaining);
                                 }
                             }
@@ -472,8 +468,9 @@ public abstract class OutboundWay extends Way {
                         // After filling the byte buffer, we can now flip it
                         // and start draining it.
                         getByteBuffer().flip();
-                        int bytesWritten = getConnection().getSocketChannel()
-                                .write(getByteBuffer());
+                        int bytesWritten = getConnection()
+                                .getWritableSelectionChannel().write(
+                                        getByteBuffer());
 
                         if (bytesWritten == 0) {
                             // The byte buffer hasn't been written, the socket
@@ -518,7 +515,7 @@ public abstract class OutboundWay extends Way {
             if ((getEntityKey() == null) && (entityInterestOps > 0)) {
                 try {
                     setEntityKey(entitySelectableChannel.register(selector,
-                            entityInterestOps, new Selectable() {
+                            entityInterestOps, new SelectionListener() {
 
                                 public void onSelected(SelectionKey key) {
                                     // TODO
@@ -527,8 +524,7 @@ public abstract class OutboundWay extends Way {
                             }));
                 } catch (ClosedChannelException cce) {
                     getLogger()
-                            .log(
-                                    Level.WARNING,
+                            .log(Level.WARNING,
                                     "Unable to register NIO interest operations for this entity",
                                     cce);
                     getConnection().onError();

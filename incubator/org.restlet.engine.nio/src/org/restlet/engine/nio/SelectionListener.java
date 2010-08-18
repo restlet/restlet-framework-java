@@ -30,50 +30,22 @@
 
 package org.restlet.engine.nio;
 
-import java.io.IOException;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
-
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+import java.nio.channels.SelectionKey;
 
 /**
- * HTTP server helper based on NIO blocking sockets.
+ * Callback interface when a NIO selection occurs on the selectable object.
  * 
  * @author Jerome Louvel
  */
-public class HttpServerHelper extends BaseServerHelper {
+public interface SelectionListener {
 
     /**
-     * Constructor.
+     * Callback method invoked when the connection has been selected for IO
+     * operations it registered interest in.
      * 
-     * @param server
-     *            The server to help.
+     * @param key
+     *            The registered selection key.
      */
-    public HttpServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.HTTP);
-    }
-
-    @Override
-    protected Connection<Server> createConnection(BaseHelper<Server> helper,
-            SocketChannel socketChannel, Selector selector) throws IOException {
-        return new Connection<Server>(helper, socketChannel, selector);
-    }
-
-    @Override
-    public synchronized void start() throws Exception {
-        getLogger()
-                .info(
-                        "Starting the NIO HTTP server on port "
-                                + getHelped().getPort());
-        super.start();
-    }
-
-    @Override
-    public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the NIO HTTP server");
-        super.stop();
-    }
+    public void onSelected(SelectionKey key);
 
 }
