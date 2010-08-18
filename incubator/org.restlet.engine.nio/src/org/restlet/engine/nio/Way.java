@@ -257,7 +257,13 @@ public abstract class Way {
      *            The message state.
      */
     protected void setMessageState(MessageState messageState) {
-        this.messageState = messageState;
+        if (this.messageState != messageState) {
+            this.messageState = messageState;
+            getLogger().log(
+                    BaseHelper.DEFAULT_LEVEL,
+                    "New message state: " + messageState + " (" + hashCode()
+                            + ")");
+        }
     }
 
     @Override

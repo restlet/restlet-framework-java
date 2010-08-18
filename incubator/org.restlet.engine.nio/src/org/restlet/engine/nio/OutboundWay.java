@@ -354,6 +354,8 @@ public abstract class OutboundWay extends Way {
     @Override
     protected void onCompleted(Response message) {
         super.onCompleted(message);
+        setHeaders(null);
+        setHeaderIndex(0);
         getLogger().log(BaseHelper.DEFAULT_LEVEL, "Outbound message sent");
     }
 
@@ -632,12 +634,9 @@ public abstract class OutboundWay extends Way {
     /**
      * Write a new line into the line builder.
      * 
-     * @return True if a new line was written.
      * @throws IOException
      */
-    protected boolean writeLine() throws IOException {
-        boolean result = true;
-
+    protected void writeLine() throws IOException {
         switch (getMessageState()) {
         case START_LINE:
             writeStartLine();
@@ -700,8 +699,6 @@ public abstract class OutboundWay extends Way {
 
             break;
         }
-
-        return result;
     }
 
     /**

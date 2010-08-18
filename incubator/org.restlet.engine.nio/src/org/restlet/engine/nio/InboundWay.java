@@ -284,7 +284,7 @@ public abstract class InboundWay extends Way {
             }
         } catch (Exception e) {
             getLogger()
-                    .log(Level.INFO,
+                    .log(Level.FINE,
                             "Error while reading a message. Closing the connection.",
                             e);
             getConnection().onError();
