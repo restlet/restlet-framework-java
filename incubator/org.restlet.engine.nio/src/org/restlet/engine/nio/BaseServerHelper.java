@@ -42,7 +42,7 @@ import org.restlet.Response;
 import org.restlet.Server;
 
 /**
- * Base server helper based on NIO blocking sockets. Here is the list of
+ * Base server helper based on NIO non blocking sockets. Here is the list of
  * parameters that are supported. They should be set in the Server's context
  * before it is started:
  * <table>
