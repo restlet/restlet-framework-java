@@ -36,10 +36,13 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -76,16 +79,29 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>Time for the controller thread to sleep between each control.</td>
  * </tr>
  * <tr>
- * <td>minThreads</td>
+ * <td>coreThreads</td>
  * <td>int</td>
  * <td>1</td>
- * <td>Minimum threads waiting to service requests.</td>
+ * <td>Core number of worker threads waiting to service calls, even if they are
+ * idle. This is similar to the minimum number of threads except that those
+ * threads are not pre-created.</td>
  * </tr>
  * <tr>
  * <td>maxThreads</td>
  * <td>int</td>
  * <td>10</td>
- * <td>Maximum threads that will service requests.</td>
+ * <td>Maximum number of worker threads that can service calls. If this number
+ * is reached then additional calls are queued if the "maxQueued" value hasn't
+ * been reached.</td>
+ * </tr>
+ * <tr>
+ * <td>maxQueued</td>
+ * <td>int</td>
+ * <td>50</td>
+ * <td>Maximum number of calls that can be queued if there aren't any worker
+ * thread available to service them. If the value is '0', then no queue is used
+ * and calls are rejected. If the value is '-1', then an unbounded queue is used
+ * and calls are never rejected.</td>
  * </tr>
  * <tr>
  * <td>maxConnectionsPerHost</td>
@@ -259,12 +275,21 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     protected ThreadPoolExecutor createWorkerService() {
         int maxThreads = getMaxThreads();
-        int minThreads = getMinThreads();
+        int minThreads = getCoreThreads();
+
+        BlockingQueue<Runnable> queue = null;
+
+        if (getMaxQueued() == 0) {
+            queue = new SynchronousQueue<Runnable>();
+        } else if (getMaxQueued() < 0) {
+            queue = new LinkedBlockingQueue<Runnable>();
+        } else {
+            queue = new ArrayBlockingQueue<Runnable>(getMaxQueued());
+        }
 
         ThreadPoolExecutor result = new ThreadPoolExecutor(minThreads,
                 maxThreads, getMaxThreadIdleTimeMs(), TimeUnit.MILLISECONDS,
-                new SynchronousQueue<Runnable>(), new LoggingThreadFactory(
-                        getLogger(), true));
+                queue, new LoggingThreadFactory(getLogger(), true));
         result.setRejectedExecutionHandler(new RejectedExecutionHandler() {
             public void rejectedExecution(Runnable r,
                     ThreadPoolExecutor executor) {
@@ -329,6 +354,16 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Returns the core threads waiting to service requests.
+     * 
+     * @return The core threads waiting to service requests.
+     */
+    public int getCoreThreads() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "coreThreads", "1"));
+    }
+
+    /**
      * Returns the queue of inbound messages pending for handling.
      * 
      * @return The queue of inbound messages.
@@ -346,6 +381,43 @@ public abstract class BaseHelper<T extends Connector> extends
     public int getMaxConnectionsPerHost() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "maxConnectionsPerHost", "-1"));
+    }
+
+    /**
+     * Returns the time for an idle IO connection to wait for an operation
+     * before being closed.
+     * 
+     * @return The time for an idle IO connection to wait for an operation
+     *         before being closed.
+     */
+    public int getMaxIoIdleTimeMs() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "maxIoIdleTimeMs", "30000"));
+    }
+
+    /**
+     * Returns the maximum number of calls that can be queued if there aren't
+     * any worker thread available to service them. If the value is '0', then no
+     * queue is used and calls are rejected. If the value is '-1', then an
+     * unbounded queue is used and calls are never rejected.
+     * 
+     * @return The maximum number of calls that can be queued.
+     */
+    public int getMaxQueued() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "maxQueued", "5S0"));
+    }
+
+    /**
+     * Returns the time for an idle thread to wait for an operation before being
+     * collected.
+     * 
+     * @return The time for an idle thread to wait for an operation before being
+     *         collected.
+     */
+    public int getMaxThreadIdleTimeMs() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "maxThreadIdleTimeMs", "60000"));
     }
 
     /**
@@ -370,16 +442,6 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Returns the minimum threads waiting to service requests.
-     * 
-     * @return The minimum threads waiting to service requests.
-     */
-    public int getMinThreads() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "minThreads", "1"));
-    }
-
-    /**
      * Returns the queue of outbound messages pending for handling.
      * 
      * @return The queue of outbound messages.
@@ -389,27 +451,12 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Returns the time for an idle IO connection to wait for an operation
-     * before being closed.
+     * Returns the trace output stream to use if tracing is enabled.
      * 
-     * @return The time for an idle IO connection to wait for an operation
-     *         before being closed.
+     * @return The trace output stream to use if tracing is enabled.
      */
-    public int getMaxIoIdleTimeMs() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxIoIdleTimeMs", "30000"));
-    }
-
-    /**
-     * Returns the time for an idle thread to wait for an operation before being
-     * collected.
-     * 
-     * @return The time for an idle thread to wait for an operation before being
-     *         collected.
-     */
-    public int getMaxThreadIdleTimeMs() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxThreadIdleTimeMs", "60000"));
+    public OutputStream getTraceStream() {
+        return System.out;
     }
 
     /**
@@ -509,15 +556,6 @@ public abstract class BaseHelper<T extends Connector> extends
     public boolean isTracing() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "tracing", "false"));
-    }
-
-    /**
-     * Returns the trace output stream to use if tracing is enabled.
-     * 
-     * @return The trace output stream to use if tracing is enabled.
-     */
-    public OutputStream getTraceStream() {
-        return System.out;
     }
 
     /**
