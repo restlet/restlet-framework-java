@@ -115,10 +115,13 @@ public class ServerController extends Controller {
                                         getSelector());
                         connection.open();
                         getHelper().getConnections().add(connection);
-                        getHelper().getLogger().log(
-                                BaseHelper.DEFAULT_LEVEL,
-                                "New connection accepted. Total : "
-                                        + getHelper().getConnections().size());
+
+                        if (getHelper().getLogger().isLoggable(Level.FINE)) {
+                            getHelper().getLogger().fine(
+                                    "New connection accepted. Total : "
+                                            + getHelper().getConnections()
+                                                    .size());
+                        }
 
                         // Attempt to read immediately
                         connection.onSelected(null);

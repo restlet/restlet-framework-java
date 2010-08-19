@@ -35,6 +35,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.Selector;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Response;
@@ -259,10 +260,12 @@ public abstract class Way {
     protected void setMessageState(MessageState messageState) {
         if (this.messageState != messageState) {
             this.messageState = messageState;
-            getLogger().log(
-                    BaseHelper.DEFAULT_LEVEL,
-                    "New message state: " + messageState + " (" + hashCode()
-                            + ")");
+
+            if (getLogger().isLoggable(Level.FINER)) {
+                getLogger().finer(
+                        "New message state: " + messageState + " ("
+                                + hashCode() + ")");
+            }
         }
     }
 

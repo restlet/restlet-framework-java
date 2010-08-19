@@ -43,6 +43,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Message;
+import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
@@ -64,6 +65,19 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public abstract class OutboundWay extends Way {
+
+    /**
+     * Returns the protocol version.
+     * 
+     * @param request
+     * @return
+     */
+    protected static String getVersion(Request request) {
+        Protocol protocol = request.getProtocol();
+        String protocolVersion = protocol.getVersion();
+        return protocol.getTechnicalName() + '/'
+                + ((protocolVersion == null) ? "1.1" : protocolVersion);
+    }
 
     /** The entity as a NIO readable byte channel. */
     private volatile ReadableByteChannel entityChannel;
@@ -356,7 +370,10 @@ public abstract class OutboundWay extends Way {
         super.onCompleted(message);
         setHeaders(null);
         setHeaderIndex(0);
-        getLogger().log(BaseHelper.DEFAULT_LEVEL, "Outbound message sent");
+
+        if (getLogger().isLoggable(Level.FINER)) {
+            getLogger().finer("Outbound message sent");
+        }
     }
 
     @Override
@@ -706,24 +723,6 @@ public abstract class OutboundWay extends Way {
      * 
      * @throws IOException
      */
-    protected void writeStartLine() throws IOException {
-        Protocol protocol = getMessage().getRequest().getProtocol();
-        String protocolVersion = protocol.getVersion();
-        String version = protocol.getTechnicalName() + '/'
-                + ((protocolVersion == null) ? "1.1" : protocolVersion);
-        getLineBuilder().append(version);
-        getLineBuilder().append(' ');
-        getLineBuilder().append(getMessage().getStatus().getCode());
-        getLineBuilder().append(' ');
-
-        if (getMessage().getStatus().getName() != null) {
-            getLineBuilder().append(getMessage().getStatus().getName());
-        } else {
-            getLineBuilder().append(
-                    "Status " + getMessage().getStatus().getCode());
-        }
-
-        getLineBuilder().append("\r\n");
-    }
+    protected abstract void writeStartLine() throws IOException;
 
 }

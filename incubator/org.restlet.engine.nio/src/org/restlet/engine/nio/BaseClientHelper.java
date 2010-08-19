@@ -181,6 +181,16 @@ public class BaseClientHelper extends BaseHelper<Client> {
         return new ClientController(this);
     }
 
+    @Override
+    public InboundWay createInboundWay(Connection<Client> connection) {
+        return new ClientInboundWay(connection);
+    }
+
+    @Override
+    public OutboundWay createOutboundWay(Connection<Client> connection) {
+        return new ClientOutboundWay(connection);
+    }
+
     /**
      * Creates a properly configured secure socket factory.
      * 

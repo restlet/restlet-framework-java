@@ -34,7 +34,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketAddress;
+import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.util.logging.Level;
 
 import org.restlet.Request;
@@ -65,7 +67,7 @@ import org.restlet.Server;
  * 
  * @author Jerome Louvel
  */
-public abstract class BaseServerHelper extends BaseHelper<Server> {
+public class BaseServerHelper extends BaseHelper<Server> {
 
     /** The server socket channel. */
     private volatile ServerSocketChannel serverSocketChannel;
@@ -84,8 +86,24 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     }
 
     @Override
+    protected Connection<Server> createConnection(BaseHelper<Server> helper,
+            SocketChannel socketChannel, Selector selector) throws IOException {
+        return new Connection<Server>(helper, socketChannel, selector);
+    }
+
+    @Override
     protected ServerController createController() {
         return new ServerController(this);
+    }
+
+    @Override
+    public ServerInboundWay createInboundWay(Connection<Server> connection) {
+        return new ServerInboundWay(connection);
+    }
+
+    @Override
+    public OutboundWay createOutboundWay(Connection<Server> connection) {
+        return new ServerOutboundWay(connection);
     }
 
     /**
@@ -105,11 +123,6 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
             String methodName, String resourceUri, String version) {
         return new ConnectedRequest(getContext(), connection, methodName,
                 resourceUri, version);
-    }
-
-    @Override
-    public ServerInboundWay createInboundWay(Connection<Server> connection) {
-        return new ServerInboundWay(connection);
     }
 
     /**
@@ -175,8 +188,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     @Override
     public void handleInbound(Response response) {
         if ((response != null) && (response.getRequest() != null)) {
-            getLogger().log(BaseHelper.DEFAULT_LEVEL,
-                    "Handling inbound message");
+            getLogger().fine("Handling inbound message");
             ConnectedRequest request = (ConnectedRequest) response.getRequest();
 
             // Effectively handle the request
@@ -195,8 +207,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     @Override
     public void handleOutbound(Response response) {
         if (response != null) {
-            getLogger().log(BaseHelper.DEFAULT_LEVEL,
-                    "Handling outbound message");
+            getLogger().fine("Handling outbound message");
             ConnectedRequest request = (ConnectedRequest) response.getRequest();
             Connection<Server> connection = request.getConnection();
 

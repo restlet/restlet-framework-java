@@ -10,6 +10,13 @@ public class NioServer {
     public static void main(String[] args) throws Exception {
         // Engine.getInstance().getRegisteredServers()
         // .add(0, new org.restlet.ext.jetty.HttpServerHelper(null));
+        // Engine.getInstance().getRegisteredServers()
+        // .add(0, new org.restlet.ext.grizzly.HttpServerHelper(null));
+        // Engine.getInstance()
+        // .getRegisteredServers()
+        // .add(0,
+        // new org.restlet.engine.http.connector.HttpServerHelper(
+        // null));
         Engine.getInstance().getRegisteredServers()
                 .add(0, new org.restlet.engine.nio.HttpServerHelper(null));
 

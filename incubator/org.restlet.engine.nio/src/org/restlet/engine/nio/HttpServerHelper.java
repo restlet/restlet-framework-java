@@ -30,10 +30,6 @@
 
 package org.restlet.engine.nio;
 
-import java.io.IOException;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
-
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
@@ -53,12 +49,6 @@ public class HttpServerHelper extends BaseServerHelper {
     public HttpServerHelper(Server server) {
         super(server);
         getProtocols().add(Protocol.HTTP);
-    }
-
-    @Override
-    protected Connection<Server> createConnection(BaseHelper<Server> helper,
-            SocketChannel socketChannel, Selector selector) throws IOException {
-        return new Connection<Server>(helper, socketChannel, selector);
     }
 
     @Override

@@ -159,8 +159,6 @@ import org.restlet.engine.log.LoggingThreadFactory;
 public abstract class BaseHelper<T extends Connector> extends
         ConnectorHelper<T> {
 
-    public static Level DEFAULT_LEVEL = Level.FINE;
-
     /** Indicates if it is helping a client connector. */
     private final boolean clientSide;
 
@@ -238,9 +236,7 @@ public abstract class BaseHelper<T extends Connector> extends
      *            The parent connection.
      * @return The inbound way created.
      */
-    public InboundWay createInboundWay(Connection<T> connection) {
-        return new ServerInboundWay(connection);
-    }
+    public abstract InboundWay createInboundWay(Connection<T> connection);
 
     /**
      * Creates an outbound way for the given connection.
@@ -249,9 +245,7 @@ public abstract class BaseHelper<T extends Connector> extends
      *            The parent connection.
      * @return The outbound way created.
      */
-    public OutboundWay createOutboundWay(Connection<T> connection) {
-        return new ServerOutboundWay(connection);
-    }
+    public abstract OutboundWay createOutboundWay(Connection<T> connection);
 
     /**
      * Creates the request object.
@@ -311,32 +305,6 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Adds traces on the worker service.
-     */
-    public void traceWorkerService() {
-        getLogger().info(
-                "Worker service state: "
-                        + (isWorkerServiceOverloaded() ? "Overloaded"
-                                : "Normal"));
-        getLogger().info(
-                "Worker service tasks: " + getWorkerService().getQueue().size()
-                        + " queued, " + getWorkerService().getActiveCount()
-                        + " active, "
-                        + getWorkerService().getCompletedTaskCount()
-                        + " completed, " + getWorkerService().getTaskCount()
-                        + " scheduled.");
-        getLogger().info(
-                "Worker service thread pool: "
-                        + getWorkerService().getCorePoolSize()
-                        + " mimimum size, "
-                        + getWorkerService().getMaximumPoolSize()
-                        + " maximum size, " + getWorkerService().getPoolSize()
-                        + " current size, "
-                        + getWorkerService().getLargestPoolSize()
-                        + " largest size");
-    }
-
-    /**
      * Returns the set of active connections.
      * 
      * @return The set of active connections.
@@ -362,16 +330,6 @@ public abstract class BaseHelper<T extends Connector> extends
     public int getControllerSleepTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "controllerSleepTimeMs", "100"));
-    }
-
-    /**
-     * Returns the minimum threads waiting to service requests.
-     * 
-     * @return The minimum threads waiting to service requests.
-     */
-    public int getMinThreads() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "minThreads", "5"));
     }
 
     /**
@@ -460,6 +418,16 @@ public abstract class BaseHelper<T extends Connector> extends
     public int getMaxTotalConnections() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "maxTotalConnections", "-1"));
+    }
+
+    /**
+     * Returns the minimum threads waiting to service requests.
+     * 
+     * @return The minimum threads waiting to service requests.
+     */
+    public int getMinThreads() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "minThreads", "5"));
     }
 
     /**
@@ -637,6 +605,36 @@ public abstract class BaseHelper<T extends Connector> extends
                                 "Interruption while shutting down the controller service",
                                 ex);
             }
+        }
+    }
+
+    /**
+     * Adds traces on the worker service.
+     */
+    public void traceWorkerService() {
+        if (getLogger().isLoggable(Level.FINE)) {
+            getLogger().fine(
+                    "Worker service state: "
+                            + (isWorkerServiceOverloaded() ? "Overloaded"
+                                    : "Normal"));
+            getLogger()
+                    .fine("Worker service tasks: "
+                            + getWorkerService().getQueue().size()
+                            + " queued, " + getWorkerService().getActiveCount()
+                            + " active, "
+                            + getWorkerService().getCompletedTaskCount()
+                            + " completed, "
+                            + getWorkerService().getTaskCount() + " scheduled.");
+            getLogger().fine(
+                    "Worker service thread pool: "
+                            + getWorkerService().getCorePoolSize()
+                            + " mimimum size, "
+                            + getWorkerService().getMaximumPoolSize()
+                            + " maximum size, "
+                            + getWorkerService().getPoolSize()
+                            + " current size, "
+                            + getWorkerService().getLargestPoolSize()
+                            + " largest size");
         }
     }
 }

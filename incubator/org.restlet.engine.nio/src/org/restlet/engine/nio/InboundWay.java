@@ -193,7 +193,10 @@ public abstract class InboundWay extends Way {
     @Override
     protected void onCompleted(Response message) {
         super.onCompleted(message);
-        getLogger().log(BaseHelper.DEFAULT_LEVEL, "Inbound message received");
+
+        if (getLogger().isLoggable(Level.FINER)) {
+            getLogger().finer("Inbound message received");
+        }
     }
 
     @Override

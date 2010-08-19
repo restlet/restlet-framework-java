@@ -97,8 +97,7 @@ public abstract class Controller implements Runnable {
                 conn.close(false);
             } else if (conn.hasTimedOut()) {
                 conn.close(false);
-                getHelper().getLogger().log(
-                        BaseHelper.DEFAULT_LEVEL,
+                getHelper().getLogger().fine(
                         "Closing connection with no IO activity during "
                                 + getHelper().getMaxIoIdleTimeMs() + " ms.");
             } else {
@@ -309,15 +308,17 @@ public abstract class Controller implements Runnable {
                 if (isOverloaded()) {
                     if (!isWorkerServiceOverloaded()) {
                         setOverloaded(false);
-                        getHelper().getLogger().log(Level.INFO,
-                                "Accepting new connections again");
+                        getHelper()
+                                .getLogger()
+                                .info("Connector overload ended. Accepting new connections again");
                         getHelper().traceWorkerService();
                     }
                 } else {
                     if (isWorkerServiceOverloaded()) {
                         setOverloaded(true);
-                        getHelper().getLogger().log(Level.INFO,
-                                "Stop accepting new connections");
+                        getHelper()
+                                .getLogger()
+                                .info("Connector overload detected. Stop accepting new connections");
                         getHelper().traceWorkerService();
                     }
                 }
@@ -326,7 +327,7 @@ public abstract class Controller implements Runnable {
                 controlConnections(isOverloaded());
                 controlHelper();
             } catch (Exception ex) {
-                this.helper.getLogger().log(Level.INFO,
+                this.helper.getLogger().log(Level.WARNING,
                         "Unexpected error while controlling connector", ex);
             }
         }

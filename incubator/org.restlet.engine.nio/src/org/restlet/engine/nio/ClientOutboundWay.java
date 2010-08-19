@@ -32,14 +32,16 @@ package org.restlet.engine.nio;
 
 import java.io.IOException;
 
+import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Reference;
 
 /**
- * Server-side outbound way.
+ * Client-side outbound way.
  * 
  * @author Jerome Louvel
  */
-public class ServerOutboundWay extends OutboundWay {
+public class ClientOutboundWay extends OutboundWay {
 
     /**
      * Constructor.
@@ -47,7 +49,7 @@ public class ServerOutboundWay extends OutboundWay {
      * @param connection
      *            The parent connection.
      */
-    public ServerOutboundWay(Connection<?> connection) {
+    public ClientOutboundWay(Connection<?> connection) {
         super(connection);
     }
 
@@ -66,21 +68,38 @@ public class ServerOutboundWay extends OutboundWay {
         }
     }
 
-    @Override
-    protected void writeStartLine() throws IOException {
-        getLineBuilder().append(getVersion(getMessage().getRequest()));
-        getLineBuilder().append(' ');
-        getLineBuilder().append(getMessage().getStatus().getCode());
-        getLineBuilder().append(' ');
-
-        if (getMessage().getStatus().getName() != null) {
-            getLineBuilder().append(getMessage().getStatus().getName());
+    /**
+     * Returns the absolute request URI.
+     * 
+     * @param resourceRef
+     *            The resource reference.
+     * @return The absolute request URI.
+     */
+    private static String getRequestUri(Reference resourceRef) {
+        String result = null;
+        Reference absoluteRef = resourceRef.isAbsolute() ? resourceRef
+                : resourceRef.getTargetRef();
+        if (absoluteRef.hasQuery()) {
+            result = absoluteRef.getPath() + "?" + absoluteRef.getQuery();
         } else {
-            getLineBuilder().append(
-                    "Status " + getMessage().getStatus().getCode());
+            result = absoluteRef.getPath();
         }
 
-        getLineBuilder().append("\r\n");
+        if ((result == null) || (result.equals(""))) {
+            result = "/";
+        }
+
+        return result;
     }
 
+    @Override
+    protected void writeStartLine() throws IOException {
+        Request request = getMessage().getRequest();
+        getLineBuilder().append(request.getMethod().getName());
+        getLineBuilder().append(' ');
+        getLineBuilder().append(getRequestUri(request.getResourceRef()));
+        getLineBuilder().append(' ');
+        getLineBuilder().append(getVersion(request));
+        getLineBuilder().append("\r\n");
+    }
 }
