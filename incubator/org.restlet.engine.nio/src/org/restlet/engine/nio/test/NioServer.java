@@ -15,8 +15,10 @@ public class NioServer {
 
         Server server = new Server(new Context(), Protocol.HTTP, 9999);
         // server.getContext().getParameters().add("tracing", "true");
-        server.getContext().getParameters().add("maxThreads", "20");
-        server.getContext().getParameters().add("maxQueued", "100");
+        server.getContext().getParameters().add("minThreads", "20");
+        server.getContext().getParameters().add("lowThreads", "30");
+        server.getContext().getParameters().add("maxThreads", "40");
+        server.getContext().getParameters().add("maxQueued", "20");
         server.setNext(HelloServerResource.class);
         server.start();
 

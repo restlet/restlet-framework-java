@@ -33,6 +33,8 @@ package org.restlet.engine.nio;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.SelectionKey;
 
+import org.restlet.Response;
+
 /**
  * Controls the IO work of parent client helper and manages its connections.
  * 
@@ -60,8 +62,20 @@ public class ClientController extends Controller {
     }
 
     @Override
+    protected void handleInbound(Response response) {
+        handleInbound(response, getHelper()
+                .isSynchronous(response.getRequest()));
+    }
+
+    @Override
+    protected void handleOutbound(Response response) {
+        handleOutbound(response, false);
+    }
+
+    @Override
     protected void onSelected(SelectionKey key)
             throws ClosedByInterruptException {
+
     }
 
 }

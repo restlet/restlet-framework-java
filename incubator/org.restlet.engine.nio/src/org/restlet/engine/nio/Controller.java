@@ -47,7 +47,7 @@ import org.restlet.engine.Engine;
  * 
  * @author Jerome Louvel
  */
-public class Controller implements Runnable {
+public abstract class Controller implements Runnable {
 
     /** The parent connector helper. */
     private final BaseHelper<?> helper;
@@ -115,50 +115,14 @@ public class Controller implements Runnable {
     protected boolean controlHelper() {
         boolean result = false;
 
-        // Control if there are some pending requests that could
-        // be processed
+        // Control pending inbound messages
         for (int i = 0; i < getHelper().getInboundMessages().size(); i++) {
-            final Response response = getHelper().getInboundMessages().poll();
-
-            if (response != null) {
-                execute(new Runnable() {
-                    public void run() {
-                        try {
-                            getHelper().handleInbound(response);
-                        } finally {
-                            Engine.clearThreadLocalVariables();
-                        }
-                    }
-
-                    @Override
-                    public String toString() {
-                        return "Handle inbound messages";
-                    }
-                });
-            }
+            handleInbound(getHelper().getInboundMessages().poll());
         }
 
-        // Control if some pending responses that could be moved
-        // to their respective connection queues
+        // Control pending outbound messages
         for (int i = 0; i < getHelper().getOutboundMessages().size(); i++) {
-            final Response response = getHelper().getOutboundMessages().poll();
-
-            if (response != null) {
-                execute(new Runnable() {
-                    public void run() {
-                        try {
-                            getHelper().handleOutbound(response);
-                        } finally {
-                            Engine.clearThreadLocalVariables();
-                        }
-                    }
-
-                    @Override
-                    public String toString() {
-                        return "Handle outbound messages";
-                    }
-                });
-            }
+            handleOutbound(getHelper().getOutboundMessages().poll());
         }
 
         return result;
@@ -214,6 +178,84 @@ public class Controller implements Runnable {
     }
 
     /**
+     * Handle the given inbound message.
+     * 
+     * @param response
+     *            The message to handle.
+     */
+    protected abstract void handleInbound(final Response response);
+
+    /**
+     * Handle the given outbound message.
+     * 
+     * @param response
+     *            The message to handle.
+     */
+    protected abstract void handleOutbound(final Response response);
+
+    /**
+     * Handle the given inbound message.
+     * 
+     * @param response
+     *            The message to handle.
+     * @param synchronous
+     *            True if the current thread should be used.
+     */
+    protected void handleInbound(final Response response, boolean synchronous) {
+        if (response != null) {
+            if (synchronous) {
+                getHelper().handleInbound(response);
+            } else {
+                execute(new Runnable() {
+                    public void run() {
+                        try {
+                            getHelper().handleInbound(response);
+                        } finally {
+                            Engine.clearThreadLocalVariables();
+                        }
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "Handle inbound messages";
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Handle the given outbound message.
+     * 
+     * @param response
+     *            The message to handle.
+     * @param synchronous
+     *            True if the current thread should be used.
+     */
+    protected void handleOutbound(final Response response, boolean synchronous) {
+        if (response != null) {
+            if (synchronous) {
+                getHelper().handleOutbound(response);
+            } else {
+                execute(new Runnable() {
+                    public void run() {
+                        try {
+                            getHelper().handleOutbound(response);
+                        } finally {
+                            Engine.clearThreadLocalVariables();
+                        }
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "Handle outbound messages";
+                    }
+                });
+            }
+        }
+    }
+
+    /**
      * Indicates if the controller is overloaded.
      * 
      * @return True if the controller is overloaded.
@@ -232,13 +274,13 @@ public class Controller implements Runnable {
     }
 
     /**
-     * Indicates if the helper's worker service is fully busy and can't accept
-     * more tasks.
+     * Indicates if the helper's worker service is overloaded and won't soon be
+     * able to accept more tasks.
      * 
      * @return True if the helper's worker service is fully busy.
      */
-    protected boolean isWorkerServiceFull() {
-        return getHelper().isWorkerServiceFull();
+    protected boolean isWorkerServiceOverloaded() {
+        return getHelper().isWorkerServiceOverloaded();
     }
 
     /**
@@ -265,22 +307,19 @@ public class Controller implements Runnable {
         while (isRunning()) {
             try {
                 if (isOverloaded()) {
-                    if (!isWorkerServiceFull()) {
+                    if (!isWorkerServiceOverloaded()) {
                         setOverloaded(false);
-                        getHelper()
-                                .getLogger()
-                                .log(Level.INFO,
-                                        "Accepting new connections and transactions again.");
+                        getHelper().getLogger().log(Level.INFO,
+                                "Accepting new connections again");
+                        getHelper().traceWorkerService();
                     }
                 } else {
-                    if (isWorkerServiceFull()) {
+                    if (isWorkerServiceOverloaded()) {
                         setOverloaded(true);
-                        getHelper()
-                                .getLogger()
-                                .log(Level.INFO,
-                                        "Stop accepting new connections and transactions. Consider increasing the maximum number of threads.");
+                        getHelper().getLogger().log(Level.INFO,
+                                "Stop accepting new connections");
+                        getHelper().traceWorkerService();
                     }
-
                 }
 
                 selectKey(sleepTime);

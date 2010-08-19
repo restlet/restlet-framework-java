@@ -217,7 +217,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
                 }
             } else {
                 // The request expects no response, the connection is free to
-                // read.
+                // read a new request.
             }
         }
     }
@@ -275,8 +275,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
             getController().await();
         } catch (InterruptedException ex) {
             getLogger()
-                    .log(
-                            Level.WARNING,
+                    .log(Level.WARNING,
                             "Interrupted while waiting for starting latch. Stopping...",
                             ex);
             stop();

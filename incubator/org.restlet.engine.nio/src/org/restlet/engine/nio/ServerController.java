@@ -39,6 +39,7 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 
+import org.restlet.Response;
 import org.restlet.Server;
 
 /**
@@ -79,6 +80,16 @@ public class ServerController extends Controller {
      */
     protected BaseServerHelper getHelper() {
         return (BaseServerHelper) super.getHelper();
+    }
+
+    @Override
+    protected void handleInbound(Response response) {
+        handleInbound(response, false);
+    }
+
+    @Override
+    protected void handleOutbound(Response response) {
+        handleOutbound(response, true);
     }
 
     @Override

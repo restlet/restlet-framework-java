@@ -176,6 +176,11 @@ public class BaseClientHelper extends BaseHelper<Client> {
         return new Connection<Client>(helper, socketChannel, selector);
     }
 
+    @Override
+    protected Controller createController() {
+        return new ClientController(this);
+    }
+
     /**
      * Creates a properly configured secure socket factory.
      * 
@@ -648,8 +653,8 @@ public class BaseClientHelper extends BaseHelper<Client> {
     @Override
     public void handle(Request request, Response response) {
         try {
-            if (request.getOnResponse() == null) {
-                // Synchronous mode
+            if (isSynchronous(request)) {
+                // Prepare the latch to block the caller thread
                 CountDownLatch latch = new CountDownLatch(1);
                 request.getAttributes().put(CONNECTOR_LATCH, latch);
 
@@ -708,6 +713,18 @@ public class BaseClientHelper extends BaseHelper<Client> {
                 unblock(response);
             }
         }
+    }
+
+    /**
+     * Indicates if the given request is handled in a synchronous way, blocking
+     * the calling thread.
+     * 
+     * @param request
+     *            The request to test.
+     * @return True if the given request is handled in a synchronous way.
+     */
+    public boolean isSynchronous(Request request) {
+        return (request.getOnResponse() == null);
     }
 
     /**

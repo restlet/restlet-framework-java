@@ -79,12 +79,19 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>Time for the controller thread to sleep between each control.</td>
  * </tr>
  * <tr>
- * <td>coreThreads</td>
+ * <td>minThreads</td>
  * <td>int</td>
- * <td>1</td>
- * <td>Core number of worker threads waiting to service calls, even if they are
- * idle. This is similar to the minimum number of threads except that those
- * threads are not pre-created.</td>
+ * <td>5</td>
+ * <td>Minimum number of worker threads waiting to service calls, even if they
+ * are idle.</td>
+ * </tr>
+ * <tr>
+ * <td>lowThreads</td>
+ * <td>int</td>
+ * <td>8</td>
+ * <td>Number of worker threads determining when the connector is considered
+ * overloaded. This triggers some protection actions such as not accepting new
+ * connections.</td>
  * </tr>
  * <tr>
  * <td>maxThreads</td>
@@ -97,7 +104,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>maxQueued</td>
  * <td>int</td>
- * <td>50</td>
+ * <td>10</td>
  * <td>Maximum number of calls that can be queued if there aren't any worker
  * thread available to service them. If the value is '0', then no queue is used
  * and calls are rejected. If the value is '-1', then an unbounded queue is used
@@ -212,9 +219,7 @@ public abstract class BaseHelper<T extends Connector> extends
      * 
      * @return A new controller.
      */
-    protected Controller createController() {
-        return new Controller(this);
-    }
+    protected abstract Controller createController();
 
     /**
      * Creates the connector controller service.
@@ -275,7 +280,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     protected ThreadPoolExecutor createWorkerService() {
         int maxThreads = getMaxThreads();
-        int minThreads = getCoreThreads();
+        int minThreads = getMinThreads();
 
         BlockingQueue<Runnable> queue = null;
 
@@ -297,32 +302,38 @@ public abstract class BaseHelper<T extends Connector> extends
                         "Unable to run the following "
                                 + (isClientSide() ? "client-side"
                                         : "server-side") + " task: " + r);
-                getLogger().info(
-                        "Worker service state: "
-                                + (isWorkerServiceFull() ? "Full" : "Normal"));
-                getLogger().info(
-                        "Worker service tasks: "
-                                + getWorkerService().getQueue().size()
-                                + " queued, "
-                                + getWorkerService().getActiveCount()
-                                + " active, "
-                                + getWorkerService().getCompletedTaskCount()
-                                + " completed, "
-                                + getWorkerService().getTaskCount()
-                                + " scheduled.");
-                getLogger().info(
-                        "Worker service thread pool: "
-                                + getWorkerService().getCorePoolSize()
-                                + " core size, "
-                                + getWorkerService().getLargestPoolSize()
-                                + " largest size, "
-                                + getWorkerService().getMaximumPoolSize()
-                                + " maximum size, "
-                                + getWorkerService().getPoolSize()
-                                + " current size");
+                traceWorkerService();
             }
         });
+
+        result.prestartAllCoreThreads();
         return result;
+    }
+
+    /**
+     * Adds traces on the worker service.
+     */
+    public void traceWorkerService() {
+        getLogger().info(
+                "Worker service state: "
+                        + (isWorkerServiceOverloaded() ? "Overloaded"
+                                : "Normal"));
+        getLogger().info(
+                "Worker service tasks: " + getWorkerService().getQueue().size()
+                        + " queued, " + getWorkerService().getActiveCount()
+                        + " active, "
+                        + getWorkerService().getCompletedTaskCount()
+                        + " completed, " + getWorkerService().getTaskCount()
+                        + " scheduled.");
+        getLogger().info(
+                "Worker service thread pool: "
+                        + getWorkerService().getCorePoolSize()
+                        + " mimimum size, "
+                        + getWorkerService().getMaximumPoolSize()
+                        + " maximum size, " + getWorkerService().getPoolSize()
+                        + " current size, "
+                        + getWorkerService().getLargestPoolSize()
+                        + " largest size");
     }
 
     /**
@@ -354,13 +365,13 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Returns the core threads waiting to service requests.
+     * Returns the minimum threads waiting to service requests.
      * 
-     * @return The core threads waiting to service requests.
+     * @return The minimum threads waiting to service requests.
      */
-    public int getCoreThreads() {
+    public int getMinThreads() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "coreThreads", "1"));
+                "minThreads", "5"));
     }
 
     /**
@@ -370,6 +381,16 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     protected Queue<Response> getInboundMessages() {
         return inboundMessages;
+    }
+
+    /**
+     * Returns the number of threads for the overload state.
+     * 
+     * @return The number of threads for the overload state.
+     */
+    public int getLowThreads() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "lowThreads", "8"));
     }
 
     /**
@@ -405,7 +426,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getMaxQueued() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxQueued", "5S0"));
+                "maxQueued", "10"));
     }
 
     /**
@@ -565,9 +586,8 @@ public abstract class BaseHelper<T extends Connector> extends
      * 
      * @return True if the worker service is busy.
      */
-    protected boolean isWorkerServiceFull() {
-        return (getWorkerService().getActiveCount()) >= (getWorkerService()
-                .getMaximumPoolSize());
+    protected boolean isWorkerServiceOverloaded() {
+        return getWorkerService().getActiveCount() >= getLowThreads();
     }
 
     @Override
