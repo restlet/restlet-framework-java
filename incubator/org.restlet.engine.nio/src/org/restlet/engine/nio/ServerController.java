@@ -42,8 +42,8 @@ import java.util.logging.Level;
 import org.restlet.Server;
 
 /**
- * Listens on the given socket channel for incoming connections and dispatches
- * them to the given handler pool
+ * Controls the IO work of parent server helper and manages its connections.
+ * Listens on a server socket channel for incoming connections.
  * 
  * @author Jerome Louvel
  */

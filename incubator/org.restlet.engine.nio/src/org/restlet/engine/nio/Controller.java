@@ -43,7 +43,7 @@ import org.restlet.Response;
 import org.restlet.engine.Engine;
 
 /**
- * Controls the state of the server helper and its managed connections.
+ * Controls the IO work of parent connector helper and manages its connections.
  * 
  * @author Jerome Louvel
  */
