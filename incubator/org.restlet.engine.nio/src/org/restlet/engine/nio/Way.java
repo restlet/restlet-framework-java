@@ -33,6 +33,7 @@ package org.restlet.engine.nio;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.Selector;
+import java.nio.channels.WritableByteChannel;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -102,6 +103,15 @@ public abstract class Way {
      */
     protected Connection<?> getConnection() {
         return connection;
+    }
+
+    /**
+     * Returns the entity channel, chunked if necessary.
+     * 
+     * @return The entity channel, chunked if necessary.
+     */
+    public WritableByteChannel getEntityChannel(boolean chunked) {
+        return getConnection().getWritableSelectionChannel();
     }
 
     /**

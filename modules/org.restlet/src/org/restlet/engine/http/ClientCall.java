@@ -218,7 +218,7 @@ public abstract class ClientCall extends Call {
             }
         }
 
-        result = HeaderUtils.copyResponseEntityHeaders(responseHeaders, result);
+        result = HeaderUtils.extractEntityHeaders(responseHeaders, result);
         if (result != null) {
             result.setSize(size);
 

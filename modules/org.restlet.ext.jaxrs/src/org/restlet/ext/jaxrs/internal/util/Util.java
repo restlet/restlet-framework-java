@@ -307,7 +307,7 @@ public class Util {
         }
 
         HeaderUtils.copyResponseTransportHeaders(headers, restletResponse);
-        HeaderUtils.copyResponseEntityHeaders(headers, restletResponse
+        HeaderUtils.extractEntityHeaders(headers, restletResponse
                 .getEntity());
     }
 

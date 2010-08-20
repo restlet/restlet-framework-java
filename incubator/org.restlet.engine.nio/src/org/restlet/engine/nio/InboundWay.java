@@ -108,7 +108,7 @@ public abstract class InboundWay extends Way {
 
         if (headers != null) {
             try {
-                result = HeaderUtils.copyResponseEntityHeaders(headers, result);
+                result = HeaderUtils.extractEntityHeaders(headers, result);
             } catch (Throwable t) {
                 getLogger().log(Level.WARNING,
                         "Error while parsing entity headers", t);

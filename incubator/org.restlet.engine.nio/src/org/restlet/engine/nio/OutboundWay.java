@@ -32,14 +32,12 @@ package org.restlet.engine.nio;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Message;
@@ -146,7 +144,8 @@ public abstract class OutboundWay extends Way {
     }
 
     /**
-     * Add headers.
+     * Add all the headers, including the general, the message specific and the
+     * entity headers.
      * 
      * @param headers
      *            The headers to update.
@@ -250,31 +249,6 @@ public abstract class OutboundWay extends Way {
         return headers;
     }
 
-    /**
-     * Returns the response channel if it exists.
-     * 
-     * @return The response channel if it exists.
-     */
-    public WritableByteChannel getOutboundEntityChannel(boolean chunked) {
-        return getConnection().getWritableSelectionChannel();
-    }
-
-    /**
-     * Returns the response entity stream if it exists.
-     * 
-     * @return The response entity stream if it exists.
-     */
-    public OutputStream getOutboundEntityStream(boolean chunked) {
-        // OutputStream result = getOutboundChannel();
-        //
-        // if (chunked) {
-        // result = new ChunkedOutputStream(result);
-        // }
-        //
-        // return result;
-        return null;
-    }
-
     @Override
     public int getSocketInterestOps() {
         int result = 0;
@@ -291,6 +265,7 @@ public abstract class OutboundWay extends Way {
         super.onCompleted(message);
         setHeaders(null);
         setHeaderIndex(0);
+        setEntityIndex(0);
 
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Outbound message sent");
@@ -491,7 +466,7 @@ public abstract class OutboundWay extends Way {
      * @param entityIndex
      *            The entity index.
      */
-    public void setEntityIndex(long entityIndex) {
+    protected void setEntityIndex(long entityIndex) {
         this.entityIndex = entityIndex;
     }
 

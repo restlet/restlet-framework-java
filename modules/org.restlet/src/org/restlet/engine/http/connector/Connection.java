@@ -310,7 +310,7 @@ public abstract class Connection<T extends Connector> implements Notifiable {
 
         if (headers != null) {
             try {
-                result = HeaderUtils.copyResponseEntityHeaders(headers, result);
+                result = HeaderUtils.extractEntityHeaders(headers, result);
             } catch (Throwable t) {
                 getLogger().log(Level.WARNING,
                         "Error while parsing entity headers", t);

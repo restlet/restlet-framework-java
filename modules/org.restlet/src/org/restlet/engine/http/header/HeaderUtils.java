@@ -70,31 +70,6 @@ public class HeaderUtils {
 
     /**
      * Adds the entity headers based on the {@link Representation} to the
-     * {@link Series} when a 304 (Not Modified) status is returned.
-     * 
-     * @param entity
-     *            The source entity {@link Representation}.
-     * @param headers
-     *            The target headers {@link Series}.
-     */
-    public static void addNotModifiedEntityHeaders(Representation entity,
-            Series<Parameter> headers) {
-        if (entity != null) {
-            if (entity.getTag() != null) {
-                HeaderUtils.addHeader(HeaderConstants.HEADER_ETAG, TagWriter
-                        .write(entity.getTag()), headers);
-            }
-
-            if (entity.getLocationRef() != null) {
-                HeaderUtils.addHeader(HeaderConstants.HEADER_CONTENT_LOCATION,
-                        entity.getLocationRef().getTargetRef().toString(),
-                        headers);
-            }
-        }
-    }
-
-    /**
-     * Adds the entity headers based on the {@link Representation} to the
      * {@link Series}.
      * 
      * @param entity
@@ -107,15 +82,15 @@ public class HeaderUtils {
         if (entity == null || !entity.isAvailable()) {
             addHeader(HeaderConstants.HEADER_CONTENT_LENGTH, "0", headers);
         } else if (entity.getAvailableSize() != Representation.UNKNOWN_SIZE) {
-            addHeader(HeaderConstants.HEADER_CONTENT_LENGTH, Long
-                    .toString(entity.getAvailableSize()), headers);
+            addHeader(HeaderConstants.HEADER_CONTENT_LENGTH,
+                    Long.toString(entity.getAvailableSize()), headers);
         }
 
         if (entity != null) {
-            addHeader(HeaderConstants.HEADER_CONTENT_ENCODING, EncodingWriter
-                    .write(entity.getEncodings()), headers);
-            addHeader(HeaderConstants.HEADER_CONTENT_LANGUAGE, LanguageWriter
-                    .write(entity.getLanguages()), headers);
+            addHeader(HeaderConstants.HEADER_CONTENT_ENCODING,
+                    EncodingWriter.write(entity.getEncodings()), headers);
+            addHeader(HeaderConstants.HEADER_CONTENT_LANGUAGE,
+                    LanguageWriter.write(entity.getLanguages()), headers);
 
             if (entity.getLocationRef() != null) {
                 addHeader(HeaderConstants.HEADER_CONTENT_LOCATION, entity
@@ -126,23 +101,25 @@ public class HeaderUtils {
             if (entity.getDigest() != null
                     && Digest.ALGORITHM_MD5.equals(entity.getDigest()
                             .getAlgorithm())) {
-                addHeader(HeaderConstants.HEADER_CONTENT_MD5, new String(
-                        org.restlet.engine.util.Base64.encode(entity
+                addHeader(
+                        HeaderConstants.HEADER_CONTENT_MD5,
+                        new String(org.restlet.engine.util.Base64.encode(entity
                                 .getDigest().getValue(), false)), headers);
             }
             // [enddef]
 
             if (entity.getRange() != null) {
-                addHeader(HeaderConstants.HEADER_CONTENT_RANGE, RangeWriter
-                        .write(entity.getRange(), entity.getSize()), headers);
+                addHeader(HeaderConstants.HEADER_CONTENT_RANGE,
+                        RangeWriter.write(entity.getRange(), entity.getSize()),
+                        headers);
             }
 
             if (entity.getMediaType() != null) {
                 String contentType = entity.getMediaType().toString();
 
                 // Specify the character set parameter if required
-                if ((entity.getMediaType().getParameters().getFirstValue(
-                        "charset") == null)
+                if ((entity.getMediaType().getParameters()
+                        .getFirstValue("charset") == null)
                         && (entity.getCharacterSet() != null)) {
                     contentType = contentType + "; charset="
                             + entity.getCharacterSet().getName();
@@ -153,18 +130,18 @@ public class HeaderUtils {
             }
 
             if (entity.getExpirationDate() != null) {
-                addHeader(HeaderConstants.HEADER_EXPIRES, DateWriter
-                        .write(entity.getExpirationDate()), headers);
+                addHeader(HeaderConstants.HEADER_EXPIRES,
+                        DateWriter.write(entity.getExpirationDate()), headers);
             }
 
             if (entity.getModificationDate() != null) {
-                addHeader(HeaderConstants.HEADER_LAST_MODIFIED, DateWriter
-                        .write(entity.getModificationDate()), headers);
+                addHeader(HeaderConstants.HEADER_LAST_MODIFIED,
+                        DateWriter.write(entity.getModificationDate()), headers);
             }
 
             if (entity.getTag() != null) {
-                addHeader(HeaderConstants.HEADER_ETAG, TagWriter.write(entity
-                        .getTag()), headers);
+                addHeader(HeaderConstants.HEADER_ETAG,
+                        TagWriter.write(entity.getTag()), headers);
             }
 
             if (entity.getDisposition() != null
@@ -284,8 +261,7 @@ public class HeaderUtils {
                         || param.getName().equalsIgnoreCase(
                                 HeaderConstants.HEADER_WWW_AUTHENTICATE)) {
                     // Standard headers that can't be overridden
-                    Context
-                            .getCurrentLogger()
+                    Context.getCurrentLogger()
                             .warning(
                                     "Addition of the standard header \""
                                             + param.getName()
@@ -301,12 +277,10 @@ public class HeaderUtils {
                         || param.getName().equalsIgnoreCase(
                                 HeaderConstants.HEADER_UPGRADE)) {
                     // Standard headers that shouldn't be overridden
-                    Context
-                            .getCurrentLogger()
-                            .info(
-                                    "Addition of the standard header \""
-                                            + param.getName()
-                                            + "\" is discouraged as a future version of the Restlet API will directly support it.");
+                    Context.getCurrentLogger()
+                            .info("Addition of the standard header \""
+                                    + param.getName()
+                                    + "\" is discouraged as a future version of the Restlet API will directly support it.");
                     existingHeaders.add(param);
                 } else {
                     existingHeaders.add(param);
@@ -326,21 +300,22 @@ public class HeaderUtils {
     public static void addGeneralHeaders(Message message,
             Series<Parameter> headers) {
 
-        addHeader(HeaderConstants.HEADER_CACHE_CONTROL, CacheDirectiveWriter
-                .write(message.getCacheDirectives()), headers);
+        addHeader(HeaderConstants.HEADER_CACHE_CONTROL,
+                CacheDirectiveWriter.write(message.getCacheDirectives()),
+                headers);
 
         if (message.getDate() == null) {
             message.setDate(new Date());
         }
 
-        addHeader(HeaderConstants.HEADER_DATE, DateWriter.write(message
-                .getDate()), headers);
+        addHeader(HeaderConstants.HEADER_DATE,
+                DateWriter.write(message.getDate()), headers);
 
-        addHeader(HeaderConstants.HEADER_VIA, RecipientInfoWriter.write(message
-                .getRecipientsInfo()), headers);
+        addHeader(HeaderConstants.HEADER_VIA,
+                RecipientInfoWriter.write(message.getRecipientsInfo()), headers);
 
-        addHeader(HeaderConstants.HEADER_WARNING, WarningWriter.write(message
-                .getWarnings()), headers);
+        addHeader(HeaderConstants.HEADER_WARNING,
+                WarningWriter.write(message.getWarnings()), headers);
     }
 
     /**
@@ -367,6 +342,31 @@ public class HeaderUtils {
     }
 
     /**
+     * Adds the entity headers based on the {@link Representation} to the
+     * {@link Series} when a 304 (Not Modified) status is returned.
+     * 
+     * @param entity
+     *            The source entity {@link Representation}.
+     * @param headers
+     *            The target headers {@link Series}.
+     */
+    public static void addNotModifiedEntityHeaders(Representation entity,
+            Series<Parameter> headers) {
+        if (entity != null) {
+            if (entity.getTag() != null) {
+                HeaderUtils.addHeader(HeaderConstants.HEADER_ETAG,
+                        TagWriter.write(entity.getTag()), headers);
+            }
+
+            if (entity.getLocationRef() != null) {
+                HeaderUtils.addHeader(HeaderConstants.HEADER_CONTENT_LOCATION,
+                        entity.getLocationRef().getTargetRef().toString(),
+                        headers);
+            }
+        }
+    }
+
+    /**
      * Adds the headers based on the {@link Request} to the given {@link Series}
      * .
      * 
@@ -381,32 +381,37 @@ public class HeaderUtils {
         ClientInfo clientInfo = request.getClientInfo();
 
         if (!clientInfo.getAcceptedMediaTypes().isEmpty()) {
-            addHeader(HeaderConstants.HEADER_ACCEPT, PreferenceWriter
-                    .write(clientInfo.getAcceptedMediaTypes()), headers);
+            addHeader(HeaderConstants.HEADER_ACCEPT,
+                    PreferenceWriter.write(clientInfo.getAcceptedMediaTypes()),
+                    headers);
         } else {
             addHeader(HeaderConstants.HEADER_ACCEPT, MediaType.ALL.getName(),
                     headers);
         }
 
         if (!clientInfo.getAcceptedCharacterSets().isEmpty()) {
-            addHeader(HeaderConstants.HEADER_ACCEPT_CHARSET, PreferenceWriter
-                    .write(clientInfo.getAcceptedCharacterSets()), headers);
+            addHeader(HeaderConstants.HEADER_ACCEPT_CHARSET,
+                    PreferenceWriter.write(clientInfo
+                            .getAcceptedCharacterSets()), headers);
         }
 
         if (!clientInfo.getAcceptedEncodings().isEmpty()) {
-            addHeader(HeaderConstants.HEADER_ACCEPT_ENCODING, PreferenceWriter
-                    .write(clientInfo.getAcceptedEncodings()), headers);
+            addHeader(HeaderConstants.HEADER_ACCEPT_ENCODING,
+                    PreferenceWriter.write(clientInfo.getAcceptedEncodings()),
+                    headers);
         }
 
         if (!clientInfo.getAcceptedLanguages().isEmpty()) {
-            addHeader(HeaderConstants.HEADER_ACCEPT_LANGUAGE, PreferenceWriter
-                    .write(clientInfo.getAcceptedLanguages()), headers);
+            addHeader(HeaderConstants.HEADER_ACCEPT_LANGUAGE,
+                    PreferenceWriter.write(clientInfo.getAcceptedLanguages()),
+                    headers);
         }
 
         // [ifndef gwt]
         if (!clientInfo.getExpectations().isEmpty()) {
-            addHeader(HeaderConstants.HEADER_EXPECT, ExpectationWriter
-                    .write(clientInfo.getExpectations()), headers);
+            addHeader(HeaderConstants.HEADER_EXPECT,
+                    ExpectationWriter.write(clientInfo.getExpectations()),
+                    headers);
         }
         // [enddef]
 
@@ -418,8 +423,7 @@ public class HeaderUtils {
         // Manually add the host name and port when it is potentially
         // different from the one specified in the target resource reference.
         Reference hostRef = (request.getResourceRef().getBaseRef() != null) ? request
-                .getResourceRef().getBaseRef()
-                : request.getResourceRef();
+                .getResourceRef().getBaseRef() : request.getResourceRef();
 
         if (hostRef.getHostDomain() != null) {
             String host = hostRef.getHostDomain();
@@ -435,44 +439,42 @@ public class HeaderUtils {
         }
 
         Conditions conditions = request.getConditions();
-        addHeader(HeaderConstants.HEADER_IF_MATCH, TagWriter.write(conditions
-                .getMatch()), headers);
-        addHeader(HeaderConstants.HEADER_IF_NONE_MATCH, TagWriter
-                .write(conditions.getNoneMatch()), headers);
+        addHeader(HeaderConstants.HEADER_IF_MATCH,
+                TagWriter.write(conditions.getMatch()), headers);
+        addHeader(HeaderConstants.HEADER_IF_NONE_MATCH,
+                TagWriter.write(conditions.getNoneMatch()), headers);
 
         if (conditions.getModifiedSince() != null) {
-            addHeader(HeaderConstants.HEADER_IF_MODIFIED_SINCE, DateWriter
-                    .write(conditions.getModifiedSince()), headers);
+            addHeader(HeaderConstants.HEADER_IF_MODIFIED_SINCE,
+                    DateWriter.write(conditions.getModifiedSince()), headers);
         }
 
         if (conditions.getRangeTag() != null
                 && conditions.getRangeDate() != null) {
-            Context
-                    .getCurrentLogger()
-                    .log(
-                            Level.WARNING,
+            Context.getCurrentLogger()
+                    .log(Level.WARNING,
                             "Unable to format the HTTP If-Range header due to the presence of both entity tag and modification date.");
         } else if (conditions.getRangeTag() != null) {
-            addHeader(HeaderConstants.HEADER_IF_RANGE, TagWriter
-                    .write(conditions.getRangeTag()), headers);
+            addHeader(HeaderConstants.HEADER_IF_RANGE,
+                    TagWriter.write(conditions.getRangeTag()), headers);
         } else if (conditions.getRangeDate() != null) {
-            addHeader(HeaderConstants.HEADER_IF_RANGE, DateWriter
-                    .write(conditions.getRangeDate()), headers);
+            addHeader(HeaderConstants.HEADER_IF_RANGE,
+                    DateWriter.write(conditions.getRangeDate()), headers);
         }
 
         if (conditions.getUnmodifiedSince() != null) {
-            addHeader(HeaderConstants.HEADER_IF_UNMODIFIED_SINCE, DateWriter
-                    .write(conditions.getUnmodifiedSince()), headers);
+            addHeader(HeaderConstants.HEADER_IF_UNMODIFIED_SINCE,
+                    DateWriter.write(conditions.getUnmodifiedSince()), headers);
         }
 
         if (request.getMaxForwards() > -1) {
-            addHeader(HeaderConstants.HEADER_MAX_FORWARDS, Integer
-                    .toString(request.getMaxForwards()), headers);
+            addHeader(HeaderConstants.HEADER_MAX_FORWARDS,
+                    Integer.toString(request.getMaxForwards()), headers);
         }
 
         if (!request.getRanges().isEmpty()) {
-            addHeader(HeaderConstants.HEADER_RANGE, RangeWriter.write(request
-                    .getRanges()), headers);
+            addHeader(HeaderConstants.HEADER_RANGE,
+                    RangeWriter.write(request.getRanges()), headers);
         }
 
         if (request.getReferrerRef() != null) {
@@ -490,8 +492,9 @@ public class HeaderUtils {
 
         // [ifndef gwt]
         if (clientInfo.getExpectations().size() > 0) {
-            addHeader(HeaderConstants.HEADER_ACCEPT_ENCODING, PreferenceWriter
-                    .write(clientInfo.getAcceptedEncodings()), headers);
+            addHeader(HeaderConstants.HEADER_ACCEPT_ENCODING,
+                    PreferenceWriter.write(clientInfo.getAcceptedEncodings()),
+                    headers);
         }
         // [enddef]
 
@@ -500,8 +503,8 @@ public class HeaderUtils {
         // ----------------------------------
 
         if (request.getCookies().size() > 0) {
-            addHeader(HeaderConstants.HEADER_COOKIE, CookieWriter.write(request
-                    .getCookies()), headers);
+            addHeader(HeaderConstants.HEADER_COOKIE,
+                    CookieWriter.write(request.getCookies()), headers);
         }
 
         // -------------------------------------
@@ -556,14 +559,14 @@ public class HeaderUtils {
         }
 
         if (response.getAge() > 0) {
-            addHeader(HeaderConstants.HEADER_AGE, Integer.toString(response
-                    .getAge()), headers);
+            addHeader(HeaderConstants.HEADER_AGE,
+                    Integer.toString(response.getAge()), headers);
         }
 
         if (response.getStatus().equals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)
                 || Method.OPTIONS.equals(response.getRequest().getMethod())) {
-            addHeader(HeaderConstants.HEADER_ALLOW, MethodWriter.write(response
-                    .getAllowedMethods()), headers);
+            addHeader(HeaderConstants.HEADER_ALLOW,
+                    MethodWriter.write(response.getAllowedMethods()), headers);
         }
 
         if (response.getLocationRef() != null) {
@@ -583,8 +586,8 @@ public class HeaderUtils {
         }
 
         if (response.getRetryAfter() != null) {
-            addHeader(HeaderConstants.HEADER_RETRY_AFTER, DateWriter
-                    .write(response.getRetryAfter()), headers);
+            addHeader(HeaderConstants.HEADER_RETRY_AFTER,
+                    DateWriter.write(response.getRetryAfter()), headers);
         }
 
         if ((response.getServerInfo() != null)
@@ -601,8 +604,8 @@ public class HeaderUtils {
         if (!((response.getRequest().getClientInfo().getAgent() != null) && response
                 .getRequest().getClientInfo().getAgent().contains("MSIE"))) {
             // Add the Vary header if content negotiation was used
-            addHeader(HeaderConstants.HEADER_VARY, DimensionWriter
-                    .write(response.getDimensions()), headers);
+            addHeader(HeaderConstants.HEADER_VARY,
+                    DimensionWriter.write(response.getDimensions()), headers);
         }
 
         // Set the security data
@@ -631,8 +634,8 @@ public class HeaderUtils {
         // Cookies settings should be written in a single header, but Web
         // browsers does not seem to support it.
         for (CookieSetting cookieSetting : response.getCookieSettings()) {
-            addHeader(HeaderConstants.HEADER_SET_COOKIE, CookieSettingWriter
-                    .write(cookieSetting), headers);
+            addHeader(HeaderConstants.HEADER_SET_COOKIE,
+                    CookieSettingWriter.write(cookieSetting), headers);
         }
 
         // -------------------------------------
@@ -645,28 +648,26 @@ public class HeaderUtils {
     }
 
     /**
-     * Copies entity headers into a response and ensures that a non null
-     * representation is returned when at least one entity header is present.
+     * Extracts entity headers and updates a given representation or create an
+     * empty one when at least one entity header is present.
      * 
-     * @param responseHeaders
+     * @param headers
      *            The headers to copy.
      * @param representation
-     *            The Representation to update.
-     * @return a representation with the entity headers of the response or null
-     *         if no representation has been provided and the response has not
-     *         sent any entity header.
+     *            The representation to update or null.
+     * @return a representation updated with the given entity headers.
      * @throws NumberFormatException
      * @see HeaderUtils#copyResponseTransportHeaders(Series, Response)
      */
-    public static Representation copyResponseEntityHeaders(
-            Iterable<Parameter> responseHeaders, Representation representation)
+    public static Representation extractEntityHeaders(
+            Iterable<Parameter> headers, Representation representation)
             throws NumberFormatException {
         Representation result = (representation == null) ? new EmptyRepresentation()
                 : representation;
         boolean entityHeaderFound = false;
 
-        if (responseHeaders != null) {
-            for (Parameter header : responseHeaders) {
+        if (headers != null) {
+            for (Parameter header : headers) {
                 if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_CONTENT_TYPE)) {
                     ContentType contentType = new ContentType(header.getValue());
@@ -683,8 +684,8 @@ public class HeaderUtils {
                     entityHeaderFound = true;
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_EXPIRES)) {
-                    result.setExpirationDate(HeaderReader.readDate(header
-                            .getValue(), false));
+                    result.setExpirationDate(HeaderReader.readDate(
+                            header.getValue(), false));
                     entityHeaderFound = true;
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_CONTENT_ENCODING)) {
@@ -698,8 +699,8 @@ public class HeaderUtils {
                     entityHeaderFound = true;
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_LAST_MODIFIED)) {
-                    result.setModificationDate(HeaderReader.readDate(header
-                            .getValue(), false));
+                    result.setModificationDate(HeaderReader.readDate(
+                            header.getValue(), false));
                     entityHeaderFound = true;
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_ETAG)) {
@@ -724,8 +725,8 @@ public class HeaderUtils {
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_CONTENT_RANGE)) {
                     // [ifndef gwt]
-                    org.restlet.engine.http.header.RangeReader.update(header
-                            .getValue(), result);
+                    org.restlet.engine.http.header.RangeReader.update(
+                            header.getValue(), result);
                     entityHeaderFound = true;
                     // [enddef]
                 } else if (header.getName().equalsIgnoreCase(
@@ -814,8 +815,8 @@ public class HeaderUtils {
                         || (header.getName()
                                 .equalsIgnoreCase(HeaderConstants.HEADER_SET_COOKIE2))) {
                     try {
-                        CookieSettingReader cr = new CookieSettingReader(header
-                                .getValue());
+                        CookieSettingReader cr = new CookieSettingReader(
+                                header.getValue());
                         response.getCookieSettings().add(cr.readValue());
                     } catch (Exception e) {
                         Context.getCurrentLogger().log(
@@ -856,15 +857,15 @@ public class HeaderUtils {
                     DimensionReader.addValues(header, response.getDimensions());
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_VIA)) {
-                    RecipientInfoReader.addValues(header, response
-                            .getRecipientsInfo());
+                    RecipientInfoReader.addValues(header,
+                            response.getRecipientsInfo());
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_WARNING)) {
                     WarningReader.addValues(header, response.getWarnings());
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_CACHE_CONTROL)) {
-                    CacheDirectiveReader.addValues(header, response
-                            .getCacheDirectives());
+                    CacheDirectiveReader.addValues(header,
+                            response.getCacheDirectives());
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_ACCEPT_RANGES)) {
                     TokenReader tr = new TokenReader(header.getValue());
