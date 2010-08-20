@@ -729,6 +729,9 @@ public class BaseClientHelper extends BaseHelper<Client> {
                 } else {
                     getLogger().log(Level.WARNING,
                             "Unable to find a connection to send the request");
+                    response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION,
+                            "Unable to find a connection to send the request");
+                    unblock(response);
                 }
             } catch (Throwable t) {
                 getLogger()

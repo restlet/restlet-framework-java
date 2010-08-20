@@ -17,6 +17,8 @@ Changes log
        - Allowed to filter serialized types in the GWT client proxies
          generated.
        - Fixed potential entity reading issue with Grizzly HTTP server.
+       - Fixed the internal client connector when a connection cannot 
+         be found to send a request.
     - Enhancements
        - Updated Grizzly library to version 1.9.19.
     - Misc
