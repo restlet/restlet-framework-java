@@ -126,7 +126,6 @@ public class ServerInboundWay extends InboundWay {
                     getConnection(), requestMethod, requestUri, version);
             Response response = getHelper().createResponse(request);
             setMessage(response);
-
             setMessageState(MessageState.HEADERS);
             getLineBuilder().delete(0, getLineBuilder().length());
         }

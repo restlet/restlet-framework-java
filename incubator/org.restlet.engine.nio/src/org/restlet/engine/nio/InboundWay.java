@@ -31,7 +31,6 @@
 package org.restlet.engine.nio;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
@@ -42,7 +41,6 @@ import org.restlet.data.Parameter;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.representation.EmptyRepresentation;
-import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -119,30 +117,6 @@ public abstract class InboundWay extends Way {
     }
 
     /**
-     * Creates the representation wrapping the given stream.
-     * 
-     * @param stream
-     *            The response input stream.
-     * @return The wrapping representation.
-     */
-    protected Representation createRepresentation(InputStream stream) {
-        return new InputRepresentation(stream, null);
-    }
-
-    /**
-     * Returns the representation wrapping the given channel.
-     * 
-     * @param channel
-     *            The response channel.
-     * @return The wrapping representation.
-     */
-    protected Representation createRepresentation(
-            java.nio.channels.ReadableByteChannel channel) {
-        return new org.restlet.representation.ReadableRepresentation(channel,
-                null);
-    }
-
-    /**
      * Returns the line builder index.
      * 
      * @return The line builder index.
@@ -159,7 +133,7 @@ public abstract class InboundWay extends Way {
      * 
      * @return The inbound message entity channel if it exists.
      */
-    public ReadableByteChannel getEntityChannel(long size, boolean chunked) {
+    protected ReadableByteChannel getEntityChannel(long size, boolean chunked) {
         ReadableByteChannel result = null;
 
         if (getByteBuffer().hasRemaining()) {

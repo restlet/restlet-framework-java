@@ -34,6 +34,8 @@ import java.io.IOException;
 
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.engine.http.header.HeaderUtils;
 
 /**
@@ -60,9 +62,9 @@ public class ClientInboundWay extends InboundWay {
 
     @Override
     protected void readStartLine() throws IOException {
-        String requestMethod = null;
-        String requestUri = null;
         String version = null;
+        int statusCode = -1;
+        String reasonPhrase = null;
 
         int i = 0;
         int start = 0;
@@ -72,64 +74,91 @@ public class ClientInboundWay extends InboundWay {
         if (size == 0) {
             // Skip leading empty lines per HTTP specification
         } else {
-            // Parse the request method
-            for (i = start; (requestMethod == null) && (i < size); i++) {
-                next = getLineBuilder().charAt(i);
-
-                if (HeaderUtils.isSpace(next)) {
-                    requestMethod = getLineBuilder().substring(start, i);
-                    start = i + 1;
-                }
-            }
-
-            if ((requestMethod == null) || (i == size)) {
-                throw new IOException(
-                        "Unable to parse the request method. End of line reached too early.");
-            }
-
-            // Parse the request URI
-            for (i = start; (requestUri == null) && (i < size); i++) {
-                next = getLineBuilder().charAt(i);
-
-                if (HeaderUtils.isSpace(next)) {
-                    requestUri = getLineBuilder().substring(start, i);
-                    start = i + 1;
-                }
-            }
-
-            if (i == size) {
-                throw new IOException(
-                        "Unable to parse the request URI. End of line reached too early.");
-            }
-
-            if ((requestUri == null) || (requestUri.equals(""))) {
-                requestUri = "/";
-            }
-
             // Parse the protocol version
             for (i = start; (version == null) && (i < size); i++) {
                 next = getLineBuilder().charAt(i);
+
+                if (HeaderUtils.isSpace(next)) {
+                    version = getLineBuilder().substring(start, i);
+                    start = i + 1;
+                }
+            }
+
+            // Parse the status code
+            for (i = start; (statusCode == -1) && (i < size); i++) {
+                next = getLineBuilder().charAt(i);
+
+                if (HeaderUtils.isSpace(next)) {
+                    try {
+                        statusCode = Integer.parseInt(getLineBuilder()
+                                .substring(start, i));
+                    } catch (NumberFormatException e) {
+                        throw new IOException(
+                                "Unable to parse the status code. Non numeric value: "
+                                        + getLineBuilder().substring(start, i)
+                                                .toString());
+                    }
+
+                    start = i + 1;
+                }
+            }
+
+            if (statusCode == -1) {
+                throw new IOException(
+                        "Unable to parse the status code. End of line reached too early.");
+            }
+
+            // Parse the reason phrase
+            for (i = start; (reasonPhrase == null) && (i < size); i++) {
+                next = getLineBuilder().charAt(i);
             }
 
             if (i == size) {
-                version = getLineBuilder().substring(start, i);
+                reasonPhrase = getLineBuilder().substring(start, i);
                 start = i + 1;
             }
 
             if (version == null) {
                 throw new IOException(
-                        "Unable to parse the protocol version. End of line reached too early.");
+                        "Unable to parse the reason phrase. End of line reached too early.");
             }
 
-            // Create a new request object
-            ConnectedRequest request = getHelper().createRequest(
-                    getConnection(), requestMethod, requestUri, version);
-            Response response = getHelper().createResponse(request);
-            setMessage(response);
+            // Prepare the response
+            Response finalResponse = getMessages().peek();
+            Response response = null;
+            Status status = createStatus(statusCode);
 
+            if (status.isInformational()) {
+                response = getHelper().createResponse(
+                        finalResponse.getRequest());
+            } else {
+                response = finalResponse;
+            }
+
+            // Update the response
+            response.setStatus(status, reasonPhrase);
+            response.getServerInfo().setAddress(
+                    getConnection().getSocket().getLocalAddress().toString());
+            response.getServerInfo().setAgent(Engine.VERSION_HEADER);
+            response.getServerInfo().setPort(
+                    getConnection().getSocket().getPort());
+
+            // Set the current message object
+            setMessage(response);
             setMessageState(MessageState.HEADERS);
             getLineBuilder().delete(0, getLineBuilder().length());
         }
+    }
+
+    /**
+     * Returns the status corresponding to a given status code.
+     * 
+     * @param code
+     *            The status code.
+     * @return The status corresponding to a given status code.
+     */
+    protected Status createStatus(int code) {
+        return Status.valueOf(code);
     }
 
     @Override
