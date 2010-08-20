@@ -328,14 +328,6 @@ public class BaseClientHelper extends BaseHelper<Client> {
         result.configureBlocking(false);
         InetSocketAddress address = new InetSocketAddress(hostDomain, hostPort);
         result.connect(address);
-        // result.connect(address), getConnectTimeout());
-        // result.setTcpNoDelay(getTcpNoDelay());
-
-        while (!result.finishConnect()) {
-            // Wait
-            // TODO: optimize using selectors
-        }
-
         return result;
     }
 
@@ -450,7 +442,6 @@ public class BaseClientHelper extends BaseHelper<Client> {
                         this,
                         createSocketChannel(request.isConfidential(),
                                 socketAddress), getController().getSelector());
-                result.open();
             }
         }
 

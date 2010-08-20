@@ -447,6 +447,23 @@ public class Connection<T extends Connector> implements SelectionListener {
             getInboundWay().onSelected();
         } else if (key.isWritable()) {
             getOutboundWay().onSelected();
+        } else if (key.isConnectable()) {
+            // Client-side asynchronous connection
+            try {
+                if (getSocketChannel().finishConnect()) {
+                    open();
+                } else {
+                    getLogger().info(
+                            "Unable to establish a connection to "
+                                    + getSocket().getInetAddress());
+                    setState(ConnectionState.CLOSING);
+                }
+            } catch (IOException e) {
+                getLogger().warning(
+                        "Unable to establish a connection to "
+                                + getSocket().getInetAddress());
+                setState(ConnectionState.CLOSING);
+            }
         }
     }
 

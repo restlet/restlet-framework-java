@@ -31,6 +31,7 @@
 package org.restlet.engine.nio;
 
 import java.io.IOException;
+import java.nio.channels.SelectionKey;
 
 import org.restlet.Response;
 import org.restlet.Server;
@@ -45,8 +46,25 @@ import org.restlet.engine.http.header.HeaderUtils;
  */
 public class ClientInboundWay extends InboundWay {
 
+    /**
+     * Constructor.
+     * 
+     * @param connection
+     *            The parent connection.
+     */
     public ClientInboundWay(Connection<?> connection) {
         super(connection);
+    }
+
+    /**
+     * Returns the status corresponding to a given status code.
+     * 
+     * @param code
+     *            The status code.
+     * @return The status corresponding to a given status code.
+     */
+    protected Status createStatus(int code) {
+        return Status.valueOf(code);
     }
 
     @SuppressWarnings("unchecked")
@@ -58,6 +76,19 @@ public class ClientInboundWay extends InboundWay {
     @Override
     public BaseServerHelper getHelper() {
         return (BaseServerHelper) super.getHelper();
+    }
+
+    @Override
+    protected int getSocketInterestOps() {
+        int result = 0;
+
+        if (getConnection().getState() == ConnectionState.OPENING) {
+            result = SelectionKey.OP_CONNECT;
+        } else {
+            result = super.getSocketInterestOps();
+        }
+
+        return result;
     }
 
     @Override
@@ -148,17 +179,6 @@ public class ClientInboundWay extends InboundWay {
             setMessageState(MessageState.HEADERS);
             getLineBuilder().delete(0, getLineBuilder().length());
         }
-    }
-
-    /**
-     * Returns the status corresponding to a given status code.
-     * 
-     * @param code
-     *            The status code.
-     * @return The status corresponding to a given status code.
-     */
-    protected Status createStatus(int code) {
-        return Status.valueOf(code);
     }
 
     @Override

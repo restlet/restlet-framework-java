@@ -37,10 +37,10 @@ package org.restlet.engine.nio;
  */
 public enum ConnectionState {
 
-    /** The network connection is being opened. */
+    /** The network connection is being opened and connected. */
     OPENING,
 
-    /** The network connection has been successfully opened. */
+    /** The network connection has been successfully opened and connected. */
     OPEN,
 
     /** Waiting for all pending responses to be sent. */

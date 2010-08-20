@@ -606,7 +606,7 @@ public abstract class OutboundWay extends Way {
                         setEntityType(EntityType.STREAM);
                     }
                 } else {
-                    onCompleted(getMessage());
+                    setMessageState(MessageState.IDLE);
                 }
             }
 

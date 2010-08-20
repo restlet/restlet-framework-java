@@ -30,9 +30,6 @@
 
 package org.restlet.engine.nio;
 
-import java.nio.channels.ClosedByInterruptException;
-import java.nio.channels.SelectionKey;
-
 import org.restlet.Response;
 
 /**
@@ -70,12 +67,6 @@ public class ClientController extends Controller {
     @Override
     protected void handleOutbound(Response response) {
         handleOutbound(response, false);
-    }
-
-    @Override
-    protected void onSelected(SelectionKey key)
-            throws ClosedByInterruptException {
-
     }
 
 }
