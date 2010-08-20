@@ -46,10 +46,8 @@ import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Form;
-import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.data.Status;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.util.StringUtils;
@@ -100,7 +98,7 @@ public abstract class OutboundWay extends Way {
     /** The header index. */
     private volatile int headerIndex;
 
-    /** The response headers. */
+    /** The message headers. */
     private volatile Series<Parameter> headers;
 
     /**
@@ -110,6 +108,8 @@ public abstract class OutboundWay extends Way {
      */
     public OutboundWay(Connection<?> connection) {
         super(connection);
+        this.entityChannel = null;
+        this.entityStream = null;
         this.entityKey = null;
         this.entityIndex = 0;
         this.headerIndex = 0;
@@ -151,86 +151,7 @@ public abstract class OutboundWay extends Way {
      * @param headers
      *            The headers to update.
      */
-    protected void addHeaders(Series<Parameter> headers) {
-        Response response = getMessage();
-        ConnectedRequest request = (ConnectedRequest) response.getRequest();
-
-        if ((request.getMethod() != null)
-                && request.getMethod().equals(Method.HEAD)) {
-            addEntityHeaders(response.getEntity(), headers);
-            response.setEntity(null);
-        } else if (Method.GET.equals(request.getMethod())
-                && Status.SUCCESS_OK.equals(response.getStatus())
-                && (!response.isEntityAvailable())) {
-            addEntityHeaders(response.getEntity(), headers);
-            getLogger()
-                    .warning(
-                            "A response with a 200 (Ok) status should have an entity. Make sure that resource \""
-                                    + request.getResourceRef()
-                                    + "\" returns one or sets the status to 204 (No content).");
-        } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
-            addEntityHeaders(response.getEntity(), headers);
-
-            if (response.isEntityAvailable()) {
-                getLogger()
-                        .fine("Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
-                                + request.getResourceRef() + "\".");
-                response.setEntity(null);
-            }
-        } else if (response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)) {
-            if (response.isEntityAvailable()) {
-                getLogger()
-                        .warning(
-                                "Responses with a 205 (Reset content) status can't have an entity. Ignoring the entity for resource \""
-                                        + request.getResourceRef() + "\".");
-                response.setEntity(null);
-            }
-        } else if (response.getStatus().equals(Status.REDIRECTION_NOT_MODIFIED)) {
-            if (response.getEntity() != null) {
-                HeaderUtils.addNotModifiedEntityHeaders(response.getEntity(),
-                        headers);
-                response.setEntity(null);
-            }
-        } else if (response.getStatus().isInformational()) {
-            if (response.isEntityAvailable()) {
-                getLogger()
-                        .warning(
-                                "Responses with an informational (1xx) status can't have an entity. Ignoring the entity for resource \""
-                                        + request.getResourceRef() + "\".");
-                response.setEntity(null);
-            }
-
-            addGeneralHeaders(headers);
-            addResponseHeaders(headers);
-        } else {
-            addGeneralHeaders(headers);
-            addResponseHeaders(headers);
-            addEntityHeaders(response.getEntity(), headers);
-
-            if (!response.isEntityAvailable()) {
-                if ((response.getEntity() != null)
-                        && response.getEntity().getSize() != 0) {
-                    getLogger()
-                            .warning(
-                                    "A response with an unavailable and potentially non empty entity was returned. Ignoring the entity for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + "\".");
-                }
-
-                response.setEntity(null);
-            }
-        }
-    }
-
-    /**
-     * Adds the response headers.
-     * 
-     * @param headers
-     *            The headers series to update.
-     */
-    protected void addResponseHeaders(Series<Parameter> headers) {
-        HeaderUtils.addResponseHeaders(getMessage(), headers);
-    }
+    protected abstract void addHeaders(Series<Parameter> headers);
 
     /**
      * Returns the entity as a NIO readable byte channel.

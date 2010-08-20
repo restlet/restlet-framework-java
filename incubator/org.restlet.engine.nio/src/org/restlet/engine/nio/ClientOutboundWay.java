@@ -34,7 +34,10 @@ import java.io.IOException;
 
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.util.Series;
 
 /**
  * Client-side outbound way.
@@ -42,31 +45,6 @@ import org.restlet.data.Reference;
  * @author Jerome Louvel
  */
 public class ClientOutboundWay extends OutboundWay {
-
-    /**
-     * Constructor.
-     * 
-     * @param connection
-     *            The parent connection.
-     */
-    public ClientOutboundWay(Connection<?> connection) {
-        super(connection);
-    }
-
-    @Override
-    protected void onCompleted(Response message) {
-        super.onCompleted(message);
-        getMessages().remove(message);
-
-        if (!message.getStatus().isInformational()) {
-            // Attempt to read additional inbound messages
-            getConnection().getInboundWay().getMessages().remove(message);
-        }
-
-        if (!getConnection().isPersistent()) {
-            getConnection().close(true);
-        }
-    }
 
     /**
      * Returns the absolute request URI.
@@ -90,6 +68,49 @@ public class ClientOutboundWay extends OutboundWay {
         }
 
         return result;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param connection
+     *            The parent connection.
+     */
+    public ClientOutboundWay(Connection<?> connection) {
+        super(connection);
+    }
+
+    @Override
+    protected void addHeaders(Series<Parameter> headers) {
+        Request request = getMessage().getRequest();
+        addGeneralHeaders(headers);
+        addRequestHeaders(headers);
+        addEntityHeaders(request.getEntity(), headers);
+    }
+
+    /**
+     * Adds the request headers.
+     * 
+     * @param headers
+     *            The headers series to update.
+     */
+    protected void addRequestHeaders(Series<Parameter> headers) {
+        HeaderUtils.addRequestHeaders(getMessage().getRequest(), headers);
+    }
+
+    @Override
+    protected void onCompleted(Response message) {
+        super.onCompleted(message);
+        getMessages().remove(message);
+
+        if (!message.getStatus().isInformational()) {
+            // Attempt to read additional inbound messages
+            getConnection().getInboundWay().getMessages().remove(message);
+        }
+
+        if (!getConnection().isPersistent()) {
+            getConnection().close(true);
+        }
     }
 
     @Override
