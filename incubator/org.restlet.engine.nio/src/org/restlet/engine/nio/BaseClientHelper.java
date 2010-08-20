@@ -695,6 +695,8 @@ public class BaseClientHelper extends BaseHelper<Client> {
             }
 
             if (!response.getStatus().isInformational()) {
+                // Informational response shouldn't unblock a synchronous
+                // call waiting for a final response.
                 unblock(response);
             }
         }
@@ -713,6 +715,9 @@ public class BaseClientHelper extends BaseHelper<Client> {
                 } else {
                     getLogger().log(Level.WARNING,
                             "Unable to find a connection to send the request");
+                    response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION,
+                            "Unable to find a connection to send the request");
+                    unblock(response);
                 }
             } catch (Throwable t) {
                 getLogger()

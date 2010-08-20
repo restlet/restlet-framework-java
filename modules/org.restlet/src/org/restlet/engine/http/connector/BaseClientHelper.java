@@ -214,7 +214,8 @@ public class BaseClientHelper extends BaseHelper<Client> {
         if (keystoreInputStream != null) {
             try {
                 keystore = KeyStore.getInstance(getKeystoreType());
-                keystore.load(keystoreInputStream,
+                keystore.load(
+                        keystoreInputStream,
                         keystorePassword == null ? null : keystorePassword
                                 .toCharArray());
             } catch (IOException ioe) {
@@ -243,7 +244,8 @@ public class BaseClientHelper extends BaseHelper<Client> {
         if ((truststoreType != null) && (truststoreInputStream != null)) {
             try {
                 truststore = KeyStore.getInstance(truststoreType);
-                truststore.load(truststoreInputStream,
+                truststore.load(
+                        truststoreInputStream,
                         truststorePassword == null ? null : truststorePassword
                                 .toCharArray());
             } catch (IOException ioe) {
@@ -293,8 +295,8 @@ public class BaseClientHelper extends BaseHelper<Client> {
     protected Socket createSocket(boolean secure,
             InetSocketAddress socketAddress) throws UnknownHostException,
             IOException {
-        return createSocket(secure, socketAddress.getHostName(), socketAddress
-                .getPort());
+        return createSocket(secure, socketAddress.getHostName(),
+                socketAddress.getPort());
     }
 
     /**
@@ -425,8 +427,9 @@ public class BaseClientHelper extends BaseHelper<Client> {
                             .size() < getMaxTotalConnections()))
                     && ((getMaxConnectionsPerHost() == -1) || (hostConnectionCount < getMaxConnectionsPerHost()))) {
                 // Create a new connection
-                result = createConnection(this, createSocket(request
-                        .isConfidential(), socketAddress), null);
+                result = createConnection(this,
+                        createSocket(request.isConfidential(), socketAddress),
+                        null);
                 result.open();
             }
         }
@@ -582,8 +585,7 @@ public class BaseClientHelper extends BaseHelper<Client> {
         } else {
             // Resolve relative references
             Reference resourceRef = request.getResourceRef().isRelative() ? request
-                    .getResourceRef().getTargetRef()
-                    : request.getResourceRef();
+                    .getResourceRef().getTargetRef() : request.getResourceRef();
 
             // Extract the host info
             hostDomain = resourceRef.getHostDomain();
@@ -697,8 +699,8 @@ public class BaseClientHelper extends BaseHelper<Client> {
     public void handleInbound(Response response) {
         if (response != null) {
             if (response.getRequest().getOnResponse() != null) {
-                response.getRequest().getOnResponse().handle(
-                        response.getRequest(), response);
+                response.getRequest().getOnResponse()
+                        .handle(response.getRequest(), response);
             }
 
             if (!response.getStatus().isInformational()) {
@@ -722,6 +724,7 @@ public class BaseClientHelper extends BaseHelper<Client> {
                         // Attempt to directly write the response, preventing a
                         // thread context switch
                         bestConn.writeMessages();
+
                         // Unblock the possibly waiting thread.
                         // NB : the request may not be written at this time.
                         unblock(response);
@@ -735,8 +738,7 @@ public class BaseClientHelper extends BaseHelper<Client> {
                 }
             } catch (Throwable t) {
                 getLogger()
-                        .log(
-                                Level.FINE,
+                        .log(Level.FINE,
                                 "An error occured during the communication with the remote server.",
                                 t);
                 response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, t);
