@@ -33,7 +33,6 @@ package org.restlet.engine.nio;
 import java.io.IOException;
 
 import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.http.header.HeaderUtils;
@@ -99,20 +98,21 @@ public class ClientOutboundWay extends OutboundWay {
     }
 
     @Override
-    protected void onCompleted(Response message) {
-        super.onCompleted(message);
-        Request request = message.getRequest();
+    protected void onCompleted() {
+        Request request = getMessage().getRequest();
 
         if (request.getOnSent() != null) {
-            request.getOnSent().handle(request, message);
+            request.getOnSent().handle(request, getMessage());
         }
 
         // The request has been written
-        getMessages().remove(message);
+        getMessages().remove(getMessage());
 
         if (request.isExpectingResponse()) {
-            getConnection().getInboundWay().getMessages().add(message);
+            getConnection().getInboundWay().getMessages().add(getMessage());
         }
+
+        super.onCompleted();
     }
 
     @Override

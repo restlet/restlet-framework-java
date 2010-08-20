@@ -135,18 +135,19 @@ public class ServerOutboundWay extends OutboundWay {
     }
 
     @Override
-    protected void onCompleted(Response message) {
-        super.onCompleted(message);
-        getMessages().remove(message);
+    protected void onCompleted() {
+        getMessages().remove(getMessage());
 
-        if (!message.getStatus().isInformational()) {
+        if (!getMessage().getStatus().isInformational()) {
             // Attempt to read additional inbound messages
-            getConnection().getInboundWay().getMessages().remove(message);
+            getConnection().getInboundWay().getMessages().remove(getMessage());
         }
 
         if (!getConnection().isPersistent()) {
             getConnection().close(true);
         }
+
+        super.onCompleted();
     }
 
     @Override

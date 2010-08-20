@@ -35,6 +35,7 @@ import java.io.IOException;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.representation.Representation;
 
 /**
  * Server-side inbound way.
@@ -56,6 +57,49 @@ public class ServerInboundWay extends InboundWay {
     @Override
     public BaseServerHelper getHelper() {
         return (BaseServerHelper) super.getHelper();
+    }
+
+    @Override
+    protected void onReceived() {
+        ConnectedRequest request = (ConnectedRequest) getMessage().getRequest();
+
+        if (getHeaders() != null) {
+            request.setHeaders(getHeaders());
+        }
+
+        // Check if the client wants to close the
+        // connection after the response is sent
+        if (HeaderUtils.isConnectionClose(getHeaders())) {
+            getConnection().setState(ConnectionState.CLOSING);
+        }
+
+        // Check if an entity is available
+        Representation entity = createEntity(getHeaders());
+        request.setEntity(entity);
+
+        // Update the response
+        // getMessage().getServerInfo().setAddress(
+        // getConnection().getHelper().getHelped()
+        // .getAddress());
+        // getMessage().getServerInfo().setPort(
+        // getConnection().getHelper().getHelped()
+        // .getPort());
+
+        if (request != null) {
+            if (request.isExpectingResponse()) {
+                // Add it to the inbound queue
+                getMessages().add(getMessage());
+            }
+
+            // Add it to the helper queue
+            getHelper().getInboundMessages().add(getMessage());
+            getHelper().getController().wakeup();
+        }
+
+        if (!request.isEntityAvailable()) {
+            // The request has been completely read
+            onCompleted();
+        }
     }
 
     @Override

@@ -40,7 +40,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Response;
+import org.restlet.data.Parameter;
 import org.restlet.engine.io.IoUtils;
+import org.restlet.util.Series;
 
 /**
  * A network connection way though which messages are exchanged. Messages can be
@@ -49,6 +51,9 @@ import org.restlet.engine.io.IoUtils;
  * @author Jerome Louvel
  */
 public abstract class Way {
+
+    /** The message headers. */
+    private volatile Series<Parameter> headers;
 
     /** The byte buffer. */
     private final ByteBuffer byteBuffer;
@@ -79,6 +84,7 @@ public abstract class Way {
      */
     public Way(Connection<?> connection) {
         this.byteBuffer = ByteBuffer.allocate(IoUtils.BUFFER_SIZE);
+        this.headers = null;
         this.lineBuilder = new StringBuilder();
         this.connection = connection;
         this.messageState = MessageState.IDLE;
@@ -112,6 +118,15 @@ public abstract class Way {
      */
     public WritableByteChannel getEntityChannel(boolean chunked) {
         return getConnection().getWritableSelectionChannel();
+    }
+
+    /**
+     * Returns the response headers.
+     * 
+     * @return The response headers to be written.
+     */
+    public Series<Parameter> getHeaders() {
+        return headers;
     }
 
     /**
@@ -197,11 +212,8 @@ public abstract class Way {
     /**
      * Callback method invoked when the current message has been completely
      * received or sent.
-     * 
-     * @param message
-     *            The message completed.
      */
-    protected void onCompleted(Response message) {
+    protected void onCompleted() {
         setIoState(IoState.IDLE);
         setMessageState(MessageState.IDLE);
         setMessage(null);
@@ -239,6 +251,16 @@ public abstract class Way {
      */
     public void registerInterest(Selector selector) {
         updateState();
+    }
+
+    /**
+     * Sets the response headers to be written.
+     * 
+     * @param headers
+     *            The response headers.
+     */
+    public void setHeaders(Series<Parameter> headers) {
+        this.headers = headers;
     }
 
     /**

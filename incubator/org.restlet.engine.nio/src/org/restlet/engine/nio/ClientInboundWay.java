@@ -32,12 +32,16 @@ package org.restlet.engine.nio;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
+import java.util.logging.Level;
 
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.util.Series;
 
 /**
  * Client-side inbound way.
@@ -54,6 +58,19 @@ public class ClientInboundWay extends InboundWay {
      */
     public ClientInboundWay(Connection<?> connection) {
         super(connection);
+    }
+
+    /**
+     * Copies headers into a response.
+     * 
+     * @param headers
+     *            The headers to copy.
+     * @param response
+     *            The response to update.
+     */
+    protected void copyResponseTransportHeaders(Series<Parameter> headers,
+            Response response) {
+        HeaderUtils.copyResponseTransportHeaders(headers, response);
     }
 
     /**
@@ -89,6 +106,43 @@ public class ClientInboundWay extends InboundWay {
         }
 
         return result;
+    }
+
+    @Override
+    protected void onReceived() {
+        // Check if the server wants to close the connection
+        if (HeaderUtils.isConnectionClose(getHeaders())) {
+            getConnection().setState(ConnectionState.CLOSING);
+        }
+
+        // Update the response
+        getMessage().setEntity(createEntity(getHeaders()));
+
+        try {
+            copyResponseTransportHeaders(getHeaders(), getMessage());
+        } catch (Throwable t) {
+            getLogger()
+                    .log(Level.WARNING, "Error while parsing the headers", t);
+        }
+
+        // Put the headers in the response's attributes map
+        if (getHeaders() != null) {
+            getMessage().getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
+                    getHeaders());
+        }
+
+        if (!getMessage().getStatus().isInformational()) {
+            getMessages().poll();
+        }
+
+        // Add it to the helper queue
+        getHelper().getInboundMessages().add(getMessage());
+        getHelper().getController().wakeup();
+
+        if (!getMessage().isEntityAvailable()) {
+            // The response has been completely read
+            onCompleted();
+        }
     }
 
     @Override

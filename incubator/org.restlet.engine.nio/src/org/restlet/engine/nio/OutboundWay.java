@@ -96,9 +96,6 @@ public abstract class OutboundWay extends Way {
     /** The header index. */
     private volatile int headerIndex;
 
-    /** The message headers. */
-    private volatile Series<Parameter> headers;
-
     /**
      * Constructor.
      * 
@@ -111,7 +108,6 @@ public abstract class OutboundWay extends Way {
         this.entityKey = null;
         this.entityIndex = 0;
         this.headerIndex = 0;
-        this.headers = null;
     }
 
     /**
@@ -240,15 +236,6 @@ public abstract class OutboundWay extends Way {
         return headerIndex;
     }
 
-    /**
-     * Returns the response headers.
-     * 
-     * @return The response headers to be written.
-     */
-    public Series<Parameter> getHeaders() {
-        return headers;
-    }
-
     @Override
     public int getSocketInterestOps() {
         int result = 0;
@@ -261,8 +248,7 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
-    protected void onCompleted(Response message) {
-        super.onCompleted(message);
+    protected void onCompleted() {
         setHeaders(null);
         setHeaderIndex(0);
         setEntityIndex(0);
@@ -270,6 +256,8 @@ public abstract class OutboundWay extends Way {
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Outbound message sent");
         }
+
+        super.onCompleted();
     }
 
     @Override
@@ -400,7 +388,7 @@ public abstract class OutboundWay extends Way {
                             getByteBuffer().compact();
                         } else if (getMessageState() == MessageState.IDLE) {
                             // Message fully sent, ready for a new one
-                            onCompleted(getMessage());
+                            onCompleted();
                         } else {
                             // The byte buffer has been fully written, but
                             // the socket channel wants more.
@@ -509,16 +497,6 @@ public abstract class OutboundWay extends Way {
      */
     protected void setHeaderIndex(int headerIndex) {
         this.headerIndex = headerIndex;
-    }
-
-    /**
-     * Sets the response headers to be written.
-     * 
-     * @param headers
-     *            The response headers.
-     */
-    public void setHeaders(Series<Parameter> headers) {
-        this.headers = headers;
     }
 
     /**

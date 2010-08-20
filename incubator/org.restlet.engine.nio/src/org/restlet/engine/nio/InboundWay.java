@@ -35,7 +35,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
-import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.header.HeaderReader;
@@ -93,7 +92,7 @@ public abstract class InboundWay extends Way {
                     @Override
                     public void release() {
                         super.release();
-                        onCompleted(getMessage());
+                        onCompleted();
                     }
                 };
 
@@ -110,6 +109,38 @@ public abstract class InboundWay extends Way {
             } catch (Throwable t) {
                 getLogger().log(Level.WARNING,
                         "Error while parsing entity headers", t);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Read the current message line (start line or header line).
+     * 
+     * @return True if the message line was fully read.
+     * @throws IOException
+     */
+    protected boolean fillLine() throws IOException {
+        boolean result = false;
+        int next;
+
+        while (!result && getByteBuffer().hasRemaining()) {
+            next = (int) getByteBuffer().get();
+
+            if (HeaderUtils.isCarriageReturn(next)) {
+                next = (int) getByteBuffer().get();
+
+                if (HeaderUtils.isLineFeed(next)) {
+                    result = true;
+                } else {
+                    throw new IOException(
+                            "Missing carriage return character at the end of HTTP line");
+                }
+            } else if (next == -1) {
+                setMessageState(MessageState.IDLE);
+            } else {
+                getLineBuilder().append((char) next);
             }
         }
 
@@ -165,13 +196,20 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    protected void onCompleted(Response message) {
-        super.onCompleted(message);
-
+    protected void onCompleted() {
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Inbound message received");
         }
+
+        super.onCompleted();
     }
+
+    /**
+     * Callback invoked when a message has been received. Note that one the
+     * start line and the headers must have been received, not the optional
+     * body.
+     */
+    protected abstract void onReceived();
 
     @Override
     public void onSelected() {
@@ -190,69 +228,21 @@ public abstract class InboundWay extends Way {
                         // End of channel reached
                         setIoState(IoState.CANCELING);
                     } else {
-                        ConnectedRequest request = (ConnectedRequest) ((getMessage() == null) ? null
-                                : getMessage().getRequest());
-                        Series<Parameter> headers = (request == null) ? null
-                                : request.getHeaders();
-
                         // Parse ready lines
                         while (fillLine()) {
                             if (getMessageState() == MessageState.START_LINE) {
                                 readStartLine();
                             } else if (getMessageState() == MessageState.HEADERS) {
-                                request = (ConnectedRequest) getMessage()
-                                        .getRequest();
-                                headers = (headers == null) ? request
-                                        .getHeaders() : headers;
                                 Parameter header = readHeader();
 
                                 if (header != null) {
-                                    if (headers == null) {
-                                        headers = new Form();
+                                    if (getHeaders() == null) {
+                                        setHeaders(new Form());
                                     }
 
-                                    headers.add(header);
+                                    getHeaders().add(header);
                                 } else {
-                                    // End of headers
-                                    if (headers != null) {
-                                        request.setHeaders(headers);
-                                    }
-
-                                    // Check if the client wants to close the
-                                    // connection after the response is sent
-                                    if (HeaderUtils.isConnectionClose(headers)) {
-                                        getConnection().setState(
-                                                ConnectionState.CLOSING);
-                                    }
-
-                                    // Check if an entity is available
-                                    Representation entity = createEntity(headers);
-                                    request.setEntity(entity);
-
-                                    // Update the response
-                                    // getMessage().getServerInfo().setAddress(
-                                    // getConnection().getHelper().getHelped()
-                                    // .getAddress());
-                                    // getMessage().getServerInfo().setPort(
-                                    // getConnection().getHelper().getHelped()
-                                    // .getPort());
-
-                                    if (request != null) {
-                                        if (request.isExpectingResponse()) {
-                                            // Add it to the inbound queue
-                                            getMessages().add(getMessage());
-                                        }
-
-                                        // Add it to the helper queue
-                                        getHelper().getInboundMessages().add(
-                                                getMessage());
-                                        getHelper().getController().wakeup();
-                                    }
-
-                                    if (!request.isEntityAvailable()) {
-                                        // The request has been completely read
-                                        onCompleted(getMessage());
-                                    }
+                                    onReceived();
                                 }
                             }
                         }
@@ -278,38 +268,6 @@ public abstract class InboundWay extends Way {
         Parameter header = HeaderReader.readHeader(getLineBuilder());
         getLineBuilder().delete(0, getLineBuilder().length());
         return header;
-    }
-
-    /**
-     * Read the current message line (start line or header line).
-     * 
-     * @return True if the message line was fully read.
-     * @throws IOException
-     */
-    protected boolean fillLine() throws IOException {
-        boolean result = false;
-        int next;
-
-        while (!result && getByteBuffer().hasRemaining()) {
-            next = (int) getByteBuffer().get();
-
-            if (HeaderUtils.isCarriageReturn(next)) {
-                next = (int) getByteBuffer().get();
-
-                if (HeaderUtils.isLineFeed(next)) {
-                    result = true;
-                } else {
-                    throw new IOException(
-                            "Missing carriage return character at the end of HTTP line");
-                }
-            } else if (next == -1) {
-                setMessageState(MessageState.IDLE);
-            } else {
-                getLineBuilder().append((char) next);
-            }
-        }
-
-        return result;
     }
 
     /**
