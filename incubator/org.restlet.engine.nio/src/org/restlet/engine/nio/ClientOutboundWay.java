@@ -101,15 +101,17 @@ public class ClientOutboundWay extends OutboundWay {
     @Override
     protected void onCompleted(Response message) {
         super.onCompleted(message);
-        getMessages().remove(message);
+        Request request = message.getRequest();
 
-        if (!message.getStatus().isInformational()) {
-            // Attempt to read additional inbound messages
-            getConnection().getInboundWay().getMessages().remove(message);
+        if (request.getOnSent() != null) {
+            request.getOnSent().handle(request, message);
         }
 
-        if (!getConnection().isPersistent()) {
-            getConnection().close(true);
+        // The request has been written
+        getMessages().remove(message);
+
+        if (request.isExpectingResponse()) {
+            getConnection().getInboundWay().getMessages().add(message);
         }
     }
 

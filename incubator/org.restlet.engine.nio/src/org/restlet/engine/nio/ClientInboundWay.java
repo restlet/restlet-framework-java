@@ -149,7 +149,7 @@ public class ClientInboundWay extends InboundWay {
                 start = i + 1;
             }
 
-            if (version == null) {
+            if (reasonPhrase == null) {
                 throw new IOException(
                         "Unable to parse the reason phrase. End of line reached too early.");
             }
