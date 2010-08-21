@@ -30,18 +30,16 @@
 
 package org.restlet.ext.sip;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.nio.channels.SocketChannel;
-
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Protocol;
-import org.restlet.engine.http.connector.BaseClientHelper;
-import org.restlet.engine.http.connector.BaseHelper;
-import org.restlet.engine.http.connector.Connection;
-import org.restlet.ext.sip.internal.SipClientConnection;
+import org.restlet.engine.nio.BaseClientHelper;
+import org.restlet.engine.nio.Connection;
+import org.restlet.engine.nio.InboundWay;
+import org.restlet.engine.nio.OutboundWay;
+import org.restlet.ext.sip.internal.SipClientInboundWay;
+import org.restlet.ext.sip.internal.SipClientOutboundWay;
 
 /**
  * Standalone SIP client helper.
@@ -63,9 +61,13 @@ public class SipClientHelper extends BaseClientHelper {
     }
 
     @Override
-    protected Connection<Client> createConnection(BaseHelper<Client> helper,
-            Socket socket, SocketChannel socketChannel) throws IOException {
-        return new SipClientConnection(helper, socket, socketChannel);
+    public InboundWay createInboundWay(Connection<Client> connection) {
+        return new SipClientInboundWay(connection);
+    }
+
+    @Override
+    public OutboundWay createOutboundWay(Connection<Client> connection) {
+        return new SipClientOutboundWay(connection);
     }
 
     @Override
@@ -75,13 +77,13 @@ public class SipClientHelper extends BaseClientHelper {
 
     @Override
     public synchronized void start() throws Exception {
-        getLogger().info("Starting the SIP client");
+        getLogger().info("Starting the " + getProtocols() + " client");
         super.start();
     }
 
     @Override
     public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the SIP client");
+        getLogger().info("Stopping the " + getProtocols() + " client");
         super.stop();
     }
 }

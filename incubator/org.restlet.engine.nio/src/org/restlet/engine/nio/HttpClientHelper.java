@@ -52,6 +52,16 @@ public class HttpClientHelper extends BaseClientHelper {
     }
 
     @Override
+    public InboundWay createInboundWay(Connection<Client> connection) {
+        return new ClientInboundWay(connection);
+    }
+
+    @Override
+    public OutboundWay createOutboundWay(Connection<Client> connection) {
+        return new ClientOutboundWay(connection);
+    }
+
+    @Override
     public synchronized void start() throws Exception {
         getLogger().info("Starting the NIO HTTP client");
         super.start();

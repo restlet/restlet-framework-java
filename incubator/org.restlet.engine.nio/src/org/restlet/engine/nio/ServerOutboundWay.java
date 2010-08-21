@@ -33,6 +33,7 @@ package org.restlet.engine.nio;
 import java.io.IOException;
 
 import org.restlet.Response;
+import org.restlet.Server;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
@@ -52,7 +53,7 @@ public class ServerOutboundWay extends OutboundWay {
      * @param connection
      *            The parent connection.
      */
-    public ServerOutboundWay(Connection<?> connection) {
+    public ServerOutboundWay(Connection<Server> connection) {
         super(connection);
     }
 

@@ -30,43 +30,38 @@
 
 package org.restlet.ext.sip.internal;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.nio.channels.SocketChannel;
-
-import org.restlet.Client;
-import org.restlet.Message;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Parameter;
-import org.restlet.data.Status;
-import org.restlet.engine.http.connector.BaseHelper;
-import org.restlet.engine.http.connector.ClientConnection;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.TagWriter;
+import org.restlet.engine.nio.ClientOutboundWay;
+import org.restlet.engine.nio.Connection;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
-import org.restlet.ext.sip.SipResponse;
-import org.restlet.ext.sip.SipStatus;
 import org.restlet.util.Series;
 
 /**
- * SIP client connection for the SIP connector.
+ * SIP client outbound way.
  * 
  * @author Thierry Boileau
  */
-public class SipClientConnection extends ClientConnection {
+public class SipClientOutboundWay extends ClientOutboundWay {
 
-    public SipClientConnection(BaseHelper<Client> helper, Socket socket,
-            SocketChannel socketChannel) throws IOException {
-        super(helper, socket, socketChannel);
+    /**
+     * Constructor.
+     * 
+     * @param connection
+     *            The parent connection.
+     */
+    public SipClientOutboundWay(Connection<?> connection) {
+        super(connection);
     }
 
     @Override
-    protected void addGeneralHeaders(Message message, Series<Parameter> headers) {
-        if (message instanceof SipRequest) {
+    protected void addGeneralHeaders(Series<Parameter> headers) {
+        if (getMessage().getRequest() instanceof SipRequest) {
             // Put the VIA header at the top most level.
-            SipRequest sipRequest = (SipRequest) message;
+            SipRequest sipRequest = (SipRequest) getMessage().getRequest();
+
             if (!sipRequest.getSipRecipientsInfo().isEmpty()) {
                 for (SipRecipientInfo recipient : sipRequest
                         .getSipRecipientsInfo()) {
@@ -77,109 +72,131 @@ public class SipClientConnection extends ClientConnection {
             }
         }
 
-        super.addGeneralHeaders(message, headers);
+        super.addGeneralHeaders(headers);
     }
 
     @Override
-    protected void addRequestHeaders(Request request, Series<Parameter> headers) {
+    protected void addRequestHeaders(Series<Parameter> headers) {
         SipRequest sipRequest = null;
-        if (request instanceof SipRequest) {
-            sipRequest = (SipRequest) request;
+
+        if (getMessage().getRequest() instanceof SipRequest) {
+            sipRequest = (SipRequest) getMessage().getRequest();
+
             if (sipRequest.getCallId() != null) {
-                headers
-                        .add(SipConstants.HEADER_CALL_ID, sipRequest
-                                .getCallId());
+                headers.add(SipConstants.HEADER_CALL_ID, sipRequest.getCallId());
             }
 
             if (sipRequest.getCallSequence() != null) {
-                headers.add(SipConstants.HEADER_CALL_SEQ, sipRequest
-                        .getCallSequence());
+                headers.add(SipConstants.HEADER_CALL_SEQ,
+                        sipRequest.getCallSequence());
             }
+
             if (sipRequest.getFrom() != null) {
-                headers.add(HeaderConstants.HEADER_FROM, AddressWriter
-                        .write(sipRequest.getFrom()));
+                headers.add(HeaderConstants.HEADER_FROM,
+                        AddressWriter.write(sipRequest.getFrom()));
             }
+
             if (sipRequest.getTo() != null) {
-                headers.add(SipConstants.HEADER_TO, AddressWriter
-                        .write(sipRequest.getTo()));
+                headers.add(SipConstants.HEADER_TO,
+                        AddressWriter.write(sipRequest.getTo()));
             }
 
             if (sipRequest.getAlertInfo() != null) {
-                headers.add(SipConstants.HEADER_ALERT_INFO, AddressWriter
-                        .write(sipRequest.getAlertInfo()));
+                headers.add(SipConstants.HEADER_ALERT_INFO,
+                        AddressWriter.write(sipRequest.getAlertInfo()));
             }
+
             if (!sipRequest.getAllowedEventTypes().isEmpty()) {
                 headers.add(SipConstants.HEADER_ALLOW_EVENTS, EventTypeWriter
                         .write(sipRequest.getAllowedEventTypes()));
             }
+
             if (!sipRequest.getCallerInfo().isEmpty()) {
-                headers.add(SipConstants.HEADER_CALL_INFO, AddressWriter
-                        .write(sipRequest.getCallerInfo()));
+                headers.add(SipConstants.HEADER_CALL_INFO,
+                        AddressWriter.write(sipRequest.getCallerInfo()));
             }
+
             if (!sipRequest.getContact().isEmpty()) {
-                headers.add(SipConstants.HEADER_CONTACT, ContactInfoWriter
-                        .write(sipRequest.getContact()));
+                headers.add(SipConstants.HEADER_CONTACT,
+                        ContactInfoWriter.write(sipRequest.getContact()));
             }
+
             if (sipRequest.getEvent() != null) {
-                headers.add(SipConstants.HEADER_EVENT, EventWriter
-                        .write(sipRequest.getEvent()));
+                headers.add(SipConstants.HEADER_EVENT,
+                        EventWriter.write(sipRequest.getEvent()));
             }
+
             if (sipRequest.getMimeVersion() != null) {
-                headers.add(SipConstants.HEADER_MIME_VERSION, sipRequest
-                        .getMimeVersion());
+                headers.add(SipConstants.HEADER_MIME_VERSION,
+                        sipRequest.getMimeVersion());
             }
+
             if (sipRequest.getOrganization() != null) {
-                headers.add(SipConstants.HEADER_ORGANIZATION, sipRequest
-                        .getOrganization());
+                headers.add(SipConstants.HEADER_ORGANIZATION,
+                        sipRequest.getOrganization());
             }
+
             if (!sipRequest.getRecordedRoutes().isEmpty()) {
-                headers.add(SipConstants.HEADER_RECORD_ROUTE, AddressWriter
-                        .write(sipRequest.getRecordedRoutes()));
+                headers.add(SipConstants.HEADER_RECORD_ROUTE,
+                        AddressWriter.write(sipRequest.getRecordedRoutes()));
             }
+
             if (sipRequest.getReplyTo() != null) {
-                headers.add(SipConstants.HEADER_REPLY_TO, AddressWriter
-                        .write(sipRequest.getReplyTo()));
+                headers.add(SipConstants.HEADER_REPLY_TO,
+                        AddressWriter.write(sipRequest.getReplyTo()));
             }
+
             if (!sipRequest.getSupported().isEmpty()) {
-                headers.add(SipConstants.HEADER_SUPPORTED, OptionTagWriter
-                        .write(sipRequest.getSupported()));
+                headers.add(SipConstants.HEADER_SUPPORTED,
+                        OptionTagWriter.write(sipRequest.getSupported()));
             }
+
             if (!sipRequest.getInReplyTo().isEmpty()) {
                 StringBuilder sb = new StringBuilder(sipRequest.getInReplyTo()
                         .get(0));
+
                 for (int i = 1; i < sipRequest.getInReplyTo().size(); i++) {
                     sb.append(",").append(sipRequest.getInReplyTo().get(i));
                 }
+
                 headers.add(SipConstants.HEADER_IN_REPLY_TO, sb.toString());
             }
+
             if (sipRequest.getPriority() != null) {
                 headers.add(SipConstants.HEADER_PRIORITY, sipRequest
                         .getPriority().getValue());
             }
+
             if (!sipRequest.getProxyRequires().isEmpty()) {
-                headers.add(SipConstants.HEADER_PROXY_REQUIRE, OptionTagWriter
-                        .write(sipRequest.getProxyRequires()));
+                headers.add(SipConstants.HEADER_PROXY_REQUIRE,
+                        OptionTagWriter.write(sipRequest.getProxyRequires()));
             }
+
             if (sipRequest.getReferTo() != null) {
-                headers.add(SipConstants.HEADER_REFER_TO, AddressWriter
-                        .write(sipRequest.getReferTo()));
+                headers.add(SipConstants.HEADER_REFER_TO,
+                        AddressWriter.write(sipRequest.getReferTo()));
             }
+
             if (!sipRequest.getRequires().isEmpty()) {
-                headers.add(SipConstants.HEADER_REQUIRE, OptionTagWriter
-                        .write(sipRequest.getProxyRequires()));
+                headers.add(SipConstants.HEADER_REQUIRE,
+                        OptionTagWriter.write(sipRequest.getProxyRequires()));
             }
+
             if (!sipRequest.getRoutes().isEmpty()) {
-                headers.add(SipConstants.HEADER_ROUTE, AddressWriter
-                        .write(sipRequest.getRoutes()));
+                headers.add(SipConstants.HEADER_ROUTE,
+                        AddressWriter.write(sipRequest.getRoutes()));
             }
+
             if (sipRequest.getSipIfMatch() != null) {
-                headers.add(HeaderConstants.HEADER_IF_MATCH, TagWriter
-                        .write(sipRequest.getSipIfMatch()));
+                headers.add(HeaderConstants.HEADER_IF_MATCH,
+                        TagWriter.write(sipRequest.getSipIfMatch()));
             }
+
             if (sipRequest.getSubject() != null) {
-                headers.add(SipConstants.HEADER_SUBJECT, sipRequest
-                        .getSubject());
+                headers.add(SipConstants.HEADER_SUBJECT,
+                        sipRequest.getSubject());
             }
+
             if (sipRequest.getSubscriptionState() != null) {
                 headers.add(SipConstants.HEADER_SUBSCRIPTION_STATE,
                         SubscriptionWriter.write(sipRequest
@@ -187,27 +204,7 @@ public class SipClientConnection extends ClientConnection {
             }
         }
 
-        super.addRequestHeaders(request, headers);
+        super.addRequestHeaders(headers);
     }
 
-    @Override
-    protected void copyResponseTransportHeaders(Series<Parameter> headers,
-            Response response) {
-        SipResponse sr = (SipResponse) response;
-        for (Parameter header : headers) {
-            if (header.getName().equalsIgnoreCase(HeaderConstants.HEADER_VIA)) {
-                SipRecipientInfoReader.addValues(header, sr
-                        .getSipRecipientsInfo());
-            }
-        }
-        // Don't let the parent code handle the VIA header according to HTTP
-        // syntax.
-        headers.removeAll(HeaderConstants.HEADER_VIA, true);
-        super.copyResponseTransportHeaders(headers, response);
-    }
-
-    @Override
-    protected Status createStatus(int code) {
-        return SipStatus.valueOf(code);
-    }
 }

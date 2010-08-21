@@ -28,51 +28,27 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.nio;
+package org.restlet.ext.sip.internal;
 
 import org.restlet.Server;
-import org.restlet.data.Protocol;
+import org.restlet.engine.nio.Connection;
+import org.restlet.engine.nio.ServerInboundWay;
 
 /**
- * HTTP server helper based on NIO blocking sockets.
+ * SIP server inbound way.
  * 
  * @author Jerome Louvel
  */
-public class HttpServerHelper extends BaseServerHelper {
+public class SipServerInboundWay extends ServerInboundWay {
 
     /**
      * Constructor.
      * 
-     * @param server
-     *            The server to help.
+     * @param connection
+     *            The parent connection.
      */
-    public HttpServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.HTTP);
-    }
-
-    @Override
-    public ServerInboundWay createInboundWay(Connection<Server> connection) {
-        return new ServerInboundWay(connection);
-    }
-
-    @Override
-    public OutboundWay createOutboundWay(Connection<Server> connection) {
-        return new ServerOutboundWay(connection);
-    }
-
-    @Override
-    public synchronized void start() throws Exception {
-        getLogger()
-                .info("Starting the NIO HTTP server on port "
-                        + getHelped().getPort());
-        super.start();
-    }
-
-    @Override
-    public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the NIO HTTP server");
-        super.stop();
+    public SipServerInboundWay(Connection<Server> connection) {
+        super(connection);
     }
 
 }

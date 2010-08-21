@@ -156,7 +156,7 @@ import org.restlet.data.Status;
  * 
  * @author Jerome Louvel
  */
-public class BaseClientHelper extends BaseHelper<Client> {
+public abstract class BaseClientHelper extends BaseHelper<Client> {
 
     private static final String CONNECTOR_LATCH = "org.restlet.engine.http.connector.latch";
 
@@ -179,16 +179,6 @@ public class BaseClientHelper extends BaseHelper<Client> {
     @Override
     protected Controller createController() {
         return new ClientController(this);
-    }
-
-    @Override
-    public InboundWay createInboundWay(Connection<Client> connection) {
-        return new ClientInboundWay(connection);
-    }
-
-    @Override
-    public OutboundWay createOutboundWay(Connection<Client> connection) {
-        return new ClientOutboundWay(connection);
     }
 
     /**

@@ -30,18 +30,20 @@
 
 package org.restlet.ext.sip;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.http.connector.BaseHelper;
-import org.restlet.engine.http.connector.BaseServerHelper;
-import org.restlet.engine.http.connector.Connection;
-import org.restlet.ext.sip.internal.SipServerConnection;
+import org.restlet.data.RecipientInfo;
+import org.restlet.engine.nio.BaseServerHelper;
+import org.restlet.engine.nio.ConnectedRequest;
+import org.restlet.engine.nio.Connection;
+import org.restlet.engine.nio.OutboundWay;
+import org.restlet.engine.nio.ServerInboundWay;
+import org.restlet.ext.sip.internal.SipServerInboundWay;
+import org.restlet.ext.sip.internal.SipServerOutboundWay;
 
 /**
  * Standalone SIP server helper.
@@ -49,6 +51,19 @@ import org.restlet.ext.sip.internal.SipServerConnection;
  * @author Jerome Louvel
  */
 public class SipServerHelper extends BaseServerHelper {
+
+    @Override
+    protected ConnectedRequest createRequest(Connection<Server> connection,
+            String methodName, String resourceUri, String version) {
+
+        SipRequest request = new SipRequest(getContext(), connection,
+                methodName, resourceUri, version);
+
+        // The via header is linked with the sipRecipientsInfo attribute, due to
+        // distinct formats.
+        request.setRecipientsInfo(new ArrayList<RecipientInfo>());
+        return request;
+    }
 
     /**
      * Constructor.
@@ -62,9 +77,13 @@ public class SipServerHelper extends BaseServerHelper {
     }
 
     @Override
-    protected Connection<Server> createConnection(BaseHelper<Server> helper,
-            Socket socket, SocketChannel socketChannel) throws IOException {
-        return new SipServerConnection(helper, socket, socketChannel);
+    public ServerInboundWay createInboundWay(Connection<Server> connection) {
+        return new SipServerInboundWay(connection);
+    }
+
+    @Override
+    public OutboundWay createOutboundWay(Connection<Server> connection) {
+        return new SipServerOutboundWay(connection);
     }
 
     @Override

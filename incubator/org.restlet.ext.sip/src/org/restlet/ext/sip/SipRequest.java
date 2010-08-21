@@ -31,18 +31,16 @@
 package org.restlet.ext.sip;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Context;
-import org.restlet.data.Method;
-import org.restlet.data.Parameter;
+import org.restlet.Server;
 import org.restlet.data.Tag;
-import org.restlet.engine.http.connector.ConnectedRequest;
-import org.restlet.engine.http.connector.ServerConnection;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderReader;
+import org.restlet.engine.nio.ConnectedRequest;
+import org.restlet.engine.nio.Connection;
 import org.restlet.ext.sip.internal.AddressReader;
 import org.restlet.ext.sip.internal.ContactInfoReader;
 import org.restlet.ext.sip.internal.EventReader;
@@ -51,8 +49,6 @@ import org.restlet.ext.sip.internal.OptionTagReader;
 import org.restlet.ext.sip.internal.SipConstants;
 import org.restlet.ext.sip.internal.SipRecipientInfoReader;
 import org.restlet.ext.sip.internal.SubscriptionReader;
-import org.restlet.representation.Representation;
-import org.restlet.util.Series;
 
 /**
  * Request part of a SIP transaction.
@@ -206,27 +202,16 @@ public class SipRequest extends ConnectedRequest {
      *            The context of the parent connector.
      * @param connection
      *            The associated network connection.
-     * @param method
-     *            The protocol method.
+     * @param methodName
+     *            The protocol method name.
      * @param resourceUri
      *            The target resource URI.
      * @param version
      *            The protocol version.
-     * @param headers
-     *            The request headers.
-     * @param entity
-     *            The request entity.
-     * @param confidential
-     *            True if received confidentially.
-     * @param userPrincipal
-     *            The user principal.
      */
-    public SipRequest(Context context, ServerConnection connection,
-            Method method, String resourceUri, String version,
-            Series<Parameter> headers, Representation entity,
-            boolean confidential, Principal userPrincipal) {
-        super(context, connection, method, resourceUri, version, headers,
-                entity, confidential, userPrincipal);
+    public SipRequest(Context context, Connection<Server> connection,
+            String methodName, String resourceUri, String version) {
+        super(context, connection, methodName, resourceUri, version);
 
         // Set the "callId" property
         String callIdHeader = (getHeaders() == null) ? null : getHeaders()

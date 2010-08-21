@@ -44,6 +44,12 @@ import org.restlet.representation.Representation;
  */
 public class ServerInboundWay extends InboundWay {
 
+    /**
+     * Constructor.
+     * 
+     * @param connection
+     *            The parent connection.
+     */
     public ServerInboundWay(Connection<?> connection) {
         super(connection);
     }

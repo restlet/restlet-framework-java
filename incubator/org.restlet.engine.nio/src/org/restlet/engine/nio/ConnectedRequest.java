@@ -137,6 +137,19 @@ public class ConnectedRequest extends Request {
     private volatile boolean warningsAdded;
 
     /**
+     * Copy constructor.
+     * 
+     * @param request
+     *            The request to copy.
+     */
+    public ConnectedRequest(ConnectedRequest request) {
+        super(request);
+        this.connection = request.getConnection();
+        this.context = request.context;
+        this.userPrincipal = request.getUserPrincipal();
+    }
+
+    /**
      * Constructor.
      * 
      * @param context
@@ -371,12 +384,12 @@ public class ConnectedRequest extends Request {
                 for (Parameter header : getHeaders()) {
                     if (header.getName().equalsIgnoreCase(
                             HeaderConstants.HEADER_IF_MODIFIED_SINCE)) {
-                        ifModifiedSince = HeaderReader.readDate(header
-                                .getValue(), false);
+                        ifModifiedSince = HeaderReader.readDate(
+                                header.getValue(), false);
                     } else if (header.getName().equalsIgnoreCase(
                             HeaderConstants.HEADER_IF_UNMODIFIED_SINCE)) {
-                        ifUnmodifiedSince = HeaderReader.readDate(header
-                                .getValue(), false);
+                        ifUnmodifiedSince = HeaderReader.readDate(
+                                header.getValue(), false);
                     }
                 }
 
@@ -635,9 +648,10 @@ public class ConnectedRequest extends Request {
         // Set the protocol used for this request
         Protocol serverProtocol = getConnection().getHelper().getHelped()
                 .getProtocols().get(0);
-        setProtocol(new Protocol(serverProtocol.getSchemeName(), serverProtocol
-                .getName(), serverProtocol.getDescription(), serverProtocol
-                .getDefaultPort(), serverProtocol.isConfidential(), version));
+        setProtocol(new Protocol(serverProtocol.getSchemeName(),
+                serverProtocol.getName(), serverProtocol.getDescription(),
+                serverProtocol.getDefaultPort(),
+                serverProtocol.isConfidential(), version));
 
         // Parse the host header
         String host = (getHeaders() == null) ? null : getHeaders()

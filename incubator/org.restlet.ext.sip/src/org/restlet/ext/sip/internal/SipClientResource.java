@@ -53,6 +53,7 @@ import org.restlet.resource.UniformResource;
 /**
  * Client-side resource for the sip protocol. Acts like a proxy of a target
  * resource.<br>
+ * <br>
  * This class changes the semantics of the {@link UniformResource#getRequest()}
  * and {@link UniformResource#getResponse()} methods. Since a clientResource may
  * receive severals responses for a single request (in case of interim
@@ -60,15 +61,17 @@ import org.restlet.resource.UniformResource;
  * response object. The Request object returned by the {@link #getRequest()} is
  * actually a prototype which is cloned (except the representation) just before
  * the {@link #handle()} method is called.<br>
+ * <br>
  * Users must be aware that by most representations can only be read or written
  * once. Some others, such as {@link StringRepresentation} stored the entity in
  * memory which can be read several times but has the drawback to consume
  * memory.<br>
+ * <br>
  * Concurrency note: instances of the class are not designed to be shared among
  * several threads. If thread-safety is necessary, consider using the
  * lower-level {@link Client} class instead.
  * 
- * @author thierry Boileau
+ * @author Thierry Boileau
  */
 public class SipClientResource extends ClientResource {
 

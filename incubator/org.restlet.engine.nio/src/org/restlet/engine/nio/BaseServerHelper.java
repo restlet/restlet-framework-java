@@ -67,7 +67,7 @@ import org.restlet.Server;
  * 
  * @author Jerome Louvel
  */
-public class BaseServerHelper extends BaseHelper<Server> {
+public abstract class BaseServerHelper extends BaseHelper<Server> {
 
     /** The server socket channel. */
     private volatile ServerSocketChannel serverSocketChannel;
@@ -94,16 +94,6 @@ public class BaseServerHelper extends BaseHelper<Server> {
     @Override
     protected ServerController createController() {
         return new ServerController(this);
-    }
-
-    @Override
-    public ServerInboundWay createInboundWay(Connection<Server> connection) {
-        return new ServerInboundWay(connection);
-    }
-
-    @Override
-    public OutboundWay createOutboundWay(Connection<Server> connection) {
-        return new ServerOutboundWay(connection);
     }
 
     /**
