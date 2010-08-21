@@ -102,7 +102,7 @@ public class NbChannelInputStream extends InputStream {
         int result = -1;
 
         if (!this.endReached) {
-            if (!this.bb.hasRemaining() && (this.selectableChannel != null)) {
+            if (!this.bb.hasRemaining()) {
                 // Let's try to refill
                 refill();
             }
@@ -147,7 +147,7 @@ public class NbChannelInputStream extends InputStream {
 
             // If no bytes were read, try to register a select key to
             // get more
-            if (bytesRead == 0) {
+            if ((bytesRead == 0) && (selectableChannel != null)) {
                 selector = SelectorFactory.getSelector();
 
                 if (selector != null) {

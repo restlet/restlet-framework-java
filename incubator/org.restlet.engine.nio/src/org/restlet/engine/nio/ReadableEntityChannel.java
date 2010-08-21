@@ -45,7 +45,7 @@ public class ReadableEntityChannel extends
     /** The byte buffer remaining from previous read processing. */
     private volatile ByteBuffer remainingBuffer;
 
-    /** The total size that should be read from the source channel. */
+    /** The total available size that should be read from the source channel. */
     private volatile long availableSize;
 
     /**
@@ -56,7 +56,8 @@ public class ReadableEntityChannel extends
      * @param source
      *            The source channel.
      * @param availableSize
-     *            The available size that can be read from the source channel.
+     *            The total available size that can be read from the source
+     *            channel.
      */
     public ReadableEntityChannel(ByteBuffer remainingBuffer,
             ReadableSelectionChannel source, long availableSize) {

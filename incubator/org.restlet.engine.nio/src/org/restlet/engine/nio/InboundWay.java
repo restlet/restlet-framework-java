@@ -229,7 +229,8 @@ public abstract class InboundWay extends Way {
                         setIoState(IoState.CANCELING);
                     } else {
                         // Parse ready lines
-                        while (fillLine()) {
+                        while ((getMessageState() != MessageState.BODY)
+                                && fillLine()) {
                             if (getMessageState() == MessageState.START_LINE) {
                                 readStartLine();
                             } else if (getMessageState() == MessageState.HEADERS) {

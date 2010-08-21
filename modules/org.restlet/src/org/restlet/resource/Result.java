@@ -32,7 +32,7 @@ package org.restlet.resource;
 
 // [ifdef gwt] javadocs
 /**
- * High-level resource callback. This is an equivalent to the
+ * Callback interface for asynchronous tasks. This is an equivalent to the
  * {@link com.google.gwt.user.client.rpc.AsyncCallback} interface used by the
  * GWT-RPC mechanism.
  * 
@@ -42,7 +42,7 @@ package org.restlet.resource;
  */
 // [ifndef gwt] javadocs
 /**
- * Marker interface for remote RESTful resources.
+ * Callback interface for asynchronous tasks.
  * 
  * @param <T>
  *            The class of the result object returned in case of success.

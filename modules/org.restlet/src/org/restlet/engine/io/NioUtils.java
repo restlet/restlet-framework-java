@@ -33,6 +33,7 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.Channel;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -163,10 +164,8 @@ public class NioUtils {
             result = pipe.source();
             // [enddef]
         } else {
-            Context
-                    .getCurrentLogger()
-                    .log(
-                            Level.WARNING,
+            Context.getCurrentLogger()
+                    .log(Level.WARNING,
                             "The GAE edition is unable to return a channel for a representation given its write(WritableByteChannel) method.");
         }
         return result;
@@ -197,20 +196,25 @@ public class NioUtils {
      * @return An output stream based on a given writable byte channel.
      */
     public static OutputStream getStream(WritableByteChannel writableChannel) {
-        OutputStream result = null;
+        return isBlocking(writableChannel) ? Channels
+                .newOutputStream(writableChannel) : new NbChannelOutputStream(
+                writableChannel);
+    }
 
-        if (writableChannel instanceof SelectableChannel) {
-            SelectableChannel selectableChannel = (SelectableChannel) writableChannel;
+    /**
+     * Indicates if the channel is in blocking mode. It returns false when the
+     * channel is selectable and configured to be non blocking.
+     * 
+     * @param channel
+     *            The channel to test.
+     * @return True if the channel is in blocking mode.
+     */
+    public static boolean isBlocking(Channel channel) {
+        boolean result = true;
 
-            synchronized (selectableChannel.blockingLock()) {
-                if (selectableChannel.isBlocking()) {
-                    result = Channels.newOutputStream(writableChannel);
-                } else {
-                    result = new NbChannelOutputStream(writableChannel);
-                }
-            }
-        } else {
-            result = new NbChannelOutputStream(writableChannel);
+        if (channel instanceof SelectableChannel) {
+            SelectableChannel selectableChannel = (SelectableChannel) channel;
+            result = selectableChannel.isBlocking();
         }
 
         return result;
