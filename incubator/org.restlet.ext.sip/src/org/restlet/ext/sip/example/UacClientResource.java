@@ -65,6 +65,8 @@ public class UacClientResource implements UacResource {
         this.clientResource = new ClientResource(uri);
         Client client = new Client(new Context(), Protocol.SIP);
         client.getContext().getParameters().add("tracing", "true");
+        client.getContext().getParameters().add("proxyHost", "localhost");
+        client.getContext().getParameters().add("proxyPort", "5060");
         this.clientResource.setNext(client);
         this.proxy = this.clientResource.wrap(UacResource.class);
     }
