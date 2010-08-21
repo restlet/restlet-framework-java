@@ -78,12 +78,10 @@ public class ServerInboundWay extends InboundWay {
         request.setEntity(entity);
 
         // Update the response
-        // getMessage().getServerInfo().setAddress(
-        // getConnection().getHelper().getHelped()
-        // .getAddress());
-        // getMessage().getServerInfo().setPort(
-        // getConnection().getHelper().getHelped()
-        // .getPort());
+        getMessage().getServerInfo().setAddress(
+                getConnection().getHelper().getHelped().getAddress());
+        getMessage().getServerInfo().setPort(
+                getConnection().getHelper().getHelped().getPort());
 
         if (request != null) {
             if (request.isExpectingResponse()) {

@@ -34,8 +34,8 @@ import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
+import org.restlet.Client;
 import org.restlet.Response;
-import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
@@ -86,13 +86,13 @@ public class ClientInboundWay extends InboundWay {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Connection<Server> getConnection() {
-        return (Connection<Server>) super.getConnection();
+    public Connection<Client> getConnection() {
+        return (Connection<Client>) super.getConnection();
     }
 
     @Override
-    public BaseServerHelper getHelper() {
-        return (BaseServerHelper) super.getHelper();
+    public BaseClientHelper getHelper() {
+        return (BaseClientHelper) super.getHelper();
     }
 
     @Override
@@ -238,13 +238,8 @@ public class ClientInboundWay extends InboundWay {
     @Override
     public void updateState() {
         if (getIoState() == IoState.IDLE) {
-            if (getConnection().isPipelining()) {
-                // Read the next request
-                setIoState(IoState.INTEREST);
-            } else if (getMessages().isEmpty()
-                    && (getConnection().getOutboundWay().getMessages()
-                            .isEmpty())) {
-                // Read the next request
+            if (!getMessages().isEmpty()) {
+                // Read the next response
                 setIoState(IoState.INTEREST);
             }
         }
