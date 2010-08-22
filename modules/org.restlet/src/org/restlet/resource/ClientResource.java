@@ -146,6 +146,12 @@ public class ClientResource extends UniformResource {
     private volatile boolean retryOnError;
 
     /**
+     * Empty constructor.
+     */
+    protected ClientResource() {
+    }
+
+    /**
      * Constructor.
      * 
      * @param resource
@@ -154,7 +160,6 @@ public class ClientResource extends UniformResource {
     public ClientResource(ClientResource resource) {
         Request request = new Request(resource.getRequest());
         Response response = new Response(request);
-
         this.next = resource.getNext();
         this.followingRedirects = resource.isFollowingRedirects();
         this.retryOnError = resource.isRetryOnError();
@@ -804,11 +809,14 @@ public class ClientResource extends UniformResource {
         T result = null;
 
         org.restlet.service.ConverterService cs = getConverterService();
-        ClientInfo clientInfo = new ClientInfo(cs
-                .getVariants(resultClass, null));
+        ClientInfo clientInfo = new ClientInfo(
+                cs.getVariants(resultClass, null));
 
-        result = toObject(handle(method, (entity == null) ? null
-                : toRepresentation(entity, null), clientInfo), resultClass);
+        result = toObject(
+                handle(method,
+                        (entity == null) ? null
+                                : toRepresentation(entity, null), clientInfo),
+                resultClass);
 
         return result;
     }
@@ -1588,8 +1596,7 @@ public class ClientResource extends UniformResource {
                                             : null;
                                     final Class<?> actualType = (parameterizedType
                                             .getActualTypeArguments()[0] instanceof Class<?>) ? (Class<?>) parameterizedType
-                                            .getActualTypeArguments()[0]
-                                            : null;
+                                            .getActualTypeArguments()[0] : null;
 
                                     // Define the callback
                                     Uniform callback = new Uniform() {
@@ -1598,14 +1605,12 @@ public class ClientResource extends UniformResource {
                                             if (response.getStatus().isError()) {
                                                 rCallback
                                                         .onFailure(new ResourceException(
-                                                                response
-                                                                        .getStatus()));
+                                                                response.getStatus()));
                                             } else {
                                                 if (actualType != null) {
                                                     rCallback
                                                             .onSuccess(toObject(
-                                                                    response
-                                                                            .getEntity(),
+                                                                    response.getEntity(),
                                                                     actualType
                                                                             .getClass()));
                                                 } else {
@@ -1648,15 +1653,15 @@ public class ClientResource extends UniformResource {
                         // Handle the response
                         if (isSynchronous) {
                             if (response.getStatus().isError()) {
-                                throw new ResourceException(response
-                                        .getStatus());
+                                throw new ResourceException(
+                                        response.getStatus());
                             }
 
                             if (!annotation.getJavaOutputType().equals(
                                     void.class)) {
                                 result = toObject((response == null ? null
-                                        : response.getEntity()), annotation
-                                        .getJavaOutputType());
+                                        : response.getEntity()),
+                                        annotation.getJavaOutputType());
                             }
                         }
                     }

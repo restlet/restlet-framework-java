@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.sip.internal;
+package org.restlet.ext.sip;
 
 import java.util.List;
 
@@ -40,10 +40,7 @@ import org.restlet.Uniform;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.ext.sip.Address;
-import org.restlet.ext.sip.SipMethod;
-import org.restlet.ext.sip.SipRequest;
-import org.restlet.ext.sip.SipResponse;
+import org.restlet.ext.sip.internal.SipConnectedRequest;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
@@ -71,7 +68,7 @@ import org.restlet.resource.UniformResource;
  * several threads. If thread-safety is necessary, consider using the
  * lower-level {@link Client} class instead.
  * 
- * @author Thierry Boileau
+ * @author Thierry Boileau, Jerome Louvel
  */
 public class SipClientResource extends ClientResource {
 
@@ -127,6 +124,24 @@ public class SipClientResource extends ClientResource {
     /**
      * Constructor.
      * 
+     * @param resource
+     *            The client resource to copy.
+     */
+    public SipClientResource(SipClientResource resource) {
+        super();
+        SipRequest request = new SipRequest(resource.getRequest());
+        SipResponse response = new SipResponse(request);
+        setNext(resource.getNext());
+        setFollowingRedirects(resource.isFollowingRedirects());
+        setRetryOnError(resource.isRetryOnError());
+        setRetryDelay(resource.getRetryDelay());
+        setRetryAttempts(resource.getRetryAttempts());
+        init(resource.getContext(), request, response);
+    }
+
+    /**
+     * Constructor.
+     * 
      * @param context
      *            The context.
      * @param uri
@@ -161,7 +176,7 @@ public class SipClientResource extends ClientResource {
      *            The target reference.
      */
     public SipClientResource(Context context, Method method, Reference reference) {
-        super(context, method, reference);
+        this(context, new SipRequest(method, reference), new SipResponse(null));
     }
 
     /**
@@ -329,6 +344,16 @@ public class SipClientResource extends ClientResource {
         handle(SipMethod.CANCEL);
     }
 
+    @Override
+    public SipRequest getRequest() {
+        return (SipRequest) super.getRequest();
+    }
+
+    @Override
+    public SipResponse getResponse() {
+        return (SipResponse) super.getResponse();
+    }
+
     /**
      * Handles the call by invoking the next handler. The prototype request is
      * retrieved via {@link #getRequest()} and cloned and the response is set as
@@ -415,7 +440,7 @@ public class SipClientResource extends ClientResource {
      * @see #getNext()
      */
     @SuppressWarnings("unused")
-    private SipResponse handle(SipRequest request) {
+    private SipResponse handle(SipConnectedRequest request) {
         // TODO refactor ClientResource.
         return null;
     }
@@ -436,7 +461,7 @@ public class SipClientResource extends ClientResource {
      *            The next handler handling the call.
      */
     @SuppressWarnings("unused")
-    private void handle(SipRequest request, SipResponse response,
+    private void handle(SipConnectedRequest request, SipResponse response,
             List<Reference> references, int retryAttempt, Uniform next) {
         if (next != null) {
             // Actually handle the call
@@ -564,9 +589,29 @@ public class SipClientResource extends ClientResource {
      *      method</a>
      */
     public void register(Address to) throws ResourceException {
-        SipRequest request = (SipRequest) getRequest();
+        SipConnectedRequest request = (SipConnectedRequest) getRequest();
         request.setTo(to);
         handle(SipMethod.REGISTER);
+    }
+
+    @Override
+    public void setRequest(Request request) {
+        if (request instanceof SipRequest) {
+            super.setRequest(request);
+        } else {
+            throw new IllegalArgumentException(
+                    "Only SipRequest instances are allowed as parameter");
+        }
+    }
+
+    @Override
+    public void setResponse(Response response) {
+        if (response instanceof SipResponse) {
+            super.setResponse(response);
+        } else {
+            throw new IllegalArgumentException(
+                    "Only SipResponse instances are allowed as parameter");
+        }
     }
 
     /**

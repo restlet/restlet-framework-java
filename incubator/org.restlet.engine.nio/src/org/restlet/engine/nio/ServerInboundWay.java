@@ -32,6 +32,7 @@ package org.restlet.engine.nio;
 
 import java.io.IOException;
 
+import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.engine.http.header.HeaderUtils;
@@ -170,8 +171,8 @@ public class ServerInboundWay extends InboundWay {
             }
 
             // Create a new request object
-            ConnectedRequest request = getHelper().createRequest(
-                    getConnection(), requestMethod, requestUri, version);
+            Request request = getHelper().createRequest(getConnection(),
+                    requestMethod, requestUri, version);
             Response response = getHelper().createResponse(request);
             setMessage(response);
             setMessageState(MessageState.HEADERS);

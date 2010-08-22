@@ -117,7 +117,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
      *            The protocol version.
      * @return The created request.
      */
-    protected ConnectedRequest createRequest(Connection<Server> connection,
+    protected Request createRequest(Connection<Server> connection,
             String methodName, String resourceUri, String version) {
         return new ConnectedRequest(getContext(), connection, methodName,
                 resourceUri, version);
