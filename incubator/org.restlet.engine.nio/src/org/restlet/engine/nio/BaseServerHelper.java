@@ -179,14 +179,13 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     public void handleInbound(Response response) {
         if ((response != null) && (response.getRequest() != null)) {
             getLogger().fine("Handling inbound message");
-            ConnectedRequest request = (ConnectedRequest) response.getRequest();
 
             // Effectively handle the request
-            handle(request, response);
+            handle(response.getRequest(), response);
 
             if (!response.isCommitted() && response.isAutoCommitting()) {
-                getOutboundMessages().add(response);
                 response.setCommitted(true);
+                getOutboundMessages().add(response);
                 getController().wakeup();
             }
         }
