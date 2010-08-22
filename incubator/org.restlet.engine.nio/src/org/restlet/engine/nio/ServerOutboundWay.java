@@ -32,6 +32,7 @@ package org.restlet.engine.nio;
 
 import java.io.IOException;
 
+import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Method;
@@ -60,7 +61,7 @@ public class ServerOutboundWay extends OutboundWay {
     @Override
     protected void addHeaders(Series<Parameter> headers) {
         Response response = getMessage();
-        ConnectedRequest request = (ConnectedRequest) response.getRequest();
+        Request request = response.getRequest();
 
         // Initial verifications
         if (Status.SUCCESS_RESET_CONTENT.equals(response.getStatus())

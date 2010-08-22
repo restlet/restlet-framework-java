@@ -40,7 +40,7 @@ import org.restlet.Uniform;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.ext.sip.internal.SipConnectedRequest;
+import org.restlet.ext.sip.internal.SipInboundRequest;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
@@ -440,7 +440,7 @@ public class SipClientResource extends ClientResource {
      * @see #getNext()
      */
     @SuppressWarnings("unused")
-    private SipResponse handle(SipConnectedRequest request) {
+    private SipResponse handle(SipInboundRequest request) {
         // TODO refactor ClientResource.
         return null;
     }
@@ -461,7 +461,7 @@ public class SipClientResource extends ClientResource {
      *            The next handler handling the call.
      */
     @SuppressWarnings("unused")
-    private void handle(SipConnectedRequest request, SipResponse response,
+    private void handle(SipInboundRequest request, SipResponse response,
             List<Reference> references, int retryAttempt, Uniform next) {
         if (next != null) {
             // Actually handle the call
@@ -589,7 +589,7 @@ public class SipClientResource extends ClientResource {
      *      method</a>
      */
     public void register(Address to) throws ResourceException {
-        SipConnectedRequest request = (SipConnectedRequest) getRequest();
+        SipInboundRequest request = (SipInboundRequest) getRequest();
         request.setTo(to);
         handle(SipMethod.REGISTER);
     }

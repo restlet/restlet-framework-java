@@ -119,7 +119,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
      */
     protected Request createRequest(Connection<Server> connection,
             String methodName, String resourceUri, String version) {
-        return new ConnectedRequest(getContext(), connection, methodName,
+        return new HttpInboundRequest(getContext(), connection, methodName,
                 resourceUri, version);
     }
 
@@ -205,10 +205,10 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     public void handleOutbound(Response response) {
         if (response != null) {
             getLogger().fine("Handling outbound message");
-            ConnectedRequest request = (ConnectedRequest) response.getRequest();
+            InboundRequest request = (InboundRequest) response.getRequest();
             Connection<Server> connection = request.getConnection();
 
-            if (request.isExpectingResponse()) {
+            if (response.getRequest().isExpectingResponse()) {
                 // Check if the response is indeed the next one to be written
                 // for this connection
                 Response nextResponse = connection.getInboundWay()

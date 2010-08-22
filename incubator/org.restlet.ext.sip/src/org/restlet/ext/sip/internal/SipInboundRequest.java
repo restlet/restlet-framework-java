@@ -28,8 +28,9 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.nio;
+package org.restlet.ext.sip.internal;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
@@ -38,7 +39,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.CacheDirective;
@@ -63,33 +63,29 @@ import org.restlet.engine.http.header.PreferenceReader;
 import org.restlet.engine.http.header.RangeReader;
 import org.restlet.engine.http.header.RecipientInfoReader;
 import org.restlet.engine.http.header.WarningReader;
+import org.restlet.engine.nio.Connection;
+import org.restlet.engine.nio.InboundRequest;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.ext.sip.Address;
+import org.restlet.ext.sip.ContactInfo;
+import org.restlet.ext.sip.Event;
+import org.restlet.ext.sip.EventType;
+import org.restlet.ext.sip.OptionTag;
+import org.restlet.ext.sip.Priority;
+import org.restlet.ext.sip.SipRecipientInfo;
+import org.restlet.ext.sip.SipRequest;
+import org.restlet.ext.sip.Subscription;
 import org.restlet.util.Series;
 
 /**
- * Request wrapper for server HTTP calls.
+ * Request part of a SIP transaction.
  * 
  * @author Jerome Louvel
  */
-public class ConnectedRequest extends Request {
-    /**
-     * Adds a new header to the given request.
-     * 
-     * @param request
-     *            The request to update.
-     * @param headerName
-     *            The header name to add.
-     * @param headerValue
-     *            The header value to add.
-     */
-    public static void addHeader(Request request, String headerName,
-            String headerValue) {
-        if (request instanceof ConnectedRequest) {
-            ((ConnectedRequest) request).getHeaders().add(headerName,
-                    headerValue);
-        }
-    }
+public class SipInboundRequest extends SipRequest implements InboundRequest {
+
+    // HTTP specific members (copy from ConnectedRequest)
 
     /** Indicates if the cache control data was parsed and added. */
     private volatile boolean cacheDirectivesAdded;
@@ -136,18 +132,58 @@ public class ConnectedRequest extends Request {
     /** Indicates if the warning data was parsed and added. */
     private volatile boolean warningsAdded;
 
-    /**
-     * Copy constructor.
-     * 
-     * @param request
-     *            The request to copy.
-     */
-    public ConnectedRequest(ConnectedRequest request) {
-        super(request);
-        this.connection = request.getConnection();
-        this.context = request.context;
-        this.userPrincipal = request.getUserPrincipal();
-    }
+    // SIP specific members
+
+    /** Indicates if the alert info data was parsed and added. */
+    private volatile boolean alertInfoAdded;
+
+    /** Indicates if the allowed event types data was parsed and added. */
+    private volatile boolean allowedEventTypesAdded;
+
+    /** Indicates if the caller data was parsed and added. */
+    private volatile boolean callerInfoAdded;
+
+    /** Indicates if the contact data was parsed and added. */
+    private volatile boolean contactAdded;
+
+    /** Indicates if the event data was parsed and added. */
+    private volatile boolean eventAdded;
+
+    /** Indicates if the "in reply to" data was parsed and added. */
+    private volatile boolean inReplyToAdded;
+
+    /** Indicates if the priority data was parsed and added. */
+    private volatile boolean priorityAdded;
+
+    /** Indicates if the proxy data was parsed and added. */
+    private volatile boolean proxyRequiresAdded;
+
+    /** Indicates if the SIP recipients data was parsed and added. */
+    private volatile boolean sipRecipientsInfoAdded;
+
+    /** Indicates if the recorded routes data was parsed and added. */
+    private volatile boolean recordedRoutesAdded;
+
+    /** Indicates if the refer-to data was parsed and added. */
+    private volatile boolean referToAdded;
+
+    /** Indicates if the reply-to data was parsed and added. */
+    private volatile boolean replyToAdded;
+
+    /** Indicates if the requires data was parsed and added. */
+    private volatile boolean requiresAdded;
+
+    /** Indicates if the routes data was parsed and added. */
+    private volatile boolean routesAdded;
+
+    /** Indicates if the if-match data was parsed and added. */
+    private volatile boolean sipIfMatchAdded;
+
+    /** Indicates if the subscription data was parsed and added. */
+    private volatile boolean subscriptionAdded;
+
+    /** Indicates if the supported data was parsed and added. */
+    private volatile boolean supportedAdded;
 
     /**
      * Constructor.
@@ -163,10 +199,11 @@ public class ConnectedRequest extends Request {
      * @param version
      *            The protocol version.
      */
-    public ConnectedRequest(Context context, Connection<Server> connection,
+    public SipInboundRequest(Context context, Connection<Server> connection,
             String methodName, String resourceUri, String version) {
         super();
         this.context = context;
+        this.cacheDirectivesAdded = false;
         this.clientAdded = false;
         this.conditionAdded = false;
         this.connection = connection;
@@ -179,6 +216,15 @@ public class ConnectedRequest extends Request {
         this.resourceUri = resourceUri;
         this.version = version;
         this.warningsAdded = false;
+
+        // SIP specific initialization
+        this.alertInfoAdded = false;
+        this.allowedEventTypesAdded = false;
+        this.callerInfoAdded = false;
+        this.contactAdded = false;
+        this.eventAdded = false;
+        this.inReplyToAdded = false;
+        this.priorityAdded = false;
 
         // Set the properties
         setMethod(Method.valueOf(methodName));
@@ -205,6 +251,19 @@ public class ConnectedRequest extends Request {
         }
     }
 
+    /**
+     * Copy constructor.
+     * 
+     * @param request
+     *            The request to copy.
+     */
+    public SipInboundRequest(SipInboundRequest request) {
+        super(request);
+        this.connection = request.getConnection();
+        this.context = request.context;
+        this.userPrincipal = request.getUserPrincipal();
+    }
+
     @Override
     public boolean abort() {
         getConnection().close(false);
@@ -217,6 +276,49 @@ public class ConnectedRequest extends Request {
             getConnection().commit(response);
             response.setCommitted(true);
         }
+    }
+
+    @Override
+    public Address getAlertInfo() {
+        if (!alertInfoAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_ALERT_INFO);
+
+            if (header != null) {
+                try {
+                    setAlertInfo(new AddressReader(header).readValue());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            alertInfoAdded = true;
+        }
+
+        return super.getAlertInfo();
+    }
+
+    @Override
+    public List<EventType> getAllowedEventTypes() {
+        List<EventType> aet = super.getAllowedEventTypes();
+
+        if (!allowedEventTypesAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_ALLOW_EVENTS);
+
+            if (header != null) {
+                try {
+                    aet.addAll(new EventTypeReader(header).readValues());
+                    allowedEventTypesAdded = true;
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            allowedEventTypesAdded = true;
+        }
+
+        return aet;
     }
 
     @Override
@@ -234,6 +336,28 @@ public class ConnectedRequest extends Request {
             this.cacheDirectivesAdded = true;
         }
         return result;
+    }
+
+    @Override
+    public List<Address> getCallerInfo() {
+        List<Address> ci = super.getCallerInfo();
+
+        if (!callerInfoAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_CALL_INFO);
+
+            if (header != null) {
+                try {
+                    ci.addAll(new AddressReader(header).readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            callerInfoAdded = true;
+        }
+
+        return ci;
     }
 
     @Override
@@ -489,8 +613,30 @@ public class ConnectedRequest extends Request {
      * 
      * @return The related connection.
      */
-    protected Connection<Server> getConnection() {
+    public Connection<Server> getConnection() {
         return connection;
+    }
+
+    @Override
+    public List<ContactInfo> getContact() {
+        List<ContactInfo> c = super.getContact();
+
+        if (!contactAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_CONTACT);
+
+            if (header != null) {
+                try {
+                    c.addAll(new ContactInfoReader(header).readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            contactAdded = true;
+        }
+
+        return c;
     }
 
     /**
@@ -518,6 +664,26 @@ public class ConnectedRequest extends Request {
         return result;
     }
 
+    @Override
+    public Event getEvent() {
+        if (!eventAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_EVENT);
+
+            if (header != null) {
+                try {
+                    setEvent(new EventReader(header).readValue());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            eventAdded = true;
+        }
+
+        return super.getEvent();
+    }
+
     /**
      * Returns the HTTP headers.
      * 
@@ -527,6 +693,48 @@ public class ConnectedRequest extends Request {
     public Series<Parameter> getHeaders() {
         return (Series<Parameter>) getAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
+    }
+
+    @Override
+    public List<String> getInReplyTo() {
+        List<String> irt = super.getInReplyTo();
+
+        if (!inReplyToAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_ALLOW_EVENTS);
+
+            if (header != null) {
+                try {
+                    irt.addAll(new HeaderReader<String>(header).readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            inReplyToAdded = true;
+        }
+
+        return irt;
+    }
+
+    @Override
+    public Priority getPriority() {
+        if (!priorityAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_PRIORITY);
+
+            if (header != null) {
+                try {
+                    setPriority(Priority.valueOf(header));
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            priorityAdded = true;
+        }
+
+        return super.getPriority();
     }
 
     @Override
@@ -549,6 +757,28 @@ public class ConnectedRequest extends Request {
         }
 
         return result;
+    }
+
+    @Override
+    public List<OptionTag> getProxyRequires() {
+        List<OptionTag> pr = super.getProxyRequires();
+
+        if (!proxyRequiresAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_PROXY_REQUIRE);
+
+            if (header != null) {
+                try {
+                    pr.addAll(new OptionTagReader(header).readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            proxyRequiresAdded = true;
+        }
+
+        return pr;
     }
 
     @Override
@@ -585,6 +815,28 @@ public class ConnectedRequest extends Request {
         return result;
     }
 
+    @Override
+    public List<Address> getRecordedRoutes() {
+        List<Address> rr = super.getRecordedRoutes();
+
+        if (!recordedRoutesAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_RECORD_ROUTE);
+
+            if (header != null) {
+                try {
+                    rr.addAll(new AddressReader(header).readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            recordedRoutesAdded = true;
+        }
+
+        return rr;
+    }
+
     /**
      * Returns the referrer reference if available.
      * 
@@ -606,6 +858,176 @@ public class ConnectedRequest extends Request {
         }
 
         return super.getReferrerRef();
+    }
+
+    @Override
+    public Address getReferTo() {
+        if (!referToAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_REFER_TO);
+
+            if (header != null) {
+                try {
+                    setReferTo(new AddressReader(header).readValue());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            referToAdded = true;
+        }
+
+        return super.getReferTo();
+    }
+
+    @Override
+    public Address getReplyTo() {
+        if (!replyToAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_REPLY_TO);
+
+            if (header != null) {
+                try {
+                    setReplyTo(new AddressReader(header).readValue());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            replyToAdded = true;
+        }
+
+        return super.getReplyTo();
+    }
+
+    @Override
+    public List<OptionTag> getRequires() {
+        List<OptionTag> r = super.getRequires();
+
+        if (!requiresAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_REQUIRE);
+
+            if (header != null) {
+                try {
+                    r.addAll(new OptionTagReader(header).readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            requiresAdded = true;
+        }
+
+        return r;
+    }
+
+    @Override
+    public List<Address> getRoutes() {
+        List<Address> r = super.getRoutes();
+
+        if (!routesAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_ROUTE);
+
+            if (header != null) {
+                try {
+                    r.addAll(new AddressReader(header).readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            routesAdded = true;
+        }
+
+        return r;
+    }
+
+    @Override
+    public Tag getSipIfMatch() {
+        if (!sipIfMatchAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_SIP_IF_MATCH);
+
+            if (header != null) {
+                try {
+                    setSipIfMatch(Tag.parse(header));
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            sipIfMatchAdded = true;
+        }
+
+        return super.getSipIfMatch();
+    }
+
+    @Override
+    public List<SipRecipientInfo> getSipRecipientsInfo() {
+        List<SipRecipientInfo> sri = super.getSipRecipientsInfo();
+
+        if (!sipRecipientsInfoAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(HeaderConstants.HEADER_VIA);
+
+            if (header != null) {
+                try {
+                    sri.addAll(new SipRecipientInfoReader(header).readValues());
+                    sipRecipientsInfoAdded = true;
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            sipRecipientsInfoAdded = true;
+        }
+
+        return sri;
+    }
+
+    @Override
+    public Subscription getSubscriptionState() {
+        if (!subscriptionAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_SUBSCRIPTION_STATE);
+
+            if (header != null) {
+                try {
+                    setSubscriptionState(new SubscriptionReader(header)
+                            .readValue());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            subscriptionAdded = true;
+        }
+
+        return super.getSubscriptionState();
+    }
+
+    @Override
+    public List<OptionTag> getSupported() {
+        List<OptionTag> s = super.getSupported();
+
+        if (!supportedAdded) {
+            String header = (getHeaders() == null) ? null : getHeaders()
+                    .getValues(SipConstants.HEADER_SUPPORTED);
+
+            if (header != null) {
+                try {
+                    s.addAll(new OptionTagReader(header).readValues());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().info(e.getMessage());
+                }
+            }
+
+            supportedAdded = true;
+        }
+
+        return s;
     }
 
     /**
@@ -636,9 +1058,39 @@ public class ConnectedRequest extends Request {
     }
 
     @Override
+    public void setAlertInfo(Address alertInfo) {
+        super.setAlertInfo(alertInfo);
+        this.alertInfoAdded = true;
+    }
+
+    @Override
+    public void setAllowedEventTypes(List<EventType> allowedEventTypes) {
+        super.setAllowedEventTypes(allowedEventTypes);
+        allowedEventTypesAdded = true;
+    }
+
+    @Override
+    public void setCallerInfo(List<Address> callerInfo) {
+        super.setCallerInfo(callerInfo);
+        callerInfoAdded = true;
+    }
+
+    @Override
     public void setChallengeResponse(ChallengeResponse response) {
         super.setChallengeResponse(response);
         this.securityAdded = true;
+    }
+
+    @Override
+    public void setContact(List<ContactInfo> contact) {
+        super.setContact(contact);
+        this.contactAdded = true;
+    }
+
+    @Override
+    public void setEvent(Event event) {
+        super.setEvent(event);
+        eventAdded = true;
     }
 
     /**
@@ -751,6 +1203,68 @@ public class ConnectedRequest extends Request {
                                 + maxForwardsHeader);
             }
         }
+
+        // Set the "callId" property
+        String callIdHeader = (getHeaders() == null) ? null : getHeaders()
+                .getFirstValue(SipConstants.HEADER_CALL_ID);
+        if (callIdHeader != null) {
+            setCallId(callIdHeader);
+        }
+
+        // Set the "callSeq" property
+        String callSeqHeader = (getHeaders() == null) ? null : getHeaders()
+                .getFirstValue(SipConstants.HEADER_CALL_SEQ);
+        if (callSeqHeader != null) {
+            setCallSequence(callSeqHeader);
+        }
+
+        // Set the "to" property
+        String toHeader = (getHeaders() == null) ? null : getHeaders()
+                .getFirstValue(SipConstants.HEADER_TO);
+        if (toHeader != null) {
+            try {
+                setTo(new AddressReader(toHeader).readValue());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Set the "from" property
+        String fromHeader = (getHeaders() == null) ? null : getHeaders()
+                .getFirstValue(HeaderConstants.HEADER_FROM);
+        if (fromHeader != null) {
+            try {
+                setFrom(new AddressReader(fromHeader).readValue());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Set the "mime-version" property
+        String mimeVersionHeader = (getHeaders() == null) ? null : getHeaders()
+                .getFirstValue(SipConstants.HEADER_MIME_VERSION);
+        setMimeVersion(mimeVersionHeader);
+
+        // Set the "mime-version" property
+        String organizationHeader = (getHeaders() == null) ? null
+                : getHeaders().getFirstValue(SipConstants.HEADER_ORGANIZATION);
+        setOrganization(organizationHeader);
+
+        String subjectHeader = (getHeaders() == null) ? null : getHeaders()
+                .getFirstValue(SipConstants.HEADER_SUBJECT);
+        setSubject(subjectHeader);
+    }
+
+    @Override
+    public void setInReplyTo(List<String> inReplyTo) {
+        super.setInReplyTo(inReplyTo);
+        this.inReplyToAdded = true;
+    }
+
+    @Override
+    public void setPriority(Priority priority) {
+        super.setPriority(priority);
+        this.priorityAdded = true;
     }
 
     @Override
@@ -760,9 +1274,69 @@ public class ConnectedRequest extends Request {
     }
 
     @Override
+    public void setProxyRequires(List<OptionTag> proxyRequires) {
+        super.setProxyRequires(proxyRequires);
+        this.proxyRequiresAdded = true;
+    }
+
+    @Override
     public void setRecipientsInfo(List<RecipientInfo> recipientsInfo) {
         super.setRecipientsInfo(recipientsInfo);
         this.recipientsInfoAdded = true;
+    }
+
+    @Override
+    public void setRecordedRoutes(List<Address> recordedRoutes) {
+        super.setRecordedRoutes(recordedRoutes);
+        this.recordedRoutesAdded = true;
+    }
+
+    @Override
+    public void setReferTo(Address referTo) {
+        super.setReferTo(referTo);
+        this.referToAdded = true;
+    }
+
+    @Override
+    public void setReplyTo(Address replyTo) {
+        super.setReplyTo(replyTo);
+        this.replyToAdded = true;
+    }
+
+    @Override
+    public void setRequires(List<OptionTag> requires) {
+        super.setRequires(requires);
+        this.requiresAdded = true;
+    }
+
+    @Override
+    public void setRoutes(List<Address> routes) {
+        super.setRoutes(routes);
+        this.routesAdded = true;
+    }
+
+    @Override
+    public void setSipIfMatch(Tag sipIfMatch) {
+        super.setSipIfMatch(sipIfMatch);
+        this.sipIfMatchAdded = true;
+    }
+
+    @Override
+    public void setSipRecipientsInfo(List<SipRecipientInfo> recipientsInfo) {
+        super.setSipRecipientsInfo(recipientsInfo);
+        this.recipientsInfoAdded = true;
+    }
+
+    @Override
+    public void setSubscriptionState(Subscription subscription) {
+        super.setSubscriptionState(subscription);
+        this.subscriptionAdded = true;
+    }
+
+    @Override
+    public void setSupported(List<OptionTag> supported) {
+        super.setSupported(supported);
+        this.supportedAdded = true;
     }
 
     @Override

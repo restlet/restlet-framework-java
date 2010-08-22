@@ -41,7 +41,7 @@ import org.restlet.engine.nio.BaseServerHelper;
 import org.restlet.engine.nio.Connection;
 import org.restlet.engine.nio.OutboundWay;
 import org.restlet.engine.nio.ServerInboundWay;
-import org.restlet.ext.sip.internal.SipConnectedRequest;
+import org.restlet.ext.sip.internal.SipInboundRequest;
 import org.restlet.ext.sip.internal.SipServerInboundWay;
 import org.restlet.ext.sip.internal.SipServerOutboundWay;
 
@@ -56,7 +56,7 @@ public class SipServerHelper extends BaseServerHelper {
     protected Request createRequest(Connection<Server> connection,
             String methodName, String resourceUri, String version) {
 
-        SipConnectedRequest request = new SipConnectedRequest(getContext(),
+        SipInboundRequest request = new SipInboundRequest(getContext(),
                 connection, methodName, resourceUri, version);
 
         // The via header is linked with the sipRecipientsInfo attribute, due to

@@ -170,16 +170,18 @@ public class ConnectedRequest extends Request {
             Series<Parameter> headers, Representation entity,
             boolean confidential, Principal userPrincipal) {
         super();
+        this.connection = connection;
         this.context = context;
+        this.userPrincipal = userPrincipal;
+        this.cacheDirectivesAdded = false;
         this.clientAdded = false;
         this.conditionAdded = false;
-        this.connection = connection;
         this.cookiesAdded = false;
+        this.proxySecurityAdded = false;
+        this.rangesAdded = false;
+        this.recipientsInfoAdded = false;
         this.referrerAdded = false;
         this.securityAdded = false;
-        this.userPrincipal = userPrincipal;
-        this.proxySecurityAdded = false;
-        this.recipientsInfoAdded = false;
         this.warningsAdded = false;
 
         // Set the properties
@@ -225,9 +227,10 @@ public class ConnectedRequest extends Request {
         // Set the protocol used for this request
         Protocol serverProtocol = getConnection().getHelper().getHelped()
                 .getProtocols().get(0);
-        setProtocol(new Protocol(serverProtocol.getSchemeName(), serverProtocol
-                .getName(), serverProtocol.getDescription(), serverProtocol
-                .getDefaultPort(), serverProtocol.isConfidential(), version));
+        setProtocol(new Protocol(serverProtocol.getSchemeName(),
+                serverProtocol.getName(), serverProtocol.getDescription(),
+                serverProtocol.getDefaultPort(),
+                serverProtocol.isConfidential(), version));
 
         // Parse the host header
         String host = (getHeaders() == null) ? null : getHeaders()
@@ -493,12 +496,12 @@ public class ConnectedRequest extends Request {
                 for (Parameter header : getHeaders()) {
                     if (header.getName().equalsIgnoreCase(
                             HeaderConstants.HEADER_IF_MODIFIED_SINCE)) {
-                        ifModifiedSince = HeaderReader.readDate(header
-                                .getValue(), false);
+                        ifModifiedSince = HeaderReader.readDate(
+                                header.getValue(), false);
                     } else if (header.getName().equalsIgnoreCase(
                             HeaderConstants.HEADER_IF_UNMODIFIED_SINCE)) {
-                        ifUnmodifiedSince = HeaderReader.readDate(header
-                                .getValue(), false);
+                        ifUnmodifiedSince = HeaderReader.readDate(
+                                header.getValue(), false);
                     }
                 }
 

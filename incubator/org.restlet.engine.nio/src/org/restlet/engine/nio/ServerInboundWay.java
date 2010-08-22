@@ -68,7 +68,7 @@ public class ServerInboundWay extends InboundWay {
 
     @Override
     protected void onReceived() {
-        ConnectedRequest request = (ConnectedRequest) getMessage().getRequest();
+        InboundRequest request = (InboundRequest) getMessage().getRequest();
 
         if (getHeaders() != null) {
             request.setHeaders(getHeaders());
@@ -82,7 +82,7 @@ public class ServerInboundWay extends InboundWay {
 
         // Check if an entity is available
         Representation entity = createEntity(getHeaders());
-        request.setEntity(entity);
+        getMessage().getRequest().setEntity(entity);
 
         // Update the response
         getMessage().getServerInfo().setAddress(
@@ -91,7 +91,7 @@ public class ServerInboundWay extends InboundWay {
                 getConnection().getHelper().getHelped().getPort());
 
         if (request != null) {
-            if (request.isExpectingResponse()) {
+            if (getMessage().getRequest().isExpectingResponse()) {
                 // Add it to the inbound queue
                 getMessages().add(getMessage());
             }
@@ -101,7 +101,7 @@ public class ServerInboundWay extends InboundWay {
             getHelper().getController().wakeup();
         }
 
-        if (!request.isEntityAvailable()) {
+        if (!getMessage().getRequest().isEntityAvailable()) {
             // The request has been completely read
             onCompleted();
         }
