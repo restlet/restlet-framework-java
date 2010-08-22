@@ -136,8 +136,8 @@ public abstract class Controller implements Runnable {
      */
     protected void execute(Runnable task) {
         try {
-            if (!isOverloaded() && !getWorkerService().isShutdown()
-                    && isRunning()) {
+            if (!isOverloaded() && (getWorkerService() != null)
+                    && !getWorkerService().isShutdown() && isRunning()) {
                 getWorkerService().execute(task);
             }
         } catch (Exception e) {
@@ -202,7 +202,7 @@ public abstract class Controller implements Runnable {
      */
     protected void handleInbound(final Response response, boolean synchronous) {
         if (response != null) {
-            if (synchronous) {
+            if (synchronous || !getHelper().isWorkerThreads()) {
                 getHelper().handleInbound(response);
             } else {
                 execute(new Runnable() {
@@ -233,7 +233,7 @@ public abstract class Controller implements Runnable {
      */
     protected void handleOutbound(final Response response, boolean synchronous) {
         if (response != null) {
-            if (synchronous) {
+            if (synchronous || !getHelper().isWorkerThreads()) {
                 getHelper().handleOutbound(response);
             } else {
                 execute(new Runnable() {
@@ -273,16 +273,6 @@ public abstract class Controller implements Runnable {
     }
 
     /**
-     * Indicates if the helper's worker service is overloaded and won't soon be
-     * able to accept more tasks.
-     * 
-     * @return True if the helper's worker service is fully busy.
-     */
-    protected boolean isWorkerServiceOverloaded() {
-        return getHelper().isWorkerServiceOverloaded();
-    }
-
-    /**
      * Callback when a key has been selected.
      * 
      * @param key
@@ -305,16 +295,16 @@ public abstract class Controller implements Runnable {
 
         while (isRunning()) {
             try {
-                if (isOverloaded()) {
-                    if (!isWorkerServiceOverloaded()) {
+                if (getHelper().isWorkerThreads()) {
+                    if (isOverloaded()
+                            && !getHelper().isWorkerServiceOverloaded()) {
                         setOverloaded(false);
                         getHelper()
                                 .getLogger()
                                 .info("Connector overload ended. Accepting new connections again");
                         getHelper().traceWorkerService();
-                    }
-                } else {
-                    if (isWorkerServiceOverloaded()) {
+
+                    } else if (getHelper().isWorkerServiceOverloaded()) {
                         setOverloaded(true);
                         getHelper()
                                 .getLogger()

@@ -29,7 +29,8 @@ public class NioServer {
         server.getContext().getParameters().add("minThreads", "1");
         server.getContext().getParameters().add("lowThreads", "30");
         server.getContext().getParameters().add("maxThreads", "40");
-        server.getContext().getParameters().add("maxQueued", "40");
+        server.getContext().getParameters().add("maxQueued", "0");
+        server.getContext().getParameters().add("workerThreads", "true");
         // server.setNext(HelloServerResource.class);
         server.setNext(new Restlet() {
             @Override

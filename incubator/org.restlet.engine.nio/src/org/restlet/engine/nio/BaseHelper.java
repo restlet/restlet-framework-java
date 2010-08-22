@@ -75,7 +75,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>controllerSleepTimeMs</td>
  * <td>int</td>
- * <td>100</td>
+ * <td>50</td>
  * <td>Time for the controller thread to sleep between each control.</td>
  * </tr>
  * <tr>
@@ -151,6 +151,15 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>boolean</td>
  * <td>false</td>
  * <td>Indicates if all messages should be printed on the standard console.</td>
+ * </tr>
+ * <tr>
+ * <td>workerThreads</td>
+ * <td>boolean</td>
+ * <td>true</td>
+ * <td>Indicates if the processing of calls should be done via threads provided
+ * by a worker service (i.e. a pool of worker threads). Note that if set to
+ * false, calls will be processed a single IO selector thread, which should
+ * never block, otherwise the other connections would hang.</td>
  * </tr>
  * </table>
  * 
@@ -329,7 +338,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getControllerSleepTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "controllerSleepTimeMs", "100"));
+                "controllerSleepTimeMs", "50"));
     }
 
     /**
@@ -555,14 +564,29 @@ public abstract class BaseHelper<T extends Connector> extends
      * @return True if the worker service is busy.
      */
     protected boolean isWorkerServiceOverloaded() {
-        return getWorkerService().getActiveCount() >= getLowThreads();
+        return (getWorkerService() != null)
+                && getWorkerService().getActiveCount() >= getLowThreads();
+    }
+
+    /**
+     * Indicates if the worker service (pool of worker threads) is enabled.
+     * 
+     * @return True if the worker service (pool of worker threads) is enabled.
+     */
+    public boolean isWorkerThreads() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "workerThreads", "true"));
     }
 
     @Override
     public void start() throws Exception {
         super.start();
         this.controllerService = createControllerService();
-        this.workerService = createWorkerService();
+
+        if (isWorkerThreads()) {
+            this.workerService = createWorkerService();
+        }
+
         this.controllerService.submit(this.controller);
     }
 
@@ -572,8 +596,8 @@ public abstract class BaseHelper<T extends Connector> extends
         super.stop();
 
         // Gracefully shutdown the workers
-        if (this.workerService != null) {
-            this.workerService.shutdown();
+        if (getWorkerService() != null) {
+            getWorkerService().shutdown();
         }
 
         // Gracefully close the open connections
@@ -582,9 +606,9 @@ public abstract class BaseHelper<T extends Connector> extends
         }
 
         // Await for completion of pending workers
-        if (this.workerService != null) {
+        if (getWorkerService() != null) {
             try {
-                this.workerService.awaitTermination(30, TimeUnit.SECONDS);
+                getWorkerService().awaitTermination(30, TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
                 getLogger().log(Level.FINE,
                         "Interruption while shutting down the worker service",
@@ -612,7 +636,7 @@ public abstract class BaseHelper<T extends Connector> extends
      * Adds traces on the worker service.
      */
     public void traceWorkerService() {
-        if (getLogger().isLoggable(Level.FINE)) {
+        if ((getWorkerService() != null) && getLogger().isLoggable(Level.FINE)) {
             getLogger().fine(
                     "Worker service state: "
                             + (isWorkerServiceOverloaded() ? "Overloaded"
