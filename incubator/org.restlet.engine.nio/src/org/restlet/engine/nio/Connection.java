@@ -110,25 +110,7 @@ public class Connection<T extends Connector> implements SelectionListener {
         this.helper = helper;
         this.inboundWay = helper.createInboundWay(this);
         this.outboundWay = helper.createOutboundWay(this);
-        this.persistent = helper.isPersistingConnections();
-        this.pipelining = helper.isPipeliningConnections();
-        this.state = ConnectionState.OPENING;
-        this.socketChannel = socketChannel;
-
-        if (helper.isTracing()) {
-            this.readableSelectionChannel = new ReadableTraceChannel(
-                    new ReadableSocketChannel(socketChannel, selector));
-            this.writableSelectionChannel = new WritableTraceChannel(
-                    new WritableSocketChannel(socketChannel, selector));
-        } else {
-            this.readableSelectionChannel = new ReadableSocketChannel(
-                    socketChannel, selector);
-            this.writableSelectionChannel = new WritableSocketChannel(
-                    socketChannel, selector);
-        }
-
-        this.lastActivity = System.currentTimeMillis();
-        this.socketKey = null;
+        reuse(socketChannel, selector);
     }
 
     /**
@@ -541,6 +523,40 @@ public class Connection<T extends Connector> implements SelectionListener {
                 setSocketKey(null);
             }
         }
+    }
+
+    /**
+     * Reuses the connection and associates it to the given socket.
+     * 
+     * @param socketChannel
+     *            The underlying NIO socket channel.
+     * @param selector
+     *            The underlying NIO selector.
+     * @throws IOException
+     */
+    public void reuse(SocketChannel socketChannel, Selector selector)
+            throws IOException {
+        this.persistent = helper.isPersistingConnections();
+        this.pipelining = helper.isPipeliningConnections();
+        this.state = ConnectionState.OPENING;
+        this.socketChannel = socketChannel;
+
+        if (helper.isTracing()) {
+            this.readableSelectionChannel = new ReadableTraceChannel(
+                    new ReadableSocketChannel(socketChannel, selector));
+            this.writableSelectionChannel = new WritableTraceChannel(
+                    new WritableSocketChannel(socketChannel, selector));
+        } else {
+            this.readableSelectionChannel = new ReadableSocketChannel(
+                    socketChannel, selector);
+            this.writableSelectionChannel = new WritableSocketChannel(
+                    socketChannel, selector);
+        }
+
+        this.lastActivity = System.currentTimeMillis();
+        this.socketKey = null;
+        this.inboundWay.reuse();
+        this.outboundWay.reuse();
     }
 
     /**

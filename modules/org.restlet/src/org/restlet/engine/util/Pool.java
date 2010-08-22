@@ -46,26 +46,22 @@ public abstract class Pool<T> {
     private final Queue<T> store;
 
     /**
-     * Default constructor. Sets the minimum size to 0.
+     * Default constructor.
      */
     public Pool() {
-        this(0);
+        this.store = createStore();
     }
 
     /**
      * Constructor. Pre-creates the minimum number of objects if needed using
-     * the {@link #createObject()} method.
+     * the {@link #preCreate(int)} method.
      * 
      * @param initialSize
      *            The initial number of objects in the pool.
      */
     public Pool(int initialSize) {
-        this.store = createStore();
-
-        // Pre-create the initial number object and add them to the pool
-        for (int i = 0; i < initialSize; i++) {
-            checkin(createObject());
-        }
+        this();
+        preCreate(initialSize);
     }
 
     /**
@@ -76,7 +72,7 @@ public abstract class Pool<T> {
      */
     public void checkin(T object) {
         if (object != null) {
-            recycle(object);
+            clear(object);
             this.store.offer(object);
         }
     }
@@ -95,6 +91,24 @@ public abstract class Pool<T> {
         }
 
         return result;
+    }
+
+    /**
+     * Clears the store of reusable objects.
+     */
+    public void clear() {
+        getStore().clear();
+    }
+
+    /**
+     * Clears the given object when it is checked in the pool. Does nothing by
+     * default.
+     * 
+     * @param object
+     *            The object to clear.
+     */
+    protected void clear(T object) {
+
     }
 
     /**
@@ -123,14 +137,16 @@ public abstract class Pool<T> {
     }
 
     /**
-     * Recycle the given object when it is checked in the pool. Does nothing by
-     * default.
+     * Pre-creates the initial objects using the {@link #createObject()} method
+     * and check them in the pool using the {@link #checkin(Object)} method.
      * 
-     * @param object
-     *            The object to recycle.
+     * @param initialSize
+     *            The initial number of objects.
      */
-    protected void recycle(T object) {
-
+    public void preCreate(int initialSize) {
+        for (int i = 0; i < initialSize; i++) {
+            checkin(createObject());
+        }
     }
 
 }

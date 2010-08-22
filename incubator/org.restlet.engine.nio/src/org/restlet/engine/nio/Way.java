@@ -84,13 +84,13 @@ public abstract class Way {
      */
     public Way(Connection<?> connection) {
         this.byteBuffer = ByteBuffer.allocate(IoUtils.BUFFER_SIZE);
-        this.headers = null;
         this.lineBuilder = new StringBuilder();
+        this.messages = new ConcurrentLinkedQueue<Response>();
+        this.message = null;
+        this.headers = null;
         this.connection = connection;
         this.messageState = MessageState.IDLE;
         this.ioState = IoState.IDLE;
-        this.message = null;
-        this.messages = new ConcurrentLinkedQueue<Response>();
     }
 
     /**
@@ -249,9 +249,9 @@ public abstract class Way {
         this.headers = null;
         this.ioState = IoState.IDLE;
         this.lineBuilder.delete(0, this.lineBuilder.length());
-        this.message=null;
+        this.message = null;
         this.messages.clear();
-        this.messageState= MessageState.IDLE;
+        this.messageState = MessageState.IDLE;
     }
 
     /**
@@ -265,6 +265,12 @@ public abstract class Way {
      */
     public void registerInterest(Selector selector) {
         updateState();
+    }
+
+    /**
+     * Reuses the way based on an updated connection.
+     */
+    public void reuse() {
     }
 
     /**

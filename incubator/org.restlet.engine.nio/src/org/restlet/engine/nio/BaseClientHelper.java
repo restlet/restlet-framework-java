@@ -428,7 +428,7 @@ public abstract class BaseClientHelper extends BaseHelper<Client> {
                     && ((getMaxConnectionsPerHost() == -1) || (hostConnectionCount < getMaxConnectionsPerHost()))) {
 
                 // Create a new connection
-                result = createConnection(
+                result = checkout(
                         createSocketChannel(request.isConfidential(),
                                 socketAddress), getController().getSelector());
             }

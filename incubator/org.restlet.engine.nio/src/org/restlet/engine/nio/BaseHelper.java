@@ -129,6 +129,14 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>Time for an idle thread to wait for an operation before being collected.</td>
  * </tr>
  * <tr>
+ * <td>initialConnections</td>
+ * <td>int</td>
+ * <td>100</td>
+ * <td>Initial number of connections pre-created in the connections pool. This
+ * saves time during establishment of new connections as heavy byte buffers are
+ * simply reused.</td>
+ * </tr>
+ * <tr>
  * <td>maxTotalConnections</td>
  * <td>int</td>
  * <td>-1</td>
@@ -147,6 +155,12 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>Indicates if pipelining connections are supported.</td>
  * </tr>
  * <tr>
+ * <tr>
+ * <td>pooledConnections</td>
+ * <td>boolean</td>
+ * <td>true</td>
+ * <td>Indicates if connections should be pooled to save instantiation time.</td>
+ * </tr>
  * <td>tracing</td>
  * <td>boolean</td>
  * <td>false</td>
@@ -189,6 +203,9 @@ public abstract class BaseHelper<T extends Connector> extends
     /** The worker service. */
     private volatile ThreadPoolExecutor workerService;
 
+    /** The connection pool. */
+    private volatile ConnectionPool<T> connectionPool;
+
     /**
      * Constructor.
      * 
@@ -204,6 +221,44 @@ public abstract class BaseHelper<T extends Connector> extends
         this.inboundMessages = new ConcurrentLinkedQueue<Response>();
         this.outboundMessages = new ConcurrentLinkedQueue<Response>();
         this.controller = createController();
+        this.connectionPool = null;
+    }
+
+    /**
+     * Checks in the connection back into the pool.
+     * 
+     * @param connection
+     *            The connection to check in.
+     */
+    @SuppressWarnings("unchecked")
+    protected void checkin(Connection<?> connection) {
+        if (isPooledConnection()) {
+            getConnectionPool().checkin((Connection<T>) connection);
+        }
+    }
+
+    /**
+     * Checks out a connection associated to the given socket from the pool.
+     * 
+     * @param socketChannel
+     *            The underlying NIO socket channel.
+     * @param selector
+     *            The underlying NIO selector.
+     * @return The new connection.
+     * @throws IOException
+     */
+    protected Connection<T> checkout(SocketChannel socketChannel,
+            Selector selector) throws IOException {
+        Connection<T> result = null;
+
+        if (isPooledConnection()) {
+            result = getConnectionPool().checkout();
+            result.reuse(socketChannel, selector);
+        } else {
+            result = createConnection(socketChannel, selector);
+        }
+
+        return result;
     }
 
     /**
@@ -235,15 +290,6 @@ public abstract class BaseHelper<T extends Connector> extends
         return Executors.newSingleThreadExecutor(new LoggingThreadFactory(
                 getLogger(), isControllerDaemon()));
     }
-
-    /**
-     * Indicates if the controller thread should be a daemon (not blocking JVM
-     * exit).
-     * 
-     * @return True if the controller thread should be a daemon (not blocking
-     *         JVM exit).
-     */
-    public abstract boolean isControllerDaemon();
 
     /**
      * Creates an inbound way for the given connection.
@@ -321,6 +367,15 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Returns the connection pool.
+     * 
+     * @return The connection pool.
+     */
+    protected ConnectionPool<T> getConnectionPool() {
+        return connectionPool;
+    }
+
+    /**
      * Returns the set of active connections.
      * 
      * @return The set of active connections.
@@ -355,6 +410,19 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     protected Queue<Response> getInboundMessages() {
         return inboundMessages;
+    }
+
+    /**
+     * Returns the initial number of connections pre-created in the connections
+     * pool.
+     * 
+     * @return The initial number of connections pre-created in the connections
+     * 
+     *         pool.
+     */
+    public int getInitialConnections() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "initialConnections", "100"));
     }
 
     /**
@@ -513,6 +581,15 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Indicates if the controller thread should be a daemon (not blocking JVM
+     * exit).
+     * 
+     * @return True if the controller thread should be a daemon (not blocking
+     *         JVM exit).
+     */
+    public abstract boolean isControllerDaemon();
+
+    /**
      * Indicates if persistent connections should be used if possible.
      * 
      * @return True if persistent connections should be used if possible.
@@ -530,6 +607,17 @@ public abstract class BaseHelper<T extends Connector> extends
     public boolean isPipeliningConnections() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "pipeliningConnections", "false"));
+    }
+
+    /**
+     * Indicates if the connection objects should be pooled to save
+     * instantiation time.
+     * 
+     * @return True if the connection objects should be pooled.
+     */
+    public boolean isPooledConnection() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "pooledConnections", "true"));
     }
 
     /**
@@ -583,6 +671,11 @@ public abstract class BaseHelper<T extends Connector> extends
         }
 
         this.controllerService.submit(this.controller);
+
+        if (isPooledConnection()) {
+            this.connectionPool = new ConnectionPool<T>(this,
+                    getInitialConnections());
+        }
     }
 
     @Override
@@ -624,6 +717,10 @@ public abstract class BaseHelper<T extends Connector> extends
                                 "Interruption while shutting down the controller service",
                                 ex);
             }
+        }
+
+        if (isPooledConnection()) {
+            this.connectionPool = null;
         }
     }
 

@@ -92,6 +92,7 @@ public abstract class Controller implements Runnable {
         for (final Connection<?> conn : getHelper().getConnections()) {
             if (conn.getState() == ConnectionState.CLOSED) {
                 getHelper().getConnections().remove(conn);
+                getHelper().checkin(conn);
             } else if ((conn.getState() == ConnectionState.CLOSING)
                     && conn.isEmpty()) {
                 conn.close(false);

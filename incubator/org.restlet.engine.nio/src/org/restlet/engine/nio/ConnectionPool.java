@@ -33,6 +33,7 @@ package org.restlet.engine.nio;
 import java.io.IOException;
 import java.util.logging.Level;
 
+import org.restlet.Connector;
 import org.restlet.engine.util.Pool;
 
 /**
@@ -40,10 +41,10 @@ import org.restlet.engine.util.Pool;
  * 
  * @author Jerome Louvel
  */
-public class ConnectionPool extends Pool<Connection<?>> {
+public class ConnectionPool<T extends Connector> extends Pool<Connection<T>> {
 
     /** The parent helper. */
-    private BaseHelper<?> helper;
+    private BaseHelper<T> helper;
 
     /**
      * Constructor.
@@ -53,14 +54,20 @@ public class ConnectionPool extends Pool<Connection<?>> {
      * @param initialSize
      *            The initial pool size.
      */
-    public ConnectionPool(BaseHelper<?> helper, int initialSize) {
-        super(initialSize);
+    public ConnectionPool(BaseHelper<T> helper, int initialSize) {
+        super();
         this.helper = helper;
+        preCreate(initialSize);
     }
 
     @Override
-    protected Connection<?> createObject() {
-        Connection<?> result = null;
+    protected void clear(Connection<T> connection) {
+        connection.recycle();
+    }
+
+    @Override
+    protected Connection<T> createObject() {
+        Connection<T> result = null;
 
         try {
             result = this.helper.createConnection(null, null);
@@ -70,11 +77,6 @@ public class ConnectionPool extends Pool<Connection<?>> {
         }
 
         return result;
-    }
-
-    @Override
-    protected void recycle(Connection<?> connection) {
-        connection.recycle();
     }
 
 }
