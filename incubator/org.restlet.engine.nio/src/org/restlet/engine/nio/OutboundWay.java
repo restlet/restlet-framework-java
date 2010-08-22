@@ -102,7 +102,7 @@ public abstract class OutboundWay extends Way {
      * @param connection
      */
     public OutboundWay(Connection<?> connection) {
-        super(connection);
+        super(connection, connection.getHelper().getOutboundBufferSize());
         this.entityChannel = null;
         this.entityIndex = 0;
         this.entityKey = null;

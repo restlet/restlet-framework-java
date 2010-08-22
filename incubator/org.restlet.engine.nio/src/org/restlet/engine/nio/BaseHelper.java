@@ -175,6 +175,18 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * false, calls will be processed a single IO selector thread, which should
  * never block, otherwise the other connections would hang.</td>
  * </tr>
+ * <tr>
+ * <td>inboundBufferSize</td>
+ * <td>int</td>
+ * <td>8*1024</td>
+ * <td>Size of the content buffer for receiving messages.</td>
+ * </tr>
+ * <tr>
+ * <td>outboundBufferSize</td>
+ * <td>int</td>
+ * <td>32*1024</td>
+ * <td>Size of the content buffer for sending messages.</td>
+ * </tr>
  * </table>
  * 
  * @author Jerome Louvel
@@ -502,6 +514,7 @@ public abstract class BaseHelper<T extends Connector> extends
     public int getMaxTotalConnections() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "maxTotalConnections", "-1"));
+
     }
 
     /**
@@ -521,6 +534,26 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     protected Queue<Response> getOutboundMessages() {
         return outboundMessages;
+    }
+
+    /**
+     * Returns the size of the content buffer for receiving messages.
+     * 
+     * @return The size of the content buffer for receiving messages.
+     */
+    public int getInboundBufferSize() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "inboundBufferSize", Integer.toString(8 * 1024)));
+    }
+
+    /**
+     * Returns the size of the content buffer for sending responses.
+     * 
+     * @return The size of the content buffer for sending responses.
+     */
+    public int getOutboundBufferSize() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "outboundBufferSize", Integer.toString(32 * 1024)));
     }
 
     /**

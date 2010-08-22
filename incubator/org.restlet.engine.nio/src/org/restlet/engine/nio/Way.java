@@ -41,7 +41,6 @@ import java.util.logging.Logger;
 
 import org.restlet.Response;
 import org.restlet.data.Parameter;
-import org.restlet.engine.io.IoUtils;
 import org.restlet.util.Series;
 
 /**
@@ -81,9 +80,11 @@ public abstract class Way {
      * 
      * @param connection
      *            The parent connection.
+     * @param bufferSize
+     *            The byte buffer size.
      */
-    public Way(Connection<?> connection) {
-        this.byteBuffer = ByteBuffer.allocate(IoUtils.BUFFER_SIZE);
+    public Way(Connection<?> connection, int bufferSize) {
+        this.byteBuffer = ByteBuffer.allocate(bufferSize);
         this.lineBuilder = new StringBuilder();
         this.messages = new ConcurrentLinkedQueue<Response>();
         this.message = null;
