@@ -711,6 +711,12 @@ public abstract class BaseClientHelper extends BaseHelper<Client> {
         }
     }
 
+    @Override
+    public boolean isControllerDaemon() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "controllerDaemon", "true"));
+    }
+
     /**
      * Indicates if the given request is handled in a synchronous way, blocking
      * the calling thread.

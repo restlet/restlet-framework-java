@@ -57,7 +57,7 @@ import org.restlet.ext.jetty.internal.JettyCall;
  * <td>Minimum threads waiting to service requests.</td>
  * </tr>
  * <tr>
- * <td>maxThread</td>
+ * <td>maxThreads</td>
  * <td>int</td>
  * <td>255</td>
  * <td>Maximum threads that will service requests.</td>
@@ -121,7 +121,7 @@ import org.restlet.ext.jetty.internal.JettyCall;
  * <td>soLingerTime</td>
  * <td>int</td>
  * <td>1000</td>
- * <td>SO linger time (see Jetty 6 documentation).</td>
+ * <td>SO linger time (see Jetty documentation).</td>
  * </tr>
  * <tr>
  * <td>gracefulShutdown</td>

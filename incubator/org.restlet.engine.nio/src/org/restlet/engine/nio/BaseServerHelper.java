@@ -54,6 +54,7 @@ import org.restlet.Server;
  * <th>Default value</th>
  * <th>Description</th>
  * </tr>
+ * <tr>
  * <td>useForwardedForHeader</td>
  * <td>boolean</td>
  * <td>false</td>
@@ -62,6 +63,13 @@ import org.restlet.Server;
  * result. This information is only safe for intermediary components within your
  * local network. Other addresses could easily be changed by setting a fake
  * header and should not be trusted for serious security checks.</td>
+ * </tr>
+ * <tr>
+ * <td>reuseAddress</td>
+ * <td>boolean</td>
+ * <td>true</td>
+ * <td>Enable/disable the SO_REUSEADDR socket option. See
+ * java.io.ServerSocket#reuseAddress property for additional details.</td>
  * </tr>
  * </table>
  * 
@@ -222,6 +230,12 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
         }
     }
 
+    @Override
+    public boolean isControllerDaemon() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "controllerDaemon", "false"));
+    }
+
     /**
      * Indicates if the controller thread should be a daemon (not blocking JVM
      * exit).
@@ -229,9 +243,9 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
      * @return True if the controller thread should be a daemon (not blocking
      *         JVM exit).
      */
-    public boolean isControllerDaemon() {
+    public boolean isReuseAddress() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "controllerDaemon", "false"));
+                "reuseAddress", "true"));
     }
 
     /**

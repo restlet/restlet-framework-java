@@ -68,7 +68,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>controllerDaemon</td>
  * <td>boolean</td>
- * <td>true</td>
+ * <td>true (client), false (server)</td>
  * <td>Indicates if the controller thread should be a daemon (not blocking JVM
  * exit).</td>
  * </tr>
@@ -237,6 +237,15 @@ public abstract class BaseHelper<T extends Connector> extends
         return Executors.newSingleThreadExecutor(new LoggingThreadFactory(
                 getLogger(), isControllerDaemon()));
     }
+
+    /**
+     * Indicates if the controller thread should be a daemon (not blocking JVM
+     * exit).
+     * 
+     * @return True if the controller thread should be a daemon (not blocking
+     *         JVM exit).
+     */
+    public abstract boolean isControllerDaemon();
 
     /**
      * Creates an inbound way for the given connection.
@@ -503,18 +512,6 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public boolean isClientSide() {
         return clientSide;
-    }
-
-    /**
-     * Indicates if the controller thread should be a daemon (not blocking JVM
-     * exit).
-     * 
-     * @return True if the controller thread should be a daemon (not blocking
-     *         JVM exit).
-     */
-    public boolean isControllerDaemon() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "controllerDaemon", "true"));
     }
 
     /**
