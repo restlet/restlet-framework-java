@@ -63,6 +63,7 @@ public abstract class InboundWay extends Way {
      */
     public InboundWay(Connection<?> connection) {
         super(connection);
+        this.builderIndex = 0;
     }
 
     /**
@@ -290,6 +291,12 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected abstract void readStartLine() throws IOException;
+
+    @Override
+    public void recycle() {
+        super.recycle();
+        this.builderIndex = 0;
+    }
 
     /**
      * Sets the line builder index.

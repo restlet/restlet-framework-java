@@ -171,9 +171,9 @@ public abstract class BaseClientHelper extends BaseHelper<Client> {
     }
 
     @Override
-    protected Connection<Client> createConnection(BaseHelper<Client> helper,
-            SocketChannel socketChannel, Selector selector) throws IOException {
-        return new Connection<Client>(helper, socketChannel, selector);
+    protected Connection<Client> createConnection(SocketChannel socketChannel,
+            Selector selector) throws IOException {
+        return new Connection<Client>(this, socketChannel, selector);
     }
 
     @Override
@@ -429,7 +429,6 @@ public abstract class BaseClientHelper extends BaseHelper<Client> {
 
                 // Create a new connection
                 result = createConnection(
-                        this,
                         createSocketChannel(request.isConfidential(),
                                 socketAddress), getController().getSelector());
             }

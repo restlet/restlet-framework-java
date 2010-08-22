@@ -104,9 +104,10 @@ public abstract class OutboundWay extends Way {
     public OutboundWay(Connection<?> connection) {
         super(connection);
         this.entityChannel = null;
-        this.entityStream = null;
-        this.entityKey = null;
         this.entityIndex = 0;
+        this.entityKey = null;
+        this.entityStream = null;
+        this.entityType = null;
         this.headerIndex = 0;
     }
 
@@ -402,6 +403,17 @@ public abstract class OutboundWay extends Way {
             getLogger().log(Level.INFO, "Error while writing an HTTP message",
                     e);
         }
+    }
+
+    @Override
+    public void recycle() {
+        super.recycle();
+        this.entityChannel = null;
+        this.entityIndex = 0;
+        this.entityKey = null;
+        this.entityStream = null;
+        this.entityType = null;
+        this.headerIndex = 0;
     }
 
     @Override

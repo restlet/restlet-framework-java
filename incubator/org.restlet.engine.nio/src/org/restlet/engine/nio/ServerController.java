@@ -111,8 +111,7 @@ public class ServerController extends Controller {
                             || (connectionsCount <= getHelper()
                                     .getMaxTotalConnections())) {
                         Connection<Server> connection = getHelper()
-                                .createConnection(getHelper(), socketChannel,
-                                        getSelector());
+                                .createConnection(socketChannel, getSelector());
                         connection.open();
                         getHelper().getConnections().add(connection);
 

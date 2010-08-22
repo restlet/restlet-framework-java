@@ -94,9 +94,9 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     }
 
     @Override
-    protected Connection<Server> createConnection(BaseHelper<Server> helper,
-            SocketChannel socketChannel, Selector selector) throws IOException {
-        return new Connection<Server>(helper, socketChannel, selector);
+    protected Connection<Server> createConnection(SocketChannel socketChannel,
+            Selector selector) throws IOException {
+        return new Connection<Server>(this, socketChannel, selector);
     }
 
     @Override

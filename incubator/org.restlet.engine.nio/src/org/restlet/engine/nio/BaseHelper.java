@@ -209,8 +209,6 @@ public abstract class BaseHelper<T extends Connector> extends
     /**
      * Creates a connection associated to the given socket.
      * 
-     * @param helper
-     *            The parent helper.
      * @param socketChannel
      *            The underlying NIO socket channel.
      * @param selector
@@ -218,7 +216,7 @@ public abstract class BaseHelper<T extends Connector> extends
      * @return The new connection.
      * @throws IOException
      */
-    protected abstract Connection<T> createConnection(BaseHelper<T> helper,
+    protected abstract Connection<T> createConnection(
             SocketChannel socketChannel, Selector selector) throws IOException;
 
     /**

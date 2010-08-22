@@ -61,10 +61,10 @@ import org.restlet.engine.security.SslUtils;
 public class Connection<T extends Connector> implements SelectionListener {
 
     /** The readable selection channel. */
-    private final ReadableSelectionChannel readableSelectionChannel;
+    private ReadableSelectionChannel readableSelectionChannel;
 
     /** The writable selection channel. */
-    private final WritableSelectionChannel writableSelectionChannel;
+    private WritableSelectionChannel writableSelectionChannel;
 
     /** The parent connector helper. */
     private final BaseHelper<T> helper;
@@ -85,7 +85,7 @@ public class Connection<T extends Connector> implements SelectionListener {
     private volatile boolean pipelining;
 
     /** The underlying socket channel. */
-    private final SocketChannel socketChannel;
+    private SocketChannel socketChannel;
 
     /**
      * The socket's NIO selection key holding the link between the channel and
@@ -481,6 +481,20 @@ public class Connection<T extends Connector> implements SelectionListener {
     public void open() {
         setState(ConnectionState.OPEN);
         updateState();
+    }
+
+    /**
+     * Recycles the connection so it can be reused. Typically invoked by a
+     * connection pool.
+     */
+    public void recycle() {
+        this.readableSelectionChannel = null;
+        this.socketChannel = null;
+        this.socketKey = null;
+        this.state = null;
+        this.writableSelectionChannel = null;
+        this.inboundWay.recycle();
+        this.outboundWay.recycle();
     }
 
     /**

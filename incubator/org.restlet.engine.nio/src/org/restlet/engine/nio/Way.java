@@ -241,6 +241,20 @@ public abstract class Way {
     }
 
     /**
+     * Recycles the way so it can be reused. Typically invoked by a connection
+     * pool.
+     */
+    public void recycle() {
+        this.byteBuffer.clear();
+        this.headers = null;
+        this.ioState = IoState.IDLE;
+        this.lineBuilder.delete(0, this.lineBuilder.length());
+        this.message=null;
+        this.messages.clear();
+        this.messageState= MessageState.IDLE;
+    }
+
+    /**
      * Registers interest of this connection way for NIO operations with the
      * given selector. If called several times, it just updates the selection
      * keys with the new interest operations. By default, it does nothing.
