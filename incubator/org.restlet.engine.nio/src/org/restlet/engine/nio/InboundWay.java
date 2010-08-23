@@ -197,9 +197,14 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
+    protected boolean isProcessing() {
+        return super.isProcessing() && (getMessageState() != MessageState.BODY);
+    }
+
+    @Override
     protected void onCompleted() {
         if (getLogger().isLoggable(Level.FINER)) {
-            getLogger().finer("Inbound message received");
+            getLogger().finer("Inbound message fully received");
         }
 
         super.onCompleted();
@@ -210,50 +215,32 @@ public abstract class InboundWay extends Way {
      * start line and the headers must have been received, not the optional
      * body.
      */
-    protected abstract void onReceived();
+    protected void onReceived() {
+        if (getLogger().isLoggable(Level.FINER)) {
+            getLogger()
+                    .finer("Inbound message start line and headers received");
+        }
+    }
 
     @Override
     public void onSelected() {
-        super.onSelected();
-
         try {
-            while ((getIoState() == IoState.PROCESSING)
-                    && (getMessageState() != MessageState.BODY)) {
-                if (isFilling()) {
-                    int result = readSocketBytes();
+            super.onSelected();
 
-                    if (result == 0) {
-                        // Socket channel exhausted
-                        setIoState(IoState.INTEREST);
-                    } else if (result == -1) {
-                        // End of channel reached
-                        setIoState(IoState.CANCELING);
-                    } else {
-                        // Parse ready lines
-                        while ((getMessageState() != MessageState.BODY)
-                                && (getMessageState() != MessageState.IDLE)
-                                && fillLine()) {
-                            if (getMessageState() == MessageState.START_LINE) {
-                                readStartLine();
-                            } else if (getMessageState() == MessageState.HEADERS) {
-                                Parameter header = readHeader();
+            while (isProcessing()) {
+                int result = readSocketBytes();
 
-                                if (header != null) {
-                                    if (getHeaders() == null) {
-                                        setHeaders(new Form());
-                                    }
-
-                                    getHeaders().add(header);
-                                } else {
-                                    onReceived();
-                                }
-                            }
-
-                            if (getMessageState() == MessageState.IDLE) {
-                                updateState();
-                                super.onSelected();
-                            }
-                        }
+                if (result == 0) {
+                    // Socket channel exhausted
+                    setIoState(IoState.INTEREST);
+                } else if (result == -1) {
+                    // End of channel reached
+                    setIoState(IoState.CANCELING);
+                } else {
+                    while (isProcessing() && getByteBuffer().hasRemaining()) {
+                        // Bytes are available in the buffer
+                        // attempt to parse the next message
+                        readMessage();
                     }
                 }
             }
@@ -263,6 +250,39 @@ public abstract class InboundWay extends Way {
                             "Error while reading a message. Closing the connection.",
                             e);
             getConnection().onError();
+        }
+    }
+
+    /**
+     * Reads the next message if possible.
+     * 
+     * @throws IOException
+     */
+    protected void readMessage() throws IOException {
+        while (isProcessing() && fillLine()) {
+            // Parse next ready lines
+            if (getMessageState() == MessageState.START_LINE) {
+                readStartLine();
+            } else if (getMessageState() == MessageState.HEADERS) {
+                Parameter header = readHeader();
+
+                if (header != null) {
+                    if (getHeaders() == null) {
+                        setHeaders(new Form());
+                    }
+
+                    getHeaders().add(header);
+                } else {
+                    // All headers received
+                    onReceived();
+
+                    if (getMessageState() == MessageState.IDLE) {
+                        // Message fully received, check if another is ready
+                        updateState();
+                        // super.onSelected();
+                    }
+                }
+            }
         }
     }
 

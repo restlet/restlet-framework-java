@@ -590,13 +590,6 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Handles the next outbound message.
-     */
-    protected void handleNextOutbound() {
-        handleOutbound(getOutboundMessages().poll());
-    }
-
-    /**
      * Handles an outbound message.
      * 
      * @param response

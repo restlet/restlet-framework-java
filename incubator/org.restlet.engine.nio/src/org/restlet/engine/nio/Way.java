@@ -201,13 +201,13 @@ public abstract class Way {
     protected abstract int getSocketInterestOps();
 
     /**
-     * Indicates if we are filling the byte buffer.
+     * Indicates if the processing of the next message is possible.
      * 
-     * @return True if we are filling the byte buffer.
+     * @return True if the processing of the next message is possible.
      */
-    protected boolean isFilling() {
-        return (getMessageState() != MessageState.IDLE)
-                && getByteBuffer().hasRemaining();
+    protected boolean isProcessing() {
+        return (getIoState() == IoState.PROCESSING)
+                && (getMessageState() != MessageState.IDLE);
     }
 
     /**

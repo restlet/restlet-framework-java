@@ -197,8 +197,6 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
                 getController().wakeup();
             }
         }
-
-        handleNextOutbound();
     }
 
     @Override
