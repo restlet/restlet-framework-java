@@ -398,6 +398,17 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Creates a new response for the given request.
+     * 
+     * @param request
+     *            The associated request.
+     * @return The new response.
+     */
+    protected Response createResponse(Request request) {
+        return new Response(request);
+    }
+
+    /**
      * Deletes the target resource and all its representations. If a success
      * status is not returned, then a resource exception is thrown.
      * 
@@ -884,7 +895,7 @@ public class ClientResource extends UniformResource {
      * @see #getNext()
      */
     private Response handle(Request request) {
-        Response response = new Response(request);
+        Response response = createResponse(request);
         Uniform next = getNext();
 
         if (next != null) {

@@ -19,9 +19,11 @@ Changes log
        - Fixed potential entity reading issue with Grizzly HTTP server.
        - Fixed the internal client connector when a connection cannot 
          be found to send a request.
-    - Enhancements
-       - Updated Grizzly library to version 1.9.19.
+       - Added missing createResponse(Request) method in the 
+         ClientResource class.
     - Misc
+       - Updated Grizzly library to version 1.9.19.
+       - 
 
 - 2.0.0 (2010-07-19)
     - API changes

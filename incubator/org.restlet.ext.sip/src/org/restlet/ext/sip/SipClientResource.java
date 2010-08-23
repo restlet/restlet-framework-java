@@ -124,24 +124,6 @@ public class SipClientResource extends ClientResource {
     /**
      * Constructor.
      * 
-     * @param resource
-     *            The client resource to copy.
-     */
-    public SipClientResource(SipClientResource resource) {
-        super();
-        SipRequest request = new SipRequest(resource.getRequest());
-        SipResponse response = new SipResponse(request);
-        setNext(resource.getNext());
-        setFollowingRedirects(resource.isFollowingRedirects());
-        setRetryOnError(resource.isRetryOnError());
-        setRetryDelay(resource.getRetryDelay());
-        setRetryAttempts(resource.getRetryAttempts());
-        init(resource.getContext(), request, response);
-    }
-
-    /**
-     * Constructor.
-     * 
      * @param context
      *            The context.
      * @param uri
@@ -291,6 +273,24 @@ public class SipClientResource extends ClientResource {
     /**
      * Constructor.
      * 
+     * @param resource
+     *            The client resource to copy.
+     */
+    public SipClientResource(SipClientResource resource) {
+        super();
+        SipRequest request = new SipRequest(resource.getRequest());
+        SipResponse response = new SipResponse(request);
+        setNext(resource.getNext());
+        setFollowingRedirects(resource.isFollowingRedirects());
+        setRetryOnError(resource.isRetryOnError());
+        setRetryDelay(resource.getRetryDelay());
+        setRetryAttempts(resource.getRetryAttempts());
+        init(resource.getContext(), request, response);
+    }
+
+    /**
+     * Constructor.
+     * 
      * @param request
      *            The handled request.
      * @param response
@@ -342,6 +342,11 @@ public class SipClientResource extends ClientResource {
      */
     public void cancel() throws ResourceException {
         handle(SipMethod.CANCEL);
+    }
+
+    @Override
+    protected Response createResponse(Request request) {
+        return new SipResponse(request);
     }
 
     @Override

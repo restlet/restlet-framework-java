@@ -231,6 +231,7 @@ public abstract class InboundWay extends Way {
                     } else {
                         // Parse ready lines
                         while ((getMessageState() != MessageState.BODY)
+                                && (getMessageState() != MessageState.IDLE)
                                 && fillLine()) {
                             if (getMessageState() == MessageState.START_LINE) {
                                 readStartLine();
@@ -246,6 +247,11 @@ public abstract class InboundWay extends Way {
                                 } else {
                                     onReceived();
                                 }
+                            }
+
+                            if (getMessageState() == MessageState.IDLE) {
+                                updateState();
+                                super.onSelected();
                             }
                         }
                     }

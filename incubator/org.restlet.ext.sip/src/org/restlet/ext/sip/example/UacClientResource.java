@@ -33,6 +33,7 @@ package org.restlet.ext.sip.example;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
+import org.restlet.ext.sip.SipClientResource;
 import org.restlet.resource.ClientResource;
 
 /**
@@ -43,10 +44,10 @@ import org.restlet.resource.ClientResource;
 public class UacClientResource implements UacResource {
 
     public static void main(String[] args) {
-        UacClientResource client = new UacClientResource("sip:bob@locahost");
-        client.start();
-        client.acknowledge();
-        client.stop();
+        UacClientResource cr = new UacClientResource("sip:bob@locahost");
+        cr.start();
+        cr.acknowledge();
+        cr.stop();
     }
 
     /** The internal client resource proxy. */
@@ -62,8 +63,9 @@ public class UacClientResource implements UacResource {
      *            Target resource URI.
      */
     public UacClientResource(String uri) {
-        this.clientResource = new ClientResource(uri);
+        this.clientResource = new SipClientResource(uri);
         Client client = new Client(new Context(), Protocol.SIP);
+        client.getContext().getParameters().add("minThreads", "1");
         client.getContext().getParameters().add("tracing", "true");
         client.getContext().getParameters().add("proxyHost", "localhost");
         client.getContext().getParameters().add("proxyPort", "5060");
