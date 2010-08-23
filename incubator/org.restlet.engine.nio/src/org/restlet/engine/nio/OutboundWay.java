@@ -46,6 +46,7 @@ import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.data.Status;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.util.StringUtils;
@@ -457,11 +458,10 @@ public abstract class OutboundWay extends Way {
 
                             }));
                 } catch (ClosedChannelException cce) {
-                    getLogger()
-                            .log(Level.WARNING,
+                    getConnection()
+                            .onError(
                                     "Unable to register NIO interest operations for this entity",
-                                    cce);
-                    getConnection().onError();
+                                    cce, Status.CONNECTOR_ERROR_COMMUNICATION);
                 }
             } else {
                 getEntityKey().interestOps(entityInterestOps);

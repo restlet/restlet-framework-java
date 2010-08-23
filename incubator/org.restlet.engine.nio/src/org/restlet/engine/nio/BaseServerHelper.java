@@ -42,6 +42,7 @@ import java.util.logging.Level;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.data.Status;
 
 /**
  * Base server helper based on NIO non blocking sockets. Here is the list of
@@ -95,8 +96,10 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
     @Override
     protected Connection<Server> createConnection(SocketChannel socketChannel,
-            Selector selector) throws IOException {
-        return new Connection<Server>(this, socketChannel, selector);
+            Selector selector, SocketAddress socketAddress)
+            throws IOException {
+        return new Connection<Server>(this, socketChannel, selector,
+                socketAddress);
     }
 
     @Override
@@ -244,6 +247,13 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     public boolean isReuseAddress() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "reuseAddress", "true"));
+    }
+
+    @Override
+    public void onError(Status status, Response message) {
+        if (message != null) {
+            message.setStatus(status);
+        }
     }
 
     /**

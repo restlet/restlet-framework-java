@@ -35,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -172,8 +173,9 @@ public abstract class BaseClientHelper extends BaseHelper<Client> {
 
     @Override
     protected Connection<Client> createConnection(SocketChannel socketChannel,
-            Selector selector) throws IOException {
-        return new Connection<Client>(this, socketChannel, selector);
+            Selector selector, SocketAddress socketAddress) throws IOException {
+        return new Connection<Client>(this, socketChannel, selector,
+                socketAddress);
     }
 
     @Override
@@ -388,9 +390,7 @@ public abstract class BaseClientHelper extends BaseHelper<Client> {
                 Connection<Client> currConn = iterator.next();
 
                 if (socketAddress.getAddress().equals(
-                        currConn.getSocket().getInetAddress())
-                        && socketAddress.getPort() == currConn.getSocket()
-                                .getPort()) {
+                        currConn.getSocketAddress())) {
                     if (currConn.getState().equals(ConnectionState.OPEN)
                             && currConn.getInboundWay().getIoState()
                                     .equals(IoState.IDLE)
@@ -430,7 +430,8 @@ public abstract class BaseClientHelper extends BaseHelper<Client> {
                 // Create a new connection
                 result = checkout(
                         createSocketChannel(request.isConfidential(),
-                                socketAddress), getController().getSelector());
+                                socketAddress), getController().getSelector(),
+                        socketAddress);
             }
         }
 
@@ -728,17 +729,11 @@ public abstract class BaseClientHelper extends BaseHelper<Client> {
         return (request.getOnResponse() == null);
     }
 
-    /**
-     * Unblocks the thread that handles the given request/response pair.
-     * 
-     * @param response
-     *            The response.
-     */
-    private void unblock(Response response) {
-        CountDownLatch latch = (CountDownLatch) response.getRequest()
-                .getAttributes().get(CONNECTOR_LATCH);
-        if (latch != null) {
-            latch.countDown();
+    @Override
+    public void onError(Status status, Response message) {
+        if (message != null) {
+            message.setStatus(status);
+            getInboundMessages().add(message);
         }
     }
 
@@ -753,6 +748,20 @@ public abstract class BaseClientHelper extends BaseHelper<Client> {
     public void stop() throws Exception {
         getLogger().info("Stopping the NIO " + getProtocols() + " client");
         super.stop();
+    }
+
+    /**
+     * Unblocks the thread that handles the given request/response pair.
+     * 
+     * @param response
+     *            The response.
+     */
+    private void unblock(Response response) {
+        CountDownLatch latch = (CountDownLatch) response.getRequest()
+                .getAttributes().get(CONNECTOR_LATCH);
+        if (latch != null) {
+            latch.countDown();
+        }
     }
 
 }

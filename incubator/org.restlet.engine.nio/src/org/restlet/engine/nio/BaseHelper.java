@@ -32,6 +32,7 @@ package org.restlet.engine.nio;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.SocketAddress;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
@@ -52,6 +53,7 @@ import java.util.logging.Level;
 import org.restlet.Connector;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Status;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.log.LoggingThreadFactory;
 
@@ -256,18 +258,20 @@ public abstract class BaseHelper<T extends Connector> extends
      *            The underlying NIO socket channel.
      * @param selector
      *            The underlying NIO selector.
+     * @param socketAddress
+     *            The associated IP address.
      * @return The new connection.
      * @throws IOException
      */
     protected Connection<T> checkout(SocketChannel socketChannel,
-            Selector selector) throws IOException {
+            Selector selector, SocketAddress socketAddress) throws IOException {
         Connection<T> result = null;
 
         if (isPooledConnection()) {
             result = getConnectionPool().checkout();
-            result.reuse(socketChannel, selector);
+            result.reuse(socketChannel, selector, socketAddress);
         } else {
-            result = createConnection(socketChannel, selector);
+            result = createConnection(socketChannel, selector, socketAddress);
         }
 
         return result;
@@ -280,11 +284,14 @@ public abstract class BaseHelper<T extends Connector> extends
      *            The underlying NIO socket channel.
      * @param selector
      *            The underlying NIO selector.
+     * @param socketAddress
+     *            The associated IP address.
      * @return The new connection.
      * @throws IOException
      */
     protected abstract Connection<T> createConnection(
-            SocketChannel socketChannel, Selector selector) throws IOException;
+            SocketChannel socketChannel, Selector selector,
+            SocketAddress socketAddress) throws IOException;
 
     /**
      * Creates a new controller.
@@ -416,6 +423,16 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Returns the size of the content buffer for receiving messages.
+     * 
+     * @return The size of the content buffer for receiving messages.
+     */
+    public int getInboundBufferSize() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "inboundBufferSize", Integer.toString(8 * 1024)));
+    }
+
+    /**
      * Returns the queue of inbound messages pending for handling.
      * 
      * @return The queue of inbound messages.
@@ -528,25 +545,6 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Returns the queue of outbound messages pending for handling.
-     * 
-     * @return The queue of outbound messages.
-     */
-    protected Queue<Response> getOutboundMessages() {
-        return outboundMessages;
-    }
-
-    /**
-     * Returns the size of the content buffer for receiving messages.
-     * 
-     * @return The size of the content buffer for receiving messages.
-     */
-    public int getInboundBufferSize() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "inboundBufferSize", Integer.toString(8 * 1024)));
-    }
-
-    /**
      * Returns the size of the content buffer for sending responses.
      * 
      * @return The size of the content buffer for sending responses.
@@ -554,6 +552,15 @@ public abstract class BaseHelper<T extends Connector> extends
     public int getOutboundBufferSize() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "outboundBufferSize", Integer.toString(32 * 1024)));
+    }
+
+    /**
+     * Returns the queue of outbound messages pending for handling.
+     * 
+     * @return The queue of outbound messages.
+     */
+    protected Queue<Response> getOutboundMessages() {
+        return outboundMessages;
     }
 
     /**
@@ -686,6 +693,16 @@ public abstract class BaseHelper<T extends Connector> extends
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "workerThreads", "true"));
     }
+
+    /**
+     * Called on error. Unblocks the message.
+     * 
+     * @param status
+     *            The error status to set on the responses.
+     * @param message
+     *            The message to unblock.
+     */
+    public abstract void onError(Status status, Response message);
 
     @Override
     public void start() throws Exception {

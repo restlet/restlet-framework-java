@@ -37,6 +37,7 @@ import java.util.logging.Level;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
+import org.restlet.data.Status;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.representation.EmptyRepresentation;
@@ -245,11 +246,9 @@ public abstract class InboundWay extends Way {
                 }
             }
         } catch (Exception e) {
-            getLogger()
-                    .log(Level.FINE,
-                            "Error while reading a message. Closing the connection.",
-                            e);
-            getConnection().onError();
+            getConnection().onError(
+                    "Error while reading a message. Closing the connection.",
+                    e, Status.CONNECTOR_ERROR_COMMUNICATION);
         }
     }
 

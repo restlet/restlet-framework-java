@@ -32,6 +32,7 @@ package org.restlet.engine.nio;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -48,6 +49,7 @@ import javax.net.ssl.SSLSocket;
 
 import org.restlet.Connector;
 import org.restlet.Response;
+import org.restlet.data.Status;
 import org.restlet.engine.security.SslUtils;
 
 /**
@@ -73,28 +75,31 @@ public class Connection<T extends Connector> implements SelectionListener {
     private final Way inboundWay;
 
     /** The timestamp of the last IO activity. */
-    private volatile long lastActivity;
+    private long lastActivity;
 
     /** The outbound way. */
     private final Way outboundWay;
 
     /** Indicates if the connection should be persisted across calls. */
-    private volatile boolean persistent;
+    private boolean persistent;
 
     /** Indicates if idempotent sequences of requests can be pipelined. */
-    private volatile boolean pipelining;
+    private boolean pipelining;
 
     /** The underlying socket channel. */
     private SocketChannel socketChannel;
+
+    /** The socket address. */
+    private SocketAddress socketAddress;
 
     /**
      * The socket's NIO selection key holding the link between the channel and
      * the way.
      */
-    private volatile SelectionKey socketKey;
+    private SelectionKey socketKey;
 
     /** The state of the connection. */
-    private volatile ConnectionState state;
+    private ConnectionState state;
 
     /**
      * Constructor.
@@ -103,14 +108,18 @@ public class Connection<T extends Connector> implements SelectionListener {
      *            The parent connector helper.
      * @param socketChannel
      *            The underlying NIO socket channel.
+     * @param selector
+     *            The controller's NIO selector.
+     * @param socketAddress
+     *            The associated IP address.
      * @throws IOException
      */
     public Connection(BaseHelper<T> helper, SocketChannel socketChannel,
-            Selector selector) throws IOException {
+            Selector selector, SocketAddress socketAddress) throws IOException {
         this.helper = helper;
         this.inboundWay = helper.createInboundWay(this);
         this.outboundWay = helper.createOutboundWay(this);
-        reuse(socketChannel, selector);
+        reuse(socketChannel, selector, socketAddress);
     }
 
     /**
@@ -240,6 +249,15 @@ public class Connection<T extends Connector> implements SelectionListener {
     public Socket getSocket() {
         return (getSocketChannel() == null) ? null : getSocketChannel()
                 .socket();
+    }
+
+    /**
+     * Returns the socket address.
+     * 
+     * @return The socket address.
+     */
+    protected SocketAddress getSocketAddress() {
+        return socketAddress;
     }
 
     /**
@@ -408,8 +426,30 @@ public class Connection<T extends Connector> implements SelectionListener {
     /**
      * Called on error. By default, it calls {@link #close(boolean)} with a
      * 'false' parameter.
+     * 
+     * @param message
+     *            The error message.
+     * @param throwable
+     *            The cause of the error.
+     * @param status
+     *            The error status.
      */
-    public void onError() {
+    public void onError(String message, Throwable throwable, Status status) {
+        getLogger().log(Level.FINE, message, throwable);
+        status = new Status(status, throwable, message);
+
+        for (Response rsp : getInboundWay().getMessages()) {
+            getInboundWay().getMessages().remove(rsp);
+            getHelper().onError(status, rsp);
+        }
+
+        for (Response rsp : getOutboundWay().getMessages()) {
+            getOutboundWay().getMessages().remove(rsp);
+            getHelper().onError(status, rsp);
+        }
+
+        getHelper().onError(status, getInboundWay().getMessage());
+        getHelper().onError(status, getOutboundWay().getMessage());
         close(false);
     }
 
@@ -436,22 +476,19 @@ public class Connection<T extends Connector> implements SelectionListener {
                     if (getSocketChannel().finishConnect()) {
                         open();
                     } else {
-                        getLogger().info(
-                                "Unable to establish a connection to "
-                                        + getSocket().getInetAddress());
-                        setState(ConnectionState.CLOSING);
+                        onError("Unable to establish a connection to "
+                                + getSocketAddress(), null,
+                                Status.CONNECTOR_ERROR_CONNECTION);
                     }
                 } catch (IOException e) {
-                    getLogger().warning(
-                            "Unable to establish a connection to "
-                                    + getSocket().getInetAddress());
-                    setState(ConnectionState.CLOSING);
+                    onError("Unable to establish a connection to "
+                            + getSocketAddress(), e,
+                            Status.CONNECTOR_ERROR_CONNECTION);
                 }
             }
         } catch (Throwable t) {
-            getLogger().log(Level.WARNING,
-                    "Unexpected error detected. Closing the connection.", t);
-            onError();
+            onError("Unexpected error detected. Closing the connection.", t,
+                    Status.CONNECTOR_ERROR_INTERNAL);
         }
     }
 
@@ -489,38 +526,38 @@ public class Connection<T extends Connector> implements SelectionListener {
      * @throws ClosedChannelException
      */
     public void registerInterest(Selector selector) {
-        // Give a chance to ways for addition registrations
-        getInboundWay().registerInterest(selector);
-        getOutboundWay().registerInterest(selector);
+        if ((getState() != ConnectionState.CLOSING)
+                && (getState() != ConnectionState.CLOSED)) {
+            // Give a chance to ways for addition registrations
+            getInboundWay().registerInterest(selector);
+            getOutboundWay().registerInterest(selector);
 
-        // Get the socket interest
-        int socketInterestOps = getSocketInterestOps();
+            // Get the socket interest
+            int socketInterestOps = getSocketInterestOps();
 
-        if (socketInterestOps > 0) {
-            // IO interest declared
-            if (getSocketKey() == null) {
-                // Create a new selection key
-                try {
-                    setSocketKey(getSocketChannel().register(selector,
-                            socketInterestOps, this));
-                } catch (ClosedChannelException cce) {
-                    getLogger()
-                            .log(Level.WARNING,
-                                    "Unable to register NIO interest operations for this connection",
-                                    cce);
-                    onError();
+            if (socketInterestOps > 0) {
+                // IO interest declared
+                if (getSocketKey() == null) {
+                    // Create a new selection key
+                    try {
+                        setSocketKey(getSocketChannel().register(selector,
+                                socketInterestOps, this));
+                    } catch (ClosedChannelException cce) {
+                        onError("Unable to register NIO interest operations for this connection",
+                                cce, Status.CONNECTOR_ERROR_COMMUNICATION);
+                    }
+                } else {
+                    // Update the existing selection key
+                    getSocketKey().interestOps(socketInterestOps);
                 }
             } else {
-                // Update the existing selection key
-                getSocketKey().interestOps(socketInterestOps);
-            }
-        } else {
-            // No IO interest declared
-            if (getSocketKey() != null) {
-                // Free the existing selection key
-                getSocketKey().cancel();
-                getSocketKey().attach(null);
-                setSocketKey(null);
+                // No IO interest declared
+                if (getSocketKey() != null) {
+                    // Free the existing selection key
+                    getSocketKey().cancel();
+                    getSocketKey().attach(null);
+                    setSocketKey(null);
+                }
             }
         }
     }
@@ -532,14 +569,17 @@ public class Connection<T extends Connector> implements SelectionListener {
      *            The underlying NIO socket channel.
      * @param selector
      *            The underlying NIO selector.
+     * @param socketAddress
+     *            The associated socket address.
      * @throws IOException
      */
-    public void reuse(SocketChannel socketChannel, Selector selector)
-            throws IOException {
+    public void reuse(SocketChannel socketChannel, Selector selector,
+            SocketAddress socketAddress) throws IOException {
         this.persistent = helper.isPersistingConnections();
         this.pipelining = helper.isPipeliningConnections();
         this.state = ConnectionState.OPENING;
         this.socketChannel = socketChannel;
+        this.socketAddress = socketAddress;
 
         if (helper.isTracing()) {
             this.readableSelectionChannel = new ReadableTraceChannel(

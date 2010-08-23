@@ -55,9 +55,10 @@ public class UacServerResource extends SipServerResource implements UacResource 
 
     public static void main(String[] args) throws Exception {
         Server server = null;
+
         if (args.length == 1) {
-            server = new Server(new Context(), Protocol.SIP, Integer
-                    .parseInt(args[0]), UacServerResource.class);
+            server = new Server(new Context(), Protocol.SIP,
+                    Integer.parseInt(args[0]), UacServerResource.class);
         } else {
             server = new Server(new Context(), Protocol.SIP,
                     UacServerResource.class);
@@ -67,8 +68,7 @@ public class UacServerResource extends SipServerResource implements UacResource 
         InputStream is = cl.getResourceAsStream("UacServerResource.properties");
 
         if (is == null) {
-            is = cl
-                    .getResourceAsStream("org/restlet/ext/sip/example/UacServerResource.properties");
+            is = cl.getResourceAsStream("org/restlet/ext/sip/example/UacServerResource.properties");
         }
 
         if (is != null) {
@@ -76,8 +76,9 @@ public class UacServerResource extends SipServerResource implements UacResource 
             p.load(is);
 
             for (Map.Entry<Object, Object> entry : p.entrySet()) {
-                server.getContext().getParameters().add(
-                        (String) entry.getKey(), (String) entry.getValue());
+                server.getContext()
+                        .getParameters()
+                        .add((String) entry.getKey(), (String) entry.getValue());
             }
 
             // Sets the sleep time of this resource

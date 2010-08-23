@@ -110,8 +110,12 @@ public class ServerController extends Controller {
                     if ((getHelper().getMaxTotalConnections() == -1)
                             || (connectionsCount <= getHelper()
                                     .getMaxTotalConnections())) {
-                        Connection<Server> connection = getHelper().checkout(
-                                socketChannel, getSelector());
+                        Connection<Server> connection = getHelper()
+                                .checkout(
+                                        socketChannel,
+                                        getSelector(),
+                                        socketChannel.socket()
+                                                .getRemoteSocketAddress());
                         connection.open();
                         getHelper().getConnections().add(connection);
 

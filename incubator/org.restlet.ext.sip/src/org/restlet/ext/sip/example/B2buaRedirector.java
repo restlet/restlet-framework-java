@@ -25,8 +25,9 @@ public class B2buaRedirector extends Redirector {
     public static void main(String[] args) throws Exception {
         String[] arguments = new String[1];
         arguments[0] = "8182";
+
         // Start the origin server on port 8182
-        // UacServerResource.main(arguments);
+        UacServerResource.main(arguments);
 
         Component c = new Component();
         Server server = new Server(Protocol.SIP);
@@ -37,7 +38,7 @@ public class B2buaRedirector extends Redirector {
         c.getClients().add(client);
         client.getContext().getParameters().add("proxyHost", "localhost");
         client.getContext().getParameters().add("proxyPort", arguments[0]);
-        client.getContext().getParameters().add("tracing", "true");
+        client.getContext().getParameters().add("tracing", "false");
         client.getContext().getParameters()
                 .add("pipeliningConnections", "false");
 
