@@ -38,8 +38,8 @@ public class B2buaRedirector extends Redirector {
         client.getContext().getParameters().add("proxyHost", "localhost");
         client.getContext().getParameters().add("proxyPort", arguments[0]);
         client.getContext().getParameters().add("tracing", "true");
-        client.getContext().getParameters().add("pipeliningConnections",
-                "false");
+        client.getContext().getParameters()
+                .add("pipeliningConnections", "false");
 
         c.getDefaultHost().attachDefault(
                 new B2buaRedirector(null, "sip:localhost:8182"));
@@ -83,7 +83,6 @@ public class B2buaRedirector extends Redirector {
         sri.setName("127.0.0.1:5060");
         sri.getParameters().add("branch", "z9hG4bK-20369-1-0");
         r.getSipRecipientsInfo().add(0, sri);
-
         super.outboundServerRedirect(targetRef, r, response);
     };
 
@@ -103,6 +102,7 @@ public class B2buaRedirector extends Redirector {
         request.setOnResponse(new Uniform() {
             public void handle(Request req, Response resp) {
                 SipResponse r = (SipResponse) resp;
+
                 if (!resp.getStatus().isInformational()) {
                     // Allow for response rewriting and clean the headers
                     response.setEntity(rewrite(response.getEntity()));

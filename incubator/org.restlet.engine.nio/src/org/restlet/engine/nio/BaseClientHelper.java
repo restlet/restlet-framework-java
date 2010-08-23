@@ -742,4 +742,17 @@ public abstract class BaseClientHelper extends BaseHelper<Client> {
         }
     }
 
+    @Override
+    public void start() throws Exception {
+        getLogger().info("Starting the NIO " + getProtocols() + " client");
+
+        super.start();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        getLogger().info("Stopping the NIO " + getProtocols() + " client");
+        super.stop();
+    }
+
 }

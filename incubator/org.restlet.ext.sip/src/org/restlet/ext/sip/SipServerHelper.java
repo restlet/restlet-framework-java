@@ -91,18 +91,4 @@ public class SipServerHelper extends BaseServerHelper {
         return new SipResponse(request);
     }
 
-    @Override
-    public synchronized void start() throws Exception {
-        getLogger().info(
-                "Starting the " + getProtocols() + " server on port "
-                        + getHelped().getPort());
-        super.start();
-    }
-
-    @Override
-    public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the SIP server");
-        super.stop();
-    }
-
 }

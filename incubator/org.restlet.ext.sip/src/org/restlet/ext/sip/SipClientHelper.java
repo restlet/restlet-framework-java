@@ -75,15 +75,4 @@ public class SipClientHelper extends BaseClientHelper {
         return new SipResponse(request);
     }
 
-    @Override
-    public synchronized void start() throws Exception {
-        getLogger().info("Starting the " + getProtocols() + " client");
-        super.start();
-    }
-
-    @Override
-    public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the " + getProtocols() + " client");
-        super.stop();
-    }
 }

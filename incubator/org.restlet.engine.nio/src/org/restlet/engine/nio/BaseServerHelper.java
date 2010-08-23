@@ -272,6 +272,10 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
     @Override
     public synchronized void start() throws Exception {
+        getLogger().info(
+                "Starting the NIO " + getProtocols() + " server on port "
+                        + getHelped().getPort());
+
         // Create the server socket channel
         this.serverSocketChannel = createServerSocketChannel();
 
@@ -296,6 +300,9 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
     @Override
     public synchronized void stop() throws Exception {
+        getLogger().info("Stopping the NIO " + getProtocols() + " server");
+
+        // Stop the controller
         super.stop();
 
         // Close the server socket channel

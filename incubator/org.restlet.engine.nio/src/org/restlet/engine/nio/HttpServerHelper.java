@@ -61,18 +61,4 @@ public class HttpServerHelper extends BaseServerHelper {
         return new ServerOutboundWay(connection);
     }
 
-    @Override
-    public synchronized void start() throws Exception {
-        getLogger()
-                .info("Starting the NIO HTTP server on port "
-                        + getHelped().getPort());
-        super.start();
-    }
-
-    @Override
-    public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the NIO HTTP server");
-        super.stop();
-    }
-
 }
