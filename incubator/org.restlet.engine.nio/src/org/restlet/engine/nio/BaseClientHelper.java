@@ -643,7 +643,7 @@ public abstract class BaseClientHelper extends BaseHelper<Client> {
     @Override
     public void handle(Request request, Response response) {
         try {
-            if (isSynchronous(request)) {
+            if (isSynchronous(request) && request.isExpectingResponse()) {
                 // Prepare the latch to block the caller thread
                 CountDownLatch latch = new CountDownLatch(1);
                 request.getAttributes().put(CONNECTOR_LATCH, latch);

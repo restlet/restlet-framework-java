@@ -398,6 +398,17 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Creates a new request by cloning the given one.
+     * 
+     * @param prototype
+     *            The prototype request.
+     * @return The new response.
+     */
+    protected Request createRequest(Request prototype) {
+        return new Request(prototype);
+    }
+
+    /**
      * Creates a new response for the given request.
      * 
      * @param request
@@ -1640,7 +1651,7 @@ public class ClientResource extends UniformResource {
                         }
 
                         // Clone the prototype request
-                        Request request = new Request(getRequest());
+                        Request request = createRequest(getRequest());
 
                         // The Java method was annotated
                         request.setMethod(annotation.getRestletMethod());

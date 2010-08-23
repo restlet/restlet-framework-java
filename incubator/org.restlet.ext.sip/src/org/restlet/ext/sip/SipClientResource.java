@@ -345,6 +345,11 @@ public class SipClientResource extends ClientResource {
     }
 
     @Override
+    protected Request createRequest(Request prototype) {
+        return new SipRequest((SipRequest) prototype);
+    }
+
+    @Override
     protected Response createResponse(Request request) {
         return new SipResponse(request);
     }
