@@ -32,6 +32,7 @@ package org.restlet.engine.nio;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.Channels;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -271,31 +272,37 @@ public abstract class OutboundWay extends Way {
         while (isProcessing() && getByteBuffer().hasRemaining()) {
             if (getMessageState() == MessageState.BODY) {
                 if (getMessage().isEntityAvailable()) {
+                    long entitySize = getMessage().getEntity().getSize();
+                    int available = getEntityStream().available();
+                    int result = 0;
+
                     // Writing the body doesn't rely on the line builder
                     switch (getEntityType()) {
                     case ASYNC_CHANNEL:
-
-                        break;
-
-                    case SYNC_CHANNEL:
-
-                        break;
-
                     case FILE_CHANNEL:
+                    case SYNC_CHANNEL:
+                        result = getEntityChannel().read(getByteBuffer());
 
+                        if (result > 0) {
+                            setEntityIndex(getEntityIndex() + result);
+                        } else if (result == -1) {
+                            setEntityIndex(getEntityIndex() + available);
+                        }
+
+                        // Detect end of entity reached
+                        if ((result == -1)
+                                || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
+                            setMessageState(MessageState.IDLE);
+                        }
                         break;
 
                     case STREAM:
                         if (getByteBuffer().hasArray()) {
                             byte[] byteArray = getByteBuffer().array();
-                            int available = getEntityStream().available();
 
                             if (available > 0) {
-                                long entitySize = getMessage().getEntity()
-                                        .getSize();
-
                                 // Non-blocking read guaranteed
-                                int result = getEntityStream().read(byteArray,
+                                result = getEntityStream().read(byteArray,
                                         getByteBuffer().position(), available);
 
                                 if (result > 0) {
@@ -321,8 +328,21 @@ public abstract class OutboundWay extends Way {
                                 // thread...
                             }
                         } else {
-                            System.out
-                                    .println("No underlying byte array for the NIO byte buffer!");
+                            ReadableByteChannel rbc = Channels
+                                    .newChannel(getEntityStream());
+                            result = rbc.read(getByteBuffer());
+
+                            if (result > 0) {
+                                setEntityIndex(getEntityIndex() + result);
+                            } else if (result == -1) {
+                                setEntityIndex(getEntityIndex() + available);
+                            }
+
+                            // Detect end of entity reached
+                            if ((result == -1)
+                                    || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
+                                setMessageState(MessageState.IDLE);
+                            }
                         }
                         break;
                     }

@@ -84,7 +84,8 @@ public abstract class Way {
      *            The byte buffer size.
      */
     public Way(Connection<?> connection, int bufferSize) {
-        this.byteBuffer = ByteBuffer.allocate(bufferSize);
+        this.byteBuffer = connection.getHelper().isDirectBuffers() ? ByteBuffer
+                .allocateDirect(bufferSize) : ByteBuffer.allocate(bufferSize);
         this.lineBuilder = new StringBuilder();
         this.messages = new ConcurrentLinkedQueue<Response>();
         this.message = null;

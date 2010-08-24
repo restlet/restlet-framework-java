@@ -189,6 +189,13 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>32*1024</td>
  * <td>Size of the content buffer for sending messages.</td>
  * </tr>
+ * <tr>
+ * <td>directBuffers</td>
+ * <td>boolean</td>
+ * <td>true</td>
+ * <td>Indicates if direct NIO buffers should be allocated instead of regular
+ * buffers. See NIO's ByteBuffer Javadocs.</td>
+ * </tr>
  * </table>
  * 
  * @author Jerome Louvel
@@ -621,6 +628,16 @@ public abstract class BaseHelper<T extends Connector> extends
      *         JVM exit).
      */
     public abstract boolean isControllerDaemon();
+
+    /**
+     * Indicates if direct NIO buffers should be used.
+     * 
+     * @return True if direct NIO buffers should be used.
+     */
+    public boolean isDirectBuffers() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "directBuffers", "true"));
+    }
 
     /**
      * Indicates if persistent connections should be used if possible.
