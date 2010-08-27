@@ -23,7 +23,8 @@ Changes log
          methods in the ClientResource class.
     - Misc
        - Updated Grizzly library to version 1.9.19.
-       - 
+       - Improved concurrency for TunnelFilter.AcceptReplacer. 
+         Contributed by Tim Peierls.
 
 - 2.0.0 (2010-07-19)
     - API changes

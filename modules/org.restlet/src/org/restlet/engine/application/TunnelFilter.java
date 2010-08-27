@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,17 +82,48 @@ public class TunnelFilter extends Filter {
      * for a a series of specific agent (i.e. web client) attributes.
      * 
      * @author Thierry Boileau
-     * 
      */
     private static class AcceptReplacer {
+
+        static class Builder {
+            String acceptOld;
+
+            String acceptNew;
+
+            Map<String, String> agentAttributes = new HashMap<String, String>();
+
+            void setAcceptOld(String acceptOld) {
+                this.acceptOld = acceptOld;
+            }
+
+            void setAcceptNew(String acceptNew) {
+                this.acceptNew = acceptNew;
+            }
+
+            void putAgentAttribute(String key, String value) {
+                agentAttributes.put(key, value);
+            }
+
+            AcceptReplacer build() {
+                return new AcceptReplacer(acceptOld, acceptNew, agentAttributes);
+            }
+        }
+
+        AcceptReplacer(String acceptOld, String acceptNew,
+                Map<String, String> agentAttributes) {
+            this.acceptOld = acceptOld;
+            this.acceptNew = acceptNew;
+            this.agentAttributes = Collections.unmodifiableMap(agentAttributes);
+        }
+
         /** New accept header value. */
-        private volatile String acceptNew;
+        private final String acceptNew;
 
         /** Old accept header value. */
-        private volatile String acceptOld;
+        private final String acceptOld;
 
         /** Agent attributes that must be checked. */
-        private volatile Map<String, String> agentAttributes;
+        private final Map<String, String> agentAttributes;
 
         public String getAcceptNew() {
             return acceptNew;
@@ -102,24 +134,13 @@ public class TunnelFilter extends Filter {
         }
 
         public Map<String, String> getAgentAttributes() {
-            if (agentAttributes == null) {
-                agentAttributes = new HashMap<String, String>();
-            }
-
             return agentAttributes;
         }
 
-        public void setAcceptNew(String acceptNew) {
-            this.acceptNew = acceptNew;
-        }
-
-        public void setAcceptOld(String acceptOld) {
-            this.acceptOld = acceptOld;
-        }
     }
 
     /** Used to replace accept header values. */
-    private volatile List<AcceptReplacer> acceptReplacers;
+    private final List<AcceptReplacer> acceptReplacers = getAcceptReplacers();
 
     /**
      * Constructor.
@@ -154,72 +175,63 @@ public class TunnelFilter extends Filter {
 
     /**
      * Returns the list of new accept header values. Each of them describe also
-     * a set of conditions required to set the new value.
+     * a set of conditions required to set the new value. This method is used
+     * only to initialize the acceptReplacers field.
      * 
      * @return The list of new accept header values.
      */
     private List<AcceptReplacer> getAcceptReplacers() {
-        // Lazy initialization with double-check.
-        List<AcceptReplacer> a = this.acceptReplacers;
-        if (a == null) {
-            synchronized (this) {
-                a = this.acceptReplacers;
-                if (a == null) {
-                    this.acceptReplacers = a = new ArrayList<AcceptReplacer>();
+        List<AcceptReplacer> acceptReplacers = new ArrayList<AcceptReplacer>();
+        // Load the accept.properties file.
+        final URL userAgentPropertiesUrl = Engine
+                .getResource("org/restlet/service/accept.properties");
+        if (userAgentPropertiesUrl != null) {
+            BufferedReader reader;
+            try {
+                reader = new BufferedReader(new InputStreamReader(
+                        userAgentPropertiesUrl.openStream(), CharacterSet.UTF_8
+                                .getName()), IoUtils.getBufferSize());
 
-                    // Load the accept.properties file.
-                    final URL userAgentPropertiesUrl = Engine
-                            .getResource("org/restlet/service/accept.properties");
-                    if (userAgentPropertiesUrl != null) {
-                        BufferedReader reader;
-                        try {
-                            reader = new BufferedReader(new InputStreamReader(
-                                    userAgentPropertiesUrl.openStream(),
-                                    CharacterSet.UTF_8.getName()), IoUtils
-                                    .getBufferSize());
+                AcceptReplacer.Builder acceptReplacerBuilder = new AcceptReplacer.Builder();
 
-                            AcceptReplacer acceptReplacer = new AcceptReplacer();
+                try {
+                    // Read the entire file, excluding comment lines starting
+                    // with "#" character.
+                    String line = reader.readLine();
+                    for (; line != null; line = reader.readLine()) {
+                        if (!line.startsWith("#")) {
+                            final String[] keyValue = line.split(":");
+                            if (keyValue.length == 2) {
+                                final String key = keyValue[0].trim();
+                                final String value = keyValue[1].trim();
+                                if ("acceptOld".equalsIgnoreCase(key)) {
+                                    acceptReplacerBuilder.setAcceptOld((""
+                                            .equals(value)) ? null : value);
+                                } else if ("acceptNew".equalsIgnoreCase(key)) {
+                                    acceptReplacerBuilder.setAcceptNew(value);
+                                    acceptReplacers.add(acceptReplacerBuilder
+                                            .build());
 
-                            // Read the entire file, excluding comment lines
-                            // starting with "#" character.
-                            String line = reader.readLine();
-                            for (; line != null; line = reader.readLine()) {
-                                if (!line.startsWith("#")) {
-                                    final String[] keyValue = line.split(":");
-                                    if (keyValue.length == 2) {
-                                        final String key = keyValue[0].trim();
-                                        final String value = keyValue[1].trim();
-                                        if ("acceptOld".equalsIgnoreCase(key)) {
-                                            acceptReplacer.setAcceptOld((""
-                                                    .equals(value)) ? null
-                                                    : value);
-                                        } else if ("acceptNew"
-                                                .equalsIgnoreCase(key)) {
-                                            acceptReplacer.setAcceptNew(value);
-                                            this.acceptReplacers
-                                                    .add(acceptReplacer);
-
-                                            acceptReplacer = new AcceptReplacer();
-                                        } else {
-                                            acceptReplacer.getAgentAttributes()
-                                                    .put(key, value);
-                                        }
-                                    }
+                                    acceptReplacerBuilder = new AcceptReplacer.Builder();
+                                } else {
+                                    acceptReplacerBuilder.putAgentAttribute(
+                                            key, value);
                                 }
                             }
-
-                            reader.close();
-                        } catch (IOException e) {
-                            getContext().getLogger().warning(
-                                    "Cannot read '"
-                                            + userAgentPropertiesUrl.toString()
-                                            + "' due to: " + e.getMessage());
                         }
                     }
+                } finally {
+                    reader.close();
                 }
+            } catch (IOException e) {
+                getContext().getLogger().warning(
+                        "Cannot read '" + userAgentPropertiesUrl.toString()
+                                + "' due to: " + e.getMessage());
             }
         }
-        return a;
+
+        return acceptReplacers;
+
     }
 
     /**
@@ -506,7 +518,7 @@ public class TunnelFilter extends Filter {
         final Map<String, String> agentAttributes = request.getClientInfo()
                 .getAgentAttributes();
         if (agentAttributes != null) {
-            if (getAcceptReplacers() != null) {
+            if (!this.acceptReplacers.isEmpty()) {
                 // Get the old Accept header value
                 Form headers = (Form) request.getAttributes().get(
                         HeaderConstants.ATTRIBUTE_HEADERS);
