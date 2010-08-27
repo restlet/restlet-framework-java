@@ -40,6 +40,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
+import org.restlet.data.Range;
 import org.restlet.engine.Edition;
 import org.restlet.representation.Representation;
 
@@ -237,6 +238,36 @@ public final class BioUtils {
     }
 
     /**
+     * Returns the size effectively available. This returns the same value as
+     * {@link #getSize()} if no range is defined, otherwise it returns the size
+     * of the range using {@link Range#getSize()}.
+     * 
+     * @param representation
+     *            The representation to evaluate.
+     * @return The available size.
+     */
+    public static long getAvailableSize(Representation representation) {
+        // [ifndef gwt]
+        if (representation.getRange() == null) {
+            return representation.getSize();
+        } else if (representation.getRange().getSize() != Range.SIZE_MAX) {
+            return representation.getRange().getSize();
+        } else if (representation.getSize() != Representation.UNKNOWN_SIZE) {
+            if (representation.getRange().getIndex() != Range.INDEX_LAST) {
+                return representation.getSize()
+                        - representation.getRange().getIndex();
+            }
+
+            return representation.getSize();
+        }
+
+        return Representation.UNKNOWN_SIZE;
+        // [enddef]
+        // [ifdef gwt] line uncomment
+        // return getSize();
+    }
+
+    /**
      * Returns a reader from an input stream and a character set.
      * 
      * @param stream
@@ -288,10 +319,8 @@ public final class BioUtils {
                         representation.write(pipedWriter);
                         pipedWriter.close();
                     } catch (IOException ioe) {
-                        Context
-                                .getCurrentLogger()
-                                .log(
-                                        Level.FINE,
+                        Context.getCurrentLogger()
+                                .log(Level.FINE,
                                         "Error while writing to the piped reader.",
                                         ioe);
                     }
@@ -301,13 +330,24 @@ public final class BioUtils {
             result = pipedReader;
             // [enddef]
         } else {
-            Context
-                    .getCurrentLogger()
+            Context.getCurrentLogger()
                     .log(Level.WARNING,
                             "The GAE edition is unable to return a reader for a writer representation.");
         }
         return result;
 
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns an output stream based on a given writer.
+     * 
+     * @param writer
+     *            The writer.
+     * @return the output stream of the writer
+     */
+    public static java.io.OutputStream getStream(java.io.Writer writer) {
+        return new WriterOutputStream(writer);
     }
 
     // [ifndef gwt] method
@@ -368,10 +408,8 @@ public final class BioUtils {
                         os.write(-1);
                         os.close();
                     } catch (IOException ioe) {
-                        Context
-                                .getCurrentLogger()
-                                .log(
-                                        Level.FINE,
+                        Context.getCurrentLogger()
+                                .log(Level.FINE,
                                         "Error while writing to the piped input stream.",
                                         ioe);
                     }
@@ -381,10 +419,8 @@ public final class BioUtils {
             result = pipe.getInputStream();
             // [enddef]
         } else {
-            Context
-                    .getCurrentLogger()
-                    .log(
-                            Level.WARNING,
+            Context.getCurrentLogger()
+                    .log(Level.WARNING,
                             "The GAE edition is unable to get an InputStream out of an OutputRepresentation.");
         }
 
@@ -393,14 +429,29 @@ public final class BioUtils {
 
     // [ifndef gwt] method
     /**
-     * Returns an output stream based on a given writer.
+     * Converts the representation to a string value. Be careful when using this
+     * method as the conversion of large content to a string fully stored in
+     * memory can result in OutOfMemoryErrors being thrown.
      * 
-     * @param writer
-     *            The writer.
-     * @return the output stream of the writer
+     * @param representation
+     *            The representation to convert.
+     * @return The representation as a string value.
      */
-    public static java.io.OutputStream getStream(java.io.Writer writer) {
-        return new WriterOutputStream(writer);
+    public static String getText(Representation representation)
+            throws IOException {
+        String result = null;
+
+        if (representation.isAvailable()) {
+            if (representation.getSize() == 0) {
+                result = "";
+            } else {
+                java.io.StringWriter sw = new java.io.StringWriter();
+                representation.write(sw);
+                result = sw.toString();
+            }
+        }
+
+        return result;
     }
 
     // [ifndef gwt] method
@@ -532,7 +583,7 @@ public final class BioUtils {
                 } else {
                     result = toString(new InputStreamReader(inputStream));
                 }
-                
+
                 inputStream.close();
             } catch (Exception e) {
                 // Returns an empty string

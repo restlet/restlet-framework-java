@@ -24,6 +24,8 @@ Changes log
        - Optional authentication keep request in neutral state: neither
          authenticated neither unauthenticated.
          Reported by Bruno Harbulot.
+       - Fixed RangeRepresentation which was incorrectly modifying the
+         wrapped representation. Reported by David Fogel.
     - Misc
        - Updated Grizzly library to version 1.9.19.
        - Improved concurrency for TunnelFilter.AcceptReplacer. 

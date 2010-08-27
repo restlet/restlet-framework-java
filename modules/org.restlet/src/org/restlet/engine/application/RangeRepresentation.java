@@ -33,6 +33,7 @@ package org.restlet.engine.application;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.Range;
@@ -49,6 +50,9 @@ import org.restlet.util.WrapperRepresentation;
  * @author Jerome Louvel
  */
 public class RangeRepresentation extends WrapperRepresentation {
+
+    /** The range specific to this wrapper. */
+    private volatile Range range;
 
     /**
      * Constructor.
@@ -78,8 +82,59 @@ public class RangeRepresentation extends WrapperRepresentation {
     }
 
     @Override
+    public long getAvailableSize() {
+        return BioUtils.getAvailableSize(this);
+    }
+
+    // [ifndef gwt] method
+    @Override
+    public java.nio.channels.ReadableByteChannel getChannel()
+            throws IOException {
+        return org.restlet.engine.io.NioUtils.getChannel(getStream());
+    }
+
+    /**
+     * Returns the range specific to this wrapper. The wrapped representation
+     * must not have a range set itself.
+     * 
+     * @return The range specific to this wrapper.
+     */
+    @Override
+    public Range getRange() {
+        return this.range;
+    }
+
+    @Override
+    public Reader getReader() throws IOException {
+        return BioUtils.getReader(getStream(), getCharacterSet());
+    }
+
+    @Override
     public InputStream getStream() throws IOException {
         return new RangeInputStream(super.getStream(), getSize(), getRange());
+    }
+
+    @Override
+    public String getText() throws IOException {
+        return BioUtils.getText(this);
+    }
+
+    /**
+     * Sets the range specific to this wrapper. This will not affect the wrapped
+     * representation.
+     * 
+     * @param range
+     *            The range specific to this wrapper.
+     */
+    @Override
+    public void setRange(Range range) {
+        this.range = range;
+    }
+
+    // [ifndef gwt] method
+    @Override
+    public void write(java.io.Writer writer) throws IOException {
+        write(BioUtils.getStream(writer));
     }
 
     @Override

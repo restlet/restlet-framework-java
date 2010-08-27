@@ -63,8 +63,9 @@ import org.restlet.test.ext.xml.ResolvingTransformerTestCase;
 import org.restlet.test.ext.xml.RestletXmlTestCase;
 import org.restlet.test.ext.xml.TransformerTestCase;
 import org.restlet.test.jaxrs.AllJaxRsTests;
-import org.restlet.test.representation.AppendableTestCase;
-import org.restlet.test.representation.DigestTestCase;
+import org.restlet.test.representation.AppendableRepresentationTestCase;
+import org.restlet.test.representation.DigesterRepresentationTestCase;
+import org.restlet.test.representation.RangeRepresentationTestCase;
 import org.restlet.test.resource.ResourceTestSuite;
 import org.restlet.test.routing.FilterTestCase;
 import org.restlet.test.routing.RedirectTestCase;
@@ -95,7 +96,7 @@ public class RestletTestSuite extends TestSuite {
     /** Constructor. */
     public RestletTestSuite() {
         addTest(ResourceTestSuite.suite());
-        addTestSuite(AppendableTestCase.class);
+        addTestSuite(AppendableRepresentationTestCase.class);
         addTestSuite(AtomTestCase.class);
         addTestSuite(AuthenticationInfoTestCase.class);
         addTestSuite(CallTestCase.class);
@@ -134,11 +135,12 @@ public class RestletTestSuite extends TestSuite {
         // edition.
         // [ifndef gae]
         addTestSuite(ComponentXmlTestCase.class);
-        addTestSuite(DigestTestCase.class);
+        addTestSuite(DigesterRepresentationTestCase.class);
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpBasicTestCase.class);
         addTestSuite(HttpDigestTestCase.class);
         addTestSuite(RangeTestCase.class);
+        addTestSuite(RangeRepresentationTestCase.class);
         addTestSuite(RedirectTestCase.class);
         addTestSuite(SecurityTestCase.class);
         addTestSuite(TemplateFilterTestCase.class);

@@ -38,7 +38,7 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author Jerome Louvel
  */
-public class AppendableTestCase extends RestletTestCase {
+public class AppendableRepresentationTestCase extends RestletTestCase {
 
     public void testAppendable() throws Exception {
         AppendableRepresentation ar = new AppendableRepresentation();

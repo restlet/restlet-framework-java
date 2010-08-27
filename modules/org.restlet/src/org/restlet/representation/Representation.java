@@ -322,7 +322,7 @@ public abstract class Representation extends RepresentationInfo {
      */
     public long exhaust() throws IOException {
         long result = -1L;
-        
+
         // [ifndef gwt]
         if (isAvailable()) {
             InputStream is = getStream();
@@ -342,22 +342,7 @@ public abstract class Representation extends RepresentationInfo {
      * @return The available size.
      */
     public long getAvailableSize() {
-        // [ifndef gwt]
-        if (getRange() == null) {
-            return getSize();
-        } else if (getRange().getSize() != Range.SIZE_MAX) {
-            return getRange().getSize();
-        } else if (getSize() != Representation.UNKNOWN_SIZE) {
-            if (getRange().getIndex() != Range.INDEX_LAST) {
-                return getSize() - getRange().getIndex();
-            }
-            return getSize();
-        }
-
-        return Representation.UNKNOWN_SIZE;
-        // [enddef]
-        // [ifdef gwt] line uncomment
-        // return getSize();
+        return BioUtils.getAvailableSize(this);
     }
 
     // [ifndef gwt] member

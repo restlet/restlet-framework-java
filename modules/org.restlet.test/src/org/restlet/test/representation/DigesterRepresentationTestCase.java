@@ -53,7 +53,7 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author Thierry Boileau
  */
-public class DigestTestCase extends RestletTestCase {
+public class DigesterRepresentationTestCase extends RestletTestCase {
 
     /** Component used for the tests. */
     private Component component;
