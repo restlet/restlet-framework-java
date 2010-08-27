@@ -116,8 +116,11 @@ public abstract class Authenticator extends Filter {
      */
     @Override
     protected int beforeHandle(Request request, Response response) {
-        if (authenticate(request, response) || isOptional()) {
+        if (authenticate(request, response)) {
             return authenticated(request, response);
+        } else if (isOptional()) {
+            response.setStatus(Status.SUCCESS_OK);
+            return CONTINUE;
         }
 
         return unauthenticated(request, response);
