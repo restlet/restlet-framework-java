@@ -55,6 +55,8 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.http.io.UnclosableInputStream;
+import org.restlet.engine.http.io.UnclosableOutputStream;
 import org.restlet.ext.servlet.ServletUtils;
 import org.restlet.util.Series;
 
@@ -190,7 +192,7 @@ public class ServletCall extends ServerCall {
     @Override
     public InputStream getRequestEntityStream(long size) {
         try {
-            return getRequest().getInputStream();
+            return new UnclosableInputStream(getRequest().getInputStream());
         } catch (IOException e) {
             return null;
         }
@@ -281,7 +283,7 @@ public class ServletCall extends ServerCall {
     @Override
     public OutputStream getResponseEntityStream() {
         try {
-            return getResponse().getOutputStream();
+            return new UnclosableOutputStream(getResponse().getOutputStream());
         } catch (IOException e) {
             return null;
         }

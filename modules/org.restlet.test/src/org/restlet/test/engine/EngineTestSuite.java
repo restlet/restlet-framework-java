@@ -62,8 +62,8 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(HttpCallTestCase.class);
         addTestSuite(ImmutableDateTestCase.class);
         addTestSuite(InputEntityStreamTestCase.class);
-        addTestSuite(KeepAliveInputStreamTestCase.class);
-        addTestSuite(KeepAliveOutputStreamTestCase.class);
+        addTestSuite(UnclosableInputStreamTestCase.class);
+        addTestSuite(UnclosableOutputStreamTestCase.class);
         addTestSuite(PreferencesTestCase.class);
         // Tests based on HTTP client connectors are not supported by the GAE
         // edition.

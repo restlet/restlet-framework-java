@@ -26,6 +26,11 @@ Changes log
          Reported by Bruno Harbulot.
        - Fixed RangeRepresentation which was incorrectly modifying the
          wrapped representation. Reported by David Fogel.
+       - The ServerServlet now wraps the Servlet input and output 
+         streams to prevent them from being closed, especially once the
+         response has been returned to the container as it could be
+         reused and impact another call.
+         Suggested by Alois Cochard.
     - Misc
        - Updated Grizzly library to version 1.9.19.
        - Improved concurrency for TunnelFilter.AcceptReplacer. 

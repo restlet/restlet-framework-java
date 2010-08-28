@@ -42,7 +42,7 @@ import java.io.InputStream;
  * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
  * 
  */
-public class KeepAliveInputStream extends FilterInputStream {
+public class UnclosableInputStream extends FilterInputStream {
 
     /**
      * Constructor.
@@ -50,7 +50,7 @@ public class KeepAliveInputStream extends FilterInputStream {
      * @param source
      *            The source input stream.
      */
-    public KeepAliveInputStream(InputStream source) {
+    public UnclosableInputStream(InputStream source) {
         super(source);
     }
 

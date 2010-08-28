@@ -28,32 +28,43 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http.io;
+package org.restlet.test.engine;
 
-import java.io.FilterOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 
-// [excludes gwt]
+import org.restlet.engine.http.io.UnclosableInputStream;
+import org.restlet.test.RestletTestCase;
+
+
 /**
- * OutputStream decorator to trap close() calls so that the decorated stream
- * does not get closed.
+ * Unit tests for the HTTP KeepAlive.
  * 
- * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
+ * @author Kevin Conaway
  */
-public class KeepAliveOutputStream extends FilterOutputStream {
+public class UnclosableInputStreamTestCase extends RestletTestCase {
 
-    /**
-     * Constructor.
-     * 
-     * @param source
-     *            The decorated source stream.
-     */
-    public KeepAliveOutputStream(OutputStream source) {
-        super(source);
+    static class MockInputStream extends InputStream {
+        boolean closed = false;
+
+        @Override
+        public void close() throws IOException {
+            this.closed = true;
+        }
+
+        @Override
+        public int read() throws IOException {
+            return -1;
+        }
     }
 
-    @Override
-    public void close() throws IOException {
+    public void testClose() throws IOException {
+        final MockInputStream mock = new MockInputStream();
+        final InputStream keepalive = new UnclosableInputStream(mock);
+
+        keepalive.close();
+        assertFalse(mock.closed);
+        mock.close();
+        assertTrue(mock.closed);
     }
 }
