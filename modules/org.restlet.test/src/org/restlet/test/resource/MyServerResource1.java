@@ -30,6 +30,8 @@
 
 package org.restlet.test.resource;
 
+import org.restlet.Server;
+import org.restlet.data.Protocol;
 import org.restlet.resource.ServerResource;
 
 /**
@@ -38,6 +40,12 @@ import org.restlet.resource.ServerResource;
  * @author Jerome Louvel
  */
 public class MyServerResource1 extends ServerResource implements MyResource1 {
+
+    public static void main(String[] args) throws Exception {
+        Server server = new Server(Protocol.HTTP, 8182);
+        server.setNext(MyServerResource1.class);
+        server.start();
+    }
 
     private volatile MyBean myBean = new MyBean("myName", "myDescription");
 

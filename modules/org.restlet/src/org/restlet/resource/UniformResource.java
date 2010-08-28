@@ -130,11 +130,13 @@ public abstract class UniformResource {
 
         if (throwable instanceof ResourceException) {
             ResourceException re = (ResourceException) throwable;
-            status = re.getStatus();
 
             if (re.getCause() != null) {
                 // What is most interesting is the embedded cause
                 throwable = re.getCause();
+                status = getStatusService().getStatus(throwable, this);
+            } else {
+                status = re.getStatus();
             }
         } else {
             status = getStatusService().getStatus(throwable, this);

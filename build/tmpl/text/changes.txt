@@ -33,7 +33,10 @@ Changes log
          Suggested by Alois Cochard.
        - Removed Message#finalize() calling release() at GC time which 
          can have side-effects that are hard to isolate, especially in 
-         Servlet environments.
+         Servlet environments. Reported by Giovani Pieri.
+       - Throwables wrapped in ResourceExceptions can now get a custom
+         status via the StatusService. Reported by Olivier Miel and
+         Olivier Monaco.
     - Misc
        - Updated Grizzly library to version 1.9.19.
        - Improved concurrency for TunnelFilter.AcceptReplacer. 

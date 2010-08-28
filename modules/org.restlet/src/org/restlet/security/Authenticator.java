@@ -121,9 +121,9 @@ public abstract class Authenticator extends Filter {
         } else if (isOptional()) {
             response.setStatus(Status.SUCCESS_OK);
             return CONTINUE;
+        } else {
+            return unauthenticated(request, response);
         }
-
-        return unauthenticated(request, response);
     }
 
     /**

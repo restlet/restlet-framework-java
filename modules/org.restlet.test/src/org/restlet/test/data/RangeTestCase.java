@@ -79,8 +79,8 @@ public class RangeTestCase extends RestletTestCase {
             Router router = new Router();
             router.attach("/test", new TestRangeRestlet());
             router.attach("/testGet", new TestRangeGetRestlet());
-            Directory directory = new Directory(getContext(), LocalReference
-                    .createFileReference(testDir));
+            Directory directory = new Directory(getContext(),
+                    LocalReference.createFileReference(testDir));
             directory.setModifiable(true);
             router.attach("/testPut/", directory);
             return router;
@@ -154,8 +154,8 @@ public class RangeTestCase extends RestletTestCase {
     }
 
     // Create a temporary directory for the tests
-    private static final File testDir = new File(System
-            .getProperty("java.io.tmpdir"), "rangeTestCase");
+    private static final File testDir = new File(
+            System.getProperty("java.io.tmpdir"), "rangeTestCase");
 
     /** Component used for the tests. */
     private Component component;
@@ -305,6 +305,8 @@ public class RangeTestCase extends RestletTestCase {
         request.setEntity(new StringRepresentation("0000000000"));
         request.setRanges(Arrays.asList(new Range(1, 10)));
         response = client.handle(request);
+        System.out.println(response.getStatus() + " / "
+                + response.getStatus().getThrowable());
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         response = client.handle(new Request(Method.GET, request
                 .getResourceRef()));
