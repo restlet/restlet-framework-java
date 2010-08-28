@@ -105,14 +105,6 @@ public abstract class Message {
     }
 
     /**
-     * Attempts to {@link #release()} the message.
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        release();
-    }
-
-    /**
      * Returns the modifiable map of attributes that can be used by developers
      * to save information relative to the message. Creates a new instance if no
      * one has been set. This is an easier alternative to the creation of a
