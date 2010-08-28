@@ -274,14 +274,17 @@ public class Context {
 
     // [ifndef gwt] method
     /**
-     * Returns a request dispatcher to component's virtual hosts. This is mostly
-     * useful for application that want to optimize calls to other applications
-     * hosted in the same component or to the application itself.<br>
+     * Returns a request dispatcher to component's virtual hosts. This is useful
+     * for application that want to optimize calls to other applications hosted
+     * in the same component or to the application itself.<br>
      * <br>
      * The processing is the same as what would have been done if the request
      * came from one of the component's server connectors. It first must match
      * one of the registered virtual hosts. Then it can be routed to one of the
-     * attached Restlets, typically an Application.
+     * attached Restlets, typically an Application.<br>
+     * <br>
+     * Note that the RIAP pseudo protocol isn't supported by this dispatcher,
+     * you should instead rely on the {@link #getClientDispatcher()} method.
      * 
      * @return A request dispatcher to the server connectors' router.
      */

@@ -72,8 +72,9 @@ public class RangeFilter extends Filter {
                     // At this time, list of ranges are not supported.
                     if (request.getRanges().size() == 1
                             && (!request.getConditions().hasSomeRange() || request
-                                    .getConditions().getRangeStatus(
-                                            response.getEntity()).isSuccess())) {
+                                    .getConditions()
+                                    .getRangeStatus(response.getEntity())
+                                    .isSuccess())) {
                         Range requestedRange = request.getRanges().get(0);
 
                         if (response.getEntity().getSize() == Representation.UNKNOWN_SIZE) {
@@ -82,29 +83,22 @@ public class RangeFilter extends Filter {
                                     && !(requestedRange.getIndex() == Range.INDEX_LAST && requestedRange
                                             .getSize() == Range.SIZE_MAX)) {
                                 // The end index cannot be properly computed
-                                response
-                                        .setStatus(Status.SERVER_ERROR_INTERNAL);
+                                response.setStatus(Status.SERVER_ERROR_INTERNAL);
                                 getLogger()
                                         .warning(
                                                 "Unable to serve this range since at least the end index of the range cannot be computed.");
                                 response.setEntity(null);
                             }
-                        } else {
-
-                            if (!requestedRange.equals(response.getEntity()
-                                    .getRange())) {
-                                if (rangedEntity) {
-                                    getLogger()
-                                            .info(
-                                                    "The range of the response entity is not equal to the requested one.");
-                                }
-
-                                response.setEntity(new RangeRepresentation(
-                                        response.getEntity(), requestedRange));
-                                response
-                                        .setStatus(Status.SUCCESS_PARTIAL_CONTENT);
+                        } else if (!requestedRange.equals(response.getEntity()
+                                .getRange())) {
+                            if (rangedEntity) {
+                                getLogger()
+                                        .info("The range of the response entity is not equal to the requested one.");
                             }
 
+                            response.setEntity(new RangeRepresentation(response
+                                    .getEntity(), requestedRange));
+                            response.setStatus(Status.SUCCESS_PARTIAL_CONTENT);
                         }
                     } else if (request.getRanges().size() > 1) {
                         // Return a server error as this feature isn't supported
@@ -118,8 +112,7 @@ public class RangeFilter extends Filter {
                 } else {
                     if (rangedEntity) {
                         getLogger()
-                                .info(
-                                        "The status of a response to a partial GET must be \"206 Partial content\".");
+                                .info("The status of a response to a partial GET must be \"206 Partial content\".");
                     }
                 }
             }
