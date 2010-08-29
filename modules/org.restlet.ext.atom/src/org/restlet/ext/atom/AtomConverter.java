@@ -87,14 +87,18 @@ public class AtomConverter extends ConverterHelper {
         float result = -1.0F;
 
         if (source instanceof Feed) {
-            if (MediaType.APPLICATION_ATOM.isCompatible(target.getMediaType())) {
+            if (target == null) {
+                result = 0.5F;
+            } else if (MediaType.APPLICATION_ATOM.isCompatible(target
+                    .getMediaType())) {
                 result = 1.0F;
             } else {
                 result = 0.5F;
             }
         } else if (source instanceof Service) {
-            if (MediaType.APPLICATION_ATOMPUB_SERVICE.isCompatible(target
-                    .getMediaType())) {
+            if ((target != null)
+                    && MediaType.APPLICATION_ATOMPUB_SERVICE
+                            .isCompatible(target.getMediaType())) {
                 result = 1.0F;
             } else {
                 result = 0.5F;

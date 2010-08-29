@@ -66,7 +66,6 @@ public class VelocityConverter extends ConverterHelper {
 
     @Override
     public float score(Object source, Variant target, UniformResource resource) {
-
         if (source instanceof Template) {
             return 1.0f;
         }

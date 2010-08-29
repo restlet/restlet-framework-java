@@ -73,6 +73,7 @@ public class JdbcConverter extends ConverterHelper {
                 || source instanceof ResultSet) {
             return 1.0f;
         }
+
         return 0;
     }
 

@@ -129,7 +129,9 @@ public class EmfConverter extends ConverterHelper {
         if (source instanceof EmfRepresentation<?>) {
             result = 1.0F;
         } else {
-            if (VARIANT_JSON.isCompatible(target)) {
+            if (target == null) {
+                result = 0.5F;
+            } else if (VARIANT_JSON.isCompatible(target)) {
                 result = 0.8F;
             } else if (isCompatible(target)) {
                 result = 0.8F;
@@ -201,10 +203,11 @@ public class EmfConverter extends ConverterHelper {
     }
 
     protected boolean isCompatible(Variant variant) {
-        return VARIANT_APPLICATION_ALL_XML.isCompatible(variant)
-                || VARIANT_APPLICATION_XML.isCompatible(variant)
-                || VARIANT_APPLICATION_XMI.isCompatible(variant)
-                || VARIANT_TEXT_HTML.isCompatible(variant)
-                || VARIANT_TEXT_XML.isCompatible(variant);
+        return (variant != null)
+                && (VARIANT_APPLICATION_ALL_XML.isCompatible(variant)
+                        || VARIANT_APPLICATION_XML.isCompatible(variant)
+                        || VARIANT_APPLICATION_XMI.isCompatible(variant)
+                        || VARIANT_TEXT_HTML.isCompatible(variant) || VARIANT_TEXT_XML
+                        .isCompatible(variant));
     }
 }

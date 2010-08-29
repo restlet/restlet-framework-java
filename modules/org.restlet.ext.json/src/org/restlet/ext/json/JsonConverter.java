@@ -89,20 +89,12 @@ public class JsonConverter extends ConverterHelper {
     public float score(Object source, Variant target, UniformResource resource) {
         float result = -1.0F;
 
-        if (source instanceof JSONArray) {
-            if (MediaType.APPLICATION_JSON.isCompatible(target.getMediaType())) {
-                result = 1.0F;
-            } else {
+        if ((source instanceof JSONArray) || (source instanceof JSONObject)
+                || (source instanceof JSONTokener)) {
+            if (target == null) {
                 result = 0.5F;
-            }
-        } else if (source instanceof JSONObject) {
-            if (MediaType.APPLICATION_JSON.isCompatible(target.getMediaType())) {
-                result = 1.0F;
-            } else {
-                result = 0.5F;
-            }
-        } else if (source instanceof JSONTokener) {
-            if (MediaType.APPLICATION_JSON.isCompatible(target.getMediaType())) {
+            } else if (MediaType.APPLICATION_JSON.isCompatible(target
+                    .getMediaType())) {
                 result = 1.0F;
             } else {
                 result = 0.5F;

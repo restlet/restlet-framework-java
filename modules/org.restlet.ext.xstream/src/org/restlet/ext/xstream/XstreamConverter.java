@@ -121,7 +121,9 @@ public class XstreamConverter extends ConverterHelper {
         if (source instanceof XstreamRepresentation<?>) {
             result = 1.0F;
         } else {
-            if (VARIANT_JSON.isCompatible(target)) {
+            if (target == null) {
+                result = 0.5F;
+            } else if (VARIANT_JSON.isCompatible(target)) {
                 result = 0.8F;
             } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(target)
                     || VARIANT_APPLICATION_XML.isCompatible(target)
@@ -167,7 +169,7 @@ public class XstreamConverter extends ConverterHelper {
 
         // The source for the XStream conversion
         XstreamRepresentation<?> xstreamSource = null;
-        
+
         if (source instanceof XstreamRepresentation) {
             xstreamSource = (XstreamRepresentation<?>) source;
         } else if (VARIANT_JSON.isCompatible(source)) {

@@ -109,7 +109,9 @@ public class JacksonConverter extends ConverterHelper {
         if (source instanceof JacksonRepresentation<?>) {
             result = 1.0F;
         } else {
-            if (VARIANT_JSON.isCompatible(target)) {
+            if (target == null) {
+                result = 0.5F;
+            } else if (VARIANT_JSON.isCompatible(target)) {
                 result = 0.8F;
             } else {
                 result = 0.5F;

@@ -105,8 +105,7 @@ public class JaxbConverter extends ConverterHelper {
                 && (source instanceof JaxbRepresentation<?> || isJaxbRootElementClass(source
                         .getClass()))) {
             if (target == null) {
-                // Can Happen when using ClientResource toRepresentation();
-                result = 1.0F;
+                result = 0.5F;
             } else if (MediaType.APPLICATION_ALL_XML.isCompatible(target
                     .getMediaType())) {
                 result = 1.0F;

@@ -103,16 +103,22 @@ public class RdfConverter extends ConverterHelper {
 
     @Override
     public float score(Object source, Variant target, UniformResource resource) {
+        float result = -1.0F;
+
         if (source instanceof Graph) {
-            if (VARIANT_RDF_N3.isCompatible(target)
+            if (target == null) {
+                result = 0.5F;
+            } else if (VARIANT_RDF_N3.isCompatible(target)
                     || VARIANT_RDF_NTRIPLES.isCompatible(target)
                     || VARIANT_RDF_TURTLE.isCompatible(target)
                     || VARIANT_RDF_XML.isCompatible(target)) {
-                return 1.0f;
+                result = 1.0F;
+            } else {
+                result = 0.5F;
             }
         }
 
-        return -1.0f;
+        return result;
     }
 
     @Override
@@ -127,8 +133,7 @@ public class RdfConverter extends ConverterHelper {
                 result = (new RdfRepresentation(source)).getGraph();
             }
         } catch (Exception e) {
-            Context
-                    .getCurrentLogger()
+            Context.getCurrentLogger()
                     .warning(
                             "Cannot convert a source representation into a Graph object.");
         }

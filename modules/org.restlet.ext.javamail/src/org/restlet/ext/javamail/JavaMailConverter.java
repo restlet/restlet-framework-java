@@ -72,6 +72,7 @@ public class JavaMailConverter extends ConverterHelper {
         if (source instanceof Message) {
             return 1.0f;
         }
+
         return -1.0f;
     }
 

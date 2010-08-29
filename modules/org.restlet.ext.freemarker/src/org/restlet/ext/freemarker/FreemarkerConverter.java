@@ -72,6 +72,7 @@ public class FreemarkerConverter extends ConverterHelper {
         if (source instanceof Template) {
             return 1.0f;
         }
+
         return -1.0f;
     }
 
@@ -87,9 +88,9 @@ public class FreemarkerConverter extends ConverterHelper {
 
         if (source instanceof Template) {
             return new TemplateRepresentation((Template) source,
-                    new ResolverHashModel(Resolver.createResolver(resource
-                            .getRequest(), resource.getResponse())), target
-                            .getMediaType());
+                    new ResolverHashModel(Resolver.createResolver(
+                            resource.getRequest(), resource.getResponse())),
+                    target.getMediaType());
 
         }
 

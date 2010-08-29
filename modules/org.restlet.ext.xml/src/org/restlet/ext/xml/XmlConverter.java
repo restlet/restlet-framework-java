@@ -92,7 +92,9 @@ public class XmlConverter extends ConverterHelper {
         float result = -1.0F;
 
         if (source instanceof Document) {
-            if (MediaType.APPLICATION_ALL_XML.isCompatible(target
+            if (target == null) {
+                result = 0.5F;
+            } else if (MediaType.APPLICATION_ALL_XML.isCompatible(target
                     .getMediaType())) {
                 result = 1.0F;
             } else if (MediaType.APPLICATION_XML.isCompatible(target

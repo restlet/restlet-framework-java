@@ -37,6 +37,8 @@ Changes log
        - Throwables wrapped in ResourceExceptions can now get a custom
          status via the StatusService. Reported by Olivier Miel and
          Olivier Monaco.
+       - Fixed potential NPEs in converters such as the JSON extension
+         converter. Reported by Alexander Kampmann.
     - Misc
        - Updated Grizzly library to version 1.9.19.
        - Improved concurrency for TunnelFilter.AcceptReplacer. 
