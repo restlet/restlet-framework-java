@@ -47,6 +47,8 @@ Changes log
          a similar (optional) method on ConverterHelper.
        - Fixed bug in ConnegUtils#getPreferedMetadata() causing the
          quality level to be ignored. Reported by Daniel Zhelyazkov.
+       - Reduce the number of OSGi imported packages for the Jackson
+         extension. Suggested by Jean-Luc Geering.
     - Misc
        - Updated Grizzly library to version 1.9.19.
        - Improved concurrency for TunnelFilter.AcceptReplacer. 
