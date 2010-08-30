@@ -50,7 +50,7 @@ public class ConnegUtils {
      * supported by the server and client preferences.
      * 
      * @param supported
-     *            The metadata supported by the server
+     *            The metadata supported by the server.
      * @param preferences
      *            The client preferences.
      * @return The preferred metadata.
@@ -65,6 +65,7 @@ public class ConnegUtils {
                 if (supported.contains(pref.getMetadata())
                         && (pref.getQuality() > maxQuality)) {
                     result = pref.getMetadata();
+                    maxQuality = pref.getQuality();
                 }
             }
         }

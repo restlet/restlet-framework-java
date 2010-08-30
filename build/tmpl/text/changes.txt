@@ -44,7 +44,9 @@ Changes log
          setting (Request#clientInfo#acceptedMediaTypes property) on
          the ClientResource based on the available converters. New
          ConverterService#updatePreferences() method was added with
-         a similar (optional
+         a similar (optional) method on ConverterHelper.
+       - Fixed bug in ConnegUtils#getPreferedMetadata() causing the
+         quality level to be ignored. Reported by Daniel Zhelyazkov.
     - Misc
        - Updated Grizzly library to version 1.9.19.
        - Improved concurrency for TunnelFilter.AcceptReplacer. 
