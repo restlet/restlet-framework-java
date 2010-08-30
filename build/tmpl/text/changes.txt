@@ -10,7 +10,8 @@ Changes log
        - Fixed the setting of the Request's rootRef attribute when 
          using the RIAP protocol.
          Reported by Tal Liron and Tim Peierls. 
-       - Fixed content negotiation issue in the servlet extension.  
+       - Fixed content negotiation issue in the Servlet extension and
+         all HTTP connectors except the internal one.  
        - Fixed the deserialization of unavailable entities in the GWT 
          edition.
        - Fixed serialization of String objects in the GWT extension.

@@ -43,6 +43,7 @@ import org.restlet.data.Metadata;
  * @author Thierry Boileau
  */
 public class MetadataExtension {
+
     /** The mapped metadata. */
     private final Metadata metadata;
 
