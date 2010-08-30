@@ -39,12 +39,18 @@ Changes log
          Olivier Monaco.
        - Fixed potential NPEs in converters such as the JSON extension
          converter. Reported by Alexander Kampmann.
+       - Fixed potential conversion issues due to lack of preference 
+         setting (Request#clientInfo#acceptedMediaTypes property) on
+         the ClientResource based on the available converters. New
+         ConverterService#updatePreferences() method was added with
+         a similar (optional
     - Misc
        - Updated Grizzly library to version 1.9.19.
        - Improved concurrency for TunnelFilter.AcceptReplacer. 
          Contributed by Tim Peierls.
        - Clarified Javadocs of Context#getServerDispatcher().
          Suggested by Alex Milowski.
+       - Added missing parsing capability to the ROME extension.
 
 - 2.0.0 (2010-07-19)
     - API changes

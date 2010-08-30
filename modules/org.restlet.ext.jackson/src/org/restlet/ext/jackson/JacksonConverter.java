@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
@@ -145,10 +146,10 @@ public class JacksonConverter extends ConverterHelper {
         Object result = null;
 
         // The source for the Jackson conversion
-        JacksonRepresentation jacksonSource = null;
+        JacksonRepresentation<?> jacksonSource = null;
 
         if (source instanceof JacksonRepresentation) {
-            jacksonSource = (JacksonRepresentation) source;
+            jacksonSource = (JacksonRepresentation<?>) source;
         } else if (VARIANT_JSON.isCompatible(source)) {
             jacksonSource = create(source, target);
         }
@@ -166,14 +167,13 @@ public class JacksonConverter extends ConverterHelper {
         return (T) result;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Representation toRepresentation(Object source, Variant target,
             UniformResource resource) {
         Representation result = null;
 
         if (source instanceof JacksonRepresentation) {
-            result = (JacksonRepresentation) source;
+            result = (JacksonRepresentation<?>) source;
         } else {
             if (target.getMediaType() == null) {
                 target.setMediaType(MediaType.APPLICATION_JSON);
@@ -188,4 +188,11 @@ public class JacksonConverter extends ConverterHelper {
 
         return result;
     }
+
+    @Override
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<T> entity) {
+        updatePreferences(preferences, MediaType.APPLICATION_JSON, 1.0F);
+    }
+
 }

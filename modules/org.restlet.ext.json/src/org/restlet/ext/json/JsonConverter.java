@@ -38,6 +38,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
@@ -186,4 +187,15 @@ public class JsonConverter extends ConverterHelper {
         return result;
 
     }
+
+    @Override
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<T> entity) {
+        if (JSONArray.class.isAssignableFrom(entity)
+                || JSONObject.class.isAssignableFrom(entity)
+                || JSONTokener.class.isAssignableFrom(entity)) {
+            updatePreferences(preferences, MediaType.APPLICATION_JSON, 1.0F);
+        }
+    }
+
 }

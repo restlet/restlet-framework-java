@@ -34,6 +34,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.ClientInfo;
+import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.engine.Helper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
@@ -112,20 +115,6 @@ public abstract class ConverterHelper extends Helper {
      * Scores the affinity of this helper with the source class.
      * 
      * @param source
-     *            The source representation to convert.
-     * @param target
-     *            The expected class of the Java object.
-     * @param resource
-     *            The calling resource.
-     * @return The affinity score of this helper.
-     */
-    public abstract <T> float score(Representation source, Class<T> target,
-            UniformResource resource);
-
-    /**
-     * Scores the affinity of this helper with the source class.
-     * 
-     * @param source
      *            The source object to convert.
      * @param target
      *            The expected representation metadata.
@@ -134,6 +123,20 @@ public abstract class ConverterHelper extends Helper {
      * @return The affinity score of this helper.
      */
     public abstract float score(Object source, Variant target,
+            UniformResource resource);
+
+    /**
+     * Scores the affinity of this helper with the source class.
+     * 
+     * @param source
+     *            The source representation to convert.
+     * @param target
+     *            The expected class of the Java object.
+     * @param resource
+     *            The calling resource.
+     * @return The affinity score of this helper.
+     */
+    public abstract <T> float score(Representation source, Class<T> target,
             UniformResource resource);
 
     /**
@@ -166,4 +169,48 @@ public abstract class ConverterHelper extends Helper {
     public abstract Representation toRepresentation(Object source,
             Variant target, UniformResource resource) throws IOException;
 
+    /**
+     * Updates the preferences of the given {@link ClientInfo} object with
+     * conversion capabilities for the given entity class.
+     * 
+     * @param preferences
+     *            The media type preferences.
+     * @param entity
+     *            The entity class to convert.
+     */
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<T> entity) {
+        // Does nothing by default
+    }
+
+    /**
+     * Updates the preferences of the given {@link ClientInfo} object with
+     * conversion capabilities for the given entity class.
+     * 
+     * @param preferences
+     *            The media type preferences.
+     * @param mediaType
+     *            The media type to update to add to the preferences.
+     * @param score
+     *            The media type score to use as a quality score.
+     */
+    public void updatePreferences(List<Preference<MediaType>> preferences,
+            MediaType mediaType, float score) {
+        boolean found = false;
+        Preference<MediaType> preference;
+
+        for (int i = 0; !found && (i < preferences.size()); i++) {
+            preference = preferences.get(i);
+
+            if (preference.getMetadata().equals(mediaType)
+                    && (preference.getQuality() < score)) {
+                preference.setQuality(score);
+                found = true;
+            }
+        }
+
+        if (!found) {
+            preferences.add(new Preference<MediaType>(mediaType, score));
+        }
+    }
 }

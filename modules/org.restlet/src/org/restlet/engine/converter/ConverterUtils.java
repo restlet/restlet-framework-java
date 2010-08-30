@@ -49,6 +49,27 @@ import org.restlet.resource.UniformResource;
 public class ConverterUtils {
 
     /**
+     * 
+     * @param variants
+     * @param variant
+     * @return
+     */
+    protected static List<VariantInfo> addVariant(List<VariantInfo> variants,
+            VariantInfo variant) {
+        List<VariantInfo> result = variants;
+
+        if (result == null) {
+            result = new ArrayList<VariantInfo>();
+        }
+
+        if (!result.contains(variant)) {
+            result.add(variant);
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the list of variants that can be converted from a given object
      * class.
      * 
@@ -71,30 +92,19 @@ public class ConverterUtils {
             if (helperVariants != null) {
                 // Loop over the variants list
                 for (VariantInfo helperVariant : helperVariants) {
-                    if (helperVariant.includes(targetVariant)) {
-                        if (result == null) {
-                            result = new ArrayList<VariantInfo>();
+                    if (targetVariant == null) {
+                        if (helperVariant.getMediaType().isConcrete()) {
+                            result = addVariant(result, helperVariant);
                         }
-
+                    } else if (helperVariant.includes(targetVariant)) {
                         // Detected a more generic variant, but still consider
                         // the conversion is possible to the target variant.
-                        // TODO: Add support for the other kind of metadata
-                        VariantInfo newVariant = new VariantInfo(targetVariant
-                                .getMediaType());
-
-                        if (!result.contains(newVariant)) {
-                            result.add(newVariant);
-                        }
-                    } else if (targetVariant == null
-                            || targetVariant.includes(helperVariant)) {
-                        // Add this variant for content negotiation.
-                        if (result == null) {
-                            result = new ArrayList<VariantInfo>();
-                        }
-
-                        if (!result.contains(helperVariant)) {
-                            result.add(helperVariant);
-                        }
+                        result = addVariant(result, new VariantInfo(
+                                targetVariant.getMediaType()));
+                    } else if (targetVariant.includes(helperVariant)) {
+                        // Detected a more specific variant, but still consider
+                        // the conversion is possible to the target variant.
+                        result = addVariant(result, helperVariant);
                     }
                 }
             }

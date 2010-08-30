@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
@@ -218,4 +219,14 @@ public class XstreamConverter extends ConverterHelper {
 
         return result;
     }
+
+    @Override
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<T> entity) {
+        updatePreferences(preferences, MediaType.APPLICATION_ALL_XML, 1.0F);
+        updatePreferences(preferences, MediaType.APPLICATION_JSON, 1.0F);
+        updatePreferences(preferences, MediaType.APPLICATION_XML, 1.0F);
+        updatePreferences(preferences, MediaType.TEXT_XML, 1.0F);
+    }
+
 }

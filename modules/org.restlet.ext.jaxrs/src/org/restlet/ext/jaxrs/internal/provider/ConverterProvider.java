@@ -115,13 +115,10 @@ public class ConverterProvider extends AbstractProvider<Object> {
     @Override
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-
         Variant targetVariant = new Variant(new org.restlet.data.MediaType(
                 mediaType.toString()));
-
         List<? extends Variant> variants = getConverterService().getVariants(
                 type, targetVariant);
-
         return (variants != null) && !variants.isEmpty();
     }
 
@@ -132,8 +129,8 @@ public class ConverterProvider extends AbstractProvider<Object> {
             throws IOException {
 
         Representation sourceRepresentation = new InputRepresentation(
-                entityStream, new org.restlet.data.MediaType(mediaType
-                        .toString()));
+                entityStream, new org.restlet.data.MediaType(
+                        mediaType.toString()));
         return getConverterService().toObject(sourceRepresentation, type, null);
     }
 

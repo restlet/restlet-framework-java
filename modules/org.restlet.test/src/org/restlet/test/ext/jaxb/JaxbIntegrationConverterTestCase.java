@@ -65,34 +65,34 @@ import org.restlet.routing.Router;
  * 
  * @author Sanjay Acharya
  */
-public class JaxbIntegrationConverterTestCase extends RestletTestCase {    
+public class JaxbIntegrationConverterTestCase extends RestletTestCase {
     private static final String IN_STRING = "foo";
 
     private static final String HELLO_OUT_STRING = "Hello World " + IN_STRING;
+
     private Component component;
-    private String uri; 
-    
+
+    private String uri;
+
     public void setUp() throws Exception {
-      super.setUp();
-      this.component = new Component();
-      final Server server = this.component.getServers().add(Protocol.HTTP, 0);
-      final Application application = createApplication(this.component);
-
-      this.component.getDefaultHost().attach(application);
-      this.component.start();
-
-      uri = "http://localhost:" + server.getEphemeralPort() + "/test";
+        super.setUp();
+        this.component = new Component();
+        final Server server = this.component.getServers().add(Protocol.HTTP, 0);
+        final Application application = createApplication(this.component);
+        this.component.getDefaultHost().attach(application);
+        this.component.start();
+        uri = "http://localhost:" + server.getEphemeralPort() + "/test";
     }
-    
+
     public void tearDown() throws Exception {
-      super.tearDown();
-      if (component != null) {
-        component.stop();
-      }
-      
-      this.component = null;
+        super.tearDown();
+        if (component != null) {
+            component.stop();
+        }
+
+        this.component = null;
     }
-    
+
     protected Application createApplication(Component component) {
         final Application application = new Application() {
             @Override
@@ -114,8 +114,7 @@ public class JaxbIntegrationConverterTestCase extends RestletTestCase {
     public void testIntegration() throws Exception {
         Client client = new Client(new Context(), Arrays.asList(Protocol.HTTP));
         Request request = new Request(Method.POST, uri);
-        request
-                .setEntity(new JaxbRepresentation<Sample>(new Sample(IN_STRING)));
+        request.setEntity(new JaxbRepresentation<Sample>(new Sample(IN_STRING)));
 
         Response response = client.handle(request);
 
@@ -123,24 +122,23 @@ public class JaxbIntegrationConverterTestCase extends RestletTestCase {
                 response.getEntity(), Sample.class);
         Sample sample = resultRepresentation.getObject();
         assertEquals(HELLO_OUT_STRING, sample.getVal());
-        
+
         request = new Request(Method.PUT, uri);
-        request
-                .setEntity(new JaxbRepresentation<Sample>(new Sample(IN_STRING)));
+        request.setEntity(new JaxbRepresentation<Sample>(new Sample(IN_STRING)));
 
         response = client.handle(request);
-        resultRepresentation = new JaxbRepresentation<Sample>(response
-                .getEntity(), Sample.class);
+        resultRepresentation = new JaxbRepresentation<Sample>(
+                response.getEntity(), Sample.class);
         sample = resultRepresentation.getObject();
         assertEquals(HELLO_OUT_STRING, sample.getVal());
 
         request = new Request(Method.GET, uri);
         response = client.handle(request);
-        resultRepresentation = new JaxbRepresentation<Sample>(response
-                .getEntity(), Sample.class);
+        resultRepresentation = new JaxbRepresentation<Sample>(
+                response.getEntity(), Sample.class);
         sample = resultRepresentation.getObject();
-        assertEquals(IN_STRING, sample.getVal());  
-        
+        assertEquals(IN_STRING, sample.getVal());
+
         client.stop();
     }
 
@@ -170,12 +168,12 @@ public class JaxbIntegrationConverterTestCase extends RestletTestCase {
     }
 
     public static class SampleResource extends ServerResource {
-        @Post("xml")        
-        public Sample post(Sample sample) {            
+        @Post("xml")
+        public Sample post(Sample sample) {
             assertNotNull(sample);
             return new Sample(HELLO_OUT_STRING);
         }
-        
+
         @Get("xml")
         public Sample getSample() {
             return new Sample(IN_STRING);

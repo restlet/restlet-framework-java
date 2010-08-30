@@ -35,6 +35,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
@@ -69,7 +70,8 @@ public class GwtConverter extends ConverterHelper {
     public List<VariantInfo> getVariants(Class<?> source) {
         List<VariantInfo> result = null;
 
-        if (Serializable.class.isAssignableFrom(source)) {
+        if (Serializable.class.isAssignableFrom(source)
+                || ObjectRepresentation.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_GWT);
         }
 
@@ -160,4 +162,15 @@ public class GwtConverter extends ConverterHelper {
 
         return result;
     }
+
+    @Override
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<T> entity) {
+        if (Serializable.class.isAssignableFrom(entity)
+                || ObjectRepresentation.class.isAssignableFrom(entity)) {
+            updatePreferences(preferences,
+                    MediaType.APPLICATION_JAVA_OBJECT_GWT, 1.0F);
+        }
+    }
+
 }

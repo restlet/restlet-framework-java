@@ -37,6 +37,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.converter.ConverterUtils;
@@ -247,8 +248,7 @@ public class ConverterService extends Service {
                             result.setMediaType(resource.getMetadataService()
                                     .getDefaultMediaType());
                         } else {
-                            result
-                                    .setMediaType(MediaType.APPLICATION_OCTET_STREAM);
+                            result.setMediaType(MediaType.APPLICATION_OCTET_STREAM);
                         }
                     }
 
@@ -270,5 +270,22 @@ public class ConverterService extends Service {
         }
 
         return result;
+    }
+
+    /**
+     * Updates the media type preferences with available conversion capabilities
+     * for the given entity class.
+     * 
+     * @param preferences
+     *            The media type preferences.
+     * @param entity
+     *            The entity class to convert.
+     */
+    public void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<?> entity) {
+        for (ConverterHelper ch : Engine.getInstance()
+                .getRegisteredConverters()) {
+            ch.updatePreferences(preferences, entity);
+        }
     }
 }

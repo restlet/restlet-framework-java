@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
@@ -65,9 +66,11 @@ public class WadlConverter extends ConverterHelper {
     @Override
     public List<VariantInfo> getVariants(Class<?> source) {
         List<VariantInfo> result = null;
+
         if (ApplicationInfo.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_APPLICATION_WADL);
         }
+
         return result;
     }
 
@@ -119,4 +122,11 @@ public class WadlConverter extends ConverterHelper {
         return null;
     }
 
+    @Override
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<T> entity) {
+        if (ApplicationInfo.class.isAssignableFrom(entity)) {
+            updatePreferences(preferences, MediaType.APPLICATION_WADL, 1.0F);
+        }
+    }
 }

@@ -36,6 +36,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
@@ -105,7 +106,7 @@ public class JaxbConverter extends ConverterHelper {
                 && (source instanceof JaxbRepresentation<?> || isJaxbRootElementClass(source
                         .getClass()))) {
             if (target == null) {
-                result = 0.5F;
+                result = 0.8F;
             } else if (MediaType.APPLICATION_ALL_XML.isCompatible(target
                     .getMediaType())) {
                 result = 1.0F;
@@ -117,7 +118,7 @@ public class JaxbConverter extends ConverterHelper {
             } else {
                 // Allow for JAXB object to be used for JSON and other
                 // representations
-                result = 0.5F;
+                result = 0.7F;
             }
         }
 
@@ -132,9 +133,8 @@ public class JaxbConverter extends ConverterHelper {
         if (source != null) {
             if (source instanceof JaxbRepresentation<?>) {
                 result = 1.0F;
-            } else if (JaxbRepresentation.class.isAssignableFrom(target)) {
-                result = 1.0F;
-            } else if (isJaxbRootElementClass(target)
+            } else if (JaxbRepresentation.class.isAssignableFrom(target)
+                    || isJaxbRootElementClass(target)
                     || JaxbRepresentation.class.isAssignableFrom(source
                             .getClass())) {
                 result = 1.0F;
@@ -174,5 +174,16 @@ public class JaxbConverter extends ConverterHelper {
         }
 
         return result;
+    }
+
+    @Override
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<T> entity) {
+        if (JaxbRepresentation.class.isAssignableFrom(entity)
+                || isJaxbRootElementClass(entity)) {
+            updatePreferences(preferences, MediaType.APPLICATION_ALL_XML, 1.0F);
+            updatePreferences(preferences, MediaType.APPLICATION_XML, 1.0F);
+            updatePreferences(preferences, MediaType.TEXT_XML, 1.0F);
+        }
     }
 }

@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.velocity.Template;
+import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
@@ -48,6 +50,9 @@ import org.restlet.resource.UniformResource;
  */
 public class VelocityConverter extends ConverterHelper {
 
+    private static final VariantInfo VARIANT_ALL = new VariantInfo(
+            MediaType.ALL);
+
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
         return null;
@@ -55,7 +60,13 @@ public class VelocityConverter extends ConverterHelper {
 
     @Override
     public List<VariantInfo> getVariants(Class<?> source) {
-        return null;
+        List<VariantInfo> result = null;
+
+        if (Template.class.isAssignableFrom(source)) {
+            result = addVariant(result, VARIANT_ALL);
+        }
+
+        return result;
     }
 
     @Override
@@ -89,6 +100,15 @@ public class VelocityConverter extends ConverterHelper {
             tr.setDataModel(resource.getRequest(), resource.getResponse());
             return tr;
         }
+
         return null;
+    }
+
+    @Override
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<T> entity) {
+        if (Template.class.isAssignableFrom(entity)) {
+            updatePreferences(preferences, MediaType.ALL, 1.0F);
+        }
     }
 }

@@ -53,6 +53,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.Variant;
 import org.restlet.util.Series;
 
 /**
@@ -829,17 +830,21 @@ public class ClientResource extends UniformResource {
     private <T> T handle(Method method, Object entity, Class<T> resultClass)
             throws ResourceException {
         T result = null;
-
         org.restlet.service.ConverterService cs = getConverterService();
-        ClientInfo clientInfo = new ClientInfo(
-                cs.getVariants(resultClass, null));
+        List<? extends Variant> variants = cs.getVariants(resultClass, null);
+        ClientInfo clientInfo = getClientInfo();
+
+        if (clientInfo.getAcceptedMediaTypes().isEmpty()) {
+            cs.updatePreferences(clientInfo.getAcceptedMediaTypes(),
+                    resultClass);
+        }
 
         result = toObject(
                 handle(method,
-                        (entity == null) ? null
-                                : toRepresentation(entity, null), clientInfo),
+                        (entity == null) ? null : toRepresentation(entity,
+                                clientInfo.getPreferredVariant(variants,
+                                        getMetadataService())), clientInfo),
                 resultClass);
-
         return result;
     }
 

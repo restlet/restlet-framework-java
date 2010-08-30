@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
@@ -63,6 +64,7 @@ public class RdfConverter extends ConverterHelper {
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
+
         if (VARIANT_RDF_N3.isCompatible(source)
                 || VARIANT_RDF_NTRIPLES.isCompatible(source)
                 || VARIANT_RDF_TURTLE.isCompatible(source)
@@ -149,6 +151,18 @@ public class RdfConverter extends ConverterHelper {
         }
 
         return null;
+    }
+
+    @Override
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<T> entity) {
+        if (Graph.class.isAssignableFrom(entity)) {
+            updatePreferences(preferences, MediaType.TEXT_RDF_N3, 1.0F);
+            updatePreferences(preferences, MediaType.TEXT_RDF_NTRIPLES, 1.0F);
+            updatePreferences(preferences, MediaType.APPLICATION_RDF_TURTLE,
+                    1.0F);
+            updatePreferences(preferences, MediaType.APPLICATION_RDF_XML, 1.0F);
+        }
     }
 
 }

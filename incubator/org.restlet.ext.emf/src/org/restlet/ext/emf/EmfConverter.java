@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
@@ -209,5 +210,18 @@ public class EmfConverter extends ConverterHelper {
                         || VARIANT_APPLICATION_XMI.isCompatible(variant)
                         || VARIANT_TEXT_HTML.isCompatible(variant) || VARIANT_TEXT_XML
                         .isCompatible(variant));
+    }
+
+    @Override
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<T> entity) {
+        if (EObject.class.isAssignableFrom(entity)
+                || EmfRepresentation.class.isAssignableFrom(entity)) {
+            updatePreferences(preferences, MediaType.APPLICATION_ALL_XML, 1.0F);
+            updatePreferences(preferences, MediaType.APPLICATION_XML, 1.0F);
+            updatePreferences(preferences, MediaType.APPLICATION_XMI_XML, 1.0F);
+            updatePreferences(preferences, MediaType.TEXT_HTML, 1.0F);
+            updatePreferences(preferences, MediaType.TEXT_XML, 1.0F);
+        }
     }
 }

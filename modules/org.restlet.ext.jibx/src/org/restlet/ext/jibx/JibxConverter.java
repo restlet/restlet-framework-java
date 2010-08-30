@@ -36,6 +36,7 @@ import java.util.List;
 import org.jibx.runtime.BindingDirectory;
 import org.jibx.runtime.JiBXException;
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
@@ -201,4 +202,16 @@ public class JibxConverter extends ConverterHelper {
 
         return result;
     }
+
+    @Override
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<T> entity) {
+        if (isJibxBoundClass(entity)
+                || JibxRepresentation.class.isAssignableFrom(entity)) {
+            updatePreferences(preferences, MediaType.APPLICATION_ALL_XML, 1.0F);
+            updatePreferences(preferences, MediaType.APPLICATION_XML, 1.0F);
+            updatePreferences(preferences, MediaType.TEXT_XML, 1.0F);
+        }
+    }
+
 }

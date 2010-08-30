@@ -4,14 +4,18 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
+import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
 
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.io.FeedException;
+import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.SyndFeedOutput;
 
 /**
@@ -23,10 +27,33 @@ import com.sun.syndication.io.SyndFeedOutput;
  * @see <a href="https://rome.dev.java.net/">ROME home</a>
  */
 public class SyndFeedRepresentation extends WriterRepresentation {
+
+    /** The syndication feed. */
+    private volatile SyndFeed feed;
+
     /**
-     * The feed.
+     * Constructor that parses the given feed representation.
+     * 
+     * @param feedRepresentation
+     *            The feed representation to parse.
      */
-    private final SyndFeed feed;
+    public SyndFeedRepresentation(Representation feedRepresentation) {
+        super(null);
+
+        try {
+            this.feed = new SyndFeedInput().build(feedRepresentation
+                    .getReader());
+
+            if (this.feed.getFeedType().startsWith("atom")) {
+                setMediaType(MediaType.APPLICATION_ATOM);
+            } else {
+                setMediaType(MediaType.APPLICATION_RSS);
+            }
+        } catch (Exception e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to parse feed", e);
+        }
+    }
 
     /**
      * Constructs a UTF8 RSS 2.0 feed.
@@ -101,8 +128,8 @@ public class SyndFeedRepresentation extends WriterRepresentation {
 
     @Override
     public void write(Writer writer) throws IOException {
-        SyndFeedOutput output = new SyndFeedOutput();
         try {
+            SyndFeedOutput output = new SyndFeedOutput();
             output.output(this.feed, writer);
         } catch (FeedException e) {
             IOException ioe = new IOException("Feed exception");

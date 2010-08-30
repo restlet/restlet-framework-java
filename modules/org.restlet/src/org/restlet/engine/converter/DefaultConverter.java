@@ -40,6 +40,7 @@ import java.util.List;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.FileRepresentation;
@@ -77,7 +78,6 @@ public class DefaultConverter extends ConverterHelper {
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
-
         result = addObjectClass(result, String.class);
         result = addObjectClass(result, InputStream.class);
         result = addObjectClass(result, Reader.class);
@@ -239,8 +239,8 @@ public class DefaultConverter extends ConverterHelper {
             } else if (String.class.isAssignableFrom(target)) {
                 result = source.getText();
             } else if (StringRepresentation.class.isAssignableFrom(target)) {
-                result = new StringRepresentation(source.getText(), source
-                        .getMediaType());
+                result = new StringRepresentation(source.getText(),
+                        source.getMediaType());
             } else if (EmptyRepresentation.class.isAssignableFrom(target)) {
                 result = null;
             } else if (File.class.isAssignableFrom(target)) {
@@ -265,7 +265,8 @@ public class DefaultConverter extends ConverterHelper {
                     result = ((ObjectRepresentation<?>) source).getObject();
                 } else {
                     try {
-                        result = new ObjectRepresentation(source).getObject();
+                        result = new ObjectRepresentation<Serializable>(source)
+                                .getObject();
                     } catch (Exception e) {
                         IOException ioe = new IOException(
                                 "Unable to create the Object representation");
@@ -287,32 +288,55 @@ public class DefaultConverter extends ConverterHelper {
         Representation result = null;
 
         if (source instanceof String) {
-            result = new StringRepresentation((String) source, MediaType
-                    .getMostSpecific(target.getMediaType(),
+            result = new StringRepresentation((String) source,
+                    MediaType.getMostSpecific(target.getMediaType(),
                             MediaType.TEXT_PLAIN));
         } else if (source instanceof File) {
-            result = new FileRepresentation((File) source, MediaType
-                    .getMostSpecific(target.getMediaType(),
+            result = new FileRepresentation((File) source,
+                    MediaType.getMostSpecific(target.getMediaType(),
                             MediaType.APPLICATION_OCTET_STREAM));
         } else if (source instanceof Form) {
             result = ((Form) source).getWebRepresentation();
         } else if (source instanceof InputStream) {
-            result = new InputRepresentation((InputStream) source, MediaType
-                    .getMostSpecific(target.getMediaType(),
+            result = new InputRepresentation((InputStream) source,
+                    MediaType.getMostSpecific(target.getMediaType(),
                             MediaType.APPLICATION_OCTET_STREAM));
         } else if (source instanceof Reader) {
-            result = new ReaderRepresentation((Reader) source, MediaType
-                    .getMostSpecific(target.getMediaType(),
+            result = new ReaderRepresentation((Reader) source,
+                    MediaType.getMostSpecific(target.getMediaType(),
                             MediaType.TEXT_PLAIN));
         } else if (source instanceof Representation) {
             result = (Representation) source;
         } else if (source instanceof Serializable) {
             result = new ObjectRepresentation<Serializable>(
-                    (Serializable) source, MediaType
-                            .getMostSpecific(target.getMediaType(),
-                                    MediaType.APPLICATION_OCTET_STREAM));
+                    (Serializable) source, MediaType.getMostSpecific(
+                            target.getMediaType(),
+                            MediaType.APPLICATION_OCTET_STREAM));
         }
 
         return result;
     }
+
+    @Override
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<T> entity) {
+        if (Form.class.isAssignableFrom(entity)) {
+            updatePreferences(preferences, MediaType.APPLICATION_WWW_FORM, 1.0F);
+        } else if (Serializable.class.isAssignableFrom(entity)) {
+            updatePreferences(preferences, MediaType.APPLICATION_JAVA_OBJECT,
+                    1.0F);
+            updatePreferences(preferences,
+                    MediaType.APPLICATION_JAVA_OBJECT_XML, 1.0F);
+        } else if (String.class.isAssignableFrom(entity)
+                || Reader.class.isAssignableFrom(entity)) {
+            updatePreferences(preferences, MediaType.TEXT_PLAIN, 1.0F);
+            updatePreferences(preferences, MediaType.TEXT_ALL, 0.5F);
+        } else if (InputStream.class.isAssignableFrom(entity)
+                || ReadableByteChannel.class.isAssignableFrom(entity)) {
+            updatePreferences(preferences, MediaType.APPLICATION_OCTET_STREAM,
+                    1.0F);
+            updatePreferences(preferences, MediaType.APPLICATION_ALL, 0.5F);
+        }
+    }
+
 }

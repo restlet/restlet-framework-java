@@ -33,6 +33,8 @@ package org.restlet.ext.rome;
 import java.io.IOException;
 import java.util.List;
 
+import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
@@ -49,20 +51,46 @@ import com.sun.syndication.feed.synd.SyndFeed;
  */
 public class RomeConverter extends ConverterHelper {
 
+    private static final VariantInfo VARIANT_APPLICATION_ATOM = new VariantInfo(
+            MediaType.APPLICATION_ATOM);
+
+    private static final VariantInfo VARIANT_APPLICATION_RSS = new VariantInfo(
+            MediaType.APPLICATION_RSS);
+
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
-        return null;
+        List<Class<?>> result = null;
+
+        if (VARIANT_APPLICATION_ATOM.isCompatible(source)
+                || VARIANT_APPLICATION_RSS.isCompatible(source)) {
+            result = addObjectClass(result, SyndFeed.class);
+        }
+
+        return result;
     }
 
     @Override
     public List<VariantInfo> getVariants(Class<?> source) {
-        return null;
+        List<VariantInfo> result = null;
+
+        if (SyndFeed.class.isAssignableFrom(source)) {
+            result = addVariant(result, VARIANT_APPLICATION_ATOM);
+            result = addVariant(result, VARIANT_APPLICATION_RSS);
+        }
+
+        return result;
     }
 
     @Override
     public <T> float score(Representation source, Class<T> target,
             UniformResource resource) {
-        return -1.0f;
+        float result = -1.0F;
+
+        if ((source != null) && (SyndFeed.class.isAssignableFrom(target))) {
+            result = 1.0F;
+        }
+
+        return result;
     }
 
     @Override
@@ -77,7 +105,17 @@ public class RomeConverter extends ConverterHelper {
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             UniformResource resource) throws IOException {
-        return null;
+        Object result = null;
+
+        if (SyndFeed.class.isAssignableFrom(target)) {
+            if (source instanceof SyndFeedRepresentation) {
+                result = ((SyndFeedRepresentation) source).getFeed();
+            } else {
+                result = new SyndFeedRepresentation(source).getFeed();
+            }
+        }
+
+        return target.cast(result);
     }
 
     @Override
@@ -88,6 +126,15 @@ public class RomeConverter extends ConverterHelper {
         }
 
         return null;
+    }
+
+    @Override
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<T> entity) {
+        if (SyndFeed.class.isAssignableFrom(entity)) {
+            updatePreferences(preferences, MediaType.APPLICATION_ATOM, 1.0F);
+            updatePreferences(preferences, MediaType.APPLICATION_RSS, 1.0F);
+        }
     }
 
 }
