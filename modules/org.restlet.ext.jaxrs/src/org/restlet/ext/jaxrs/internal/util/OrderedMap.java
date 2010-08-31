@@ -246,7 +246,7 @@ public class OrderedMap<K, V> implements Map<K, V> {
     /**
      * @see java.util.Map#entrySet()
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Set<Map.Entry<K, V>> entrySet() {
         return new ListWrappingSet<Map.Entry<K, V>>((List) this.elements);
     }
@@ -301,7 +301,7 @@ public class OrderedMap<K, V> implements Map<K, V> {
                 return elements.isEmpty();
             }
 
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Iterator<K> iterator() {
                 return new KeySetIterator<K, V>((Iterator) elements.iterator());
             }
@@ -408,7 +408,7 @@ public class OrderedMap<K, V> implements Map<K, V> {
                 return elements.isEmpty();
             }
 
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Iterator<V> iterator() {
                 return new ValueSetIterator<K, V>((Iterator) elements
                         .iterator());

@@ -433,7 +433,6 @@ public class JaxRsRestlet extends Restlet {
      * @throws WebApplicationException
      * @see AbstractMethodWrapper.EntityGetter
      */
-    @SuppressWarnings("unchecked")
     private Representation convertToRepresentation(Object entity,
             ResourceMethod resourceMethod, MediaType jaxRsResponseMediaType,
             MultivaluedMap<String, Object> jaxRsRespHeaders,
@@ -496,8 +495,9 @@ public class JaxRsRestlet extends Restlet {
                 throw excHandler.noMessageBodyWriter(entityClass,
                         genericReturnType, methodAnnotations, respMediaType,
                         accMediaTypes);
-            repr = new JaxRsOutputRepresentation(entity, genericReturnType,
-                    respMediaType, methodAnnotations, mbw, httpResponseHeaders);
+            repr = new JaxRsOutputRepresentation<Object>(entity,
+                    genericReturnType, respMediaType, methodAnnotations, mbw,
+                    httpResponseHeaders);
         } else { // entity == null
             repr = new EmptyRepresentation();
             repr.setMediaType(determineMediaType(jaxRsResponseMediaType,
@@ -832,8 +832,8 @@ public class JaxRsRestlet extends Restlet {
         if (resourceMethods.isEmpty()) {
             Set<Method> allowedMethods = resourceClass.getAllowedMethods(u);
             if (httpMethod.equals(Method.OPTIONS)) {
-                callContext.getResponse().getAllowedMethods().addAll(
-                        allowedMethods);
+                callContext.getResponse().getAllowedMethods()
+                        .addAll(allowedMethods);
                 throw new RequestHandledException();
             }
             excHandler.methodNotAllowed(allowedMethods);
@@ -979,8 +979,8 @@ public class JaxRsRestlet extends Restlet {
         } catch (InvocationTargetException ite) {
             throw handleInvocationTargetExc(ite);
         } catch (RuntimeException e) {
-            throw excHandler.runtimeExecption(e, resourceMethod, tlContext
-                    .get(), "Can not invoke the resource method");
+            throw excHandler.runtimeExecption(e, resourceMethod,
+                    tlContext.get(), "Can not invoke the resource method");
         } catch (MethodInvokeException e) {
             throw excHandler.methodInvokeException(e, tlContext.get(),
                     "Can not invoke the resource method");

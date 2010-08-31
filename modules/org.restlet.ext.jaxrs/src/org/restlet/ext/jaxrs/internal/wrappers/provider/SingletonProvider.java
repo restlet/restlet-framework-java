@@ -118,34 +118,33 @@ public class SingletonProvider extends AbstractProviderWrapper implements
         this.jaxRsProvider = jaxRsProvider;
         boolean isProvider = false;
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyWriter) {
-            this.writer = (javax.ws.rs.ext.MessageBodyWriter) jaxRsProvider;
+            this.writer = (javax.ws.rs.ext.MessageBodyWriter<Object>) jaxRsProvider;
             isProvider = true;
         } else {
             this.writer = null;
         }
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyReader) {
-            this.reader = (javax.ws.rs.ext.MessageBodyReader) jaxRsProvider;
+            this.reader = (javax.ws.rs.ext.MessageBodyReader<?>) jaxRsProvider;
             isProvider = true;
         } else {
             this.reader = null;
         }
         if (jaxRsProvider instanceof javax.ws.rs.ext.ExceptionMapper) {
-            this.excMapper = (javax.ws.rs.ext.ExceptionMapper) jaxRsProvider;
+            this.excMapper = (javax.ws.rs.ext.ExceptionMapper<? extends Throwable>) jaxRsProvider;
             isProvider = true;
         } else {
             this.excMapper = null;
         }
         if (jaxRsProvider instanceof javax.ws.rs.ext.ContextResolver) {
-            this.contextResolver = (javax.ws.rs.ext.ContextResolver) jaxRsProvider;
+            this.contextResolver = (javax.ws.rs.ext.ContextResolver<?>) jaxRsProvider;
             isProvider = true;
         } else {
             this.contextResolver = null;
         }
         if (!isProvider) {
-            logger
-                    .config("The provider "
-                            + jaxRsProvider.getClass()
-                            + " is neither a MessageBodyWriter nor a MessageBodyReader nor a ContextResolver nor an ExceptionMapper");
+            logger.config("The provider "
+                    + jaxRsProvider.getClass()
+                    + " is neither a MessageBodyWriter nor a MessageBodyReader nor a ContextResolver nor an ExceptionMapper");
         }
     }
 
@@ -297,7 +296,7 @@ public class SingletonProvider extends AbstractProviderWrapper implements
      *      javax.ws.rs.core.MediaType, Annotation[], MultivaluedMap,
      *      InputStream)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Object readFrom(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             CharacterSet characterSet,
@@ -431,8 +430,8 @@ public class SingletonProvider extends AbstractProviderWrapper implements
      */
     public long getSize(Object t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-        return this.writer.getSize(t, type, genericType, annotations, Converter
-                .toJaxRsMediaType(mediaType));
+        return this.writer.getSize(t, type, genericType, annotations,
+                Converter.toJaxRsMediaType(mediaType));
     }
 
     /**

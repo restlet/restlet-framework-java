@@ -130,7 +130,7 @@ public class ParameterList {
 
         protected final ThreadLocalizedContext tlContext;
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         AbstractParamGetter(DefaultValue defaultValue, Class<?> convToCl,
                 Type convToGen, ThreadLocalizedContext tlContext) {
             this.tlContext = tlContext;
@@ -297,7 +297,7 @@ public class ParameterList {
         protected <A> Collection<A> createColl() {
             try {
                 if (this.collType != null) {
-                    return (Collection) this.collType.newInstance();
+                    return (Collection<A>) this.collType.newInstance();
                 }
                 return null;
             } catch (Exception e) {
@@ -437,7 +437,7 @@ public class ParameterList {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         public Object getParamValue() {
             final String cookieName = this.cookieParam.value();
             Series<org.restlet.data.Cookie> cookies;
@@ -472,8 +472,8 @@ public class ParameterList {
                             .getValue(cookies.getFirst(cookieName));
                     return convertParamValue(firstCookieValue);
                 }
-                return convertParamValues(new ParamValueIter((Series) cookies
-                        .subList(cookieName)));
+                return convertParamValues(new ParamValueIter(
+                        (Series) cookies.subList(cookieName)));
             } catch (ConvertParameterException e) {
                 throw new ConvertCookieParamException(e);
             }
@@ -590,8 +590,8 @@ public class ParameterList {
                             .getFirst(headerName, true));
                     return convertParamValue(firstHeader);
                 }
-                return convertParamValues(new ParamValueIter(httpHeaders
-                        .subList(headerName, true)));
+                return convertParamValues(new ParamValueIter(
+                        httpHeaders.subList(headerName, true)));
             } catch (ConvertParameterException e) {
                 throw new ConvertHeaderParamException(e);
             }
@@ -825,7 +825,7 @@ public class ParameterList {
      *         If the given type do not represent an collection, null is
      *         returned.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static Class<Collection<?>> collType(ParameterizedType type) {
         final Type rawType = type.getRawType();
         if (rawType.equals(List.class)) {
@@ -935,9 +935,10 @@ public class ParameterList {
                     this.parameters[i] = new UriInfoGetter(tlContext,
                             allMustBeAvailable);
                 } else {
-                    this.parameters[i] = new ContextHolder(ContextInjector
-                            .getInjectObject(parameterType, tlContext,
-                                    jaxRsProviders, extensionBackwardMapping));
+                    this.parameters[i] = new ContextHolder(
+                            ContextInjector.getInjectObject(parameterType,
+                                    tlContext, jaxRsProviders,
+                                    extensionBackwardMapping));
                 }
                 continue;
             }

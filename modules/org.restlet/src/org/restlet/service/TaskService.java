@@ -238,8 +238,8 @@ public class TaskService extends Service implements ExecutorService {
      *            The task to execute.
      * @return The list of futures.
      */
-    @SuppressWarnings("unchecked")
-    public List invokeAll(Collection tasks) throws InterruptedException {
+    public <T> List<Future<T>> invokeAll(Collection<Callable<T>> tasks)
+            throws InterruptedException {
         return getWrapped().invokeAll(tasks);
     }
 
@@ -265,9 +265,8 @@ public class TaskService extends Service implements ExecutorService {
      *            The time unit.
      * @return The list of futures.
      */
-    @SuppressWarnings("unchecked")
-    public List invokeAll(Collection tasks, long timeout, TimeUnit unit)
-            throws InterruptedException {
+    public <T> List<Future<T>> invokeAll(Collection<Callable<T>> tasks,
+            long timeout, TimeUnit unit) throws InterruptedException {
         return getWrapped().invokeAll(tasks, timeout, unit);
     }
 
@@ -287,9 +286,8 @@ public class TaskService extends Service implements ExecutorService {
      *            The task to execute.
      * @return The result returned by one of the tasks.
      */
-    @SuppressWarnings("unchecked")
-    public Object invokeAny(Collection tasks) throws InterruptedException,
-            ExecutionException {
+    public <T> T invokeAny(Collection<Callable<T>> tasks)
+            throws InterruptedException, ExecutionException {
         return getWrapped().invokeAny(tasks);
     }
 
@@ -313,9 +311,9 @@ public class TaskService extends Service implements ExecutorService {
      *            The time unit.
      * @return The result returned by one of the tasks.
      */
-    @SuppressWarnings("unchecked")
-    public Object invokeAny(Collection tasks, long timeout, TimeUnit unit)
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public <T> T invokeAny(Collection<Callable<T>> tasks, long timeout,
+            TimeUnit unit) throws InterruptedException, ExecutionException,
+            TimeoutException {
         return getWrapped().invokeAny(tasks, timeout, unit);
     }
 

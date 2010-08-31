@@ -101,8 +101,8 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
      * @return the media type as singleton of SortedMetadata
      */
     public static SortedMetadata<MediaType> get(MediaType respMediaType) {
-        return new SortedMetadata<MediaType>(Collections
-                .singleton(new Preference<MediaType>(respMediaType)));
+        return new SortedMetadata<MediaType>(
+                Collections.singleton(new Preference<MediaType>(respMediaType)));
     }
 
     /**
@@ -136,9 +136,10 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
     public static SortedMetadata<MediaType> getForMediaTypes(
             Collection<Preference<MediaType>> preferences) {
         if (preferences.isEmpty()) {
-            return new SortedMetadata<MediaType>(Collections
-                    .singletonList((Collection<MediaType>) Collections
-                            .singletonList(MediaType.ALL)));
+            return new SortedMetadata<MediaType>(
+                    Collections
+                            .singletonList((Collection<MediaType>) Collections
+                                    .singletonList(MediaType.ALL)));
         }
 
         return new SortedMetadata<MediaType>(preferences);
@@ -174,10 +175,11 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
      * 
      * @param preferences
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private SortedMetadata(Collection<Preference<T>> preferences) {
         final SortedMap<Float, Collection<T>> map = new TreeMap<Float, Collection<T>>(
                 Collections.reverseOrder());
+
         for (final Preference<T> preference : preferences) {
             final Float quality = preference.getQuality();
             Collection<T> metadatas = map.get(quality);
@@ -187,6 +189,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
             }
             metadatas.add(preference.getMetadata());
         }
+
         final Collection<Collection<T>> values = map.values();
         this.metadatas = Collections.unmodifiableList(new ArrayList(values));
     }
@@ -215,7 +218,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
      * 
      * @see java.lang.Iterable#iterator()
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Iterator<T> iterator() {
         return new IteratorIterator(this.metadatas.iterator());
     }
@@ -225,7 +228,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
      * 
      * @return the list of collections as {@link Iterable} of {@link Iterable}s.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Iterable<Iterable<T>> listOfColls() {
         return (Iterable) this.metadatas;
     }

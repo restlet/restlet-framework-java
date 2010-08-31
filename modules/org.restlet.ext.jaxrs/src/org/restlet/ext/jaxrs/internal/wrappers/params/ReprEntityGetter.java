@@ -144,8 +144,8 @@ public abstract class ReprEntityGetter implements ParamGetter {
             return new DirectReprEntityGetter();
         }
         try {
-            return new ReprOnlyEntityGetter(representationType
-                    .getConstructor(Representation.class));
+            return new ReprOnlyEntityGetter(
+                    representationType.getConstructor(Representation.class));
         } catch (SecurityException e) {
             logger.warning("The constructor " + representationType
                     + "(Representation) is not accessable.");
@@ -175,8 +175,9 @@ public abstract class ReprEntityGetter implements ParamGetter {
             // try next
         }
         try {
-            return new ClassReprEntityGetter(genClass, representationType
-                    .getConstructor(Class.class, Representation.class));
+            return new ClassReprEntityGetter(genClass,
+                    representationType.getConstructor(Class.class,
+                            Representation.class));
         } catch (SecurityException e) {
             logger.warning("The constructor " + representationType
                     + "(Representation) is not accessable.");
@@ -190,7 +191,7 @@ public abstract class ReprEntityGetter implements ParamGetter {
 
     @SuppressWarnings("unchecked")
     ReprEntityGetter(Constructor<?> constr) {
-        this.constr = (Constructor) constr;
+        this.constr = (Constructor<? extends Representation>) constr;
     }
 
     abstract Representation createInstance(Representation entity)

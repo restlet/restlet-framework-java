@@ -289,7 +289,7 @@ public class ExtendedUriBuilder extends AbstractUriBuilder {
 
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public ExtendedUriBuilder path(Class resource)
             throws IllegalArgumentException {
         super.path(resource);
@@ -298,7 +298,7 @@ public class ExtendedUriBuilder extends AbstractUriBuilder {
 
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public ExtendedUriBuilder path(Class resource, String methodName)
             throws IllegalArgumentException {
         super.path(resource, methodName);

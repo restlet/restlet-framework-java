@@ -232,7 +232,8 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      */
     @SuppressWarnings("unchecked")
     private void addExcMapper(ProviderWrapper excMapperWrapper) {
-        Class excClass = excMapperWrapper.getExcMapperType();
+        Class<? extends Throwable> excClass = (Class<? extends Throwable>) excMapperWrapper
+                .getExcMapperType();
         excMappers.put(excClass, excMapperWrapper);
     }
 
@@ -271,24 +272,28 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      *             if <code>null</code> is given
      * @see ExceptionMapper#toResponse(Object)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Response convert(Throwable cause) {
         ExceptionMapper mapper = getExceptionMapper(cause.getClass());
+
         if (mapper == null) {
             if (cause instanceof RuntimeException)
                 throw (RuntimeException) cause;
             if (cause instanceof Error)
                 throw (Error) cause;
             String entity = "No ExceptionMapper was found, but must be found";
-            return Response.serverError().entity(entity).type(
-                    javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE).build();
+            return Response.serverError().entity(entity)
+                    .type(javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE).build();
         }
+
         Response response = mapper.toResponse(cause);
+
         if (response == null) {
             String message = "The ExceptionMapper returned null";
             localLogger.log(Level.WARNING, message);
             return Response.serverError().entity(message).build();
         }
+
         return response;
     }
 
@@ -421,8 +426,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
                     // look for next
                 } catch (WebApplicationException e) {
                     localLogger
-                            .log(
-                                    Level.INFO,
+                            .log(Level.INFO,
                                     "The exception mapper for "
                                             + causeClass
                                             + " could not be initialized, so it can#t be used. Will look for the next exception mapper in hierarchy.",
@@ -430,10 +434,11 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
                     // look for next
                 }
             }
-            Class superclass = causeClass.getSuperclass();
+
+            Class<?> superclass = causeClass.getSuperclass();
             if (superclass == null || superclass.equals(Object.class))
                 return null;
-            causeClass = superclass;
+            causeClass = (Class<T>) superclass;
         }
         // disabled caching, because adding of new ExceptionMappers could
         // cause trouble.
@@ -444,7 +449,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * @see javax.ws.rs.ext.Providers#getMessageBodyReader(Class, Type,
      *      Annotation[], javax.ws.rs.core.MediaType)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> javax.ws.rs.ext.MessageBodyReader<T> getMessageBodyReader(
             Class<T> type, Type genericType, Annotation[] annotations,
             javax.ws.rs.core.MediaType mediaType) {
@@ -458,7 +463,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * @see javax.ws.rs.ext.Providers#getMessageBodyWriter(Class, Type,
      *      Annotation[], javax.ws.rs.core.MediaType)
      */
-    @SuppressWarnings( { "unchecked" })
+    @SuppressWarnings({ "unchecked" })
     public <T> javax.ws.rs.ext.MessageBodyWriter<T> getMessageBodyWriter(
             Class<T> type, Type genericType, Annotation[] annotations,
             javax.ws.rs.core.MediaType mediaType) {
@@ -495,22 +500,24 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
                 provider.initAtAppStartUp(tlContext, this,
                         extensionBackwardMapping);
             } catch (InjectException e) {
-                localLogger.log(Level.WARNING, "The provider "
-                        + provider.getClassName() + " could not be used", e);
+                localLogger.log(Level.WARNING,
+                        "The provider " + provider.getClassName()
+                                + " could not be used", e);
                 this.remove(provider);
             } catch (IllegalTypeException e) {
-                localLogger.log(Level.WARNING, "The provider "
-                        + provider.getClassName() + " could not be used", e);
+                localLogger.log(Level.WARNING,
+                        "The provider " + provider.getClassName()
+                                + " could not be used", e);
                 this.remove(provider);
             } catch (InvocationTargetException e) {
-                localLogger.log(Level.WARNING, "The provider "
-                        + provider.getClassName() + " could not be used", e
-                        .getCause());
+                localLogger.log(Level.WARNING,
+                        "The provider " + provider.getClassName()
+                                + " could not be used", e.getCause());
                 this.remove(provider);
             } catch (SecurityException e) {
-                localLogger.log(Level.WARNING, "The provider "
-                        + provider.getClassName() + " could not be used", e
-                        .getCause());
+                localLogger.log(Level.WARNING,
+                        "The provider " + provider.getClassName()
+                                + " could not be used", e.getCause());
                 this.remove(provider);
             }
         }

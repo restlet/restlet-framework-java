@@ -69,7 +69,6 @@ public class RiapTestCase extends TestCase {
                 + "\n";
     }
 
-    @SuppressWarnings("unchecked")
     public void testRiap() throws Exception {
         final Component comp = new Component();
         final Application localOnly = new Application() {
@@ -86,12 +85,13 @@ public class RiapTestCase extends TestCase {
                                 DEFAULT_MSG);
 
                         if (remainder.startsWith("/echo/")) {
-                            result = new StringRepresentation(remainder
-                                    .substring(6));
+                            result = new StringRepresentation(
+                                    remainder.substring(6));
                         } else if (remainder.equals("/object")) {
-                            result = new ObjectRepresentation(JUST_SOME_OBJ);
+                            result = new ObjectRepresentation<Serializable>(
+                                    JUST_SOME_OBJ);
                         } else if (remainder.equals("/null")) {
-                            result = new ObjectRepresentation(
+                            result = new ObjectRepresentation<Serializable>(
                                     (Serializable) null);
                         } else if (remainder.equals("/self-aggregated")) {
                             final String echoMessage = ECHO_TEST_MSG;
@@ -132,19 +132,19 @@ public class RiapTestCase extends TestCase {
         final Representation objRep = dispatcher.handle(
                 new Request(Method.GET, objURI)).getEntity();
         assertSame("expected specific test-object", JUST_SOME_OBJ,
-                ((ObjectRepresentation) objRep).getObject());
+                ((ObjectRepresentation<?>) objRep).getObject());
 
         final String nullURI = localBase + "/null";
         final Representation nullRep = dispatcher.handle(
                 new Request(Method.GET, nullURI)).getEntity();
-        assertNull("expected null", ((ObjectRepresentation) nullRep)
-                .getObject());
+        assertNull("expected null",
+                ((ObjectRepresentation<?>) nullRep).getObject());
 
         final String anyURI = localBase + "/whatever";
         final Representation anyRep = dispatcher.handle(
                 new Request(Method.GET, anyURI)).getEntity();
-        assertEquals("expected echo of uri-remainder", DEFAULT_MSG, anyRep
-                .getText());
+        assertEquals("expected echo of uri-remainder", DEFAULT_MSG,
+                anyRep.getText());
 
         final String aggURI = localBase + "/self-aggregated";
         final Representation aggRep = dispatcher.handle(

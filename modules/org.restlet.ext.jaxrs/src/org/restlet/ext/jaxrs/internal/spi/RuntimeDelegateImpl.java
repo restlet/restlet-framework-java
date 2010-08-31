@@ -77,7 +77,7 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
      * @see javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(Class)
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> HeaderDelegate createHeaderDelegate(Class<T> type)
             throws IllegalArgumentException {
         if (type.equals(Cookie.class)) {

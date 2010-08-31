@@ -58,7 +58,7 @@ public class SortedOrderedBag<E> implements Collection<E> {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private static final Comparator<?> DEFAULT_COMPARATOR = new Compar();
 
     private final Comparator<E> comp;

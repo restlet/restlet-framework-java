@@ -468,7 +468,7 @@ public abstract class AbstractUriBuilder extends UriBuilder {
      * @see javax.ws.rs.core.UriBuilder#path(java.lang.Class)
      */
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public UriBuilder path(Class rootResource) throws IllegalArgumentException {
         if (rootResource == null) {
             throw new IllegalArgumentException(
@@ -509,8 +509,8 @@ public abstract class AbstractUriBuilder extends UriBuilder {
      *             variant of the method annotated with UriPath
      * @see javax.ws.rs.core.UriBuilder#path(java.lang.Class, java.lang.String)
      */
+    @SuppressWarnings("rawtypes")
     @Override
-    @SuppressWarnings("unchecked")
     public UriBuilder path(Class rootResource, String methodName)
             throws IllegalArgumentException {
         if (methodName == null) {

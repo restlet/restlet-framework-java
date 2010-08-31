@@ -97,7 +97,8 @@ public class FormReader {
         // [ifndef gwt] line
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
         // [ifdef gwt] line uncomment
-        // this.stream = new org.restlet.engine.io.StringInputStream(parametersString);
+        // this.stream = new
+        // org.restlet.engine.io.StringInputStream(parametersString);
         this.characterSet = null;
         this.separator = separator;
     }
@@ -117,7 +118,8 @@ public class FormReader {
         // [ifndef gwt] line
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
         // [ifdef gwt] line uncomment
-        // this.stream = new org.restlet.engine.io.StringInputStream(parametersString);
+        // this.stream = new
+        // org.restlet.engine.io.StringInputStream(parametersString);
         this.characterSet = characterSet;
         this.separator = separator;
     }
@@ -147,10 +149,8 @@ public class FormReader {
                     }
                 }
             } catch (IOException ioe) {
-                Context
-                        .getCurrentLogger()
-                        .log(
-                                Level.WARNING,
+                Context.getCurrentLogger()
+                        .log(Level.WARNING,
                                 "Unable to parse a form parameter. Skipping the remaining parameters.",
                                 ioe);
             }
@@ -244,10 +244,8 @@ public class FormReader {
                         } else if (nextChar == -1) {
                             // Do nothing return null preference
                         } else {
-                            Context
-                                    .getCurrentLogger()
-                                    .fine(
-                                            "Empty parameter name detected. Please check your form data");
+                            Context.getCurrentLogger()
+                                    .fine("Empty parameter name detected. Please check your form data");
                         }
                     } else {
                         nameBuffer.append((char) nextChar);
@@ -296,7 +294,7 @@ public class FormReader {
 
                     if (result instanceof List) {
                         // Multiple values already found for this parameter
-                        values = (List) result;
+                        values = (List<Object>) result;
                     } else {
                         // Second value found for this parameter
                         // Create a list of values
@@ -351,7 +349,7 @@ public class FormReader {
 
                     if (currentValue instanceof List) {
                         // Multiple values already found for this parameter
-                        values = (List) currentValue;
+                        values = (List<Object>) currentValue;
                     } else {
                         // Second value found for this parameter
                         // Create a list of values

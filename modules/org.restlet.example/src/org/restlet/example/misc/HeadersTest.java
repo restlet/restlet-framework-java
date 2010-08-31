@@ -54,7 +54,7 @@ public class HeadersTest {
                 // ------------------------------
                 // Getting an HTTP request header
                 // ------------------------------
-                Series<Parameter> headers = (Series) request.getAttributes()
+                Series<Parameter> headers = (Series<Parameter>) request.getAttributes()
                         .get("org.restlet.http.headers");
 
                 // The headers list contains all received HTTP headers, in raw

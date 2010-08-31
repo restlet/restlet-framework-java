@@ -185,8 +185,8 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
 
     @SuppressWarnings("unchecked")
     @Override
-    public DigestVerifier getVerifier() {
-        return (DigestVerifier) super.getVerifier();
+    public DigestVerifier<LocalVerifier> getVerifier() {
+        return (DigestVerifier<LocalVerifier>) super.getVerifier();
     }
 
     /**
@@ -267,7 +267,6 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
      * @param localVerifier
      *            The local verifier to wrap.
      */
-    @SuppressWarnings("unchecked")
     public void setWrappedVerifier(LocalVerifier localVerifier) {
         getVerifier().setWrappedVerifier(localVerifier);
     }

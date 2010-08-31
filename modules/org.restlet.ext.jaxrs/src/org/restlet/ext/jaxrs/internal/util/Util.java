@@ -902,7 +902,7 @@ public class Util {
             Request request) {
         final Map<String, Object> attrsOfRequ = request.getAttributes();
         @SuppressWarnings("unchecked")
-        MultivaluedMap<String, String> headers = (MultivaluedMap) attrsOfRequ
+        MultivaluedMap<String, String> headers = (MultivaluedMap<String, String>) attrsOfRequ
                 .get(ORG_RESTLET_EXT_JAXRS_HTTP_HEADERS);
         if (headers == null) {
             headers = UnmodifiableMultivaluedMap.getFromForm(
