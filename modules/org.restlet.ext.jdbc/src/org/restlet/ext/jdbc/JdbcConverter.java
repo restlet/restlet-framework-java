@@ -74,7 +74,7 @@ public class JdbcConverter extends ConverterHelper {
             return 1.0f;
         }
 
-        return 0;
+        return -1.0f;
     }
 
     @Override

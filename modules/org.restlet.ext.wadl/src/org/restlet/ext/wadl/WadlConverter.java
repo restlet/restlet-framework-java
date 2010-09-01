@@ -56,7 +56,7 @@ public class WadlConverter extends ConverterHelper {
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (VARIANT_APPLICATION_WADL.isCompatible(source)) {
+        if (VARIANT_APPLICATION_WADL.includes(source)) {
             result = addObjectClass(result, ApplicationInfo.class);
         }
 
@@ -93,7 +93,7 @@ public class WadlConverter extends ConverterHelper {
             return 1.0f;
         }
 
-        return 0;
+        return -1.0f;
     }
 
     @Override
