@@ -97,8 +97,7 @@ public class FormReader {
         // [ifndef gwt] line
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
         // [ifdef gwt] line uncomment
-        // this.stream = new
-        // org.restlet.engine.io.StringInputStream(parametersString);
+        // this.stream = new org.restlet.engine.io.StringInputStream(parametersString);
         this.characterSet = null;
         this.separator = separator;
     }
@@ -118,8 +117,7 @@ public class FormReader {
         // [ifndef gwt] line
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
         // [ifdef gwt] line uncomment
-        // this.stream = new
-        // org.restlet.engine.io.StringInputStream(parametersString);
+        // this.stream = new org.restlet.engine.io.StringInputStream(parametersString);
         this.characterSet = characterSet;
         this.separator = separator;
     }
