@@ -6,6 +6,7 @@
 
    <dependencies>
       <dependency type="library" id="rome" primary="true" />
+      <dependency type="library" id="jdom" />
       <dependency type="module" id="core" />
    </dependencies>
 </module>
