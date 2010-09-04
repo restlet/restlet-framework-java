@@ -740,7 +740,8 @@
 	<target name="package" if="do-package" depends="package-classic" description="Generate the distribution.">
 		<!-- copy final artifacts to the final distribution directory -->
 		<move file="${dist-base}/restlet-${edition}-${version-compact}.zip" todir="${final-dist-base}" />
-		<move file="${dist-base}/restlet-${edition}-${version-compact}.exe" todir="${final-dist-base}" />
+		<!-- do not fail on error if the exe does not exist in builds that didn't run the nsis task -->
+    <move file="${dist-base}/restlet-${edition}-${version-compact}.exe" todir="${final-dist-base}" failonerror="false"/>
 		<move todir="${final-dist-maven2}">
 			<fileset dir="${dist-maven2}" />
 		</move>
