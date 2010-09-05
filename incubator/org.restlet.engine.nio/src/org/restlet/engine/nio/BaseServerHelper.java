@@ -96,15 +96,14 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
 
     @Override
     protected Connection<Server> createConnection(SocketChannel socketChannel,
-            Selector selector, SocketAddress socketAddress)
-            throws IOException {
+            Selector selector, SocketAddress socketAddress) throws IOException {
         return new Connection<Server>(this, socketChannel, selector,
                 socketAddress);
     }
 
     @Override
-    protected ServerController createController() {
-        return new ServerController(this);
+    protected ServerConnectionController createController() {
+        return new ServerConnectionController(this);
     }
 
     /**
@@ -158,8 +157,8 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
     }
 
     @Override
-    public ServerController getController() {
-        return (ServerController) super.getController();
+    public ServerConnectionController getController() {
+        return (ServerConnectionController) super.getController();
     }
 
     /**

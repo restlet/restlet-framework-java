@@ -31,35 +31,27 @@
 package org.restlet.engine.nio;
 
 import java.io.IOException;
-import java.nio.channels.ClosedByInterruptException;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.engine.Engine;
 
 /**
- * Controls the IO work of parent connector helper and manages its connections.
+ * Controls the IO work of parent connector helper.
  * 
  * @author Jerome Louvel
  */
-public abstract class Controller implements Runnable {
+public abstract class Controller {
 
     /** The parent connector helper. */
-    private final BaseHelper<?> helper;
+    protected final BaseHelper<?> helper;
 
     /** Indicates if the controller is overloaded. */
-    private volatile boolean overloaded;
+    protected volatile boolean overloaded;
 
     /** Indicates if the task is running. */
-    private volatile boolean running;
-
-    /** The NIO selector. */
-    private volatile Selector selector;
+    protected volatile boolean running;
 
     /**
      * Constructor.
@@ -71,40 +63,6 @@ public abstract class Controller implements Runnable {
         this.helper = helper;
         this.overloaded = false;
         this.running = false;
-
-        try {
-            this.selector = Selector.open();
-        } catch (IOException ioe) {
-            Context.getCurrentLogger().log(Level.WARNING,
-                    "Unable to open the controller's NIO selector", ioe);
-        }
-    }
-
-    /**
-     * Control each connection for messages to read or write.
-     * 
-     * @param overloaded
-     *            Indicates if the controller is overloaded.
-     * @throws IOException
-     */
-    protected void controlConnections(boolean overloaded) throws IOException {
-        // Close connections or register interest in NIO operations
-        for (final Connection<?> conn : getHelper().getConnections()) {
-            if (conn.getState() == ConnectionState.CLOSED) {
-                getHelper().getConnections().remove(conn);
-                getHelper().checkin(conn);
-            } else if ((conn.getState() == ConnectionState.CLOSING)
-                    && conn.isEmpty()) {
-                conn.close(false);
-            } else if (conn.hasTimedOut()) {
-                conn.close(false);
-                getHelper().getLogger().fine(
-                        "Closing connection with no IO activity during "
-                                + getHelper().getMaxIoIdleTimeMs() + " ms.");
-            } else {
-                conn.registerInterest(getSelector());
-            }
-        }
     }
 
     /**
@@ -157,15 +115,6 @@ public abstract class Controller implements Runnable {
      */
     protected BaseHelper<?> getHelper() {
         return helper;
-    }
-
-    /**
-     * Returns the NIO selector.
-     * 
-     * @return The NIO selector.
-     */
-    public Selector getSelector() {
-        return selector;
     }
 
     /**
@@ -274,80 +223,6 @@ public abstract class Controller implements Runnable {
     }
 
     /**
-     * Callback when a key has been selected.
-     * 
-     * @param key
-     *            The selected key.
-     */
-    protected void onSelected(SelectionKey key)
-            throws ClosedByInterruptException {
-        // Notify the selected way
-        if (key.attachment() != null) {
-            ((SelectionListener) key.attachment()).onSelected(key);
-        }
-    }
-
-    /**
-     * Listens on the given server socket for incoming connections.
-     */
-    public void run() {
-        setRunning(true);
-        long sleepTime = getHelper().getControllerSleepTimeMs();
-
-        while (isRunning()) {
-            try {
-                if (getHelper().isWorkerThreads()) {
-                    if (isOverloaded()
-                            && !getHelper().isWorkerServiceOverloaded()) {
-                        setOverloaded(false);
-                        getHelper()
-                                .getLogger()
-                                .info("Connector overload ended. Accepting new connections again");
-                        getHelper().traceWorkerService();
-
-                    } else if (getHelper().isWorkerServiceOverloaded()) {
-                        setOverloaded(true);
-                        getHelper()
-                                .getLogger()
-                                .info("Connector overload detected. Stop accepting new connections");
-                        getHelper().traceWorkerService();
-                    }
-                }
-
-                selectKey(sleepTime);
-                controlConnections(isOverloaded());
-                controlHelper();
-            } catch (Exception ex) {
-                this.helper.getLogger().log(Level.WARNING,
-                        "Unexpected error while controlling connector", ex);
-            }
-        }
-    }
-
-    /**
-     * Selects the key ready for IO operations.
-     * 
-     * @param sleepTime
-     *            The max sleep time.
-     * @throws IOException
-     * @throws ClosedByInterruptException
-     */
-    protected void selectKey(long sleepTime) throws IOException,
-            ClosedByInterruptException {
-        // Select the connections ready for NIO operations
-        if (getSelector().select(sleepTime) > 0) {
-            for (Iterator<SelectionKey> selectedKeys = getSelector()
-                    .selectedKeys().iterator(); selectedKeys.hasNext();) {
-                // Retrieve the next selected key
-                onSelected(selectedKeys.next());
-
-                // Remove the processed key from the set
-                selectedKeys.remove();
-            }
-        }
-    }
-
-    /**
      * Indicates if the controller is overloaded.
      * 
      * @param overloaded
@@ -372,14 +247,6 @@ public abstract class Controller implements Runnable {
      */
     public void shutdown() throws IOException {
         setRunning(false);
-        getSelector().close();
-    }
-
-    /**
-     * Wakes up the controller. By default it wakes up the selector.
-     */
-    public void wakeup() {
-        getSelector().wakeup();
     }
 
 }

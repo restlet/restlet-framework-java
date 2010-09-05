@@ -216,7 +216,7 @@ public abstract class BaseHelper<T extends Connector> extends
     private final Set<Connection<T>> connections;
 
     /** The controller task. */
-    private final Controller controller;
+    private final ConnectionController controller;
 
     /** The controller service. */
     private volatile ExecutorService controllerService;
@@ -311,7 +311,7 @@ public abstract class BaseHelper<T extends Connector> extends
      * 
      * @return A new controller.
      */
-    protected abstract Controller createController();
+    protected abstract ConnectionController createController();
 
     /**
      * Creates the connector controller service.
@@ -421,7 +421,7 @@ public abstract class BaseHelper<T extends Connector> extends
      * 
      * @return The controller task.
      */
-    public Controller getController() {
+    public ConnectionController getController() {
         return controller;
     }
 

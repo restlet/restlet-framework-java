@@ -179,8 +179,8 @@ public abstract class BaseClientHelper extends BaseHelper<Client> {
     }
 
     @Override
-    protected Controller createController() {
-        return new ClientController(this);
+    protected ConnectionController createController() {
+        return new ClientConnectionController(this);
     }
 
     /**

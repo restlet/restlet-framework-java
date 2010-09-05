@@ -48,7 +48,7 @@ import org.restlet.Server;
  * 
  * @author Jerome Louvel
  */
-public class ServerController extends Controller {
+public class ServerConnectionController extends ConnectionController {
 
     /** The latch to countdown when the socket is ready to accept connections. */
     private final CountDownLatch latch;
@@ -59,7 +59,7 @@ public class ServerController extends Controller {
      * @param helper
      *            The target server helper.
      */
-    public ServerController(BaseServerHelper helper) {
+    public ServerConnectionController(BaseServerHelper helper) {
         super(helper);
         this.latch = new CountDownLatch(1);
     }

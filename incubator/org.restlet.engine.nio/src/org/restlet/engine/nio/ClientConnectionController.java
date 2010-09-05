@@ -37,7 +37,7 @@ import org.restlet.Response;
  * 
  * @author Jerome Louvel
  */
-public class ClientController extends Controller {
+public class ClientConnectionController extends ConnectionController {
 
     /**
      * Constructor.
@@ -45,7 +45,7 @@ public class ClientController extends Controller {
      * @param helper
      *            The target client helper.
      */
-    public ClientController(BaseClientHelper helper) {
+    public ClientConnectionController(BaseClientHelper helper) {
         super(helper);
     }
 
