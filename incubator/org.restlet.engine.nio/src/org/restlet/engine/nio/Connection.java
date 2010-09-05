@@ -69,7 +69,7 @@ public class Connection<T extends Connector> implements SelectionListener {
     private WritableSelectionChannel writableSelectionChannel;
 
     /** The parent connector helper. */
-    private final ConnectedHelper<T> helper;
+    private final ConnectionHelper<T> helper;
 
     /** The inbound way. */
     private final Way inboundWay;
@@ -114,7 +114,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      *            The associated IP address.
      * @throws IOException
      */
-    public Connection(ConnectedHelper<T> helper, SocketChannel socketChannel,
+    public Connection(ConnectionHelper<T> helper, SocketChannel socketChannel,
             Selector selector, SocketAddress socketAddress) throws IOException {
         this.helper = helper;
         this.inboundWay = helper.createInboundWay(this);
@@ -192,7 +192,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * 
      * @return The parent connector helper.
      */
-    public ConnectedHelper<T> getHelper() {
+    public ConnectionHelper<T> getHelper() {
         return helper;
     }
 

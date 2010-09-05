@@ -76,7 +76,7 @@ import org.restlet.data.Status;
  * 
  * @author Jerome Louvel
  */
-public abstract class ConnectedServerHelper extends ConnectedHelper<Server> {
+public abstract class ConnectionServerHelper extends ConnectionHelper<Server> {
 
     /** The server socket channel. */
     private volatile ServerSocketChannel serverSocketChannel;
@@ -87,7 +87,7 @@ public abstract class ConnectedServerHelper extends ConnectedHelper<Server> {
      * @param server
      *            The server to help.
      */
-    public ConnectedServerHelper(Server server) {
+    public ConnectionServerHelper(Server server) {
         super(server, false);
 
         // Clear the ephemeral port

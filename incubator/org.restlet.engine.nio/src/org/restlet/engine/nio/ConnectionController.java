@@ -56,7 +56,7 @@ public abstract class ConnectionController extends Controller implements
      * @param helper
      *            The parent connector helper.
      */
-    public ConnectionController(ConnectedHelper<?> helper) {
+    public ConnectionController(ConnectionHelper<?> helper) {
         super(helper);
 
         try {

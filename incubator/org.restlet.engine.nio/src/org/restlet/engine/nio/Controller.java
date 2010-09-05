@@ -45,7 +45,7 @@ import org.restlet.engine.Engine;
 public abstract class Controller {
 
     /** The parent connector helper. */
-    protected final ConnectedHelper<?> helper;
+    protected final ConnectionHelper<?> helper;
 
     /** Indicates if the controller is overloaded. */
     protected volatile boolean overloaded;
@@ -103,7 +103,7 @@ public abstract class Controller {
      * @param helper
      *            The parent connector helper.
      */
-    public Controller(ConnectedHelper<?> helper) {
+    public Controller(ConnectionHelper<?> helper) {
         this.helper = helper;
         this.overloaded = false;
         this.running = false;
@@ -157,7 +157,7 @@ public abstract class Controller {
      * 
      * @return The parent connector helper.
      */
-    protected ConnectedHelper<?> getHelper() {
+    protected ConnectionHelper<?> getHelper() {
         return helper;
     }
 

@@ -59,7 +59,7 @@ public class ServerConnectionController extends ConnectionController {
      * @param helper
      *            The target server helper.
      */
-    public ServerConnectionController(ConnectedServerHelper helper) {
+    public ServerConnectionController(ConnectionServerHelper helper) {
         super(helper);
         this.latch = new CountDownLatch(1);
     }
@@ -78,8 +78,8 @@ public class ServerConnectionController extends ConnectionController {
      * 
      * @return The parent server helper.
      */
-    protected ConnectedServerHelper getHelper() {
-        return (ConnectedServerHelper) super.getHelper();
+    protected ConnectionServerHelper getHelper() {
+        return (ConnectionServerHelper) super.getHelper();
     }
 
     @Override

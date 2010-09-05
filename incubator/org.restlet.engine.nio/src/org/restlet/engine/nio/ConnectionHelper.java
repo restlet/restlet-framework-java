@@ -92,7 +92,7 @@ import org.restlet.Connector;
  * 
  * @author Jerome Louvel
  */
-public abstract class ConnectedHelper<T extends Connector> extends
+public abstract class ConnectionHelper<T extends Connector> extends
         BaseHelper<T> {
     /** The set of active connections. */
     private final Set<Connection<T>> connections;
@@ -108,7 +108,7 @@ public abstract class ConnectedHelper<T extends Connector> extends
      * @param clientSide
      *            True if it is helping a client connector.
      */
-    public ConnectedHelper(T connector, boolean clientSide) {
+    public ConnectionHelper(T connector, boolean clientSide) {
         super(connector, clientSide);
         this.connections = new CopyOnWriteArraySet<Connection<T>>();
         this.connectionPool = null;
