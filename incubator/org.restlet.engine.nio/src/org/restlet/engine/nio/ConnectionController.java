@@ -56,7 +56,7 @@ public abstract class ConnectionController extends Controller implements
      * @param helper
      *            The parent connector helper.
      */
-    public ConnectionController(BaseHelper<?> helper) {
+    public ConnectionController(ConnectedHelper<?> helper) {
         super(helper);
 
         try {
@@ -117,41 +117,11 @@ public abstract class ConnectionController extends Controller implements
         }
     }
 
-    /**
-     * Listens on the given server socket for incoming connections.
-     */
-    public void run() {
-        setRunning(true);
-        long sleepTime = getHelper().getControllerSleepTimeMs();
-
-        while (isRunning()) {
-            try {
-                if (getHelper().isWorkerThreads()) {
-                    if (isOverloaded()
-                            && !getHelper().isWorkerServiceOverloaded()) {
-                        setOverloaded(false);
-                        getHelper()
-                                .getLogger()
-                                .info("Connector overload ended. Accepting new connections again");
-                        getHelper().traceWorkerService();
-
-                    } else if (getHelper().isWorkerServiceOverloaded()) {
-                        setOverloaded(true);
-                        getHelper()
-                                .getLogger()
-                                .info("Connector overload detected. Stop accepting new connections");
-                        getHelper().traceWorkerService();
-                    }
-                }
-
-                selectKey(sleepTime);
-                controlConnections(isOverloaded());
-                controlHelper();
-            } catch (Exception ex) {
-                this.helper.getLogger().log(Level.WARNING,
-                        "Unexpected error while controlling connector", ex);
-            }
-        }
+    @Override
+    protected void doRun(long sleepTime) throws IOException {
+        super.doRun(sleepTime);
+        selectKey(sleepTime);
+        controlConnections(isOverloaded());
     }
 
     /**

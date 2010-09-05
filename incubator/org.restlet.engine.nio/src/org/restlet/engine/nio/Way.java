@@ -136,7 +136,7 @@ public abstract class Way {
      * 
      * @return The parent connector helper.
      */
-    protected BaseHelper<?> getHelper() {
+    protected ConnectedHelper<?> getHelper() {
         return getConnection().getHelper();
     }
 

@@ -44,7 +44,7 @@ import org.restlet.engine.util.Pool;
 public class ConnectionPool<T extends Connector> extends Pool<Connection<T>> {
 
     /** The parent helper. */
-    private BaseHelper<T> helper;
+    private ConnectedHelper<T> helper;
 
     /**
      * Constructor.
@@ -54,7 +54,7 @@ public class ConnectionPool<T extends Connector> extends Pool<Connection<T>> {
      * @param initialSize
      *            The initial pool size.
      */
-    public ConnectionPool(BaseHelper<T> helper, int initialSize) {
+    public ConnectionPool(ConnectedHelper<T> helper, int initialSize) {
         super();
         this.helper = helper;
         preCreate(initialSize);

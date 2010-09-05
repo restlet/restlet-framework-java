@@ -62,8 +62,8 @@ public class ServerInboundWay extends InboundWay {
     }
 
     @Override
-    public BaseServerHelper getHelper() {
-        return (BaseServerHelper) super.getHelper();
+    public ConnectedServerHelper getHelper() {
+        return (ConnectedServerHelper) super.getHelper();
     }
 
     @Override

@@ -157,7 +157,7 @@ import org.restlet.data.Status;
  * 
  * @author Jerome Louvel
  */
-public abstract class BaseClientHelper extends BaseHelper<Client> {
+public abstract class ConnectedClientHelper extends ConnectedHelper<Client> {
 
     private static final String CONNECTOR_LATCH = "org.restlet.engine.http.connector.latch";
 
@@ -167,7 +167,7 @@ public abstract class BaseClientHelper extends BaseHelper<Client> {
      * @param connector
      *            The helped client connector.
      */
-    public BaseClientHelper(Client connector) {
+    public ConnectedClientHelper(Client connector) {
         super(connector, true);
     }
 

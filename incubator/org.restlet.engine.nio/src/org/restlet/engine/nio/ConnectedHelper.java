@@ -206,7 +206,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * 
  * @author Jerome Louvel
  */
-public abstract class BaseHelper<T extends Connector> extends
+public abstract class ConnectedHelper<T extends Connector> extends
         ConnectorHelper<T> {
 
     /** Indicates if it is helping a client connector. */
@@ -241,7 +241,7 @@ public abstract class BaseHelper<T extends Connector> extends
      * @param clientSide
      *            True if it is helping a client connector.
      */
-    public BaseHelper(T connector, boolean clientSide) {
+    public ConnectedHelper(T connector, boolean clientSide) {
         super(connector);
         this.clientSide = clientSide;
         this.connections = new CopyOnWriteArraySet<Connection<T>>();

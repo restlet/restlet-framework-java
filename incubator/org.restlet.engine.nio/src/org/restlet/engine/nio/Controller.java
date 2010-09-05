@@ -45,7 +45,7 @@ import org.restlet.engine.Engine;
 public abstract class Controller {
 
     /** The parent connector helper. */
-    protected final BaseHelper<?> helper;
+    protected final ConnectedHelper<?> helper;
 
     /** Indicates if the controller is overloaded. */
     protected volatile boolean overloaded;
@@ -54,12 +54,56 @@ public abstract class Controller {
     protected volatile boolean running;
 
     /**
+     * Listens on the given server socket for incoming connections.
+     */
+    public void run() {
+        setRunning(true);
+        long sleepTime = getHelper().getControllerSleepTimeMs();
+
+        while (isRunning()) {
+            try {
+                if (getHelper().isWorkerThreads()) {
+                    if (isOverloaded()
+                            && !getHelper().isWorkerServiceOverloaded()) {
+                        setOverloaded(false);
+                        getHelper()
+                                .getLogger()
+                                .info("Connector overload ended. Accepting new work again");
+                        getHelper().traceWorkerService();
+                    } else if (getHelper().isWorkerServiceOverloaded()) {
+                        setOverloaded(true);
+                        getHelper()
+                                .getLogger()
+                                .info("Connector overload detected. Stop accepting new work");
+                        getHelper().traceWorkerService();
+                    }
+                }
+
+                doRun(sleepTime);
+            } catch (Exception ex) {
+                this.helper.getLogger().log(Level.WARNING,
+                        "Unexpected error while controlling connector", ex);
+            }
+        }
+    }
+
+    /**
+     * Do the actual controller work. Called by the {@link #run()} to provide an
+     * easy method to overload.
+     * 
+     * @param sleepTime
+     */
+    protected void doRun(long sleepTime) throws IOException {
+        controlHelper();
+    }
+
+    /**
      * Constructor.
      * 
      * @param helper
      *            The parent connector helper.
      */
-    public Controller(BaseHelper<?> helper) {
+    public Controller(ConnectedHelper<?> helper) {
         this.helper = helper;
         this.overloaded = false;
         this.running = false;
@@ -113,7 +157,7 @@ public abstract class Controller {
      * 
      * @return The parent connector helper.
      */
-    protected BaseHelper<?> getHelper() {
+    protected ConnectedHelper<?> getHelper() {
         return helper;
     }
 
