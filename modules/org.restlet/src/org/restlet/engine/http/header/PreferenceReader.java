@@ -69,7 +69,7 @@ public class PreferenceReader<T extends Metadata> extends
      * @param clientInfo
      *            The client info to update.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void addCharacterSets(String acceptCharsetHeader,
             ClientInfo clientInfo) {
         if (acceptCharsetHeader != null) {
@@ -98,7 +98,7 @@ public class PreferenceReader<T extends Metadata> extends
      * @param clientInfo
      *            The client info to update.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void addEncodings(String acceptEncodingHeader,
             ClientInfo clientInfo) {
         if (acceptEncodingHeader != null) {
@@ -119,7 +119,7 @@ public class PreferenceReader<T extends Metadata> extends
      * @param clientInfo
      *            The client info to update.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void addLanguages(String acceptLanguageHeader,
             ClientInfo clientInfo) {
         if (acceptLanguageHeader != null) {
@@ -139,7 +139,7 @@ public class PreferenceReader<T extends Metadata> extends
      * @param clientInfo
      *            The client info to update.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void addMediaTypes(String acceptMediaTypeHeader,
             ClientInfo clientInfo) {
         if (acceptMediaTypeHeader != null) {
@@ -211,8 +211,7 @@ public class PreferenceReader<T extends Metadata> extends
 
             switch (this.type) {
             case TYPE_CHARACTER_SET:
-                result.setMetadata((T) CharacterSet
-                        .valueOf(metadata.toString()));
+                result.setMetadata((T) CharacterSet.valueOf(metadata.toString()));
                 break;
 
             case TYPE_ENCODING:

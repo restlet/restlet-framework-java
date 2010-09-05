@@ -1581,6 +1581,7 @@ public class ClientResource extends UniformResource {
         // Create the client resource proxy
         java.lang.reflect.InvocationHandler h = new java.lang.reflect.InvocationHandler() {
 
+            @SuppressWarnings("rawtypes")
             public Object invoke(Object proxy,
                     java.lang.reflect.Method javaMethod, Object[] args)
                     throws Throwable {
