@@ -63,13 +63,13 @@ public class GenericTypeTestCase extends JaxRsTestCase {
     protected Application getApplication() {
         return new Application() {
             @Override
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Object> getSingletons() {
                 return (Set) Collections.singleton(new GenericTypeMBW());
             }
     
             @Override
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
                 return (Set) Collections.singleton(GenericTypeResource.class);
             }

@@ -95,462 +95,462 @@ import org.restlet.util.WrapperRepresentation;
  */
 public abstract class RestletServerTestCase extends TestCase {
 
-    /**
-     * The name of the header {@link Form} in the attribute map.
+	/**
+	 * The name of the header {@link Form} in the attribute map.
+	 * 
+	 * @see #getHttpHeaders(Request)
+	 */
+	public static final String ORG_RESTLET_HTTP_HEADERS = "org.restlet.http.headers";
+
+	/**
+	 * ServerWrapperFactory to use. Default: {@link RestletServerWrapperFactory}
+	 */
+	private static ServerWrapperFactory serverWrapperFactory;
+
+	/**
+	 * if true, a real server is started and all communication uses real TCP,
+	 * real Restlet request and response serialization. If false, the
+	 * application is called without serialization.<br>
+	 * The first is real, the last is very fast.
+	 * 
+	 * @see #setServerWrapperFactory(ServerWrapperFactory)
+	 */
+	private static boolean usingTcp = false;
+
+	/**
+	 * Adds the given media types to the accepted media types.
+	 * 
+	 * @param request
+	 *            a Restlet {@link Request}
+	 * @param mediaTypes
+	 *            a collection of {@link MediaType}s or {@link Preference}<
+	 *            {@link MediaType}>; mixing is also allowed.
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static void addAcceptedMediaTypes(Request request, Collection mediaTypes) {
+		if ((mediaTypes == null) || mediaTypes.isEmpty()) {
+			return;
+		}
+		final Collection<Preference<MediaType>> mediaTypePrefs = new ArrayList<Preference<MediaType>>(
+				mediaTypes.size());
+		for (final Object mediaType : mediaTypes) {
+			if (mediaType instanceof MediaType) {
+				mediaTypePrefs.add(new Preference<MediaType>(
+						(MediaType) mediaType));
+				continue;
+			}
+			if (mediaType instanceof Preference) {
+				final Preference<Metadata> preference = (Preference) mediaType;
+				if (preference.getMetadata() instanceof MediaType) {
+					mediaTypePrefs.add((Preference) preference);
+					continue;
+				}
+			}
+			throw new IllegalArgumentException(
+					"Valid mediaTypes are only Preference<MediaType> or MediaType");
+		}
+		request.getClientInfo().getAcceptedMediaTypes().addAll(mediaTypePrefs);
+	}
+
+	/**
+	 * creates a Guard, that could be used for testing.
+	 * 
+	 * @param context
+	 * @param challengeScheme
+	 * @return
+	 */
+	public static ChallengeAuthenticator createAuthenticator(
+			final Context context, final ChallengeScheme challengeScheme) {
+		MemoryRealm realm = new MemoryRealm();
+
+		realm.getUsers().add(new User("admin", "adminPW".toCharArray()));
+		realm.getUsers().add(new User("alice", "alicesSecret".toCharArray()));
+		realm.getUsers().add(new User("bob", "bobsSecret".toCharArray()));
+
+		context.setDefaultEnroler(realm.getEnroler());
+		context.setDefaultVerifier(realm.getVerifier());
+
+		return new ChallengeAuthenticator(context, challengeScheme, "");
+	}
+
+	/**
+	 * Returns the HTTP headers of the Restlet {@link Request} as {@link Form}.
+	 * 
+	 * @param request
+	 * @return Returns the HTTP headers of the Request.
+	 */
+	public static Form getHttpHeaders(Request request) {
+		Form headers = (Form) request.getAttributes().get(
+				ORG_RESTLET_HTTP_HEADERS);
+		if (headers == null) {
+			headers = new Form();
+			request.getAttributes().put(ORG_RESTLET_HTTP_HEADERS, headers);
+		}
+		return headers;
+	}
+
+	public static ServerWrapperFactory getServerWrapperFactory() {
+		if (serverWrapperFactory == null) {
+			if (usingTcp) {
+				serverWrapperFactory = new RestletServerWrapperFactory();
+			} else {
+				serverWrapperFactory = new DirectServerWrapperFactory();
+			}
+		}
+		return serverWrapperFactory;
+	}
+
+	/**
+	 * Sets the default ServerWrapper. Should be called before setUp.
+	 * 
+	 * @param newServerWrapper
+	 */
+	public static void setServerWrapperFactory(ServerWrapperFactory swf) {
+		if (swf == null) {
+			throw new IllegalArgumentException(
+					"null is an illegal ServerWrapperFactory");
+		}
+		serverWrapperFactory = swf;
+	}
+
+	/**
+	 * @param usingTcp
+	 *            the useTcp to set
+	 */
+	public static void setUseTcp(boolean usingTcp) {
+		if (usingTcp) {
+			if ((serverWrapperFactory != null)
+					&& !serverWrapperFactory.usesTcp()) {
+				serverWrapperFactory = null;
+			}
+		} else {
+			if ((serverWrapperFactory != null)
+					&& serverWrapperFactory.usesTcp()) {
+				serverWrapperFactory = null;
+			}
+		}
+		RestletServerTestCase.usingTcp = usingTcp;
+	}
+
+	/**
+	 * @param response
+	 */
+	public static void sysOutEntity(Response response) {
+		final Representation entity = response.getEntity();
+		try {
+			if (entity != null) {
+				System.out.println(entity.getText());
+			} else {
+				System.out.println("[no Entity available]");
+			}
+		} catch (IOException e) {
+			System.out.println("Entity not readable: ");
+			e.printStackTrace(System.out);
+		}
+	}
+
+	/**
+	 * Utility method: Prints the entity to System.out, if the status indicates
+	 * an error.
+	 * 
+	 * @param response
+	 * @throws IOException
+	 */
+	public static void sysOutEntityIfError(Response response) {
+		if (response.getStatus().isError()) {
+			sysOutEntity(response);
+		}
+	}
+
+	/**
+	 * @param status
+	 * @param response
+	 */
+	public static void sysOutEntityIfNotStatus(Status status, Response response) {
+		if (!response.getStatus().equals(status)) {
+			sysOutEntity(response);
+		}
+	}
+
+	/**
+	 * @return the useTcp
+	 */
+	public static boolean usesTcp() {
+		return usingTcp;
+	}
+
+	/**
+	 * ServerWrapper to use.
+	 */
+	protected ServerWrapper serverWrapper;
+
+	/**
      * 
-     * @see #getHttpHeaders(Request)
      */
-    public static final String ORG_RESTLET_HTTP_HEADERS = "org.restlet.http.headers";
+	public RestletServerTestCase() {
+		super();
+	}
 
-    /**
-     * ServerWrapperFactory to use. Default: {@link RestletServerWrapperFactory}
-     */
-    private static ServerWrapperFactory serverWrapperFactory;
+	/**
+	 * @param name
+	 */
+	public RestletServerTestCase(String name) {
+		super(name);
+	}
 
-    /**
-     * if true, a real server is started and all communication uses real TCP,
-     * real Restlet request and response serialization. If false, the
-     * application is called without serialization.<br>
-     * The first is real, the last is very fast.
-     * 
-     * @see #setServerWrapperFactory(ServerWrapperFactory)
-     */
-    private static boolean usingTcp = false;
+	public Response accessServer(Method httpMethod, Reference reference) {
+		return accessServer(httpMethod, reference, null, null, null, null,
+				null, null);
+	}
 
-    /**
-     * Adds the given media types to the accepted media types.
-     * 
-     * @param request
-     *            a Restlet {@link Request}
-     * @param mediaTypes
-     *            a collection of {@link MediaType}s or {@link Preference}<
-     *            {@link MediaType}>; mixing is also allowed.
-     */
-    @SuppressWarnings("unchecked")
-    static void addAcceptedMediaTypes(Request request, Collection mediaTypes) {
-        if ((mediaTypes == null) || mediaTypes.isEmpty()) {
-            return;
-        }
-        final Collection<Preference<MediaType>> mediaTypePrefs = new ArrayList<Preference<MediaType>>(
-                mediaTypes.size());
-        for (final Object mediaType : mediaTypes) {
-            if (mediaType instanceof MediaType) {
-                mediaTypePrefs.add(new Preference<MediaType>(
-                        (MediaType) mediaType));
-                continue;
-            }
-            if (mediaType instanceof Preference) {
-                final Preference<Metadata> preference = (Preference) mediaType;
-                if (preference.getMetadata() instanceof MediaType) {
-                    mediaTypePrefs.add((Preference) preference);
-                    continue;
-                }
-            }
-            throw new IllegalArgumentException(
-                    "Valid mediaTypes are only Preference<MediaType> or MediaType");
-        }
-        request.getClientInfo().getAcceptedMediaTypes().addAll(mediaTypePrefs);
-    }
+	/**
+	 * access the server with the given values.
+	 * 
+	 * @param httpMethod
+	 *            The HTTP method to use.
+	 * @param reference
+	 *            The {@link Reference}
+	 * @param accMediaTypes
+	 *            the accepted {@link MediaType}s and/or {@link Preference}<
+	 *            {@link MediaType}> (may be mixed). May be null or empty.
+	 * @param entity
+	 *            the entity to send. null for GET and DELETE requests
+	 * @param challengeResponse
+	 * @param conditions
+	 *            the conditions to send with the request. May be null.
+	 * @param addCookies
+	 *            {@link Cookie}s to add to the {@link Request}. May be null.
+	 * @param addHeaders
+	 *            headers to add to the request. May be null.
+	 * @return
+	 * @see #accessServer(Request)
+	 * @see #accessServer(Method, Reference)
+	 */
+	@SuppressWarnings("rawtypes")
+	public Response accessServer(Method httpMethod, Reference reference,
+			Collection accMediaTypes, Representation entity,
+			ChallengeResponse challengeResponse, Conditions conditions,
+			Collection<Cookie> addCookies, Collection<Parameter> addHeaders) {
+		final Request request = new Request(httpMethod, reference);
+		addAcceptedMediaTypes(request, accMediaTypes);
+		request.setChallengeResponse(challengeResponse);
+		request.setEntity(entity);
+		request.setConditions(conditions);
+		if (addCookies != null) {
+			request.getCookies().addAll(addCookies);
+		}
+		if (addHeaders != null) {
+			getHttpHeaders(request).addAll(addHeaders);
+		}
+		return accessServer(request);
+	}
 
-    /**
-     * creates a Guard, that could be used for testing.
-     * 
-     * @param context
-     * @param challengeScheme
-     * @return
-     */
-    public static ChallengeAuthenticator createAuthenticator(
-            final Context context, final ChallengeScheme challengeScheme) {
-        MemoryRealm realm = new MemoryRealm();
+	/**
+	 * @param request
+	 * @return
+	 * @see #accessServer(Method, Reference)
+	 * @see #accessServer(Method, Reference, Collection, Representation,
+	 *      ChallengeResponse, Conditions, Collection, Collection)
+	 */
+	public Response accessServer(Request request) {
+		final Reference reference = request.getResourceRef();
+		if (reference.getBaseRef() == null) {
+			reference.setBaseRef(reference.getHostIdentifier());
+		}
+		request.setOriginalRef(reference.getTargetRef());
+		final Restlet connector = getClientConnector();
+		if (shouldAccessWithoutTcp()) {
+			final String hostDomain = request.getResourceRef().getHostDomain();
+			getHttpHeaders(request).add("host", hostDomain);
+		}
+		Response response = new Response(request);
+		connector.handle(request, response);
+		if (!usingTcp && request.getMethod().equals(Method.HEAD)) {
+			response.setEntity(new WrapperRepresentation(response.getEntity()) {
 
-        realm.getUsers().add(new User("admin", "adminPW".toCharArray()));
-        realm.getUsers().add(new User("alice", "alicesSecret".toCharArray()));
-        realm.getUsers().add(new User("bob", "bobsSecret".toCharArray()));
+				@Override
+				public ReadableByteChannel getChannel() throws IOException {
+					return NioUtils.getChannel(getStream());
+				}
 
-        context.setDefaultEnroler(realm.getEnroler());
-        context.setDefaultVerifier(realm.getVerifier());
+				@Override
+				public Reader getReader() throws IOException {
+					return new StringReader("");
+				}
 
-        return new ChallengeAuthenticator(context, challengeScheme, "");
-    }
+				@Override
+				public InputStream getStream() throws IOException {
+					return new ByteArrayInputStream(new byte[0]);
+				}
 
-    /**
-     * Returns the HTTP headers of the Restlet {@link Request} as {@link Form}.
-     * 
-     * @param request
-     * @return Returns the HTTP headers of the Request.
-     */
-    public static Form getHttpHeaders(Request request) {
-        Form headers = (Form) request.getAttributes().get(
-                ORG_RESTLET_HTTP_HEADERS);
-        if (headers == null) {
-            headers = new Form();
-            request.getAttributes().put(ORG_RESTLET_HTTP_HEADERS, headers);
-        }
-        return headers;
-    }
+				@Override
+				public String getText() {
+					return null;
+				}
 
-    public static ServerWrapperFactory getServerWrapperFactory() {
-        if (serverWrapperFactory == null) {
-            if (usingTcp) {
-                serverWrapperFactory = new RestletServerWrapperFactory();
-            } else {
-                serverWrapperFactory = new DirectServerWrapperFactory();
-            }
-        }
-        return serverWrapperFactory;
-    }
+				@Override
+				public boolean isAvailable() {
+					return false;
+				}
 
-    /**
-     * Sets the default ServerWrapper. Should be called before setUp.
-     * 
-     * @param newServerWrapper
-     */
-    public static void setServerWrapperFactory(ServerWrapperFactory swf) {
-        if (swf == null) {
-            throw new IllegalArgumentException(
-                    "null is an illegal ServerWrapperFactory");
-        }
-        serverWrapperFactory = swf;
-    }
+				@Override
+				public void write(OutputStream outputStream) throws IOException {
+				}
 
-    /**
-     * @param usingTcp
-     *            the useTcp to set
-     */
-    public static void setUseTcp(boolean usingTcp) {
-        if (usingTcp) {
-            if ((serverWrapperFactory != null)
-                    && !serverWrapperFactory.usesTcp()) {
-                serverWrapperFactory = null;
-            }
-        } else {
-            if ((serverWrapperFactory != null)
-                    && serverWrapperFactory.usesTcp()) {
-                serverWrapperFactory = null;
-            }
-        }
-        RestletServerTestCase.usingTcp = usingTcp;
-    }
+				@Override
+				public void write(WritableByteChannel writableChannel)
+						throws IOException {
+				}
 
-    /**
-     * @param response
-     */
-    public static void sysOutEntity(Response response) {
-        final Representation entity = response.getEntity();
-        try {
-            if (entity != null) {
-                System.out.println(entity.getText());
-            } else {
-                System.out.println("[no Entity available]");
-            }
-        } catch (IOException e) {
-            System.out.println("Entity not readable: ");
-            e.printStackTrace(System.out);
-        }
-    }
+				@Override
+				public void write(Writer writer) throws IOException {
+				}
+			});
+		}
+		return response;
+	}
 
-    /**
-     * Utility method: Prints the entity to System.out, if the status indicates
-     * an error.
-     * 
-     * @param response
-     * @throws IOException
-     */
-    public static void sysOutEntityIfError(Response response) {
-        if (response.getStatus().isError()) {
-            sysOutEntity(response);
-        }
-    }
+	/**
+	 * Creates the application and returns it. You can define other abstract
+	 * methods for this.
+	 */
+	protected abstract Application createApplication();
 
-    /**
-     * @param status
-     * @param response
-     */
-    public static void sysOutEntityIfNotStatus(Status status, Response response) {
-        if (!response.getStatus().equals(status)) {
-            sysOutEntity(response);
-        }
-    }
+	protected Reference createBaseRef() {
+		final Reference reference = new Reference();
+		reference.setProtocol(Protocol.HTTP);
+		reference.setAuthority("localhost");
+		if (!shouldAccessWithoutTcp()) {
+			reference.setHostPort(getServerWrapper().getServerPort());
+		}
+		return reference;
+	}
 
-    /**
-     * @return the useTcp
-     */
-    public static boolean usesTcp() {
-        return usingTcp;
-    }
+	/**
+	 * @return
+	 */
+	private Restlet getClientConnector() {
+		return getServerWrapper().getClientConnector();
+	}
 
-    /**
-     * ServerWrapper to use.
-     */
-    protected ServerWrapper serverWrapper;
+	public int getServerPort() {
+		return getServerWrapper().getServerPort();
+	}
 
-    /**
-     * 
-     */
-    public RestletServerTestCase() {
-        super();
-    }
+	public ServerWrapper getServerWrapper() {
+		if (this.serverWrapper == null) {
+			this.serverWrapper = getServerWrapperFactory()
+					.createServerWrapper();
+		}
+		return this.serverWrapper;
+	}
 
-    /**
-     * @param name
-     */
-    public RestletServerTestCase(String name) {
-        super(name);
-    }
+	/**
+	 * This methods shows information about the started server after starting
+	 * it.<br>
+	 * You may override this method to do what ever you want
+	 */
+	protected void runServerAfterStart() {
+		System.out.print("server is accessable via http://localhost:");
+		System.out.println(getServerPort());
+	}
 
-    public Response accessServer(Method httpMethod, Reference reference) {
-        return accessServer(httpMethod, reference, null, null, null, null,
-                null, null);
-    }
+	/**
+	 * <p>
+	 * Starts the current test case as a normal HTTP server (sets
+	 * {@link #useTcp} to true), waits for an input from {@link System#in} and
+	 * then stops the server.<br>
+	 * After startup the method {@link #runServerAfterStart()} is called; you
+	 * may override it to give more information about the startet server.
+	 * </p>
+	 * <p>
+	 * This method is easy to use. Just instantiate the unit test case class and
+	 * call this method, e.g. in the main method.
+	 * </p>
+	 */
+	public void runServerUntilKeyPressed() throws Exception {
+		setUseTcp(true);
+		startServer(createApplication());
+		runServerAfterStart();
+		System.out.println("press key to stop . . .");
+		System.in.read();
+		stopServer();
+		System.out.println("server stopped");
+	}
 
-    /**
-     * access the server with the given values.
-     * 
-     * @param httpMethod
-     *            The HTTP method to use.
-     * @param reference
-     *            The {@link Reference}
-     * @param accMediaTypes
-     *            the accepted {@link MediaType}s and/or {@link Preference}<
-     *            {@link MediaType}> (may be mixed). May be null or empty.
-     * @param entity
-     *            the entity to send. null for GET and DELETE requests
-     * @param challengeResponse
-     * @param conditions
-     *            the conditions to send with the request. May be null.
-     * @param addCookies
-     *            {@link Cookie}s to add to the {@link Request}. May be null.
-     * @param addHeaders
-     *            headers to add to the request. May be null.
-     * @return
-     * @see #accessServer(Request)
-     * @see #accessServer(Method, Reference)
-     */
-    @SuppressWarnings("unchecked")
-    public Response accessServer(Method httpMethod, Reference reference,
-            Collection accMediaTypes, Representation entity,
-            ChallengeResponse challengeResponse, Conditions conditions,
-            Collection<Cookie> addCookies, Collection<Parameter> addHeaders) {
-        final Request request = new Request(httpMethod, reference);
-        addAcceptedMediaTypes(request, accMediaTypes);
-        request.setChallengeResponse(challengeResponse);
-        request.setEntity(entity);
-        request.setConditions(conditions);
-        if (addCookies != null) {
-            request.getCookies().addAll(addCookies);
-        }
-        if (addHeaders != null) {
-            getHttpHeaders(request).addAll(addHeaders);
-        }
-        return accessServer(request);
-    }
+	public void setServerWrapper(ServerWrapper serverWrapper) {
+		this.serverWrapper = serverWrapper;
+	}
 
-    /**
-     * @param request
-     * @return
-     * @see #accessServer(Method, Reference)
-     * @see #accessServer(Method, Reference, Collection, Representation,
-     *      ChallengeResponse, Conditions, Collection, Collection)
-     */
-    public Response accessServer(Request request) {
-        final Reference reference = request.getResourceRef();
-        if (reference.getBaseRef() == null) {
-            reference.setBaseRef(reference.getHostIdentifier());
-        }
-        request.setOriginalRef(reference.getTargetRef());
-        final Restlet connector = getClientConnector();
-        if (shouldAccessWithoutTcp()) {
-            final String hostDomain = request.getResourceRef().getHostDomain();
-            getHttpHeaders(request).add("host", hostDomain);
-        }
-        Response response = new Response(request);
-        connector.handle(request, response);
-        if (!usingTcp && request.getMethod().equals(Method.HEAD)) {
-            response.setEntity(new WrapperRepresentation(response.getEntity()) {
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		if (shouldStartServerInSetUp()) {
+			startServer(createApplication());
+		}
+	}
 
-                @Override
-                public ReadableByteChannel getChannel() throws IOException {
-                    return NioUtils.getChannel(getStream());
-                }
+	/**
+	 * @return
+	 */
+	public boolean shouldAccessWithoutTcp() {
+		return getServerWrapper() instanceof DirectServerWrapper;
+	}
 
-                @Override
-                public Reader getReader() throws IOException {
-                    return new StringReader("");
-                }
+	public boolean shouldStartServerInSetUp() {
+		return true;
+	}
 
-                @Override
-                public InputStream getStream() throws IOException {
-                    return new ByteArrayInputStream(new byte[0]);
-                }
+	/**
+	 * @param application
+	 * @throws Exception
+	 */
+	public void startServer() throws Exception {
+		startServer(createApplication());
+	}
 
-                @Override
-                public String getText() {
-                    return null;
-                }
+	/**
+	 * @param application
+	 * @throws Exception
+	 */
+	public void startServer(Application application) throws Exception {
+		startServer(application, Protocol.HTTP);
+	}
 
-                @Override
-                public boolean isAvailable() {
-                    return false;
-                }
+	/**
+	 * @param jaxRsApplication
+	 * @param protocol
+	 * @throws Exception
+	 */
+	protected void startServer(Application jaxRsApplication, Protocol protocol)
+			throws Exception {
+		try {
+			getServerWrapper().startServer(jaxRsApplication, protocol);
+		} catch (Exception e) {
+			try {
+				stopServer();
+			} catch (Exception e1) {
+				// ignore exception, throw before catched Exception later
+			}
+			throw e;
+		}
+	}
 
-                @Override
-                public void write(OutputStream outputStream) throws IOException {
-                }
+	/**
+	 * @throws Exception
+	 * @see {@link #accessServer(Request)}
+	 */
+	protected void stopServer() throws Exception {
+		if (this.serverWrapper != null) {
+			this.serverWrapper.stopServer();
+		}
+		this.serverWrapper = null;
+	}
 
-                @Override
-                public void write(WritableByteChannel writableChannel)
-                        throws IOException {
-                }
-
-                @Override
-                public void write(Writer writer) throws IOException {
-                }
-            });
-        }
-        return response;
-    }
-
-    /**
-     * Creates the application and returns it. You can define other abstract
-     * methods for this.
-     */
-    protected abstract Application createApplication();
-
-    protected Reference createBaseRef() {
-        final Reference reference = new Reference();
-        reference.setProtocol(Protocol.HTTP);
-        reference.setAuthority("localhost");
-        if (!shouldAccessWithoutTcp()) {
-            reference.setHostPort(getServerWrapper().getServerPort());
-        }
-        return reference;
-    }
-
-    /**
-     * @return
-     */
-    private Restlet getClientConnector() {
-        return getServerWrapper().getClientConnector();
-    }
-
-    public int getServerPort() {
-        return getServerWrapper().getServerPort();
-    }
-
-    public ServerWrapper getServerWrapper() {
-        if (this.serverWrapper == null) {
-            this.serverWrapper = getServerWrapperFactory()
-                    .createServerWrapper();
-        }
-        return this.serverWrapper;
-    }
-
-    /**
-     * This methods shows information about the started server after starting
-     * it.<br>
-     * You may override this method to do what ever you want
-     */
-    protected void runServerAfterStart() {
-        System.out.print("server is accessable via http://localhost:");
-        System.out.println(getServerPort());
-    }
-
-    /**
-     * <p>
-     * Starts the current test case as a normal HTTP server (sets
-     * {@link #useTcp} to true), waits for an input from {@link System#in} and
-     * then stops the server.<br>
-     * After startup the method {@link #runServerAfterStart()} is called; you
-     * may override it to give more information about the startet server.
-     * </p>
-     * <p>
-     * This method is easy to use. Just instantiate the unit test case class and
-     * call this method, e.g. in the main method.
-     * </p>
-     */
-    public void runServerUntilKeyPressed() throws Exception {
-        setUseTcp(true);
-        startServer(createApplication());
-        runServerAfterStart();
-        System.out.println("press key to stop . . .");
-        System.in.read();
-        stopServer();
-        System.out.println("server stopped");
-    }
-
-    public void setServerWrapper(ServerWrapper serverWrapper) {
-        this.serverWrapper = serverWrapper;
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        if (shouldStartServerInSetUp()) {
-            startServer(createApplication());
-        }
-    }
-
-    /**
-     * @return
-     */
-    public boolean shouldAccessWithoutTcp() {
-        return getServerWrapper() instanceof DirectServerWrapper;
-    }
-
-    public boolean shouldStartServerInSetUp() {
-        return true;
-    }
-
-    /**
-     * @param application
-     * @throws Exception
-     */
-    public void startServer() throws Exception {
-        startServer(createApplication());
-    }
-
-    /**
-     * @param application
-     * @throws Exception
-     */
-    public void startServer(Application application) throws Exception {
-        startServer(application, Protocol.HTTP);
-    }
-
-    /**
-     * @param jaxRsApplication
-     * @param protocol
-     * @throws Exception
-     */
-    protected void startServer(Application jaxRsApplication, Protocol protocol)
-            throws Exception {
-        try {
-            getServerWrapper().startServer(jaxRsApplication, protocol);
-        } catch (Exception e) {
-            try {
-                stopServer();
-            } catch (Exception e1) {
-                // ignore exception, throw before catched Exception later
-            }
-            throw e;
-        }
-    }
-
-    /**
-     * @throws Exception
-     * @see {@link #accessServer(Request)}
-     */
-    protected void stopServer() throws Exception {
-        if (this.serverWrapper != null) {
-            this.serverWrapper.stopServer();
-        }
-        this.serverWrapper = null;
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        stopServer();
-    }
+	@Override
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		stopServer();
+	}
 
 }

@@ -262,7 +262,6 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * @param challengeResponse
      * @return
      */
-    @SuppressWarnings("unchecked")
     public Response accessServer(Method httpMethod, Class<?> klasse,
             String subPath, Collection accMediaTypes,
             ChallengeResponse challengeResponse) {

@@ -54,7 +54,7 @@ public class RepresentationTest extends JaxRsTestCase {
     protected Application getApplication() {
         final Application appConfig = new Application() {
             @Override
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
                 return (Set) Collections.singleton(RepresentationTestService.class);
             }

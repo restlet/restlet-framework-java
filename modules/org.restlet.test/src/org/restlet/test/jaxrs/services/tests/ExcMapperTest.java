@@ -62,13 +62,13 @@ public class ExcMapperTest extends JaxRsTestCase {
     protected Application getApplication() {
         return new Application() {
             @Override
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
                 return (Set) Collections.singleton(ExcMapperTestResource.class);
             }
     
             @Override
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Object> getSingletons() {
                 return (Set) Collections.singleton(new IllegalArgExcMapper());
             }

@@ -51,7 +51,7 @@ public class Issue593Test extends JaxRsTestCase {
     protected Application getApplication() {
         return new Application() {
             @Override
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
                 return (Set) Collections.singleton(Issue593Resource.class);
             }

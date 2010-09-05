@@ -196,6 +196,12 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>Indicates if direct NIO buffers should be allocated instead of regular
  * buffers. See NIO's ByteBuffer Javadocs.</td>
  * </tr>
+ * <tr>
+ * <td>transport</td>
+ * <td>String</td>
+ * <td>TCP</td>
+ * <td>Indicates the transport protocol such as TCP or UDP.</td>
+ * </tr>
  * </table>
  * 
  * @author Jerome Louvel
@@ -577,6 +583,15 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public OutputStream getTraceStream() {
         return System.out;
+    }
+
+    /**
+     * Returns the transport protocol.
+     * 
+     * @return The transport protocol.
+     */
+    public String getTransport() {
+        return getHelpedParameters().getFirstValue("transport", "TCP");
     }
 
     /**

@@ -52,13 +52,13 @@ public class ThrowWebAppExcProviderTest extends JaxRsTestCase {
     protected Application getApplication() {
         final Application appConfig = new Application() {
             @Override
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Object> getSingletons() {
                 return (Set) TestUtils.createSet(new ThrowWebAppExcProvider());
             }
     
             @Override
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
                 return (Set) Collections.singleton(SimpleResource.class);
             }

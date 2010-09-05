@@ -63,7 +63,7 @@ public class PathParamTest extends JaxRsTestCase {
     protected Application getApplication() {
         return new Application() {
             @Override
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
                 return (Set) Collections.singleton(PathParamTestService.class);
             }

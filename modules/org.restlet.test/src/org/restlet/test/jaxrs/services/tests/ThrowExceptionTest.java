@@ -51,13 +51,13 @@ public class ThrowExceptionTest extends JaxRsTestCase {
     protected Application getApplication() {
         final Application appConfig = new Application() {
             @Override
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Class<?>> getClasses() {
                 return (Set) Collections.singleton(ThrowExceptionResource.class);
             }
     
             @Override
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             public Set<Object> getSingletons() {
                 return (Set) Util.createSet(new SqlExceptionMapper());
             }

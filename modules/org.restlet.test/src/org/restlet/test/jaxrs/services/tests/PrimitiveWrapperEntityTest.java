@@ -51,7 +51,7 @@ import org.restlet.test.jaxrs.util.TestUtils;
 public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Application getApplication() {
         final Application appConfig = new Application() {
             @Override
