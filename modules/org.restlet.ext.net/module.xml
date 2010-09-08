@@ -12,8 +12,14 @@
       <dependency type="module" id="core" />
    </dependencies>
    <source edition="android">
+      <files-mappers>
+<![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".android" to="" />
+]]>
+      </files-mappers>
       <files-sets>
 <![CDATA[
+         <exclude name="src/META-INF/services/org.restlet.engine.ClientHelper" />
          <exclude name="src/org/restlet/ext/net/FtpClientHelper.java" />
 ]]>
       </files-sets>

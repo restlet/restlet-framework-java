@@ -49,6 +49,8 @@ Changes log
          quality level to be ignored. Reported by Daniel Zhelyazkov.
        - Reduce the number of OSGi imported packages for the Jackson
          extension. Suggested by Jean-Luc Geering.
+       - Removed the support of FTP protocol of the net client connector.
+         Reported by Christophe Vanfleteren.
     - Misc
        - Updated Grizzly library to version 1.9.19.
        - Improved concurrency for TunnelFilter.AcceptReplacer. 
