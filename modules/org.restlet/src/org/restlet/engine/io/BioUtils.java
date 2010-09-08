@@ -264,7 +264,7 @@ public final class BioUtils {
         return Representation.UNKNOWN_SIZE;
         // [enddef]
         // [ifdef gwt] line uncomment
-        // return getSize();
+        // return representation.getSize();
     }
 
     /**
