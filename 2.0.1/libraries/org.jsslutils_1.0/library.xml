@@ -1,0 +1,18 @@
+<library id="jsslutils">
+	<package name="org.jsslutils">
+		<maven>
+			<artifactId>jsslutils</artifactId>
+		</maven>
+	</package>
+	<version>1.0</version>
+	<release>5</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://code.google.com/p/jsslutils/
+	</homeUri>
+	<downloadUri>
+		http://code.google.com/p/jsslutils/downloads/list
+	</downloadUri>
+</library>

@@ -1,0 +1,98 @@
+<editions>
+	<edition id="android">
+		<label>
+			<full>Android</full>
+			<medium>Android</medium>
+			<short>Android</short>
+		</label>
+		<description>Restlet Edition for the Android platform 1.5.
+		</description>
+		<javadocs>
+			<link href="http://developer.android.com/reference/" />
+		</javadocs>
+		<distributions>
+			<distribution id="classic" />
+			<distribution id="maven" />
+		</distributions>
+	</edition>
+	<edition id="jee">
+		<label>
+			<full>Java Enterprise Edition</full>
+			<medium>Java EE</medium>
+			<short>JEE</short>
+		</label>
+		<description>Restlet Edition for Java Enterprise Edition 5.0.
+		</description>
+		<javadocs>
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="http://java.sun.com/javaee/5/docs/api/" />
+		</javadocs>
+		<distributions>
+			<distribution id="classic" />
+			<distribution id="maven" />
+		</distributions>
+	</edition>
+	<edition id="jse">
+		<label>
+			<full>Java Standard Edition</full>
+			<medium>Java SE</medium>
+			<short>JSE</short>
+		</label>
+		<description>Restlet Edition for Java Standard Edition 1.5.
+		</description>
+		<javadocs>
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+		</javadocs>
+		<distributions>
+			<distribution id="classic" />
+			<distribution id="maven" />
+		</distributions>
+	</edition>
+	<edition id="gae">
+		<label>
+			<full>Google App Engine</full>
+			<medium>GAE</medium>
+			<short>GAE</short>
+		</label>
+		<description>Restlet Edition for Google App Engine 1.0.</description>
+		<javadocs>
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="http://code.google.com/intl/fr/appengine/docs/java/javadoc/" />
+		</javadocs>
+		<distributions>
+			<distribution id="classic" />
+			<distribution id="maven" />
+		</distributions>
+	</edition>
+	<edition id="gwt">
+		<label>
+			<full>Google Web Toolkit</full>
+			<medium>GWT</medium>
+			<short>GWT</short>
+		</label>
+		<description>Restlet Edition for Google Web Toolkit 1.7.</description>
+		<javadocs>
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="http://google-web-toolkit.googlecode.com/svn/javadoc/1.6/" />
+			<packages>
+				<core>org.restlet</core>
+				<engine>org.restlet.client.engine</engine>
+				<extension>org.restlet.client.ext</extension>
+			</packages>
+		</javadocs>
+		<distributions>
+			<distribution id="classic" />
+			<distribution id="maven" />
+		</distributions>
+		<postSource>
+<![CDATA[
+      <move todir="${mod}/${module.package}/src/org/restlet/client" overwrite="true">
+         <fileset dir="${mod}/${module.package}/src/org/restlet" excludes="rebind/**, *.gwt.xml" />
+      </move>
+      <replace dir="${mod}/${module.package}" includes="**/*" token="org.restlet" value="org.restlet.client" />
+      <replace dir="${mod}/${module.package}" includes="**/*" token="org.restlet.client.rebind" value="org.restlet.rebind" />
+      <replace dir="${mod}/${module.package}" includes="**/.project" token="org.restlet.client" value="org.restlet.${edition}" />
+]]>
+		</postSource>
+	</edition>
+</editions>

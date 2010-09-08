@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Java Script API
+Bundle-SymbolicName: javax.script
+Bundle-Version: 1.0
+Bundle-ClassPath: javax.script.jar,
+ com.sun.script.jar
+Bundle-Vendor: Sun Microsystems Inc.
+Export-Package: com.sun.script.javascript;uses:="javax.script,org.mozilla.javascript,com.sun.script.util",
+ com.sun.script.util;uses:="javax.script",
+ javax.script
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+
