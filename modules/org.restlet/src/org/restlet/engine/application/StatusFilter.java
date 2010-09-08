@@ -193,9 +193,16 @@ public class StatusFilter extends Filter {
         sb.append("</head>\n");
         sb.append("<body style=\"font-family: sans-serif;\">\n");
 
-        sb.append("<h3>");
+        sb
+                .append("<p style=\"font-size: 1.2em;font-weight: bold;margin: 1em 0px;\">");
         sb.append(getStatusInfo(status));
-        sb.append("</h3>");
+        sb.append("</p>");
+        if (status.getDescription() != null) {
+            sb.append("<p>");
+            sb.append(status.getDescription());
+            sb.append("</p>");
+        }
+
         sb.append("<p>You can get technical details <a href=\"");
         sb.append(status.getUri());
         sb.append("\">here</a>.<br>\n");
