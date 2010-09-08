@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.0.1 (2010-09-08)
     - Bugs fixed
        - When cloning the prototype request, the ClientResource wasn't
          copying the ClientInfo#user property.
