@@ -58,6 +58,8 @@ Changes log
        - Clarified Javadocs of Context#getServerDispatcher().
          Suggested by Alex Milowski.
        - Added missing parsing capability to the ROME extension.
+       - Added description of the status in the default error 
+         representation. Suggested by Fabian Mandelbaum.
 
 - 2.0.0 (2010-07-19)
     - API changes
