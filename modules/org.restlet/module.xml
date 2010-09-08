@@ -148,6 +148,7 @@
          <exclude name="src/org/restlet/engine/util/EngineClassLoader.java" />
          <exclude name="src/org/restlet/engine/util/InternetDateFormat.java" />
          <exclude name="src/org/restlet/engine/util/MapResolver.java" />
+         <exclude name="src/org/restlet/engine/util/Pool.java" />         
          <exclude name="src/org/restlet/representation/AppendableRepresentation.java" />
          <exclude name="src/org/restlet/representation/ChannelRepresentation.java" />
          <exclude name="src/org/restlet/representation/DigesterRepresentation.java" />
