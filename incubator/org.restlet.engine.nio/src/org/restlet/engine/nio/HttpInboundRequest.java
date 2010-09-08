@@ -177,8 +177,10 @@ public class HttpInboundRequest extends Request implements InboundRequest {
         this.rangesAdded = false;
         this.recipientsInfoAdded = false;
         this.referrerAdded = false;
+        this.resourceUri = resourceUri;
         this.securityAdded = false;
         this.warningsAdded = false;
+        
 
         // Set the properties
         setMethod(Method.valueOf(methodName));
