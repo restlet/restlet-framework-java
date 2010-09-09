@@ -4,7 +4,7 @@ Copyright notice
 ================
 
 
-Version 4.1, October 2009
+Version 4.2, September 2010
 
 This software distribution is covered by this copyright notice.
   
@@ -13,8 +13,8 @@ of their respective copyright owners and are subject to separate license
 agreements. For questions, please contact the copyright holder:
    
     Noelios Technologies
-    5 rue Salomon de Rothschild
-    92156 Suresnes Cedex
+	22-23 quai du President Carnot
+	92212 Saint-Cloud Cedex
     FRANCE
 	http://www.restlet.org/about/legal
     mailto:legal@noelios.com
