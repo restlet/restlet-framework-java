@@ -183,8 +183,9 @@ public class Connection<T extends Connector> implements SelectionListener {
      * @return The socket IP address.
      */
     public String getAddress() {
-        return (getSocket().getInetAddress() == null) ? null : getSocket()
-                .getInetAddress().getHostAddress();
+        return (getSocket() == null) ? null
+                : (getSocket().getInetAddress() == null) ? null : getSocket()
+                        .getInetAddress().getHostAddress();
     }
 
     /**
