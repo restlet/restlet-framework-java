@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jetty HTTP server
 Bundle-SymbolicName: org.eclipse.jetty
-Bundle-Version: 7.0
+Bundle-Version: 7.1
 Bundle-ClassPath: org.eclipse.jetty.ajp.jar,
  org.eclipse.jetty.http.jar,
  org.eclipse.jetty.server.jar,
@@ -18,7 +18,6 @@ Export-Package: org.eclipse.jetty.ajp,
  org.eclipse.jetty.continuation,
  org.eclipse.jetty.http,
  org.eclipse.jetty.http.security,
- org.eclipse.jetty.http.ssl,
  org.eclipse.jetty.io,
  org.eclipse.jetty.io.bio,
  org.eclipse.jetty.io.nio,
@@ -33,4 +32,5 @@ Export-Package: org.eclipse.jetty.ajp,
  org.eclipse.jetty.util.component,
  org.eclipse.jetty.util.log,
  org.eclipse.jetty.util.resource,
+ org.eclipse.jetty.util.statistic,
  org.eclipse.jetty.util.thread
