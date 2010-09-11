@@ -153,48 +153,4 @@ public class SpringFinder extends Finder {
         return create();
     }
 
-    /**
-     * Creates a new instance of the resource class designated by the
-     * "targetClass" property. For easier Spring configuration, the default
-     * target resource's constructor is invoked. The created instance must be
-     * initialized by invoking the
-     * {@link org.restlet.resource.Resource#init(Context, Request, Response)}
-     * method on the resource.
-     * 
-     * @return The created resource or null.
-     */
-    @SuppressWarnings("deprecation")
-    public org.restlet.resource.Resource createResource() {
-        org.restlet.resource.Resource result = null;
-
-        if (getTargetClass() != null) {
-            try {
-                // Invoke the default constructor
-                result = (org.restlet.resource.Resource) getTargetClass()
-                        .newInstance();
-            } catch (Exception e) {
-                getLogger()
-                        .log(
-                                Level.WARNING,
-                                "Exception while instantiating the target resource.",
-                                e);
-            }
-        }
-
-        return result;
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public org.restlet.resource.Resource createTarget(Request request,
-            Response response) {
-        org.restlet.resource.Resource result = createResource();
-
-        if (result != null) {
-            result.init(getContext(), request, response);
-        }
-
-        return result;
-    }
-
 }

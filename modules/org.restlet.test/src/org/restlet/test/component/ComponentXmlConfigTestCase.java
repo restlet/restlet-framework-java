@@ -319,7 +319,8 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
     public void testAttachParams1a() throws Exception {
         System.out.println("-- testAttachParams1a()");
 
-        TemplateRoute route = c.getDefaultHost().getRoutes().get(0);
+        TemplateRoute route = (TemplateRoute) c.getDefaultHost().getRoutes()
+                .get(0);
         assertNotNull(
                 "The first Attach element of the Default Host MUST NOT be null",
                 route);
@@ -350,7 +351,8 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
     public void testAttachParams1b() throws Exception {
         System.out.println("-- testAttachParams1b()");
 
-        TemplateRoute route = c.getDefaultHost().getRoutes().get(1);
+        TemplateRoute route = (TemplateRoute) c.getDefaultHost().getRoutes()
+                .get(1);
         assertNotNull(
                 "The second Attach element of the Default Host MUST NOT be null",
                 route);
@@ -381,7 +383,8 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
     public void testAttachParams2() throws Exception {
         System.out.println("-- testAttachParams2()");
 
-        TemplateRoute route = c.getHosts().get(0).getRoutes().get(0);
+        TemplateRoute route = (TemplateRoute) c.getHosts().get(0).getRoutes()
+                .get(0);
         assertNotNull(
                 "The single Attach element of the Single Host MUST NOT be null",
                 route);

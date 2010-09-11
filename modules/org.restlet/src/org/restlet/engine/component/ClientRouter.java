@@ -65,7 +65,6 @@ public class ClientRouter extends Router {
         this.component = component;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void logRoute(org.restlet.routing.Route route) {
         if (getLogger().isLoggable(Level.FINE)) {
@@ -73,7 +72,8 @@ public class ClientRouter extends Router {
                 Client client = ((ClientRoute) route).getClient();
 
                 getLogger().fine(
-                        "This client was selected: \"" + client.getProtocols() + "\"");
+                        "This client was selected: \"" + client.getProtocols()
+                                + "\"");
             } else {
                 super.logRoute(route);
             }

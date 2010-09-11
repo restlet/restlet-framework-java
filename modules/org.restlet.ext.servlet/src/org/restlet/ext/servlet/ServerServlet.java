@@ -56,6 +56,7 @@ import org.restlet.engine.http.HttpServerHelper;
 import org.restlet.engine.http.ServerCall;
 import org.restlet.ext.servlet.internal.ServletCall;
 import org.restlet.ext.servlet.internal.ServletWarClient;
+import org.restlet.routing.Route;
 import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.VirtualHost;
 
@@ -367,26 +368,21 @@ public class ServerServlet extends HttpServlet {
                             parentContext.createChildContext());
                 }
             } catch (ClassNotFoundException e) {
-                log(
-                        "[Restlet] ServerServlet couldn't find the target class. Please check that your classpath includes "
-                                + applicationClassName, e);
+                log("[Restlet] ServerServlet couldn't find the target class. Please check that your classpath includes "
+                        + applicationClassName, e);
 
             } catch (InstantiationException e) {
-                log(
-                        "[Restlet] ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
-                                + applicationClassName, e);
+                log("[Restlet] ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
+                        + applicationClassName, e);
             } catch (IllegalAccessException e) {
-                log(
-                        "[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
-                                + applicationClassName, e);
+                log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
+                        + applicationClassName, e);
             } catch (NoSuchMethodException e) {
-                log(
-                        "[Restlet] ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
-                                + applicationClassName, e);
+                log("[Restlet] ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
+                        + applicationClassName, e);
             } catch (InvocationTargetException e) {
-                log(
-                        "[Restlet] ServerServlet couldn't instantiate the target class. An exception was thrown while creating "
-                                + applicationClassName, e);
+                log("[Restlet] ServerServlet couldn't instantiate the target class. An exception was thrown while creating "
+                        + applicationClassName, e);
             }
         }
 
@@ -420,7 +416,8 @@ public class ServerServlet extends HttpServlet {
 
         // Look for the Component XML configuration file.
         Client warClient = createWarClient(new Context(), getServletConfig());
-        Response response = warClient.handle(new Request(Method.GET, "war:///WEB-INF/restlet.xml"));
+        Response response = warClient.handle(new Request(Method.GET,
+                "war:///WEB-INF/restlet.xml"));
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             component = new Component(response.getEntity());
         }
@@ -440,17 +437,14 @@ public class ServerServlet extends HttpServlet {
                     // invoking the constructor with the Context parameter.
                     component = (Component) targetClass.newInstance();
                 } catch (ClassNotFoundException e) {
-                    log(
-                            "[Restlet] ServerServlet couldn't find the target class. Please check that your classpath includes "
-                                    + componentClassName, e);
+                    log("[Restlet] ServerServlet couldn't find the target class. Please check that your classpath includes "
+                            + componentClassName, e);
                 } catch (InstantiationException e) {
-                    log(
-                            "[Restlet] ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
-                                    + componentClassName, e);
+                    log("[Restlet] ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
+                            + componentClassName, e);
                 } catch (IllegalAccessException e) {
-                    log(
-                            "[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
-                                    + componentClassName, e);
+                    log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
+                            + componentClassName, e);
                 }
             }
         }
@@ -500,8 +494,8 @@ public class ServerServlet extends HttpServlet {
         if (component != null) {
             // First, let's create a pseudo server
             Server server = new Server(component.getContext()
-                    .createChildContext(), (List<Protocol>) null, this
-                    .getLocalAddr(request), this.getLocalPort(request),
+                    .createChildContext(), (List<Protocol>) null,
+                    this.getLocalAddr(request), this.getLocalPort(request),
                     component);
             result = new HttpServerHelper(server);
 
@@ -534,21 +528,28 @@ public class ServerServlet extends HttpServlet {
                         addFullServletPath = component.getDefaultHost()
                                 .getDefaultRoute() != null;
                     } else {
-                        for (TemplateRoute route : component.getDefaultHost()
+                        for (Route route : component.getDefaultHost()
                                 .getRoutes()) {
-                            if (route.getTemplate().getPattern() == null) {
-                                addFullServletPath = true;
-                                continue;
-                            }
+                            if (route instanceof TemplateRoute) {
+                                TemplateRoute templateRoute = (TemplateRoute) route;
 
-                            if (!route.getTemplate().getPattern().startsWith(
-                                    uriPattern)) {
-                                if (!route.getTemplate().getPattern()
-                                        .startsWith(request.getServletPath())) {
+                                if (templateRoute.getTemplate().getPattern() == null) {
                                     addFullServletPath = true;
-                                } else {
-                                    addContextPath = true;
-                                    break;
+                                    continue;
+                                }
+
+                                if (!templateRoute.getTemplate().getPattern()
+                                        .startsWith(uriPattern)) {
+                                    if (!templateRoute
+                                            .getTemplate()
+                                            .getPattern()
+                                            .startsWith(
+                                                    request.getServletPath())) {
+                                        addFullServletPath = true;
+                                    } else {
+                                        addContextPath = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -561,25 +562,29 @@ public class ServerServlet extends HttpServlet {
                                 addFullServletPath = virtualHost
                                         .getDefaultRoute() != null;
                             } else {
-                                for (TemplateRoute route : virtualHost
-                                        .getRoutes()) {
-                                    if (route.getTemplate().getPattern() == null) {
-                                        addFullServletPath = true;
-                                        continue;
-                                    }
+                                for (Route route : virtualHost.getRoutes()) {
+                                    if (route instanceof TemplateRoute) {
+                                        TemplateRoute templateRoute = (TemplateRoute) route;
 
-                                    if (!route.getTemplate().getPattern()
-                                            .startsWith(uriPattern)) {
-                                        if (!route
-                                                .getTemplate()
-                                                .getPattern()
-                                                .startsWith(
-                                                        request
-                                                                .getServletPath())) {
+                                        if (templateRoute.getTemplate()
+                                                .getPattern() == null) {
                                             addFullServletPath = true;
-                                        } else {
-                                            addContextPath = true;
-                                            break;
+                                            continue;
+                                        }
+
+                                        if (!templateRoute.getTemplate()
+                                                .getPattern()
+                                                .startsWith(uriPattern)) {
+                                            if (!templateRoute
+                                                    .getTemplate()
+                                                    .getPattern()
+                                                    .startsWith(
+                                                            request.getServletPath())) {
+                                                addFullServletPath = true;
+                                            } else {
+                                                addContextPath = true;
+                                                break;
+                                            }
                                         }
                                     }
                                 }
@@ -601,61 +606,104 @@ public class ServerServlet extends HttpServlet {
                         }
 
                         if (offsetPath != null) {
-                            getComponent().getContext().getAttributes().put(
-                                    NAME_OFFSET_PATH_ATTRIBUTE, offsetPath);
+                            getComponent()
+                                    .getContext()
+                                    .getAttributes()
+                                    .put(NAME_OFFSET_PATH_ATTRIBUTE, offsetPath);
                         }
 
                         // Shift the default route (if any) of the default host
-                        TemplateRoute defaultRoute = component.getDefaultHost()
+                        Route defaultRoute = component.getDefaultHost()
                                 .getDefaultRoute();
-                        if (defaultRoute != null) {
-                            defaultRoute.getTemplate().setPattern(
-                                    offsetPath
-                                            + defaultRoute.getTemplate()
-                                                    .getPattern());
-                            log("[Restlet] Attaching restlet: "
-                                    + defaultRoute.getNext() + " to URI: "
-                                    + offsetPath
-                                    + defaultRoute.getTemplate().getPattern());
-                        }
 
-                        // Shift the routes of the default host
-                        for (TemplateRoute route : component.getDefaultHost()
-                                .getRoutes()) {
-                            log("[Restlet] Attaching restlet: "
-                                    + route.getNext() + " to URI: "
-                                    + offsetPath
-                                    + route.getTemplate().getPattern());
-                            route.getTemplate().setPattern(
-                                    offsetPath
-                                            + route.getTemplate().getPattern());
-                        }
-                        for (VirtualHost virtualHost : component.getHosts()) {
-                            // Shift the default route (if any) of the virtual
-                            // host
-                            defaultRoute = virtualHost.getDefaultRoute();
-                            if (defaultRoute != null) {
-                                defaultRoute.getTemplate().setPattern(
+                        if (defaultRoute != null) {
+                            if (defaultRoute instanceof TemplateRoute) {
+                                TemplateRoute defaultTemplateRoute = (TemplateRoute) defaultRoute;
+                                defaultTemplateRoute.getTemplate().setPattern(
                                         offsetPath
-                                                + defaultRoute.getTemplate()
+                                                + defaultTemplateRoute
+                                                        .getTemplate()
                                                         .getPattern());
                                 log("[Restlet] Attaching restlet: "
                                         + defaultRoute.getNext()
                                         + " to URI: "
                                         + offsetPath
-                                        + defaultRoute.getTemplate()
+                                        + defaultTemplateRoute.getTemplate()
                                                 .getPattern());
-                            }
-                            // Shift the routes of the virtual host
-                            for (TemplateRoute route : virtualHost.getRoutes()) {
+                            } else {
                                 log("[Restlet] Attaching restlet: "
-                                        + route.getNext() + " to URI: "
+                                        + defaultRoute.getNext());
+                            }
+                        }
+
+                        // Shift the routes of the default host
+                        for (Route route : component.getDefaultHost()
+                                .getRoutes()) {
+                            if (route instanceof TemplateRoute) {
+                                TemplateRoute templateRoute = (TemplateRoute) route;
+
+                                log("[Restlet] Attaching restlet: "
+                                        + route.getNext()
+                                        + " to URI: "
                                         + offsetPath
-                                        + route.getTemplate().getPattern());
-                                route.getTemplate().setPattern(
+                                        + templateRoute.getTemplate()
+                                                .getPattern());
+                                templateRoute.getTemplate().setPattern(
                                         offsetPath
-                                                + route.getTemplate()
+                                                + templateRoute.getTemplate()
                                                         .getPattern());
+                            } else {
+                                log("[Restlet] Attaching restlet: "
+                                        + defaultRoute.getNext());
+                            }
+                        }
+
+                        for (VirtualHost virtualHost : component.getHosts()) {
+                            // Shift the default route (if any) of the virtual
+                            // host
+                            defaultRoute = virtualHost.getDefaultRoute();
+                            if (defaultRoute != null) {
+                                if (defaultRoute instanceof TemplateRoute) {
+                                    TemplateRoute defaultTemplateRoute = (TemplateRoute) defaultRoute;
+                                    defaultTemplateRoute
+                                            .getTemplate()
+                                            .setPattern(
+                                                    offsetPath
+                                                            + defaultTemplateRoute
+                                                                    .getTemplate()
+                                                                    .getPattern());
+                                    log("[Restlet] Attaching restlet: "
+                                            + defaultRoute.getNext()
+                                            + " to URI: "
+                                            + offsetPath
+                                            + defaultTemplateRoute
+                                                    .getTemplate().getPattern());
+                                } else {
+                                    log("[Restlet] Attaching restlet: "
+                                            + defaultRoute.getNext());
+                                }
+                            }
+
+                            // Shift the routes of the virtual host
+                            for (Route route : virtualHost.getRoutes()) {
+                                if (route instanceof TemplateRoute) {
+                                    TemplateRoute templateRoute = (TemplateRoute) route;
+
+                                    log("[Restlet] Attaching restlet: "
+                                            + route.getNext()
+                                            + " to URI: "
+                                            + offsetPath
+                                            + templateRoute.getTemplate()
+                                                    .getPattern());
+                                    templateRoute.getTemplate().setPattern(
+                                            offsetPath
+                                                    + templateRoute
+                                                            .getTemplate()
+                                                            .getPattern());
+                                } else {
+                                    log("[Restlet] Attaching restlet: "
+                                            + route.getNext());
+                                }
                             }
                         }
                     }
@@ -941,9 +989,8 @@ public class ServerServlet extends HttpServlet {
             // Complete the configuration of the Component
             // Add the WAR client
             component.getClients()
-                    .add(
-                            createWarClient(component.getContext(),
-                                    getServletConfig()));
+                    .add(createWarClient(component.getContext(),
+                            getServletConfig()));
 
             // Copy all the servlet parameters into the context
             ComponentContext componentContext = (ComponentContext) component
@@ -992,7 +1039,8 @@ public class ServerServlet extends HttpServlet {
     private boolean isDefaultComponent() {
         // The Component is provided via an XML configuration file.
         Client client = createWarClient(new Context(), getServletConfig());
-        Response response = client.handle(new Request(Method.GET, "war:///WEB-INF/restlet.xml"));
+        Response response = client.handle(new Request(Method.GET,
+                "war:///WEB-INF/restlet.xml"));
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             return false;
         }

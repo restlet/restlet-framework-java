@@ -95,25 +95,6 @@ public class Redirector extends Restlet {
     public static final int MODE_CLIENT_TEMPORARY = 4;
 
     /**
-     * In this mode, the call is sent to the context's dispatcher. Once the
-     * selected client connector has completed the request handling, the
-     * response is normally returned to the client. In this case, you can view
-     * the Redirector as acting as a transparent proxy Restlet.<br>
-     * <br>
-     * Remember to add the required connectors to the parent Component and to
-     * declare them in the list of required connectors on the
-     * Application.connectorService property.<br>
-     * <br>
-     * Note that in this mode, the headers of HTTP requests, stored in the
-     * request's attributes, are removed before dispatching. Also, when a HTTP
-     * response comes back the headers are also removed.
-     * 
-     * @deprecated Use the {@link Redirector#MODE_SERVER_OUTBOUND} instead.
-     */
-    @Deprecated
-    public static final int MODE_DISPATCHER = 5;
-
-    /**
      * In this mode, the call is sent to the application's outboundRoot or if
      * null to the context's client dispatcher. Once the selected client
      * connector has completed the request handling, the response is normally
@@ -262,12 +243,6 @@ public class Redirector extends Restlet {
             response.redirectTemporary(targetRef);
             break;
 
-        case MODE_DISPATCHER:
-            getLogger().log(Level.INFO,
-                    "Redirecting via client connector to: " + targetRef);
-            redirectDispatcher(targetRef, request, response);
-            break;
-
         case MODE_SERVER_OUTBOUND:
             getLogger().log(Level.INFO,
                     "Redirecting via client dispatcher to: " + targetRef);
@@ -332,29 +307,6 @@ public class Redirector extends Restlet {
             // Distinct protocol, this data cannot be exposed.
             response.getEntity().setLocationRef((Reference) null);
         }
-    }
-
-    /**
-     * Redirects a given call to a target reference. In the default
-     * implementation, the request HTTP headers, stored in the request's
-     * attributes, are removed before dispatching. After dispatching, the
-     * response HTTP headers are also removed to prevent conflicts with the main
-     * call.
-     * 
-     * @param targetRef
-     *            The target reference with URI variables resolved.
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @deprecated Use
-     *             {@link #outboundServerRedirect(Reference, Request, Response)}
-     *             instead.
-     */
-    @Deprecated
-    protected void redirectDispatcher(Reference targetRef, Request request,
-            Response response) {
-        outboundServerRedirect(targetRef, request, response);
     }
 
     /**

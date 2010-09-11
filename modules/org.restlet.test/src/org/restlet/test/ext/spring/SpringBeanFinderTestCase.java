@@ -33,7 +33,6 @@ package org.restlet.test.ext.spring;
 import java.util.Arrays;
 
 import org.restlet.ext.spring.SpringBeanFinder;
-import org.restlet.resource.Resource;
 import org.restlet.resource.ServerResource;
 import org.restlet.test.RestletTestCase;
 import org.springframework.beans.MutablePropertyValues;
@@ -45,12 +44,11 @@ import org.springframework.context.support.StaticApplicationContext;
 /**
  * @author Rhett Sutphin
  */
-@SuppressWarnings("deprecation")
 public class SpringBeanFinderTestCase extends RestletTestCase {
-    private static class AnotherResource extends Resource {
+    private static class AnotherResource extends ServerResource {
     }
 
-    private static class SomeResource extends Resource {
+    private static class SomeResource extends ServerResource {
     }
 
     private static class SomeServerResource extends ServerResource {
@@ -93,6 +91,7 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         registerBeanFactoryBean(beanName, resourceClass, null);
     }
 
+    @SuppressWarnings("deprecation")
     private void registerBeanFactoryBean(String beanName,
             Class<?> resourceClass, MutablePropertyValues values) {
         this.beanFactory.registerBeanDefinition(beanName,
@@ -120,7 +119,7 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
     public void testBeanResolutionFailsWithNeitherApplicationContextOrBeanFactory()
             throws Exception {
         try {
-            this.finder.createResource();
+            this.finder.create();
             fail("Exception not thrown");
         } catch (IllegalStateException iae) {
             assertEquals(
@@ -167,7 +166,7 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
 
         this.finder.setApplicationContext(applicationContext);
 
-        Resource actual = this.finder.createResource();
+        ServerResource actual = this.finder.create();
 
         assertNotNull("Resource not found", actual);
         assertTrue("Resource not from application context: "
@@ -179,7 +178,7 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
 
         this.finder.setBeanFactory(beanFactory);
 
-        final Resource actual = this.finder.createResource();
+        final ServerResource actual = this.finder.create();
 
         assertNotNull("Resource not found", actual);
         assertTrue("Resource not the correct type",
@@ -221,7 +220,7 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
 
         this.finder.setApplicationContext(applicationContext);
 
-        Resource actual = this.finder.createResource();
+        ServerResource actual = this.finder.create();
 
         assertNotNull("Resource not found", actual);
         assertTrue("Resource not the correct type",

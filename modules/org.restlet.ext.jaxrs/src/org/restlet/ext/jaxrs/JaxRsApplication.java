@@ -38,7 +38,6 @@ import javax.ws.rs.core.Application;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.data.ClientInfo;
 import org.restlet.routing.Filter;
 import org.restlet.security.Authenticator;
 
@@ -192,17 +191,6 @@ public class JaxRsApplication extends org.restlet.Application {
     }
 
     /**
-     * Returns the current RoleChecker
-     * 
-     * @return the current RoleChecker
-     * @deprecated Use {@link ClientInfo#getRoles()} instead
-     */
-    @Deprecated
-    public RoleChecker getRoleChecker() {
-        return this.jaxRsRestlet.getRoleChecker();
-    }
-
-    /**
      * Returns an unmodifiable set with the attached root resource classes.
      * 
      * @return an unmodifiable set with the attached root resource classes.
@@ -232,50 +220,10 @@ public class JaxRsApplication extends org.restlet.Application {
         }
     }
 
-    /**
-     * Sets the objects to check the authentication. The {@link Authenticator}
-     * checks the username and password (e.g.), the {@link RoleChecker} manages
-     * the role management for the JAX-RS extension.
-     * 
-     * @param guard
-     *            the Guard to use.
-     * @param roleChecker
-     *            the RoleChecker to use
-     * @see #setGuard(Authenticator)
-     * @see #setRoleChecker(RoleChecker)
-     * @deprecated Use {@link ClientInfo#getRoles()} instead
-     */
-    @Deprecated
-    public void setAuthentication(Authenticator guard, RoleChecker roleChecker) {
-        setGuard(guard);
-        setRoleChecker(roleChecker);
-    }
-
     @Override
     public void setContext(Context context) {
         super.setContext(context);
         this.jaxRsRestlet.setContext(context);
-    }
-
-    /**
-     * Sets the {@link Authenticator} to use. It should typically use the
-     * {@link Context} of this application.<br>
-     * The new one is ignored, after the root Restlet is created (see
-     * {@link #createRoot()}.
-     * 
-     * <p>
-     * This replaced the guard set via
-     * {@link #setGuard(org.restlet.security.Authenticator)}.
-     * 
-     * @param guard
-     *            the Guard to use.
-     * @see #setAuthentication(Authenticator, RoleChecker)
-     * @see #setGuard(org.restlet.security.Authenticator)
-     * @deprecated Use the {@link #setGuard(Authenticator)} method instead.
-     */
-    @Deprecated
-    public void setGuard(org.restlet.security.Guard guard) {
-        this.guard = guard;
     }
 
     /**
@@ -304,17 +252,4 @@ public class JaxRsApplication extends org.restlet.Application {
         this.jaxRsRestlet.setObjectFactory(objectFactory);
     }
 
-    /**
-     * Sets the {@link RoleChecker} to use.<br>
-     * If you give an RoleChecker, you should also give a Guard.
-     * 
-     * @param roleChecker
-     * @see #setAuthentication(Authenticator, RoleChecker)
-     * @see #setGuard(Authenticator)
-     * @deprecated Use {@link ClientInfo#getRoles()} instead
-     */
-    @Deprecated
-    public void setRoleChecker(RoleChecker roleChecker) {
-        this.jaxRsRestlet.setRoleChecker(roleChecker);
-    }
 }

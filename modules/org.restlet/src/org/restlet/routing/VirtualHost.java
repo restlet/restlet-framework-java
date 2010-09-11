@@ -255,8 +255,7 @@ public class VirtualHost extends Router {
      * @return The created route.
      */
     @Override
-    @SuppressWarnings("deprecation")
-    public Route attach(Restlet target) {
+    public TemplateRoute attach(Restlet target) {
         if ((target.getContext() == null) && (this.parentContext != null)) {
             target.setContext(this.parentContext.createChildContext());
         }
@@ -281,8 +280,7 @@ public class VirtualHost extends Router {
      * @return The created route.
      */
     @Override
-    @SuppressWarnings("deprecation")
-    public Route attach(String uriPattern, Restlet target) {
+    public TemplateRoute attach(String uriPattern, Restlet target) {
         if ((target.getContext() == null) && (this.parentContext != null)) {
             target.setContext(this.parentContext.createChildContext());
         }
@@ -304,8 +302,7 @@ public class VirtualHost extends Router {
      * @return The created route.
      */
     @Override
-    @SuppressWarnings("deprecation")
-    public Route attachDefault(Restlet defaultTarget) {
+    public TemplateRoute attachDefault(Restlet defaultTarget) {
         if ((defaultTarget.getContext() == null)
                 && (this.parentContext != null)) {
             defaultTarget.setContext(this.parentContext.createChildContext());
@@ -333,10 +330,9 @@ public class VirtualHost extends Router {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    protected Route createRoute(String uriPattern, Restlet target,
+    protected TemplateRoute createRoute(String uriPattern, Restlet target,
             int matchingMode) {
-        Route result = new Route(this, uriPattern, target) {
+        TemplateRoute result = new TemplateRoute(this, uriPattern, target) {
             @Override
             protected int beforeHandle(Request request, Response response) {
                 final int result = super.beforeHandle(request, response);
@@ -350,6 +346,7 @@ public class VirtualHost extends Router {
                 return result;
             }
         };
+
         result.getTemplate().setMatchingMode(matchingMode);
         result.setMatchingQuery(getDefaultMatchingQuery());
         return result;

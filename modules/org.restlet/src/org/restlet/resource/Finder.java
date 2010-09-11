@@ -31,7 +31,6 @@
 package org.restlet.resource;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,7 +38,6 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 /**
@@ -79,15 +77,14 @@ public class Finder extends Restlet {
      *            The logger.
      * @return The new finder instance.
      */
-    @SuppressWarnings("deprecation")
     public static Finder createFinder(Class<?> targetClass,
             Class<? extends Finder> finderClass, Context context, Logger logger) {
         Finder result = null;
-        if (Resource.class.isAssignableFrom(targetClass)
-                || ServerResource.class.isAssignableFrom(targetClass)) {
+
+        if (ServerResource.class.isAssignableFrom(targetClass)) {
             if (finderClass != null) {
                 try {
-                    final Constructor<? extends Finder> constructor = finderClass
+                    Constructor<? extends Finder> constructor = finderClass
                             .getConstructor(Context.class, Class.class);
 
                     if (constructor != null) {
@@ -104,12 +101,12 @@ public class Finder extends Restlet {
             }
         } else {
             if (logger != null) {
-                logger
-                        .log(
-                                Level.WARNING,
-                                "Cannot create a Finder for the given target class, since it is neither a subclass of Resource nor a subclass of ServerResource.");
+                logger.log(
+                        Level.WARNING,
+                        "Cannot create a Finder for the given target class, since it is neither a subclass of Resource nor a subclass of ServerResource.");
             }
         }
+
         return result;
     }
 
@@ -149,46 +146,6 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Indicates if a method is allowed on a target handler.
-     * 
-     * @param method
-     *            The method to test.
-     * @param target
-     *            The target handler.
-     * @return True if a method is allowed on a target handler.
-     */
-    @SuppressWarnings("deprecation")
-    private boolean allow(Method method, Handler target) {
-        boolean result = false;
-
-        if (target != null) {
-            if (method.equals(Method.GET)) {
-                result = target.allowGet();
-            } else if (method.equals(Method.POST)) {
-                result = target.allowPost();
-            } else if (method.equals(Method.PUT)) {
-                result = target.allowPut();
-            } else if (method.equals(Method.DELETE)) {
-                result = target.allowDelete();
-            } else if (method.equals(Method.HEAD)) {
-                result = target.allowHead();
-            } else if (method.equals(Method.OPTIONS)) {
-                result = target.allowOptions();
-            } else {
-                // Dynamically introspect the target handler to detect a
-                // matching "allow" method.
-                final java.lang.reflect.Method allowMethod = getAllowMethod(
-                        method, target);
-                if (allowMethod != null) {
-                    result = (Boolean) invoke(target, allowMethod);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Creates a new instance of a given {@link ServerResource} subclass. Note
      * that Error and RuntimeException thrown by {@link ServerResource}
      * constructors are re-thrown by this method. Other exception are caught and
@@ -210,8 +167,7 @@ public class Finder extends Restlet {
                 result = targetClass.newInstance();
             } catch (Exception e) {
                 getLogger()
-                        .log(
-                                Level.WARNING,
+                        .log(Level.WARNING,
                                 "Exception while instantiating the target server resource.",
                                 e);
             }
@@ -246,90 +202,6 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Creates a new instance of a given handler class. Note that Error and
-     * RuntimeException thrown by Handler constructors are re-thrown by this
-     * method. Other exception are caught and logged.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @return The created handler or null.
-     * @deprecated Use {@link #create(Request, Response)} instead.
-     */
-    @Deprecated
-    protected Handler createTarget(Class<? extends Handler> targetClass,
-            Request request, Response response) {
-        Handler result = null;
-
-        if (targetClass != null) {
-            try {
-                Constructor<?> constructor;
-                try {
-                    // Invoke the constructor with Context, Request and Response
-                    // parameters
-                    constructor = targetClass.getConstructor(Context.class,
-                            Request.class, Response.class);
-                    result = (Handler) constructor.newInstance(getContext(),
-                            request, response);
-                } catch (NoSuchMethodException nsme) {
-                    // Invoke the default constructor then the init(Context,
-                    // Request, Response) method.
-                    constructor = targetClass.getConstructor();
-                    if (constructor != null) {
-                        result = (Handler) constructor.newInstance();
-                        result.init(getContext(), request, response);
-                    }
-                }
-            } catch (InvocationTargetException e) {
-                if (e.getCause() instanceof Error) {
-                    throw (Error) e.getCause();
-                } else if (e.getCause() instanceof RuntimeException) {
-                    throw (RuntimeException) e.getCause();
-                } else {
-                    getLogger()
-                            .log(
-                                    Level.WARNING,
-                                    "Exception while instantiating the target handler.",
-                                    e);
-                }
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING,
-                        "Exception while instantiating the target handler.", e);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Creates a new instance of the handler class designated by the
-     * "targetClass" property. The default behavior is to invoke the
-     * {@link #createTarget(Class, Request, Response)} with the "targetClass"
-     * property as a parameter.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @return The created handler or null.
-     * @deprecated Use {@link #create(Request, Response)} instead.
-     */
-    @Deprecated
-    @SuppressWarnings("unchecked")
-    protected Handler createTarget(Request request, Response response) {
-        Handler result = null;
-
-        if ((getTargetClass() != null)
-                && Handler.class.isAssignableFrom(getTargetClass())) {
-            result = createTarget((Class<? extends Handler>) getTargetClass(),
-                    request, response);
-        }
-
-        return result;
-    }
-
-    /**
      * Finds the target {@link ServerResource} if available. The default
      * behavior is to invoke the {@link #create(Request, Response)} method.
      * 
@@ -341,88 +213,6 @@ public class Finder extends Restlet {
      */
     public ServerResource find(Request request, Response response) {
         return create(request, response);
-    }
-
-    /**
-     * Finds the target {@link Handler} if available. The default behavior is to
-     * invoke the {@link #createTarget(Request, Response)} method.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @return The target handler if available or null.
-     * @deprecated Use {@link #find(Request, Response)} instead.
-     */
-    @Deprecated
-    public Handler findTarget(Request request, Response response) {
-        return createTarget(request, response);
-    }
-
-    /**
-     * Returns the allow method matching the given method name.
-     * 
-     * @param method
-     *            The method to match.
-     * @param target
-     *            The target handler.
-     * @return The allow method matching the given method name.
-     */
-    @SuppressWarnings("deprecation")
-    private java.lang.reflect.Method getAllowMethod(Method method,
-            Handler target) {
-        return getMethod("allow", method, target);
-    }
-
-    /**
-     * Returns the handle method matching the given method name.
-     * 
-     * @param method
-     *            The method to match.
-     * @return The handle method matching the given method name.
-     */
-    @SuppressWarnings("deprecation")
-    private java.lang.reflect.Method getHandleMethod(Handler target,
-            Method method) {
-        return getMethod("handle", method, target);
-    }
-
-    /**
-     * Returns the method matching the given prefix and method name.
-     * 
-     * @param prefix
-     *            The method prefix to match (ex: "allow" or "handle").
-     * @param method
-     *            The method to match.
-     * @return The method matching the given prefix and method name.
-     */
-    private java.lang.reflect.Method getMethod(String prefix, Method method,
-            Object target, Class<?>... classes) {
-        java.lang.reflect.Method result = null;
-        final StringBuilder sb = new StringBuilder();
-        final String methodName = method.getName().toLowerCase();
-
-        if ((methodName != null) && (methodName.length() > 0)) {
-            sb.append(prefix);
-            sb.append(Character.toUpperCase(methodName.charAt(0)));
-            sb.append(methodName.substring(1));
-        }
-
-        try {
-            result = target.getClass().getMethod(sb.toString(), classes);
-        } catch (SecurityException e) {
-            getLogger().log(
-                    Level.WARNING,
-                    "Couldn't access the " + prefix + " method for \"" + method
-                            + "\"", e);
-        } catch (NoSuchMethodException e) {
-            getLogger().log(
-                    Level.INFO,
-                    "Couldn't find the " + prefix + " method for \"" + method
-                            + "\"", e);
-        }
-
-        return result;
     }
 
     /**
@@ -443,113 +233,36 @@ public class Finder extends Restlet {
      * @param response
      *            The response to update.
      */
-    @SuppressWarnings("deprecation")
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
         if (isStarted()) {
-            Handler targetHandler = findTarget(request, response);
+            ServerResource targetResource = find(request, response);
 
-            if (targetHandler != null) {
-                if (!response.getStatus().equals(Status.SUCCESS_OK)) {
-                    // Probably during the instantiation of the target
-                    // handler, or earlier the status was changed from the
-                    // default one. Don't go further.
-                } else {
-                    Method method = request.getMethod();
-
-                    if (method == null) {
-                        response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-                                "No method specified");
-                    } else {
-                        if (!allow(method, targetHandler)) {
-                            response
-                                    .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-                            targetHandler.updateAllowedMethods();
-                        } else {
-
-                            if (method.equals(Method.GET)) {
-                                targetHandler.handleGet();
-                            } else if (method.equals(Method.HEAD)) {
-                                targetHandler.handleHead();
-                            } else if (method.equals(Method.POST)) {
-                                targetHandler.handlePost();
-                            } else if (method.equals(Method.PUT)) {
-                                targetHandler.handlePut();
-                            } else if (method.equals(Method.DELETE)) {
-                                targetHandler.handleDelete();
-                            } else if (method.equals(Method.OPTIONS)) {
-                                targetHandler.handleOptions();
-                            } else {
-                                final java.lang.reflect.Method handleMethod = getHandleMethod(
-                                        targetHandler, method);
-                                if (handleMethod != null) {
-                                    invoke(targetHandler, handleMethod);
-                                } else {
-                                    response
-                                            .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-                                }
-                            }
-                        }
-                    }
-                }
+            if (targetResource == null) {
+                // If the current status is a success but we couldn't
+                // find the target handler for the request's resource
+                // URI, then we set the response status to 404 (Not
+                // Found).
+                getLogger().warning(
+                        "No target resource was defined for this finder: "
+                                + toString());
+                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else {
-                ServerResource targetResource = find(request, response);
+                targetResource.init(getContext(), request, response);
 
-                if (targetResource == null) {
-                    // If the current status is a success but we couldn't
-                    // find the target handler for the request's resource
-                    // URI, then we set the response status to 404 (Not
-                    // Found).
-                    getLogger().warning(
-                            "No target resource was defined for this finder: "
-                                    + toString());
-                    response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                if ((response == null) || response.getStatus().isSuccess()) {
+                    targetResource.handle();
                 } else {
-                    targetResource.init(getContext(), request, response);
-
-                    if ((response == null) || response.getStatus().isSuccess()) {
-                        targetResource.handle();
-                    } else {
-                        // Probably during the instantiation of the target
-                        // server resource, or earlier the status was
-                        // changed from the default one. Don't go further.
-                    }
-
-                    targetResource.release();
+                    // Probably during the instantiation of the target
+                    // server resource, or earlier the status was
+                    // changed from the default one. Don't go further.
                 }
+
+                targetResource.release();
             }
         }
-    }
-
-    /**
-     * Invokes a method with the given arguments.
-     * 
-     * @param target
-     *            The target object.
-     * @param method
-     *            The method to invoke.
-     * @param args
-     *            The arguments to pass.
-     * @return Invocation result.
-     */
-    private Object invoke(Object target, java.lang.reflect.Method method,
-            Object... args) {
-        Object result = null;
-
-        if (method != null) {
-            try {
-                result = method.invoke(target, args);
-            } catch (Exception e) {
-                getLogger().log(
-                        Level.WARNING,
-                        "Couldn't invoke the handle method for \"" + method
-                                + "\"", e);
-            }
-        }
-
-        return result;
     }
 
     /**

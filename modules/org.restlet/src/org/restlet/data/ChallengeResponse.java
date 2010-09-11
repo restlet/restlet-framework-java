@@ -50,13 +50,6 @@ import org.restlet.util.Series;
  */
 public final class ChallengeResponse extends ChallengeMessage {
 
-    /**
-     * Indicates if the identifier or principal has been authenticated. The
-     * application is responsible for updating this property, relying on a
-     * {@link org.restlet.security.Guard} or manually.
-     */
-    private volatile boolean authenticated;
-
     /** The client nonce value. */
     private volatile String clientNonce;
 
@@ -140,8 +133,8 @@ public final class ChallengeResponse extends ChallengeMessage {
             char[] baseSecret, String baseSecretAlgorithm) {
         super(challengeRequest.getScheme());
         this.identifier = identifier;
-        org.restlet.engine.security.AuthenticatorUtils.update(this, response
-                .getRequest(), response, identifier, baseSecret,
+        org.restlet.engine.security.AuthenticatorUtils.update(this,
+                response.getRequest(), response, identifier, baseSecret,
                 baseSecretAlgorithm);
     }
 
@@ -155,26 +148,10 @@ public final class ChallengeResponse extends ChallengeMessage {
         super(scheme);
         this.identifier = null;
         this.secret = null;
-        this.authenticated = false;
         this.clientNonce = null;
         this.digestRef = null;
         this.quality = null;
         this.serverNounceCount = 1;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param scheme
-     *            The challenge scheme.
-     * @param credentials
-     *            The raw credentials for custom challenge schemes.
-     * @deprecated Use {@link #setRawValue(String)} instead.
-     */
-    @Deprecated
-    public ChallengeResponse(ChallengeScheme scheme, String credentials) {
-        this(scheme);
-        setRawValue(credentials);
     }
 
     /**
@@ -240,10 +217,10 @@ public final class ChallengeResponse extends ChallengeMessage {
             if (obj instanceof ChallengeResponse) {
                 final ChallengeResponse that = (ChallengeResponse) obj;
 
-                if (getCredentials() != null) {
-                    result = getCredentials().equals(that.getCredentials());
+                if (getRawValue() != null) {
+                    result = getRawValue().equals(that.getRawValue());
                 } else {
-                    result = (that.getCredentials() == null);
+                    result = (that.getRawValue() == null);
                 }
 
                 if (result) {
@@ -292,17 +269,6 @@ public final class ChallengeResponse extends ChallengeMessage {
      */
     public String getClientNonce() {
         return this.clientNonce;
-    }
-
-    /**
-     * Returns the raw credentials.
-     * 
-     * @return The raw credentials.
-     * @deprecated Use {@link #getRawValue()} instead.
-     */
-    @Deprecated
-    public String getCredentials() {
-        return getRawValue();
     }
 
     /**
@@ -383,38 +349,10 @@ public final class ChallengeResponse extends ChallengeMessage {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return SystemUtils.hashCode(getScheme(), getIdentifier(),
-        // Secret is simply discarded from hash code calculation because we
-                // don't want it to be materialized as a string
-                // (getSecret() == null) ? null : new String(getSecret()),
-                getCredentials());
-    }
-
-    /**
-     * Indicates if the identifier or principal has been authenticated. The
-     * application is responsible for updating this property, relying on a
-     * {@link org.restlet.security.Guard} or manually.
-     * 
-     * @return True if the identifier or principal has been authenticated.
-     * @deprecated Use {@link ClientInfo#isAuthenticated()} instead.
-     */
-    @Deprecated
-    public boolean isAuthenticated() {
-        return this.authenticated;
-    }
-
-    /**
-     * Indicates if the identifier or principal has been authenticated. The
-     * application is responsible for updating this property, relying on a
-     * {@link org.restlet.security.Guard} or manually.
-     * 
-     * @param authenticated
-     *            True if the identifier or principal has been authenticated.
-     * @deprecated Use {@link ClientInfo#setAuthenticated(boolean)} instead.
-     */
-    @Deprecated
-    public void setAuthenticated(boolean authenticated) {
-        this.authenticated = authenticated;
+        // Note that the secret is simply discarded from hash code calculation
+        // because we don't want it to be materialized as a string
+        return SystemUtils
+                .hashCode(getScheme(), getIdentifier(), getRawValue());
     }
 
     /**
@@ -425,18 +363,6 @@ public final class ChallengeResponse extends ChallengeMessage {
      */
     public void setClientNonce(String clientNonce) {
         this.clientNonce = clientNonce;
-    }
-
-    /**
-     * Sets the raw credentials.
-     * 
-     * @param credentials
-     *            The credentials.
-     * @deprecated Use {@link #getRawValue()} instead.
-     */
-    @Deprecated
-    public void setCredentials(String credentials) {
-        setRawValue(credentials);
     }
 
     /**

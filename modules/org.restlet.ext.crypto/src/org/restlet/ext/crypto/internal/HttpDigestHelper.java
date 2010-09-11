@@ -49,7 +49,6 @@ import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.ext.crypto.DigestUtils;
-import org.restlet.security.Guard;
 import org.restlet.util.Series;
 
 /**
@@ -57,33 +56,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("deprecation")
 public class HttpDigestHelper extends AuthenticatorHelper {
-
-    /**
-     * Return the hashed secret.
-     * 
-     * @param identifier
-     *            The user identifier to hash.
-     * @param guard
-     *            The associated guard to callback.
-     * 
-     * @return A hash of the user name, realm, and password, specified as A1 in
-     *         section 3.2.2.2 of RFC2617, or null if the identifier has no
-     *         corresponding secret.
-     */
-    @Deprecated
-    private static String getHashedSecret(String identifier, Guard guard) {
-        char[] secret = guard.getSecretResolver().resolve(identifier);
-
-        if (secret != null) {
-            return DigestUtils.toHttpDigest(identifier, secret, guard
-                    .getRealm());
-        }
-
-        // The given identifier is not known
-        return null;
-    }
 
     /**
      * Checks whether the specified nonce is valid with respect to the specified
@@ -129,97 +102,6 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         super(ChallengeScheme.HTTP_DIGEST, true, true);
     }
 
-    @Deprecated
-    @Override
-    public int authenticate(ChallengeResponse cr, Request request, Guard guard) {
-        Series<Parameter> parameters = cr.getParameters();
-        String username = cr.getIdentifier();
-        String response = new String(cr.getSecret());
-        String nonce = parameters.getFirstValue("nonce");
-        String uri = parameters.getFirstValue("uri");
-        String qop = parameters.getFirstValue("qop");
-        String nc = parameters.getFirstValue("nc");
-        String cnonce = parameters.getFirstValue("cnonce");
-
-        try {
-            if (!isNonceValid(nonce, guard.getServerKey(), guard
-                    .getNonceLifespan())) {
-                // Nonce expired, send challenge request with
-                // stale=true
-                return Guard.AUTHENTICATION_STALE;
-            }
-        } catch (Exception ce) {
-            // Invalid nonce, probably doesn't match serverKey
-            return Guard.AUTHENTICATION_INVALID;
-        }
-
-        if (!AuthenticatorUtils.anyNull(username, nonce, response, uri)) {
-            Reference resourceRef = request.getResourceRef();
-            String requestUri = resourceRef.getPath();
-
-            if ((resourceRef.getQuery() != null) && (uri.indexOf('?') > -1)) {
-                // IE neglects to include the query string, so
-                // the workaround is to leave it off
-                // unless both the calculated URI and the
-                // specified URI contain a query string
-                requestUri += "?" + resourceRef.getQuery();
-            }
-
-            if (uri.equals(requestUri)) {
-                String a1 = getHashedSecret(username, guard);
-
-                if (a1 != null) {
-                    String a2 = DigestUtils.toMd5(request.getMethod() + ":"
-                            + requestUri);
-
-                    StringBuffer expectedResponse = new StringBuffer(a1)
-                            .append(':').append(nonce);
-
-                    if (!AuthenticatorUtils.anyNull(qop, cnonce, nc)) {
-                        expectedResponse.append(':').append(nc).append(':')
-                                .append(cnonce).append(':').append(qop);
-                    }
-
-                    expectedResponse.append(':').append(a2);
-
-                    if (response.equals(DigestUtils.toMd5(expectedResponse
-                            .toString()))) {
-                        return Guard.AUTHENTICATION_VALID;
-                    }
-                }
-            }
-
-            return Guard.AUTHENTICATION_INVALID;
-        }
-
-        return Guard.AUTHENTICATION_MISSING;
-    }
-
-    @Deprecated
-    @Override
-    public void challenge(Response response, boolean stale, Guard guard) {
-        super.challenge(response, stale, guard);
-
-        // This is temporary, pending Guard re-factoring. We still assume
-        // there is only one challenge scheme, that of the Guard.
-        ChallengeRequest mainChallengeRequest = null;
-
-        for (ChallengeRequest challengeRequest : response
-                .getChallengeRequests()) {
-            if (challengeRequest.getScheme().equals(guard.getScheme())) {
-                mainChallengeRequest = challengeRequest;
-                break;
-            }
-        }
-
-        if (mainChallengeRequest != null) {
-            mainChallengeRequest.setDomainUris(guard.getDomainUris());
-            mainChallengeRequest.setStale(stale);
-            mainChallengeRequest.setServerNonce(CryptoUtils.makeNonce(guard
-                    .getServerKey()));
-        }
-    }
-
     @Override
     public void formatRawRequest(ChallengeWriter cw,
             ChallengeRequest challenge, Response response,
@@ -244,8 +126,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         }
 
         if (challenge.getServerNonce() != null) {
-            cw.appendQuotedChallengeParameter("nonce", challenge
-                    .getServerNonce());
+            cw.appendQuotedChallengeParameter("nonce",
+                    challenge.getServerNonce());
         }
 
         if (challenge.getOpaque() != null) {
@@ -257,8 +139,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         }
 
         if (challenge.getDigestAlgorithm() != null) {
-            cw.appendChallengeParameter("algorithm", challenge
-                    .getDigestAlgorithm());
+            cw.appendChallengeParameter("algorithm",
+                    challenge.getDigestAlgorithm());
         }
 
         if (!challenge.getQualityOptions().isEmpty()) {
@@ -290,8 +172,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
             Series<Parameter> httpHeaders) {
 
         if (challenge.getIdentifier() != null) {
-            cw.appendQuotedChallengeParameter("username", challenge
-                    .getIdentifier());
+            cw.appendQuotedChallengeParameter("username",
+                    challenge.getIdentifier());
         }
 
         if (challenge.getRealm() != null) {
@@ -299,8 +181,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         }
 
         if (challenge.getServerNonce() != null) {
-            cw.appendQuotedChallengeParameter("nonce", challenge
-                    .getServerNonce());
+            cw.appendQuotedChallengeParameter("nonce",
+                    challenge.getServerNonce());
         }
 
         if (challenge.getDigestRef() != null) {
@@ -309,19 +191,19 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         }
 
         if (challenge.getSecret() != null) {
-            cw.appendQuotedChallengeParameter("response", new String(challenge
-                    .getSecret()));
+            cw.appendQuotedChallengeParameter("response",
+                    new String(challenge.getSecret()));
         }
 
         if ((challenge.getDigestAlgorithm() != null)
                 && !Digest.ALGORITHM_MD5.equals(challenge.getDigestAlgorithm())) {
-            cw.appendChallengeParameter("algorithm", challenge
-                    .getDigestAlgorithm());
+            cw.appendChallengeParameter("algorithm",
+                    challenge.getDigestAlgorithm());
         }
 
         if (challenge.getClientNonce() != null) {
-            cw.appendQuotedChallengeParameter("cnonce", challenge
-                    .getClientNonce());
+            cw.appendQuotedChallengeParameter("cnonce",
+                    challenge.getClientNonce());
         }
 
         if (challenge.getOpaque() != null) {
@@ -334,8 +216,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
 
         if ((challenge.getQuality() != null)
                 && (challenge.getServerNounceCount() > 0)) {
-            cw.appendChallengeParameter("nc", challenge
-                    .getServerNounceCountAsHex());
+            cw.appendChallengeParameter("nc",
+                    challenge.getServerNounceCountAsHex());
         }
 
         for (Parameter param : challenge.getParameters()) {
@@ -371,13 +253,14 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                     .append(challengeResponse.getServerNonce());
 
             if (!AuthenticatorUtils.anyNull(challengeResponse.getQuality(),
-                    challengeResponse.getClientNonce(), challengeResponse
-                            .getServerNounceCount())) {
-                sb.append(':').append(
-                        AuthenticatorUtils.formatNonceCount(challengeResponse
-                                .getServerNounceCount())).append(':').append(
-                        challengeResponse.getClientNonce()).append(':').append(
-                        challengeResponse.getQuality());
+                    challengeResponse.getClientNonce(),
+                    challengeResponse.getServerNounceCount())) {
+                sb.append(':')
+                        .append(AuthenticatorUtils
+                                .formatNonceCount(challengeResponse
+                                        .getServerNounceCount())).append(':')
+                        .append(challengeResponse.getClientNonce()).append(':')
+                        .append(challengeResponse.getQuality());
             }
 
             sb.append(':').append(a2);
@@ -392,8 +275,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     public void parseRequest(ChallengeRequest challenge, Response response,
             Series<Parameter> httpHeaders) {
         if (challenge.getRawValue() != null) {
-            HeaderReader<Object> hr = new HeaderReader<Object>(challenge
-                    .getRawValue());
+            HeaderReader<Object> hr = new HeaderReader<Object>(
+                    challenge.getRawValue());
 
             try {
                 Parameter param = hr.readParameter();
@@ -410,8 +293,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                         } else if ("opaque".equals(param.getName())) {
                             challenge.setOpaque(param.getValue());
                         } else if ("stale".equals(param.getName())) {
-                            challenge.setStale(Boolean
-                                    .valueOf(param.getValue()));
+                            challenge
+                                    .setStale(Boolean.valueOf(param.getValue()));
                         } else if ("algorithm".equals(param.getName())) {
                             challenge.setDigestAlgorithm(param.getValue());
                         } else if ("qop".equals(param.getName())) {
@@ -426,19 +309,15 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                             param = null;
                         }
                     } catch (Exception e) {
-                        Context
-                                .getCurrentLogger()
-                                .log(
-                                        Level.WARNING,
+                        Context.getCurrentLogger()
+                                .log(Level.WARNING,
                                         "Unable to parse the challenge request header parameter",
                                         e);
                     }
                 }
             } catch (Exception e) {
-                Context
-                        .getCurrentLogger()
-                        .log(
-                                Level.WARNING,
+                Context.getCurrentLogger()
+                        .log(Level.WARNING,
                                 "Unable to parse the challenge request header parameter",
                                 e);
             }
@@ -448,9 +327,9 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     @Override
     public void parseResponse(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
-        if (challenge.getCredentials() != null) {
-            HeaderReader<Object> hr = new HeaderReader<Object>(challenge
-                    .getCredentials());
+        if (challenge.getRawValue() != null) {
+            HeaderReader<Object> hr = new HeaderReader<Object>(
+                    challenge.getRawValue());
 
             try {
                 Parameter param = hr.readParameter();
@@ -483,10 +362,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                             challenge.getParameters().add(param);
                         }
                     } catch (Throwable e) {
-                        Context
-                                .getCurrentLogger()
-                                .log(
-                                        Level.WARNING,
+                        Context.getCurrentLogger()
+                                .log(Level.WARNING,
                                         "Unable to parse the challenge request header parameter",
                                         e);
                     }
@@ -497,10 +374,8 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                     }
                 }
             } catch (Exception e) {
-                Context
-                        .getCurrentLogger()
-                        .log(
-                                Level.WARNING,
+                Context.getCurrentLogger()
+                        .log(Level.WARNING,
                                 "Unable to parse the challenge request header parameter",
                                 e);
             }

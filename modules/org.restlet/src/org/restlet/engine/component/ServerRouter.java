@@ -78,7 +78,6 @@ public class ServerRouter extends Router {
         return this.component;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void logRoute(org.restlet.routing.Route route) {
         if (getLogger().isLoggable(Level.FINE)) {
@@ -101,7 +100,6 @@ public class ServerRouter extends Router {
     }
 
     /** Starts the Restlet. */
-    @SuppressWarnings("deprecation")
     @Override
     public synchronized void start() throws Exception {
         // Attach all virtual hosts
@@ -125,7 +123,7 @@ public class ServerRouter extends Router {
             }
         };
 
-        setDefaultRoute(new org.restlet.routing.Route(this, "", noHostMatched));
+        setDefaultRoute(new org.restlet.routing.TemplateRoute(this, "", noHostMatched));
 
         // Start the router
         super.start();

@@ -220,22 +220,9 @@ public class FileRepresentation extends Representation {
      * 
      * @return True if this file should be automatically deleted on release of
      *         the representation.
-     * @deprecated Use {@link #isAutoDeleting()} instead.
-     */
-    @Deprecated
-    public boolean isAutoDelete() {
-        return autoDeleting;
-    }
-
-    /**
-     * Indicates if this file should be automatically deleted on release of the
-     * representation.
-     * 
-     * @return True if this file should be automatically deleted on release of
-     *         the representation.
      */
     public boolean isAutoDeleting() {
-        return isAutoDelete();
+        return autoDeleting;
     }
 
     /**
@@ -261,23 +248,9 @@ public class FileRepresentation extends Representation {
      * @param autoDeleting
      *            True if this file should be automatically deleted on release
      *            of the representation.
-     * @deprecated Use {@link #setAutoDeleting(boolean)} instead.
-     */
-    @Deprecated
-    public void setAutoDelete(boolean autoDeleting) {
-        this.autoDeleting = autoDeleting;
-    }
-
-    /**
-     * Indicates if this file should be automatically deleted on release of the
-     * representation.
-     * 
-     * @param autoDeleting
-     *            True if this file should be automatically deleted on release
-     *            of the representation.
      */
     public void setAutoDeleting(boolean autoDeleting) {
-        setAutoDelete(autoDeleting);
+        this.autoDeleting = autoDeleting;
     }
 
     /**

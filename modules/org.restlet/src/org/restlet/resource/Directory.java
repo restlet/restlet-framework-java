@@ -280,21 +280,9 @@ public class Directory extends Finder {
      * is true.
      * 
      * @return True if the best content is automatically negotiated.
-     * @deprecated Use {@link #isNegotiatingContent()} instead.
-     */
-    @Deprecated
-    public boolean isNegotiateContent() {
-        return this.negotiatingContent;
-    }
-
-    /**
-     * Indicates if the best content is automatically negotiated. Default value
-     * is true.
-     * 
-     * @return True if the best content is automatically negotiated.
      */
     public boolean isNegotiatingContent() {
-        return isNegotiateContent();
+        return this.negotiatingContent;
     }
 
     /**
@@ -378,22 +366,9 @@ public class Directory extends Finder {
      * 
      * @param negotiatingContent
      *            True if the best content is automatically negotiated.
-     * @deprecated Use {@link #setNegotiatingContent(boolean)} instead.
-     */
-    @Deprecated
-    public void setNegotiateContent(boolean negotiatingContent) {
-        this.negotiatingContent = negotiatingContent;
-    }
-
-    /**
-     * Indicates if the best content is automatically negotiated. Default value
-     * is true.
-     * 
-     * @param negotiatingContent
-     *            True if the best content is automatically negotiated.
      */
     public void setNegotiatingContent(boolean negotiatingContent) {
-        setNegotiateContent(negotiatingContent);
+        this.negotiatingContent = negotiatingContent;
     }
 
     /**

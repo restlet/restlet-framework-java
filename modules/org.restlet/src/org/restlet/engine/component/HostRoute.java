@@ -48,7 +48,6 @@ import org.restlet.routing.VirtualHost;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("deprecation")
 public class HostRoute extends Route {
     /**
      * Constructor.
@@ -59,7 +58,7 @@ public class HostRoute extends Route {
      *            The target virtual host.
      */
     public HostRoute(Router router, VirtualHost target) {
-        super(router, "", target);
+        super(router, target);
     }
 
     /**
@@ -107,8 +106,8 @@ public class HostRoute extends Route {
      * @return True if the formatted string matched the pattern.
      */
     private boolean matches(String regex, String formattedString) {
-        return Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(
-                formattedString).matches();
+        return Pattern.compile(regex, Pattern.CASE_INSENSITIVE)
+                .matcher(formattedString).matches();
     }
 
     /**

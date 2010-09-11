@@ -126,16 +126,7 @@ public class SpringBeanRouter extends Router implements
      * @param beanFactory
      *            The Spring bean factory.
      */
-    @SuppressWarnings("deprecation")
     private void attachAllResources(ListableBeanFactory beanFactory) {
-        for (String beanName : getBeanNamesByType(
-                org.restlet.resource.Resource.class, beanFactory)) {
-            String uri = resolveUri(beanName, beanFactory);
-
-            if (uri != null)
-                attachResource(uri, beanName, beanFactory);
-        }
-
         for (String beanName : getBeanNamesByType(
                 org.restlet.resource.ServerResource.class, beanFactory)) {
             String uri = resolveUri(beanName, beanFactory);
@@ -278,7 +269,6 @@ public class SpringBeanRouter extends Router implements
      *            The Spring bean factory.
      * @see #setAttachments
      */
-    @SuppressWarnings("deprecation")
     public void postProcessBeanFactory(
             ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
@@ -294,10 +284,7 @@ public class SpringBeanRouter extends Router implements
                 String beanName = attachment.getValue();
                 Class<?> beanType = source.getType(beanName);
 
-                if (org.restlet.resource.Resource.class
-                        .isAssignableFrom(beanType)) {
-                    attachResource(uri, beanName, source);
-                } else if (org.restlet.resource.ServerResource.class
+                if (org.restlet.resource.ServerResource.class
                         .isAssignableFrom(beanType)) {
                     attachResource(uri, beanName, source);
                 } else if (Restlet.class.isAssignableFrom(beanType)) {

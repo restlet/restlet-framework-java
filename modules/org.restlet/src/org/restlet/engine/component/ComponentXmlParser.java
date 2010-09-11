@@ -57,6 +57,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
+import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.Variable;
 import org.restlet.routing.VirtualHost;
 import org.w3c.dom.Document;
@@ -101,8 +102,8 @@ public class ComponentXmlParser {
         Node valueNode = domNode.getAttributes().getNamedItem("value");
 
         if ((nameNode != null) && (valueNode != null)) {
-            result = new Parameter(nameNode.getNodeValue(), valueNode
-                    .getNodeValue());
+            result = new Parameter(nameNode.getNodeValue(),
+                    valueNode.getNodeValue());
         }
 
         return result;
@@ -142,10 +143,11 @@ public class ComponentXmlParser {
      *            Is this route the default one?
      * @return the created route, or null.
      */
-    @SuppressWarnings( { "unchecked", "deprecation" })
-    private org.restlet.routing.Route attach(Router router,
-            String targetClassName, String uriPattern, boolean defaultRoute) {
-        org.restlet.routing.Route route = null;
+    @SuppressWarnings("unchecked")
+    private TemplateRoute attach(Router router, String targetClassName,
+            String uriPattern, boolean defaultRoute) {
+        TemplateRoute route = null;
+
         // Load the application class using the given class name
         if (targetClassName != null) {
             try {
@@ -153,16 +155,7 @@ public class ComponentXmlParser {
 
                 // First, check if we have a Resource class that should be
                 // attached directly to the router.
-                if (org.restlet.resource.Resource.class
-                        .isAssignableFrom(targetClass)) {
-                    final Class<? extends org.restlet.resource.Resource> resourceClass = (Class<? extends org.restlet.resource.Resource>) targetClass;
-
-                    if ((uriPattern != null) && !defaultRoute) {
-                        route = router.attach(uriPattern, resourceClass);
-                    } else {
-                        route = router.attachDefault(resourceClass);
-                    }
-                } else if (ServerResource.class.isAssignableFrom(targetClass)) {
+                if (ServerResource.class.isAssignableFrom(targetClass)) {
                     final Class<? extends ServerResource> resourceClass = (Class<? extends ServerResource>) targetClass;
 
                     if ((uriPattern != null) && !defaultRoute) {
@@ -182,8 +175,7 @@ public class ComponentXmlParser {
                                         .createChildContext());
                     } catch (NoSuchMethodException e) {
                         getLogger()
-                                .log(
-                                        Level.FINE,
+                                .log(Level.FINE,
                                         "Couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of type Context. The empty constructor and the context setter will be used instead: "
                                                 + targetClassName, e);
 
@@ -211,26 +203,22 @@ public class ComponentXmlParser {
                                 + targetClassName, e);
             } catch (InstantiationException e) {
                 getLogger()
-                        .log(
-                                Level.WARNING,
+                        .log(Level.WARNING,
                                 "Couldn't instantiate the target class. Please check this class has an empty constructor "
                                         + targetClassName, e);
             } catch (IllegalAccessException e) {
                 getLogger()
-                        .log(
-                                Level.WARNING,
+                        .log(Level.WARNING,
                                 "Couldn't instantiate the target class. Please check that you have to proper access rights to "
                                         + targetClassName, e);
             } catch (NoSuchMethodException e) {
                 getLogger()
-                        .log(
-                                Level.WARNING,
+                        .log(Level.WARNING,
                                 "Couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
                                         + targetClassName, e);
             } catch (InvocationTargetException e) {
                 getLogger()
-                        .log(
-                                Level.WARNING,
+                        .log(Level.WARNING,
                                 "Couldn't instantiate the target class. An exception was thrown while creating "
                                         + targetClassName, e);
             }
@@ -252,11 +240,11 @@ public class ComponentXmlParser {
      *            Is this route the default one?
      * @return the created route, or null.
      */
-    @SuppressWarnings("deprecation")
-    private org.restlet.routing.Route attachWithDescriptor(Router router,
+    private TemplateRoute attachWithDescriptor(Router router,
             String targetDescriptor, String uriPattern, boolean defaultRoute) {
-        org.restlet.routing.Route route = null;
+        TemplateRoute route = null;
         String targetClassName = null;
+
         try {
             // Only WADL descriptors are supported at this moment.
             targetClassName = "org.restlet.ext.wadl.WadlApplication";
@@ -264,8 +252,8 @@ public class ComponentXmlParser {
 
             // Get the WADL document
             final Response response = getComponent().getContext()
-                    .getClientDispatcher().handle(
-                            new Request(Method.GET, targetDescriptor));
+                    .getClientDispatcher()
+                    .handle(new Request(Method.GET, targetDescriptor));
             if (response.getStatus().isSuccess()
                     && response.isEntityAvailable()) {
                 final Representation representation = response.getEntity();
@@ -285,8 +273,7 @@ public class ComponentXmlParser {
                 }
             } else {
                 getLogger()
-                        .log(
-                                Level.WARNING,
+                        .log(Level.WARNING,
                                 "The target descriptor has not been found or is not available, or no client supporting the URI's protocol has been defined on this component. "
                                         + targetDescriptor);
             }
@@ -297,26 +284,22 @@ public class ComponentXmlParser {
                             + targetClassName, e);
         } catch (InstantiationException e) {
             getLogger()
-                    .log(
-                            Level.WARNING,
+                    .log(Level.WARNING,
                             "Couldn't instantiate the target class. Please check this class has an empty constructor "
                                     + targetClassName, e);
         } catch (IllegalAccessException e) {
             getLogger()
-                    .log(
-                            Level.WARNING,
+                    .log(Level.WARNING,
                             "Couldn't instantiate the target class. Please check that you have to proper access rights to "
                                     + targetClassName, e);
         } catch (NoSuchMethodException e) {
             getLogger()
-                    .log(
-                            Level.WARNING,
+                    .log(Level.WARNING,
                             "Couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
                                     + targetClassName, e);
         } catch (InvocationTargetException e) {
             getLogger()
-                    .log(
-                            Level.WARNING,
+                    .log(Level.WARNING,
                             "Couldn't instantiate the target class. An exception was thrown while creating "
                                     + targetClassName, e);
         }
@@ -515,8 +498,8 @@ public class ComponentXmlParser {
                                         protocolsList);
                             }
                         } else {
-                            client = new Client(new Context(), getProtocol(item
-                                    .getNodeValue()));
+                            client = new Client(new Context(),
+                                    getProtocol(item.getNodeValue()));
                         }
 
                         if (client != null) {
@@ -843,12 +826,11 @@ public class ComponentXmlParser {
      * @param node
      *            The node describing the Restlets to attach.
      */
-    @SuppressWarnings("deprecation")
     private void setAttach(Router router, Node node) {
-        final NodeList childNodes = node.getChildNodes();
+        NodeList childNodes = node.getChildNodes();
 
         for (int i = 0; i < childNodes.getLength(); i++) {
-            final Node childNode = childNodes.item(i);
+            Node childNode = childNodes.item(i);
 
             if (isParameter(childNode)) {
                 Parameter p = parseParameter(childNode);
@@ -861,6 +843,7 @@ public class ComponentXmlParser {
                 String uriPattern = null;
                 Node item = childNode.getAttributes()
                         .getNamedItem("uriPattern");
+
                 if (item != null) {
                     uriPattern = item.getNodeValue();
                 } else {
@@ -868,16 +851,17 @@ public class ComponentXmlParser {
                 }
 
                 item = childNode.getAttributes().getNamedItem("default");
-                final boolean bDefault = getBoolean(item, false)
+                boolean bDefault = getBoolean(item, false)
                         || "attachDefault".equals(childNode.getNodeName());
 
                 // Attaches a new route.
                 // save the old router context so new routes do not inherit it
-                final Context oldContext = router.getContext();
+                Context oldContext = router.getContext();
                 router.setContext(new Context());
 
-                org.restlet.routing.Route route = null;
+                TemplateRoute route = null;
                 item = childNode.getAttributes().getNamedItem("targetClass");
+
                 if (item != null) {
                     route = attach(router, item.getNodeValue(), uriPattern,
                             bDefault);
@@ -885,22 +869,21 @@ public class ComponentXmlParser {
                     item = childNode.getAttributes().getNamedItem(
                             "targetDescriptor");
                     if (item != null) {
-                        route = attachWithDescriptor(router, item
-                                .getNodeValue(), uriPattern, bDefault);
+                        route = attachWithDescriptor(router,
+                                item.getNodeValue(), uriPattern, bDefault);
                     } else {
                         getLogger()
-                                .log(
-                                        Level.WARNING,
+                                .log(Level.WARNING,
                                         "Both targetClass name and targetDescriptor are missing. Couldn't attach a new route.");
                     }
                 }
 
                 if (route != null) {
-                    final Template template = route.getTemplate();
+                    Template template = route.getTemplate();
                     item = childNode.getAttributes().getNamedItem(
                             "matchingMode");
-                    template.setMatchingMode(getInt(item, router
-                            .getDefaultMatchingMode()));
+                    template.setMatchingMode(getInt(item,
+                            router.getDefaultMatchingMode()));
                     item = childNode.getAttributes().getNamedItem(
                             "defaultVariableType");
                     template.getDefaultVariable().setType(

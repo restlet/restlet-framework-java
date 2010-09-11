@@ -42,7 +42,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.ConnectorHelper;
-import org.restlet.engine.http.header.DispositionReader;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.representation.Representation;
@@ -70,34 +69,6 @@ public abstract class ClientCall extends Call {
             // [ifndef gae,gwt]
         }
         // [enddef]
-    }
-
-    /**
-     * Parse the Content-Disposition header value
-     * 
-     * @param value
-     *            Content-disposition header
-     * @return Filename
-     * @deprecated Use {@link DispositionReader} instead.
-     */
-    @Deprecated
-    public static String parseContentDisposition(String value) {
-        if (value != null) {
-            String key = "FILENAME=\"";
-            int index = value.toUpperCase().indexOf(key);
-            if (index > 0) {
-                return value
-                        .substring(index + key.length(), value.length() - 1);
-            }
-
-            key = "FILENAME=";
-            index = value.toUpperCase().indexOf(key);
-            if (index > 0) {
-                return value.substring(index + key.length(), value.length());
-            }
-        }
-
-        return null;
     }
 
     /** The parent HTTP client helper. */

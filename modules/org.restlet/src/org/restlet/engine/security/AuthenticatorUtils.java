@@ -50,7 +50,6 @@ import org.restlet.engine.http.header.ChallengeRequestReader;
 import org.restlet.engine.http.header.ChallengeWriter;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.ParameterReader;
-import org.restlet.security.Guard;
 import org.restlet.util.Series;
 
 /**
@@ -59,7 +58,6 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  * @author Ray Waldin (ray@waldin.net)
  */
-@SuppressWarnings("deprecation")
 public class AuthenticatorUtils {
 
     /**
@@ -79,88 +77,6 @@ public class AuthenticatorUtils {
     }
 
     /**
-     * Indicates if the request is properly authenticated. By default, this
-     * delegates credentials checking to checkSecret().
-     * 
-     * @param request
-     *            The request to authenticate.
-     * @param guard
-     *            The associated guard to callback.
-     * @return -1 if the given credentials were invalid, 0 if no credentials
-     *         were found and 1 otherwise.
-     * @see Guard#checkSecret(Request, String, char[])
-     * @deprecated See new org.restlet.security package.
-     */
-    @Deprecated
-    public static int authenticate(Request request, Guard guard) {
-        int result = Guard.AUTHENTICATION_MISSING;
-
-        if (guard.getScheme() != null) {
-            // An authentication scheme has been defined,
-            // the request must be authenticated
-            final ChallengeResponse cr = request.getChallengeResponse();
-
-            if (cr != null) {
-                if (guard.getScheme().equals(cr.getScheme())) {
-                    final AuthenticatorHelper helper = Engine.getInstance()
-                            .findHelper(cr.getScheme(), false, true);
-
-                    if (helper != null) {
-                        result = helper.authenticate(cr, request, guard);
-                    } else {
-                        throw new IllegalArgumentException("Challenge scheme "
-                                + guard.getScheme()
-                                + " not supported by the Restlet engine.");
-                    }
-                } else {
-                    // The challenge schemes are incompatible, we need to
-                    // challenge the client
-                }
-            } else {
-                // No challenge response found, we need to challenge the client
-            }
-        }
-
-        if (request.getChallengeResponse() != null) {
-            // Update the challenge response accordingly
-            request.getChallengeResponse().setAuthenticated(
-                    result == Guard.AUTHENTICATION_VALID);
-        }
-
-        // Update the client info accordingly
-        request.getClientInfo().setAuthenticated(
-                result == Guard.AUTHENTICATION_VALID);
-
-        return result;
-    }
-
-    /**
-     * Challenges the client by adding a challenge request to the response and
-     * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
-     * 
-     * @param response
-     *            The response to update.
-     * @param stale
-     *            Indicates if the new challenge is due to a stale response.
-     * @param guard
-     *            The associated guard to callback.
-     * @deprecated See new org.restlet.security package.
-     */
-    @Deprecated
-    public static void challenge(Response response, boolean stale, Guard guard) {
-        final AuthenticatorHelper helper = Engine.getInstance().findHelper(
-                guard.getScheme(), false, true);
-
-        if (helper != null) {
-            helper.challenge(response, stale, guard);
-        } else {
-            throw new IllegalArgumentException("Challenge scheme "
-                    + guard.getScheme()
-                    + " not supported by the Restlet engine.");
-        }
-    }
-
-    /**
      * Formats an authentication information as a HTTP header value. The header
      * is {@link HeaderConstants#HEADER_AUTHENTICATION_INFO}.
      * 
@@ -177,8 +93,8 @@ public class AuthenticatorUtils {
             if (info.getNextServerNonce() != null
                     && info.getNextServerNonce().length() > 0) {
                 cw.setFirstChallengeParameter(firstParameter);
-                cw.appendQuotedChallengeParameter("nextnonce", info
-                        .getNextServerNonce());
+                cw.appendQuotedChallengeParameter("nextnonce",
+                        info.getNextServerNonce());
                 firstParameter = false;
             }
 
@@ -188,16 +104,16 @@ public class AuthenticatorUtils {
                 firstParameter = false;
 
                 if (info.getNonceCount() > 0) {
-                    cw.appendChallengeParameter("nc", formatNonceCount(info
-                            .getNonceCount()));
+                    cw.appendChallengeParameter("nc",
+                            formatNonceCount(info.getNonceCount()));
                 }
             }
 
             if (info.getResponseDigest() != null
                     && info.getResponseDigest().length() > 0) {
                 cw.setFirstChallengeParameter(firstParameter);
-                cw.appendQuotedChallengeParameter("rspauth", info
-                        .getResponseDigest());
+                cw.appendQuotedChallengeParameter("rspauth",
+                        info.getResponseDigest());
                 firstParameter = false;
             }
 
@@ -221,8 +137,8 @@ public class AuthenticatorUtils {
      * @return The formatted value of the given nonce count.
      */
     public static String formatNonceCount(int nonceCount) {
-        StringBuilder result = new StringBuilder(Integer
-                .toHexString(nonceCount));
+        StringBuilder result = new StringBuilder(
+                Integer.toHexString(nonceCount));
         while (result.length() < 8) {
             result.insert(0, '0');
         }
@@ -342,10 +258,8 @@ public class AuthenticatorUtils {
                         param = null;
                     }
                 } catch (Exception e) {
-                    Context
-                            .getCurrentLogger()
-                            .log(
-                                    Level.WARNING,
+                    Context.getCurrentLogger()
+                            .log(Level.WARNING,
                                     "Unable to parse the authentication info header parameter",
                                     e);
                 }
@@ -355,8 +269,7 @@ public class AuthenticatorUtils {
                     responseAuth);
         } catch (IOException e) {
             Context.getCurrentLogger()
-                    .log(
-                            Level.WARNING,
+                    .log(Level.WARNING,
                             "Unable to parse the authentication info header: "
                                     + header, e);
         }

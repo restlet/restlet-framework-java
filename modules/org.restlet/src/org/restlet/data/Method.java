@@ -500,20 +500,6 @@ public final class Method implements Comparable<Method> {
     }
 
     /**
-     * Sets the URI of the specification describing the method.
-     * 
-     * @param uri
-     *            The URI of the specification describing the method.
-     * 
-     * @deprecated Method instances are shared by all Restlet applications and
-     *             shouldn't be modifiable.
-     */
-    @Deprecated
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    /**
      * Returns the name.
      * 
      * @return The name.

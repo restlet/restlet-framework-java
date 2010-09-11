@@ -41,7 +41,9 @@ import java.security.DigestInputStream;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.data.Digest;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.io.NioUtils;
@@ -100,32 +102,54 @@ public class DigesterRepresentation extends WrapperRepresentation {
     }
 
     /**
-     * Check that the digest computed from the wrapped representation content
-     * and the digest declared by the wrapped representation are the same. User
-     * must be aware that the computed value is accurate only after a complete
-     * reading or writing operation.
+     * Check that the digest computed from the representation content and the
+     * digest declared by the representation are the same.<br>
+     * Since this method relies on the {@link #computeDigest(String)} method,
+     * and since this method reads entirely the representation's stream, user
+     * must take care of the content of the representation in case the latter is
+     * transient.
+     * 
+     * {@link #isTransient}
+     * 
+     * @return True if both digests are not null and equals.
      */
-    @Override
     public boolean checkDigest() {
         Digest digest = getDigest();
         return (digest != null && digest.equals(getComputedDigest()));
     }
 
     /**
-     * {@inheritDoc} <br>
-     * If case the given algorithm is the same than the one provided at
-     * instantiation, the check operation is made with the current stored
-     * computed value and does not require to exhaust entirely the
-     * representation's stream.
+     * Check that the digest computed from the representation content and the
+     * digest declared by the representation are the same. It also first checks
+     * that the algorithms are the same.<br>
+     * Since this method relies on the {@link #computeDigest(String)} method,
+     * and since this method reads entirely the representation's stream, user
+     * must take care of the content of the representation in case the latter is
+     * transient.
+     * 
+     * {@link #isTransient}
+     * 
+     * @param algorithm
+     *            The algorithm used to compute the digest to compare with. See
+     *            constant values in {@link org.restlet.data.Digest}.
+     * @return True if both digests are not null and equals.
      */
-    @SuppressWarnings("deprecation")
-    @Override
     public boolean checkDigest(String algorithm) {
+        boolean result = false;
+
         if (this.algorithm != null && this.algorithm.equals(algorithm)) {
-            return checkDigest();
+            result = checkDigest();
+        } else {
+            Digest digest = getDigest();
+
+            if (digest != null) {
+                if (algorithm.equals(digest.getAlgorithm())) {
+                    result = digest.equals(computeDigest(algorithm));
+                }
+            }
         }
 
-        return super.checkDigest(algorithm);
+        return result;
     }
 
     /**
@@ -140,24 +164,45 @@ public class DigesterRepresentation extends WrapperRepresentation {
     }
 
     /**
-     * {@inheritDoc} <br>
-     * If case the given algorithm is the same than the one provided at
-     * instantiation, the computation operation is made with the current stored
-     * computed value and does not require to exhaust entirely the
-     * representation's stream.
+     * Compute the representation digest according to the given algorithm.<br>
+     * Since this method reads entirely the representation's stream, user must
+     * take care of the content of the representation in case the latter is
+     * transient.
+     * 
+     * {@link #isTransient}
+     * 
+     * @param algorithm
+     *            The algorithm used to compute the digest. See constant values
+     *            in {@link org.restlet.data.Digest}.
+     * @return The computed digest or null if the digest cannot be computed.
      */
-    @SuppressWarnings("deprecation")
-    @Override
     public Digest computeDigest(String algorithm) {
+        Digest result = null;
+
         if (this.algorithm != null && this.algorithm.equals(algorithm)) {
-            return getComputedDigest();
+            result = getComputedDigest();
+        } else if (isAvailable()) {
+            try {
+                java.security.MessageDigest md = java.security.MessageDigest
+                        .getInstance(algorithm);
+                java.security.DigestInputStream dis = new java.security.DigestInputStream(
+                        getStream(), md);
+                org.restlet.engine.io.BioUtils.exhaust(dis);
+                result = new org.restlet.data.Digest(algorithm, md.digest());
+            } catch (java.security.NoSuchAlgorithmException e) {
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to check the digest of the representation.", e);
+            } catch (IOException e) {
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to check the digest of the representation.", e);
+            }
         }
 
-        return super.computeDigest(algorithm);
+        return result;
     }
 
     /**
-     * Exhauts the content of the representation by reading it and silently
+     * Exhausts the content of the representation by reading it and silently
      * discarding anything read.
      * 
      * @return The number of bytes consumed or -1 if unknown.

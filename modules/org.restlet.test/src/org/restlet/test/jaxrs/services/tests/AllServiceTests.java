@@ -81,7 +81,6 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(RepresentationTest.class);
         mySuite.addTestSuite(RequestTest.class);
         mySuite.addTestSuite(ResponseBuilderTest.class);
-        mySuite.addTestSuite(SecurityContextTest.class);
         mySuite.addTestSuite(SimpleHouseTest.class);
         mySuite.addTestSuite(SimpleTrainTest.class);
         mySuite.addTestSuite(ThrowExceptionTest.class);

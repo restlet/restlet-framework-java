@@ -42,7 +42,6 @@ import org.restlet.util.RouteList;
  * 
  * @author Kevin Conaway
  */
-@SuppressWarnings("deprecation")
 public class RouteListTestCase extends TestCase {
 
     static class MockScoringRoute extends Route {

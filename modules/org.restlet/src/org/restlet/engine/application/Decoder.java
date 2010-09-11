@@ -184,62 +184,18 @@ public class Decoder extends Filter {
      * Indicates if the request entity should be decoded.
      * 
      * @return True if the request entity should be decoded.
-     * @deprecated Use {@link #isDecodingRequest()} instead.
-     */
-    @Deprecated
-    public boolean isDecodeRequest() {
-        return this.decodingRequest;
-    }
-    
-    /**
-     * Indicates if the response entity should be decoded.
-     * 
-     * @return True if the response entity should be decoded.
-     * @deprecated Use {@link #isDecodingResponse()} instead.
-     */
-    @Deprecated
-    public boolean isDecodeResponse() {
-        return this.decodingResponse;
-    }
-
-    /**
-     * Indicates if the request entity should be decoded.
-     * 
-     * @return True if the request entity should be decoded.
      */
     public boolean isDecodingRequest() {
-        return isDecodeRequest();
+        return this.decodingRequest;
     }
+
     /**
      * Indicates if the response entity should be decoded.
      * 
      * @return True if the response entity should be decoded.
      */
     public boolean isDecodingResponse() {
-        return isDecodeResponse();
-    }
-
-    /**
-     * Indicates if the request entity should be decoded.
-     * 
-     * @param decodingRequest
-     *            True if the request entity should be decoded.
-     * @deprecated Use {@link #setDecodingRequest(boolean)} instead.
-     */
-    @Deprecated
-    public void setDecodeRequest(boolean decodingRequest) {
-        this.decodingRequest = decodingRequest;
-    }
-    /**
-     * Indicates if the response entity should be decoded.
-     * 
-     * @param decodingResponse
-     *            True if the response entity should be decoded.
-     * @deprecated Use {@link #setDecodingResponse(boolean)} instead.
-     */
-    @Deprecated
-    public void setDecodeResponse(boolean decodingResponse) {
-        this.decodingResponse = decodingResponse;
+        return this.decodingResponse;
     }
 
     /**
@@ -249,7 +205,7 @@ public class Decoder extends Filter {
      *            True if the request entity should be decoded.
      */
     public void setDecodingRequest(boolean decodingRequest) {
-        setDecodeRequest(decodingRequest);
+        this.decodingRequest = decodingRequest;
     }
 
     /**
@@ -259,7 +215,7 @@ public class Decoder extends Filter {
      *            True if the response entity should be decoded.
      */
     public void setDecodingResponse(boolean decodingResponse) {
-        setDecodeResponse(decodingResponse);
+        this.decodingResponse = decodingResponse;
     }
 
 }

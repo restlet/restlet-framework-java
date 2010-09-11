@@ -138,13 +138,7 @@ public abstract class Authenticator extends Filter {
      *            The response to update.
      * @return The filter continuation code.
      */
-    @SuppressWarnings("deprecation")
     protected int authenticated(Request request, Response response) {
-        // Update the challenge response accordingly
-        if (request.getChallengeResponse() != null) {
-            request.getChallengeResponse().setAuthenticated(true);
-        }
-
         // Update the client info accordingly
         if (request.getClientInfo() != null) {
             request.getClientInfo().setAuthenticated(true);
@@ -172,16 +166,10 @@ public abstract class Authenticator extends Filter {
      *            The response to update.
      * @return The filter continuation code.
      */
-    @SuppressWarnings("deprecation")
     protected int unauthenticated(Request request, Response response) {
         if (isOptional()) {
             response.setStatus(Status.SUCCESS_OK);
             return CONTINUE;
-        }
-
-        // Update the challenge response accordingly
-        if (request.getChallengeResponse() != null) {
-            request.getChallengeResponse().setAuthenticated(false);
         }
 
         // Update the client info accordingly

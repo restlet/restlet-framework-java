@@ -35,9 +35,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Date;
-import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
@@ -74,17 +72,6 @@ public abstract class Representation extends RepresentationInfo {
      * Indicates that the size of the representation can't be known in advance.
      */
     public static final long UNKNOWN_SIZE = -1L;
-
-    /**
-     * Returns a new empty representation with no content.
-     * 
-     * @return A new empty representation.
-     * @deprecated Use {@link EmptyRepresentation} instead.
-     */
-    @Deprecated
-    public static Representation createEmpty() {
-        return new EmptyRepresentation();
-    }
 
     /** Indicates if the representation's content is potentially available. */
     private volatile boolean available;
@@ -226,93 +213,6 @@ public abstract class Representation extends RepresentationInfo {
         this(variant, null, tag);
     }
 
-    // [ifndef gwt] method
-    /**
-     * Check that the digest computed from the representation content and the
-     * digest declared by the representation are the same.<br>
-     * Since this method relies on the {@link #computeDigest(String)} method,
-     * and since this method reads entirely the representation's stream, user
-     * must take care of the content of the representation in case the latter is
-     * transient.
-     * 
-     * {@link #isTransient}
-     * 
-     * @return True if both digests are not null and equals.
-     * @deprecated Use a {@link DigesterRepresentation} instead.
-     */
-    @Deprecated
-    public boolean checkDigest() {
-        return (getDigest() != null && checkDigest(getDigest().getAlgorithm()));
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Check that the digest computed from the representation content and the
-     * digest declared by the representation are the same. It also first checks
-     * that the algorithms are the same.<br>
-     * Since this method relies on the {@link #computeDigest(String)} method,
-     * and since this method reads entirely the representation's stream, user
-     * must take care of the content of the representation in case the latter is
-     * transient.
-     * 
-     * {@link #isTransient}
-     * 
-     * @param algorithm
-     *            The algorithm used to compute the digest to compare with. See
-     *            constant values in {@link org.restlet.data.Digest}.
-     * @return True if both digests are not null and equals.
-     * @deprecated Use a {@link DigesterRepresentation} instead.
-     */
-    @Deprecated
-    public boolean checkDigest(String algorithm) {
-        org.restlet.data.Digest digest = getDigest();
-        if (digest != null) {
-            if (algorithm.equals(digest.getAlgorithm())) {
-                return digest.equals(computeDigest(algorithm));
-            }
-        }
-        return false;
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Compute the representation digest according to the given algorithm.<br>
-     * Since this method reads entirely the representation's stream, user must
-     * take care of the content of the representation in case the latter is
-     * transient.
-     * 
-     * {@link #isTransient}
-     * 
-     * @param algorithm
-     *            The algorithm used to compute the digest. See constant values
-     *            in {@link org.restlet.data.Digest}.
-     * @return The computed digest or null if the digest cannot be computed.
-     * @deprecated Use a {@link DigesterRepresentation} instead.
-     */
-    @Deprecated
-    public org.restlet.data.Digest computeDigest(String algorithm) {
-        org.restlet.data.Digest result = null;
-
-        if (isAvailable()) {
-            try {
-                java.security.MessageDigest md = java.security.MessageDigest
-                        .getInstance(algorithm);
-                java.security.DigestInputStream dis = new java.security.DigestInputStream(
-                        getStream(), md);
-                org.restlet.engine.io.BioUtils.exhaust(dis);
-                result = new org.restlet.data.Digest(algorithm, md.digest());
-            } catch (java.security.NoSuchAlgorithmException e) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to check the digest of the representation.", e);
-            } catch (IOException e) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to check the digest of the representation.", e);
-            }
-        }
-
-        return result;
-    }
-
     /**
      * Exhaust the content of the representation by reading it and silently
      * discarding anything read. By default, it relies on {@link #getStream()}
@@ -379,27 +279,6 @@ public abstract class Representation extends RepresentationInfo {
      */
     public Disposition getDisposition() {
         return disposition;
-    }
-
-    /**
-     * Returns the suggested download file name for this representation. This is
-     * mainly used to suggest to the client a local name for a downloaded
-     * representation.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Disposition" header with this value:
-     * "inline; filename=<downloadName>".
-     * 
-     * @return The suggested file name for this representation.
-     * @deprecated Use the "disposition" attribute instead.
-     */
-    @Deprecated
-    public String getDownloadName() {
-        if (getDisposition() != null) {
-            return getDisposition().getFilename();
-        }
-
-        return null;
     }
 
     /**
@@ -515,23 +394,6 @@ public abstract class Representation extends RepresentationInfo {
     // public abstract String getText() throws IOException;
 
     /**
-     * Indicates if the representation is downloadable which means that it can
-     * be obtained via a download dialog box.
-     * 
-     * @return True if the representation's content is downloadable.
-     * @deprecated Use the "disposition" attribute instead.
-     */
-    @Deprecated
-    public boolean isDownloadable() {
-        if (getDisposition() != null) {
-            return !(Disposition.TYPE_INLINE.equalsIgnoreCase(getDisposition()
-                    .getType()));
-        }
-
-        return false;
-    }
-
-    /**
      * Indicates if the representation's content is transient, which means that
      * it can be obtained only once. This is often the case with representations
      * transmitted via network sockets for example. In such case, if you need to
@@ -587,44 +449,6 @@ public abstract class Representation extends RepresentationInfo {
      */
     public void setDisposition(Disposition disposition) {
         this.disposition = disposition;
-    }
-
-    /**
-     * Indicates if the representation is downloadable which means that it can
-     * be obtained via a download dialog box.
-     * 
-     * @param downloadable
-     *            True if the representation's content is downloadable.
-     * @deprecated Use the "disposition" attribute instead.
-     */
-    @Deprecated
-    public void setDownloadable(boolean downloadable) {
-        if (getDisposition() == null) {
-            this.disposition = new Disposition();
-        }
-
-        this.disposition.setType((downloadable ? Disposition.TYPE_ATTACHMENT
-                : Disposition.TYPE_NONE));
-    }
-
-    /**
-     * Set the suggested download file name for this representation.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Disposition" header with this value:
-     * "inline; filename=<downloadName>".
-     * 
-     * @param fileName
-     *            The suggested file name.
-     * @deprecated Use the "disposition" attribute instead.
-     */
-    @Deprecated
-    public void setDownloadName(String fileName) {
-        if (getDisposition() == null) {
-            this.disposition = new Disposition();
-        }
-
-        getDisposition().setFilename(fileName);
     }
 
     /**

@@ -95,19 +95,6 @@ public final class ServerInfo {
      * @return True if the server accepts range requests for a resource.
      */
     public boolean isAcceptingRanges() {
-        return isAcceptRanges();
-    }
-
-    /**
-     * Return true if the server accepts range requests for a resource, with the
-     * "byte" range unit. Note that when used with HTTP connectors, this
-     * property maps to the "Accept-Ranges" header.
-     * 
-     * @return True if the server accepts range requests for a resource.
-     * @deprecated Use {@link #isAcceptingRanges()} instead.
-     */
-    @Deprecated
-    public boolean isAcceptRanges() {
         return acceptingRanges;
     }
 
@@ -120,20 +107,6 @@ public final class ServerInfo {
      *            True if the server accepts range requests for a resource.
      */
     public void setAcceptingRanges(boolean acceptingRanges) {
-        setAcceptRanges(acceptingRanges);
-    }
-
-    /**
-     * Indicates if the server accepts range requests for a resource, with the
-     * "byte" range unit. Note that when used with HTTP connectors, this
-     * property maps to the "Accept-Ranges" header.
-     * 
-     * @param acceptingRanges
-     *            True if the server accepts range requests for a resource.
-     * @deprecated Use {@link #setAcceptingRanges(boolean)} instead.
-     */
-    @Deprecated
-    public void setAcceptRanges(boolean acceptingRanges) {
         this.acceptingRanges = acceptingRanges;
     }
 

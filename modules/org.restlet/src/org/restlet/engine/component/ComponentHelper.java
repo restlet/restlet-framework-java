@@ -40,7 +40,7 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ChainHelper;
 import org.restlet.routing.Filter;
-import org.restlet.routing.TemplateRoute;
+import org.restlet.routing.Route;
 import org.restlet.routing.VirtualHost;
 import org.restlet.service.Service;
 
@@ -81,7 +81,7 @@ public class ComponentHelper extends ChainHelper<Component> {
         boolean result = true;
 
         if (host != null) {
-            for (TemplateRoute route : host.getRoutes()) {
+            for (Route route : host.getRoutes()) {
                 Restlet next = route.getNext();
 
                 if (next instanceof Application) {
@@ -107,14 +107,11 @@ public class ComponentHelper extends ChainHelper<Component> {
 
                                 if (!clientFound) {
                                     getLogger()
-                                            .severe(
-                                                    "Unable to start the application \""
-                                                            + application
-                                                                    .getName()
-                                                            + "\". Client connector for protocol "
-                                                            + clientProtocol
-                                                                    .getName()
-                                                            + " is missing.");
+                                            .severe("Unable to start the application \""
+                                                    + application.getName()
+                                                    + "\". Client connector for protocol "
+                                                    + clientProtocol.getName()
+                                                    + " is missing.");
                                     result = false;
                                 }
                             }
@@ -139,14 +136,11 @@ public class ComponentHelper extends ChainHelper<Component> {
 
                                 if (!serverFound) {
                                     getLogger()
-                                            .severe(
-                                                    "Unable to start the application \""
-                                                            + application
-                                                                    .getName()
-                                                            + "\". Server connector for protocol "
-                                                            + serverProtocol
-                                                                    .getName()
-                                                            + " is missing.");
+                                            .severe("Unable to start the application \""
+                                                    + application.getName()
+                                                    + "\". Server connector for protocol "
+                                                    + serverProtocol.getName()
+                                                    + " is missing.");
                                     result = false;
                                 }
                             }
@@ -245,7 +239,7 @@ public class ComponentHelper extends ChainHelper<Component> {
      * @throws Exception
      */
     private void stopHostApplications(VirtualHost host) throws Exception {
-        for (TemplateRoute route : host.getRoutes()) {
+        for (Route route : host.getRoutes()) {
             if (route.getNext().isStarted()) {
                 route.getNext().stop();
             }

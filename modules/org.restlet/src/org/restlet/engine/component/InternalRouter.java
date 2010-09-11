@@ -37,6 +37,7 @@ import org.restlet.Restlet;
 import org.restlet.resource.Finder;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
+import org.restlet.routing.TemplateRoute;
 
 /**
  * Provides the behavior of the internal router of a Component. It overrides the
@@ -58,12 +59,10 @@ public class InternalRouter extends Router {
         setRoutingMode(Router.MODE_BEST_MATCH);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    protected org.restlet.routing.Route createRoute(String uriPattern,
-            Restlet target, int matchingMode) {
-        org.restlet.routing.Route result = new org.restlet.routing.Route(this,
-                uriPattern, target) {
+    protected TemplateRoute createRoute(String uriPattern, Restlet target,
+            int matchingMode) {
+        TemplateRoute result = new TemplateRoute(this, uriPattern, target) {
             @Override
             protected int beforeHandle(Request request, Response response) {
                 final int result = super.beforeHandle(request, response);
@@ -75,15 +74,14 @@ public class InternalRouter extends Router {
                 return result;
             }
         };
+
         result.getTemplate().setMatchingMode(matchingMode);
         result.setMatchingQuery(getDefaultMatchingQuery());
-
         return result;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public org.restlet.routing.Route attach(Restlet target) {
+    public TemplateRoute attach(Restlet target) {
         if (target.getContext() == null) {
             target.setContext(getContext().createChildContext());
         }
@@ -92,8 +90,7 @@ public class InternalRouter extends Router {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public org.restlet.routing.Route attach(String uriPattern, Restlet target) {
+    public TemplateRoute attach(String uriPattern, Restlet target) {
         if (target.getContext() == null) {
             target.setContext(getContext().createChildContext());
         }
@@ -102,8 +99,7 @@ public class InternalRouter extends Router {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public org.restlet.routing.Route attachDefault(Restlet defaultTarget) {
+    public TemplateRoute attachDefault(Restlet defaultTarget) {
         if (defaultTarget.getContext() == null) {
             defaultTarget.setContext(getContext().createChildContext());
         }

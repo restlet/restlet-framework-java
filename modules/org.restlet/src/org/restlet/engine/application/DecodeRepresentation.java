@@ -92,20 +92,9 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * Indicates if the decoding can happen.
      * 
      * @return True if the decoding can happen.
-     * @deprecated Use {@link #isDecoding()} instead.
-     */
-    @Deprecated
-    public boolean canDecode() {
-        return this.decoding;
-    }
-
-    /**
-     * Indicates if the decoding can happen.
-     * 
-     * @return True if the decoding can happen.
      */
     public boolean isDecoding() {
-        return canDecode();
+        return this.decoding;
     }
 
     /**

@@ -48,7 +48,6 @@ import org.restlet.routing.Router;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("deprecation")
 public class ClientRoute extends Route {
     /**
      * Constructor.
@@ -59,7 +58,7 @@ public class ClientRoute extends Route {
      *            The target client.
      */
     public ClientRoute(Router router, Client target) {
-        super(router, "", target);
+        super(router, target);
     }
 
     /**

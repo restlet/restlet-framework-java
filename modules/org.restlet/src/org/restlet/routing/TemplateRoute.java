@@ -50,15 +50,12 @@ import org.restlet.data.Status;
  * @see org.restlet.routing.Template
  * @author Jerome Louvel
  */
-public class TemplateRoute extends Filter {
+public class TemplateRoute extends Route {
     /**
      * Indicates whether the query part should be taken into account when
      * matching a reference with the template.
      */
     private volatile boolean matchingQuery;
-
-    /** The parent router. */
-    private volatile Router router;
 
     /** The reference template to match. */
     private volatile Template template;
@@ -102,10 +99,9 @@ public class TemplateRoute extends Filter {
      *            The next Restlet.
      */
     public TemplateRoute(Router router, Template template, Restlet next) {
-        super(router == null ? null : router.getContext(), next);
+        super(router, next);
         this.matchingQuery = (router == null) ? true : router
                 .getDefaultMatchingQuery();
-        this.router = router;
         this.template = template;
     }
 
@@ -185,28 +181,6 @@ public class TemplateRoute extends Filter {
     }
 
     /**
-     * Indicates whether the query part should be taken into account when
-     * matching a reference with the template.
-     * 
-     * @return True if the query part of the reference should be taken into
-     *         account, false otherwise.
-     * @deprecated Use {@link #isMatchingQuery()} instead.
-     */
-    @Deprecated
-    public boolean getMatchQuery() {
-        return this.matchingQuery;
-    }
-
-    /**
-     * Returns the parent router.
-     * 
-     * @return The parent router.
-     */
-    public Router getRouter() {
-        return this.router;
-    }
-
-    /**
      * Returns the reference template to match.
      * 
      * @return The reference template to match.
@@ -223,7 +197,7 @@ public class TemplateRoute extends Filter {
      *         account, false otherwise.
      */
     public boolean isMatchingQuery() {
-        return getMatchQuery();
+        return this.matchingQuery;
     }
 
     /**
@@ -288,31 +262,7 @@ public class TemplateRoute extends Filter {
      *            false otherwise.
      */
     public void setMatchingQuery(boolean matchingQuery) {
-        setMatchQuery(matchingQuery);
-    }
-
-    /**
-     * Sets whether the matching should be done on the URI with or without query
-     * string.
-     * 
-     * @param matchingQuery
-     *            True if the matching should be done with the query string,
-     *            false otherwise.
-     * @deprecated Use {@link #setMatchingQuery(boolean)} instead.
-     */
-    @Deprecated
-    public void setMatchQuery(boolean matchingQuery) {
         this.matchingQuery = matchingQuery;
-    }
-
-    /**
-     * Sets the parent router.
-     * 
-     * @param router
-     *            The parent router.
-     */
-    public void setRouter(Router router) {
-        this.router = router;
     }
 
     /**

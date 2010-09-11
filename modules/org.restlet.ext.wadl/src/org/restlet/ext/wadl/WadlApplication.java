@@ -56,6 +56,7 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Route;
 import org.restlet.routing.Router;
+import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.VirtualHost;
 
 /**
@@ -102,7 +103,6 @@ import org.restlet.routing.VirtualHost;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("deprecation")
 public class WadlApplication extends Application {
 
     /**
@@ -376,13 +376,13 @@ public class WadlApplication extends Application {
 
         if (resourceInfo.getIdentifier() != null) {
             // The "id" attribute conveys the target class name
-            Class<?> targetClass = Engine.loadClass(resourceInfo.getIdentifier());
+            Class<?> targetClass = Engine.loadClass(resourceInfo
+                    .getIdentifier());
             result = router.createFinder(targetClass);
         } else {
             getLogger()
-                    .fine(
-                            "Unable to find the 'id' attribute of the resource element with this path attribute \""
-                                    + uriPattern + "\"");
+                    .fine("Unable to find the 'id' attribute of the resource element with this path attribute \""
+                            + uriPattern + "\"");
         }
 
         return result;
@@ -532,16 +532,12 @@ public class WadlApplication extends Application {
             resource = finder;
         } else {
             // The handler instance targeted by this finder.
-            resource = finder.findTarget(request, response);
+            ServerResource sr = finder.find(request, response);
 
-            if (resource == null) {
-                ServerResource sr = finder.find(request, response);
-
-                if (sr != null) {
-                    sr.init(getContext(), request, response);
-                    sr.updateAllowedMethods();
-                    resource = sr;
-                }
+            if (sr != null) {
+                sr.init(getContext(), request, response);
+                sr.updateAllowedMethods();
+                resource = sr;
             }
         }
 
@@ -608,15 +604,21 @@ public class WadlApplication extends Application {
      */
     private ResourceInfo getResourceInfo(ApplicationInfo applicationInfo,
             Route route, String basePath, Request request, Response response) {
-        String path = route.getTemplate().getPattern();
+        ResourceInfo result = null;
 
-        // WADL requires resource paths to be relative to parent path
-        if (path.startsWith("/") && basePath.endsWith("/")) {
-            path = path.substring(1);
+        if (route instanceof TemplateRoute) {
+            TemplateRoute templateRoute = (TemplateRoute) route;
+            String path = templateRoute.getTemplate().getPattern();
+
+            // WADL requires resource paths to be relative to parent path
+            if (path.startsWith("/") && basePath.endsWith("/")) {
+                path = path.substring(1);
+            }
+
+            result = getResourceInfo(applicationInfo, route.getNext(), path,
+                    request, response);
         }
 
-        ResourceInfo result = getResourceInfo(applicationInfo, route.getNext(),
-                path, request, response);
         return result;
     }
 
@@ -639,7 +641,7 @@ public class WadlApplication extends Application {
             Response response) {
         List<ResourceInfo> result = new ArrayList<ResourceInfo>();
 
-        for (final Route route : router.getRoutes()) {
+        for (Route route : router.getRoutes()) {
             ResourceInfo resourceInfo = getResourceInfo(applicationInfo, route,
                     "/", request, response);
 
@@ -649,8 +651,8 @@ public class WadlApplication extends Application {
         }
 
         if (router.getDefaultRoute() != null) {
-            ResourceInfo resourceInfo = getResourceInfo(applicationInfo, router
-                    .getDefaultRoute(), "/", request, response);
+            ResourceInfo resourceInfo = getResourceInfo(applicationInfo,
+                    router.getDefaultRoute(), "/", request, response);
             if (resourceInfo != null) {
                 result.add(resourceInfo);
             }

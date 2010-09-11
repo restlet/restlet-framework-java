@@ -162,8 +162,8 @@ public final class ClientInfo {
                         try {
                             reader = new BufferedReader(new InputStreamReader(
                                     userAgentPropertiesUrl.openStream(),
-                                    CharacterSet.UTF_8.getName()), IoUtils
-                                    .getBufferSize());
+                                    CharacterSet.UTF_8.getName()),
+                                    IoUtils.getBufferSize());
                             String line = reader.readLine();
                             for (; line != null; line = reader.readLine()) {
                                 if ((line.trim().length() > 0)
@@ -177,8 +177,7 @@ public final class ClientInfo {
                             reader.close();
                         } catch (IOException e) {
                             if (Context.getCurrent() != null) {
-                                Context
-                                        .getCurrent()
+                                Context.getCurrent()
                                         .getLogger()
                                         .warning(
                                                 "Cannot read '"
@@ -412,24 +411,6 @@ public final class ClientInfo {
      */
     public String getAddress() {
         return this.address;
-    }
-
-    /**
-     * Returns the list of client IP addresses. The first address is the one of
-     * the immediate client component as returned by the getClientAdress()
-     * method and the last address should correspond to the origin client
-     * (frequently a user agent).<br>
-     * <br>
-     * This is useful when the user agent is separated from the origin server by
-     * a chain of intermediary components. Creates a new instance if no one has
-     * been set.
-     * 
-     * @return The client IP addresses.
-     * @deprecated Use the {@link #getForwardedAddresses()} method instead.
-     */
-    @Deprecated
-    public List<String> getAddresses() {
-        return getForwardedAddresses();
     }
 
     /**
@@ -720,31 +701,6 @@ public final class ClientInfo {
 
     // [ifndef gwt] method
     /**
-     * Returns the best variant for a given resource according the the client
-     * preferences. A default language is provided in case the resource's
-     * variants don't match the client preferences.
-     * 
-     * @param resource
-     *            The resource for which the best representation needs to be
-     *            set.
-     * @param metadataService
-     *            The metadata service.
-     * @return The best variant.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
-     * @deprecated Used
-     *             {@link #getPreferredVariant(List, org.restlet.service.MetadataService)}
-     *             instead.
-     */
-    @Deprecated
-    public Variant getPreferredVariant(org.restlet.resource.Resource resource,
-            org.restlet.service.MetadataService metadataService) {
-        return getPreferredVariant(resource.getVariants(), metadataService);
-    }
-
-    // [ifndef gwt] method
-    /**
      * Returns the additional client principals. Note that {@link #getUser()}
      * and {@link #getRoles()} methods already return user and role principals.
      * 
@@ -905,18 +861,6 @@ public final class ClientInfo {
      */
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    /**
-     * Sets the list of client IP addresses.
-     * 
-     * @param addresses
-     *            The list of client IP addresses.
-     * @deprecated See the {@link #setForwardedAddresses(List)} method instead.
-     */
-    @Deprecated
-    public void setAddresses(List<String> addresses) {
-        setForwardedAddresses(addresses);
     }
 
     /**

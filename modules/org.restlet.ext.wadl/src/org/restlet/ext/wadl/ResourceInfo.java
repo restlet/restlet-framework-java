@@ -41,7 +41,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.ext.xml.XmlWriter;
-import org.restlet.representation.Variant;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
 import org.xml.sax.SAXException;
@@ -66,7 +65,6 @@ public class ResourceInfo extends DocumentedInfo {
      * @param info
      *            WADL description of the current resource to update.
      */
-    @SuppressWarnings("deprecation")
     public static void describe(ApplicationInfo applicationInfo,
             ResourceInfo info, Object resource, String path) {
         if ((path != null) && path.startsWith("/")) {
@@ -89,14 +87,6 @@ public class ResourceInfo extends DocumentedInfo {
                 if (applicationInfo != null) {
                     ((WadlServerResource) resource).describe(applicationInfo);
                 }
-            }
-        } else if (resource instanceof org.restlet.resource.Resource) {
-            methodsList.addAll(((org.restlet.resource.Resource) resource)
-                    .getAllowedMethods());
-
-            if (resource instanceof WadlResource) {
-                info.setParameters(((WadlResource) resource)
-                        .getParametersInfo());
             }
         } else if (resource instanceof Directory) {
             Directory directory = (Directory) resource;
@@ -130,34 +120,6 @@ public class ResourceInfo extends DocumentedInfo {
                     MethodInfo.describeAnnotations(methodInfo,
                             (ServerResource) resource);
                 }
-            } else if (resource instanceof org.restlet.resource.Resource) {
-                if (resource instanceof WadlResource) {
-                    WadlResource wsResource = (WadlResource) resource;
-
-                    if (wsResource.isDescribable(method)) {
-                        wsResource.describeMethod(method, methodInfo);
-                    }
-                } else {
-                    // Can document the list of supported variants.
-                    if (Method.GET.equals(method)) {
-                        ResponseInfo responseInfo = null;
-
-                        for (Variant variant : ((org.restlet.resource.Resource) resource)
-                                .getVariants()) {
-                            RepresentationInfo representationInfo = new RepresentationInfo();
-                            representationInfo.setMediaType(variant
-                                    .getMediaType());
-
-                            if (responseInfo == null) {
-                                responseInfo = new ResponseInfo();
-                                methodInfo.getResponses().add(responseInfo);
-                            }
-
-                            responseInfo.getRepresentations().add(
-                                    representationInfo);
-                        }
-                    }
-                }
             }
         }
 
@@ -168,8 +130,6 @@ public class ResourceInfo extends DocumentedInfo {
         if (resource instanceof WadlServerResource) {
             title = ((WadlServerResource) resource).getName();
             textContent = ((WadlServerResource) resource).getDescription();
-        } else if (resource instanceof WadlResource) {
-            title = ((WadlResource) resource).getTitle();
         }
 
         if ((title != null) && !"".equals(title)) {

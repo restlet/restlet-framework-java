@@ -94,16 +94,16 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
         if (optionsResponse.getStatus().isError()) {
             assertEquals(Status.SUCCESS_OK, optionsResponse.getStatus());
         }
-        final Set<Method> expectedMethods = new HashSet<Method>(Arrays
-                .asList(methods));
+        final Set<Method> expectedMethods = new HashSet<Method>(
+                Arrays.asList(methods));
         if (expectedMethods.contains(Method.GET)) {
             expectedMethods.add(Method.HEAD);
         }
         final List<Method> allowedMethods = new ArrayList<Method>(
                 optionsResponse.getAllowedMethods());
         for (final Method method : methods) {
-            assertTrue("allowedMethod must contain " + method, allowedMethods
-                    .contains(method));
+            assertTrue("allowedMethod must contain " + method,
+                    allowedMethods.contains(method));
         }
         assertEquals("allowedMethods.size invalid", expectedMethods.size(),
                 allowedMethods.size());
@@ -242,7 +242,6 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      *             If an element in the mediaTypes is neither a
      *             Preference&lt;MediaType&gt; or a MediaType object.
      */
-    @SuppressWarnings("unchecked")
     public Response accessServer(Method httpMethod, Class<?> klasse,
             Collection acceptedMediaTypes) throws IllegalArgumentException {
         return accessServer(httpMethod, klasse, null, acceptedMediaTypes, null);
@@ -329,7 +328,6 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
             ChallengeScheme challengeScheme, RoleChecker roleChecker) {
         final JaxRsApplication application = new JaxRsApplication(new Context());
         if (roleChecker != null) {
-            application.setRoleChecker(roleChecker);
             Authenticator guard = createAuthenticator(application.getContext(),
                     challengeScheme);
             application.setGuard(guard);
@@ -465,9 +463,9 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     public Response get(String subPath, Cookie cookie) {
-        return accessServer(Method.GET, createReference(
-                getRootResourceClassFromAppConf(), subPath), null, null, null,
-                null, TestUtils.createList(cookie), null);
+        return accessServer(Method.GET,
+                createReference(getRootResourceClassFromAppConf(), subPath),
+                null, null, null, null, TestUtils.createList(cookie), null);
     }
 
     public Response get(String subPath, MediaType accMediaType) {
@@ -524,9 +522,9 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * with the given {@link Cookie}s.
      */
     public Response getWithCookies(String subPath, Collection<Cookie> cookies) {
-        return accessServer(Method.GET, createReference(
-                getRootResourceClassFromAppConf(), subPath), null, null, null,
-                null, cookies, null);
+        return accessServer(Method.GET,
+                createReference(getRootResourceClassFromAppConf(), subPath),
+                null, null, null, null, cookies, null);
     }
 
     /**
@@ -534,9 +532,9 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * with the given headers.
      */
     public Response getWithHeaders(String subPath, Collection<Parameter> headers) {
-        return accessServer(Method.GET, createReference(
-                getRootResourceClassFromAppConf(), subPath), null, null, null,
-                null, null, headers);
+        return accessServer(Method.GET,
+                createReference(getRootResourceClassFromAppConf(), subPath),
+                null, null, null, null, null, headers);
     }
 
     /**
@@ -584,16 +582,16 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
 
     public Response post(String subPath, Representation entity,
             ChallengeResponse cr) {
-        return accessServer(Method.POST, createReference(
-                getRootResourceClassFromAppConf(), subPath), null, entity, cr,
-                null, null, null);
+        return accessServer(Method.POST,
+                createReference(getRootResourceClassFromAppConf(), subPath),
+                null, entity, cr, null, null, null);
     }
 
     public Response post(String subPath, Representation entity,
             Collection accMediaTypes, ChallengeResponse challengeResponse) {
-        return accessServer(Method.POST, createReference(
-                getRootResourceClassFromAppConf(), subPath), accMediaTypes,
-                entity, challengeResponse, null, null, null);
+        return accessServer(Method.POST,
+                createReference(getRootResourceClassFromAppConf(), subPath),
+                accMediaTypes, entity, challengeResponse, null, null, null);
     }
 
     public Response put(String subPath, Representation entity) {
@@ -602,9 +600,9 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
 
     public Response put(String subPath, Representation entity,
             Conditions conditions) {
-        return accessServer(Method.PUT, createReference(
-                getRootResourceClassFromAppConf(), subPath), null, entity,
-                null, conditions, null, null);
+        return accessServer(Method.PUT,
+                createReference(getRootResourceClassFromAppConf(), subPath),
+                null, entity, null, conditions, null, null);
     }
 
     /**

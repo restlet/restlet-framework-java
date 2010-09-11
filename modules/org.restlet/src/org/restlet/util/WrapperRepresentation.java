@@ -67,27 +67,6 @@ public class WrapperRepresentation extends Representation {
         this.wrappedRepresentation = wrappedRepresentation;
     }
 
-    // [ifndef gwt] method
-    @Override
-    @Deprecated
-    public boolean checkDigest() {
-        return getWrappedRepresentation().checkDigest();
-    }
-
-    // [ifndef gwt] method
-    @Override
-    @Deprecated
-    public boolean checkDigest(String algorithm) {
-        return getWrappedRepresentation().checkDigest(algorithm);
-    }
-
-    // [ifndef gwt] method
-    @Override
-    @Deprecated
-    public org.restlet.data.Digest computeDigest(String algorithm) {
-        return getWrappedRepresentation().computeDigest(algorithm);
-    }
-
     @Override
     public long exhaust() throws IOException {
         return getWrappedRepresentation().exhaust();
@@ -122,12 +101,6 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
-    @Deprecated
-    public String getDownloadName() {
-        return getWrappedRepresentation().getDownloadName();
-    }
-
-    @Override
     public List<Encoding> getEncodings() {
         return getWrappedRepresentation().getEncodings();
     }
@@ -135,12 +108,6 @@ public class WrapperRepresentation extends Representation {
     @Override
     public Date getExpirationDate() {
         return getWrappedRepresentation().getExpirationDate();
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public Reference getIdentifier() {
-        return getWrappedRepresentation().getIdentifier();
     }
 
     @Override
@@ -209,12 +176,6 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
-    @Deprecated
-    public boolean isDownloadable() {
-        return getWrappedRepresentation().isDownloadable();
-    }
-
-    @Override
     public boolean isTransient() {
         return getWrappedRepresentation().isTransient();
     }
@@ -246,18 +207,6 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
-    @Deprecated
-    public void setDownloadable(boolean downloadable) {
-        getWrappedRepresentation().setDownloadable(downloadable);
-    }
-
-    @Override
-    @Deprecated
-    public void setDownloadName(String fileName) {
-        getWrappedRepresentation().setDownloadName(fileName);
-    }
-
-    @Override
     public void setEncodings(List<Encoding> encodings) {
         getWrappedRepresentation().setEncodings(encodings);
     }
@@ -265,18 +214,6 @@ public class WrapperRepresentation extends Representation {
     @Override
     public void setExpirationDate(Date expirationDate) {
         getWrappedRepresentation().setExpirationDate(expirationDate);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void setIdentifier(Reference identifier) {
-        getWrappedRepresentation().setIdentifier(identifier);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void setIdentifier(String identifierUri) {
-        getWrappedRepresentation().setIdentifier(identifierUri);
     }
 
     @Override

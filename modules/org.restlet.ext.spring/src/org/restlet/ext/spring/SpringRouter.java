@@ -75,7 +75,6 @@ public class SpringRouter extends Router {
      * @param route
      *            The route object to attach.
      */
-    @SuppressWarnings("deprecation")
     public static void setAttachment(Router router, String path, Object route) {
         Class<?> resourceClass;
 
@@ -87,15 +86,11 @@ public class SpringRouter extends Router {
             try {
                 resourceClass = Engine.loadClass((String) route);
 
-                if (org.restlet.resource.Resource.class
-                        .isAssignableFrom(resourceClass)) {
-                    router.attach(path, resourceClass);
-                } else if (org.restlet.resource.ServerResource.class
+                if (org.restlet.resource.ServerResource.class
                         .isAssignableFrom(resourceClass)) {
                     router.attach(path, resourceClass);
                 } else {
-                    router
-                            .getLogger()
+                    router.getLogger()
                             .warning(
                                     "Unknown class found in the mappings. Only subclasses of org.restlet.resource.Resource and ServerResource are allowed.");
                 }
@@ -104,8 +99,7 @@ public class SpringRouter extends Router {
                         "Unable to set the router mappings", e);
             }
         } else {
-            router
-                    .getLogger()
+            router.getLogger()
                     .warning(
                             "Unknown object found in the mappings. Only instances of Restlet and subclasses of org.restlet.resource.Resource and ServerResource are allowed.");
         }

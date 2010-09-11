@@ -43,6 +43,7 @@ import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.ext.spring.SpringBeanRouter;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
+import org.restlet.routing.Route;
 import org.restlet.routing.TemplateRoute;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.test.RestletTestCase;
@@ -108,15 +109,10 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         BeanDefinition bd = new RootBeanDefinition(beanClass);
         bd.setScope(scope == null ? BeanDefinition.SCOPE_SINGLETON : scope);
         this.factory.registerBeanDefinition(id, bd);
+
         if (alias != null) {
             this.factory.registerAlias(id, alias);
         }
-    }
-
-    @SuppressWarnings("deprecation")
-    private void registerResourceBeanDefinition(String id, String alias) {
-        registerBeanDefinition(id, alias, org.restlet.resource.Resource.class,
-                BeanDefinition.SCOPE_PROTOTYPE);
     }
 
     private void registerServerResourceBeanDefinition(String id, String alias) {
@@ -125,10 +121,15 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
     }
 
     private Set<String> routeUris(RouteList routes) {
-        final Set<String> uris = new HashSet<String>();
-        for (final TemplateRoute actualRoute : routes) {
-            uris.add(actualRoute.getTemplate().getPattern());
+        Set<String> uris = new HashSet<String>();
+
+        for (Route actualRoute : routes) {
+            if (actualRoute instanceof TemplateRoute) {
+                uris.add(((TemplateRoute) actualRoute).getTemplate()
+                        .getPattern());
+            }
         }
+
         return uris;
     }
 
@@ -137,7 +138,7 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         super.setUp();
         this.factory = new DefaultListableBeanFactory();
 
-        registerResourceBeanDefinition("ore", ORE_URI);
+        registerServerResourceBeanDefinition("ore", ORE_URI);
         registerServerResourceBeanDefinition("fish", FISH_URI);
         registerBeanDefinition("someOtherBean", null, String.class, null);
 
@@ -190,21 +191,21 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
 
     public void testRoutesCreatedForBeanIdsIfAppropriate() throws Exception {
         String grain = "/renewable/grain/{grain_type}";
-        registerResourceBeanDefinition(grain, null);
+        registerServerResourceBeanDefinition(grain, null);
 
         final Set<String> actualUris = routeUris(actualRoutes());
         assertEquals("Wrong number of URIs", 3, actualUris.size());
-        assertTrue("Missing grain URI: " + actualUris, actualUris
-                .contains(grain));
+        assertTrue("Missing grain URI: " + actualUris,
+                actualUris.contains(grain));
     }
 
     public void testRoutesCreatedForUrlAliases() throws Exception {
         final Set<String> actualUris = routeUris(actualRoutes());
         assertEquals("Wrong number of URIs", 2, actualUris.size());
-        assertTrue("Missing ore URI: " + actualUris, actualUris
-                .contains(ORE_URI));
-        assertTrue("Missing fish URI: " + actualUris, actualUris
-                .contains(FISH_URI));
+        assertTrue("Missing ore URI: " + actualUris,
+                actualUris.contains(ORE_URI));
+        assertTrue("Missing fish URI: " + actualUris,
+                actualUris.contains(FISH_URI));
     }
 
     public void testRoutesPointToFindersForBeans() throws Exception {
@@ -227,8 +228,8 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
 
         TemplateRoute authenticatorRoute = matchRouteFor(expected);
         assertNotNull("No route for authenticator", authenticatorRoute);
-        assertTrue("Route is not for authenticator", authenticatorRoute
-                .getNext() instanceof TestAuthenticator);
+        assertTrue("Route is not for authenticator",
+                authenticatorRoute.getNext() instanceof TestAuthenticator);
     }
 
     public void testRoutingIncludesFilters() throws Exception {

@@ -75,22 +75,6 @@ public final class MediaType extends Metadata {
             "application/atom+xml", "Atom document");
 
     // [ifndef gwt] member
-    /**
-     * @deprecated Use {@link #APPLICATION_ATOMPUB_SERVICE} instead.
-     */
-    @Deprecated
-    public static final MediaType APPLICATION_ATOM_SERVICE_XML = register(
-            "application/atomsvc+xml", "Atom service document");
-
-    // [ifndef gwt] member
-    /**
-     * @deprecated Use {@link #APPLICATION_ATOMPUB_SERVICE} instead.
-     */
-    @Deprecated
-    public static final MediaType APPLICATION_ATOM_XML = register(
-            "application/atom+xml", "Atom document");
-
-    // [ifndef gwt] member
     public static final MediaType APPLICATION_ATOMPUB_CATEGORY = register(
             "application/atomcat+xml", "Atom category document");
 
@@ -177,14 +161,6 @@ public final class MediaType extends Metadata {
 
     // [ifndef gwt] member
     public static final MediaType APPLICATION_MATHML = register(
-            "application/mathml+xml", "MathML XML document");
-
-    // [ifndef gwt] member
-    /**
-     * @deprecated Use {@link #APPLICATION_MATHML} instead.
-     */
-    @Deprecated
-    public static final MediaType APPLICATION_MATHML_XML = register(
             "application/mathml+xml", "MathML XML document");
 
     // [ifndef gwt] member
@@ -417,14 +393,6 @@ public final class MediaType extends Metadata {
             "application/rss+xml", "Really Simple Syndication document");
 
     // [ifndef gwt] member
-    /**
-     * @deprecated Use {@link #APPLICATION_RSS} instead.
-     */
-    @Deprecated
-    public static final MediaType APPLICATION_RSS_XML = register(
-            "application/rss+xml", "Really Simple Syndication document");
-
-    // [ifndef gwt] member
     public static final MediaType APPLICATION_RTF = register("application/rtf",
             "Rich Text Format document");
 
@@ -475,28 +443,11 @@ public final class MediaType extends Metadata {
             "application/x-xsd+xml", "W3C XML Schema document");
 
     // [ifndef gwt] member
-    /**
-     * @deprecated Use {@link #APPLICATION_W3C_SCHEMA} instead.
-     */
-    @Deprecated
-    public static final MediaType APPLICATION_W3C_SCHEMA_XML = register(
-            "application/x-xsd+xml", "W3C XML Schema document");
-
-    // [ifndef gwt] member
     public static final MediaType APPLICATION_W3C_XSLT = register(
             "application/xslt+xml", "W3C XSLT Stylesheet");
 
     // [ifndef gwt] member
     public static final MediaType APPLICATION_WADL = register(
-            "application/vnd.sun.wadl+xml",
-            "Web Application Description Language document");
-
-    // [ifndef gwt] member
-    /**
-     * @deprecated Use {@link #APPLICATION_WADL} instead.
-     */
-    @Deprecated
-    public static final MediaType APPLICATION_WADL_XML = register(
             "application/vnd.sun.wadl+xml",
             "Web Application Description Language document");
 
@@ -508,13 +459,6 @@ public final class MediaType extends Metadata {
             "application/x-www-form-urlencoded", "Web form (URL encoded)");
 
     public static final MediaType APPLICATION_XHTML = register(
-            "application/xhtml+xml", "XHTML document");
-
-    /**
-     * @deprecated Use {@link #APPLICATION_XHTML} instead.
-     */
-    @Deprecated
-    public static final MediaType APPLICATION_XHTML_XML = register(
             "application/xhtml+xml", "XHTML document");
 
     public static final MediaType APPLICATION_XMI_XML = register(

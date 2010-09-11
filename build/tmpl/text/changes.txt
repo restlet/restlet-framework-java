@@ -4,10 +4,13 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - API changes
+      - Removed deprecated classes and code.
+      - The Route class has been reintroduced with a lighter
+        behavior not depending on URI templates.
     - Enhancements
-	
+	  
     - Bugs fixed
     
 	- Misc
-
 	

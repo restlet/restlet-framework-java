@@ -41,11 +41,9 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
-import org.restlet.data.Status;
 import org.restlet.engine.Helper;
 import org.restlet.engine.http.header.ChallengeWriter;
 import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.security.Guard;
 import org.restlet.util.Series;
 
 /**
@@ -53,7 +51,6 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("deprecation")
 public abstract class AuthenticatorHelper extends Helper {
 
     /** The supported challenge scheme. */
@@ -80,58 +77,6 @@ public abstract class AuthenticatorHelper extends Helper {
         this.challengeScheme = challengeScheme;
         this.clientSide = clientSide;
         this.serverSide = serverSide;
-    }
-
-    /**
-     * Indicates if the call is properly authenticated. You are guaranteed that
-     * the request has a challenge response with a scheme matching the one
-     * supported by the plugin.
-     * 
-     * @param cr
-     *            The challenge response in the request.
-     * @param request
-     *            The request to authenticate.
-     * @param guard
-     *            The associated guard to callback.
-     * @return -1 if the given credentials were invalid, 0 if no credentials
-     *         were found and 1 otherwise.
-     * @see Guard#checkSecret(Request, String, char[])
-     * @deprecated See new org.restlet.security package.
-     */
-    @Deprecated
-    public int authenticate(ChallengeResponse cr, Request request, Guard guard) {
-        int result = Guard.AUTHENTICATION_MISSING;
-
-        // The challenge schemes are compatible
-        final String identifier = cr.getIdentifier();
-        final char[] secret = cr.getSecret();
-
-        // Check the credentials
-        if ((identifier != null) && (secret != null)) {
-            result = guard.checkSecret(request, identifier, secret) ? Guard.AUTHENTICATION_VALID
-                    : Guard.AUTHENTICATION_INVALID;
-        }
-
-        return result;
-    }
-
-    /**
-     * Challenges the client by adding a challenge request to the response and
-     * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
-     * 
-     * @param response
-     *            The response to update.
-     * @param stale
-     *            Indicates if the new challenge is due to a stale response.
-     * @param guard
-     *            The associated guard to callback.
-     * @deprecated See new org.restlet.security package.
-     */
-    @Deprecated
-    public void challenge(Response response, boolean stale, Guard guard) {
-        response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-        response.getChallengeRequests().add(
-                new ChallengeRequest(guard.getScheme(), guard.getRealm()));
     }
 
     /**

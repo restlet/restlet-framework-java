@@ -9,7 +9,6 @@ public class ResourceTestSuite {
         TestSuite suite = new TestSuite("Test for org.restlet.test.resource");
         // $JUnit-BEGIN$
         suite.addTestSuite(DirectoryTestCase.class);
-        suite.addTestSuite(ResourceTestCase.class);
 
         suite.addTestSuite(AnnotatedResource1TestCase.class);
         suite.addTestSuite(AnnotatedResource2TestCase.class);

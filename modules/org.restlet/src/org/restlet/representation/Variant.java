@@ -281,22 +281,6 @@ public class Variant {
     }
 
     /**
-     * Returns an optional identifier. This is useful when the representation is
-     * accessible from a location separate from the representation's resource
-     * URI, for example when content negotiation occurs.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Location" header.
-     * 
-     * @return The identifier.
-     * @deprecated Use {@link #getLocationRef()} instead.
-     */
-    @Deprecated
-    public Reference getIdentifier() {
-        return getLocationRef();
-    }
-
-    /**
      * Returns the modifiable list of languages. Creates a new instance if no
      * one has been set. An "IllegalArgumentException" exception is thrown when
      * adding a null language to this list.<br>
@@ -474,39 +458,6 @@ public class Variant {
     }
 
     /**
-     * Sets the optional identifier. This is useful when the representation is
-     * accessible from a location separate from the representation's resource
-     * URI, for example when content negotiation occurs.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Location" header.
-     * 
-     * @param identifier
-     *            The identifier.
-     * @deprecated Use {@link #setLocationRef(Reference)} instead
-     */
-    @Deprecated
-    public void setIdentifier(Reference identifier) {
-        setLocationRef(identifier);
-    }
-
-    /**
-     * Sets the identifier from a URI string.<br>
-     * <br>
-     * Note that when used with HTTP connectors, this property maps to the
-     * "Content-Location" header.
-     * 
-     * @param identifierUri
-     *            The identifier to parse.
-     * @see #setIdentifier(Reference)
-     * @deprecated Use {@link #setLocationRef(String)} instead.
-     */
-    @Deprecated
-    public void setIdentifier(String identifierUri) {
-        setLocationRef(identifierUri);
-    }
-
-    /**
      * Sets the list of languages.<br>
      * <br>
      * Note that when used with HTTP connectors, this property maps to the
@@ -566,18 +517,8 @@ public class Variant {
         StringBuilder sb = new StringBuilder("[");
         boolean first = true;
 
-        if (getIdentifier() != null) {
-            sb.append(getIdentifier());
-            first = false;
-        }
-
         if (getMediaType() != null) {
-            if (!first) {
-                sb.append(",");
-            } else {
-                first = false;
-            }
-
+            first = false;
             sb.append(getMediaType());
         }
 

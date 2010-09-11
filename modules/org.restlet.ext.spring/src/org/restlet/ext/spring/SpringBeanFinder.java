@@ -102,18 +102,6 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
         return (org.restlet.resource.ServerResource) resource;
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public org.restlet.resource.Resource createResource() {
-        Object resource = findBean();
-
-        if (!(resource instanceof org.restlet.resource.Resource)) {
-            resource = null;
-        }
-
-        return (org.restlet.resource.Resource) resource;
-    }
-
     private Object findBean() {
         if (getApplicationContext() != null
                 && getApplicationContext().containsBean(getBeanName())) {

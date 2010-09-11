@@ -47,8 +47,6 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
-import org.restlet.test.jaxrs.services.tests.SecurityContextTest;
-
 /**
  * @author Stephan Koops
  * @see SecurityContextTest
