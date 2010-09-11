@@ -294,7 +294,7 @@ public class JettyCall extends ServerCall {
     }
 
     @Override
-    public boolean isConnectionBroken(Exception exception) {
+    public boolean isConnectionBroken(Throwable exception) {
         return (exception instanceof EofException)
                 || super.isConnectionBroken(exception);
     }
