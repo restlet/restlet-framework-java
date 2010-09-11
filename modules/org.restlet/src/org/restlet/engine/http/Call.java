@@ -56,7 +56,7 @@ public abstract class Call {
      *            The exception to inspect.
      * @return True if the given exception is caused by a broken connection.
      */
-    public static boolean isBroken(Exception exception) {
+    public static boolean isBroken(Throwable exception) {
         boolean result = false;
 
         if (exception.getMessage() != null) {
@@ -346,7 +346,7 @@ public abstract class Call {
      *            The exception to inspect.
      * @return True if the given exception is caused by a broken connection.
      */
-    public boolean isConnectionBroken(Exception exception) {
+    public boolean isConnectionBroken(Throwable exception) {
         return isBroken(exception);
     }
 

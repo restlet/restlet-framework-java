@@ -5,6 +5,13 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
+	   - 
+    - Misc
+       - Additional errors are now caught and logged in the HTTP 
+         servers. Contributed by Marc Portier.
+	
+- 2.0.0 (2010-07-19)
+    - Bugs fixed
        - When cloning the prototype request, the ClientResource wasn't
          copying the ClientInfo#user property.
        - Fixed the setting of the Request's rootRef attribute when 
