@@ -52,7 +52,7 @@
 
 	<bean id="application" class="org.restlet.Application">
 		<constructor-arg ref="componentChildContext" />
-		<property name="root">
+		<property name="inboundRoot">
 			<bean class="org.restlet.ext.spring.SpringRouter">
 				<constructor-arg ref="application" />
 				<property name="attachments">
