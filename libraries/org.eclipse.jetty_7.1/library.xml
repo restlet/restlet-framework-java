@@ -35,8 +35,8 @@
 			<artifactId>jetty-util</artifactId>
 		</maven>
 	</package>
-	<version>7.0</version>
-	<release>1.v20091125</release>
+	<version>7.1</version>
+	<release>6</release>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
