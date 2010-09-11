@@ -225,31 +225,9 @@ public final class Variable {
      * Indicates if the parsed value must be decoded.
      * 
      * @return True if the parsed value must be decoded, false otherwise.
-     * @deprecated Use {@link #isDecodingOnParse()} instead.
-     */
-    @Deprecated
-    public boolean isDecodedOnParse() {
-        return this.decodingOnParse;
-    }
-
-    /**
-     * Indicates if the parsed value must be decoded.
-     * 
-     * @return True if the parsed value must be decoded, false otherwise.
      */
     public boolean isDecodingOnParse() {
-        return isDecodedOnParse();
-    }
-
-    /**
-     * Indicates if the formatted value must be encoded.
-     * 
-     * @return True if the formatted value must be encoded, false otherwise.
-     * @deprecated Use {@link #isEncodingOnFormat()} instead.
-     */
-    @Deprecated
-    public boolean isEncodedOnFormat() {
-        return this.encodingOnFormat;
+        return this.decodingOnParse;
     }
 
     /**
@@ -258,7 +236,7 @@ public final class Variable {
      * @return True if the formatted value must be encoded, false otherwise.
      */
     public boolean isEncodingOnFormat() {
-        return isEncodedOnFormat();
+        return this.encodingOnFormat;
     }
 
     /**
@@ -286,21 +264,9 @@ public final class Variable {
      * 
      * @param decodingOnParse
      *            True if the parsed value must be decoded, false otherwise.
-     * @deprecated Use {@link #setDecodingOnParse(boolean)} instead.
-     */
-    @Deprecated
-    public void setDecodedOnParse(boolean decodingOnParse) {
-        this.decodingOnParse = decodingOnParse;
-    }
-
-    /**
-     * Indicates if the parsed value must be decoded.
-     * 
-     * @param decodingOnParse
-     *            True if the parsed value must be decoded, false otherwise.
      */
     public void setDecodingOnParse(boolean decodingOnParse) {
-        setDecodedOnParse(decodingOnParse);
+        this.decodingOnParse = decodingOnParse;
     }
 
     /**
@@ -319,21 +285,9 @@ public final class Variable {
      * 
      * @param encodingOnFormat
      *            True if the formatted value must be encoded, false otherwise.
-     * @deprecated Use {@link #setEncodingOnFormat(boolean)} instead.
-     */
-    @Deprecated
-    public void setEncodedOnFormat(boolean encodingOnFormat) {
-        this.encodingOnFormat = encodingOnFormat;
-    }
-
-    /**
-     * Indicates if the formatted value must be encoded.
-     * 
-     * @param encodingOnFormat
-     *            True if the formatted value must be encoded, false otherwise.
      */
     public void setEncodingOnFormat(boolean encodingOnFormat) {
-        setEncodedOnFormat(encodingOnFormat);
+        this.encodingOnFormat = encodingOnFormat;
     }
 
     /**

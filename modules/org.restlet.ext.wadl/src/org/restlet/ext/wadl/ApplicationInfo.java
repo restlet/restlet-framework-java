@@ -47,10 +47,6 @@ import org.xml.sax.SAXException;
  */
 public class ApplicationInfo extends DocumentedInfo {
 
-    /** List of faults (representations that denote an error condition). */
-    @SuppressWarnings("deprecation")
-    private List<FaultInfo> faults;
-
     /** Container for definitions of the format of data exchanged. */
     private GrammarsInfo grammars;
 
@@ -110,26 +106,6 @@ public class ApplicationInfo extends DocumentedInfo {
      */
     public ApplicationInfo(String documentation) {
         super(documentation);
-    }
-
-    /**
-     * Returns the list of fault elements.
-     * 
-     * @return The list of fault elements.
-     */
-    @SuppressWarnings("deprecation")
-    public List<FaultInfo> getFaults() {
-        // Lazy initialization with double-check.
-        List<FaultInfo> f = this.faults;
-        if (f == null) {
-            synchronized (this) {
-                f = this.faults;
-                if (f == null) {
-                    this.faults = f = new ArrayList<FaultInfo>();
-                }
-            }
-        }
-        return f;
     }
 
     /**
@@ -237,17 +213,6 @@ public class ApplicationInfo extends DocumentedInfo {
     }
 
     /**
-     * Sets the list of fault elements.
-     * 
-     * @param faults
-     *            The list of documentation elements.
-     */
-    @SuppressWarnings("deprecation")
-    public void setFaults(List<FaultInfo> faults) {
-        this.faults = faults;
-    }
-
-    /**
      * Sets the grammars element.
      * 
      * @param grammars
@@ -308,7 +273,6 @@ public class ApplicationInfo extends DocumentedInfo {
         this.resourceTypes = resourceTypes;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void updateNamespaces(Map<String, String> namespaces) {
         namespaces.putAll(resolveNamespaces());
@@ -332,10 +296,6 @@ public class ApplicationInfo extends DocumentedInfo {
         for (final ResourceTypeInfo resourceTypeInfo : getResourceTypes()) {
             resourceTypeInfo.updateNamespaces(namespaces);
         }
-
-        for (final FaultInfo faultInfo : getFaults()) {
-            faultInfo.updateNamespaces(namespaces);
-        }
     }
 
     /**
@@ -345,7 +305,6 @@ public class ApplicationInfo extends DocumentedInfo {
      *            The SAX writer.
      * @throws SAXException
      */
-    @SuppressWarnings("deprecation")
     public void writeElement(XmlWriter writer) throws SAXException {
         updateNamespaces(getNamespaces());
 
@@ -377,10 +336,6 @@ public class ApplicationInfo extends DocumentedInfo {
 
         for (final ResourceTypeInfo resourceTypeInfo : getResourceTypes()) {
             resourceTypeInfo.writeElement(writer);
-        }
-
-        for (final FaultInfo faultInfo : getFaults()) {
-            faultInfo.writeElement(writer);
         }
 
         writer.endElement(APP_NAMESPACE, "application");

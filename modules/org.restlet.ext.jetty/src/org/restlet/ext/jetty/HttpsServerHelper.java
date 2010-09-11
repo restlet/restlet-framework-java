@@ -30,8 +30,6 @@
 
 package org.restlet.ext.jetty;
 
-import java.io.File;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 
@@ -40,8 +38,8 @@ import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.security.SslContextFactory;
+import org.restlet.engine.security.SslUtils;
 
 /**
  * Jetty HTTPS server connector. Here is the list of additional parameters that
@@ -222,89 +220,6 @@ public class HttpsServerHelper extends JettyServerHelper {
         }
 
         return result;
-    }
-
-    /**
-     * Returns the SSL certificate algorithm.
-     * 
-     * @return The SSL certificate algorithm.
-     */
-    @Deprecated
-    public String getCertAlgorithm() {
-        return getHelpedParameters().getFirstValue("certAlgorithm", "SunX509");
-    }
-
-    /**
-     * Returns the SSL key password.
-     * 
-     * @return The SSL key password.
-     */
-    @Deprecated
-    public String getKeyPassword() {
-        return getHelpedParameters().getFirstValue("keyPassword",
-                getKeystorePassword());
-    }
-
-    /**
-     * Returns the SSL keystore password.
-     * 
-     * @return The SSL keystore password.
-     */
-    @Deprecated
-    public String getKeystorePassword() {
-        return getHelpedParameters().getFirstValue("keystorePassword", "");
-    }
-
-    /**
-     * Returns the SSL keystore path.
-     * 
-     * @return The SSL keystore path.
-     */
-    @Deprecated
-    public String getKeystorePath() {
-        return getHelpedParameters().getFirstValue("keystorePath",
-                System.getProperty("user.home") + File.separator + ".keystore");
-    }
-
-    /**
-     * Returns the SSL keystore type.
-     * 
-     * @return The SSL keystore type.
-     */
-    @Deprecated
-    public String getKeystoreType() {
-        return getHelpedParameters().getFirstValue("keystoreType", "JKS");
-    }
-
-    /**
-     * Returns the name of the RNG algorithm.
-     * 
-     * @return The name of the RNG algorithm.
-     */
-    @Deprecated
-    public String getSecureRandomAlgorithm() {
-        return getHelpedParameters().getFirstValue("secureRandomAlgorithm",
-                null);
-    }
-
-    /**
-     * Returns the Java security provider name.
-     * 
-     * @return The Java security provider name.
-     */
-    @Deprecated
-    public String getSecurityProvider() {
-        return getHelpedParameters().getFirstValue("securityProvider", null);
-    }
-
-    /**
-     * Returns the SSL keystore type.
-     * 
-     * @return The SSL keystore type.
-     */
-    @Deprecated
-    public String getSslProtocol() {
-        return getHelpedParameters().getFirstValue("sslProtocol", "TLS");
     }
 
     /**

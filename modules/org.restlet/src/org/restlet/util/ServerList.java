@@ -74,7 +74,7 @@ public final class ServerList extends WrapperList<Server> {
      */
     public Server add(Protocol protocol) {
         Server result = new Server(protocol, null, protocol.getDefaultPort(),
-                getTarget());
+                getNext());
         add(result);
         return result;
     }
@@ -90,7 +90,7 @@ public final class ServerList extends WrapperList<Server> {
      * @return The added server.
      */
     public Server add(Protocol protocol, int port) {
-        Server result = new Server(protocol, null, port, getTarget());
+        Server result = new Server(protocol, null, port, getNext());
         add(result);
         return result;
     }
@@ -109,7 +109,7 @@ public final class ServerList extends WrapperList<Server> {
      * @return The added server.
      */
     public Server add(Protocol protocol, String address, int port) {
-        Server result = new Server(protocol, address, port, getTarget());
+        Server result = new Server(protocol, address, port, getNext());
         add(result);
         return result;
     }
@@ -126,7 +126,7 @@ public final class ServerList extends WrapperList<Server> {
             server.setContext(getContext().createChildContext());
         }
 
-        server.setNext(getTarget());
+        server.setNext(getNext());
         return super.add(server);
     }
 
@@ -145,17 +145,6 @@ public final class ServerList extends WrapperList<Server> {
      * @return The next Restlet.
      */
     public Restlet getNext() {
-        return getTarget();
-    }
-
-    /**
-     * Returns the next Restlet.
-     * 
-     * @return The next Restlet.
-     * @deprecated Use the {@link #getNext()} method instead.
-     */
-    @Deprecated
-    public Restlet getTarget() {
         return this.next;
     }
 
@@ -178,7 +167,7 @@ public final class ServerList extends WrapperList<Server> {
      *            The next resource class to attach.
      */
     public void setNext(Class<?> nextClass) {
-        setTarget(new Finder(getContext(), nextClass));
+        setNext(new Finder(getContext(), nextClass));
     }
 
     /**
@@ -188,18 +177,6 @@ public final class ServerList extends WrapperList<Server> {
      *            The next Restlet.
      */
     public void setNext(Restlet next) {
-        setTarget(next);
-    }
-
-    /**
-     * Sets the next Restlet.
-     * 
-     * @param next
-     *            The next Restlet.
-     * @deprecated Use the {@link #setNext(Restlet)} method instead.
-     */
-    @Deprecated
-    public void setTarget(Restlet next) {
         this.next = next;
     }
 

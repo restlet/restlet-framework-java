@@ -193,20 +193,6 @@ public class Application extends Restlet {
     }
 
     /**
-     * Creates a inbound root Restlet that will receive all incoming calls. In
-     * general, instances of Router, Filter or Handler classes will be used as
-     * initial application Restlet. The default implementation returns null by
-     * default. This method is intended to be overridden by subclasses.
-     * 
-     * @return The server root Restlet.
-     * @deprecated Override the {@link #createInboundRoot()} method instead.
-     */
-    @Deprecated
-    public Restlet createRoot() {
-        return createInboundRoot();
-    }
-
-    /**
      * Returns the connector service. The service is enabled by default.
      * 
      * @return The connector service.
@@ -261,7 +247,7 @@ public class Application extends Restlet {
         if (this.inboundRoot == null) {
             synchronized (this) {
                 if (this.inboundRoot == null) {
-                    this.inboundRoot = createRoot();
+                    this.inboundRoot = createInboundRoot();
                 }
             }
         }
@@ -328,19 +314,6 @@ public class Application extends Restlet {
      */
     public List<Role> getRoles() {
         return roles;
-    }
-
-    /**
-     * Returns the root inbound Restlet. Invokes the createRoot() method if no
-     * inbound root has been set, and stores the Restlet created for future
-     * uses.
-     * 
-     * @return The root inbound Restlet.
-     * @deprecated Use the {@link #getInboundRoot()} method instead.
-     */
-    @Deprecated
-    public synchronized Restlet getRoot() {
-        return getInboundRoot();
     }
 
     /**
@@ -523,30 +496,6 @@ public class Application extends Restlet {
                 }
             }
         }
-    }
-
-    /**
-     * Sets the inbound root Resource class.
-     * 
-     * @param inboundRootClass
-     *            The inbound root Resource class.
-     * @deprecated Use the {@link #setInboundRoot(Class)} method instead.
-     */
-    @Deprecated
-    public synchronized void setRoot(Class<?> inboundRootClass) {
-        setInboundRoot(inboundRootClass);
-    }
-
-    /**
-     * Sets the inbound root Restlet.
-     * 
-     * @param inboundRoot
-     *            The inbound root Restlet.
-     * @deprecated Use the {@link #setInboundRoot(Restlet)} method instead.
-     */
-    @Deprecated
-    public synchronized void setRoot(Restlet inboundRoot) {
-        setInboundRoot(inboundRoot);
     }
 
     /**

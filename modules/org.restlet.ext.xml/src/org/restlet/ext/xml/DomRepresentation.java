@@ -205,20 +205,9 @@ public class DomRepresentation extends XmlRepresentation {
      * Indicates if the XML serialization should be indented. False by default.
      * 
      * @return True if the XML serialization should be indented.
-     * @deprecated Use {@link #isIndenting()} instead.
-     */
-    @Deprecated
-    public boolean isIndent() {
-        return indenting;
-    }
-
-    /**
-     * Indicates if the XML serialization should be indented. False by default.
-     * 
-     * @return True if the XML serialization should be indented.
      */
     public boolean isIndenting() {
-        return isIndent();
+        return indenting;
     }
 
     /**
@@ -251,21 +240,9 @@ public class DomRepresentation extends XmlRepresentation {
      * 
      * @param indenting
      *            True if the XML serialization should be indented.
-     * @deprecated Use {@link #setIndenting(boolean)} instead.
-     */
-    @Deprecated
-    public void setIndent(boolean indenting) {
-        this.indenting = indenting;
-    }
-
-    /**
-     * Indicates if the XML serialization should be indented.
-     * 
-     * @param indenting
-     *            True if the XML serialization should be indented.
      */
     public void setIndenting(boolean indenting) {
-        setIndent(indenting);
+        this.indenting = indenting;
     }
 
     @Override

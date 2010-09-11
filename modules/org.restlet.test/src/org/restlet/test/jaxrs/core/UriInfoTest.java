@@ -43,7 +43,6 @@ import junit.framework.TestCase;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Reference;
-import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo;
@@ -116,15 +115,15 @@ public class UriInfoTest extends TestCase {
      * @param rootRef
      * @return
      */
-    static ThreadLocalizedUriInfo newUriInfo(Reference resourceRef, Reference rootRef) {
+    static ThreadLocalizedUriInfo newUriInfo(Reference resourceRef,
+            Reference rootRef) {
         final Request request = new Request();
         request.setResourceRef(resourceRef);
         request.setOriginalRef(resourceRef);
         request.setRootRef(rootRef);
         final Response response = new Response(request);
         Response.setCurrent(response);
-        final CallContext callContext = new CallContext(request, response,
-                RoleChecker.REJECT_WITH_ERROR);
+        final CallContext callContext = new CallContext(request, response);
         final ThreadLocalizedContext tlContext = new ThreadLocalizedContext();
         tlContext.set(callContext);
         return new ThreadLocalizedUriInfo(tlContext);
@@ -278,10 +277,10 @@ public class UriInfoTest extends TestCase {
      * .
      */
     public void testGetQueryParametersDecoded() {
-        assertEquals("123", createUriInfo7().getQueryParameters(true).getFirst(
-                "def"));
-        assertEquals("456", createUriInfo7().getQueryParameters(true).getFirst(
-                "ghi"));
+        assertEquals("123",
+                createUriInfo7().getQueryParameters(true).getFirst("def"));
+        assertEquals("456",
+                createUriInfo7().getQueryParameters(true).getFirst("ghi"));
         assertEquals(2, createUriInfo7().getQueryParameters(true).size());
 
         assertEquals("1 23", createUriInfo8().getQueryParameters(true)
@@ -327,7 +326,7 @@ public class UriInfoTest extends TestCase {
 
     public void testGetRequestUriBuilder() throws Exception {
         final UriBuilder uriBuilder1 = createUriInfo1().getRequestUriBuilder();
-        UriBuilderImplTest.assertEqualsURI(
-                "http://localhost/test/relativ/a/b", uriBuilder1);
+        UriBuilderImplTest.assertEqualsURI("http://localhost/test/relativ/a/b",
+                uriBuilder1);
     }
 }

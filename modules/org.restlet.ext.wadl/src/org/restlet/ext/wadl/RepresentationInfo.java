@@ -39,7 +39,6 @@ import java.util.Map;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.data.Status;
 import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.Variant;
 import org.xml.sax.SAXException;
@@ -66,15 +65,6 @@ public class RepresentationInfo extends DocumentedInfo {
 
     /** Reference to an representation identifier. */
     private String reference;
-
-    /**
-     * List of statuses associated with this response representation.
-     * 
-     * @deprecated According to new WADL specification, this attribute has been
-     *             moved to the {@link ResponseInfo} class.
-     */
-    @Deprecated
-    private List<Status> statuses;
 
     /** Qualified name of the root element for this XML-based representation. */
     private String xmlElement;
@@ -202,30 +192,6 @@ public class RepresentationInfo extends DocumentedInfo {
     }
 
     /**
-     * Returns the list of statuses associated with this response
-     * representation.
-     * 
-     * @return The list of statuses associated with this response
-     *         representation.
-     * @deprecated According to new WADL specification, this method has been
-     *             moved to the {@link ResponseInfo} class.
-     */
-    @Deprecated
-    public List<Status> getStatuses() {
-        // Lazy initialization with double-check.
-        List<Status> s = this.statuses;
-        if (s == null) {
-            synchronized (this) {
-                s = this.statuses;
-                if (s == null) {
-                    this.statuses = s = new ArrayList<Status>();
-                }
-            }
-        }
-        return s;
-    }
-
-    /**
      * Returns the qualified name of the root element for this XML-based
      * representation.
      * 
@@ -284,20 +250,6 @@ public class RepresentationInfo extends DocumentedInfo {
      */
     public void setReference(String reference) {
         this.reference = reference;
-    }
-
-    /**
-     * Sets the list of statuses associated with this response representation.
-     * 
-     * @param statuses
-     *            The list of statuses associated with this response
-     *            representation.
-     * @deprecated According to new WADL specification, this method has been
-     *             moved to the {@link ResponseInfo} class.
-     */
-    @Deprecated
-    public void setStatuses(List<Status> statuses) {
-        this.statuses = statuses;
     }
 
     /**

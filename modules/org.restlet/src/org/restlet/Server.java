@@ -457,7 +457,7 @@ public class Server extends Connector {
      * @return The next Restlet.
      */
     public Restlet getNext() {
-        return getTarget();
+        return this.next;
     }
 
     /**
@@ -469,23 +469,12 @@ public class Server extends Connector {
         return this.port;
     }
 
-    /**
-     * Returns the next Restlet.
-     * 
-     * @return The next Restlet.
-     * @deprecated Use the {@link #getNext()} method instead.
-     */
-    @Deprecated
-    public Restlet getTarget() {
-        return this.next;
-    }
-
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
-        if (getTarget() != null) {
-            getTarget().handle(request, response);
+        if (getNext() != null) {
+            getNext().handle(request, response);
         }
     }
 
@@ -496,17 +485,6 @@ public class Server extends Connector {
      */
     public boolean hasNext() {
         return this.next != null;
-    }
-
-    /**
-     * Indicates if a next Restlet is set.
-     * 
-     * @return True if a next Restlet is set.
-     * @deprecated Use the {@link #hasNext()} method instead.
-     */
-    @Deprecated
-    public boolean hasTarget() {
-        return hasNext();
     }
 
     /**
@@ -538,7 +516,7 @@ public class Server extends Connector {
      *            The next resource class to attach.
      */
     public void setNext(Class<?> nextClass) {
-        setTarget(new Finder(getContext(), nextClass));
+        setNext(new Finder(getContext(), nextClass));
     }
 
     /**
@@ -548,7 +526,7 @@ public class Server extends Connector {
      *            The next Restlet.
      */
     public void setNext(Restlet next) {
-        setTarget(next);
+        this.next = next;
     }
 
     /**
@@ -562,18 +540,6 @@ public class Server extends Connector {
      */
     protected void setPort(int port) {
         this.port = port;
-    }
-
-    /**
-     * Sets the next Restlet.
-     * 
-     * @param next
-     *            The next Restlet.
-     * @deprecated Use the {@link #setNext(Restlet)} method instead.
-     */
-    @Deprecated
-    public void setTarget(Restlet next) {
-        this.next = next;
     }
 
     @Override

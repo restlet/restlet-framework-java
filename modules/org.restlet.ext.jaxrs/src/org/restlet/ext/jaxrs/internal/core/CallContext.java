@@ -59,11 +59,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.Application;
 import org.restlet.Request;
@@ -77,7 +77,6 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.ExtendedUriBuilder;
-import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.EmptyIterator;
@@ -97,7 +96,6 @@ import org.restlet.security.Role;
  * 
  * @author Stephan Koops
  */
-@SuppressWarnings("deprecation")
 public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         SecurityContext {
 
@@ -235,8 +233,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     private final org.restlet.Response response;
 
-    private final RoleChecker roleChecker;
-
     /**
      * 
      * @param request
@@ -246,8 +242,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @param roleChecker
      *            Optional, can be null, see {@link RoleChecker}.
      */
-    public CallContext(Request request, org.restlet.Response response,
-            RoleChecker roleChecker) {
+    public CallContext(Request request, org.restlet.Response response) {
         if (request == null) {
             throw new IllegalArgumentException(
                     "The Restlet Request must not be null");
@@ -281,7 +276,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         this.readOnly = false;
         this.request = request;
         this.response = response;
-        this.roleChecker = roleChecker;
         this.accMediaTypes = SortedMetadata.getForMediaTypes(request
                 .getClientInfo().getAcceptedMediaTypes());
     }
@@ -1043,8 +1037,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public MultivaluedMap<String, String> getRequestHeaders() {
         if (this.requestHeaders == null) {
-            this.requestHeaders = UnmodifiableMultivaluedMap.getFromForm(Util
-                    .getHttpHeaders(this.request), false);
+            this.requestHeaders = UnmodifiableMultivaluedMap.getFromForm(
+                    Util.getHttpHeaders(this.request), false);
         }
         return this.requestHeaders;
     }
@@ -1150,10 +1144,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see SecurityContext#isUserInRole(String)
      */
     public boolean isUserInRole(String roleName) {
-        if (roleChecker != null) {
-            return roleChecker.isInRole(getUserPrincipal(), roleName);
-        }
-
         Role role = Application.getCurrent().getRole(roleName);
         return (role != null)
                 && this.request.getClientInfo().getRoles().contains(role);

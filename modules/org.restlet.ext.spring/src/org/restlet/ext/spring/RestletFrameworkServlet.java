@@ -133,19 +133,6 @@ public class RestletFrameworkServlet extends FrameworkServlet {
     }
 
     /**
-     * Provides access to the {@link ServletAdapter} used to handle requests.
-     * Exposed so that subclasses may do additional configuration, if necessary,
-     * by overriding {@link #initFrameworkServlet()}.
-     * 
-     * @return The converter of Servlet calls into Restlet equivalents.
-     * @deprecated Use {@link #getAdapter()} instead.
-     */
-    @Deprecated
-    protected ServletAdapter getConverter() {
-        return this.adapter;
-    }
-
-    /**
      * Returns the target Restlet from Spring's Web application context.
      * 
      * @return The target Restlet.

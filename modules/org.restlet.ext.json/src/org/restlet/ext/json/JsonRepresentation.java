@@ -168,17 +168,6 @@ public class JsonRepresentation extends WriterRepresentation {
     }
 
     /**
-     * Returns the number of spaces to use for indentation.
-     * 
-     * @return The number of spaces to use for indentation.
-     * @deprecated Use {@link #getIndentingSize()} instead.
-     */
-    @Deprecated
-    public int getIndentSize() {
-        return getIndentingSize();
-    }
-
-    /**
      * Gets the wrapped JSON array or converts the wrapped representation if
      * needed.
      * 
@@ -190,7 +179,7 @@ public class JsonRepresentation extends WriterRepresentation {
             return (JSONArray) this.jsonValue;
         }
 
-        return toJsonArray();
+        return new JSONArray(getJsonText());
     }
 
     /**
@@ -205,7 +194,7 @@ public class JsonRepresentation extends WriterRepresentation {
             return (JSONObject) this.jsonValue;
         }
 
-        return toJsonObject();
+        return new JSONObject(getJsonText());
     }
 
     /**
@@ -293,32 +282,9 @@ public class JsonRepresentation extends WriterRepresentation {
      * Indicates if JSON objects and arrays should be indented.
      * 
      * @return True if JSON objects and arrays should be indented.
-     * @deprecated Use {@link #isIndenting()} instead.
-     */
-    @Deprecated
-    public boolean isIndent() {
-        return indenting;
-    }
-
-    /**
-     * Indicates if JSON objects and arrays should be indented.
-     * 
-     * @return True if JSON objects and arrays should be indented.
      */
     public boolean isIndenting() {
-        return isIndent();
-    }
-
-    /**
-     * Indicates if JSON objects and arrays should be indented.
-     * 
-     * @param indenting
-     *            True if JSON objects and arrays should be indented.
-     * @deprecated Use {@link #setIndenting(boolean)} instead.
-     */
-    @Deprecated
-    public void setIndent(boolean indenting) {
-        this.indenting = indenting;
+        return indenting;
     }
 
     /**
@@ -328,7 +294,7 @@ public class JsonRepresentation extends WriterRepresentation {
      *            True if JSON objects and arrays should be indented.
      */
     public void setIndenting(boolean indenting) {
-        setIndent(indenting);
+        this.indenting = indenting;
     }
 
     /**
@@ -339,44 +305,6 @@ public class JsonRepresentation extends WriterRepresentation {
      */
     public void setIndentingSize(int indentFactor) {
         this.indentingSize = indentFactor;
-    }
-
-    /**
-     * Sets the number of spaces to use for indentation.
-     * 
-     * @param indentFactor
-     *            The number of spaces to use for indentation.
-     * @deprecated Use {@link #setIndentingSize(int)} instead
-     */
-    @Deprecated
-    public void setIndentSize(int indentFactor) {
-        setIndentingSize(indentFactor);
-    }
-
-    /**
-     * Converts the representation to a JSON array. This method will trigger the
-     * serialization of any wrapped JSON array.
-     * 
-     * @return The converted JSON array.
-     * @throws JSONException
-     * @deprecated Use {@link #getJsonArray()} instead.
-     */
-    @Deprecated
-    public JSONArray toJsonArray() throws JSONException {
-        return new JSONArray(getJsonText());
-    }
-
-    /**
-     * Converts the representation to a JSON object. This method will trigger
-     * the serialization of any wrapped JSON object.
-     * 
-     * @return The converted JSON object.
-     * @throws JSONException
-     * @deprecated Use {@link #getJsonObject()} instead.
-     */
-    @Deprecated
-    public JSONObject toJsonObject() throws JSONException {
-        return new JSONObject(getJsonText());
     }
 
     /**

@@ -40,7 +40,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.util.JAXBSource;
-import javax.xml.transform.sax.SAXSource;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -48,7 +47,6 @@ import org.restlet.ext.jaxb.internal.Marshaller;
 import org.restlet.ext.jaxb.internal.Unmarshaller;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
-import org.xml.sax.InputSource;
 
 /**
  * An XML representation based on JAXB that provides easy translation between
@@ -249,17 +247,6 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     }
 
     /**
-     * Returns the XML representation as a SAX input source.
-     * 
-     * @return The SAX input source.
-     * @deprecated
-     */
-    @Deprecated
-    public InputSource getInputSource() throws IOException {
-        return new InputSource(this.xmlRepresentation.getStream());
-    }
-
-    /**
      * Returns a JAXB SAX source.
      * 
      * @return A JAXB SAX source.
@@ -319,17 +306,6 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
             }
         }
         return this.object;
-    }
-
-    /**
-     * Returns a JAXB SAX source.
-     * 
-     * @return A JAXB SAX source.
-     * @deprecated Use {@link #getJaxbSource()} instead.
-     */
-    @Deprecated
-    public SAXSource getSaxSource() throws IOException {
-        return getJaxbSource();
     }
 
     /**

@@ -564,22 +564,6 @@ public class Response extends Message {
     }
 
     /**
-     * Sets the authentication request sent by an origin server to a client.
-     * 
-     * @param request
-     *            The authentication request sent by an origin server to a
-     *            client.
-     * @deprecated Add request to {@link #getChallengeRequests()} method result
-     *             instead or use {@link #setChallengeRequests(List)}.
-     */
-    @Deprecated
-    public void setChallengeRequest(ChallengeRequest request) {
-        final List<ChallengeRequest> requests = new CopyOnWriteArrayList<ChallengeRequest>();
-        requests.add(request);
-        setChallengeRequests(requests);
-    }
-
-    /**
      * Sets the list of authentication requests sent by an origin server to a
      * client. Note that when used with HTTP connectors, this property maps to
      * the "WWW-Authenticate" header. This method clears the current list and

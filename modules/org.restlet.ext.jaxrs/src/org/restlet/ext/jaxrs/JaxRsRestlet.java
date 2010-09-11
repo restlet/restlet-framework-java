@@ -60,7 +60,6 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.data.ClientInfo;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -194,9 +193,6 @@ public class JaxRsRestlet extends Restlet {
 
     private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
 
-    @SuppressWarnings("deprecation")
-    private volatile RoleChecker roleChecker;
-
     private final JaxRsProviders providers;
 
     private final ResourceClasses resourceClasses;
@@ -224,29 +220,9 @@ public class JaxRsRestlet extends Restlet {
      *            {@link Restlet#Restlet(Context)}.
      * @param metadataService
      *            the metadata service of the {@link JaxRsApplication}.
-     * @see #JaxRsRestlet(Context, RoleChecker, MetadataService)
-     */
-    public JaxRsRestlet(Context context, MetadataService metadataService) {
-        this(context, null, metadataService);
-    }
-
-    /**
-     * Creates a new JaxRsRestlet with the given Context. Only the default
-     * providers are loaded.
-     * 
-     * @param context
-     *            the context from the parent, see
-     *            {@link Restlet#Restlet(Context)}.
-     * @param roleChecker
-     *            The RoleChecker to use. If null, the normal Restlet security
-     *            API wil be used.
-     * @param metadataService
-     *            the metadata service of the {@link JaxRsApplication}.
      * @see #JaxRsRestlet(Context, MetadataService)
      */
-    @SuppressWarnings("deprecation")
-    public JaxRsRestlet(Context context, RoleChecker roleChecker,
-            MetadataService metadataService) {
+    public JaxRsRestlet(Context context, MetadataService metadataService) {
         super(context);
         final ExtensionBackwardMapping extensionBackwardMapping = new ExtensionBackwardMapping(
                 metadataService);
@@ -256,7 +232,6 @@ public class JaxRsRestlet extends Restlet {
         this.resourceClasses = new ResourceClasses(this.tlContext,
                 this.providers, extensionBackwardMapping, getLogger());
         this.loadDefaultProviders();
-        this.setRoleChecker(roleChecker);
     }
 
     /**
@@ -659,18 +634,6 @@ public class JaxRsRestlet extends Restlet {
     }
 
     /**
-     * Gets the currently used {@link RoleChecker}.
-     * 
-     * @return the currently used RoleChecker.
-     * @see #setRoleChecker(RoleChecker)
-     * @deprecated Use {@link ClientInfo#getRoles()} instead
-     */
-    @Deprecated
-    public RoleChecker getRoleChecker() {
-        return roleChecker;
-    }
-
-    /**
      * Returns an unmodifiable set with the attached root resource classes.
      * 
      * @return an unmodifiable set with the attached root resource classes.
@@ -714,7 +677,7 @@ public class JaxRsRestlet extends Restlet {
         // Email from Jerome, 2008-09-22
         try {
             CallContext callContext;
-            callContext = new CallContext(request, response, this.roleChecker);
+            callContext = new CallContext(request, response);
             tlContext.set(callContext);
             try {
                 ResObjAndMeth resObjAndMeth;
@@ -1206,21 +1169,6 @@ public class JaxRsRestlet extends Restlet {
     public void setObjectFactory(ObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
         this.providers.setObjectFactory(objectFactory);
-    }
-
-    /**
-     * Sets the {@link RoleChecker} to use.
-     * 
-     * @param roleChecker
-     *            the roleChecker to set. Can be null, in which case the normal
-     *            Restlet security API will be used.
-     * @see RoleChecker
-     * @see #getRoleChecker()
-     * @deprecated Use {@link ClientInfo#getRoles()} instead
-     */
-    @Deprecated
-    public void setRoleChecker(RoleChecker roleChecker) {
-        this.roleChecker = roleChecker;
     }
 
     @Override

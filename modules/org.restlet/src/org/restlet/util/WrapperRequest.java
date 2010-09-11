@@ -40,7 +40,6 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -166,22 +165,6 @@ public class WrapperRequest extends Request {
     @Override
     public Representation getEntity() {
         return getWrappedRequest().getEntity();
-    }
-
-    /**
-     * Returns the entity as a DOM representation.<br>
-     * Note that this triggers the parsing of the entity into a reusable DOM
-     * document stored in memory.<br>
-     * This method and the related getEntity*() methods can only be invoked
-     * once.
-     * 
-     * @return The entity as a DOM representation.
-     * @deprecated Will be removed in future release 2.1.
-     */
-    @Deprecated
-    @Override
-    public Form getEntityAsForm() {
-        return getWrappedRequest().getEntityAsForm();
     }
 
     /**

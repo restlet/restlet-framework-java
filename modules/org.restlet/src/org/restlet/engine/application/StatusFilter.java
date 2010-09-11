@@ -307,20 +307,9 @@ public class StatusFilter extends Filter {
      * Indicates if existing representations should be overwritten.
      * 
      * @return True if existing representations should be overwritten.
-     * @deprecated Use {@link #isOverwriting()} instead.
-     */
-    @Deprecated
-    public boolean isOverwrite() {
-        return overwriting;
-    }
-
-    /**
-     * Indicates if existing representations should be overwritten.
-     * 
-     * @return True if existing representations should be overwritten.
      */
     public boolean isOverwriting() {
-        return isOverwrite();
+        return overwriting;
     }
 
     /**
@@ -348,21 +337,9 @@ public class StatusFilter extends Filter {
      * 
      * @param overwriting
      *            True if existing representations should be overwritten.
-     * @deprecated Use {@link #setOverwriting(boolean)} instead.
-     */
-    @Deprecated
-    public void setOverwrite(boolean overwriting) {
-        this.overwriting = overwriting;
-    }
-
-    /**
-     * Indicates if existing representations should be overwritten.
-     * 
-     * @param overwriting
-     *            True if existing representations should be overwritten.
      */
     public void setOverwriting(boolean overwriting) {
-        setOverwrite(overwriting);
+        this.overwriting = overwriting;
     }
 
     /**

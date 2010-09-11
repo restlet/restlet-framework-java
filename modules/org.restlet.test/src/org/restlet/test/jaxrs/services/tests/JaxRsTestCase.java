@@ -60,11 +60,9 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.JaxRsApplication;
-import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
-import org.restlet.security.Authenticator;
 import org.restlet.test.jaxrs.server.RestletServerTestCase;
 import org.restlet.test.jaxrs.util.OrderedReadonlySet;
 import org.restlet.test.jaxrs.util.TestUtils;
@@ -308,8 +306,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     protected org.restlet.Application createApplication() {
-        return createApplication(getApplication(), ChallengeScheme.HTTP_BASIC,
-                null);
+        return createApplication(getApplication(), ChallengeScheme.HTTP_BASIC);
     }
 
     /**
@@ -325,13 +322,8 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * @return
      */
     protected JaxRsApplication createApplication(Application appConfig,
-            ChallengeScheme challengeScheme, RoleChecker roleChecker) {
+            ChallengeScheme challengeScheme) {
         final JaxRsApplication application = new JaxRsApplication(new Context());
-        if (roleChecker != null) {
-            Authenticator guard = createAuthenticator(application.getContext(),
-                    challengeScheme);
-            application.setGuard(guard);
-        }
         application.add(appConfig);
         modifyApplication(application);
         return application;
@@ -651,19 +643,18 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * @throws Exception
      */
     private void startServer(Application application, Protocol protocol,
-            final ChallengeScheme challengeScheme, RoleChecker roleChecker)
-            throws Exception {
+            final ChallengeScheme challengeScheme) throws Exception {
         final org.restlet.Application jaxRsApplication = createApplication(
-                application, challengeScheme, roleChecker);
+                application, challengeScheme);
         startServer(jaxRsApplication, protocol);
     }
 
     /**
      * @see #startServer(Application, Protocol, ChallengeScheme, RoleChecker)
      */
-    protected void startServer(ChallengeScheme challengeScheme,
-            RoleChecker roleChecker) throws Exception {
+    protected void startServer(ChallengeScheme challengeScheme)
+            throws Exception {
         final Application appConfig = getApplication();
-        startServer(appConfig, Protocol.HTTP, challengeScheme, roleChecker);
+        startServer(appConfig, Protocol.HTTP, challengeScheme);
     }
 }

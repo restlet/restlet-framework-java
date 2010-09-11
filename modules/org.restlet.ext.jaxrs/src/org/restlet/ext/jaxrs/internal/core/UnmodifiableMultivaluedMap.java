@@ -133,7 +133,6 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
         this.caseInsensitive = !caseSensitive;
     }
 
-    @Deprecated
     public void add(K key, V value) {
         throw throwUnmodifiable();
     }
@@ -145,7 +144,6 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
         return key;
     }
 
-    @Deprecated
     public void clear() throws UnsupportedOperationException {
         throw throwUnmodifiable();
     }

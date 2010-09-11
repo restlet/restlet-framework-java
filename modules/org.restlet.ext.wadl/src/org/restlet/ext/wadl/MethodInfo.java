@@ -36,10 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.data.Status;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.ext.xml.XmlWriter;
@@ -70,8 +68,7 @@ public class MethodInfo extends DocumentedInfo {
         // Loop over the annotated Java methods
         MetadataService metadataService = resource.getMetadataService();
         List<AnnotationInfo> annotations = resource.isAnnotated() ? AnnotationUtils
-                .getAnnotations(resource.getClass())
-                : null;
+                .getAnnotations(resource.getClass()) : null;
 
         if (annotations != null && metadataService != null) {
             for (AnnotationInfo annotationInfo : annotations) {
@@ -104,8 +101,8 @@ public class MethodInfo extends DocumentedInfo {
                                             variant);
                                 }
 
-                                info.getRequest().getRepresentations().add(
-                                        representationInfo);
+                                info.getRequest().getRepresentations()
+                                        .add(representationInfo);
                             }
                         }
                     }
@@ -115,22 +112,22 @@ public class MethodInfo extends DocumentedInfo {
 
                     if (outputClass != null) {
                         List<Variant> responseVariants = annotationInfo
-                                .getResponseVariants(resource
-                                        .getMetadataService(), resource
-                                        .getConverterService());
+                                .getResponseVariants(
+                                        resource.getMetadataService(),
+                                        resource.getConverterService());
 
                         if (responseVariants != null) {
                             for (Variant variant : responseVariants) {
                                 if ((variant.getMediaType() != null)
                                         && !info.getResponse()
-                                                .getRepresentations().contains(
-                                                        variant)) {
+                                                .getRepresentations()
+                                                .contains(variant)) {
                                     RepresentationInfo representationInfo = null;
 
                                     if (resource instanceof WadlServerResource) {
                                         representationInfo = ((WadlServerResource) resource)
-                                                .describe(info, info
-                                                        .getResponse(),
+                                                .describe(info,
+                                                        info.getResponse(),
                                                         outputClass, variant);
                                     } else {
                                         representationInfo = new RepresentationInfo(
@@ -198,119 +195,6 @@ public class MethodInfo extends DocumentedInfo {
      */
     public MethodInfo(String documentation) {
         super(documentation);
-    }
-
-    /**
-     * Adds a new fault to the response.
-     * 
-     * @param status
-     *            The associated status code.
-     * @param mediaType
-     *            The fault representation's media type.
-     * @param documentation
-     *            A single documentation element.
-     * @return The created fault description.
-     * @deprecated Use the {@link ResponseInfo#getRepresentations()} method
-     *             instead.
-     */
-    @Deprecated
-    public RepresentationInfo addFault(Status status, MediaType mediaType,
-            String documentation) {
-        RepresentationInfo result = new RepresentationInfo(documentation);
-        result.setMediaType(mediaType);
-        getResponse().getStatuses().add(status);
-        getResponse().getRepresentations().add(result);
-        return result;
-    }
-
-    /**
-     * Adds a new request parameter.
-     * 
-     * @param name
-     *            The name of the parameter.
-     * @param required
-     *            True if thes parameter is required.
-     * @param type
-     *            The type of the parameter.
-     * @param style
-     *            The style of the parameter.
-     * @param documentation
-     *            A single documentation element.
-     * @return The created parameter description.
-     * @deprecated Use {@link RequestInfo#getParameters()} instead.
-     */
-    @Deprecated
-    public ParameterInfo addRequestParameter(String name, boolean required,
-            String type, ParameterStyle style, String documentation) {
-        ParameterInfo result = new ParameterInfo(name, required, type, style,
-                documentation);
-
-        if (getRequest() == null) {
-            setRequest(new RequestInfo());
-        }
-
-        getRequest().getParameters().add(result);
-        return result;
-    }
-
-    /**
-     * Adds a new request representation based on a given variant.
-     * 
-     * @param variant
-     *            The variant to describe.
-     * @return The created representation description.
-     * @deprecated Use {@link RequestInfo#getRepresentations()} instead.
-     */
-    @Deprecated
-    public RepresentationInfo addRequestRepresentation(Variant variant) {
-        RepresentationInfo result = new RepresentationInfo(variant);
-
-        if (getRequest() == null) {
-            setRequest(new RequestInfo());
-        }
-
-        getRequest().getRepresentations().add(result);
-        return result;
-    }
-
-    /**
-     * Adds a new response parameter.
-     * 
-     * @param name
-     *            The name of the parameter.
-     * @param required
-     *            True if the parameter is required.
-     * @param type
-     *            The type of the parameter.
-     * @param style
-     *            The style of the parameter.
-     * @param documentation
-     *            A single documentation element.
-     * @return The created parameter description.
-     * @deprecated Use the {@link ResponseInfo#getParameters()} method instead.
-     */
-    @Deprecated
-    public ParameterInfo addResponseParameter(String name, boolean required,
-            String type, ParameterStyle style, String documentation) {
-        ParameterInfo result = new ParameterInfo(name, required, type, style,
-                documentation);
-        getResponse().getParameters().add(result);
-        return result;
-    }
-
-    /**
-     * Adds a new response representation based on a given variant.
-     * 
-     * @param variant
-     *            The variant to describe.
-     * @return The created representation description.
-     * @deprecated Use {@link ResponseInfo#getRepresentations()} instead.
-     */
-    @Deprecated
-    public RepresentationInfo addResponseRepresentation(Variant variant) {
-        RepresentationInfo result = new RepresentationInfo(variant);
-        getResponse().getRepresentations().add(result);
-        return result;
     }
 
     /**
@@ -415,20 +299,6 @@ public class MethodInfo extends DocumentedInfo {
     /**
      * Sets the output of the method.
      * 
-     * @param response
-     *            The output of the method.
-     * @deprecated Use the {@link #getResponses()} or
-     *             {@link #setResponses(List)} methods instead.
-     */
-    @Deprecated
-    public void setResponsee(ResponseInfo response) {
-        setResponses(new ArrayList<ResponseInfo>());
-        getResponses().add(response);
-    }
-
-    /**
-     * Sets the output of the method.
-     * 
      * @param responses
      *            The output of the method.
      */
@@ -468,7 +338,6 @@ public class MethodInfo extends DocumentedInfo {
      *            The SAX writer.
      * @throws SAXException
      */
-    @SuppressWarnings("deprecation")
     public void writeElement(XmlWriter writer) throws SAXException {
         final AttributesImpl attributes = new AttributesImpl();
 
@@ -502,24 +371,6 @@ public class MethodInfo extends DocumentedInfo {
             if (!getResponses().isEmpty()) {
                 for (ResponseInfo response : getResponses()) {
                     response.writeElement(writer);
-
-                    // TODO to be removed with the FaultInfo class
-                    // Each response's fault generates a new Response
-                    if (!response.getFaults().isEmpty()) {
-                        for (FaultInfo faultInfo : response.getFaults()) {
-                            ResponseInfo r = new ResponseInfo();
-
-                            // Get the statuses from the faults
-                            for (Status status : faultInfo.getStatuses()) {
-                                if (!r.getStatuses().contains(status)) {
-                                    r.getStatuses().add(status);
-                                }
-                            }
-
-                            r.getRepresentations().add(faultInfo);
-                            r.writeElement(writer);
-                        }
-                    }
                 }
             }
 

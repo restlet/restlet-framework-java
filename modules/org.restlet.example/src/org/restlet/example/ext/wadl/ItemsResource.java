@@ -44,8 +44,8 @@ public class ItemsResource extends BaseResource {
             Representation rep = new StringRepresentation("Item created",
                     MediaType.TEXT_PLAIN);
             // Indicates where is located the new resource.
-            rep.setLocationRef(getRequest().getResourceRef().getIdentifier() + "/"
-                    + itemName);
+            rep.setLocationRef(getRequest().getResourceRef().getIdentifier()
+                    + "/" + itemName);
             result = rep;
         } else { // Item is already registered.
             setStatus(Status.CLIENT_ERROR_NOT_FOUND);
@@ -62,7 +62,6 @@ public class ItemsResource extends BaseResource {
         return super.describe();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void describeGet(MethodInfo info) {
         info.setIdentifier("items");
@@ -74,9 +73,6 @@ public class ItemsResource extends BaseResource {
         repInfo.setDocumentation("List of items as XML file");
         response.getRepresentations().add(repInfo);
 
-        response.getFaults().add(
-                new org.restlet.ext.wadl.FaultInfo(
-                        Status.CLIENT_ERROR_BAD_REQUEST, "Not good at all"));
         info.getResponses().add(response);
     }
 

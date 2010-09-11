@@ -45,7 +45,6 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
-import org.xml.sax.InputSource;
 
 /**
  * An XML representation based on JiBX that provides easy translation between
@@ -178,29 +177,6 @@ public class JibxRepresentation<T> extends WriterRepresentation {
     }
 
     /**
-     * Returns the document encoding to use for marshalling. The default value
-     * is UTF-8.
-     * 
-     * @return The document encoding to use for marshalling.
-     * @deprecated Use {@link #getCharacterSet()} instead.
-     */
-    @Deprecated
-    public String getEncoding() {
-        return getCharacterSet().getName();
-    }
-
-    /**
-     * Returns the XML representation as a SAX input source.
-     * 
-     * @return The SAX input source.
-     * @deprecated
-     */
-    @Deprecated
-    public InputSource getInputSource() throws IOException {
-        return new InputSource(this.xmlRepresentation.getReader());
-    }
-
-    /**
      * Returns the wrapped Java object.
      * 
      * @return The wrapped Java object.
@@ -222,18 +198,6 @@ public class JibxRepresentation<T> extends WriterRepresentation {
         }
 
         return this.object;
-    }
-
-    /**
-     * Sets the JiBX encoding.
-     * 
-     * @param encoding
-     *            The JiBX encoding.
-     * @deprecated Use {@link #setCharacterSet(CharacterSet)} instead.
-     */
-    @Deprecated
-    public void setEncoding(String encoding) {
-        setCharacterSet(CharacterSet.valueOf(encoding));
     }
 
     /**

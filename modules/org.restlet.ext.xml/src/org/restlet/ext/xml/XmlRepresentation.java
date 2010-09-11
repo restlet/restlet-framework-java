@@ -717,20 +717,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
     }
 
     /**
-     * Puts a new mapping between a prefix and a namespace URI.
-     * 
-     * @param prefix
-     *            The namespace prefix.
-     * @param namespaceURI
-     *            The namespace URI.
-     * @deprecated Use the modifiable map returned by {@link #getNamespaces()}
-     */
-    @Deprecated
-    public void putNamespace(String prefix, String namespaceURI) {
-        getNamespaces().put(prefix, namespaceURI);
-    }
-
-    /**
      * Releases the namespaces map.
      */
     @Override

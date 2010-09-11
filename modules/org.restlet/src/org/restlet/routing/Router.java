@@ -78,43 +78,6 @@ public class Router extends Restlet {
     /**
      * Each call will be routed to the route with the best score, if the
      * required score is reached.
-     * 
-     * @deprecated Use {@link #MODE_BEST_MATCH} instead.
-     */
-    @Deprecated
-    public static final int BEST = 1;
-
-    /**
-     * Each call will be routed according to a custom mode.
-     * 
-     * @deprecated Use {@link #MODE_CUSTOM} instead.
-     */
-    @Deprecated
-    public static final int CUSTOM = 6;
-
-    /**
-     * Each call is routed to the first route if the required score is reached.
-     * If the required score is not reached, then the route is skipped and the
-     * next one is considered.
-     * 
-     * @deprecated Use {@link #MODE_FIRST_MATCH} instead.
-     */
-    @Deprecated
-    public static final int FIRST = 2;
-
-    /**
-     * Each call will be routed to the last route if the required score is
-     * reached. If the required score is not reached, then the route is skipped
-     * and the previous one is considered.
-     * 
-     * @deprecated Use {@link #MODE_LAST_MATCH} instead.
-     */
-    @Deprecated
-    public static final int LAST = 3;
-
-    /**
-     * Each call will be routed to the route with the best score, if the
-     * required score is reached.
      */
     public static final int MODE_BEST_MATCH = 1;
 
@@ -154,30 +117,6 @@ public class Router extends Restlet {
      * return null.
      */
     public static final int MODE_RANDOM_MATCH = 5;
-
-    /**
-     * Each call is be routed to the next route target if the required score is
-     * reached. The next route is relative to the previous call routed (round
-     * robin mode). If the required score is not reached, then the route is
-     * skipped and the next one is considered. If the last route is reached, the
-     * first route will be considered.
-     * 
-     * @deprecated Use {@link #MODE_NEXT_MATCH} instead.
-     */
-    @Deprecated
-    public static final int NEXT = 4;
-
-    /**
-     * Each call will be randomly routed to one of the routes that reached the
-     * required score. If the random route selected is not a match then the
-     * immediate next route is evaluated until one matching route is found. If
-     * we get back to the initial random route selected with no match, then we
-     * return null.
-     * 
-     * @deprecated Use {@link #MODE_RANDOM_MATCH} instead.
-     */
-    @Deprecated
-    public static final int RANDOM = 5;
 
     /** The default matching mode to use when selecting routes based on URIs. */
     private volatile int defaultMatchingMode;

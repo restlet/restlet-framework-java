@@ -157,17 +157,6 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
     }
 
     /**
-     * Returns the associated router.
-     * 
-     * @return The associated router.
-     * @deprecated Use {@link #getRouter()} instead
-     */
-    @Deprecated
-    public SpringBeanRouter getSpringBeanRouter() {
-        return (SpringBeanRouter) router;
-    }
-
-    /**
      * Sets the parent application context
      * 
      * @param applicationContext

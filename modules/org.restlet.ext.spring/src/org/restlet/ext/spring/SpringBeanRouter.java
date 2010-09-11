@@ -241,22 +241,9 @@ public class SpringBeanRouter extends Router implements
      * 
      * @return True if bean names will be searched for higher up in the
      *         BeanFactory hierarchy.
-     * @deprecated Use {@link #isFindingInAncestors()} instead.
-     */
-    @Deprecated
-    public boolean isFindInAncestors() {
-        return this.findingInAncestors;
-    }
-
-    /**
-     * Returns true if bean names will be searched for higher up in the
-     * BeanFactory hierarchy. Default is true.
-     * 
-     * @return True if bean names will be searched for higher up in the
-     *         BeanFactory hierarchy.
      */
     public boolean isFindingInAncestors() {
-        return isFindInAncestors();
+        return this.findingInAncestors;
     }
 
     /**
@@ -356,22 +343,9 @@ public class SpringBeanRouter extends Router implements
      * 
      * @param findingInAncestors
      *            Search for beans higher up in the BeanFactory hierarchy.
-     * @deprecated Use {@link #setFindingInAncestors(boolean)} instead.
-     */
-    @Deprecated
-    public void setFindInAncestors(boolean findingInAncestors) {
-        this.findingInAncestors = findingInAncestors;
-    }
-
-    /**
-     * Sets if bean names will be searched for higher up in the BeanFactory
-     * hierarchy.
-     * 
-     * @param findingInAncestors
-     *            Search for beans higher up in the BeanFactory hierarchy.
      */
     public void setFindingInAncestors(boolean findingInAncestors) {
-        setFindInAncestors(findingInAncestors);
+        this.findingInAncestors = findingInAncestors;
     }
 
 }

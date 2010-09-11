@@ -36,7 +36,7 @@ import org.restlet.data.Parameter;
 import org.restlet.util.Series;
 
 /**
- * This is an abstract factory that produces configured and initialised
+ * This is an abstract factory that produces configured and initialized
  * instances of SSLContext. Concrete implementations of SslContextFactory must
  * implement {@link #createSslContext()}, which should typically consist of:
  * 
@@ -53,9 +53,9 @@ import org.restlet.util.Series;
 public abstract class SslContextFactory {
 
     /**
-     * Creates a configured and initialised SSLContext.
+     * Creates a configured and initialized SSLContext.
      * 
-     * @return A configured and initialised SSLContext.
+     * @return A configured and initialized SSLContext.
      * @throws Exception
      */
     public abstract SSLContext createSslContext() throws Exception;

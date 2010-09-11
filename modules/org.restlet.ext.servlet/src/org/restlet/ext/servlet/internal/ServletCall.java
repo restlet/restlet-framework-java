@@ -46,7 +46,6 @@ import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Form;
@@ -57,7 +56,6 @@ import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.io.UnclosableInputStream;
 import org.restlet.engine.http.io.UnclosableOutputStream;
-import org.restlet.ext.servlet.ServletUtils;
 import org.restlet.util.Series;
 
 /**
@@ -66,20 +64,6 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public class ServletCall extends ServerCall {
-
-    /**
-     * Returns the Servlet request that was used to generate the given Restlet
-     * request.
-     * 
-     * @param request
-     *            The Restlet request.
-     * @return The Servlet request or null.
-     * @deprecated Use {@link ServletUtils#getRequest(Request)} instead.
-     */
-    @Deprecated
-    public static HttpServletRequest getRequest(Request request) {
-        return ServletUtils.getRequest(request);
-    }
 
     /** The HTTP Servlet request to wrap. */
     private volatile HttpServletRequest request;

@@ -664,21 +664,9 @@ public class Template {
      * 
      * @return True if the variables must be encoded when formatting the
      *         template, false otherwise.
-     * @deprecated Use {@link #isEncodingVariables()} instead.
-     */
-    @Deprecated
-    public boolean isEncodeVariables() {
-        return this.encodingVariables;
-    }
-
-    /**
-     * Indicates if the variables must be encoded when formatting the template.
-     * 
-     * @return True if the variables must be encoded when formatting the
-     *         template, false otherwise.
      */
     public boolean isEncodingVariables() {
-        return isEncodeVariables();
+        return this.encodingVariables;
     }
 
     /**
@@ -850,22 +838,9 @@ public class Template {
      * @param encodingVariables
      *            True if the variables must be encoded when formatting the
      *            template.
-     * @deprecated Use {@link #setEncodingVariables(boolean)} instead.
-     */
-    @Deprecated
-    public void setEncodeVariables(boolean encodingVariables) {
-        this.encodingVariables = encodingVariables;
-    }
-
-    /**
-     * Indicates if the variables must be encoded when formatting the template.
-     * 
-     * @param encodingVariables
-     *            True if the variables must be encoded when formatting the
-     *            template.
      */
     public void setEncodingVariables(boolean encodingVariables) {
-        setEncodeVariables(encodingVariables);
+        this.encodingVariables = encodingVariables;
     }
 
     /**

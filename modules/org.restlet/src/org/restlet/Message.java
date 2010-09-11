@@ -37,7 +37,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.CacheDirective;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.RecipientInfo;
 import org.restlet.data.Warning;
@@ -61,9 +60,6 @@ public abstract class Message {
 
     /** The payload of the message. */
     private volatile Representation entity;
-
-    /** The optional cached Form. */
-    private volatile Form entityForm;
 
     // [ifndef gwt] member
     /** The optional cached text. */
@@ -96,7 +92,6 @@ public abstract class Message {
         this.cacheDirectives = null;
         this.date = null;
         this.entity = entity;
-        this.entityForm = null;
         // [ifndef gwt] instruction
         this.entityText = null;
         this.onSent = null;
@@ -201,23 +196,6 @@ public abstract class Message {
      */
     public Representation getEntity() {
         return this.entity;
-    }
-
-    /**
-     * Returns the entity as a form. This method can be called several times and
-     * will always return the same form instance. Note that if the entity is
-     * large this method can result in important memory consumption.
-     * 
-     * @return The entity as a form.
-     * @deprecated Will be removed in future release 2.1.
-     */
-    @Deprecated
-    public Form getEntityAsForm() {
-        if (this.entityForm == null) {
-            this.entityForm = new Form(getEntity());
-        }
-
-        return this.entityForm;
     }
 
     // [ifndef gwt] method

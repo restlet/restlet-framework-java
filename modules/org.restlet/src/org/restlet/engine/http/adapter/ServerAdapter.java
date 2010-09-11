@@ -139,10 +139,9 @@ public class ServerAdapter extends Adapter {
 
                 if (response.isEntityAvailable()) {
                     getLogger()
-                            .fine(
-                                    "Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + "\".");
+                            .fine("Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
+                                    + response.getRequest().getResourceRef()
+                                    + "\".");
                     response.setEntity(null);
                 }
             } else if (response.getStatus()
@@ -199,8 +198,7 @@ public class ServerAdapter extends Adapter {
             // [ifndef gae]
             if (response.getHttpCall().isConnectionBroken(e)) {
                 getLogger()
-                        .log(
-                                Level.INFO,
+                        .log(Level.INFO,
                                 "The connection was broken. It was probably closed by the client.",
                                 e);
             } else
@@ -237,7 +235,6 @@ public class ServerAdapter extends Adapter {
      *            The low-level HTTP call.
      * @return A new high-level uniform request.
      */
-    @SuppressWarnings("deprecation")
     public HttpRequest toRequest(ServerCall httpCall) {
         HttpRequest result = new HttpRequest(getContext(), httpCall);
         result.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,

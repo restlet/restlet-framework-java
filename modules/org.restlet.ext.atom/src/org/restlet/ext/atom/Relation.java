@@ -219,19 +219,6 @@ public class Relation {
             "working-copy-of");
 
     /**
-     * Parses a relation name into the equivalent enumeration item.
-     * 
-     * @param rel
-     *            The relation name to parse.
-     * @return The equivalent enumeration item.
-     * @deprecated Use the {@link #valueOf(String)} method instead.
-     */
-    @Deprecated
-    public static Relation parse(String rel) {
-        return valueOf(rel);
-    }
-
-    /**
      * Return a String object representing the specified Relation.
      * 
      * @param rel

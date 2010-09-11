@@ -49,15 +49,6 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class ResponseInfo extends DocumentedInfo {
 
-    /**
-     * List of faults (representations that denote an error condition).
-     * 
-     * @deprecated According to new WADL specification, the fault element has
-     *             been removed.
-     */
-    @Deprecated
-    private List<FaultInfo> faults;
-
     /** List of parameters. */
     private List<ParameterInfo> parameters;
 
@@ -104,30 +95,6 @@ public class ResponseInfo extends DocumentedInfo {
      */
     public ResponseInfo(String documentation) {
         super(documentation);
-    }
-
-    /**
-     * Returns the list of faults (representations that denote an error
-     * condition).
-     * 
-     * @return The list of faults (representations that denote an error
-     *         condition).
-     * @deprecated According to new WADL specification, the fault element has
-     *             been removed.
-     */
-    @Deprecated
-    public List<FaultInfo> getFaults() {
-        // Lazy initialization with double-check.
-        List<FaultInfo> f = this.faults;
-        if (f == null) {
-            synchronized (this) {
-                f = this.faults;
-                if (f == null) {
-                    this.faults = f = new ArrayList<FaultInfo>();
-                }
-            }
-        }
-        return f;
     }
 
     /**
@@ -190,20 +157,6 @@ public class ResponseInfo extends DocumentedInfo {
     }
 
     /**
-     * Sets the list of faults (representations that denote an error condition).
-     * 
-     * @param faults
-     *            The list of faults (representations that denote an error
-     *            condition).
-     * @deprecated According to new WADL specification, the fault element has
-     *             been removed.
-     */
-    @Deprecated
-    public void setFaults(List<FaultInfo> faults) {
-        this.faults = faults;
-    }
-
-    /**
      * Sets the list of parameters.
      * 
      * @param parameters
@@ -240,10 +193,6 @@ public class ResponseInfo extends DocumentedInfo {
 
         for (final RepresentationInfo representationInfo : getRepresentations()) {
             representationInfo.updateNamespaces(namespaces);
-        }
-
-        for (final RepresentationInfo faultInfo : getFaults()) {
-            faultInfo.updateNamespaces(namespaces);
         }
 
         for (final ParameterInfo parameterInfo : getParameters()) {

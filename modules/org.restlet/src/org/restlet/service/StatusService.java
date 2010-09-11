@@ -187,20 +187,9 @@ public class StatusService extends Service {
      * Indicates if an existing entity should be overwritten. False by default.
      * 
      * @return True if an existing entity should be overwritten.
-     * @deprecated Use {@link #isOverwriting()} instead.
-     */
-    @Deprecated
-    public boolean isOverwrite() {
-        return this.overwriting;
-    }
-
-    /**
-     * Indicates if an existing entity should be overwritten. False by default.
-     * 
-     * @return True if an existing entity should be overwritten.
      */
     public boolean isOverwriting() {
-        return isOverwrite();
+        return this.overwriting;
     }
 
     /**
@@ -229,21 +218,9 @@ public class StatusService extends Service {
      * 
      * @param overwriting
      *            True if an existing entity should be overwritten.
-     * @deprecated Use {@link #setOverwriting(boolean)} instead.
-     */
-    @Deprecated
-    public void setOverwrite(boolean overwriting) {
-        this.overwriting = overwriting;
-    }
-
-    /**
-     * Indicates if an existing entity should be overwritten.
-     * 
-     * @param overwriting
-     *            True if an existing entity should be overwritten.
      */
     public void setOverwriting(boolean overwriting) {
-        setOverwrite(overwriting);
+        this.overwriting = overwriting;
     }
 
 }

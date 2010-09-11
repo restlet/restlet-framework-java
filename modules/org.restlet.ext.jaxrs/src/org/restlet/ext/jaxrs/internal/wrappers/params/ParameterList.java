@@ -181,7 +181,7 @@ public class ParameterList {
          */
         protected Object convertParamValue(String paramValue,
                 DefaultValue defaultValue) throws ConvertParameterException {
-            if (decode() && (paramValue != null)) {
+            if (decoding() && (paramValue != null)) {
                 paramValue = Reference.decode(paramValue);
             } else if ((paramValue == null) && (defaultValue != null)) {
                 paramValue = defaultValue.value();
@@ -315,15 +315,6 @@ public class ParameterList {
             if (coll instanceof Set<?>)
                 return Collections.unmodifiableSet((Set<A>) coll);
             return Collections.unmodifiableCollection(coll);
-        }
-
-        /**
-         * 
-         * @return
-         * @deprecated Use {@link #decoding()} instead.
-         */
-        protected boolean decode() {
-            return decoding();
         }
 
         protected abstract boolean decoding();
@@ -712,7 +703,7 @@ public class ParameterList {
          */
         private PathSegment createPathSegment(final String pathSegmentEnc)
                 throws IllegalArgumentException {
-            return new PathSegmentImpl(pathSegmentEnc, this.decode(), -1);
+            return new PathSegmentImpl(pathSegmentEnc, this.decoding(), -1);
         }
 
         @Override
