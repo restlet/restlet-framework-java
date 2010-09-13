@@ -36,7 +36,7 @@
 		</maven>
 	</package>
 	<version>7.1</version>
-	<release>6</release>
+	<release>6.v20100715</release>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
