@@ -56,7 +56,6 @@ import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.ServerCall;
-import org.restlet.engine.http.io.ChunkedInputStream;
 import org.restlet.util.Series;
 
 /**
@@ -153,12 +152,7 @@ public class NettyServerCall extends ServerCall {
 
     @Override
     public InputStream getRequestEntityStream(long size) {
-        InputStream stream = new ChannelBufferInputStream(contentBuffer);
-        if (isRequestChunked()) {
-            return new ChunkedInputStream(null, stream);
-        }
-
-        return stream;
+        return new ChannelBufferInputStream(contentBuffer);
     }
 
     @Override

@@ -150,15 +150,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
                 lastChunk = true;
             }
 
-            long chunkSize = chunk.getContent().readableBytes();
-
-            content.writeBytes(longToHex(chunkSize));
-            content.writeByte(CR);
-            content.writeByte(LF);
-
             content.writeBytes(chunk.getContent());
-            content.writeByte(CR);
-            content.writeByte(LF);
         }
 
         if (content == null) {
@@ -227,7 +219,8 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
                                     .getEntity().getStream()));
                         } else {
                             ChannelBuffer buf = dynamicBuffer();
-                            buf.writeBytes(responseEntity.getStream(), 0);
+                            buf.writeBytes(responseEntity.getStream(),
+                                    (int) responseEntity.getAvailableSize());
                             nettyResponse.setContent(buf);
                         }
                     }
