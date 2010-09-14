@@ -8,6 +8,10 @@ Changes log
       - Removed deprecated classes and code.
       - The Route class has been reintroduced with a lighter
         behavior not depending on URI templates.
+      - Added an UniformResource#setApplication() setter to be able
+        to explicitly set the parent application used to pick up the
+        ConverterService or MetadataService. This property is also 
+        carried on by the copy constructor. Suggested by John Logdson.
     - Enhancements
 	  
     - Bugs fixed

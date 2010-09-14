@@ -105,7 +105,10 @@ import org.restlet.util.Series;
  */
 public abstract class UniformResource {
 
-    /** The current context. */
+    /** The parent application. */
+    private volatile org.restlet.Application application;
+
+    /** The parent context. */
     private volatile Context context;
 
     /** The handled request. */
@@ -189,15 +192,26 @@ public abstract class UniformResource {
 
     // [ifndef gwt] method
     /**
-     * Returns the parent application if it exists, or instantiates a new one if
-     * needed.
+     * Returns the parent application. If it wasn't set, it attempts to retrieve
+     * the current one via {@link org.restlet.Application#getCurrent()} if it
+     * exists, or instantiates a new one as a last resort.
      * 
      * @return The parent application if it exists, or a new one.
      */
     public org.restlet.Application getApplication() {
-        org.restlet.Application result = org.restlet.Application.getCurrent();
-        return (result == null) ? new org.restlet.Application(getContext())
-                : result;
+        org.restlet.Application result = this.application;
+
+        if (result == null) {
+            result = org.restlet.Application.getCurrent();
+
+            if (result == null) {
+                result = new org.restlet.Application(getContext());
+            }
+
+            this.application = result;
+        }
+
+        return result;
     }
 
     /**
@@ -604,6 +618,16 @@ public abstract class UniformResource {
         } catch (Throwable t) {
             doCatch(t);
         }
+    }
+
+    /**
+     * Sets the parent application.
+     * 
+     * @param application
+     *            The parent application.
+     */
+    public void setApplication(org.restlet.Application application) {
+        this.application = application;
     }
 
     /**
