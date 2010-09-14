@@ -30,8 +30,6 @@
 
 package org.restlet.ext.netty.internal;
 
-import static org.jboss.netty.buffer.ChannelBuffers.dynamicBuffer;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,26 +48,22 @@ import javax.net.ssl.SSLSession;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferInputStream;
-import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.ServerCall;
-import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.io.ChunkedInputStream;
-import org.restlet.engine.http.io.ChunkedOutputStream;
 import org.restlet.util.Series;
 
 /**
  * Call that is used by the Netty HTTP server connectors.
  * 
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
+ * @author Jerome Louvel
  */
 public class NettyServerCall extends ServerCall {
 
@@ -93,6 +87,9 @@ public class NettyServerCall extends ServerCall {
 
     /** The remote client IP address. */
     private final InetSocketAddress remoteAddress;
+
+    /** The Restlet response. */
+    private Response restletResponse;
 
     /**
      * Constructor.
@@ -211,15 +208,16 @@ public class NettyServerCall extends ServerCall {
 
     @Override
     public OutputStream getResponseEntityStream() {
-        ChannelBuffer buf = dynamicBuffer();
-        this.response.setContent(buf);
-        OutputStream stream = new ChannelBufferOutputStream(response
-                .getContent());
-        if (isResponseChunked()) {
-            return new ChunkedOutputStream(stream);
-        }
+        return null;
+    }
 
-        return stream;
+    /**
+     * Returns the Restlet response.
+     * 
+     * @return The Restlet response.
+     */
+    public Response getRestletResponse() {
+        return restletResponse;
     }
 
     @Override
@@ -254,6 +252,15 @@ public class NettyServerCall extends ServerCall {
         return null;
     }
 
+    /**
+     * Returns the SSL engine.
+     * 
+     * @return The SSL engine.
+     */
+    private SSLEngine getSslEngine() {
+        return this.sslEngine;
+    }
+
     @Override
     protected byte[] getSslSessionIdBytes() {
         final SSLEngine sslEngine = getSslEngine();
@@ -268,15 +275,6 @@ public class NettyServerCall extends ServerCall {
         return null;
     }
 
-    /**
-     * Returns the SSL engine.
-     * 
-     * @return The SSL engine.
-     */
-    private SSLEngine getSslEngine() {
-        return this.sslEngine;
-    }
-
     @Override
     public String getVersion() {
         return request.getProtocolVersion().getText();
@@ -284,29 +282,26 @@ public class NettyServerCall extends ServerCall {
 
     @Override
     protected boolean isClientKeepAlive() {
-        return request.isKeepAlive();
+        return HttpHeaders.isKeepAlive(request);
+    }
+
+    @Override
+    public void sendResponse(Response response) throws IOException {
+        setRestletResponse(response);
+    }
+
+    /**
+     * Sets the Restlet response.
+     * 
+     * @param restletResponse
+     *            The Restlet response.
+     */
+    public void setRestletResponse(Response restletResponse) {
+        this.restletResponse = restletResponse;
     }
 
     @Override
     public void writeResponseHead(Response restletResponse) throws IOException {
-        if (this.response != null) {
-            this.response.clearHeaders();
-        } else {
-            final HttpResponseStatus status = new HttpResponseStatus(
-                    restletResponse.getStatus().getCode(), restletResponse
-                            .getStatus().getName());
-            this.response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
-                    status);
-        }
-        // Check if 'Transfer-Encoding' header should be set
-        if (shouldResponseBeChunked(restletResponse)) {
-            getResponseHeaders().add(HeaderConstants.HEADER_TRANSFER_ENCODING,
-                    "chunked");
-        }
-        for (final Parameter header : getResponseHeaders()) {
-            this.response.addHeader(header.getName(), header.getValue());
-        }
-
     }
 
 }

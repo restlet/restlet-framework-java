@@ -30,7 +30,10 @@
 
 package org.restlet.ext.netty.internal;
 
+import static org.jboss.netty.buffer.ChannelBuffers.dynamicBuffer;
+
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import javax.net.ssl.SSLEngine;
@@ -40,8 +43,8 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
@@ -49,22 +52,29 @@ import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
-import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.ssl.SslHandler;
+import org.jboss.netty.handler.stream.ChunkedStream;
+import org.restlet.Response;
+import org.restlet.data.Parameter;
+import org.restlet.engine.ConnectorHelper;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.ext.netty.HttpsServerHelper;
 import org.restlet.ext.netty.NettyServerHelper;
+import org.restlet.representation.Representation;
+import org.restlet.service.ConnectorService;
 
 /**
  * HTTP request handler implementation. Pass HTTP requests to Restlet and gather
  * HTTP response from Restlet and provide it back to the client.
  * 
  * @author Gabriel Ciuloaica (gciuloaica@gmail.com)
+ * @author Jerome Louvel
  */
-@ChannelPipelineCoverage("one")
+@ChannelHandler.Sharable
 public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
     /**
      * Carriage return
@@ -118,12 +128,11 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
     @Override
     public void messageReceived(ChannelHandlerContext ctx,
             MessageEvent messageEvent) throws Exception {
-
         if (clientAddress == null) {
             clientAddress = (InetSocketAddress) messageEvent.getRemoteAddress();
         }
 
-        boolean isLastChunk = false;
+        boolean lastChunk = false;
 
         if (!readingChunks) {
             request = (HttpRequest) messageEvent.getMessage();
@@ -135,9 +144,10 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
             }
         } else {
             HttpChunk chunk = (HttpChunk) messageEvent.getMessage();
+
             if (chunk.isLast()) {
                 readingChunks = false;
-                isLastChunk = true;
+                lastChunk = true;
             }
 
             long chunkSize = chunk.getContent().readableBytes();
@@ -149,50 +159,98 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
             content.writeBytes(chunk.getContent());
             content.writeByte(CR);
             content.writeByte(LF);
-
         }
 
         if (content == null) {
             content = ChannelBuffers.dynamicBuffer();
         }
 
-        HttpResponse response = null;
+        HttpResponse nettyResponse = null;
+        NettyServerCall httpCall = null;
 
         // Let the Restlet engine handle this call only after last chunk has
         // been read.
-        if ((!request.isChunked()) || isLastChunk) {
+        if ((!request.isChunked()) || lastChunk) {
             SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
             SSLEngine sslEngine = sslHandler == null ? null : sslHandler
                     .getEngine();
 
-            NettyServerCall httpCall = new NettyServerCall(this.helper
-                    .getHelped(), messageEvent, content, request,
-                    clientAddress, (this.helper instanceof HttpsServerHelper),
-                    sslEngine);
+            httpCall = new NettyServerCall(this.helper.getHelped(),
+                    messageEvent, content, request, clientAddress,
+                    (this.helper instanceof HttpsServerHelper), sslEngine);
             this.helper.handle(httpCall);
-            response = httpCall.getResponse();
-        }
+            nettyResponse = httpCall.getResponse();
+            Response restletResponse = httpCall.getRestletResponse();
 
-        Channel ch = messageEvent.getChannel();
+            if (restletResponse != null) {
+                // Get the connector service to callback
+                Representation responseEntity = restletResponse.getEntity();
+                ConnectorService connectorService = ConnectorHelper
+                        .getConnectorService();
 
-        // Close the connection after the write operation is done.
-        if (request.isChunked()) {
-            if (isLastChunk) {
-                ChannelFuture future = ch.write(response);
-                future.addListener(ChannelFutureListener.CLOSE);
+                if (connectorService != null) {
+                    connectorService.beforeSend(responseEntity);
+                }
 
+                try {
+                    if (nettyResponse != null) {
+                        nettyResponse.clearHeaders();
+                    } else {
+                        HttpResponseStatus status = new HttpResponseStatus(
+                                restletResponse.getStatus().getCode(),
+                                restletResponse.getStatus().getName());
+                        nettyResponse = new DefaultHttpResponse(
+                                HttpVersion.HTTP_1_1, status);
+                    }
+
+                    // Copy general, response and entity headers
+                    for (Parameter header : httpCall.getResponseHeaders()) {
+                        nettyResponse.addHeader(header.getName(),
+                                header.getValue());
+                    }
+
+                    // Check if 'Transfer-Encoding' header should be set
+                    if (httpCall.shouldResponseBeChunked(restletResponse)) {
+                        nettyResponse.addHeader(
+                                HeaderConstants.HEADER_TRANSFER_ENCODING,
+                                "chunked");
+                    }
+
+                    // Write the response
+                    Channel ch = messageEvent.getChannel();
+                    ChannelFuture future = null;
+
+                    if (responseEntity != null) {
+                        if (nettyResponse.isChunked()) {
+                            nettyResponse.setContent(null);
+                            ch.write(new ChunkedStream(restletResponse
+                                    .getEntity().getStream()));
+                        } else {
+                            ChannelBuffer buf = dynamicBuffer();
+                            buf.writeBytes(responseEntity.getStream(), 0);
+                            nettyResponse.setContent(buf);
+                        }
+                    }
+
+                    future = ch.write(nettyResponse);
+
+                    // Close the connection after the write operation is done.
+                    if (shouldCloseConnection()) {
+                        future.addListener(ChannelFutureListener.CLOSE);
+                    }
+
+                } finally {
+                    if (responseEntity != null) {
+                        responseEntity.release();
+                    }
+
+                    if (connectorService != null) {
+                        connectorService.afterSend(responseEntity);
+                    }
+                }
             }
 
-        } else {
-            ChannelFuture future = ch.write(response);
-
-            if (shouldCloseConnection()
-                    || (request.getMethod() == HttpMethod.GET)) {
-                future.addListener(ChannelFutureListener.CLOSE);
-            }
-
         }
-
     }
 
     private boolean shouldCloseConnection() {
@@ -217,12 +275,13 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
                 status);
         response.setHeader(HttpHeaders.Names.CONTENT_TYPE,
                 "text/plain; charset=UTF-8");
-        response.setContent(ChannelBuffers.copiedBuffer("Failure: "
-                + status.toString() + "\r\n", "UTF-8"));
+        response.setContent(ChannelBuffers.copiedBuffer(
+                "Failure: " + status.toString() + "\r\n",
+                Charset.forName("UTF-8")));
 
         // Close the connection as soon as the error message is sent.
-        ctx.getChannel().write(response).addListener(
-                ChannelFutureListener.CLOSE);
+        ctx.getChannel().write(response)
+                .addListener(ChannelFutureListener.CLOSE);
     }
 
     /**
