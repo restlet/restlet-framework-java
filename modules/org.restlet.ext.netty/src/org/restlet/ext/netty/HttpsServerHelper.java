@@ -175,8 +175,7 @@ public class HttpsServerHelper extends NettyServerHelper {
 
     @Override
     public ChannelPipelineFactory getPipelineFatory() {
-        return new HttpsServerPipelineFactory(this, sslContext
-                .createSSLEngine());
+        return new HttpsServerPipelineFactory(this, getSslContext());
     }
 
     /**

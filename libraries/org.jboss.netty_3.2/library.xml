@@ -4,8 +4,8 @@
 			<artifactId>netty</artifactId>
 		</maven>
 	</package>
-	<version>3.1</version>
-	<release>5.GA</release>
+	<version>3.2</version>
+	<release>2</release>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
@@ -16,6 +16,6 @@
       http://jboss.org/netty/downloads.html
 	</downloadUri>
    <javadocs>
-      <link href="http://jboss.org/file-access/default/members/netty/freezone/api/3.1/" />
+      <link href="http://docs.jboss.org/netty/3.2/api/" />
    </javadocs>
 </library>

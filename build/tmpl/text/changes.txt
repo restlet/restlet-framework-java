@@ -5,11 +5,13 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-	   - 
+	   - Fixed bug in Netty HTTPS connector preventing the handling
+	     of several connections. Reported by Laurent Rustuel.
     - Misc
        - Additional errors are now caught and logged in the HTTP 
          servers. Contributed by Marc Portier.
 	   - Updated Jetty to version 7.1.6. Suggested by Marc Portier.
+	   - Updated Netty to version 3.2.2.
 	
 - 2.0.0 (2010-07-19)
     - Bugs fixed

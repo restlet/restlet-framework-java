@@ -32,6 +32,7 @@ package org.restlet.ext.netty.internal;
 
 import static org.jboss.netty.channel.Channels.pipeline;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 
 import org.jboss.netty.channel.ChannelPipeline;
@@ -51,23 +52,21 @@ public class HttpsServerPipelineFactory implements ChannelPipelineFactory {
     /** The server helper. */
     private final NettyServerHelper helper;
 
-    /** The SSL engine. */
-    private final SSLEngine sslEngine;
+    /** The SSL context. */
+    private final SSLContext sslContext;
 
     /**
      * Constructor.
      * 
      * @param serverHelper
      *            The server helper.
-     * @param sslEngine
-     *            The SSL Engine.
+     * @param sslContext
+     *            The SSL context.
      */
     public HttpsServerPipelineFactory(NettyServerHelper serverHelper,
-            SSLEngine sslEngine) {
+            SSLContext sslContext) {
         this.helper = serverHelper;
-        this.sslEngine = sslEngine;
-        this.sslEngine.setUseClientMode(false);
-
+        this.sslContext = sslContext;
     }
 
     /**
@@ -76,8 +75,11 @@ public class HttpsServerPipelineFactory implements ChannelPipelineFactory {
      * @return The channel pipeline.
      */
     public ChannelPipeline getPipeline() throws Exception {
+        SSLEngine sslEngine = this.sslContext.createSSLEngine();
+        sslEngine.setUseClientMode(false);
+
         ChannelPipeline pipeline = pipeline();
-        pipeline.addLast("ssl", new SslHandler(this.sslEngine));
+        pipeline.addLast("ssl", new SslHandler(sslEngine));
         pipeline.addLast("decoder", new HttpRequestDecoder());
         pipeline.addLast("encoder", new HttpResponseEncoder());
         pipeline.addLast("handler", new HttpRequestHandler(this.helper));
