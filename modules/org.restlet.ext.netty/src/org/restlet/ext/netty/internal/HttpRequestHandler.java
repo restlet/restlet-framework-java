@@ -148,9 +148,9 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
             if (chunk.isLast()) {
                 readingChunks = false;
                 lastChunk = true;
+            } else {
+                content.writeBytes(chunk.getContent());
             }
-
-            content.writeBytes(chunk.getContent());
         }
 
         if (content == null) {
@@ -215,6 +215,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
                     if (responseEntity != null) {
                         if (nettyResponse.isChunked()) {
                             nettyResponse.setContent(null);
+                            future = ch.write(nettyResponse);
                             ch.write(new ChunkedStream(restletResponse
                                     .getEntity().getStream()));
                         } else {
@@ -222,10 +223,9 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
                             buf.writeBytes(responseEntity.getStream(),
                                     (int) responseEntity.getAvailableSize());
                             nettyResponse.setContent(buf);
+                            future = ch.write(nettyResponse);
                         }
                     }
-
-                    future = ch.write(nettyResponse);
 
                     // Close the connection after the write operation is done.
                     if (shouldCloseConnection()) {
