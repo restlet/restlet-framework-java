@@ -63,7 +63,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
 
     private final boolean jettyServerEnabled = true;
 
-    private final boolean nettyServerEnabled = false;
+    private final boolean nettyServerEnabled = true;
 
     private final boolean simpleServerEnabled = true;
 
