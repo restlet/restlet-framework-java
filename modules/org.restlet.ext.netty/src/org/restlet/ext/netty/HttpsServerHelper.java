@@ -30,13 +30,14 @@
 
 package org.restlet.ext.netty;
 
+import java.io.File;
 import javax.net.ssl.SSLContext;
 
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.security.SslContextFactory;
 import org.restlet.engine.security.SslUtils;
+import org.restlet.engine.security.SslContextFactory;
 import org.restlet.ext.netty.internal.HttpsServerPipelineFactory;
 
 /**
@@ -121,10 +122,60 @@ public class HttpsServerHelper extends NettyServerHelper {
         getProtocols().add(Protocol.HTTPS);
     }
 
+    /**
+     * Returns the SSL certificate algorithm.
+     * 
+     * @return The SSL certificate algorithm.
+     */
+    @Deprecated
+    public String getCertAlgorithm() {
+        return getHelpedParameters().getFirstValue("certAlgorithm", "SunX509");
+    }
+
+    /**
+     * Returns the SSL key password.
+     * 
+     * @return The SSL key password.
+     */
+    @Deprecated
+    public String getKeyPassword() {
+        return getHelpedParameters().getFirstValue("keyPassword", "");
+    }
+
+    /**
+     * Returns the SSL keystore password.
+     * 
+     * @return The SSL keystore password.
+     */
+    @Deprecated
+    public String getKeystorePassword() {
+        return getHelpedParameters().getFirstValue("keystorePassword", "");
+    }
+
+    /**
+     * Returns the SSL keystore path.
+     * 
+     * @return The SSL keystore path.
+     */
+    @Deprecated
+    public String getKeystorePath() {
+        return getHelpedParameters().getFirstValue("keystorePath",
+                System.getProperty("user.home") + File.separator + ".keystore");
+    }
+
+    /**
+     * Returns the SSL keystore type.
+     * 
+     * @return The SSL keystore type.
+     */
+    @Deprecated
+    public String getKeystoreType() {
+        return getHelpedParameters().getFirstValue("keystoreType", "JKS");
+    }
+
     @Override
     public ChannelPipelineFactory getPipelineFatory() {
-        return new HttpsServerPipelineFactory(this, sslContext
-                .createSSLEngine());
+        return new HttpsServerPipelineFactory(this, getSslContext());
     }
 
     /**
@@ -134,6 +185,16 @@ public class HttpsServerHelper extends NettyServerHelper {
      */
     public SSLContext getSslContext() {
         return sslContext;
+    }
+
+    /**
+     * Returns the SSL keystore type.
+     * 
+     * @return The SSL keystore type.
+     */
+    @Deprecated
+    public String getSslProtocol() {
+        return getHelpedParameters().getFirstValue("sslProtocol", "TLS");
     }
 
     /**
