@@ -6,7 +6,8 @@ Changes log
 - @version-full@ (@release-date@)
     - Bugs fixed
 	   - Fixed bug in Netty HTTPS connector preventing the handling
-	     of several connections. Reported by Laurent Rustuel.
+	     of several connections and persistent connections.
+	     Reported by Laurent Rustuel.
     - Misc
        - Additional errors are now caught and logged in the HTTP 
          servers. Contributed by Marc Portier.

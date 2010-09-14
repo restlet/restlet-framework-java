@@ -155,9 +155,11 @@ public abstract class ServerCall extends Call {
         Representation result = null;
         long contentLength = getContentLength();
 
-        boolean chunkedEncoding = HeaderUtils.isChunkedEncoding(getRequestHeaders());
+        boolean chunkedEncoding = HeaderUtils
+                .isChunkedEncoding(getRequestHeaders());
         // In some cases there is an entity without a content-length header
-        boolean connectionClosed = HeaderUtils.isConnectionClose(getRequestHeaders());
+        boolean connectionClosed = HeaderUtils
+                .isConnectionClose(getRequestHeaders());
 
         // Create the representation
         if ((contentLength != Representation.UNKNOWN_SIZE && contentLength != 0)
@@ -167,7 +169,8 @@ public abstract class ServerCall extends Call {
             ReadableByteChannel requestChannel = getRequestEntityChannel(contentLength);
 
             if (requestStream != null) {
-                result = new InputRepresentation(requestStream, null, contentLength);
+                result = new InputRepresentation(requestStream, null,
+                        contentLength);
             } else if (requestChannel != null) {
                 result = new ReadableRepresentation(requestChannel, null,
                         contentLength);
@@ -436,6 +439,7 @@ public abstract class ServerCall extends Call {
             Representation responseEntity = response.getEntity();
             ConnectorService connectorService = ConnectorHelper
                     .getConnectorService();
+
             if (connectorService != null) {
                 connectorService.beforeSend(responseEntity);
             }
@@ -444,7 +448,6 @@ public abstract class ServerCall extends Call {
                 writeResponseHead(response);
 
                 if (responseEntity != null) {
-
                     WritableByteChannel responseEntityChannel = getResponseEntityChannel();
                     OutputStream responseEntityStream = getResponseEntityStream();
                     writeResponseBody(responseEntity, responseEntityChannel,
@@ -458,8 +461,7 @@ public abstract class ServerCall extends Call {
                             // The stream was probably already closed by the
                             // connector. Probably OK, low message priority.
                             getLogger()
-                                    .log(
-                                            Level.FINE,
+                                    .log(Level.FINE,
                                             "Exception while flushing and closing the entity stream.",
                                             ioe);
                         }
@@ -485,7 +487,7 @@ public abstract class ServerCall extends Call {
      *            The response to analyze.
      * @return True if the response should be chunked.
      */
-    protected boolean shouldResponseBeChunked(Response response) {
+    public boolean shouldResponseBeChunked(Response response) {
         return (response.getEntity() != null)
                 && (response.getEntity().getSize() == Representation.UNKNOWN_SIZE);
     }

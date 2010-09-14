@@ -49,23 +49,23 @@ import org.restlet.test.RestletTestCase;
  */
 public abstract class BaseConnectorsTestCase extends RestletTestCase {
 
-    private final boolean apacheClientEnabled = true;
+    private final boolean apacheClientEnabled = false;
 
     private Component component;
 
-    private final boolean grizzlyServerEnabled = true;
+    private final boolean grizzlyServerEnabled = false;
 
-    private final boolean defaultClientEnabled = true;
+    private final boolean defaultClientEnabled = false;
 
-    private final boolean defaultServerEnabled = true;
+    private final boolean defaultServerEnabled = false;
 
     private final boolean jdkNetClientEnabled = true;
 
-    private final boolean jettyServerEnabled = true;
+    private final boolean jettyServerEnabled = false;
 
-    private final boolean nettyServerEnabled = false;
+    private final boolean nettyServerEnabled = true;
 
-    private final boolean simpleServerEnabled = true;
+    private final boolean simpleServerEnabled = false;
 
     protected abstract void call(String uri) throws Exception;
 
