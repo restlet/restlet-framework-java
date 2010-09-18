@@ -103,7 +103,24 @@ public class NioUtils {
     }
 
     /**
-     * Returns a readable byte channel based on a given inputstream. If it is
+     * Writes a NIO readable channel to a BIO output stream.
+     * 
+     * @param readableChannel
+     *            The readable channel.
+     * @param outputStream
+     *            The output stream.
+     * @throws IOException
+     */
+    public static void copy(ReadableByteChannel readableChannel,
+            OutputStream outputStream) throws IOException {
+        if ((readableChannel != null) && (outputStream != null)) {
+            BioUtils.copy(new NbChannelInputStream(readableChannel),
+                    outputStream);
+        }
+    }
+
+    /**
+     * Returns a readable byte channel based on a given input stream. If it is
      * supported by a file a read-only instance of FileChannel is returned.
      * 
      * @param inputStream

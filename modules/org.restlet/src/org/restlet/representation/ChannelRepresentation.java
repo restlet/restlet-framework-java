@@ -68,7 +68,7 @@ public abstract class ChannelRepresentation extends Representation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        write(NioUtils.getChannel(outputStream));
+        NioUtils.copy(getChannel(), outputStream);
     }
 
     @Override
