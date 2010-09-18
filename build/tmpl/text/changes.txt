@@ -13,6 +13,7 @@ Changes log
          servers. Contributed by Marc Portier.
 	   - Updated Jetty to version 7.1.6. Suggested by Marc Portier.
 	   - Updated Netty to version 3.2.2.
+	   - Optimized writing from NIO channels to BIO output streams.
 	
 - 2.0.0 (2010-07-19)
     - Bugs fixed
