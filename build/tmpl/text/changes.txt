@@ -8,12 +8,14 @@ Changes log
 	   - Fixed bug in Netty HTTPS connector preventing the handling
 	     of several connections, persistent connections and chunked
          encoding. Reported by Laurent Rustuel.
+	   - Fixed issue with Netty when an unknown parameter was passed.
     - Misc
        - Additional errors are now caught and logged in the HTTP 
          servers. Contributed by Marc Portier.
 	   - Updated Jetty to version 7.1.6. Suggested by Marc Portier.
 	   - Updated Netty to version 3.2.2.
 	   - Optimized writing from NIO channels to BIO output streams.
+	   - Updated Simple to version 4.1.20.
 	
 - 2.0.0 (2010-07-19)
     - Bugs fixed
