@@ -21,15 +21,26 @@ public class NioClient {
         client.getContext().getParameters().add("maxQueued", "20");
         client.start();
 
-        ClientResource cr = new ClientResource("http://www.restlet.org/");
+        String uri = "http://www.restlet.org";
+        int iterations = 50;
+        ClientResource cr = new ClientResource(uri);
         cr.setNext(client);
-        Representation r = cr.get();
-        r.write(System.out);
+        Representation r = null;
 
-        System.out.println("");
+        System.out.println("Calling resource: " + uri + " " + iterations
+                + " times");
+        long start = System.currentTimeMillis();
 
-        r = cr.get();
-        r.write(System.out);
+        for (int i = 0; i < iterations; i++) {
+            r = cr.get();
+            r.exhaust();
+            // r.write(System.out);
+            // System.out.println("");
+        }
+
+        long total = (System.currentTimeMillis() - start);
+        long avg = total / iterations;
+        System.out.println("Done in " + total + ". avg per call: " + avg);
     }
 
 }

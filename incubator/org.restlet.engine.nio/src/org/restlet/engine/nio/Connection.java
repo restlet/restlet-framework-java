@@ -174,6 +174,8 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public void commit(Response response) {
         getHelper().getOutboundMessages().add(response);
+
+        // Wake up the controller if it is sleeping
         getHelper().getController().wakeup();
     }
 

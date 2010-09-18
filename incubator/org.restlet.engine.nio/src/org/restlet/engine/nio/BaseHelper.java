@@ -71,8 +71,9 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>controllerSleepTimeMs</td>
  * <td>int</td>
- * <td>50</td>
- * <td>Time for the controller thread to sleep between each control.</td>
+ * <td>1</td>
+ * <td>Time for the controller thread to sleep between each control. A value
+ * strictly superior to 0 is required.</td>
  * </tr>
  * <tr>
  * <td>minThreads</td>
@@ -330,7 +331,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getControllerSleepTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "controllerSleepTimeMs", "50"));
+                "controllerSleepTimeMs", "1"));
     }
 
     /**
@@ -472,13 +473,6 @@ public abstract class BaseHelper<T extends Connector> extends
      *            The response to handle.
      */
     public abstract void handleInbound(Response response);
-
-    /**
-     * Handles the next inbound message.
-     */
-    public void handleNextInbound() {
-        handleInbound(getInboundMessages().poll());
-    }
 
     /**
      * Handles an outbound message.

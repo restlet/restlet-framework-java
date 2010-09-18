@@ -652,11 +652,17 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
                 // Add the message to the outbound queue for processing
                 getOutboundMessages().add(response);
 
+                // Wake up the controller if it is sleeping
+                getController().wakeup();
+
                 // Await on the latch
                 latch.await();
             } else {
                 // Add the message to the outbound queue for processing
                 getOutboundMessages().add(response);
+
+                // Wake up the controller if it is sleeping
+                getController().wakeup();
             }
         } catch (Exception e) {
             getLogger().log(
@@ -734,6 +740,9 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
         if (message != null) {
             message.setStatus(status);
             getInboundMessages().add(message);
+
+            // Wake up the controller if it is sleeping
+            getController().wakeup();
         }
     }
 
