@@ -19,6 +19,7 @@
 		<export>org.restlet.engine</export>
 		<export>org.restlet.engine.application</export>
 		<export>org.restlet.engine.component</export>
+		<export>org.restlet.engine.connector</export>
 		<export>org.restlet.engine.converter</export>
 		<export>org.restlet.engine.http</export>
 		<export>org.restlet.engine.http.adapter</export>
@@ -73,6 +74,7 @@
 <![CDATA[
          <exclude name="META-INF/MANIFEST.MF" />
          <exclude name="src/com/**" />
+         <exclude name="src/org/restlet/engine/connector/**" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
          <exclude name="src/org/restlet/engine/http/connector/**" />
          <exclude name="src/org/restlet/engine/http/io/ChunkedInputStream.java" />
@@ -114,6 +116,7 @@
          <exclude name="src/org/restlet/engine/ServerHelper.java" />
          <exclude name="src/org/restlet/engine/TemplateDispatcher.java" />
          <exclude name="src/org/restlet/engine/component/**" />
+         <exclude name="src/org/restlet/engine/connector/**" />
          <exclude name="src/org/restlet/engine/converter/**" />
          <exclude name="src/org/restlet/engine/http/HttpRequest.java" />
          <exclude name="src/org/restlet/engine/http/HttpResponse*.java" />

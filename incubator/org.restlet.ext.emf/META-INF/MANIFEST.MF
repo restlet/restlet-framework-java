@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - EMF
 Bundle-SymbolicName: org.restlet.ext.emf
-Bundle-Version: 2.0
+Bundle-Version: 2.1
 Bundle-Vendor: Noelios Technologies
 Import-Package: org.eclipse.emf.common,
  org.eclipse.emf.common.notify,

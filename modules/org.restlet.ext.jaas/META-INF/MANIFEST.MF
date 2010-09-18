@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - JAAS
 Bundle-SymbolicName: org.restlet.ext.jaas
-Bundle-Version: 2.0
+Bundle-Version: 2.1
 Bundle-Vendor: Noelios Technologies
 Import-Package: javax.security.auth,
  javax.security.auth.callback,
