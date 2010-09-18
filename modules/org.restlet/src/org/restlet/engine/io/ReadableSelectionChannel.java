@@ -28,24 +28,17 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.connector;
+package org.restlet.engine.io;
 
-import java.nio.channels.SelectionKey;
+import java.nio.channels.ReadableByteChannel;
+
 
 /**
- * Callback interface when a NIO selection occurs on the selectable object.
+ * Readable byte channel that is based on a selectable channel.
  * 
  * @author Jerome Louvel
  */
-public interface SelectionListener {
-
-    /**
-     * Callback method invoked when the connection has been selected for IO
-     * operations it registered interest in.
-     * 
-     * @param key
-     *            The registered selection key.
-     */
-    public void onSelected(SelectionKey key);
+public interface ReadableSelectionChannel extends SelectionChannel,
+        ReadableByteChannel {
 
 }

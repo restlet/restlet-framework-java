@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.engine.io.SelectionListener;
 
 /**
  * Controls the IO work of parent connector helper and manages its connections.

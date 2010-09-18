@@ -50,6 +50,13 @@ import javax.net.ssl.SSLSocket;
 import org.restlet.Connector;
 import org.restlet.Response;
 import org.restlet.data.Status;
+import org.restlet.engine.io.ReadableSelectionChannel;
+import org.restlet.engine.io.ReadableSocketChannel;
+import org.restlet.engine.io.ReadableTraceChannel;
+import org.restlet.engine.io.SelectionListener;
+import org.restlet.engine.io.WritableSelectionChannel;
+import org.restlet.engine.io.WritableSocketChannel;
+import org.restlet.engine.io.WritableTraceChannel;
 import org.restlet.engine.security.SslUtils;
 
 /**

@@ -28,16 +28,16 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.connector;
+package org.restlet.engine.io;
 
-import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 /**
- * Readable byte channel that is based on a selectable channel.
+ * Writable byte channel that is based on a selectable channel.
  * 
  * @author Jerome Louvel
  */
-public interface ReadableSelectionChannel extends SelectionChannel,
-        ReadableByteChannel {
+public interface WritableSelectionChannel extends SelectionChannel,
+        WritableByteChannel {
 
 }

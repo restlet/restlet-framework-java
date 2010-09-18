@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.connector;
+package org.restlet.engine.io;
 
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;

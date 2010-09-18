@@ -33,6 +33,9 @@ package org.restlet.engine.connector;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.restlet.engine.io.ReadableSelectionChannel;
+import org.restlet.engine.io.WrapperSelectionChannel;
+
 // [excludes gwt]
 /**
  * Readable byte channel based on a source socket channel that must only be

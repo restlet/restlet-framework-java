@@ -28,20 +28,22 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.connector;
+package org.restlet.engine.io;
 
 import java.io.IOException;
-import java.nio.channels.Channel;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 /**
- * Wrapper channel.
+ * Trace byte channel that sends a copy of all data on the trace output stream.
+ * It is important to implement {@link SelectionChannel} as some framework
+ * classes rely on this down the processing chain.
  * 
  * @author Jerome Louvel
  */
-public class WrapperChannel<T extends Channel> implements Channel {
-
-    /** The wrapped channel. */
-    private T wrappedChannel;
+public class ReadableTraceChannel extends
+        TraceChannel<ReadableSelectionChannel> implements
+        ReadableSelectionChannel {
 
     /**
      * Constructor.
@@ -49,31 +51,40 @@ public class WrapperChannel<T extends Channel> implements Channel {
      * @param wrappedChannel
      *            The wrapped channel.
      */
-    public WrapperChannel(T wrappedChannel) {
-        this.wrappedChannel = wrappedChannel;
+    public ReadableTraceChannel(ReadableSelectionChannel wrappedChannel) {
+        super(wrappedChannel);
     }
 
     /**
-     * Delegates to the wrapped channel.
-     */
-    public void close() throws IOException {
-        getWrappedChannel().close();
-    }
-
-    /**
-     * Returns the wrapped channel.
+     * Constructor.
      * 
-     * @return The wrapped channel.
+     * @param wrappedChannel
+     *            The wrapped channel.
+     * @param traceStream
+     *            The trace stream.
      */
-    protected T getWrappedChannel() {
-        return wrappedChannel;
+    public ReadableTraceChannel(ReadableSelectionChannel wrappedChannel,
+            OutputStream traceStream) {
+        super(wrappedChannel, traceStream);
     }
 
     /**
-     * Delegates to the wrapped channel.
+     * Reads the available byte from the wrapped channel to the destination
+     * buffer while writing them to the console.
+     * 
+     * @param dst
+     *            The destination buffer.
+     * @return The number of bytes read.
      */
-    public boolean isOpen() {
-        return getWrappedChannel().isOpen();
+    public int read(ByteBuffer dst) throws IOException {
+        int off = dst.arrayOffset() + dst.position();
+        int result = getWrappedChannel().read(dst);
+
+        if (result > 0) {
+            System.out.write(dst.array(), off, result);
+        }
+
+        return result;
     }
 
 }

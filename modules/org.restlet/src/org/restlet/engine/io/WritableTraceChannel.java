@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.connector;
+package org.restlet.engine.io;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -41,9 +41,9 @@ import java.nio.ByteBuffer;
  * 
  * @author Jerome Louvel
  */
-public class ReadableTraceChannel extends
-        TraceChannel<ReadableSelectionChannel> implements
-        ReadableSelectionChannel {
+public class WritableTraceChannel extends
+        TraceChannel<WritableSelectionChannel> implements
+        WritableSelectionChannel {
 
     /**
      * Constructor.
@@ -51,7 +51,7 @@ public class ReadableTraceChannel extends
      * @param wrappedChannel
      *            The wrapped channel.
      */
-    public ReadableTraceChannel(ReadableSelectionChannel wrappedChannel) {
+    public WritableTraceChannel(WritableSelectionChannel wrappedChannel) {
         super(wrappedChannel);
     }
 
@@ -63,27 +63,23 @@ public class ReadableTraceChannel extends
      * @param traceStream
      *            The trace stream.
      */
-    public ReadableTraceChannel(ReadableSelectionChannel wrappedChannel,
+    public WritableTraceChannel(WritableSelectionChannel wrappedChannel,
             OutputStream traceStream) {
         super(wrappedChannel, traceStream);
     }
 
     /**
-     * Reads the available byte from the wrapped channel to the destination
+     * Writes the available byte from the wrapped channel to the destination
      * buffer while writing them to the console.
      * 
-     * @param dst
-     *            The destination buffer.
-     * @return The number of bytes read.
+     * @param src
+     *            The source buffer.
+     * @return The number of bytes written.
      */
-    public int read(ByteBuffer dst) throws IOException {
-        int off = dst.arrayOffset() + dst.position();
-        int result = getWrappedChannel().read(dst);
-
-        if (result > 0) {
-            System.out.write(dst.array(), off, result);
-        }
-
+    public int write(ByteBuffer src) throws IOException {
+        int off = src.arrayOffset() + src.position();
+        int result = getWrappedChannel().write(src);
+        System.out.write(src.array(), off, result);
         return result;
     }
 

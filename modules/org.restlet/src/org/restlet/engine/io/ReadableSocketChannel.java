@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.connector;
+package org.restlet.engine.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -40,8 +40,8 @@ import java.nio.channels.SocketChannel;
  * Readable byte channel based on a source socket channel that must only be
  * partially read.
  */
-public class WritableSocketChannel extends WrapperSocketChannel implements
-        WritableSelectionChannel {
+public class ReadableSocketChannel extends WrapperSocketChannel implements
+        ReadableSelectionChannel {
 
     /**
      * Constructor.
@@ -51,19 +51,19 @@ public class WritableSocketChannel extends WrapperSocketChannel implements
      * @param selector
      *            The selector to use.
      */
-    public WritableSocketChannel(SocketChannel wrappedChannel, Selector selector) {
+    public ReadableSocketChannel(SocketChannel wrappedChannel, Selector selector) {
         super(wrappedChannel, selector);
     }
 
     /**
-     * Writes the given bytes to the wrapped socket channel.
+     * Reads the available byte form the wrapped socket channel.
      * 
-     * @param src
-     *            The source byte buffer.
-     * @return The number of bytes written.
+     * @param dst
+     *            The destination byte buffer.
+     * @return The number of bytes read.
      */
-    public int write(ByteBuffer src) throws IOException {
-        return getWrappedChannel().write(src);
+    public int read(ByteBuffer dst) throws IOException {
+        return getWrappedChannel().read(dst);
     }
 
 }

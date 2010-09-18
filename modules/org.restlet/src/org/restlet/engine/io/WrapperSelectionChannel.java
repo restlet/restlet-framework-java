@@ -28,16 +28,35 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.connector;
+package org.restlet.engine.io;
 
-import java.nio.channels.WritableByteChannel;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SelectionKey;
 
 /**
- * Writable byte channel that is based on a selectable channel.
+ * Wrapper selection channel.
  * 
  * @author Jerome Louvel
  */
-public interface WritableSelectionChannel extends SelectionChannel,
-        WritableByteChannel {
+public class WrapperSelectionChannel<T extends SelectionChannel> extends
+        WrapperChannel<T> implements SelectionChannel {
+
+    /**
+     * Constructor.
+     * 
+     * @param wrappedChannel
+     *            The wrapped channel.
+     */
+    public WrapperSelectionChannel(T wrappedChannel) {
+        super(wrappedChannel);
+    }
+
+    /**
+     * Delegates to the wrapped channel.
+     */
+    public SelectionKey register(int ops, SelectionListener listener)
+            throws ClosedChannelException {
+        return getWrappedChannel().register(ops, listener);
+    }
 
 }

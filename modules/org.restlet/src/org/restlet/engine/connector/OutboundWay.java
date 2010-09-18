@@ -50,6 +50,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.io.SelectionListener;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.ReadableRepresentation;
