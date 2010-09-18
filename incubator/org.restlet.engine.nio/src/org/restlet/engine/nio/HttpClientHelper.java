@@ -61,15 +61,4 @@ public class HttpClientHelper extends ConnectionClientHelper {
         return new ClientOutboundWay(connection);
     }
 
-    @Override
-    public synchronized void start() throws Exception {
-        getLogger().info("Starting the NIO HTTP client");
-        super.start();
-    }
-
-    @Override
-    public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the NIO HTTP client");
-        super.stop();
-    }
 }

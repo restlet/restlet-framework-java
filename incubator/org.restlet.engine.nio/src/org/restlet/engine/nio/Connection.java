@@ -134,7 +134,7 @@ public class Connection<T extends Connector> implements SelectionListener {
             setState(ConnectionState.CLOSING);
         } else {
             try {
-                if (!getSocket().isClosed()) {
+                if ((getSocket() != null) && !getSocket().isClosed()) {
                     // Flush the output stream
                     getSocket().getOutputStream().flush();
 
@@ -151,7 +151,7 @@ public class Connection<T extends Connector> implements SelectionListener {
             }
 
             try {
-                if (!getSocket().isClosed()) {
+                if ((getSocket() != null) && !getSocket().isClosed()) {
                     getSocket().close();
                 }
             } catch (IOException ex) {

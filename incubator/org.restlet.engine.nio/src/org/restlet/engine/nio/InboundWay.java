@@ -176,7 +176,7 @@ public abstract class InboundWay extends Way {
                                 "Chunked encoding not supported (yet) in the NIO connector.");
             } else {
                 // Wraps the remaining bytes into a special entity channel
-                result = new ReadableEntityChannel(getByteBuffer(),
+                result = new ReadableEntityChannel(this, getByteBuffer(),
                         getConnection().getReadableSelectionChannel(), size);
             }
         } else {

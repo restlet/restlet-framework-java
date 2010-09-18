@@ -42,6 +42,9 @@ public class ReadableEntityChannel extends
         WrapperSelectionChannel<ReadableSelectionChannel> implements
         ReadableSelectionChannel {
 
+    /** The parent inbound way. */
+    private final InboundWay inboundWay;
+
     /** The byte buffer remaining from previous read processing. */
     private volatile ByteBuffer remainingBuffer;
 
@@ -51,6 +54,8 @@ public class ReadableEntityChannel extends
     /**
      * Constructor.
      * 
+     * @param inboundWay
+     *            The parent inbound way.
      * @param remainingBuffer
      *            The byte buffer remaining from previous read processing.
      * @param source
@@ -59,11 +64,22 @@ public class ReadableEntityChannel extends
      *            The total available size that can be read from the source
      *            channel.
      */
-    public ReadableEntityChannel(ByteBuffer remainingBuffer,
-            ReadableSelectionChannel source, long availableSize) {
+    public ReadableEntityChannel(InboundWay inboundWay,
+            ByteBuffer remainingBuffer, ReadableSelectionChannel source,
+            long availableSize) {
         super(source);
+        this.inboundWay = inboundWay;
         this.remainingBuffer = remainingBuffer;
         this.availableSize = availableSize;
+    }
+
+    /**
+     * Returns the parent inbound way.
+     * 
+     * @return The parent inbound way.
+     */
+    public InboundWay getInboundWay() {
+        return inboundWay;
     }
 
     /**
@@ -81,9 +97,13 @@ public class ReadableEntityChannel extends
         if (this.availableSize > 0) {
             if ((this.remainingBuffer != null)
                     && (this.remainingBuffer.hasRemaining())) {
+                int limit = this.remainingBuffer.limit();
+                int position = this.remainingBuffer.position();
+                this.remainingBuffer.limit(limit);
+                this.remainingBuffer.position(position);
+
                 // First make sure that the remaining buffer is empty
-                result = Math.min(this.remainingBuffer.remaining(),
-                        dst.remaining());
+                result = Math.min(limit - position, dst.remaining());
                 byte[] src = new byte[result];
                 this.remainingBuffer.get(src);
                 dst.put(src);
@@ -95,6 +115,10 @@ public class ReadableEntityChannel extends
             if (result > 0) {
                 this.availableSize -= result;
             }
+        }
+
+        if (result == -1) {
+            getInboundWay().onCompleted();
         }
 
         return result;

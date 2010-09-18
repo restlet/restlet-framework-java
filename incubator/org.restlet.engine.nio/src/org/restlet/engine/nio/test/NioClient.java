@@ -25,6 +25,11 @@ public class NioClient {
         cr.setNext(client);
         Representation r = cr.get();
         r.write(System.out);
+
+        System.out.println("");
+
+        r = cr.get();
+        r.write(System.out);
     }
 
 }

@@ -389,8 +389,7 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
                     .iterator(); !foundConn && iterator.hasNext();) {
                 Connection<Client> currConn = iterator.next();
 
-                if (socketAddress.getAddress().equals(
-                        currConn.getSocketAddress())) {
+                if (socketAddress.equals(currConn.getSocketAddress())) {
                     if (currConn.getState().equals(ConnectionState.OPEN)
                             && currConn.getInboundWay().getIoState()
                                     .equals(IoState.IDLE)
@@ -432,6 +431,7 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
                         createSocketChannel(request.isConfidential(),
                                 socketAddress), getController().getSelector(),
                         socketAddress);
+                getConnections().add(result);
             }
         }
 
