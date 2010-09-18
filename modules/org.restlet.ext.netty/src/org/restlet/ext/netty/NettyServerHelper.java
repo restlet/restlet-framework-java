@@ -178,12 +178,20 @@ public abstract class NettyServerHelper extends HttpServerHelper {
                 paramName = option.getName().substring(
                         CHILD_CHANNEL_PREFIX.length());
             }
-            NettyParams param = NettyParams.valueOf(paramName);
-            if (param != null) {
-                final Object value = param.getValue(option.getValue());
-                if ((value != null) && (param.isChannelOption())) {
-                    bootstrap.setOption(option.getName(), value);
+
+            try {
+                NettyParams param = NettyParams.valueOf(paramName);
+                if (param != null) {
+                    final Object value = param.getValue(option.getValue());
+                    if ((value != null) && (param.isChannelOption())) {
+                        bootstrap.setOption(option.getName(), value);
+                    }
                 }
+            } catch (IllegalArgumentException iae) {
+                getLogger()
+                        .log(Level.FINE,
+                                "Unable to process the \"" + paramName
+                                        + "\" parameter");
             }
         }
 
