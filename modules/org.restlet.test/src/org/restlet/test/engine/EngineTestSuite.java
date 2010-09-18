@@ -57,7 +57,6 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(ByteUtilsTestCase.class);
         addTestSuite(CookiesTestCase.class);
         addTestSuite(ContentTypeTestCase.class);
-        addTestSuite(FormTestCase.class);
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpCallTestCase.class);
         addTestSuite(ImmutableDateTestCase.class);

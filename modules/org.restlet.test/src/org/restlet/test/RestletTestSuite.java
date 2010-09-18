@@ -42,6 +42,7 @@ import org.restlet.test.data.AuthenticationInfoTestCase;
 import org.restlet.test.data.ConnegTestCase;
 import org.restlet.test.data.CookieTestCase;
 import org.restlet.test.data.FileReferenceTestCase;
+import org.restlet.test.data.FormTestCase;
 import org.restlet.test.data.LanguageTestCase;
 import org.restlet.test.data.MediaTypeTestCase;
 import org.restlet.test.data.ProductTokenTestCase;
@@ -106,6 +107,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(FileClientTestCase.class);
         addTestSuite(FileReferenceTestCase.class);
         addTestSuite(FilterTestCase.class);
+        addTestSuite(FormTestCase.class);
         addTestSuite(FreeMarkerTestCase.class);
         addTestSuite(GwtConverterTest.class);
         addTestSuite(JaxbBasicConverterTest.class);
