@@ -38,6 +38,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.resource.Finder;
+import org.restlet.resource.ServerResource;
 
 /**
  * Router of calls from Server connectors to Restlets. The attached Restlets are
@@ -323,7 +324,7 @@ public class VirtualHost extends Router {
      * @return The new finder instance.
      */
     @Override
-    public Finder createFinder(Class<?> targetClass) {
+    public Finder createFinder(Class<? extends ServerResource> targetClass) {
         Finder result = super.createFinder(targetClass);
         result.setContext(getContext().createChildContext());
         return result;

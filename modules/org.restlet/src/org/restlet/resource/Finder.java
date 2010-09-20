@@ -42,16 +42,14 @@ import org.restlet.data.Status;
 
 /**
  * Restlet that can find the target server resource that will effectively handle
- * incoming calls. By default, based on a given {@link ServerResource} (or the
- * now deprecated {@link Handler}) subclass available via the
- * {@link #getTargetClass()} method, it automatically instantiates for each
- * incoming call the target resource class using its default constructor and
- * invoking the {@link ServerResource#init(Context, Request, Response)} method.<br>
+ * incoming calls. By default, based on a given {@link ServerResource} subclass
+ * available via the {@link #getTargetClass()} method, it automatically
+ * instantiates for each incoming call the target resource class using its
+ * default constructor and invoking the
+ * {@link ServerResource#init(Context, Request, Response)} method.<br>
  * <br>
  * Once the target has been created, the call is automatically dispatched to the
- * {@link ServerResource#handle()} method (or for {@link Handler} subclasses to
- * the handle*() method (where the '*' character corresponds to the method name)
- * if the corresponding allow*() method returns true).<br>
+ * {@link ServerResource#handle()} method.<br>
  * <br>
  * Once the call is handled, the {@link ServerResource#release()} method is
  * invoked to permit clean-up actions.<br>
@@ -77,7 +75,8 @@ public class Finder extends Restlet {
      *            The logger.
      * @return The new finder instance.
      */
-    public static Finder createFinder(Class<?> targetClass,
+    public static Finder createFinder(
+            Class<? extends ServerResource> targetClass,
             Class<? extends Finder> finderClass, Context context, Logger logger) {
         Finder result = null;
 
@@ -110,8 +109,8 @@ public class Finder extends Restlet {
         return result;
     }
 
-    /** Target {@link Handler} or {@link ServerResource} subclass. */
-    private volatile Class<?> targetClass;
+    /** Target {@link ServerResource} subclass. */
+    private volatile Class<? extends ServerResource> targetClass;
 
     /**
      * Constructor.
@@ -137,25 +136,24 @@ public class Finder extends Restlet {
      * @param context
      *            The context.
      * @param targetClass
-     *            The target handler class. It must be either a subclass of
-     *            {@link Handler} or of {@link ServerResource}.
+     *            The target {@link ServerResource} subclass.
      */
-    public Finder(Context context, Class<?> targetClass) {
+    public Finder(Context context, Class<? extends ServerResource> targetClass) {
         super(context);
         this.targetClass = targetClass;
     }
 
     /**
      * Creates a new instance of a given {@link ServerResource} subclass. Note
-     * that Error and RuntimeException thrown by {@link ServerResource}
-     * constructors are re-thrown by this method. Other exception are caught and
-     * logged.
+     * that {@link Error} and {@link RuntimeException} thrown by
+     * {@link ServerResource} constructors are re-thrown by this method. Other
+     * exception are caught and logged.
      * 
      * @param request
      *            The request to handle.
      * @param response
      *            The response to update.
-     * @return The created handler or null.
+     * @return The created resource or null.
      */
     public ServerResource create(Class<? extends ServerResource> targetClass,
             Request request, Response response) {
@@ -186,14 +184,12 @@ public class Finder extends Restlet {
      *            The request to handle.
      * @param response
      *            The response to update.
-     * @return The created handler or null.
+     * @return The created resource or null.
      */
-    @SuppressWarnings("unchecked")
     public ServerResource create(Request request, Response response) {
         ServerResource result = null;
 
-        if ((getTargetClass() != null)
-                && ServerResource.class.isAssignableFrom(getTargetClass())) {
+        if (getTargetClass() != null) {
             result = create((Class<? extends ServerResource>) getTargetClass(),
                     request, response);
         }
@@ -209,19 +205,19 @@ public class Finder extends Restlet {
      *            The request to handle.
      * @param response
      *            The response to update.
-     * @return The target handler if available or null.
+     * @return The target resource if available or null.
      */
     public ServerResource find(Request request, Response response) {
         return create(request, response);
     }
 
     /**
-     * Returns the target handler class which must be either a subclass of
-     * {@link Handler} or of {@link ServerResource}.
+     * Returns the target resource class which must be either a subclass of
+     * {@link ServerResource}.
      * 
      * @return the target Handler class.
      */
-    public Class<?> getTargetClass() {
+    public Class<? extends ServerResource> getTargetClass() {
         return this.targetClass;
     }
 
@@ -242,9 +238,8 @@ public class Finder extends Restlet {
 
             if (targetResource == null) {
                 // If the current status is a success but we couldn't
-                // find the target handler for the request's resource
-                // URI, then we set the response status to 404 (Not
-                // Found).
+                // find the target resource for the request's URI,
+                // then we set the response status to 404 (Not Found).
                 getLogger().warning(
                         "No target resource was defined for this finder: "
                                 + toString());
@@ -266,14 +261,14 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Sets the target handler class which must be either a subclass of
-     * {@link Handler} or of {@link ServerResource}.
+     * Sets the target resource class which must be a subclass of
+     * {@link ServerResource}.
      * 
      * @param targetClass
-     *            The target handler class. It must be either a subclass of
-     *            {@link Handler} or of {@link ServerResource}.
+     *            The target resource class. It must be a subclass of
+     *            {@link ServerResource}.
      */
-    public void setTargetClass(Class<?> targetClass) {
+    public void setTargetClass(Class<? extends ServerResource> targetClass) {
         this.targetClass = targetClass;
     }
 

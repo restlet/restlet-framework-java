@@ -232,15 +232,15 @@ public abstract class Filter extends Restlet {
     }
 
     /**
-     * Sets the next Restlet as a Finder for a given
-     * {@link org.restlet.resource.Handler} or {@link ServerResource} class.
-     * When the call is delegated to the Finder instance, a new instance of the
-     * resource class will be created and will actually handle the request.
+     * Sets the next {@link Restlet} as a {@link Finder} for a given
+     * {@link ServerResource} class. When the call is delegated to the
+     * {@link Finder} instance, a new instance of the resource class will be
+     * created and will actually handle the request.
      * 
      * @param targetClass
      *            The target resource class to attach.
      */
-    public void setNext(Class<?> targetClass) {
+    public void setNext(Class<? extends ServerResource> targetClass) {
         setNext(new Finder(getContext(), targetClass));
     }
 

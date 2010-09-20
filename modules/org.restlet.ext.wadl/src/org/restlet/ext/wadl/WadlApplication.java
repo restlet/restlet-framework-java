@@ -363,14 +363,15 @@ public class WadlApplication extends Application {
      * @return The created finder.
      * @throws ClassNotFoundException
      */
+    @SuppressWarnings("unchecked")
     protected Finder createFinder(Router router, String uriPattern,
             ResourceInfo resourceInfo) throws ClassNotFoundException {
         Finder result = null;
 
         if (resourceInfo.getIdentifier() != null) {
             // The "id" attribute conveys the target class name
-            Class<?> targetClass = Engine.loadClass(resourceInfo
-                    .getIdentifier());
+            Class<? extends ServerResource> targetClass = (Class<? extends ServerResource>) Engine
+                    .loadClass(resourceInfo.getIdentifier());
             result = router.createFinder(targetClass);
         } else {
             getLogger()

@@ -16,32 +16,32 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-ajp</artifactId>
-			<version>7.0.1.v20091125</version>
+			<version>7.1.6.v20100715</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-continuation</artifactId>
-			<version>7.0.1.v20091125</version>
+			<version>7.1.6.v20100715</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-http</artifactId>
-			<version>7.0.1.v20091125</version>
+			<version>7.1.6.v20100715</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-io</artifactId>
-			<version>7.0.1.v20091125</version>
+			<version>7.1.6.v20100715</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>7.0.1.v20091125</version>
+			<version>7.1.6.v20100715</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-util</artifactId>
-			<version>7.0.1.v20091125</version>
+			<version>7.1.6.v20100715</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

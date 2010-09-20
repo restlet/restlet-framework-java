@@ -37,6 +37,7 @@ import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.resource.Finder;
+import org.restlet.resource.ServerResource;
 
 /**
  * Modifiable list of server connectors.
@@ -166,7 +167,7 @@ public final class ServerList extends WrapperList<Server> {
      * @param nextClass
      *            The next resource class to attach.
      */
-    public void setNext(Class<?> nextClass) {
+    public void setNext(Class<? extends ServerResource> nextClass) {
         setNext(new Finder(getContext(), nextClass));
     }
 

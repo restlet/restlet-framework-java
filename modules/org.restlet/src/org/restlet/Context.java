@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.engine.Engine;
+import org.restlet.routing.Filter;
 import org.restlet.util.Series;
 
 /**
@@ -60,17 +61,17 @@ public class Context {
     private static final ThreadLocal<Context> CURRENT = new ThreadLocal<Context>();
 
     /**
-     * Returns the context associated to the current Restlet. The context can be
-     * the one of a Component, an Application, a Filter or any other Restlet
-     * subclass.
-     * 
+     * Returns the context associated to the current {@link Restlet}. The
+     * context can be the one of a {@link Component}, an {@link Application}, a
+     * {@link Filter} or any other {@link Restlet} subclass.<br>
+     * <br>
      * Warning: this method should only be used under duress. You should by
      * default prefer obtaining the current context using methods such as
      * {@link org.restlet.Restlet#getContext()} or
-     * {@link org.restlet.resource.Resource#getContext()}.
-     * 
+     * {@link org.restlet.resource.UniformResource#getContext()}.<br>
+     * <br>
      * This variable is stored internally as a thread local variable and updated
-     * each time a request is handled by a Restlet via the
+     * each time a request is handled by a {@link Restlet} via the
      * {@link Restlet#handle(org.restlet.Request, org.restlet.Response)} method.
      * 
      * @return The current context.

@@ -239,8 +239,8 @@ public final class BioUtils {
 
     /**
      * Returns the size effectively available. This returns the same value as
-     * {@link #getSize()} if no range is defined, otherwise it returns the size
-     * of the range using {@link Range#getSize()}.
+     * {@link Representation#getSize()} if no range is defined, otherwise it
+     * returns the size of the range using {@link Range#getSize()}.
      * 
      * @param representation
      *            The representation to evaluate.

@@ -26,38 +26,43 @@ import com.google.inject.Stage;
 public class RestletGuice {
 
     /**
-     * Creates an injector from the given modules with DependencyInjection
-     * bound to an implementation that uses the injector's bindings to create
-     * Finder instances and handle calls to attach and setNext.
+     * Creates an injector from the given modules with DependencyInjection bound
+     * to an implementation that uses the injector's bindings to create Finder
+     * instances and handle calls to attach and setNext.
      */
     public static Injector createInjector(com.google.inject.Module... modules) {
         return injectorFor(null, new Module(modules));
     }
 
     /**
-     * Creates an injector in the given Stage from the given modules with DependencyInjection
-     * bound to an implementation that uses the injector's bindings to create
-     * Finder instances and handle calls to attach and setNext.
+     * Creates an injector in the given Stage from the given modules with
+     * DependencyInjection bound to an implementation that uses the injector's
+     * bindings to create Finder instances and handle calls to attach and
+     * setNext.
      */
-    public static Injector createInjector(Stage stage, com.google.inject.Module... modules) {
+    public static Injector createInjector(Stage stage,
+            com.google.inject.Module... modules) {
         return injectorFor(stage, new Module(modules));
     }
 
     /**
-     * Creates an injector from the given modules with DependencyInjection
-     * bound to an implementation that uses the injector's bindings to create
-     * Finder instances and handle calls to attach and setNext.
+     * Creates an injector from the given modules with DependencyInjection bound
+     * to an implementation that uses the injector's bindings to create Finder
+     * instances and handle calls to attach and setNext.
      */
-    public static Injector createInjector(Iterable<com.google.inject.Module> modules) {
+    public static Injector createInjector(
+            Iterable<com.google.inject.Module> modules) {
         return injectorFor(null, new Module(modules));
     }
 
     /**
-     * Creates an injector in the given Stage from the given modules with DependencyInjection
-     * bound to an implementation that uses the injector's bindings to create
-     * Finder instances and handle calls to attach and setNext.
+     * Creates an injector in the given Stage from the given modules with
+     * DependencyInjection bound to an implementation that uses the injector's
+     * bindings to create Finder instances and handle calls to attach and
+     * setNext.
      */
-    public static Injector createInjector(Stage stage, Iterable<com.google.inject.Module> modules) {
+    public static Injector createInjector(Stage stage,
+            Iterable<com.google.inject.Module> modules) {
         return injectorFor(stage, new Module(modules));
     }
 
@@ -70,11 +75,12 @@ public class RestletGuice {
     }
 
     /**
-     * A Guice module implements DependencyInjection.
-     * On first use of the methods of this facility, if the module hasn't
-     * been used to create an Injector, this module creates its own Injector.
+     * A Guice module implements DependencyInjection. On first use of the
+     * methods of this facility, if the module hasn't been used to create an
+     * Injector, this module creates its own Injector.
      */
-    public static class Module extends AbstractModule implements DependencyInjection {
+    public static class Module extends AbstractModule implements
+            DependencyInjection {
 
         /**
          * Creates a RestletGuice.Module that will install the given modules.
@@ -90,7 +96,6 @@ public class RestletGuice {
             this.modules = modules;
         }
 
-
         //
         // DependencyInjection methods
         //
@@ -99,31 +104,28 @@ public class RestletGuice {
             return new ServerResourceKeyFinder(Key.get(cls));
         }
 
-        public Finder inject(Class<? extends ServerResource> cls, Class<? extends Annotation> qualifier) {
+        public Finder inject(Class<? extends ServerResource> cls,
+                Class<? extends Annotation> qualifier) {
             return new ServerResourceKeyFinder(Key.get(cls, qualifier));
         }
 
-
-        @Override protected final void configure() {
+        @Override
+        protected final void configure() {
 
             if (injector != null) {
-                throw new IllegalStateException("can't reconfigure with existing Injector");
+                throw new IllegalStateException(
+                        "can't reconfigure with existing Injector");
             }
 
             if (!alreadyBound.get()) {
                 alreadyBound.set(true);
 
-                bind(DependencyInjection.class)
-                    .toInstance(this);
+                bind(DependencyInjection.class).toInstance(this);
 
-                bind(Application.class)
-                    .toProvider(newApplicationProvider());
-                bind(Context.class)
-                    .toProvider(newContextProvider());
-                bind(Request.class)
-                    .toProvider(newRequestProvider());
-                bind(Response.class)
-                    .toProvider(newResponseProvider());
+                bind(Application.class).toProvider(newApplicationProvider());
+                bind(Context.class).toProvider(newContextProvider());
+                bind(Request.class).toProvider(newRequestProvider());
+                bind(Response.class).toProvider(newResponseProvider());
             }
 
             for (com.google.inject.Module module : modules) {
@@ -132,8 +134,8 @@ public class RestletGuice {
         }
 
         /**
-         * Creates a Provider for the Application.
-         * Override to use a custom Application provider.
+         * Creates a Provider for the Application. Override to use a custom
+         * Application provider.
          */
         protected Provider<Application> newApplicationProvider() {
             return new Provider<Application>() {
@@ -144,8 +146,8 @@ public class RestletGuice {
         }
 
         /**
-         * Creates a Provider for the Context.
-         * Override to use a custom Context provider.
+         * Creates a Provider for the Context. Override to use a custom Context
+         * provider.
          */
         protected Provider<Context> newContextProvider() {
             return new Provider<Context>() {
@@ -155,10 +157,9 @@ public class RestletGuice {
             };
         }
 
-
         /**
-         * Creates a Provider for the Request.
-         * Override to use a custom Request provider.
+         * Creates a Provider for the Request. Override to use a custom Request
+         * provider.
          */
         protected Provider<Request> newRequestProvider() {
             return new Provider<Request>() {
@@ -168,10 +169,9 @@ public class RestletGuice {
             };
         }
 
-
         /**
-         * Creates a Provider for the Response.
-         * Override to use a custom Response provider.
+         * Creates a Provider for the Response. Override to use a custom
+         * Response provider.
          */
         protected Provider<Response> newResponseProvider() {
             return new Provider<Response>() {
@@ -181,19 +181,20 @@ public class RestletGuice {
             };
         }
 
-
         class KeyFinder extends Finder {
-            private final Class<?> targetClass;
+            private final Class<? extends ServerResource> targetClass;
 
+            @SuppressWarnings("unchecked")
             KeyFinder(Type type) {
-                this.targetClass = (Class<?>) type;
+                this.targetClass = (Class<? extends ServerResource>) type;
             }
 
-            @Override public final Context getContext() {
+            @Override
+            public final Context getContext() {
                 return getInjector().getInstance(Context.class);
             }
 
-            public final Class<?> getTargetClass() {
+            public final Class<? extends ServerResource> getTargetClass() {
                 return this.targetClass;
             }
 
@@ -203,8 +204,10 @@ public class RestletGuice {
                     synchronized (RestletGuice.Module.this) {
                         inj = injector;
                         if (inj == null) {
-                            System.err.println("Automatically creating injector.");
-                            injector = inj = Guice.createInjector(RestletGuice.Module.this);
+                            System.err
+                                    .println("Automatically creating injector.");
+                            injector = inj = Guice
+                                    .createInjector(RestletGuice.Module.this);
                         }
                     }
                 }
@@ -215,31 +218,37 @@ public class RestletGuice {
         class ServerResourceKeyFinder extends KeyFinder {
             private final Key<? extends ServerResource> serverResourceKey;
 
-            ServerResourceKeyFinder(Key<? extends ServerResource> serverResourceKey) {
+            ServerResourceKeyFinder(
+                    Key<? extends ServerResource> serverResourceKey) {
                 super(serverResourceKey.getTypeLiteral().getType());
                 this.serverResourceKey = serverResourceKey;
             }
 
-            @Override public ServerResource create(Request request, Response response) {
+            @Override
+            public ServerResource create(Request request, Response response) {
                 return getInjector().getInstance(serverResourceKey);
             }
         }
 
-
         private final Iterable<? extends com.google.inject.Module> modules;
-        @Inject private volatile Injector injector;
+
+        @Inject
+        private volatile Injector injector;
 
         /**
-         * If this module is used in more than one injector, we clear the thread-local
-         * boolean that prevents binding more than once in the same thread.
+         * If this module is used in more than one injector, we clear the
+         * thread-local boolean that prevents binding more than once in the same
+         * thread.
          */
         @SuppressWarnings("unused")
-        @Inject private void clearAlreadyBound() {
+        @Inject
+        private void clearAlreadyBound() {
             alreadyBound.set(false);
         }
 
         private static ThreadLocal<Boolean> alreadyBound = new ThreadLocal<Boolean>() {
-            @Override protected Boolean initialValue() {
+            @Override
+            protected Boolean initialValue() {
                 return false;
             }
         };

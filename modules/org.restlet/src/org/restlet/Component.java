@@ -48,16 +48,18 @@ import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
 import org.restlet.security.Realm;
 import org.restlet.service.LogService;
+import org.restlet.service.Service;
 import org.restlet.service.StatusService;
 import org.restlet.util.ClientList;
 import org.restlet.util.ServerList;
 import org.restlet.util.ServiceList;
 
 /**
- * Restlet managing a set of Connectors, VirtualHosts, Services and
- * Applications. Applications are expected to be directly attached to virtual
- * hosts or to the internal router (see RIAP pseudo-protocol for usage).
- * Components also expose several services: access logging and status setting. <br>
+ * Restlet managing a set of {@link Connector}s, {@link VirtualHost}s,
+ * {@link Service}s and {@link Application}s. Applications are expected to be
+ * directly attached to virtual hosts or to the internal router (see RIAP
+ * pseudo-protocol for usage). Components also expose several services: access
+ * logging and status setting. <br>
  * <br>
  * From an architectural point of view, here is the REST definition: "A
  * component is an abstract unit of software instructions and internal state
@@ -300,9 +302,9 @@ public class Component extends Restlet {
      * current Component.<br>
      * <br>
      * The second use case is the composition/mash-up of several representations
-     * via the {@link org.restlet.ext.xml.Transformer} class for example. For
-     * this you can leverage the XPath's document() function or the XSLT's
-     * include and import elements with RIAP URIs.
+     * via the org.restlet.ext.xml.Transformer class for example. For this you
+     * can leverage the XPath's document() function or the XSLT's include and
+     * import elements with RIAP URIs.
      * 
      * @return The private internal router.
      */

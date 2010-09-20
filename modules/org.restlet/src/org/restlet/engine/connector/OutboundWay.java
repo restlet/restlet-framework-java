@@ -69,7 +69,8 @@ public abstract class OutboundWay extends Way {
      * Returns the protocol version.
      * 
      * @param request
-     * @return
+     *            The request.
+     * @return The protocol version.
      */
     protected static String getVersion(Request request) {
         Protocol protocol = request.getProtocol();

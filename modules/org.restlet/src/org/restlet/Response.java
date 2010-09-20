@@ -66,7 +66,7 @@ public class Response extends Message {
      * 
      * Warning: this method should only be used under duress. You should by
      * default prefer obtaining the current context using methods such as
-     * {@link org.restlet.resource.Resource#getResponse()}.
+     * {@link org.restlet.resource.UniformResource#getResponse()}.
      * 
      * This variable is stored internally as a thread local variable and updated
      * each time a call is handled by a Restlet via the

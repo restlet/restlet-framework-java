@@ -97,7 +97,8 @@ public class SpringFinder extends Finder {
      * @param targetClass
      *            The target resource class.
      */
-    public SpringFinder(Context context, Class<?> targetClass) {
+    public SpringFinder(Context context,
+            Class<? extends ServerResource> targetClass) {
         super(context, targetClass);
     }
 
@@ -127,8 +128,7 @@ public class SpringFinder extends Finder {
                 result = (ServerResource) getTargetClass().newInstance();
             } catch (Exception e) {
                 getLogger()
-                        .log(
-                                Level.WARNING,
+                        .log(Level.WARNING,
                                 "Exception while instantiating the target server resource.",
                                 e);
             }

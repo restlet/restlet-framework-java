@@ -62,8 +62,7 @@ import org.restlet.service.MetadataService;
 import org.restlet.util.Series;
 
 /**
- * Base class for server-side resources. It is a full replacement for the
- * deprecated {@link Resource} class. It acts as a wrapper to a given call,
+ * Base class for server-side resources. It acts as a wrapper to a given call,
  * including the incoming {@link Request} and the outgoing {@link Response}. <br>
  * <br>
  * It's life cycle is managed by a {@link Finder} created either explicitly or
@@ -519,8 +518,9 @@ public abstract class ServerResource extends UniformResource {
                         result = options(variant);
                     }
                 } else if (variant instanceof VariantInfo) {
-                    result = doHandle(((VariantInfo) variant)
-                            .getAnnotationInfo(), variant);
+                    result = doHandle(
+                            ((VariantInfo) variant).getAnnotationInfo(),
+                            variant);
                 } else {
                     setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
                 }
@@ -837,8 +837,7 @@ public abstract class ServerResource extends UniformResource {
                         && (getResponseEntity() == null || !getResponseEntity()
                                 .isAvailable())) {
                     getLogger()
-                            .fine(
-                                    "A response with a 200 (Ok) status should have an entity. Changing the status to 204 (No content).");
+                            .fine("A response with a 200 (Ok) status should have an entity. Changing the status to 204 (No content).");
                     setStatus(Status.SUCCESS_NO_CONTENT);
                 }
             } catch (Throwable t) {

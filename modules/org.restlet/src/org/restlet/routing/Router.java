@@ -39,6 +39,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Status;
 import org.restlet.resource.Directory;
 import org.restlet.resource.Finder;
+import org.restlet.resource.ServerResource;
 import org.restlet.util.RouteList;
 
 /**
@@ -221,7 +222,8 @@ public class Router extends Restlet {
      *            The target Resource class to attach.
      * @return The created route.
      */
-    public TemplateRoute attach(String pathTemplate, Class<?> targetClass) {
+    public TemplateRoute attach(String pathTemplate,
+            Class<? extends ServerResource> targetClass) {
         return attach(pathTemplate, createFinder(targetClass));
     }
 
@@ -239,8 +241,8 @@ public class Router extends Restlet {
      *            The matching mode.
      * @return The created route.
      */
-    public TemplateRoute attach(String pathTemplate, Class<?> targetClass,
-            int matchingMode) {
+    public TemplateRoute attach(String pathTemplate,
+            Class<? extends ServerResource> targetClass, int matchingMode) {
         return attach(pathTemplate, createFinder(targetClass), matchingMode);
     }
 
@@ -291,7 +293,8 @@ public class Router extends Restlet {
      *            The target Resource class to attach.
      * @return The created route.
      */
-    public TemplateRoute attachDefault(Class<?> defaultTargetClass) {
+    public TemplateRoute attachDefault(
+            Class<? extends ServerResource> defaultTargetClass) {
         return attachDefault(createFinder(defaultTargetClass));
     }
 
@@ -318,7 +321,7 @@ public class Router extends Restlet {
      *            The target Resource class to attach.
      * @return The new finder instance.
      */
-    public Finder createFinder(Class<?> targetClass) {
+    public Finder createFinder(Class<? extends ServerResource> targetClass) {
         return Finder.createFinder(targetClass, getFinderClass(), getContext(),
                 getLogger());
     }

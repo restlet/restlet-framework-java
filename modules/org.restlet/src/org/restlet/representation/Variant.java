@@ -493,7 +493,6 @@ public class Variant {
      * 
      * @param locationUri
      *            The location URI to parse.
-     * @see #setIdentifier(Reference)
      */
     public void setLocationRef(String locationUri) {
         setLocationRef(new Reference(locationUri));

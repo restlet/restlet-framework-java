@@ -223,8 +223,7 @@ public abstract class Way {
 
     /**
      * Callback method invoked when the way has been selected for IO operations
-     * it registered interest in. By default it call
-     * {@link Connection#onSelected()}.
+     * it registered interest in.
      */
     public void onSelected() {
         if (getIoState() == IoState.INTEREST) {

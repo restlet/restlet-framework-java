@@ -49,10 +49,13 @@ import org.restlet.resource.UniformResource;
 public class ConverterUtils {
 
     /**
+     * Adds a variant to the given list.
      * 
      * @param variants
+     *            The list to update.
      * @param variant
-     * @return
+     *            The variant info to add.
+     * @return The updated list.
      */
     protected static List<VariantInfo> addVariant(List<VariantInfo> variants,
             VariantInfo variant) {

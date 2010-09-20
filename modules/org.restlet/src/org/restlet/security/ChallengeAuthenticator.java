@@ -144,8 +144,7 @@ public class ChallengeAuthenticator extends Authenticator {
      * is invoked with the "stale" parameter to true.<br>
      * <br>
      * At the end of the process, the
-     * {@link ChallengeResponse#setAuthenticated(boolean)} and
-     * {@link ClientInfo#setAuthenticated(boolean)} methods are invoked.
+     * {@link ClientInfo#setAuthenticated(boolean)} method is invoked.
      */
     @Override
     protected boolean authenticate(Request request, Response response) {
@@ -169,8 +168,7 @@ public class ChallengeAuthenticator extends Authenticator {
                                                 .getIdentifier() + ".");
                     } else {
                         getLogger()
-                                .fine(
-                                        "Authentication succeeded. Valid credentials provided.");
+                                .fine("Authentication succeeded. Valid credentials provided.");
                     }
                 }
                 break;
@@ -189,8 +187,7 @@ public class ChallengeAuthenticator extends Authenticator {
                 // Invalid credentials provided
                 if (loggable) {
                     getLogger()
-                            .fine(
-                                    "Authentication failed. Invalid credentials provided.");
+                            .fine("Authentication failed. Invalid credentials provided.");
                 }
 
                 if (!isOptional()) {
@@ -204,8 +201,7 @@ public class ChallengeAuthenticator extends Authenticator {
             case Verifier.RESULT_STALE:
                 if (loggable) {
                     getLogger()
-                            .fine(
-                                    "Authentication failed. Stale credentials provided.");
+                            .fine("Authentication failed. Stale credentials provided.");
                 }
 
                 if (!isOptional()) {

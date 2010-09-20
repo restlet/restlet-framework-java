@@ -56,9 +56,9 @@ import org.restlet.util.Series;
 
 /**
  * Generic request sent by client connectors. It is then received by server
- * connectors and processed by Restlets. This request can also be processed by a
- * chain of Restlets, on both client and server sides. Requests are uniform
- * across all types of connectors, protocols and components.
+ * connectors and processed by {@link Restlet}s. This request can also be
+ * processed by a chain of Restlets, on both client and server sides. Requests
+ * are uniform across all types of connectors, protocols and components.
  * 
  * @see org.restlet.Response
  * @see org.restlet.Uniform
@@ -69,11 +69,11 @@ public class Request extends Message {
     // [ifndef gwt] method
     /**
      * Returns the request associated to the current thread. This is reusing the
-     * {@link Response#getCurrent()} method.
-     * 
+     * {@link Response#getCurrent()} method.<br>
+     * <br>
      * Warning: this method should only be used under duress. You should by
      * default prefer obtaining the current context using methods such as
-     * {@link org.restlet.resource.Resource#getRequest()}.
+     * {@link org.restlet.resource.UniformResource#getRequest()}.
      * 
      * @return The thread's request.
      */
@@ -483,8 +483,7 @@ public class Request extends Message {
             // Fallback: look at base reference scheme
             if (result == null) {
                 result = (getResourceRef().getBaseRef() != null) ? getResourceRef()
-                        .getBaseRef().getSchemeProtocol()
-                        : null;
+                        .getBaseRef().getSchemeProtocol() : null;
             }
         }
 
@@ -856,13 +855,15 @@ public class Request extends Message {
      * @return A synthesis of the request like an HTTP request line.
      */
     public String toString() {
-        return ((getMethod() == null) ? "null" : getMethod().toString())
+        return ((getMethod() == null) ? "" : getMethod().toString())
                 + " "
-                + ((getResourceRef() == null) ? "null" : getResourceRef()
+                + ((getResourceRef() == null) ? "" : getResourceRef()
                         .toString())
                 + " "
-                + ((getProtocol() == null) ? "null" : (getProtocol().getName()
-                        + "/" + getProtocol().getVersion()));
+                + ((getProtocol() == null) ? ""
+                        : (getProtocol().getName() + ((getProtocol()
+                                .getVersion() == null) ? "" : "/"
+                                + getProtocol().getVersion())));
     }
 
 }

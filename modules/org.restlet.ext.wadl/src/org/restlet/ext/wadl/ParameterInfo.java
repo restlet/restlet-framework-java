@@ -42,8 +42,8 @@ import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Describes a parameterized aspect of a parent {@link ResourceInfo},
- * {@link RequestInfo}, {@link ResponseInfo}, {@link RepresentationInfo} or
- * {@link FaultInfo} element.
+ * {@link RequestInfo}, {@link ResponseInfo} or {@link RepresentationInfo}
+ * element.
  * 
  * @author Jerome Louvel
  */

@@ -75,20 +75,22 @@ public class SpringRouter extends Router {
      * @param route
      *            The route object to attach.
      */
+    @SuppressWarnings("unchecked")
     public static void setAttachment(Router router, String path, Object route) {
         Class<?> resourceClass;
 
         if (route instanceof Restlet) {
             router.attach(path, (Restlet) route);
         } else if (route instanceof Class) {
-            router.attach(path, (Class<?>) route);
+            router.attach(path, (Class<? extends ServerResource>) route);
         } else if (route instanceof String) {
             try {
                 resourceClass = Engine.loadClass((String) route);
 
                 if (org.restlet.resource.ServerResource.class
                         .isAssignableFrom(resourceClass)) {
-                    router.attach(path, resourceClass);
+                    router.attach(path,
+                            (Class<? extends ServerResource>) resourceClass);
                 } else {
                     router.getLogger()
                             .warning(

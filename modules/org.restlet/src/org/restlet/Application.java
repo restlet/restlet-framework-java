@@ -38,6 +38,8 @@ import org.restlet.engine.RestletHelper;
 import org.restlet.engine.application.ApplicationHelper;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.resource.Finder;
+import org.restlet.resource.ServerResource;
+import org.restlet.routing.VirtualHost;
 import org.restlet.security.Role;
 import org.restlet.service.ConnectorService;
 import org.restlet.service.ConverterService;
@@ -51,9 +53,9 @@ import org.restlet.util.ServiceList;
 /**
  * Restlet managing a coherent set of Resources and Services. Applications are
  * guaranteed to receive calls with their base reference set relatively to the
- * VirtualHost that served them. This class is both a descriptor able to create
- * the root Restlet and the actual Restlet that can be attached to one or more
- * VirtualHost instances.<br>
+ * {@link VirtualHost} that served them. This class is both a descriptor able to
+ * create the root Restlet and the actual Restlet that can be attached to one or
+ * more VirtualHost instances.<br>
  * <br>
  * Applications also have many useful services associated. They are all enabled
  * by default and are available as properties that can be eventually overridden:
@@ -86,7 +88,7 @@ public class Application extends Restlet {
      * 
      * Warning: this method should only be used under duress. You should by
      * default prefer obtaining the current application using methods such as
-     * {@link org.restlet.resource.Resource#getApplication()}
+     * {@link org.restlet.resource.UniformResource#getApplication()}
      * 
      * @return The current context.
      */
@@ -367,9 +369,10 @@ public class Application extends Restlet {
      * Sets the client root Resource class.
      * 
      * @param clientRootClass
-     *            The client root Resource class.
+     *            The client root {@link ServerResource} subclass.
      */
-    public synchronized void setClientRoot(Class<?> clientRootClass) {
+    public synchronized void setClientRoot(
+            Class<? extends ServerResource> clientRootClass) {
         setOutboundRoot(Finder.createFinder(clientRootClass, getFinderClass(),
                 getContext(), getLogger()));
     }
@@ -426,7 +429,8 @@ public class Application extends Restlet {
      * @param inboundRootClass
      *            The inbound root Resource class.
      */
-    public synchronized void setInboundRoot(Class<?> inboundRootClass) {
+    public synchronized void setInboundRoot(
+            Class<? extends ServerResource> inboundRootClass) {
         setInboundRoot(Finder.createFinder(inboundRootClass, getFinderClass(),
                 getContext(), getLogger()));
     }

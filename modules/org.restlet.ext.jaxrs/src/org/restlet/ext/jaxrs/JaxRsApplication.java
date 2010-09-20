@@ -52,8 +52,7 @@ import org.restlet.security.Authenticator;
  * <ul>
  * <li>Add your {@link Application}(s) by calling {@link #add(Application)}.</li>
  * <li>If you need authentication, set a {@link Authenticator} and perhaps an
- * {@link RoleChecker}, see {@link #setGuard(Authenticator)} or
- * {@link #setAuthentication(Authenticator, RoleChecker)}.</li>
+ * {@link RoleChecker}, see {@link #setGuard(Authenticator)}.</li>
  * </ul>
  * At least add the JaxRsApplication to a {@link Component}.
  * </p>
@@ -67,8 +66,7 @@ import org.restlet.security.Authenticator;
 public class JaxRsApplication extends org.restlet.Application {
 
     /**
-     * The Guard to use (either {@link org.restlet.security.Guard} or
-     * {@link org.restlet.security.UniformGuard}). May be null.
+     * The Guard to use {@link org.restlet.security.UniformGuard}). May be null.
      */
     private volatile Filter guard;
 
@@ -129,10 +127,12 @@ public class JaxRsApplication extends org.restlet.Application {
             throw new IllegalArgumentException(
                     "The ApplicationConfig must not be null");
         }
+
         final JaxRsRestlet jaxRsRestlet = this.jaxRsRestlet;
         final Set<Class<?>> classes = appConfig.getClasses();
         final Set<Object> singletons = appConfig.getSingletons();
         boolean everythingFine = true;
+
         if (singletons != null) {
             for (final Object singleton : singletons) {
                 // LATER test: check, if a singelton is also available in the
@@ -143,28 +143,32 @@ public class JaxRsApplication extends org.restlet.Application {
                 }
             }
         }
+
         if (classes != null) {
             for (final Class<?> clazz : classes) {
                 everythingFine &= jaxRsRestlet.addClass(clazz);
             }
         }
+
         return everythingFine;
     }
 
     @Override
     public Restlet createInboundRoot() {
         Restlet restlet = this.jaxRsRestlet;
+
         if (this.guard != null) {
             this.guard.setNext(restlet);
             restlet = this.guard;
         }
+
         return restlet;
     }
 
     /**
-     * Returns the Guard
+     * Returns the guard.
      * 
-     * @return the Guard
+     * @return the guard.
      */
     public Filter getGuard() {
         return this.guard;
@@ -230,8 +234,7 @@ public class JaxRsApplication extends org.restlet.Application {
      * Set the Guard from the org.restlet.security package. This should be
      * called before the root Restlet is created.
      * <p>
-     * This replaced the guard set via
-     * {@link #setGuard(org.restlet.security.Guard)}.
+     * This replaced the guard set via {@link #setGuard(Authenticator))}.
      * 
      * @param guard
      *            the Guard to use.

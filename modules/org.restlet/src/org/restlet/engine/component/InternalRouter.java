@@ -35,6 +35,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.resource.Finder;
+import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.restlet.routing.Template;
 import org.restlet.routing.TemplateRoute;
@@ -108,7 +109,7 @@ public class InternalRouter extends Router {
     }
 
     @Override
-    public Finder createFinder(Class<?> targetClass) {
+    public Finder createFinder(Class<? extends ServerResource> targetClass) {
         Finder result = super.createFinder(targetClass);
         result.setContext(getContext().createChildContext());
         return result;

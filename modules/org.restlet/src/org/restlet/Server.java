@@ -37,6 +37,7 @@ import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.RestletHelper;
 import org.restlet.resource.Finder;
+import org.restlet.resource.ServerResource;
 
 /**
  * Connector acting as a generic server. It internally uses one of the available
@@ -141,7 +142,8 @@ public class Server extends Connector {
      * @param nextClass
      *            The next server resource.
      */
-    public Server(Context context, Protocol protocol, Class<?> nextClass) {
+    public Server(Context context, Protocol protocol,
+            Class<? extends ServerResource> nextClass) {
         this(context, protocol, null, (protocol == null) ? -1 : protocol
                 .getDefaultPort(), new Finder(Context.getCurrent(), nextClass));
     }
@@ -173,7 +175,7 @@ public class Server extends Connector {
      *            The next server resource.
      */
     public Server(Context context, Protocol protocol, int port,
-            Class<?> nextClass) {
+            Class<? extends ServerResource> nextClass) {
         this(context, protocol, null, port, new Finder(Context.getCurrent(),
                 nextClass));
     }
@@ -282,7 +284,7 @@ public class Server extends Connector {
      * @param nextClass
      *            The next server resource.
      */
-    public Server(Protocol protocol, Class<?> nextClass) {
+    public Server(Protocol protocol, Class<? extends ServerResource> nextClass) {
         this((Context) null, protocol, new Finder(Context.getCurrent(),
                 nextClass));
     }
@@ -309,7 +311,8 @@ public class Server extends Connector {
      * @param nextClass
      *            The next server resource.
      */
-    public Server(Protocol protocol, int port, Class<?> nextClass) {
+    public Server(Protocol protocol, int port,
+            Class<? extends ServerResource> nextClass) {
         this((Context) null, protocol, port, new Finder(Context.getCurrent(),
                 nextClass));
     }
@@ -366,7 +369,8 @@ public class Server extends Connector {
      * @param nextClass
      *            The next server resource.
      */
-    public Server(Protocol protocol, String address, Class<?> nextClass) {
+    public Server(Protocol protocol, String address,
+            Class<? extends ServerResource> nextClass) {
         this((Context) null, protocol, address, protocol.getDefaultPort(),
                 new Finder(Context.getCurrent(), nextClass));
     }
@@ -515,7 +519,7 @@ public class Server extends Connector {
      * @param nextClass
      *            The next resource class to attach.
      */
-    public void setNext(Class<?> nextClass) {
+    public void setNext(Class<? extends ServerResource> nextClass) {
         setNext(new Finder(getContext(), nextClass));
     }
 
