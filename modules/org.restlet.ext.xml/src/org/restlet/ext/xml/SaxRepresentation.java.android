@@ -105,8 +105,8 @@ public class SaxRepresentation extends XmlRepresentation {
                 this.source.setEncoding(xmlRepresentation.getCharacterSet().getName());
             }
 
-            if (xmlRepresentation.getIdentifier() != null) {
-                this.source.setSystemId(xmlRepresentation.getIdentifier()
+            if (xmlRepresentation.getLocationRef() != null) {
+                this.source.setSystemId(xmlRepresentation.getLocationRef()
                         .getTargetRef().toString());
             }
         } catch (IOException ioe) {
