@@ -37,6 +37,11 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+
+import org.restlet.Context;
 
 // [excludes gwt]
 /**
@@ -55,8 +60,11 @@ public class NbChannelInputStream extends InputStream {
     /** Indicates if further reads can be attempted. */
     private volatile boolean endReached;
 
-    /** The selectable channel to read from. */
+    /** The optional selectable channel to read from. */
     private final SelectableChannel selectableChannel;
+
+    /** The optional selection channel to read from. */
+    private final SelectionChannel selectionChannel;
 
     /**
      * Constructor.
@@ -67,9 +75,14 @@ public class NbChannelInputStream extends InputStream {
     public NbChannelInputStream(ReadableByteChannel channel) {
         this.channel = channel;
 
-        if (channel instanceof SelectableChannel) {
+        if (channel instanceof SelectionChannel) {
+            this.selectionChannel = (SelectionChannel) channel;
+            this.selectableChannel = null;
+        } else if (channel instanceof SelectableChannel) {
+            this.selectionChannel = null;
             this.selectableChannel = (SelectableChannel) channel;
         } else {
+            this.selectionChannel = null;
             this.selectableChannel = null;
         }
 
@@ -129,6 +142,9 @@ public class NbChannelInputStream extends InputStream {
         this.bb.clear();
         result = this.channel.read(this.bb);
         this.bb.flip();
+
+        // System.out.println("Bytes read: " + result);
+
         return result;
     }
 
@@ -138,30 +154,58 @@ public class NbChannelInputStream extends InputStream {
      * @throws IOException
      */
     private void refill() throws IOException {
-        // No, let's try to read more
-        Selector selector = null;
-        SelectionKey selectionKey = null;
+        int bytesRead = 0;
 
-        try {
-            int bytesRead = readChannel();
+        while (bytesRead == 0) {
+            bytesRead = readChannel();
 
-            // If no bytes were read, try to register a select key to
-            // get more
-            if ((bytesRead == 0) && (selectableChannel != null)) {
-                selector = SelectorFactory.getSelector();
+            if (bytesRead == 0) {
+                // No bytes were read, try to register
+                // a select key to get more
+                if (selectionChannel != null) {
+                    final CountDownLatch latch = new CountDownLatch(1);
 
-                if (selector != null) {
-                    selectionKey = this.selectableChannel.register(selector,
-                            SelectionKey.OP_READ);
-                    selector.select(NioUtils.NIO_TIMEOUT);
+                    try {
+                        // System.out.println("Registering interest");
+
+                        selectionChannel.register(SelectionKey.OP_READ,
+                                new SelectionListener() {
+                                    public void onSelected(SelectionKey key) {
+                                        latch.countDown();
+                                    }
+                                });
+                        latch.await(100, TimeUnit.MILLISECONDS);
+                    } catch (Exception e) {
+                        Context.getCurrentLogger()
+                                .log(Level.FINE,
+                                        "Exception while registering or waiting for new content",
+                                        e);
+                    }
+
+                    bytesRead = readChannel();
+                } else if (selectableChannel != null) {
+                    Selector selector = null;
+                    SelectionKey selectionKey = null;
+
+                    try {
+                        selector = SelectorFactory.getSelector();
+
+                        if (selector != null) {
+                            selectionKey = this.selectableChannel.register(
+                                    selector, SelectionKey.OP_READ);
+                            selector.select(NioUtils.NIO_TIMEOUT);
+                        }
+                    } finally {
+                        NioUtils.release(selector, selectionKey);
+                    }
+
+                    bytesRead = readChannel();
                 }
-
-                bytesRead = readChannel();
-            } else if (bytesRead == -1) {
-                this.endReached = true;
             }
-        } finally {
-            NioUtils.release(selector, selectionKey);
+        }
+
+        if (bytesRead == -1) {
+            this.endReached = true;
         }
     }
 }
