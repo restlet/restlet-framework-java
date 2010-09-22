@@ -12,7 +12,10 @@ Changes log
         to explicitly set the parent application used to pick up the
         ConverterService or MetadataService. This property is also 
         carried on by the copy constructor. Suggested by John Logdson.
+	  - Added UniformResource#toString() for easier debugging.
     - Enhancements
+	  - Improved the naming of files created by the FILE local 
+	    connector so that media type extension comes at the end.
 	  
     - Bugs fixed
     

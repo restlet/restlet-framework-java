@@ -141,9 +141,10 @@ public class FileClientHelper extends EntityClientHelper {
     private boolean checkMetadataConsistency(String fileName,
             Representation representation) {
         boolean result = true;
+
         if (representation != null) {
             Variant var = new Variant();
-            Entity.updateMetadata(fileName, var, true, getMetadataService());
+            Entity.updateMetadata(fileName, var, false, getMetadataService());
 
             // "var" contains the theoretical correct metadata
             if (!var.getLanguages().isEmpty()
@@ -152,12 +153,14 @@ public class FileClientHelper extends EntityClientHelper {
                             representation.getLanguages())) {
                 result = false;
             }
+
             if ((var.getMediaType() != null)
                     && (representation.getMediaType() != null)
                     && !(var.getMediaType().includes(representation
                             .getMediaType()))) {
                 result = false;
             }
+
             if (!var.getEncodings().isEmpty()
                     && !representation.getEncodings().isEmpty()
                     && !var.getEncodings().containsAll(
@@ -190,6 +193,7 @@ public class FileClientHelper extends EntityClientHelper {
     protected void handleLocal(Request request, Response response,
             String decodedPath) {
         String scheme = request.getResourceRef().getScheme();
+
         if (Protocol.FILE.getSchemeName().equalsIgnoreCase(scheme)) {
             handleFile(request, response, decodedPath);
         } else {
@@ -263,9 +267,9 @@ public class FileClientHelper extends EntityClientHelper {
      */
     protected void handleFilePut(Request request, Response response,
             String path, File file) {
-
         // Deals with directory
         boolean isDirectory = false;
+
         if (file.exists()) {
             if (file.isDirectory()) {
                 isDirectory = true;
@@ -277,6 +281,7 @@ public class FileClientHelper extends EntityClientHelper {
             // No existing file or directory found
             if (path.endsWith("/")) {
                 isDirectory = true;
+
                 // Create a new directory and its parents if necessary
                 if (file.mkdirs()) {
                     response.setStatus(Status.SUCCESS_NO_CONTENT);
@@ -286,6 +291,7 @@ public class FileClientHelper extends EntityClientHelper {
                     response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
                             "Unable to create the new directory"));
                 }
+
                 return;
             }
         }
@@ -294,9 +300,10 @@ public class FileClientHelper extends EntityClientHelper {
             // Several checks : first the consistency of the metadata and the
             // filename
             boolean partialPut = !request.getRanges().isEmpty();
+
             if (!checkMetadataConsistency(file.getName(), request.getEntity())) {
-                // ask the client to reiterate properly its request
-                response.setStatus(new Status(Status.REDIRECTION_SEE_OTHER,
+                // Ask the client to reiterate properly its request
+                response.setStatus(new Status(Status.CLIENT_ERROR_BAD_REQUEST,
                         "The metadata are not consistent with the URI"));
                 return;
             }
@@ -311,22 +318,23 @@ public class FileClientHelper extends EntityClientHelper {
             FileFilter filter = new FileFilter() {
                 public boolean accept(File file) {
                     return file.isFile()
-                            && baseName.equals(Entity.getBaseName(file
-                                    .getName(), getMetadataService()));
+                            && baseName.equals(Entity.getBaseName(
+                                    file.getName(), getMetadataService()));
                 }
             };
-            File[] files = file.getParentFile().listFiles(filter);
 
+            File[] files = file.getParentFile().listFiles(filter);
             File uniqueVariant = null;
             List<File> variantsList = new ArrayList<File>();
+
             if (files != null && files.length > 0) {
                 // Set the list of extensions, due to the file name and the
                 // default metadata.
-                // TODO It seems we may handle more clearly the equivalence
+                // TODO It seems we could handle more clearly the equivalence
                 // between the file name space and the target resource (URI
                 // completed by default metadata)
                 Variant variant = new Variant();
-                Entity.updateMetadata(file.getName(), variant, true,
+                Entity.updateMetadata(file.getName(), variant, false,
                         getMetadataService());
                 Collection<String> extensions = Entity.getExtensions(variant,
                         getMetadataService());
@@ -334,8 +342,10 @@ public class FileClientHelper extends EntityClientHelper {
                 for (File entry : files) {
                     Collection<String> entryExtensions = Entity.getExtensions(
                             entry.getName(), getMetadataService());
+
                     if (entryExtensions.containsAll(extensions)) {
                         variantsList.add(entry);
+
                         if (extensions.containsAll(entryExtensions)) {
                             // The right representation has been found.
                             uniqueVariant = entry;
@@ -351,10 +361,9 @@ public class FileClientHelper extends EntityClientHelper {
                     // Negotiated resource (several variants, but not the right
                     // one). Check if the request could be completed or not.
                     // The request could be more precise
-                    response
-                            .setStatus(new Status(
-                                    Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-                                    "Unable to process properly the request. Several variants exist but none of them suits precisely."));
+                    response.setStatus(new Status(
+                            Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+                            "Unable to process properly the request. Several variants exist but none of them suits precisely."));
                     return;
                 }
 
@@ -365,14 +374,19 @@ public class FileClientHelper extends EntityClientHelper {
 
                 // Update the URI
                 StringBuilder fileName = new StringBuilder(baseName);
-                updateFileExtension(fileName, request.getEntity()
-                        .getMediaType());
+
                 for (Language language : request.getEntity().getLanguages()) {
                     updateFileExtension(fileName, language);
                 }
+
                 for (Encoding encoding : request.getEntity().getEncodings()) {
                     updateFileExtension(fileName, encoding);
                 }
+
+                // It is important to finish with the media type as it is
+                // often leveraged by operating systems to detect file type
+                updateFileExtension(fileName, request.getEntity()
+                        .getMediaType());
 
                 file = new File(file.getParentFile(), fileName.toString());
             }
@@ -380,10 +394,9 @@ public class FileClientHelper extends EntityClientHelper {
             // Before putting the file representation, we check that all the
             // extensions are known
             if (!checkExtensionsConsistency(file)) {
-                response
-                        .setStatus(new Status(
-                                Status.SERVER_ERROR_INTERNAL,
-                                "Unable to process properly the URI. At least one extension is not known by the server."));
+                response.setStatus(new Status(
+                        Status.SERVER_ERROR_INTERNAL,
+                        "Unable to process properly the URI. At least one extension is not known by the server."));
                 return;
             }
 
@@ -396,6 +409,7 @@ public class FileClientHelper extends EntityClientHelper {
                 // 2- rename the target file
                 if (partialPut) {
                     RandomAccessFile raf = null;
+
                     // Replace the content of the file. First, create a
                     // temporary file
                     try {
@@ -417,6 +431,7 @@ public class FileClientHelper extends EntityClientHelper {
                             out.flush();
                             out.close();
                         }
+
                         raf = new RandomAccessFile(tmp, "rwd");
 
                         // Go to the desired offset.
@@ -526,10 +541,9 @@ public class FileClientHelper extends EntityClientHelper {
                             getLogger()
                                     .log(Level.WARNING,
                                             "Unable to move the temporary file to replace the existing file");
-                            response
-                                    .setStatus(new Status(
-                                            Status.SERVER_ERROR_INTERNAL,
-                                            "Unable to move the temporary file to replace the existing file"));
+                            response.setStatus(new Status(
+                                    Status.SERVER_ERROR_INTERNAL,
+                                    "Unable to move the temporary file to replace the existing file"));
                         }
                     }
                 } else {
@@ -544,6 +558,7 @@ public class FileClientHelper extends EntityClientHelper {
             } else {
                 // The file does not exist yet.
                 File parent = file.getParentFile();
+
                 if ((parent != null) && !parent.exists()) {
                     // Create the parent directories then the new file
                     if (!parent.mkdirs()) {
@@ -601,6 +616,7 @@ public class FileClientHelper extends EntityClientHelper {
                 } else {
                     // This is simple PUT of the full entity
                     FileOutputStream fos = null;
+                    
                     try {
                         if (file.createNewFile()) {
                             if (request.getEntity() == null) {

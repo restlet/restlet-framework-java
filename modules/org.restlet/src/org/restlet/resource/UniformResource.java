@@ -704,4 +704,10 @@ public abstract class UniformResource {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return (getRequest() == null ? "" : getRequest().toString())
+                + (getResponse() == null ? "" : " - "
+                        + getResponse().toString());
+    }
 }
