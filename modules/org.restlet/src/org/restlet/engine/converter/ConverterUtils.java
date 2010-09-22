@@ -96,9 +96,7 @@ public class ConverterUtils {
                 // Loop over the variants list
                 for (VariantInfo helperVariant : helperVariants) {
                     if (targetVariant == null) {
-                        if (helperVariant.getMediaType().isConcrete()) {
-                            result = addVariant(result, helperVariant);
-                        }
+                        result = addVariant(result, helperVariant);
                     } else if (helperVariant.includes(targetVariant)) {
                         // Detected a more generic variant, but still consider
                         // the conversion is possible to the target variant.
