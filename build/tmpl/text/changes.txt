@@ -7,8 +7,11 @@ Changes log
     - Bugs fixed
 	   - Fixed bug in Netty HTTPS connector preventing the handling
 	     of several connections, persistent connections and chunked
-         encoding. Reported by Laurent Rustuel.
+             encoding. Reported by Laurent Rustuel.
 	   - Fixed issue with Netty when an unknown parameter was passed.
+	   - Fixed content negotiation issues with methods accepting 
+             Representation parameters or returning Representation 
+             instances. Reported by Dustin Jenkins.
     - Misc
        - Additional errors are now caught and logged in the HTTP 
          servers. Contributed by Marc Portier.
