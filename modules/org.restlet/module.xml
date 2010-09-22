@@ -129,7 +129,8 @@
          <exclude name="src/org/restlet/engine/http/io/**" />
          <exclude name="src/org/restlet/engine/http/security/**" />
          <exclude name="src/org/restlet/engine/internal/**" />
-         <exclude name="src/org/restlet/engine/io/Trace**" />
+         <exclude name="src/org/restlet/engine/io/Trace*" />
+         <exclude name="src/org/restlet/engine/io/*Channel*" />
          <exclude name="src/org/restlet/engine/local/**" />
          <exclude name="src/org/restlet/engine/log/AccessLogFileHandler.java" />
          <exclude name="src/org/restlet/engine/log/AccessLogFormatter.java" />

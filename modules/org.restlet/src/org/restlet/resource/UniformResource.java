@@ -105,6 +105,7 @@ import org.restlet.util.Series;
  */
 public abstract class UniformResource {
 
+    // [ifndef gwt] member
     /** The parent application. */
     private volatile org.restlet.Application application;
 
@@ -620,6 +621,7 @@ public abstract class UniformResource {
         }
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the parent application.
      * 
