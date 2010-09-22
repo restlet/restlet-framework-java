@@ -477,9 +477,13 @@ public class Connection<T extends Connector> implements SelectionListener {
 
         try {
             if ((key == null) || key.isReadable()) {
-                getInboundWay().onSelected();
+                synchronized (getInboundWay().getByteBuffer()) {
+                    getInboundWay().onSelected();
+                }
             } else if (key.isWritable()) {
-                getOutboundWay().onSelected();
+                synchronized (getOutboundWay().getByteBuffer()) {
+                    getOutboundWay().onSelected();
+                }
             } else if (key.isConnectable()) {
                 // Client-side asynchronous connection
                 try {

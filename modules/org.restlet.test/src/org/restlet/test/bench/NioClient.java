@@ -10,7 +10,8 @@ import org.restlet.resource.ClientResource;
 public class NioClient {
 
     public static void main(String[] args) throws Exception {
-        Engine.getInstance().getRegisteredClients()
+        Engine.getInstance()
+                .getRegisteredClients()
                 .add(0, new org.restlet.engine.connector.HttpClientHelper(null));
 
         Client client = new Client(new Context(), Protocol.HTTP);
@@ -19,6 +20,7 @@ public class NioClient {
         client.getContext().getParameters().add("lowThreads", "30");
         client.getContext().getParameters().add("maxThreads", "40");
         client.getContext().getParameters().add("maxQueued", "20");
+        // client.getContext().getParameters().add("directBuffers", "false");
         client.start();
 
         String uri = "http://www.restlet.org/downloads/2.1/restlet-jse-2.1snapshot.zip";

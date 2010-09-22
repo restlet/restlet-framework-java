@@ -49,7 +49,7 @@ public class ReadableEntityChannel extends
     private final InboundWay inboundWay;
 
     /** The byte buffer remaining from previous read processing. */
-    private volatile ByteBuffer remainingBuffer;
+    private final ByteBuffer remainingBuffer;
 
     /** The total available size that should be read from the source channel. */
     private volatile long availableSize;
@@ -98,18 +98,21 @@ public class ReadableEntityChannel extends
         int result = -1;
 
         if (this.availableSize > 0) {
-            if ((this.remainingBuffer != null)
-                    && (this.remainingBuffer.hasRemaining())) {
-                int limit = this.remainingBuffer.limit();
-                int position = this.remainingBuffer.position();
-                this.remainingBuffer.limit(limit);
-                this.remainingBuffer.position(position);
-
-                // First make sure that the remaining buffer is empty
-                result = Math.min(limit - position, dst.remaining());
-                byte[] src = new byte[result];
-                this.remainingBuffer.get(src);
-                dst.put(src);
+            if (this.remainingBuffer != null) {
+                synchronized (this.remainingBuffer) {
+                    if (this.remainingBuffer.hasRemaining()) {
+                        // First make sure that the remaining buffer is empty
+                        int limit = this.remainingBuffer.limit();
+                        int position = this.remainingBuffer.position();
+                        result = Math.min(limit - position, dst.remaining());
+                        byte[] src = new byte[result];
+                        this.remainingBuffer.get(src);
+                        dst.put(src);
+                    } else {
+                        // Otherwise, read data from the source channel
+                        result = getWrappedChannel().read(dst);
+                    }
+                }
             } else {
                 // Otherwise, read data from the source channel
                 result = getWrappedChannel().read(dst);
@@ -126,5 +129,4 @@ public class ReadableEntityChannel extends
 
         return result;
     }
-
 }

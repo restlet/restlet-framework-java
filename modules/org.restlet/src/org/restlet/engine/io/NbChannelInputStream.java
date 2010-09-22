@@ -143,7 +143,7 @@ public class NbChannelInputStream extends InputStream {
         result = this.channel.read(this.bb);
         this.bb.flip();
 
-        // System.out.println("Bytes read: " + result);
+        System.out.println("Bytes read: " + result);
 
         return result;
     }
@@ -166,15 +166,13 @@ public class NbChannelInputStream extends InputStream {
                     final CountDownLatch latch = new CountDownLatch(1);
 
                     try {
-                        // System.out.println("Registering interest");
-
                         selectionChannel.register(SelectionKey.OP_READ,
                                 new SelectionListener() {
                                     public void onSelected(SelectionKey key) {
                                         latch.countDown();
                                     }
                                 });
-                        latch.await(100, TimeUnit.MILLISECONDS);
+                        latch.await(NioUtils.NIO_TIMEOUT, TimeUnit.MILLISECONDS);
                     } catch (Exception e) {
                         Context.getCurrentLogger()
                                 .log(Level.FINE,
