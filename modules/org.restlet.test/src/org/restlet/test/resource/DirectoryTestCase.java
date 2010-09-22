@@ -124,7 +124,7 @@ public class DirectoryTestCase extends RestletTestCase {
     String testCreationDirectory = webSiteURL.concat("dir/does/not/exist");
 
     /** Tests the creation of file with unknown parent directories. */
-    String testCreationFile = webSiteURL.concat("file/does/not/exist");
+    String testCreationFile = webSiteURL.concat("file/does/not/exist.xml");
 
     /** Tests the creation of text file with unknown parent directories. */
     String testCreationTextFile = webSiteURL
@@ -526,7 +526,7 @@ public class DirectoryTestCase extends RestletTestCase {
         // parent directories.
         response = handle(application, webSiteURL, testCreationDirectory,
                 Method.PUT, new StringRepresentation("useless entity"), "10a");
-        assertTrue(response.getStatus().equals(Status.REDIRECTION_SEE_OTHER));
+        assertTrue(response.getStatus().equals(Status.SUCCESS_CREATED));
 
         // Test 10b : Try to create a directory (with the trailing "/") with an
         // unkown hierarchy of parent directories.
@@ -539,7 +539,7 @@ public class DirectoryTestCase extends RestletTestCase {
         // don't match
         response = handle(application, webSiteURL, testCreationFile,
                 Method.PUT, new StringRepresentation("file entity"), "10c");
-        assertTrue(response.getStatus().equals(Status.REDIRECTION_SEE_OTHER));
+        assertTrue(response.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST));
 
         // Test 10d : Try to create a file with an unknown hierarchy of
         // parent directories. The name and the metadata of the provided entity
