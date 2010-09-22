@@ -60,7 +60,7 @@ public class FileClientTestCase extends RestletTestCase {
             resource.put(new StringRepresentation(text));
         } catch (ResourceException e) {
         }
-        assertEquals(Status.SUCCESS_CREATED, resource.getStatus());
+        assertTrue(resource.getStatus().isSuccess());
 
         try {
             // Get the text and compare to the original
