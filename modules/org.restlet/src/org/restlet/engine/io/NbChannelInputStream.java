@@ -143,7 +143,7 @@ public class NbChannelInputStream extends InputStream {
         result = this.channel.read(this.bb);
         this.bb.flip();
 
-        // System.out.println("Bytes read: " + result);
+        System.out.println("Bytes read: " + result);
 
         return result;
     }
