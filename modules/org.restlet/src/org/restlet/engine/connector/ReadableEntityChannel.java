@@ -77,22 +77,6 @@ public class ReadableEntityChannel extends
     }
 
     /**
-     * Effectively read from the wrapped channel.
-     * 
-     * @param dst
-     *            The destination buffer.
-     * @return
-     * @throws IOException
-     */
-    protected int doRead(ByteBuffer dst) throws IOException {
-        if (this.availableSize < dst.remaining()) {
-            dst.limit((int) (this.availableSize + dst.position()));
-        }
-
-        return getWrappedChannel().read(dst);
-    }
-
-    /**
      * Returns the parent inbound way.
      * 
      * @return The parent inbound way.
@@ -114,25 +98,25 @@ public class ReadableEntityChannel extends
         int result = -1;
 
         if (this.availableSize > 0) {
-            if (this.remainingBuffer != null) {
-                synchronized (this.remainingBuffer) {
-                    if (this.remainingBuffer.hasRemaining()) {
-                        // First make sure that the remaining buffer is empty
-                        result = Math.min(
-                                (int) this.availableSize,
-                                Math.min(this.remainingBuffer.remaining(),
-                                        dst.remaining()));
-                        byte[] src = new byte[result];
-                        this.remainingBuffer.get(src);
-                        dst.put(src);
-                    } else {
-                        // Otherwise, read data from the source channel
-                        result = doRead(dst);
+            synchronized (this.remainingBuffer) {
+                if ((this.remainingBuffer != null)
+                        && (this.remainingBuffer.hasRemaining())) {
+                    // First make sure that the remaining buffer is empty
+                    result = Math.min(
+                            (int) this.availableSize,
+                            Math.min(this.remainingBuffer.remaining(),
+                                    dst.remaining()));
+                    byte[] src = new byte[result];
+                    this.remainingBuffer.get(src);
+                    dst.put(src);
+                } else {
+                    // Otherwise, read data from the source channel
+                    if (this.availableSize < dst.remaining()) {
+                        dst.limit((int) (this.availableSize + dst.position()));
                     }
+
+                    result = getWrappedChannel().read(dst);
                 }
-            } else {
-                // Otherwise, read data from the source channel
-                result = doRead(dst);
             }
 
             if (result > 0) {
