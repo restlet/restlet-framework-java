@@ -142,9 +142,6 @@ public class NbChannelInputStream extends InputStream {
         this.bb.clear();
         result = this.channel.read(this.bb);
         this.bb.flip();
-
-        System.out.println("Bytes read: " + result);
-
         return result;
     }
 
@@ -166,9 +163,15 @@ public class NbChannelInputStream extends InputStream {
                     final CountDownLatch latch = new CountDownLatch(1);
 
                     try {
+                        // System.out.println("Register read interest");
                         selectionChannel.register(SelectionKey.OP_READ,
                                 new SelectionListener() {
                                     public void onSelected(SelectionKey key) {
+                                        // Cancel the key
+                                        key.cancel();
+                                        key.attach(null);
+
+                                        // Unblock the user thread
                                         latch.countDown();
                                     }
                                 });

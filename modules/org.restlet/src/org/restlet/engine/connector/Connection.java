@@ -101,7 +101,7 @@ public class Connection<T extends Connector> implements SelectionListener {
 
     /**
      * The socket's NIO selection key holding the link between the channel and
-     * the way.
+     * the connection.
      */
     private SelectionKey socketKey;
 
@@ -291,10 +291,10 @@ public class Connection<T extends Connector> implements SelectionListener {
 
     /**
      * Returns the socket's NIO selection key holding the link between the
-     * channel and the way.
+     * channel and the connection.
      * 
      * @return The socket's NIO selection key holding the link between the
-     *         channel and the way.
+     *         channel and the connection.
      */
     protected SelectionKey getSocketKey() {
         return socketKey;

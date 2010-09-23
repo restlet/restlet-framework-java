@@ -76,7 +76,7 @@ public class WrapperSocketChannel extends WrapperChannel<SocketChannel>
      *            The operations of interest.
      * @param listener
      *            The listener to notify.
-     * @return The created selection key.
+     * @return The created or updated selection key.
      */
     public SelectionKey register(int ops, SelectionListener listener)
             throws ClosedChannelException {
