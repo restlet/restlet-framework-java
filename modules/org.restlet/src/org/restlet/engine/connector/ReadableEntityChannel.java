@@ -77,6 +77,22 @@ public class ReadableEntityChannel extends
     }
 
     /**
+     * Effectively read from the wrapped channel.
+     * 
+     * @param dst
+     *            The destination buffer.
+     * @return
+     * @throws IOException
+     */
+    protected int doRead(ByteBuffer dst) throws IOException {
+        if (this.availableSize < dst.remaining()) {
+            dst.limit((int) (this.availableSize + dst.position()));
+        }
+
+        return getWrappedChannel().read(dst);
+    }
+
+    /**
      * Returns the parent inbound way.
      * 
      * @return The parent inbound way.
@@ -102,20 +118,21 @@ public class ReadableEntityChannel extends
                 synchronized (this.remainingBuffer) {
                     if (this.remainingBuffer.hasRemaining()) {
                         // First make sure that the remaining buffer is empty
-                        int limit = this.remainingBuffer.limit();
-                        int position = this.remainingBuffer.position();
-                        result = Math.min(limit - position, dst.remaining());
+                        result = Math.min(
+                                (int) this.availableSize,
+                                Math.min(this.remainingBuffer.remaining(),
+                                        dst.remaining()));
                         byte[] src = new byte[result];
                         this.remainingBuffer.get(src);
                         dst.put(src);
                     } else {
                         // Otherwise, read data from the source channel
-                        result = getWrappedChannel().read(dst);
+                        result = doRead(dst);
                     }
                 }
             } else {
                 // Otherwise, read data from the source channel
-                result = getWrappedChannel().read(dst);
+                result = doRead(dst);
             }
 
             if (result > 0) {
