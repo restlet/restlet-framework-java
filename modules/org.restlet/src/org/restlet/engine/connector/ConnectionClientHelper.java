@@ -44,6 +44,7 @@ import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import javax.net.SocketFactory;
@@ -58,6 +59,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.io.IoUtils;
 
 /**
  * Base client helper based on NIO non blocking sockets. Here is the list of
@@ -656,7 +658,11 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
                 getController().wakeup();
 
                 // Await on the latch
-                latch.await();
+                if (!latch.await(IoUtils.IO_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                    // Timeout detected
+                    response.setStatus(Status.CONNECTOR_ERROR_INTERNAL,
+                            "The calling thread timed out while waiting for a response to unblock it.");
+                }
             } else {
                 // Add the message to the outbound queue for processing
                 getOutboundMessages().add(response);

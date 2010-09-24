@@ -37,10 +37,12 @@ import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.engine.io.IoUtils;
 
 /**
  * Controls the IO work of parent server helper and manages its connections.
@@ -70,7 +72,13 @@ public class ServerConnectionController extends ConnectionController {
      * @throws InterruptedException
      */
     public void await() throws InterruptedException {
-        this.latch.await();
+        if (!this.latch.await(IoUtils.IO_TIMEOUT, TimeUnit.MILLISECONDS)) {
+            // Timeout detected
+            getHelper()
+                    .getLogger()
+                    .warning(
+                            "The calling thread timed out while waiting for the controller to be ready to accept connections.");
+        }
     }
 
     /**
