@@ -175,7 +175,7 @@ public class NbChannelInputStream extends InputStream {
                                         latch.countDown();
                                     }
                                 });
-                        latch.await(NioUtils.NIO_TIMEOUT, TimeUnit.MILLISECONDS);
+                        latch.await(IoUtils.IO_TIMEOUT, TimeUnit.MILLISECONDS);
                     } catch (Exception e) {
                         Context.getCurrentLogger()
                                 .log(Level.FINE,
@@ -194,7 +194,7 @@ public class NbChannelInputStream extends InputStream {
                         if (selector != null) {
                             selectionKey = this.selectableChannel.register(
                                     selector, SelectionKey.OP_READ);
-                            selector.select(NioUtils.NIO_TIMEOUT);
+                            selector.select(IoUtils.IO_TIMEOUT);
                         }
                     } finally {
                         NioUtils.release(selector, selectionKey);

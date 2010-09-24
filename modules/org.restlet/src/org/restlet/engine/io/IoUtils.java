@@ -42,6 +42,9 @@ public class IoUtils {
     /** The buffer size. */
     public static final int BUFFER_SIZE = 8192;
 
+    /** The number of milliseconds after which IO operation will time out. */
+    public static final int IO_TIMEOUT = 60000;
+
     /**
      * Returns the size to use when instantiating buffered items such as
      * instances of the {@link BufferedReader} class. It looks for the System

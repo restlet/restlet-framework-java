@@ -114,7 +114,7 @@ public class NbChannelOutputStream extends OutputStream {
                                         .register(this.selector,
                                                 SelectionKey.OP_WRITE);
 
-                                if (this.selector.select(NioUtils.NIO_TIMEOUT) == 0) {
+                                if (this.selector.select(IoUtils.IO_TIMEOUT) == 0) {
                                     if (attempts > 2) {
                                         throw new IOException(
                                                 "Unable to select the channel to write to it. Selection timed out.");

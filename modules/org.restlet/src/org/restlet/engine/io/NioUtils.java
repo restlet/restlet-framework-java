@@ -54,9 +54,6 @@ import org.restlet.representation.Representation;
  * @author Jerome Louvel
  */
 public class NioUtils {
-    /** The number of milliseconds after which NIO operation will time out. */
-    public static final int NIO_TIMEOUT = 60000;
-
     /**
      * Writes the representation to a byte channel. Optimizes using the file
      * channel transferTo method.
@@ -283,7 +280,7 @@ public class NioUtils {
                 while (selected == 0) {
                     selectionKey = selectableChannel.register(selector,
                             operations);
-                    selected = selector.select(NIO_TIMEOUT);
+                    selected = selector.select(IoUtils.IO_TIMEOUT);
                 }
             } finally {
                 NioUtils.release(selector, selectionKey);

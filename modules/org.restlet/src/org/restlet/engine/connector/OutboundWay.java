@@ -485,7 +485,7 @@ public abstract class OutboundWay extends Way {
                                     "Unable to register NIO interest operations for this entity",
                                     cce, Status.CONNECTOR_ERROR_COMMUNICATION);
                 }
-            } else {
+            } else if (getEntityKey() != null) {
                 getEntityKey().interestOps(entityInterestOps);
             }
         }
