@@ -32,10 +32,12 @@ package org.restlet.ext.grizzly;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.restlet.Server;
 import org.restlet.engine.http.HttpServerHelper;
+import org.restlet.engine.io.NioUtils;
 
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.ControllerStateListener;
@@ -148,11 +150,15 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
         // Wait for the listener to start up and count down the latch
         // This blocks until the server is ready to receive connections
         try {
-            latch.await();
+            if (!latch.await(NioUtils.NIO_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                // Timeout detected
+                getLogger()
+                        .warning(
+                                "The calling thread timed out while waiting for the connector to be ready to accept connections.");
+            }
         } catch (InterruptedException ex) {
             getLogger()
-                    .log(
-                            Level.WARNING,
+                    .log(Level.WARNING,
                             "Interrupted while waiting for starting latch. Stopping...",
                             ex);
             stop();

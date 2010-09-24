@@ -7,11 +7,13 @@ Changes log
     - Bugs fixed
 	   - Fixed bug in Netty HTTPS connector preventing the handling
 	     of several connections, persistent connections and chunked
-             encoding. Reported by Laurent Rustuel.
+         encoding. Reported by Laurent Rustuel.
 	   - Fixed issue with Netty when an unknown parameter was passed.
 	   - Fixed content negotiation issues with methods accepting 
-             Representation parameters or returning Representation 
-             instances. Reported by Dustin Jenkins.
+         Representation parameters or returning Representation 
+         instances. Reported by Dustin Jenkins.
+       - Fixed potential thread blocks due to CountDownLatch.await()
+         calls. They now properly time out. Suggested by Tim Peierls.
     - Misc
        - Additional errors are now caught and logged in the HTTP 
          servers. Contributed by Marc Portier.
@@ -19,7 +21,7 @@ Changes log
 	   - Updated Netty to version 3.2.2.
 	   - Optimized writing from NIO channels to BIO output streams.
 	   - Updated Simple to version 4.1.20.
-	
+	   
 - 2.0.0 (2010-07-19)
     - Bugs fixed
        - When cloning the prototype request, the ClientResource wasn't

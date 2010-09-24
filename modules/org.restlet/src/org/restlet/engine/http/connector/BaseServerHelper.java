@@ -43,6 +43,7 @@ import java.util.logging.Level;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.engine.io.NioUtils;
 import org.restlet.engine.log.LoggingThreadFactory;
 
 /**
@@ -256,11 +257,15 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
         // Wait for the listener to start up and count down the latch
         // This blocks until the server is ready to receive connections
         try {
-            this.latch.await();
+            if (!this.latch.await(NioUtils.NIO_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                // Timeout detected
+                getLogger()
+                        .warning(
+                                "The calling thread timed out while waiting for the connector to be ready to accept connections.");
+            }
         } catch (InterruptedException ex) {
             getLogger()
-                    .log(
-                            Level.WARNING,
+                    .log(Level.WARNING,
                             "Interrupted while waiting for starting latch. Stopping...",
                             ex);
             stop();
@@ -281,8 +286,7 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
                 this.acceptorService.awaitTermination(30, TimeUnit.SECONDS);
             } catch (Exception ex) {
                 getLogger()
-                        .log(
-                                Level.FINE,
+                        .log(Level.FINE,
                                 "Interruption while shutting down the acceptor service",
                                 ex);
             }
