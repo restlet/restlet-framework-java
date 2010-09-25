@@ -71,20 +71,6 @@ public abstract class ConnectionController extends Controller implements
     }
 
     /**
-     * Effectively cancel all the canceled selection registrations.
-     * 
-     * @throws IOException
-     */
-    protected void cancelKeys() throws IOException {
-        for (SelectionKey key : getSelector().keys()) {
-            if ((key.attachment() instanceof SelectionRegistration)
-                    && ((SelectionRegistration) key.attachment()).isCanceled()) {
-                key.cancel();
-            }
-        }
-    }
-
-    /**
      * Control each connection for messages to read or write.
      * 
      * @param overloaded
@@ -132,7 +118,7 @@ public abstract class ConnectionController extends Controller implements
     @Override
     protected void doRun(long sleepTime) throws IOException {
         super.doRun(sleepTime);
-        cancelKeys();
+        updateKeys();
         registerKeys();
         selectKeys(sleepTime);
         controlConnections(isOverloaded());
@@ -234,6 +220,27 @@ public abstract class ConnectionController extends Controller implements
     public void shutdown() throws IOException {
         super.shutdown();
         getSelector().close();
+    }
+
+    /**
+     * Updates all the selection registrations for new interest or cancellation.
+     * 
+     * @throws IOException
+     */
+    protected void updateKeys() throws IOException {
+        SelectionRegistration registration = null;
+
+        for (SelectionKey key : getSelector().keys()) {
+            if (key.attachment() instanceof SelectionRegistration) {
+                registration = (SelectionRegistration) key.attachment();
+
+                if (registration.isCanceled()) {
+                    key.cancel();
+                } else if (key.isValid()) {
+                    key.interestOps(registration.getInterestOperations());
+                }
+            }
+        }
     }
 
     /**
