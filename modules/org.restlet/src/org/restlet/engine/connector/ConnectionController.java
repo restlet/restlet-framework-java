@@ -106,7 +106,7 @@ public abstract class ConnectionController extends Controller implements
                         "Closing connection with no IO activity during "
                                 + getHelper().getMaxIoIdleTimeMs() + " ms.");
             } else {
-                conn.registerInterest(getSelector());
+                conn.registerInterest(this);
             }
         }
     }
@@ -200,10 +200,8 @@ public abstract class ConnectionController extends Controller implements
     protected void registerKeys() throws IOException {
         SelectionRegistration newRegistration;
 
-        for (Iterator<SelectionRegistration> iter = getNewRegistrations()
-                .iterator(); iter.hasNext();) {
-            newRegistration = iter.next();
-            iter.remove();
+        for (int i = getNewRegistrations().size() - 1; i >= 0; i--) {
+            newRegistration = getNewRegistrations().remove(i);
             newRegistration.getSelectableChannel().register(getSelector(),
                     newRegistration.getInterestOperations(), newRegistration);
         }

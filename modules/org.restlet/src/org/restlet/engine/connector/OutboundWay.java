@@ -33,12 +33,10 @@ package org.restlet.engine.connector;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.util.logging.Level;
 
 import org.restlet.Message;
@@ -47,15 +45,12 @@ import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.data.Status;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.util.SelectionListener;
-import org.restlet.util.SelectionRegistration;
 import org.restlet.util.Series;
 
 /**
@@ -460,38 +455,39 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
-    public void registerInterest(Selector selector) {
-        super.registerInterest(selector);
+    public void registerInterest(ConnectionController controller) {
+        super.registerInterest(controller);
 
         // If the entity is available as a non-blocking selectable channel,
         // register it as well
-        SelectableChannel entitySelectableChannel = getEntitySelectableChannel();
-
-        if (entitySelectableChannel != null) {
-            int entityInterestOps = getEntityInterestOps();
-
-            if ((getEntityKey() == null) && (entityInterestOps > 0)) {
-                try {
-                    setEntityKey(entitySelectableChannel.register(selector,
-                            entityInterestOps, new SelectionListener() {
-
-                                public void onSelected(
-                                        SelectionRegistration registration) {
-                                    // TODO
-                                }
-
-                            }));
-                    selector.wakeup();
-                } catch (ClosedChannelException cce) {
-                    getConnection()
-                            .onError(
-                                    "Unable to register NIO interest operations for this entity",
-                                    cce, Status.CONNECTOR_ERROR_COMMUNICATION);
-                }
-            } else if (getEntityKey() != null) {
-                getEntityKey().interestOps(entityInterestOps);
-            }
-        }
+        // SelectableChannel entitySelectableChannel =
+        // getEntitySelectableChannel();
+        //
+        // if (entitySelectableChannel != null) {
+        // int entityInterestOps = getEntityInterestOps();
+        //
+        // if ((getEntityKey() == null) && (entityInterestOps > 0)) {
+        // try {
+        // setEntityKey(entitySelectableChannel.register(selector,
+        // entityInterestOps, new SelectionListener() {
+        //
+        // public void onSelected(
+        // SelectionRegistration registration) {
+        // // TODO
+        // }
+        //
+        // }));
+        // selector.wakeup();
+        // } catch (ClosedChannelException cce) {
+        // getConnection()
+        // .onError(
+        // "Unable to register NIO interest operations for this entity",
+        // cce, Status.CONNECTOR_ERROR_COMMUNICATION);
+        // }
+        // } else if (getEntityKey() != null) {
+        // getEntityKey().interestOps(entityInterestOps);
+        // }
+        // }
     }
 
     /**

@@ -34,8 +34,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.channels.ClosedChannelException;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.security.cert.Certificate;
 import java.util.Arrays;
@@ -101,10 +99,10 @@ public class Connection<T extends Connector> implements SelectionListener {
     private SocketAddress socketAddress;
 
     /**
-     * The socket's NIO selection key holding the link between the channel and
-     * the connection.
+     * The socket's NIO selection registration holding the link between the
+     * channel and the connection.
      */
-    private SelectionKey socketKey;
+    private SelectionRegistration socketRegistration;
 
     /** The state of the connection. */
     private ConnectionState state;
@@ -140,6 +138,10 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public void close(boolean graceful) {
         if (graceful) {
+            if (getSocketRegistration() != null) {
+                getSocketRegistration().cancel();
+            }
+
             setState(ConnectionState.CLOSING);
         } else {
             try {
@@ -292,14 +294,14 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
-     * Returns the socket's NIO selection key holding the link between the
+     * Returns the socket's NIO registration holding the link between the
      * channel and the connection.
      * 
-     * @return The socket's NIO selection key holding the link between the
+     * @return The socket's NIO registration holding the link between the
      *         channel and the connection.
      */
-    protected SelectionKey getSocketKey() {
-        return socketKey;
+    protected SelectionRegistration getSocketRegistration() {
+        return socketRegistration;
     }
 
     /**
@@ -525,7 +527,7 @@ public class Connection<T extends Connector> implements SelectionListener {
     public void recycle() {
         this.readableSelectionChannel = null;
         this.socketChannel = null;
-        this.socketKey = null;
+        this.socketRegistration = null;
         this.state = null;
         this.writableSelectionChannel = null;
         this.inboundWay.recycle();
@@ -534,47 +536,37 @@ public class Connection<T extends Connector> implements SelectionListener {
 
     /**
      * Registers interest of this connection for NIO operations with the given
-     * selector. If called several times, it just update the selection keys with
-     * the new interest operations.
+     * selector. If called several times, it just update the selection
+     * registrations with the new interest operations.
      * 
-     * @param selector
-     *            The selector to register with.
+     * @param controller
+     *            The connection controller to register with.
      * @throws ClosedChannelException
      */
-    public void registerInterest(Selector selector) {
+    public void registerInterest(ConnectionController controller) {
         if ((getState() != ConnectionState.CLOSING)
                 && (getState() != ConnectionState.CLOSED)) {
             // Give a chance to ways for addition registrations
-            getInboundWay().registerInterest(selector);
-            getOutboundWay().registerInterest(selector);
+            getInboundWay().registerInterest(controller);
+            getOutboundWay().registerInterest(controller);
 
             // Get the socket interest
             int socketInterestOps = getSocketInterestOps();
 
-            if (socketInterestOps > 0) {
-                // IO interest declared
-                if (getSocketKey() == null) {
-                    // Create a new selection key
-                    try {
-                        setSocketKey(getSocketChannel().register(selector,
-                                socketInterestOps, this));
-                        selector.wakeup();
-                    } catch (ClosedChannelException cce) {
-                        onError("Unable to register NIO interest operations for this connection",
-                                cce, Status.CONNECTOR_ERROR_COMMUNICATION);
-                    }
-                } else {
-                    // Update the existing selection key
-                    getSocketKey().interestOps(socketInterestOps);
+            if (getSocketRegistration() == null) {
+                // Create a new selection key
+                try {
+                    setSocketRegistration(controller.register(
+                            getSocketChannel(), socketInterestOps, this));
+                    controller.wakeup();
+                } catch (IOException cce) {
+                    onError("Unable to register NIO interest operations for this connection",
+                            cce, Status.CONNECTOR_ERROR_COMMUNICATION);
                 }
             } else {
-                // No IO interest declared
-                if (getSocketKey() != null) {
-                    // Free the existing selection key
-                    getSocketKey().cancel();
-                    getSocketKey().attach(null);
-                    setSocketKey(null);
-                }
+                // Update the existing selection key
+                getSocketRegistration()
+                        .setInterestOperations(socketInterestOps);
             }
         }
     }
@@ -612,7 +604,7 @@ public class Connection<T extends Connector> implements SelectionListener {
         }
 
         this.lastActivity = System.currentTimeMillis();
-        this.socketKey = null;
+        this.socketRegistration = null;
         this.inboundWay.reuse();
         this.outboundWay.reuse();
     }
@@ -638,15 +630,16 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
-     * Sets the socket's NIO selection key holding the link between the channel
+     * Sets the socket's NIO registration holding the link between the channel
      * and the way.
      * 
-     * @param socketKey
-     *            The socket's NIO selection key holding the link between the
+     * @param socketRegistration
+     *            The socket's NIO registration holding the link between the
      *            channel and the way.
      */
-    protected void setSocketKey(SelectionKey socketKey) {
-        this.socketKey = socketKey;
+    protected void setSocketRegistration(
+            SelectionRegistration socketRegistration) {
+        this.socketRegistration = socketRegistration;
     }
 
     /**
