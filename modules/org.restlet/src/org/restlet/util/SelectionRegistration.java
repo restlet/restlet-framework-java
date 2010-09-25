@@ -34,7 +34,8 @@ import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 
 /**
- * Registration of a listener with a NIO selector.
+ * Represents a unique registration between a NIO selector and a selectable
+ * channel.
  * 
  * @author Jerome Louvel
  */
@@ -190,7 +191,9 @@ public class SelectionRegistration {
 
     /**
      * Sets the selection listener that will be notified.
-     * @param listener The selection listener that will be notified.
+     * 
+     * @param listener
+     *            The selection listener that will be notified.
      */
     public void setListener(SelectionListener listener) {
         this.listener = listener;
