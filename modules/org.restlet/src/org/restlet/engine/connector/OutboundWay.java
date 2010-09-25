@@ -55,6 +55,7 @@ import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.SelectionListener;
+import org.restlet.util.SelectionRegistration;
 import org.restlet.util.Series;
 
 /**
@@ -474,11 +475,13 @@ public abstract class OutboundWay extends Way {
                     setEntityKey(entitySelectableChannel.register(selector,
                             entityInterestOps, new SelectionListener() {
 
-                                public void onSelected(SelectionKey key) {
+                                public void onSelected(
+                                        SelectionRegistration registration) {
                                     // TODO
                                 }
 
                             }));
+                    selector.wakeup();
                 } catch (ClosedChannelException cce) {
                     getConnection()
                             .onError(

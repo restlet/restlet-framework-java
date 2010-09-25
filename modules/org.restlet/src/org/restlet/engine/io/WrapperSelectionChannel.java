@@ -30,10 +30,10 @@
 
 package org.restlet.engine.io;
 
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.SelectionKey;
+import java.io.IOException;
 
 import org.restlet.util.SelectionListener;
+import org.restlet.util.SelectionRegistration;
 
 /**
  * Wrapper selection channel.
@@ -56,8 +56,8 @@ public class WrapperSelectionChannel<T extends SelectionChannel> extends
     /**
      * Delegates to the wrapped channel.
      */
-    public SelectionKey register(int ops, SelectionListener listener)
-            throws ClosedChannelException {
+    public SelectionRegistration register(int ops, SelectionListener listener)
+            throws IOException {
         return getWrappedChannel().register(ops, listener);
     }
 

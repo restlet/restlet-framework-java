@@ -30,11 +30,11 @@
 
 package org.restlet.engine.io;
 
+import java.io.IOException;
 import java.nio.channels.Channel;
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.SelectionKey;
 
 import org.restlet.util.SelectionListener;
+import org.restlet.util.SelectionRegistration;
 
 /**
  * NIO channel that is based on a selectable channel.
@@ -45,15 +45,15 @@ public interface SelectionChannel extends Channel {
 
     /**
      * Registers a selection listener with the underlying selector for the given
-     * operations and returns the selection key created.
+     * operations and returns the registration created.
      * 
-     * @param ops
-     *            The operations of interest.
+     * @param interestOperations
+     *            The initial operations of interest.
      * @param listener
      *            The listener to notify.
-     * @return The created selection key.
+     * @return The created registration.
      */
-    public SelectionKey register(int ops, SelectionListener listener)
-            throws ClosedChannelException;
+    public SelectionRegistration register(int interestOperations,
+            SelectionListener listener) throws IOException;
 
 }

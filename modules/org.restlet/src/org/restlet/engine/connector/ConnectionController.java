@@ -32,13 +32,17 @@ package org.restlet.engine.connector;
 
 import java.io.IOException;
 import java.nio.channels.ClosedByInterruptException;
+import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.util.SelectionListener;
+import org.restlet.util.SelectionRegistration;
 
 /**
  * Controls the IO work of parent connector helper and manages its connections.
@@ -49,7 +53,10 @@ public abstract class ConnectionController extends Controller implements
         Runnable {
 
     /** The NIO selector. */
-    private volatile Selector selector;
+    private final Selector selector;
+
+    /** The list of new selection registrations. */
+    private final List<SelectionRegistration> newRegistrations;
 
     /**
      * Constructor.
@@ -59,12 +66,21 @@ public abstract class ConnectionController extends Controller implements
      */
     public ConnectionController(ConnectionHelper<?> helper) {
         super(helper);
+        this.newRegistrations = new CopyOnWriteArrayList<SelectionRegistration>();
+        this.selector = createSelector();
+    }
 
-        try {
-            this.selector = Selector.open();
-        } catch (IOException ioe) {
-            Context.getCurrentLogger().log(Level.WARNING,
-                    "Unable to open the controller's NIO selector", ioe);
+    /**
+     * Effectively cancel all the canceled selection registrations.
+     * 
+     * @throws IOException
+     */
+    protected void cancelKeys() throws IOException {
+        for (SelectionKey key : getSelector().keys()) {
+            if ((key.attachment() instanceof SelectionRegistration)
+                    && ((SelectionRegistration) key.attachment()).isCanceled()) {
+                key.cancel();
+            }
         }
     }
 
@@ -96,11 +112,47 @@ public abstract class ConnectionController extends Controller implements
     }
 
     /**
+     * Creates a new NIO selector.
+     * 
+     * @return A new NIO selector.
+     */
+    protected Selector createSelector() {
+        Selector result = null;
+
+        try {
+            result = Selector.open();
+        } catch (IOException ioe) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to open the controller's NIO selector", ioe);
+        }
+
+        return result;
+    }
+
+    @Override
+    protected void doRun(long sleepTime) throws IOException {
+        super.doRun(sleepTime);
+        cancelKeys();
+        registerKeys();
+        selectKeys(sleepTime);
+        controlConnections(isOverloaded());
+    }
+
+    /**
+     * Returns the list of new selection registrations.
+     * 
+     * @return The list of new selection registrations.
+     */
+    protected List<SelectionRegistration> getNewRegistrations() {
+        return this.newRegistrations;
+    }
+
+    /**
      * Returns the NIO selector.
      * 
      * @return The NIO selector.
      */
-    public Selector getSelector() {
+    protected Selector getSelector() {
         return selector;
     }
 
@@ -114,26 +166,58 @@ public abstract class ConnectionController extends Controller implements
             throws ClosedByInterruptException {
         // Notify the selected way
         if (key.attachment() != null) {
-            ((SelectionListener) key.attachment()).onSelected(key);
+            ((SelectionRegistration) key.attachment()).onSelected(key
+                    .readyOps());
         }
     }
 
-    @Override
-    protected void doRun(long sleepTime) throws IOException {
-        super.doRun(sleepTime);
-        selectKey(sleepTime);
-        controlConnections(isOverloaded());
+    /**
+     * Registers a selection listener with the underlying selector for the given
+     * operations and returns the registration created.
+     * 
+     * @param selectableChannel
+     *            The NIO selectable channel.
+     * @param interestOperations
+     *            The initial operations of interest.
+     * @param listener
+     *            The listener to notify.
+     * @return The created registration.
+     */
+    public SelectionRegistration register(SelectableChannel selectableChannel,
+            int interestOperations, SelectionListener listener)
+            throws IOException {
+        SelectionRegistration result = new SelectionRegistration(
+                selectableChannel, interestOperations, listener);
+        getNewRegistrations().add(result);
+        return result;
     }
 
     /**
-     * Selects the key ready for IO operations.
+     * Registers all the new selection registration requests.
+     * 
+     * @throws IOException
+     */
+    protected void registerKeys() throws IOException {
+        SelectionRegistration newRegistration;
+
+        for (Iterator<SelectionRegistration> iter = getNewRegistrations()
+                .iterator(); iter.hasNext();) {
+            newRegistration = iter.next();
+            iter.remove();
+            newRegistration.getSelectableChannel().register(getSelector(),
+                    newRegistration.getInterestOperations(), newRegistration);
+        }
+    }
+
+    /**
+     * Selects the keys ready for IO operations.
      * 
      * @param sleepTime
      *            The max sleep time.
      * @throws IOException
      * @throws ClosedByInterruptException
      */
-    protected void selectKey(long sleepTime) throws IOException,
+    protected void selectKeys(long sleepTime) throws IOException,
             ClosedByInterruptException {
         // Select the connections ready for NIO operations
         if (getSelector().select(sleepTime) > 0) {

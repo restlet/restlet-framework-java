@@ -58,6 +58,7 @@ import org.restlet.engine.io.WritableSocketChannel;
 import org.restlet.engine.io.WritableTraceChannel;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.util.SelectionListener;
+import org.restlet.util.SelectionRegistration;
 
 /**
  * A network connection though which messages are exchanged by connectors.
@@ -115,18 +116,19 @@ public class Connection<T extends Connector> implements SelectionListener {
      *            The parent connector helper.
      * @param socketChannel
      *            The underlying NIO socket channel.
-     * @param selector
-     *            The controller's NIO selector.
+     * @param controller
+     *            The IO controller.
      * @param socketAddress
      *            The associated IP address.
      * @throws IOException
      */
     public Connection(ConnectionHelper<T> helper, SocketChannel socketChannel,
-            Selector selector, SocketAddress socketAddress) throws IOException {
+            ConnectionController controller, SocketAddress socketAddress)
+            throws IOException {
         this.helper = helper;
         this.inboundWay = helper.createInboundWay(this);
         this.outboundWay = helper.createOutboundWay(this);
-        reuse(socketChannel, selector, socketAddress);
+        reuse(socketChannel, controller, socketAddress);
     }
 
     /**
@@ -469,22 +471,22 @@ public class Connection<T extends Connector> implements SelectionListener {
      * that allows the detection of expired connections and calls
      * {@link Way#onSelected()} on the inbound or outbound way.
      * 
-     * @param key
+     * @param registration
      *            The registered selection key.
      */
-    public void onSelected(SelectionKey key) {
+    public void onSelected(SelectionRegistration registration) {
         this.lastActivity = System.currentTimeMillis();
 
         try {
-            if ((key == null) || key.isReadable()) {
+            if ((registration == null) || registration.isReadable()) {
                 synchronized (getInboundWay().getByteBuffer()) {
                     getInboundWay().onSelected();
                 }
-            } else if (key.isWritable()) {
+            } else if (registration.isWritable()) {
                 synchronized (getOutboundWay().getByteBuffer()) {
                     getOutboundWay().onSelected();
                 }
-            } else if (key.isConnectable()) {
+            } else if (registration.isConnectable()) {
                 // Client-side asynchronous connection
                 try {
                     if (getSocketChannel().finishConnect()) {
@@ -556,6 +558,7 @@ public class Connection<T extends Connector> implements SelectionListener {
                     try {
                         setSocketKey(getSocketChannel().register(selector,
                                 socketInterestOps, this));
+                        selector.wakeup();
                     } catch (ClosedChannelException cce) {
                         onError("Unable to register NIO interest operations for this connection",
                                 cce, Status.CONNECTOR_ERROR_COMMUNICATION);
@@ -581,14 +584,15 @@ public class Connection<T extends Connector> implements SelectionListener {
      * 
      * @param socketChannel
      *            The underlying NIO socket channel.
-     * @param selector
-     *            The underlying NIO selector.
+     * @param controller
+     *            The underlying IO controller.
      * @param socketAddress
      *            The associated socket address.
      * @throws IOException
      */
-    public void reuse(SocketChannel socketChannel, Selector selector,
-            SocketAddress socketAddress) throws IOException {
+    public void reuse(SocketChannel socketChannel,
+            ConnectionController controller, SocketAddress socketAddress)
+            throws IOException {
         this.persistent = helper.isPersistingConnections();
         this.pipelining = helper.isPipeliningConnections();
         this.state = ConnectionState.OPENING;
@@ -597,14 +601,14 @@ public class Connection<T extends Connector> implements SelectionListener {
 
         if (helper.isTracing()) {
             this.readableSelectionChannel = new ReadableTraceChannel(
-                    new ReadableSocketChannel(socketChannel, selector));
+                    new ReadableSocketChannel(socketChannel, controller));
             this.writableSelectionChannel = new WritableTraceChannel(
-                    new WritableSocketChannel(socketChannel, selector));
+                    new WritableSocketChannel(socketChannel, controller));
         } else {
             this.readableSelectionChannel = new ReadableSocketChannel(
-                    socketChannel, selector);
+                    socketChannel, controller);
             this.writableSelectionChannel = new WritableSocketChannel(
-                    socketChannel, selector);
+                    socketChannel, controller);
         }
 
         this.lastActivity = System.currentTimeMillis();

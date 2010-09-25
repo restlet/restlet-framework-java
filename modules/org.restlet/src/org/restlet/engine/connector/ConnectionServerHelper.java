@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketAddress;
-import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.logging.Level;
@@ -96,8 +95,9 @@ public abstract class ConnectionServerHelper extends ConnectionHelper<Server> {
 
     @Override
     protected Connection<Server> createConnection(SocketChannel socketChannel,
-            Selector selector, SocketAddress socketAddress) throws IOException {
-        return new Connection<Server>(this, socketChannel, selector,
+            ConnectionController controller, SocketAddress socketAddress)
+            throws IOException {
+        return new Connection<Server>(this, socketChannel, controller,
                 socketAddress);
     }
 

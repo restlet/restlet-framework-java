@@ -30,12 +30,12 @@
 
 package org.restlet.engine.io;
 
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
+import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
+import org.restlet.engine.connector.ConnectionController;
 import org.restlet.util.SelectionListener;
+import org.restlet.util.SelectionRegistration;
 
 // [excludes gwt]
 /**
@@ -45,29 +45,30 @@ import org.restlet.util.SelectionListener;
 public class WrapperSocketChannel extends WrapperChannel<SocketChannel>
         implements SelectionChannel {
 
-    /** The selector to use. */
-    private Selector selector;
+    /** The IO controller. */
+    private ConnectionController controller;
 
     /**
      * Constructor.
      * 
      * @param wrappedChannel
      *            The source channel.
-     * @param selector
-     *            The selector to use.
+     * @param controller
+     *            The IO controller.
      */
-    public WrapperSocketChannel(SocketChannel wrappedChannel, Selector selector) {
+    public WrapperSocketChannel(SocketChannel wrappedChannel,
+            ConnectionController controller) {
         super(wrappedChannel);
-        this.selector = selector;
+        this.controller = controller;
     }
 
     /**
-     * Returns the selector.
+     * Returns the IO controller.
      * 
-     * @return The selector.
+     * @return The IO controller.
      */
-    protected Selector getSelector() {
-        return selector;
+    protected ConnectionController getController() {
+        return controller;
     }
 
     /**
@@ -78,11 +79,11 @@ public class WrapperSocketChannel extends WrapperChannel<SocketChannel>
      *            The operations of interest.
      * @param listener
      *            The listener to notify.
-     * @return The created or updated selection key.
+     * @return The created registration.
      */
-    public SelectionKey register(int ops, SelectionListener listener)
-            throws ClosedChannelException {
-        return getWrappedChannel().register(getSelector(), ops, listener);
+    public SelectionRegistration register(int ops, SelectionListener listener)
+            throws IOException {
+        return getController().register(getWrappedChannel(), ops, listener);
     }
 
 }

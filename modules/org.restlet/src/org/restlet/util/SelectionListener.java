@@ -30,8 +30,6 @@
 
 package org.restlet.util;
 
-import java.nio.channels.SelectionKey;
-
 /**
  * Callback interface when a NIO selection occurs on the selectable object.
  * 
@@ -43,9 +41,9 @@ public interface SelectionListener {
      * Callback method invoked when the connection has been selected for IO
      * operations it registered interest in.
      * 
-     * @param key
-     *            The registered selection key.
+     * @param registration
+     *            The selection registration.
      */
-    public void onSelected(SelectionKey key);
+    public void onSelected(SelectionRegistration registration);
 
 }

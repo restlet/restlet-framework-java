@@ -43,6 +43,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.util.SelectionListener;
+import org.restlet.util.SelectionRegistration;
 
 // [excludes gwt]
 /**
@@ -60,6 +61,9 @@ public class NbChannelInputStream extends InputStream {
 
     /** Indicates if further reads can be attempted. */
     private volatile boolean endReached;
+
+    /** The registered selection registration. */
+    private volatile SelectionRegistration selectionRegistration;
 
     /** The optional selectable channel to read from. */
     private final SelectableChannel selectableChannel;
@@ -90,6 +94,7 @@ public class NbChannelInputStream extends InputStream {
         this.bb = ByteBuffer.allocate(IoUtils.BUFFER_SIZE);
         this.bb.flip();
         this.endReached = false;
+        this.selectionRegistration = null;
     }
 
     @Override
@@ -164,24 +169,32 @@ public class NbChannelInputStream extends InputStream {
                     final CountDownLatch latch = new CountDownLatch(1);
 
                     try {
-                        // System.out.println("Register read interest");
-                        selectionChannel.register(SelectionKey.OP_READ,
-                                new SelectionListener() {
-                                    public void onSelected(SelectionKey key) {
-                                        // Cancel the key
-                                        key.cancel();
-                                        key.attach(null);
+                        if (this.selectionRegistration == null) {
+                            this.selectionRegistration = this.selectionChannel
+                                    .register(SelectionKey.OP_READ,
+                                            new SelectionListener() {
+                                                public void onSelected(
+                                                        SelectionRegistration registration) {
+                                                    // No more read interest at
+                                                    // this point
+                                                    registration.suspend();
 
-                                        // Unblock the user thread
-                                        latch.countDown();
-                                    }
-                                });
+                                                    // Unblock the user thread
+                                                    latch.countDown();
+                                                }
+                                            });
+                        } else {
+                            this.selectionRegistration.resume();
+                        }
+
+                        // Block until new content arrives or a timeout occurs
                         latch.await(IoUtils.IO_TIMEOUT, TimeUnit.MILLISECONDS);
                     } catch (Exception e) {
                         Context.getCurrentLogger()
                                 .log(Level.FINE,
                                         "Exception while registering or waiting for new content",
                                         e);
+                        e.printStackTrace();
                     }
 
                     bytesRead = readChannel();
@@ -208,6 +221,10 @@ public class NbChannelInputStream extends InputStream {
 
         if (bytesRead == -1) {
             this.endReached = true;
+
+            if (this.selectionRegistration != null) {
+                this.selectionRegistration.cancel();
+            }
         }
     }
 }

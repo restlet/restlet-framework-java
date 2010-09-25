@@ -386,11 +386,11 @@ public abstract class Representation extends RepresentationInfo {
     // [ifndef gwt] method
     /**
      * Indicates if the representation content supports NIO selection. In this
-     * case, the {@link #register(int, SelectionListener)} method can be called
-     * to learn about ready IO operations. By default, it returns false.
+     * case, the {@link #register(org.restlet.util.SelectionListener)} method
+     * can be called to be notifier when new content is ready for reading.
      * 
      * @return True if the representation content supports NIO selection.
-     * @see #register(int, SelectionListener)
+     * @see #register(org.restlet.util.SelectionListener)
      */
     public boolean isSelectable() {
         try {
@@ -427,18 +427,18 @@ public abstract class Representation extends RepresentationInfo {
     /**
      * Registers a selection listener that will be asynchronously be called back
      * when some readable content is available. Note that the listener will keep
-     * being called back until you cancel the selection key returned by this
-     * method. It is also a good practice to clear the key's attachment by
-     * passing null to the {@link SelectionKey#attach(Object)} method.
+     * being called back until you suspend or cancel the registration returned
+     * by this method.
      * 
      * @param listener
      *            The listener to notify when the {@link ReadableByteChannel}
-     *            returned by {@link #getChannel()} has byte ready to be read.
-     * @return The created selection key.
+     *            returned by {@link #getChannel()} has content ready to be
+     *            read.
+     * @return The created registration.
      * @throws IOException
      * @see #isSelectable()
      */
-    public java.nio.channels.SelectionKey register(
+    public org.restlet.util.SelectionRegistration register(
             org.restlet.util.SelectionListener listener) throws IOException {
         if (isSelectable()) {
             return ((org.restlet.engine.io.SelectionChannel) getChannel())

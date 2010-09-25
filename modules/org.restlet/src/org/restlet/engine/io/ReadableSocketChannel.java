@@ -32,8 +32,9 @@ package org.restlet.engine.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+
+import org.restlet.engine.connector.ConnectionController;
 
 // [excludes gwt]
 /**
@@ -48,11 +49,12 @@ public class ReadableSocketChannel extends WrapperSocketChannel implements
      * 
      * @param wrappedChannel
      *            The source channel.
-     * @param selector
-     *            The selector to use.
+     * @param controller
+     *            The IO controller.
      */
-    public ReadableSocketChannel(SocketChannel wrappedChannel, Selector selector) {
-        super(wrappedChannel, selector);
+    public ReadableSocketChannel(SocketChannel wrappedChannel,
+            ConnectionController controller) {
+        super(wrappedChannel, controller);
     }
 
     /**
@@ -63,7 +65,11 @@ public class ReadableSocketChannel extends WrapperSocketChannel implements
      * @return The number of bytes read.
      */
     public int read(ByteBuffer dst) throws IOException {
-        return getWrappedChannel().read(dst);
+        if (getWrappedChannel().isOpen()) {
+            return getWrappedChannel().read(dst);
+        } else {
+            throw new IOException("Wrapped channel closed");
+        }
     }
 
 }

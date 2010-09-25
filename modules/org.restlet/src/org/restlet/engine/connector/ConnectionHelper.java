@@ -32,7 +32,6 @@ package org.restlet.engine.connector;
 
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -132,22 +131,23 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * 
      * @param socketChannel
      *            The underlying NIO socket channel.
-     * @param selector
-     *            The underlying NIO selector.
+     * @param controller
+     *            The underlying IO controller.
      * @param socketAddress
      *            The associated IP address.
      * @return The new connection.
      * @throws IOException
      */
     protected Connection<T> checkout(SocketChannel socketChannel,
-            Selector selector, SocketAddress socketAddress) throws IOException {
+            ConnectionController controller, SocketAddress socketAddress)
+            throws IOException {
         Connection<T> result = null;
 
         if (isPooledConnection()) {
             result = getConnectionPool().checkout();
-            result.reuse(socketChannel, selector, socketAddress);
+            result.reuse(socketChannel, controller, socketAddress);
         } else {
-            result = createConnection(socketChannel, selector, socketAddress);
+            result = createConnection(socketChannel, controller, socketAddress);
         }
 
         return result;
@@ -158,15 +158,15 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * 
      * @param socketChannel
      *            The underlying NIO socket channel.
-     * @param selector
-     *            The underlying NIO selector.
+     * @param controller
+     *            The underlying IO controller.
      * @param socketAddress
      *            The associated IP address.
      * @return The new connection.
      * @throws IOException
      */
     protected abstract Connection<T> createConnection(
-            SocketChannel socketChannel, Selector selector,
+            SocketChannel socketChannel, ConnectionController controller,
             SocketAddress socketAddress) throws IOException;
 
     /**

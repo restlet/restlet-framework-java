@@ -185,8 +185,9 @@ public class WrapperRepresentation extends Representation {
         return getWrappedRepresentation().isTransient();
     }
 
+    // [ifndef gwt] method
     @Override
-    public java.nio.channels.SelectionKey register(
+    public org.restlet.util.SelectionRegistration register(
             org.restlet.util.SelectionListener listener) throws IOException {
         return getWrappedRepresentation().register(listener);
     }

@@ -37,7 +37,6 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
-import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -175,8 +174,9 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
 
     @Override
     protected Connection<Client> createConnection(SocketChannel socketChannel,
-            Selector selector, SocketAddress socketAddress) throws IOException {
-        return new Connection<Client>(this, socketChannel, selector,
+            ConnectionController controller, SocketAddress socketAddress)
+            throws IOException {
+        return new Connection<Client>(this, socketChannel, controller,
                 socketAddress);
     }
 
@@ -431,8 +431,7 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
                 // Create a new connection
                 result = checkout(
                         createSocketChannel(request.isConfidential(),
-                                socketAddress), getController().getSelector(),
-                        socketAddress);
+                                socketAddress), getController(), socketAddress);
                 getConnections().add(result);
             }
         }

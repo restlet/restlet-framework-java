@@ -121,7 +121,7 @@ public class ServerConnectionController extends ConnectionController {
                         Connection<Server> connection = getHelper()
                                 .checkout(
                                         socketChannel,
-                                        getSelector(),
+                                        this,
                                         socketChannel.socket()
                                                 .getRemoteSocketAddress());
                         connection.open();

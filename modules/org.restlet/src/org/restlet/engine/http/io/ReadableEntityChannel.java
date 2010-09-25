@@ -149,7 +149,9 @@ public class ReadableEntityChannel extends SelectableChannel implements
     @Override
     public SelectionKey register(Selector sel, int ops, Object att)
             throws ClosedChannelException {
-        return getSource().register(sel, ops, att);
+        SelectionKey result = getSource().register(sel, ops, att);
+        sel.wakeup();
+        return result;
     }
 
     @Override
