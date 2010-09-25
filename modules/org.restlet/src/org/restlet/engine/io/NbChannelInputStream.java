@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.util.SelectionListener;
 
 // [excludes gwt]
 /**

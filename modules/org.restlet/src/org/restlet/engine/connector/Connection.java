@@ -53,11 +53,11 @@ import org.restlet.data.Status;
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.engine.io.ReadableSocketChannel;
 import org.restlet.engine.io.ReadableTraceChannel;
-import org.restlet.engine.io.SelectionListener;
 import org.restlet.engine.io.WritableSelectionChannel;
 import org.restlet.engine.io.WritableSocketChannel;
 import org.restlet.engine.io.WritableTraceChannel;
 import org.restlet.engine.security.SslUtils;
+import org.restlet.util.SelectionListener;
 
 /**
  * A network connection though which messages are exchanged by connectors.

@@ -33,6 +33,8 @@ package org.restlet.engine.io;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 
+import org.restlet.util.SelectionListener;
+
 /**
  * Wrapper selection channel.
  * 

@@ -12,14 +12,17 @@ Changes log
         to explicitly set the parent application used to pick up the
         ConverterService or MetadataService. This property is also 
         carried on by the copy constructor. Suggested by John Logdson.
-	  - Added UniformResource#toString() for easier debugging.
+      - Added UniformResource#toString() for easier debugging.
+      - Added Representation#isSelectable() and register(...) method
+        to know when the NIO channel returned by getChannel() is ready
+        for reading.
     - Enhancements
-	  - Improved the naming of files created by the FILE local 
-	    connector so that media type extension comes at the end.
-	  - Added a new non-blocking NIO/HTTP connector in the engine, in
-	    addition of the internal one. It is not complete yet but has
-	    excellent performance so far. Chunked encoding and a few other
-	    features are missing though.
+      - Improved the naming of files created by the FILE local 
+        connector so that media type extension comes at the end.
+      - Added a new non-blocking NIO/HTTP connector in the engine, in
+        addition of the internal one. It is not complete yet but has
+        excellent performance so far. Chunked encoding and a few other
+        features are missing though.
     - Bugs fixed
       -   
     - Misc

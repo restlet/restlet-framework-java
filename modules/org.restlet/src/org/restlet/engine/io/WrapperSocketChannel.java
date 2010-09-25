@@ -35,6 +35,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 
+import org.restlet.util.SelectionListener;
+
 // [excludes gwt]
 /**
  * Readable byte channel based on a source socket channel that must only be

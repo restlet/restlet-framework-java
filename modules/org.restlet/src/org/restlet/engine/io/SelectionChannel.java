@@ -34,6 +34,8 @@ import java.nio.channels.Channel;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 
+import org.restlet.util.SelectionListener;
+
 /**
  * NIO channel that is based on a selectable channel.
  * 
