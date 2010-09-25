@@ -34,8 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.SelectionKey;
 import java.util.Date;
 
 import org.restlet.data.Disposition;
@@ -444,7 +442,7 @@ public abstract class Representation extends RepresentationInfo {
             org.restlet.util.SelectionListener listener) throws IOException {
         if (isSelectable()) {
             return ((org.restlet.engine.io.SelectionChannel) getChannel())
-                    .register(SelectionKey.OP_READ, listener);
+                    .register(java.nio.channels.SelectionKey.OP_READ, listener);
         } else {
             throw new IllegalStateException(
                     "The representation isn't selectable");
