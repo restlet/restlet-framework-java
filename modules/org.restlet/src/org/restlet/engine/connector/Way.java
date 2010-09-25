@@ -31,7 +31,6 @@
 package org.restlet.engine.connector;
 
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.WritableByteChannel;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -252,19 +251,6 @@ public abstract class Way {
         this.message = null;
         this.messages.clear();
         this.messageState = MessageState.IDLE;
-    }
-
-    /**
-     * Registers interest of this connection way for NIO operations with the
-     * given selector. If called several times, it just updates the selection
-     * keys with the new interest operations. By default, it does nothing.
-     * 
-     * @param controller
-     *            The controller to register with.
-     * @throws ClosedChannelException
-     */
-    public void registerInterest(ConnectionController controller) {
-        updateState();
     }
 
     /**

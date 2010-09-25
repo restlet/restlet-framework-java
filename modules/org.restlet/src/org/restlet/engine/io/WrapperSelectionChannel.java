@@ -61,4 +61,10 @@ public class WrapperSelectionChannel<T extends SelectionChannel> extends
         return getWrappedChannel().register(ops, listener);
     }
 
+    /**
+     * Delegates to the wrapped channel.
+     */
+    public SelectionRegistration getRegistration() throws IOException {
+        return getWrappedChannel().getRegistration();
+    }
 }

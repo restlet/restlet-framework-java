@@ -56,4 +56,12 @@ public interface SelectionChannel extends Channel {
     public SelectionRegistration register(int interestOperations,
             SelectionListener listener) throws IOException;
 
+    /**
+     * Returns the registration if it exists.
+     * 
+     * @return The registration if it exists.
+     * @throws IOException
+     */
+    public SelectionRegistration getRegistration() throws IOException;
+
 }

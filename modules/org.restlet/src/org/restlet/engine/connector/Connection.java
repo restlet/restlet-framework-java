@@ -535,7 +535,7 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
-     * Registers interest of this connection for NIO operations with the given
+     * Updates interest of this connection for NIO operations with the given
      * selector. If called several times, it just update the selection
      * registrations with the new interest operations.
      * 
@@ -543,31 +543,16 @@ public class Connection<T extends Connector> implements SelectionListener {
      *            The connection controller to register with.
      * @throws ClosedChannelException
      */
-    public void registerInterest(ConnectionController controller) {
+    public void updateInterest(ConnectionController controller) {
         if ((getState() != ConnectionState.CLOSING)
                 && (getState() != ConnectionState.CLOSED)) {
-            // Give a chance to ways for addition registrations
-            getInboundWay().registerInterest(controller);
-            getOutboundWay().registerInterest(controller);
+            // Give a chance to ways for state update
+            getInboundWay().updateState();
+            getOutboundWay().updateState();
 
-            // Get the socket interest
-            int socketInterestOps = getSocketInterestOps();
-
-            if (getSocketRegistration() == null) {
-                // Create a new selection key
-                try {
-                    setSocketRegistration(controller.register(
-                            getSocketChannel(), socketInterestOps, this));
-                    controller.wakeup();
-                } catch (IOException cce) {
-                    onError("Unable to register NIO interest operations for this connection",
-                            cce, Status.CONNECTOR_ERROR_COMMUNICATION);
-                }
-            } else {
-                // Update the existing selection key
-                getSocketRegistration()
-                        .setInterestOperations(socketInterestOps);
-            }
+            // Update the registration
+            getSocketRegistration().setInterestOperations(
+                    getSocketInterestOps());
         }
     }
 
@@ -591,20 +576,27 @@ public class Connection<T extends Connector> implements SelectionListener {
         this.socketChannel = socketChannel;
         this.socketAddress = socketAddress;
 
-        if (helper.isTracing()) {
-            this.readableSelectionChannel = new ReadableTraceChannel(
-                    new ReadableSocketChannel(socketChannel, controller));
-            this.writableSelectionChannel = new WritableTraceChannel(
-                    new WritableSocketChannel(socketChannel, controller));
-        } else {
-            this.readableSelectionChannel = new ReadableSocketChannel(
-                    socketChannel, controller);
-            this.writableSelectionChannel = new WritableSocketChannel(
-                    socketChannel, controller);
+        if ((controller != null) && (socketChannel != null)
+                && (socketAddress != null)) {
+            this.socketRegistration = (controller == null) ? null : controller
+                    .register(socketChannel, 0, this);
+
+            if (helper.isTracing()) {
+                this.readableSelectionChannel = new ReadableTraceChannel(
+                        new ReadableSocketChannel(socketChannel,
+                                socketRegistration));
+                this.writableSelectionChannel = new WritableTraceChannel(
+                        new WritableSocketChannel(socketChannel,
+                                socketRegistration));
+            } else {
+                this.readableSelectionChannel = new ReadableSocketChannel(
+                        socketChannel, socketRegistration);
+                this.writableSelectionChannel = new WritableSocketChannel(
+                        socketChannel, socketRegistration);
+            }
         }
 
         this.lastActivity = System.currentTimeMillis();
-        this.socketRegistration = null;
         this.inboundWay.reuse();
         this.outboundWay.reuse();
     }

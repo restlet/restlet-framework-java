@@ -33,7 +33,6 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
-import org.restlet.engine.connector.ConnectionController;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
 
@@ -45,45 +44,47 @@ import org.restlet.util.SelectionRegistration;
 public class WrapperSocketChannel extends WrapperChannel<SocketChannel>
         implements SelectionChannel {
 
-    /** The IO controller. */
-    private ConnectionController controller;
+    /** The NIO registration. */
+    private SelectionRegistration registration;
 
     /**
      * Constructor.
      * 
      * @param wrappedChannel
      *            The source channel.
-     * @param controller
-     *            The IO controller.
+     * @param registration
+     *            The NIO registration.
      */
     public WrapperSocketChannel(SocketChannel wrappedChannel,
-            ConnectionController controller) {
+            SelectionRegistration registration) {
         super(wrappedChannel);
-        this.controller = controller;
+        this.registration = registration;
     }
 
     /**
-     * Returns the IO controller.
+     * Returns the NIO registration.
      * 
-     * @return The IO controller.
+     * @return The NIO registration.
      */
-    protected ConnectionController getController() {
-        return controller;
+    public SelectionRegistration getRegistration() {
+        return registration;
     }
 
     /**
      * Registers the given listener with the underlying selector and socket
      * channel for the operations of interest.
      * 
-     * @param ops
+     * @param interestOperations
      *            The operations of interest.
      * @param listener
      *            The listener to notify.
      * @return The created registration.
      */
-    public SelectionRegistration register(int ops, SelectionListener listener)
-            throws IOException {
-        return getController().register(getWrappedChannel(), ops, listener);
+    public SelectionRegistration register(int interestOperations,
+            SelectionListener listener) throws IOException {
+        getRegistration().setInterestOperations(interestOperations);
+        getRegistration().setListener(listener);
+        return getRegistration();
     }
 
 }

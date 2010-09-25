@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import org.restlet.engine.connector.ConnectionController;
+import org.restlet.util.SelectionRegistration;
 
 // [excludes gwt]
 /**
@@ -49,12 +49,12 @@ public class WritableSocketChannel extends WrapperSocketChannel implements
      * 
      * @param wrappedChannel
      *            The source channel.
-     * @param controller
-     *            The IO controller.
+     * @param registration
+     *            The NIO registration.
      */
     public WritableSocketChannel(SocketChannel wrappedChannel,
-            ConnectionController controller) {
-        super(wrappedChannel, controller);
+            SelectionRegistration registration) {
+        super(wrappedChannel, registration);
     }
 
     /**

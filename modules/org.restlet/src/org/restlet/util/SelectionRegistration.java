@@ -41,7 +41,7 @@ import java.nio.channels.SelectionKey;
 public class SelectionRegistration {
 
     /** The selection listener that will be notified. */
-    private final SelectionListener listener;
+    private volatile SelectionListener listener;
 
     /** The IO operations interest. */
     private volatile int interestOperations;
@@ -186,6 +186,14 @@ public class SelectionRegistration {
      */
     public void setInterestOperations(int interest) {
         this.interestOperations = interest;
+    }
+
+    /**
+     * Sets the selection listener that will be notified.
+     * @param listener The selection listener that will be notified.
+     */
+    public void setListener(SelectionListener listener) {
+        this.listener = listener;
     }
 
     /**

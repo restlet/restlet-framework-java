@@ -454,42 +454,6 @@ public abstract class OutboundWay extends Way {
         this.headerIndex = 0;
     }
 
-    @Override
-    public void registerInterest(ConnectionController controller) {
-        super.registerInterest(controller);
-
-        // If the entity is available as a non-blocking selectable channel,
-        // register it as well
-        // SelectableChannel entitySelectableChannel =
-        // getEntitySelectableChannel();
-        //
-        // if (entitySelectableChannel != null) {
-        // int entityInterestOps = getEntityInterestOps();
-        //
-        // if ((getEntityKey() == null) && (entityInterestOps > 0)) {
-        // try {
-        // setEntityKey(entitySelectableChannel.register(selector,
-        // entityInterestOps, new SelectionListener() {
-        //
-        // public void onSelected(
-        // SelectionRegistration registration) {
-        // // TODO
-        // }
-        //
-        // }));
-        // selector.wakeup();
-        // } catch (ClosedChannelException cce) {
-        // getConnection()
-        // .onError(
-        // "Unable to register NIO interest operations for this entity",
-        // cce, Status.CONNECTOR_ERROR_COMMUNICATION);
-        // }
-        // } else if (getEntityKey() != null) {
-        // getEntityKey().interestOps(entityInterestOps);
-        // }
-        // }
-    }
-
     /**
      * Sets the entity as a NIO readable byte channel.
      * 

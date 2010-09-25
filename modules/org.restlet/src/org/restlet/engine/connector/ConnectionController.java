@@ -36,8 +36,8 @@ import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -56,7 +56,7 @@ public abstract class ConnectionController extends Controller implements
     private final Selector selector;
 
     /** The list of new selection registrations. */
-    private final List<SelectionRegistration> newRegistrations;
+    private final Queue<SelectionRegistration> newRegistrations;
 
     /**
      * Constructor.
@@ -66,7 +66,7 @@ public abstract class ConnectionController extends Controller implements
      */
     public ConnectionController(ConnectionHelper<?> helper) {
         super(helper);
-        this.newRegistrations = new CopyOnWriteArrayList<SelectionRegistration>();
+        this.newRegistrations = new ConcurrentLinkedQueue<SelectionRegistration>();
         this.selector = createSelector();
     }
 
@@ -92,7 +92,7 @@ public abstract class ConnectionController extends Controller implements
                         "Closing connection with no IO activity during "
                                 + getHelper().getMaxIoIdleTimeMs() + " ms.");
             } else {
-                conn.registerInterest(this);
+                conn.updateInterest(this);
             }
         }
     }
@@ -125,11 +125,11 @@ public abstract class ConnectionController extends Controller implements
     }
 
     /**
-     * Returns the list of new selection registrations.
+     * Returns the queue of new selection registrations.
      * 
-     * @return The list of new selection registrations.
+     * @return The queue of new selection registrations.
      */
-    protected List<SelectionRegistration> getNewRegistrations() {
+    protected Queue<SelectionRegistration> getNewRegistrations() {
         return this.newRegistrations;
     }
 
@@ -184,12 +184,12 @@ public abstract class ConnectionController extends Controller implements
      * @throws IOException
      */
     protected void registerKeys() throws IOException {
-        SelectionRegistration newRegistration;
+        SelectionRegistration newRegistration = getNewRegistrations().poll();
 
-        for (int i = getNewRegistrations().size() - 1; i >= 0; i--) {
-            newRegistration = getNewRegistrations().remove(i);
+        while (newRegistration != null) {
             newRegistration.getSelectableChannel().register(getSelector(),
                     newRegistration.getInterestOperations(), newRegistration);
+            newRegistration = getNewRegistrations().poll();
         }
     }
 
