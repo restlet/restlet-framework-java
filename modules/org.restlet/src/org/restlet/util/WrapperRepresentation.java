@@ -187,9 +187,9 @@ public class WrapperRepresentation extends Representation {
 
     // [ifndef gwt] method
     @Override
-    public org.restlet.util.SelectionRegistration register(
-            org.restlet.util.SelectionListener listener) throws IOException {
-        return getWrappedRepresentation().register(listener);
+    public org.restlet.util.SelectionRegistration getRegistration()
+            throws IOException {
+        return getWrappedRepresentation().getRegistration();
     }
 
     @Override

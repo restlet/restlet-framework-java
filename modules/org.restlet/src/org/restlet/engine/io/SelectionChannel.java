@@ -30,10 +30,8 @@
 
 package org.restlet.engine.io;
 
-import java.io.IOException;
 import java.nio.channels.Channel;
 
-import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
 
 /**
@@ -49,18 +47,5 @@ public interface SelectionChannel extends Channel {
      * @return The NIO registration.
      */
     public SelectionRegistration getRegistration();
-
-    /**
-     * Registers a selection listener with the underlying selector for the given
-     * operations and returns the registration created.
-     * 
-     * @param interestOperations
-     *            The initial operations of interest.
-     * @param listener
-     *            The listener to notify.
-     * @return The created registration.
-     */
-    public SelectionRegistration register(int interestOperations,
-            SelectionListener listener) throws IOException;
 
 }

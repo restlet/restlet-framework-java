@@ -13,9 +13,10 @@ Changes log
         ConverterService or MetadataService. This property is also 
         carried on by the copy constructor. Suggested by John Logdson.
       - Added UniformResource#toString() for easier debugging.
-      - Added Representation#isSelectable() and register(...) method
-        to know when the NIO channel returned by getChannel() is ready
-        for reading.
+      - Added Representation#isSelectable() and getRegistration() method
+        to manipulate the registration of the NIO channel with its 
+        associated selector and received asynchronous notifications
+        of available content.
     - Enhancements
       - Improved the naming of files created by the FILE local 
         connector so that media type extension comes at the end.

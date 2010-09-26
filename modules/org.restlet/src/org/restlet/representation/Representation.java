@@ -319,6 +319,28 @@ public abstract class Representation extends RepresentationInfo {
      */
     public abstract Reader getReader() throws IOException;
 
+    // [ifndef gwt] method
+    /**
+     * Returns the NIO registration of the channel with its selector. You can
+     * modify this registration to be called back when some readable content is
+     * available. Note that the listener will keep being called back until you
+     * suspend or cancel the registration returned by this method.
+     * 
+     * @return The NIO registration.
+     * @throws IOException
+     * @see #isSelectable()
+     */
+    public org.restlet.util.SelectionRegistration getRegistration()
+            throws IOException {
+        if (isSelectable()) {
+            return ((org.restlet.engine.io.SelectionChannel) getChannel())
+                    .getRegistration();
+        } else {
+            throw new IllegalStateException(
+                    "The representation isn't selectable");
+        }
+    }
+
     /**
      * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.<br>
      * <br>
@@ -400,6 +422,16 @@ public abstract class Representation extends RepresentationInfo {
         }
     }
 
+    // [ifdef gwt] method uncomment
+    // /**
+    // * Converts the representation to a string value. Be careful when using
+    // * this method as the conversion of large content to a string fully
+    // * stored in memory can result in OutOfMemoryErrors being thrown.
+    // *
+    // * @return The representation as a string value.
+    // */
+    // public abstract String getText() throws IOException;
+
     /**
      * Indicates if the representation's content is transient, which means that
      * it can be obtained only once. This is often the case with representations
@@ -411,42 +443,6 @@ public abstract class Representation extends RepresentationInfo {
      */
     public boolean isTransient() {
         return this.isTransient;
-    }
-
-    // [ifdef gwt] method uncomment
-    // /**
-    // * Converts the representation to a string value. Be careful when using
-    // * this method as the conversion of large content to a string fully
-    // * stored in memory can result in OutOfMemoryErrors being thrown.
-    // *
-    // * @return The representation as a string value.
-    // */
-    // public abstract String getText() throws IOException;
-
-    // [ifndef gwt] method
-    /**
-     * Registers a selection listener that will be asynchronously be called back
-     * when some readable content is available. Note that the listener will keep
-     * being called back until you suspend or cancel the registration returned
-     * by this method.
-     * 
-     * @param listener
-     *            The listener to notify when the {@link ReadableByteChannel}
-     *            returned by {@link #getChannel()} has content ready to be
-     *            read.
-     * @return The created registration.
-     * @throws IOException
-     * @see #isSelectable()
-     */
-    public org.restlet.util.SelectionRegistration register(
-            org.restlet.util.SelectionListener listener) throws IOException {
-        if (isSelectable()) {
-            return ((org.restlet.engine.io.SelectionChannel) getChannel())
-                    .register(java.nio.channels.SelectionKey.OP_READ, listener);
-        } else {
-            throw new IllegalStateException(
-                    "The representation isn't selectable");
-        }
     }
 
     /**

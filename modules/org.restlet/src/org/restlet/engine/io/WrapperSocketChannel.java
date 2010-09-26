@@ -30,10 +30,8 @@
 
 package org.restlet.engine.io;
 
-import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
-import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
 
 // [excludes gwt]
@@ -68,23 +66,6 @@ public class WrapperSocketChannel extends WrapperChannel<SocketChannel>
      */
     public SelectionRegistration getRegistration() {
         return registration;
-    }
-
-    /**
-     * Registers the given listener with the underlying selector and socket
-     * channel for the operations of interest.
-     * 
-     * @param interestOperations
-     *            The operations of interest.
-     * @param listener
-     *            The listener to notify.
-     * @return The created registration.
-     */
-    public SelectionRegistration register(int interestOperations,
-            SelectionListener listener) throws IOException {
-        getRegistration().setInterestOperations(interestOperations);
-        getRegistration().setListener(listener);
-        return getRegistration();
     }
 
 }
