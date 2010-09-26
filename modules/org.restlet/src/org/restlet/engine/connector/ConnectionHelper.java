@@ -121,6 +121,8 @@ public abstract class ConnectionHelper<T extends Connector> extends
      */
     @SuppressWarnings("unchecked")
     protected void checkin(Connection<?> connection) {
+        connection.clear();
+
         if (isPooledConnection()) {
             getConnectionPool().checkin((Connection<T>) connection);
         }

@@ -41,7 +41,6 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
-import org.restlet.util.SelectionRegistration;
 import org.restlet.util.Series;
 
 /**
@@ -102,9 +101,6 @@ public class ClientInboundWay extends InboundWay {
 
         if (getConnection().getState() == ConnectionState.OPENING) {
             result = SelectionKey.OP_CONNECT;
-        } else if ((getMessageState() == MessageState.BODY)
-                && (getEntityRegistration() != null)) {
-            result = getEntityRegistration().getInterestOperations();
         } else {
             result = super.getSocketInterestOps();
         }
@@ -142,23 +138,9 @@ public class ClientInboundWay extends InboundWay {
         // Add it to the helper queue
         getHelper().getInboundMessages().add(getMessage());
 
-        // Wake up the controller if it is sleeping
-        getHelper().getController().wakeup();
-
         if (!getMessage().isEntityAvailable()) {
             // The response has been completely read
             onCompleted();
-        }
-    }
-
-    @Override
-    public void onSelected(SelectionRegistration registration) {
-        super.onSelected(registration);
-
-        if ((getMessageState() == MessageState.BODY)
-                && (getEntityRegistration() != null)) {
-            getEntityRegistration().onSelected(
-                    registration.getReadyOperations());
         }
     }
 

@@ -150,6 +150,17 @@ public abstract class OutboundWay extends Way {
      */
     protected abstract void addHeaders(Series<Parameter> headers);
 
+    @Override
+    public void clear() {
+        super.clear();
+        this.entityChannel = null;
+        this.entityIndex = 0;
+        this.entityKey = null;
+        this.entityStream = null;
+        this.entityType = null;
+        this.headerIndex = 0;
+    }
+
     /**
      * Returns the entity as a NIO readable byte channel.
      * 
@@ -262,124 +273,6 @@ public abstract class OutboundWay extends Way {
         super.onCompleted();
     }
 
-    /**
-     * Writes the next message if possible.
-     * 
-     * @throws IOException
-     */
-    protected void writeMessage() throws IOException {
-        while (isProcessing() && getByteBuffer().hasRemaining()) {
-            if (getMessageState() == MessageState.BODY) {
-                if (getMessage().isEntityAvailable()) {
-                    long entitySize = getMessage().getEntity().getSize();
-                    int available = getEntityStream().available();
-                    int result = 0;
-
-                    // Writing the body doesn't rely on the line builder
-                    switch (getEntityType()) {
-                    case ASYNC_CHANNEL:
-                    case FILE_CHANNEL:
-                    case SYNC_CHANNEL:
-                        result = getEntityChannel().read(getByteBuffer());
-
-                        if (result > 0) {
-                            setEntityIndex(getEntityIndex() + result);
-                        } else if (result == -1) {
-                            setEntityIndex(getEntityIndex() + available);
-                        }
-
-                        // Detect end of entity reached
-                        if ((result == -1)
-                                || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
-                            setMessageState(MessageState.IDLE);
-                        }
-                        break;
-
-                    case STREAM:
-                        if (getByteBuffer().hasArray()) {
-                            byte[] byteArray = getByteBuffer().array();
-
-                            if (available > 0) {
-                                // Non-blocking read guaranteed
-                                result = getEntityStream().read(byteArray,
-                                        getByteBuffer().position(), available);
-
-                                if (result > 0) {
-                                    getByteBuffer()
-                                            .position(
-                                                    getByteBuffer().position()
-                                                            + result);
-                                    setEntityIndex(getEntityIndex() + result);
-                                } else if (result == -1) {
-                                    getByteBuffer().position(
-                                            getByteBuffer().position()
-                                                    + available);
-                                    setEntityIndex(getEntityIndex() + available);
-                                }
-
-                                // Detect end of entity reached
-                                if ((result == -1)
-                                        || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
-                                    setMessageState(MessageState.IDLE);
-                                }
-                            } else {
-                                // Blocking read, need to launch a new
-                                // thread...
-                            }
-                        } else {
-                            ReadableByteChannel rbc = Channels
-                                    .newChannel(getEntityStream());
-                            result = rbc.read(getByteBuffer());
-
-                            if (result > 0) {
-                                setEntityIndex(getEntityIndex() + result);
-                            } else if (result == -1) {
-                                setEntityIndex(getEntityIndex() + available);
-                            }
-
-                            // Detect end of entity reached
-                            if ((result == -1)
-                                    || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
-                                setMessageState(MessageState.IDLE);
-                            }
-                        }
-                        break;
-                    }
-                } else {
-                    setMessageState(MessageState.IDLE);
-                }
-            } else {
-                // Write the start line or the headers,
-                // relying on the line builder
-                if (getLineBuilder().length() == 0) {
-                    // A new line can be written in the builder
-                    writeLine();
-                }
-
-                if (getLineBuilder().length() > 0) {
-                    // We can fill the byte buffer with the
-                    // remaining line builder
-                    int remaining = getByteBuffer().remaining();
-
-                    if (remaining >= getLineBuilder().length()) {
-                        // Put the whole builder line in the buffer
-                        getByteBuffer().put(
-                                StringUtils.getLatin1Bytes(getLineBuilder()
-                                        .toString()));
-                        getLineBuilder().delete(0, getLineBuilder().length());
-                    } else {
-                        // Put the maximum number of characters
-                        // into the byte buffer
-                        getByteBuffer().put(
-                                StringUtils.getLatin1Bytes(getLineBuilder()
-                                        .substring(0, remaining)));
-                        getLineBuilder().delete(0, remaining);
-                    }
-                }
-            }
-        }
-    }
-
     @Override
     public void onSelected(SelectionRegistration registration) {
         try {
@@ -408,51 +301,6 @@ public abstract class OutboundWay extends Way {
             getLogger().log(Level.INFO, "Error while writing an HTTP message",
                     e);
         }
-    }
-
-    /**
-     * Writes available bytes from the socket channel and fill the way's buffer.
-     * 
-     * @throws IOException
-     */
-    protected void writeSocketBytes() throws IOException {
-        if (getByteBuffer().position() > 0) {
-            // After filling the byte buffer, we can now flip it
-            // and start draining it.
-            getByteBuffer().flip();
-            int bytesWritten = getConnection().getWritableSelectionChannel()
-                    .write(getByteBuffer());
-
-            if (bytesWritten == 0) {
-                // The byte buffer hasn't been written, the socket
-                // channel can't write more. We needs to put the
-                // byte buffer in the filling state again and
-                // wait for a new NIO selection.
-                getByteBuffer().flip();
-                setIoState(IoState.INTEREST);
-            } else if (getByteBuffer().hasRemaining()) {
-                // All the buffer couldn't be written. Compact the
-                // remaining bytes so that filling can happen again.
-                getByteBuffer().compact();
-            } else if (getMessageState() == MessageState.IDLE) {
-                // Message fully sent, ready for a new one
-                onCompleted();
-            } else {
-                // The byte buffer has been fully written, but
-                // the socket channel wants more.
-            }
-        }
-    }
-
-    @Override
-    public void recycle() {
-        super.recycle();
-        this.entityChannel = null;
-        this.entityIndex = 0;
-        this.entityKey = null;
-        this.entityStream = null;
-        this.entityType = null;
-        this.headerIndex = 0;
     }
 
     /**
@@ -608,6 +456,158 @@ public abstract class OutboundWay extends Way {
             }
 
             break;
+        }
+    }
+
+    /**
+     * Writes the next message if possible.
+     * 
+     * @throws IOException
+     */
+    protected void writeMessage() throws IOException {
+        while (isProcessing() && getByteBuffer().hasRemaining()) {
+            if (getMessageState() == MessageState.BODY) {
+                if (getMessage().isEntityAvailable()) {
+                    long entitySize = getMessage().getEntity().getSize();
+                    int available = getEntityStream().available();
+                    int result = 0;
+
+                    // Writing the body doesn't rely on the line builder
+                    switch (getEntityType()) {
+                    case ASYNC_CHANNEL:
+                    case FILE_CHANNEL:
+                    case SYNC_CHANNEL:
+                        result = getEntityChannel().read(getByteBuffer());
+
+                        if (result > 0) {
+                            setEntityIndex(getEntityIndex() + result);
+                        } else if (result == -1) {
+                            setEntityIndex(getEntityIndex() + available);
+                        }
+
+                        // Detect end of entity reached
+                        if ((result == -1)
+                                || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
+                            setMessageState(MessageState.IDLE);
+                        }
+                        break;
+
+                    case STREAM:
+                        if (getByteBuffer().hasArray()) {
+                            byte[] byteArray = getByteBuffer().array();
+
+                            if (available > 0) {
+                                // Non-blocking read guaranteed
+                                result = getEntityStream().read(byteArray,
+                                        getByteBuffer().position(), available);
+
+                                if (result > 0) {
+                                    getByteBuffer()
+                                            .position(
+                                                    getByteBuffer().position()
+                                                            + result);
+                                    setEntityIndex(getEntityIndex() + result);
+                                } else if (result == -1) {
+                                    getByteBuffer().position(
+                                            getByteBuffer().position()
+                                                    + available);
+                                    setEntityIndex(getEntityIndex() + available);
+                                }
+
+                                // Detect end of entity reached
+                                if ((result == -1)
+                                        || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
+                                    setMessageState(MessageState.IDLE);
+                                }
+                            } else {
+                                // Blocking read, need to launch a new
+                                // thread...
+                            }
+                        } else {
+                            ReadableByteChannel rbc = Channels
+                                    .newChannel(getEntityStream());
+                            result = rbc.read(getByteBuffer());
+
+                            if (result > 0) {
+                                setEntityIndex(getEntityIndex() + result);
+                            } else if (result == -1) {
+                                setEntityIndex(getEntityIndex() + available);
+                            }
+
+                            // Detect end of entity reached
+                            if ((result == -1)
+                                    || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
+                                setMessageState(MessageState.IDLE);
+                            }
+                        }
+                        break;
+                    }
+                } else {
+                    setMessageState(MessageState.IDLE);
+                }
+            } else {
+                // Write the start line or the headers,
+                // relying on the line builder
+                if (getLineBuilder().length() == 0) {
+                    // A new line can be written in the builder
+                    writeLine();
+                }
+
+                if (getLineBuilder().length() > 0) {
+                    // We can fill the byte buffer with the
+                    // remaining line builder
+                    int remaining = getByteBuffer().remaining();
+
+                    if (remaining >= getLineBuilder().length()) {
+                        // Put the whole builder line in the buffer
+                        getByteBuffer().put(
+                                StringUtils.getLatin1Bytes(getLineBuilder()
+                                        .toString()));
+                        getLineBuilder().delete(0, getLineBuilder().length());
+                    } else {
+                        // Put the maximum number of characters
+                        // into the byte buffer
+                        getByteBuffer().put(
+                                StringUtils.getLatin1Bytes(getLineBuilder()
+                                        .substring(0, remaining)));
+                        getLineBuilder().delete(0, remaining);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Writes available bytes from the socket channel and fill the way's buffer.
+     * 
+     * @throws IOException
+     */
+    protected void writeSocketBytes() throws IOException {
+        if (getByteBuffer().position() > 0) {
+            // After filling the byte buffer, we can now flip it
+            // and start draining it.
+            getByteBuffer().flip();
+            int bytesWritten = getConnection().getWritableSelectionChannel()
+                    .write(getByteBuffer());
+
+            if (bytesWritten == 0) {
+                // The byte buffer hasn't been written, the socket
+                // channel can't write more. We needs to put the
+                // byte buffer in the filling state again and
+                // wait for a new NIO selection.
+                getByteBuffer().flip();
+                setIoState(IoState.INTEREST);
+            } else if (getByteBuffer().hasRemaining()) {
+                // All the buffer couldn't be written. Compact the
+                // remaining bytes so that filling can happen again.
+                getByteBuffer().compact();
+            } else if (getMessageState() == MessageState.IDLE) {
+                // Message fully sent, ready for a new one
+                onCompleted();
+            } else {
+                // The byte buffer has been fully written, but
+                // the socket channel wants more.
+            }
         }
     }
 

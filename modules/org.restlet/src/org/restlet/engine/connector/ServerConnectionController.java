@@ -133,9 +133,6 @@ public class ServerConnectionController extends ConnectionController {
                                             + getHelper().getConnections()
                                                     .size());
                         }
-
-                        // Attempt to read immediately
-                        connection.onSelected(null);
                     } else {
                         // Rejection connection
                         socketChannel.close();

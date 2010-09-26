@@ -62,7 +62,7 @@ public class ConnectionPool<T extends Connector> extends Pool<Connection<T>> {
 
     @Override
     protected void clear(Connection<T> connection) {
-        connection.recycle();
+        connection.clear();
     }
 
     @Override

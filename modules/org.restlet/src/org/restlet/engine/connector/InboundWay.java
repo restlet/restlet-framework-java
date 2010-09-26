@@ -58,7 +58,7 @@ public abstract class InboundWay extends Way {
     private volatile int builderIndex;
 
     /** The NIO selection registration of the entity. */
-    private SelectionRegistration entityRegistration;
+    private volatile SelectionRegistration entityRegistration;
 
     /**
      * Constructor.
@@ -69,6 +69,13 @@ public abstract class InboundWay extends Way {
     public InboundWay(Connection<?> connection) {
         super(connection, connection.getHelper().getInboundBufferSize());
         this.builderIndex = 0;
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        this.builderIndex = 0;
+        this.entityRegistration = null;
     }
 
     /**
@@ -205,7 +212,10 @@ public abstract class InboundWay extends Way {
     protected int getSocketInterestOps() {
         int result = 0;
 
-        if (getIoState() == IoState.INTEREST) {
+        if ((getMessageState() == MessageState.BODY)
+                && (getEntityRegistration() != null)) {
+            result = getEntityRegistration().getInterestOperations();
+        } else if (getIoState() == IoState.INTEREST) {
             result = SelectionKey.OP_READ;
         }
 
@@ -243,20 +253,26 @@ public abstract class InboundWay extends Way {
         try {
             super.onSelected(registration);
 
-            while (isProcessing()) {
-                int result = readSocketBytes();
+            if ((getMessageState() == MessageState.BODY)
+                    && (getEntityRegistration() != null)) {
+                getEntityRegistration().onSelected(
+                        registration.getReadyOperations());
+            } else {
+                while (isProcessing()) {
+                    int result = readSocketBytes();
 
-                if (result == 0) {
-                    // Socket channel exhausted
-                    setIoState(IoState.INTEREST);
-                } else if (result == -1) {
-                    // End of channel reached
-                    setIoState(IoState.CANCELING);
-                } else {
-                    while (isProcessing() && getByteBuffer().hasRemaining()) {
-                        // Bytes are available in the buffer
-                        // attempt to parse the next message
-                        readMessage();
+                    if (result == 0) {
+                        // Socket channel exhausted
+                        setIoState(IoState.INTEREST);
+                    } else if (result == -1) {
+                        // End of channel reached
+                        setIoState(IoState.CANCELING);
+                    } else {
+                        while (isProcessing() && getByteBuffer().hasRemaining()) {
+                            // Bytes are available in the buffer
+                            // attempt to parse the next message
+                            readMessage();
+                        }
                     }
                 }
             }
@@ -331,13 +347,6 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected abstract void readStartLine() throws IOException;
-
-    @Override
-    public void recycle() {
-        super.recycle();
-        this.builderIndex = 0;
-        this.entityRegistration = null;
-    }
 
     /**
      * Sets the line builder index.

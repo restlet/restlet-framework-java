@@ -79,7 +79,7 @@ public abstract class ConnectionController extends Controller implements
      */
     protected void controlConnections(boolean overloaded) throws IOException {
         // Close connections or register interest in NIO operations
-        for (final Connection<?> conn : getHelper().getConnections()) {
+        for (Connection<?> conn : getHelper().getConnections()) {
             if (conn.getState() == ConnectionState.CLOSED) {
                 getHelper().getConnections().remove(conn);
                 getHelper().checkin(conn);

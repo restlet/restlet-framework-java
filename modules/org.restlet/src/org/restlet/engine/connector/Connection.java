@@ -512,17 +512,17 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
-     * Recycles the connection so it can be reused. Typically invoked by a
+     * Clears the connection so it can be reused. Typically invoked by a
      * connection pool.
      */
-    public void recycle() {
+    public void clear() {
         this.readableSelectionChannel = null;
         this.socketChannel = null;
         this.registration = null;
         this.state = null;
         this.writableSelectionChannel = null;
-        this.inboundWay.recycle();
-        this.outboundWay.recycle();
+        this.inboundWay.clear();
+        this.outboundWay.clear();
     }
 
     /**

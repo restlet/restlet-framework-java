@@ -75,7 +75,7 @@ public abstract class Way implements SelectionListener {
     private volatile MessageState messageState;
 
     /** The NIO selection registration. */
-    private SelectionRegistration registration;
+    private volatile SelectionRegistration registration;
 
     /**
      * Constructor.
@@ -253,7 +253,7 @@ public abstract class Way implements SelectionListener {
      * Recycles the way so it can be reused. Typically invoked by a connection
      * pool.
      */
-    public void recycle() {
+    public void clear() {
         this.byteBuffer.clear();
         this.headers = null;
         this.ioState = IoState.IDLE;
