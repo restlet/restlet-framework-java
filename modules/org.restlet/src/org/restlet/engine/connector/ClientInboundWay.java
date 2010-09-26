@@ -138,7 +138,10 @@ public class ClientInboundWay extends InboundWay {
         // Add it to the helper queue
         getHelper().getInboundMessages().add(getMessage());
 
-        if (!getMessage().isEntityAvailable()) {
+        if (getMessage().isEntityAvailable()) {
+            // Let's wit for the entity to be consumed by the caller
+            setIoState(IoState.IDLE);
+        } else {
             // The response has been completely read
             onCompleted();
         }

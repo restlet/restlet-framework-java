@@ -166,23 +166,31 @@ public class NbChannelInputStream extends InputStream {
                 // No bytes were read, try to register
                 // a select key to get more
                 if (selectionChannel != null) {
+                    System.out.println("NbChannelInputStream#refill : "
+                            + this.selectionRegistration);
+
                     final CountDownLatch latch = new CountDownLatch(1);
 
                     try {
                         if (this.selectionRegistration == null) {
                             this.selectionRegistration = this.selectionChannel
-                                    .register(SelectionKey.OP_READ,
-                                            new SelectionListener() {
-                                                public void onSelected(
-                                                        SelectionRegistration registration) {
-                                                    // No more read interest at
-                                                    // this point
-                                                    registration.suspend();
+                                    .getRegistration();
+                            this.selectionRegistration
+                                    .setListener(new SelectionListener() {
+                                        public void onSelected(
+                                                SelectionRegistration registration) {
+                                            System.out
+                                                    .println("NbChannelInputStream#onSelected: "
+                                                            + registration);
 
-                                                    // Unblock the user thread
-                                                    latch.countDown();
-                                                }
-                                            });
+                                            // No more read interest at
+                                            // this point
+                                            registration.suspend();
+
+                                            // Unblock the user thread
+                                            latch.countDown();
+                                        }
+                                    });
                         } else {
                             this.selectionRegistration.resume();
                         }

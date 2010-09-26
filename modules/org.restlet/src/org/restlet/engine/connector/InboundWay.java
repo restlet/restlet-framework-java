@@ -182,18 +182,14 @@ public abstract class InboundWay extends Way {
             boolean chunked) {
         ReadableSelectionChannel result = null;
 
-        if (getByteBuffer().hasRemaining()) {
-            if (chunked) {
-                getLogger()
-                        .warning(
-                                "Chunked encoding not supported (yet) in the NIO connector.");
-            } else {
-                // Wraps the remaining bytes into a special entity channel
-                result = new ReadableEntityChannel(this, getByteBuffer(),
-                        getConnection().getReadableSelectionChannel(), size);
-            }
+        if (chunked) {
+            getLogger()
+                    .warning(
+                            "Chunked encoding not supported (yet) in the NIO connector.");
         } else {
-            result = getConnection().getReadableSelectionChannel();
+            // Wraps the remaining bytes into a special entity channel
+            result = new ReadableEntityChannel(this, getByteBuffer(),
+                    getConnection().getReadableSelectionChannel(), size);
         }
 
         return result;
@@ -213,7 +209,9 @@ public abstract class InboundWay extends Way {
         int result = 0;
 
         if ((getMessageState() == MessageState.BODY)
-                && (getEntityRegistration() != null)) {
+                && (getIoState() == IoState.IDLE)
+                && (getEntityRegistration() != null)
+                && (getEntityRegistration().getListener() != null)) {
             result = getEntityRegistration().getInterestOperations();
         } else if (getIoState() == IoState.INTEREST) {
             result = SelectionKey.OP_READ;
@@ -251,10 +249,16 @@ public abstract class InboundWay extends Way {
     @Override
     public void onSelected(SelectionRegistration registration) {
         try {
+            // System.out.println("InboundWay#onSelected: "
+            // + registration.toString() + " | " + this);
+
             super.onSelected(registration);
 
             if ((getMessageState() == MessageState.BODY)
                     && (getEntityRegistration() != null)) {
+                // System.out.println("InboundWay#onSelected: "
+                // + registration.toString() + " | " + this);
+
                 getEntityRegistration().onSelected(
                         registration.getReadyOperations());
             } else {
