@@ -216,8 +216,6 @@ public class SelectionRegistration {
 
         if ((getListener() != null)
                 && ((getReadyOperations() & getInterestOperations()) != 0)) {
-            // System.out.println("Registration#onSelected: " + toString());
-
             getListener().onSelected(this);
         }
     }

@@ -249,16 +249,10 @@ public abstract class InboundWay extends Way {
     @Override
     public void onSelected(SelectionRegistration registration) {
         try {
-            // System.out.println("InboundWay#onSelected: "
-            // + registration.toString() + " | " + this);
-
             super.onSelected(registration);
 
             if ((getMessageState() == MessageState.BODY)
                     && (getEntityRegistration() != null)) {
-                // System.out.println("InboundWay#onSelected: "
-                // + registration.toString() + " | " + this);
-
                 getEntityRegistration().onSelected(
                         registration.getReadyOperations());
             } else {
