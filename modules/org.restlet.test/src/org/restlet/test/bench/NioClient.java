@@ -23,16 +23,15 @@ public class NioClient {
         client.getContext().getParameters().add("directBuffers", "true");
         client.start();
 
-        // String uri =
-        // "http://www.restlet.org/downloads/2.1/restlet-jse-2.1snapshot.zip";
+        // String uri = "http://www.restlet.org/downloads/2.1/restlet-jse-2.1snapshot.zip";
         String uri = "http://127.0.0.1:5984/";
         int iterations = 10000;
         ClientResource cr = new ClientResource(uri);
         cr.setRetryOnError(false);
         cr.setNext(client);
         Representation r = null;
-        // ClientResource fr = new ClientResource(
-        // "file://C/TEST/restlet-jse-2.1snapshot.zip");
+//        ClientResource fr = new ClientResource(
+//                "file://C/TEST/restlet-jse-2.1snapshot.zip");
 
         System.out.println("Calling resource: " + uri + " " + iterations
                 + " times");
@@ -40,8 +39,8 @@ public class NioClient {
 
         for (int i = 0; i < iterations; i++) {
             r = cr.get();
-            r.exhaust();
-            // System.out.println(r.getText());
+             r.exhaust();
+             //System.out.println(r.getText());
 
             // System.out.println("Copying to the local file");
             // fr.put(r);

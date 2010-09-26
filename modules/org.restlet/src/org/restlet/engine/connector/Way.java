@@ -51,7 +51,7 @@ import org.restlet.util.Series;
 public abstract class Way implements SelectionListener {
 
     /** The message headers. */
-    private volatile Series<Parameter> headers;
+    private Series<Parameter> headers;
 
     /** The byte buffer. */
     private final ByteBuffer byteBuffer;
@@ -60,22 +60,22 @@ public abstract class Way implements SelectionListener {
     private final Connection<?> connection;
 
     /** The IO state. */
-    private volatile IoState ioState;
+    private IoState ioState;
 
     /** The line builder. */
     private final StringBuilder lineBuilder;
 
     /** The current message exchanged. */
-    private volatile Response message;
+    private Response message;
 
     /** The queue of messages. */
     private final Queue<Response> messages;
 
     /** The message state. */
-    private volatile MessageState messageState;
+    private MessageState messageState;
 
     /** The NIO selection registration. */
-    private volatile SelectionRegistration registration;
+    private SelectionRegistration registration;
 
     /**
      * Constructor.

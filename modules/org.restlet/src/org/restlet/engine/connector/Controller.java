@@ -48,10 +48,10 @@ public abstract class Controller {
     protected final ConnectionHelper<?> helper;
 
     /** Indicates if the controller is overloaded. */
-    protected volatile boolean overloaded;
+    protected boolean overloaded;
 
     /** Indicates if the task is running. */
-    protected volatile boolean running;
+    protected boolean running;
 
     /**
      * Listens on the given server socket for incoming connections.

@@ -55,10 +55,10 @@ import org.restlet.util.Series;
 public abstract class InboundWay extends Way {
 
     /** The line builder index. */
-    private volatile int builderIndex;
+    private int builderIndex;
 
     /** The NIO selection registration of the entity. */
-    private volatile SelectionRegistration entityRegistration;
+    private SelectionRegistration entityRegistration;
 
     /**
      * Constructor.
