@@ -98,9 +98,6 @@ public class ServerInboundWay extends InboundWay {
 
             // Add it to the helper queue
             getHelper().getInboundMessages().add(getMessage());
-
-            // Wake up the controller if it is sleeping
-            getHelper().getController().wakeup();
         }
 
         if (!getMessage().getRequest().isEntityAvailable()) {

@@ -68,10 +68,10 @@ import org.restlet.util.SelectionRegistration;
 public class Connection<T extends Connector> implements SelectionListener {
 
     /** The readable selection channel. */
-    private ReadableSelectionChannel readableSelectionChannel;
+    private volatile ReadableSelectionChannel readableSelectionChannel;
 
     /** The writable selection channel. */
-    private WritableSelectionChannel writableSelectionChannel;
+    private volatile WritableSelectionChannel writableSelectionChannel;
 
     /** The parent connector helper. */
     private final ConnectionHelper<T> helper;
@@ -80,31 +80,31 @@ public class Connection<T extends Connector> implements SelectionListener {
     private final Way inboundWay;
 
     /** The timestamp of the last IO activity. */
-    private long lastActivity;
+    private volatile long lastActivity;
 
     /** The outbound way. */
     private final Way outboundWay;
 
     /** Indicates if the connection should be persisted across calls. */
-    private boolean persistent;
+    private volatile boolean persistent;
 
     /** Indicates if idempotent sequences of requests can be pipelined. */
-    private boolean pipelining;
+    private volatile boolean pipelining;
 
     /** The underlying socket channel. */
-    private SocketChannel socketChannel;
+    private volatile SocketChannel socketChannel;
 
     /** The socket address. */
-    private SocketAddress socketAddress;
+    private volatile SocketAddress socketAddress;
 
     /**
      * The socket's NIO selection registration holding the link between the
      * channel and the connection.
      */
-    private SelectionRegistration registration;
+    private volatile SelectionRegistration registration;
 
     /** The state of the connection. */
-    private ConnectionState state;
+    private volatile ConnectionState state;
 
     /**
      * Constructor.

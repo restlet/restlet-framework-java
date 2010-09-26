@@ -77,25 +77,25 @@ public abstract class OutboundWay extends Way {
     }
 
     /** The entity as a NIO readable byte channel. */
-    private ReadableByteChannel entityChannel;
+    private volatile ReadableByteChannel entityChannel;
 
     /** The entity index. */
-    private long entityIndex;
+    private volatile long entityIndex;
 
     /**
      * The entity's NIO selection key holding the link between the entity to be
      * written and the way.
      */
-    private SelectionKey entityKey;
+    private volatile SelectionKey entityKey;
 
     /** The entity as a BIO input stream. */
-    private InputStream entityStream;
+    private volatile InputStream entityStream;
 
     /** The entity type. */
-    private EntityType entityType;
+    private volatile EntityType entityType;
 
     /** The header index. */
-    private int headerIndex;
+    private volatile int headerIndex;
 
     /**
      * Constructor.

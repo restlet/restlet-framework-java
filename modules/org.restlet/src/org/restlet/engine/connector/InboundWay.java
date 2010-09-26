@@ -55,10 +55,10 @@ import org.restlet.util.Series;
 public abstract class InboundWay extends Way {
 
     /** The line builder index. */
-    private int builderIndex;
+    private volatile int builderIndex;
 
     /** The NIO selection registration of the entity. */
-    private SelectionRegistration entityRegistration;
+    private volatile SelectionRegistration entityRegistration;
 
     /**
      * Constructor.
@@ -231,7 +231,7 @@ public abstract class InboundWay extends Way {
             getLogger().finer("Inbound message fully received");
         }
 
-        clear();
+        getHeaders().clear();
         super.onCompleted();
     }
 
@@ -320,7 +320,7 @@ public abstract class InboundWay extends Way {
                     if (getMessageState() == MessageState.IDLE) {
                         // Message fully received, check if another is ready
                         updateState();
-                        // super.onSelected();
+                        super.onSelected(getRegistration());
                     }
                 }
             }
