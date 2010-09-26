@@ -231,6 +231,7 @@ public abstract class InboundWay extends Way {
             getLogger().finer("Inbound message fully received");
         }
 
+        clear();
         super.onCompleted();
     }
 
