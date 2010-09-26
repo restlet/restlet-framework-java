@@ -31,7 +31,6 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
@@ -40,9 +39,11 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.util.SelectionRegistration;
 import org.restlet.util.Series;
 
 /**
@@ -55,6 +56,9 @@ public abstract class InboundWay extends Way {
 
     /** The line builder index. */
     private volatile int builderIndex;
+
+    /** The NIO selection registration of the entity. */
+    private SelectionRegistration entityRegistration;
 
     /**
      * Constructor.
@@ -74,7 +78,7 @@ public abstract class InboundWay extends Way {
      *            The headers to use.
      * @return The inbound message if available.
      */
-    public Representation createEntity(Series<Parameter> headers) {
+    protected Representation createEntity(Series<Parameter> headers) {
         Representation result = null;
         long contentLength = HeaderUtils.getContentLength(headers);
         boolean chunkedEncoding = HeaderUtils.isChunkedEncoding(headers);
@@ -85,8 +89,9 @@ public abstract class InboundWay extends Way {
         // Create the representation
         if ((contentLength != Representation.UNKNOWN_SIZE && contentLength != 0)
                 || chunkedEncoding || connectionClose) {
-            ReadableByteChannel inboundEntityChannel = getEntityChannel(
+            ReadableSelectionChannel inboundEntityChannel = getEntityChannel(
                     contentLength, chunkedEncoding);
+            setEntityRegistration(inboundEntityChannel.getRegistration());
 
             if (inboundEntityChannel != null) {
                 result = new ReadableRepresentation(inboundEntityChannel, null,
@@ -166,8 +171,9 @@ public abstract class InboundWay extends Way {
      * 
      * @return The inbound message entity channel if it exists.
      */
-    protected ReadableByteChannel getEntityChannel(long size, boolean chunked) {
-        ReadableByteChannel result = null;
+    protected ReadableSelectionChannel getEntityChannel(long size,
+            boolean chunked) {
+        ReadableSelectionChannel result = null;
 
         if (getByteBuffer().hasRemaining()) {
             if (chunked) {
@@ -184,6 +190,15 @@ public abstract class InboundWay extends Way {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the NIO selection registration of the entity.
+     * 
+     * @return The NIO selection registration of the entity.
+     */
+    protected SelectionRegistration getEntityRegistration() {
+        return entityRegistration;
     }
 
     @Override
@@ -224,9 +239,9 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    public void onSelected() {
+    public void onSelected(SelectionRegistration registration) {
         try {
-            super.onSelected();
+            super.onSelected(registration);
 
             while (isProcessing()) {
                 int result = readSocketBytes();
@@ -250,6 +265,18 @@ public abstract class InboundWay extends Way {
                     "Error while reading a message. Closing the connection.",
                     e, Status.CONNECTOR_ERROR_COMMUNICATION);
         }
+    }
+
+    /**
+     * Read a message header.
+     * 
+     * @return The new message header or null.
+     * @throws IOException
+     */
+    protected Parameter readHeader() throws IOException {
+        Parameter header = HeaderReader.readHeader(getLineBuilder());
+        getLineBuilder().delete(0, getLineBuilder().length());
+        return header;
     }
 
     /**
@@ -286,18 +313,6 @@ public abstract class InboundWay extends Way {
     }
 
     /**
-     * Read a message header.
-     * 
-     * @return The new message header or null.
-     * @throws IOException
-     */
-    protected Parameter readHeader() throws IOException {
-        Parameter header = HeaderReader.readHeader(getLineBuilder());
-        getLineBuilder().delete(0, getLineBuilder().length());
-        return header;
-    }
-
-    /**
      * Reads available bytes from the socket channel and fill the way's buffer.
      * 
      * @return The number of bytes read.
@@ -321,6 +336,7 @@ public abstract class InboundWay extends Way {
     public void recycle() {
         super.recycle();
         this.builderIndex = 0;
+        this.entityRegistration = null;
     }
 
     /**
@@ -331,6 +347,17 @@ public abstract class InboundWay extends Way {
      */
     protected void setBuilderIndex(int builderIndex) {
         this.builderIndex = builderIndex;
+    }
+
+    /**
+     * Sets the NIO selection registration of the entity.
+     * 
+     * @param entityRegistration
+     *            The NIO selection registration of the entity.
+     */
+    protected void setEntityRegistration(
+            SelectionRegistration entityRegistration) {
+        this.entityRegistration = entityRegistration;
     }
 
 }

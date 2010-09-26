@@ -41,6 +41,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.util.SelectionRegistration;
 import org.restlet.util.Series;
 
 /**
@@ -101,6 +102,9 @@ public class ClientInboundWay extends InboundWay {
 
         if (getConnection().getState() == ConnectionState.OPENING) {
             result = SelectionKey.OP_CONNECT;
+        } else if ((getMessageState() == MessageState.BODY)
+                && (getEntityRegistration() != null)) {
+            result = getEntityRegistration().getInterestOperations();
         } else {
             result = super.getSocketInterestOps();
         }
@@ -144,6 +148,17 @@ public class ClientInboundWay extends InboundWay {
         if (!getMessage().isEntityAvailable()) {
             // The response has been completely read
             onCompleted();
+        }
+    }
+
+    @Override
+    public void onSelected(SelectionRegistration registration) {
+        super.onSelected(registration);
+
+        if ((getMessageState() == MessageState.BODY)
+                && (getEntityRegistration() != null)) {
+            getEntityRegistration().onSelected(
+                    registration.getReadyOperations());
         }
     }
 
@@ -239,6 +254,8 @@ public class ClientInboundWay extends InboundWay {
 
     @Override
     public void updateState() {
+        super.updateState();
+
         if (getIoState() == IoState.IDLE) {
             if (!getMessages().isEmpty()) {
                 // Read the next response

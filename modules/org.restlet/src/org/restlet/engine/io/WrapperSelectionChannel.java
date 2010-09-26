@@ -43,6 +43,9 @@ import org.restlet.util.SelectionRegistration;
 public class WrapperSelectionChannel<T extends SelectionChannel> extends
         WrapperChannel<T> implements SelectionChannel {
 
+    /** The NIO registration. */
+    private volatile SelectionRegistration registration;
+
     /**
      * Constructor.
      * 
@@ -50,21 +53,57 @@ public class WrapperSelectionChannel<T extends SelectionChannel> extends
      *            The wrapped channel.
      */
     public WrapperSelectionChannel(T wrappedChannel) {
+        this(wrappedChannel, wrappedChannel.getRegistration());
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param wrappedChannel
+     *            The wrapped channel.
+     * @param registration
+     *            The selection registration.
+     */
+    public WrapperSelectionChannel(T wrappedChannel,
+            SelectionRegistration registration) {
         super(wrappedChannel);
+        this.registration = registration;
     }
 
     /**
-     * Delegates to the wrapped channel.
+     * Returns the NIO registration.
+     * 
+     * @return The NIO registration.
      */
-    public SelectionRegistration register(int ops, SelectionListener listener)
-            throws IOException {
-        return getWrappedChannel().register(ops, listener);
+    public SelectionRegistration getRegistration() {
+        return registration;
     }
 
     /**
-     * Delegates to the wrapped channel.
+     * Registers the given listener with the underlying selector and socket
+     * channel for the operations of interest.
+     * 
+     * @param interestOperations
+     *            The operations of interest.
+     * @param listener
+     *            The listener to notify.
+     * @return The created registration.
      */
-    public SelectionRegistration getRegistration() throws IOException {
-        return getWrappedChannel().getRegistration();
+    public SelectionRegistration register(int interestOperations,
+            SelectionListener listener) throws IOException {
+        getRegistration().setInterestOperations(interestOperations);
+        getRegistration().setListener(listener);
+        return getRegistration();
     }
+
+    /**
+     * Sets the NIO registration.
+     * 
+     * @param registration
+     *            The NIO registration.
+     */
+    public void setRegistration(SelectionRegistration registration) {
+        this.registration = registration;
+    }
+
 }

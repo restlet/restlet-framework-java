@@ -35,6 +35,7 @@ import java.nio.ByteBuffer;
 
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.engine.io.WrapperSelectionChannel;
+import org.restlet.util.SelectionRegistration;
 
 // [excludes gwt]
 /**
@@ -71,6 +72,7 @@ public class ReadableEntityChannel extends
             ByteBuffer remainingBuffer, ReadableSelectionChannel source,
             long availableSize) {
         super(source);
+        setRegistration(new SelectionRegistration(0, null));
         this.inboundWay = inboundWay;
         this.remainingBuffer = remainingBuffer;
         this.availableSize = availableSize;

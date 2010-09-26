@@ -33,7 +33,6 @@ package org.restlet.engine.connector;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 import java.security.cert.Certificate;
 import java.util.Arrays;
@@ -102,7 +101,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * The socket's NIO selection registration holding the link between the
      * channel and the connection.
      */
-    private SelectionRegistration socketRegistration;
+    private SelectionRegistration registration;
 
     /** The state of the connection. */
     private ConnectionState state;
@@ -138,8 +137,8 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public void close(boolean graceful) {
         if (graceful) {
-            if (getSocketRegistration() != null) {
-                getSocketRegistration().cancel();
+            if (getRegistration() != null) {
+                getRegistration().cancel();
             }
 
             setState(ConnectionState.CLOSING);
@@ -284,24 +283,14 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
-     * Registers interest of this way for socket NIO operations.
-     * 
-     * @return The operations of interest.
-     */
-    protected int getSocketInterestOps() {
-        return getInboundWay().getSocketInterestOps()
-                | getOutboundWay().getSocketInterestOps();
-    }
-
-    /**
      * Returns the socket's NIO registration holding the link between the
-     * channel and the connection.
+     * {@link SocketChannel} and the {@link Connection}.
      * 
      * @return The socket's NIO registration holding the link between the
      *         channel and the connection.
      */
-    protected SelectionRegistration getSocketRegistration() {
-        return socketRegistration;
+    protected SelectionRegistration getRegistration() {
+        return registration;
     }
 
     /**
@@ -482,11 +471,13 @@ public class Connection<T extends Connector> implements SelectionListener {
         try {
             if ((registration == null) || registration.isReadable()) {
                 synchronized (getInboundWay().getByteBuffer()) {
-                    getInboundWay().onSelected();
+                    getInboundWay().getRegistration().onSelected(
+                            registration.getReadyOperations());
                 }
             } else if (registration.isWritable()) {
                 synchronized (getOutboundWay().getByteBuffer()) {
-                    getOutboundWay().onSelected();
+                    getOutboundWay().getRegistration().onSelected(
+                            registration.getReadyOperations());
                 }
             } else if (registration.isConnectable()) {
                 // Client-side asynchronous connection
@@ -527,33 +518,11 @@ public class Connection<T extends Connector> implements SelectionListener {
     public void recycle() {
         this.readableSelectionChannel = null;
         this.socketChannel = null;
-        this.socketRegistration = null;
+        this.registration = null;
         this.state = null;
         this.writableSelectionChannel = null;
         this.inboundWay.recycle();
         this.outboundWay.recycle();
-    }
-
-    /**
-     * Updates interest of this connection for NIO operations with the given
-     * selector. If called several times, it just update the selection
-     * registrations with the new interest operations.
-     * 
-     * @param controller
-     *            The connection controller to register with.
-     * @throws ClosedChannelException
-     */
-    public void updateInterest(ConnectionController controller) {
-        if ((getState() != ConnectionState.CLOSING)
-                && (getState() != ConnectionState.CLOSED)) {
-            // Give a chance to ways for state update
-            getInboundWay().updateState();
-            getOutboundWay().updateState();
-
-            // Update the registration
-            getSocketRegistration().setInterestOperations(
-                    getSocketInterestOps());
-        }
     }
 
     /**
@@ -578,21 +547,19 @@ public class Connection<T extends Connector> implements SelectionListener {
 
         if ((controller != null) && (socketChannel != null)
                 && (socketAddress != null)) {
-            this.socketRegistration = (controller == null) ? null : controller
+            this.registration = (controller == null) ? null : controller
                     .register(socketChannel, 0, this);
 
             if (helper.isTracing()) {
                 this.readableSelectionChannel = new ReadableTraceChannel(
-                        new ReadableSocketChannel(socketChannel,
-                                socketRegistration));
+                        new ReadableSocketChannel(socketChannel, registration));
                 this.writableSelectionChannel = new WritableTraceChannel(
-                        new WritableSocketChannel(socketChannel,
-                                socketRegistration));
+                        new WritableSocketChannel(socketChannel, registration));
             } else {
                 this.readableSelectionChannel = new ReadableSocketChannel(
-                        socketChannel, socketRegistration);
+                        socketChannel, registration);
                 this.writableSelectionChannel = new WritableSocketChannel(
-                        socketChannel, socketRegistration);
+                        socketChannel, registration);
             }
         }
 
@@ -625,13 +592,12 @@ public class Connection<T extends Connector> implements SelectionListener {
      * Sets the socket's NIO registration holding the link between the channel
      * and the way.
      * 
-     * @param socketRegistration
+     * @param registration
      *            The socket's NIO registration holding the link between the
      *            channel and the way.
      */
-    protected void setSocketRegistration(
-            SelectionRegistration socketRegistration) {
-        this.socketRegistration = socketRegistration;
+    protected void setRegistration(SelectionRegistration registration) {
+        this.registration = registration;
     }
 
     /**
@@ -653,8 +619,17 @@ public class Connection<T extends Connector> implements SelectionListener {
      * Updates the connection states.
      */
     public void updateState() {
-        getInboundWay().updateState();
-        getOutboundWay().updateState();
+        if ((getState() != ConnectionState.CLOSING)
+                && (getState() != ConnectionState.CLOSED)) {
+            getInboundWay().updateState();
+            getOutboundWay().updateState();
+
+            // Update the registration
+            getRegistration().setInterestOperations(
+                    getInboundWay().getRegistration().getInterestOperations()
+                            | getOutboundWay().getRegistration()
+                                    .getInterestOperations());
+        }
     }
 
 }

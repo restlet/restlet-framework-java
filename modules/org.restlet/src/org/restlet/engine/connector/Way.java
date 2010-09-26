@@ -31,7 +31,6 @@
 package org.restlet.engine.connector;
 
 import java.nio.ByteBuffer;
-import java.nio.channels.WritableByteChannel;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -39,6 +38,8 @@ import java.util.logging.Logger;
 
 import org.restlet.Response;
 import org.restlet.data.Parameter;
+import org.restlet.util.SelectionListener;
+import org.restlet.util.SelectionRegistration;
 import org.restlet.util.Series;
 
 /**
@@ -47,7 +48,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public abstract class Way {
+public abstract class Way implements SelectionListener {
 
     /** The message headers. */
     private volatile Series<Parameter> headers;
@@ -73,6 +74,9 @@ public abstract class Way {
     /** The message state. */
     private volatile MessageState messageState;
 
+    /** The NIO selection registration. */
+    private SelectionRegistration registration;
+
     /**
      * Constructor.
      * 
@@ -91,6 +95,7 @@ public abstract class Way {
         this.connection = connection;
         this.messageState = MessageState.IDLE;
         this.ioState = IoState.IDLE;
+        this.registration = new SelectionRegistration(0, this);
     }
 
     /**
@@ -109,15 +114,6 @@ public abstract class Way {
      */
     protected Connection<?> getConnection() {
         return connection;
-    }
-
-    /**
-     * Returns the entity channel, chunked if necessary.
-     * 
-     * @return The entity channel, chunked if necessary.
-     */
-    public WritableByteChannel getEntityChannel(boolean chunked) {
-        return getConnection().getWritableSelectionChannel();
     }
 
     /**
@@ -193,7 +189,18 @@ public abstract class Way {
     }
 
     /**
-     * Registers interest of this way for socket NIO operations.
+     * Returns the socket's NIO registration holding the link between the
+     * channel and the connection.
+     * 
+     * @return The socket's NIO registration holding the link between the
+     *         channel and the connection.
+     */
+    protected SelectionRegistration getRegistration() {
+        return registration;
+    }
+
+    /**
+     * Returns the operations of interest.
      * 
      * @return The operations of interest.
      */
@@ -222,8 +229,11 @@ public abstract class Way {
     /**
      * Callback method invoked when the way has been selected for IO operations
      * it registered interest in.
+     * 
+     * @param registration
+     *            The selection registration.
      */
-    public void onSelected() {
+    public void onSelected(SelectionRegistration registration) {
         if (getIoState() == IoState.INTEREST) {
             setIoState(IoState.PROCESSING);
 
@@ -307,6 +317,18 @@ public abstract class Way {
         }
     }
 
+    /**
+     * Sets the NIO selection registration holding the link between the
+     * connection and the way.
+     * 
+     * @param registration
+     *            The NIO selection registration holding the link between the
+     *            connection and the way.
+     */
+    protected void setRegistration(SelectionRegistration registration) {
+        this.registration = registration;
+    }
+
     @Override
     public String toString() {
         return getIoState() + ", " + getMessageState();
@@ -315,6 +337,8 @@ public abstract class Way {
     /**
      * Updates the way IO and message states.
      */
-    public abstract void updateState();
+    public void updateState() {
+        getRegistration().setInterestOperations(getSocketInterestOps());
+    }
 
 }

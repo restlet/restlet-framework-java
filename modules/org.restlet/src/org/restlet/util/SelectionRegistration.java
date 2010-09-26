@@ -35,11 +35,37 @@ import java.nio.channels.SelectionKey;
 
 /**
  * Represents a unique registration between a NIO selector and a selectable
- * channel.
+ * channel. For the operation codes, see the constants in {@link SelectionKey}.
  * 
  * @author Jerome Louvel
+ * @see SelectionKey
  */
 public class SelectionRegistration {
+
+    /**
+     * Returns the name of the given IO operation.
+     * 
+     * @param operation
+     *            The IO operation code.
+     * @return The name of the given IO operation.
+     */
+    public static String getName(int operation) {
+        switch (operation) {
+        case SelectionKey.OP_ACCEPT:
+            return "ACCEPT";
+        case SelectionKey.OP_CONNECT:
+            return "CONNECT";
+        case SelectionKey.OP_READ:
+            return "READ";
+        case SelectionKey.OP_WRITE:
+            return "WRITE";
+        case 0:
+            return "NONE";
+        default:
+            return "?";
+        }
+
+    }
 
     /** The selection listener that will be notified. */
     private volatile SelectionListener listener;
@@ -62,6 +88,19 @@ public class SelectionRegistration {
     /**
      * Constructor.
      * 
+     * @param interestOperations
+     *            The IO operations interest.
+     * @param listener
+     *            The selection listener that will be notified.
+     */
+    public SelectionRegistration(int interestOperations,
+            SelectionListener listener) {
+        this(null, interestOperations, listener);
+    }
+
+    /**
+     * Constructor.
+     * 
      * @param selectableChannel
      *            The parent selectable channel.
      * @param interestOperations
@@ -75,6 +114,15 @@ public class SelectionRegistration {
         this.selectableChannel = selectableChannel;
         this.listener = listener;
         this.setInterestOperations(interestOperations);
+    }
+
+    /**
+     * Adds a given operations to the current list.
+     * 
+     * @param interest
+     */
+    public void addInterestOperations(int interest) {
+        setInterestOperations(getInterestOperations() & interest);
     }
 
     /**
@@ -166,7 +214,8 @@ public class SelectionRegistration {
     public void onSelected(int readyOperations) {
         this.readyOperations = readyOperations;
 
-        if (getListener() != null) {
+        if ((getListener() != null)
+                && ((getReadyOperations() & getInterestOperations()) != 0)) {
             getListener().onSelected(this);
         }
     }
@@ -200,6 +249,16 @@ public class SelectionRegistration {
     }
 
     /**
+     * Sets the IO operations ready.
+     * 
+     * @param readyOperations
+     *            The IO operations ready.
+     */
+    public void setReadyOperations(int readyOperations) {
+        this.readyOperations = readyOperations;
+    }
+
+    /**
      * Suspend interest in new listener notifications. By default, remembers the
      * current interest and calls {@link #setInterestOperations(int)} with a 0
      * value.
@@ -207,6 +266,13 @@ public class SelectionRegistration {
     public void suspend() {
         this.previousInterest = getInterestOperations();
         setInterestOperations(0);
+    }
+
+    @Override
+    public String toString() {
+        return getName(getInterestOperations()) + ", "
+                + getName(getReadyOperations()) + ", "
+                + Boolean.toString(isCanceled());
     }
 
 }

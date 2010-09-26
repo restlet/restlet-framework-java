@@ -92,7 +92,7 @@ public abstract class ConnectionController extends Controller implements
                         "Closing connection with no IO activity during "
                                 + getHelper().getMaxIoIdleTimeMs() + " ms.");
             } else {
-                conn.updateInterest(this);
+                conn.updateState();
             }
         }
     }

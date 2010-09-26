@@ -51,6 +51,7 @@ import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.util.SelectionRegistration;
 import org.restlet.util.Series;
 
 /**
@@ -380,12 +381,12 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
-    public void onSelected() {
+    public void onSelected(SelectionRegistration registration) {
         try {
             Response message = getMessage();
 
             if (message != null) {
-                super.onSelected();
+                super.onSelected(registration);
 
                 while (isProcessing()) {
                     // Write the message or part of it in the byte buffer
@@ -529,6 +530,8 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public void updateState() {
+        super.updateState();
+
         // Update the IO state if necessary
         if ((getIoState() == IoState.IDLE) && !getMessages().isEmpty()) {
             if (getMessage() == null) {

@@ -44,6 +44,13 @@ import org.restlet.util.SelectionRegistration;
 public interface SelectionChannel extends Channel {
 
     /**
+     * Returns the NIO registration.
+     * 
+     * @return The NIO registration.
+     */
+    public SelectionRegistration getRegistration();
+
+    /**
      * Registers a selection listener with the underlying selector for the given
      * operations and returns the registration created.
      * 
@@ -55,13 +62,5 @@ public interface SelectionChannel extends Channel {
      */
     public SelectionRegistration register(int interestOperations,
             SelectionListener listener) throws IOException;
-
-    /**
-     * Returns the registration if it exists.
-     * 
-     * @return The registration if it exists.
-     * @throws IOException
-     */
-    public SelectionRegistration getRegistration() throws IOException;
 
 }
