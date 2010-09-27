@@ -35,6 +35,7 @@ import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
 import org.restlet.Client;
+import org.restlet.Message;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
@@ -82,6 +83,11 @@ public class ClientInboundWay extends InboundWay {
      */
     protected Status createStatus(int code) {
         return Status.valueOf(code);
+    }
+
+    @Override
+    protected Message getActualMessage() {
+        return getMessage();
     }
 
     @SuppressWarnings("unchecked")

@@ -32,6 +32,7 @@ package org.restlet.engine.connector;
 
 import java.io.IOException;
 
+import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
@@ -95,6 +96,11 @@ public class ClientOutboundWay extends OutboundWay {
      */
     protected void addRequestHeaders(Series<Parameter> headers) {
         HeaderUtils.addRequestHeaders(getMessage().getRequest(), headers);
+    }
+
+    @Override
+    protected Message getActualMessage() {
+        return getMessage().getRequest();
     }
 
     @Override

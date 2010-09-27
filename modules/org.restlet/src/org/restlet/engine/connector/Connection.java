@@ -468,6 +468,8 @@ public class Connection<T extends Connector> implements SelectionListener {
     public void onSelected(SelectionRegistration registration) {
         this.lastActivity = System.currentTimeMillis();
 
+        System.out.println("Connection#onSelected: " + registration);
+
         try {
             if ((registration == null) || registration.isReadable()) {
                 synchronized (getInboundWay().getByteBuffer()) {

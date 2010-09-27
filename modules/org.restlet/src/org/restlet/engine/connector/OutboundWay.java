@@ -134,11 +134,11 @@ public abstract class OutboundWay extends Way {
             headers.set(HeaderConstants.HEADER_CONNECTION, "close", true);
         }
 
-        if (shouldBeChunked(getMessage().getEntity())) {
+        if (shouldBeChunked(getActualMessage().getEntity())) {
             headers.add(HeaderConstants.HEADER_TRANSFER_ENCODING, "chunked");
         }
 
-        HeaderUtils.addGeneralHeaders(getMessage(), headers);
+        HeaderUtils.addGeneralHeaders(getActualMessage(), headers);
     }
 
     /**
@@ -425,16 +425,16 @@ public abstract class OutboundWay extends Way {
                 getLineBuilder().append('\n'); // LF
 
                 // Prepare entity writing if available
-                if (getMessage().isEntityAvailable()) {
+                if (getActualMessage().isEntityAvailable()) {
                     setMessageState(MessageState.BODY);
 
-                    if (getMessage().getEntity() instanceof FileRepresentation) {
-                        FileRepresentation fr = (FileRepresentation) getMessage()
+                    if (getActualMessage().getEntity() instanceof FileRepresentation) {
+                        FileRepresentation fr = (FileRepresentation) getActualMessage()
                                 .getEntity();
                         setEntityChannel(fr.getChannel());
                         setEntityType(EntityType.FILE_CHANNEL);
-                    } else if (getMessage().getEntity() instanceof ReadableRepresentation) {
-                        ReadableRepresentation rr = (ReadableRepresentation) getMessage()
+                    } else if (getActualMessage().getEntity() instanceof ReadableRepresentation) {
+                        ReadableRepresentation rr = (ReadableRepresentation) getActualMessage()
                                 .getEntity();
                         setEntityChannel(rr.getChannel());
                         setEntityType(EntityType.SYNC_CHANNEL);
@@ -447,7 +447,8 @@ public abstract class OutboundWay extends Way {
                             }
                         }
                     } else {
-                        setEntityStream(getMessage().getEntity().getStream());
+                        setEntityStream(getActualMessage().getEntity()
+                                .getStream());
                         setEntityType(EntityType.STREAM);
                     }
                 } else {
@@ -467,8 +468,8 @@ public abstract class OutboundWay extends Way {
     protected void writeMessage() throws IOException {
         while (isProcessing() && getByteBuffer().hasRemaining()) {
             if (getMessageState() == MessageState.BODY) {
-                if (getMessage().isEntityAvailable()) {
-                    long entitySize = getMessage().getEntity().getSize();
+                if (getActualMessage().isEntityAvailable()) {
+                    long entitySize = getActualMessage().getEntity().getSize();
                     int available = getEntityStream().available();
                     int result = 0;
 

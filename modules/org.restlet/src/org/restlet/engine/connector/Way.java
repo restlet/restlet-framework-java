@@ -36,6 +36,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Message;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.util.SelectionListener;
@@ -160,6 +161,13 @@ public abstract class Way implements SelectionListener {
     protected Logger getLogger() {
         return getConnection().getLogger();
     }
+
+    /**
+     * Returns the actual message, request or response.
+     * 
+     * @return The actual message, request or response.
+     */
+    protected abstract Message getActualMessage();
 
     /**
      * Returns the current message processed.

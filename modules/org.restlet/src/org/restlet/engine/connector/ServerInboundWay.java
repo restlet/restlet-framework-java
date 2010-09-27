@@ -32,6 +32,7 @@ package org.restlet.engine.connector;
 
 import java.io.IOException;
 
+import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
@@ -53,6 +54,11 @@ public class ServerInboundWay extends InboundWay {
      */
     public ServerInboundWay(Connection<?> connection) {
         super(connection);
+    }
+
+    @Override
+    protected Message getActualMessage() {
+        return getMessage().getRequest();
     }
 
     @SuppressWarnings("unchecked")
