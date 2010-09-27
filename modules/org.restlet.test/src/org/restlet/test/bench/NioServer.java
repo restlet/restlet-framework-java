@@ -18,7 +18,8 @@ public class NioServer {
         // helper = new org.restlet.ext.grizzly.HttpServerHelper(null);
         // helper = new org.restlet.ext.netty.HttpServerHelper(null);
         // helper = new org.restlet.ext.simple.HttpServerHelper(null);
-        // helper = new org.restlet.engine.http.connector.HttpServerHelper(null);
+        // helper = new
+        // org.restlet.engine.http.connector.HttpServerHelper(null);
         helper = new org.restlet.engine.connector.HttpServerHelper(null);
 
         // Register the selected connector
@@ -37,7 +38,8 @@ public class NioServer {
         server.setNext(new Restlet() {
             @Override
             public void handle(Request request, Response response) {
-                response.setEntity("hello, world!", MediaType.TEXT_PLAIN);
+                response.setEntity("hello, world!" + request.getEntityAsText(),
+                        MediaType.TEXT_PLAIN);
             }
         });
         server.start();

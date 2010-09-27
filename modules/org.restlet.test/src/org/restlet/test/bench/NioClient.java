@@ -26,7 +26,7 @@ public class NioClient {
         // String uri =
         // "http://www.restlet.org/downloads/2.1/restlet-jse-2.1snapshot.zip";
         String uri = "http://127.0.0.1:9999/";
-        int iterations = 10000;
+        int iterations = 1000;
         ClientResource cr = new ClientResource(uri);
         cr.setRetryOnError(false);
         cr.setNext(client);
@@ -39,7 +39,7 @@ public class NioClient {
         long start = System.currentTimeMillis();
 
         for (int i = 0; i < iterations; i++) {
-            r = cr.get();
+            r = cr.post("Sample content posted");
             r.exhaust();
             // System.out.println(r.getText());
 
