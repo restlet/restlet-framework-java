@@ -136,7 +136,7 @@ public final class ClientInfo {
      * 
      * @see The {@link ClientInfo#getAgentAttributes()} method.
      */
-    private static List<String> userAgentTemplates = null;
+    private volatile static List<String> userAgentTemplates = null;
 
     // [ifndef gwt] method
     /**
@@ -186,9 +186,9 @@ public final class ClientInfo {
                                                         + "' due to: "
                                                         + e.getMessage());
                             }
-
                         }
                     }
+                    ClientInfo.userAgentTemplates = u;
                 }
             }
         }
