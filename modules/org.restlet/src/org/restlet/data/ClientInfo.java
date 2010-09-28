@@ -136,7 +136,7 @@ public final class ClientInfo {
      * 
      * @see The {@link ClientInfo#getAgentAttributes()} method.
      */
-    private volatile static List<String> userAgentTemplates = null;
+    private static volatile List<String> userAgentTemplates = null;
 
     // [ifndef gwt] method
     /**
