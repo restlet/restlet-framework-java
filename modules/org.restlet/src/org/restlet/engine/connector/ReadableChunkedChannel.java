@@ -44,7 +44,7 @@ import org.restlet.engine.io.ReadableSelectionChannel;
 public class ReadableChunkedChannel extends ReadableWayChannel {
 
     /** The available chunk size that should be read from the source channel. */
-    private volatile long chunkSize;
+    private volatile long availableChunkSize;
 
     /** The line builder to parse chunk size or trailer. */
     private final StringBuilder lineBuilder;
@@ -61,6 +61,9 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
     /** */
     private static final int STATE_CHUNK_TRAILER = 3;
 
+    /** */
+    private static final int STATE_CHUNK_END = 4;
+
     /**
      * Constructor.
      * 
@@ -70,7 +73,7 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
      *            The byte buffer remaining from previous read processing.
      * @param source
      *            The source channel.
-     * @param chunkSize
+     * @param availableChunkSize
      *            The total available size that can be read from the source
      *            channel.
      */
@@ -124,8 +127,7 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
     public int read(ByteBuffer dst) throws IOException {
         int result = -1;
 
-        switch (this.state) {
-        case STATE_CHUNK_SIZE:
+        if (this.state == STATE_CHUNK_SIZE) {
             if (fillLine()) {
                 // The chunk size line was fully read into the line builder
                 int length = getLineBuilder().length();
@@ -139,33 +141,38 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
                 index = (index == -1) ? getLineBuilder().length() - 1 : index;
 
                 try {
-                    this.chunkSize = Long.parseLong(
-                            getLineBuilder().substring(0, index).trim(), 16);
+                    this.availableChunkSize = Long.parseLong(getLineBuilder()
+                            .substring(0, index).trim(), 16);
                 } catch (NumberFormatException ex) {
                     throw new IOException("\"" + getLineBuilder()
                             + "\" has an invalid chunk size");
                 }
 
-                if (this.chunkSize == 0) {
+                if (this.availableChunkSize == 0) {
+                    this.state = STATE_CHUNK_END;
                     result = -1;
+                } else {
+                    this.state = STATE_CHUNK_DATA;
                 }
             }
-            break;
-        case STATE_CHUNK_DATA:
-            if (this.chunkSize > 0) {
-                if (this.chunkSize < dst.remaining()) {
-                    dst.limit((int) (this.chunkSize + dst.position()));
+        }
+
+        if (this.state == STATE_CHUNK_DATA) {
+            if (this.availableChunkSize > 0) {
+                if (this.availableChunkSize < dst.remaining()) {
+                    dst.limit((int) (this.availableChunkSize + dst.position()));
                 }
 
                 result = super.read(dst);
+
+                if (result > 0) {
+                    this.availableChunkSize -= result;
+                }
             }
-            break;
-        case STATE_CHUNK_TRAILER:
-            break;
         }
 
-        if (result > 0) {
-            this.chunkSize -= result;
+        if (this.state == STATE_CHUNK_TRAILER) {
+            // TODO
         }
 
         postRead(result);
