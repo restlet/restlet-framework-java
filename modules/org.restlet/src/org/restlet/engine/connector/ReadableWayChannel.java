@@ -40,9 +40,10 @@ import org.restlet.util.SelectionRegistration;
 // [excludes gwt]
 /**
  * Readable byte channel based on a source socket channel that must only be
- * partially read.
+ * partially read. It is capable of first using the remaining buffer before
+ * reading more.
  */
-public class ReadableEntityChannel extends
+public class ReadableWayChannel extends
         WrapperSelectionChannel<ReadableSelectionChannel> implements
         ReadableSelectionChannel {
 
@@ -51,9 +52,6 @@ public class ReadableEntityChannel extends
 
     /** The byte buffer remaining from previous read processing. */
     private final ByteBuffer remainingBuffer;
-
-    /** The total available size that should be read from the source channel. */
-    private volatile long availableSize;
 
     /**
      * Constructor.
@@ -64,18 +62,13 @@ public class ReadableEntityChannel extends
      *            The byte buffer remaining from previous read processing.
      * @param source
      *            The source channel.
-     * @param availableSize
-     *            The total available size that can be read from the source
-     *            channel.
      */
-    public ReadableEntityChannel(InboundWay inboundWay,
-            ByteBuffer remainingBuffer, ReadableSelectionChannel source,
-            long availableSize) {
+    public ReadableWayChannel(InboundWay inboundWay,
+            ByteBuffer remainingBuffer, ReadableSelectionChannel source) {
         super(source);
         setRegistration(new SelectionRegistration(0, null));
         this.inboundWay = inboundWay;
         this.remainingBuffer = remainingBuffer;
-        this.availableSize = availableSize;
     }
 
     /**
@@ -83,8 +76,17 @@ public class ReadableEntityChannel extends
      * 
      * @return The parent inbound way.
      */
-    public InboundWay getInboundWay() {
+    private InboundWay getInboundWay() {
         return inboundWay;
+    }
+
+    /**
+     * Returns the byte buffer remaining from previous read processing.
+     * 
+     * @return The byte buffer remaining from previous read processing.
+     */
+    protected ByteBuffer getRemainingBuffer() {
+        return remainingBuffer;
     }
 
     /**
@@ -99,37 +101,33 @@ public class ReadableEntityChannel extends
     public int read(ByteBuffer dst) throws IOException {
         int result = -1;
 
-        if (this.availableSize > 0) {
-            synchronized (this.remainingBuffer) {
-                if ((this.remainingBuffer != null)
-                        && (this.remainingBuffer.hasRemaining())) {
-                    // First make sure that the remaining buffer is empty
-                    result = Math.min(
-                            (int) this.availableSize,
-                            Math.min(this.remainingBuffer.remaining(),
-                                    dst.remaining()));
-                    byte[] src = new byte[result];
-                    this.remainingBuffer.get(src);
-                    dst.put(src);
-                } else {
-                    // Otherwise, read data from the source channel
-                    if (this.availableSize < dst.remaining()) {
-                        dst.limit((int) (this.availableSize + dst.position()));
-                    }
+        synchronized (getRemainingBuffer()) {
+            if ((getRemainingBuffer() != null)
+                    && (getRemainingBuffer().hasRemaining())) {
+                // First make sure that the remaining buffer is empty
+                result = Math.min(getRemainingBuffer().remaining(),
+                        dst.remaining());
 
-                    result = getWrappedChannel().read(dst);
+                for (int i = 0; i < result; i++) {
+                    dst.put(getRemainingBuffer().get());
                 }
+            } else {
+                result = getWrappedChannel().read(dst);
             }
-
-            if (result > 0) {
-                this.availableSize -= result;
-            }
-        }
-
-        if (result == -1) {
-            getInboundWay().onCompleted();
         }
 
         return result;
+    }
+
+    /**
+     * Post-read callback that calls {@link InboundWay#onCompleted()} if the end
+     * has been reached.
+     * 
+     * @param length
+     */
+    protected void postRead(int length) {
+        if (length == -1) {
+            getInboundWay().onCompleted();
+        }
     }
 }

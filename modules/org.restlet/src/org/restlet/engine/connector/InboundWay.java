@@ -39,6 +39,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.io.NioUtils;
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ReadableRepresentation;
@@ -136,29 +137,7 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected boolean fillLine() throws IOException {
-        boolean result = false;
-        int next;
-
-        while (!result && getByteBuffer().hasRemaining()) {
-            next = (int) getByteBuffer().get();
-
-            if (HeaderUtils.isCarriageReturn(next)) {
-                next = (int) getByteBuffer().get();
-
-                if (HeaderUtils.isLineFeed(next)) {
-                    result = true;
-                } else {
-                    throw new IOException(
-                            "Missing carriage return character at the end of HTTP line");
-                }
-            } else if (next == -1) {
-                setMessageState(MessageState.IDLE);
-            } else {
-                getLineBuilder().append((char) next);
-            }
-        }
-
-        return result;
+        return NioUtils.fillLine(getLineBuilder(), getByteBuffer());
     }
 
     /**
@@ -188,7 +167,7 @@ public abstract class InboundWay extends Way {
                             "Chunked encoding not supported (yet) in the NIO connector.");
         } else {
             // Wraps the remaining bytes into a special entity channel
-            result = new ReadableEntityChannel(this, getByteBuffer(),
+            result = new ReadableSizedChannel(this, getByteBuffer(),
                     getConnection().getReadableSelectionChannel(), size);
         }
 

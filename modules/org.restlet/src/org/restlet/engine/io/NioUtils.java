@@ -33,6 +33,7 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channel;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -45,6 +46,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.engine.Edition;
+import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.representation.Representation;
 
 // [excludes gwt]
@@ -54,6 +56,7 @@ import org.restlet.representation.Representation;
  * @author Jerome Louvel
  */
 public class NioUtils {
+
     /**
      * Writes the representation to a byte channel. Optimizes using the file
      * channel transferTo method.
@@ -83,6 +86,23 @@ public class NioUtils {
     }
 
     /**
+     * Writes a NIO readable channel to a BIO output stream.
+     * 
+     * @param readableChannel
+     *            The readable channel.
+     * @param outputStream
+     *            The output stream.
+     * @throws IOException
+     */
+    public static void copy(ReadableByteChannel readableChannel,
+            OutputStream outputStream) throws IOException {
+        if ((readableChannel != null) && (outputStream != null)) {
+            BioUtils.copy(new NbChannelInputStream(readableChannel),
+                    outputStream);
+        }
+    }
+
+    /**
      * Writes a readable channel to a writable channel.
      * 
      * @param readableChannel
@@ -100,20 +120,34 @@ public class NioUtils {
     }
 
     /**
-     * Writes a NIO readable channel to a BIO output stream.
+     * Read the current message line (start line or header line).
      * 
-     * @param readableChannel
-     *            The readable channel.
-     * @param outputStream
-     *            The output stream.
+     * @return True if the message line was fully read.
      * @throws IOException
      */
-    public static void copy(ReadableByteChannel readableChannel,
-            OutputStream outputStream) throws IOException {
-        if ((readableChannel != null) && (outputStream != null)) {
-            BioUtils.copy(new NbChannelInputStream(readableChannel),
-                    outputStream);
+    public static boolean fillLine(StringBuilder lineBuilder,
+            ByteBuffer byteBuffer) throws IOException {
+        boolean result = false;
+        int next;
+
+        while (!result && byteBuffer.hasRemaining()) {
+            next = (int) byteBuffer.get();
+
+            if (HeaderUtils.isCarriageReturn(next)) {
+                next = (int) byteBuffer.get();
+
+                if (HeaderUtils.isLineFeed(next)) {
+                    result = true;
+                } else {
+                    throw new IOException(
+                            "Missing carriage return character at the end of HTTP line");
+                }
+            } else {
+                lineBuilder.append((char) next);
+            }
         }
+
+        return result;
     }
 
     /**
