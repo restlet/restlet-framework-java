@@ -124,45 +124,34 @@ public class DirectoryServerResource extends ServerResource {
     @Override
     public Representation delete() throws ResourceException {
         if (this.directory.isModifiable()) {
-            if (this.directoryRedirection) {
-                if (this.originalRef != null) {
-                    redirectSeeOther(this.originalRef.getIdentifier() + "/");
-                } else {
-                    redirectSeeOther(getReference().getIdentifier() + "/");
-                }
+            Request contextRequest = new Request(Method.DELETE, this.targetUri);
+            Response contextResponse = new Response(contextRequest);
+
+            if (this.directoryTarget && !this.indexTarget) {
+                contextRequest.setResourceRef(this.targetUri);
+                getClientDispatcher().handle(contextRequest, contextResponse);
             } else {
-                Request contextRequest = new Request(Method.DELETE,
-                        this.targetUri);
-                Response contextResponse = new Response(contextRequest);
-
-                if (this.directoryTarget && !this.indexTarget) {
-                    contextRequest.setResourceRef(this.targetUri);
-                    getClientDispatcher().handle(contextRequest,
-                            contextResponse);
-                } else {
-                    // Check if there is only one representation
-                    // Try to get the unique representation of the resource
-                    ReferenceList references = getVariantsReferences();
-                    if (!references.isEmpty()) {
-                        if (this.uniqueReference != null) {
-                            contextRequest.setResourceRef(this.uniqueReference);
-                            getClientDispatcher().handle(contextRequest,
-                                    contextResponse);
-                        } else {
-                            // We found variants, but not the right one
-                            contextResponse
-                                    .setStatus(new Status(
-                                            Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-                                            "Unable to process properly the request. Several variants exist but none of them suits precisely. "));
-                        }
+                // Check if there is only one representation
+                // Try to get the unique representation of the resource
+                ReferenceList references = getVariantsReferences();
+                if (!references.isEmpty()) {
+                    if (this.uniqueReference != null) {
+                        contextRequest.setResourceRef(this.uniqueReference);
+                        getClientDispatcher().handle(contextRequest,
+                                contextResponse);
                     } else {
+                        // We found variants, but not the right one
                         contextResponse
-                                .setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                                .setStatus(new Status(
+                                        Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+                                        "Unable to process properly the request. Several variants exist but none of them suits precisely. "));
                     }
+                } else {
+                    contextResponse.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 }
-
-                setStatus(contextResponse.getStatus());
             }
+
+            setStatus(contextResponse.getStatus());
         } else {
             setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED,
                     "The directory is not modifiable.");
@@ -245,7 +234,8 @@ public class DirectoryServerResource extends ServerResource {
                         this.fileTarget = false;
                         this.directoryContent = new ReferenceList(
                                 contextResponse.getEntity());
-                        if (!getReference().getIdentifier().endsWith("/")) {
+
+                        if (!getReference().getPath().endsWith("/")) {
                             // All requests will be automatically redirected
                             this.directoryRedirection = true;
                         }
@@ -335,9 +325,8 @@ public class DirectoryServerResource extends ServerResource {
                     // The target URI does not take into account the query and
                     // fragment parts of the resource.
                     this.targetUri = new Reference(directory.getRootRef()
-                            .toString()
-                            + this.relativePart).normalize().toString(false,
-                            false);
+                            .toString() + this.relativePart).normalize()
+                            .toString(false, false);
                     if (!this.targetUri.startsWith(directory.getRootRef()
                             .toString())) {
                         // Prevent the client from accessing resources in upper
@@ -529,8 +518,8 @@ public class DirectoryServerResource extends ServerResource {
         }
 
         Request request = new Request(Method.GET, resourceUri);
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(acceptedMediaType));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(acceptedMediaType));
         return getClientDispatcher().handle(request);
     }
 
@@ -558,8 +547,8 @@ public class DirectoryServerResource extends ServerResource {
                     return 1;
                 }
 
-                return rep0.getLocationRef().getLastSegment().compareTo(
-                        rep1.getLocationRef().getLastSegment());
+                return rep0.getLocationRef().getLastSegment()
+                        .compareTo(rep1.getLocationRef().getLastSegment());
             }
         };
         return identifiersComparator;
@@ -781,15 +770,20 @@ public class DirectoryServerResource extends ServerResource {
         Representation result = null;
 
         if (this.directoryRedirection) {
-            // If this request targets a directory and if the target URI does
-            // not end with a trailing "/", the client is told to redirect to a
-            // correct URI.
-
-            // Restore the cut extensions in case the call has been tunneled.
             if (this.originalRef != null) {
-                redirectSeeOther(this.originalRef.getIdentifier() + "/");
+                if (this.originalRef.hasQuery()) {
+                    redirectSeeOther(this.originalRef.getPath() + "/?"
+                            + this.originalRef.getQuery());
+                } else {
+                    redirectSeeOther(this.originalRef.getPath() + "/");
+                }
             } else {
-                redirectSeeOther(getReference().getIdentifier() + "/");
+                if (getReference().hasQuery()) {
+                    redirectSeeOther(getReference().getPath() + "/?"
+                            + getReference().getQuery());
+                } else {
+                    redirectSeeOther(getReference().getPath() + "/");
+                }
             }
         } else {
             result = super.handle();
@@ -819,25 +813,17 @@ public class DirectoryServerResource extends ServerResource {
     @Override
     public Representation put(Representation entity) throws ResourceException {
         if (this.directory.isModifiable()) {
-            if (this.directoryRedirection) {
-                if (this.originalRef != null) {
-                    redirectSeeOther(this.originalRef.getIdentifier() + "/");
-                } else {
-                    redirectSeeOther(getReference().getIdentifier() + "/");
-                }
-            } else {
-                // Transfer of PUT calls is only allowed if the readOnly flag is
-                // not set.
-                Request contextRequest = new Request(Method.PUT, this.targetUri);
+            // Transfer of PUT calls is only allowed if the readOnly flag is
+            // not set.
+            Request contextRequest = new Request(Method.PUT, this.targetUri);
 
-                // Add support of partial PUT calls.
-                contextRequest.getRanges().addAll(getRanges());
-                contextRequest.setEntity(entity);
-                Response contextResponse = new Response(contextRequest);
-                contextRequest.setResourceRef(this.targetUri);
-                getClientDispatcher().handle(contextRequest, contextResponse);
-                setStatus(contextResponse.getStatus());
-            }
+            // Add support of partial PUT calls.
+            contextRequest.getRanges().addAll(getRanges());
+            contextRequest.setEntity(entity);
+            Response contextResponse = new Response(contextRequest);
+            contextRequest.setResourceRef(this.targetUri);
+            getClientDispatcher().handle(contextRequest, contextResponse);
+            setStatus(contextResponse.getStatus());
         } else {
             setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED,
                     "The directory is not modifiable.");
