@@ -16,6 +16,8 @@ Changes log
          calls. They now properly time out. Suggested by Tim Peierls.
 	   - Fixed initialisation of the ClientInfo#userAgentTemplates 
              static variable. Reported by Michael Terrington.
+       - Fix bug with automatic redirects by Directory when the URI
+         contains query parameters. Reported by William Pietri.
     - Misc
        - Additional errors are now caught and logged in the HTTP 
          servers. Contributed by Marc Portier.
@@ -24,7 +26,7 @@ Changes log
 	   - Optimized writing from NIO channels to BIO output streams.
 	   - Updated Simple to version 4.1.20.
 	   
-- 2.0.0 (2010-07-19)
+- 2.0.1 (2010-09-08)
     - Bugs fixed
        - When cloning the prototype request, the ClientResource wasn't
          copying the ClientInfo#user property.
