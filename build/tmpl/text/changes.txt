@@ -25,6 +25,6 @@ Changes log
         excellent performance so far. Chunked encoding and a few other
         features are missing though.
     - Bugs fixed
-      -   
+      - 
     - Misc
 	

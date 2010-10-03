@@ -512,8 +512,14 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
      * @return the port of the HTTP proxy.
      */
     public int getProxyPort() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "proxyPort", System.getProperty("http.proxyPort")));
+        String proxyPort = getHelpedParameters().getFirstValue("proxyPort",
+                System.getProperty("http.proxyPort"));
+
+        if (proxyPort == null) {
+            proxyPort = "3128";
+        }
+
+        return Integer.parseInt(proxyPort);
     }
 
     /**
@@ -726,6 +732,11 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
     public boolean isControllerDaemon() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "controllerDaemon", "true"));
+    }
+
+    @Override
+    public boolean isProxying() {
+        return getProxyHost() != null;
     }
 
     /**

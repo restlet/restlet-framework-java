@@ -293,6 +293,15 @@ public abstract class ConnectionHelper<T extends Connector> extends
                 "pooledConnections", "true"));
     }
 
+    /**
+     * Indicates if the helper is going through a client proxy or is a server
+     * proxy.
+     * 
+     * @return True if the helper is going through a client proxy or is a server
+     *         proxy.
+     */
+    public abstract boolean isProxying();
+
     @Override
     public void start() throws Exception {
         super.start();

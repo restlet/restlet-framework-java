@@ -240,6 +240,11 @@ public abstract class ConnectionServerHelper extends ConnectionHelper<Server> {
                 "controllerDaemon", "false"));
     }
 
+    @Override
+    public boolean isProxying() {
+        return false;
+    }
+
     /**
      * Indicates if the controller thread should be a daemon (not blocking JVM
      * exit).
