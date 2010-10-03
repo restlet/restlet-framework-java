@@ -15,7 +15,9 @@ Changes log
        - Fixed potential thread blocks due to CountDownLatch.await()
          calls. They now properly time out. Suggested by Tim Peierls.
 	   - Fixed initialisation of the ClientInfo#userAgentTemplates 
-             static variable. Reported by Michael Terrington.
+         static variable. Reported by Michael Terrington.
+	   - Fixed the Content-length header sent by HEAD responses.
+         Reported by Nicolas Rinaudo.
        - Fix bug with automatic redirects by Directory when the URI
          contains query parameters. Reported by William Pietri.
     - Misc

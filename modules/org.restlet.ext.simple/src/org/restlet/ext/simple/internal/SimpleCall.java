@@ -46,6 +46,7 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 
 import org.restlet.Server;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.ServerCall;
 import org.restlet.util.Series;
@@ -346,8 +347,9 @@ public class SimpleCall extends ServerCall {
         this.response.setCode(getStatusCode());
         this.response.setText(getReasonPhrase());
 
-        // Is this really required
-        if (restletResponse.getEntity() == null) {
+        // Ensure the HEAD response sends back the right Content-length header.
+        if (!Method.HEAD.equals(restletResponse.getRequest().getMethod())
+                && restletResponse.getEntity() == null) {
             this.response.setContentLength(0);
         }
     }
