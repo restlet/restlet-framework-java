@@ -475,6 +475,15 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Indicates if the helper is going through a client proxy or is a server
+     * proxy.
+     * 
+     * @return True if the helper is going through a client proxy or is a server
+     *         proxy.
+     */
+    public abstract boolean isProxying();
+
+    /**
      * Indicates if it is helping a server connector.
      * 
      * @return True if it is helping a server connector.
@@ -553,8 +562,7 @@ public abstract class BaseHelper<T extends Connector> extends
                 this.controllerService.awaitTermination(10, TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
                 getLogger()
-                        .log(
-                                Level.FINE,
+                        .log(Level.FINE,
                                 "Interruption while shutting down the controller service",
                                 ex);
             }

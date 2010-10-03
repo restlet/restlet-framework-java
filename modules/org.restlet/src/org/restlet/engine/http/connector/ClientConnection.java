@@ -58,24 +58,32 @@ import org.restlet.util.Series;
 public class ClientConnection extends Connection<Client> {
 
     /**
-     * Returns the absolute request URI.
+     * Returns the request URI.
      * 
      * @param resourceRef
      *            The resource reference.
+     * @param isProxied
+     *            Indicates if the request goes through a proxy and requires an
+     *            absolute URI.
      * @return The absolute request URI.
      */
-    private static String getRequestUri(Reference resourceRef) {
+    private static String getRequestUri(Reference resourceRef, boolean isProxied) {
         String result = null;
-        Reference absoluteRef = resourceRef.isAbsolute() ? resourceRef
+        Reference requestRef = resourceRef.isAbsolute() ? resourceRef
                 : resourceRef.getTargetRef();
-        if (absoluteRef.hasQuery()) {
-            result = absoluteRef.getPath() + "?" + absoluteRef.getQuery();
-        } else {
-            result = absoluteRef.getPath();
-        }
 
-        if ((result == null) || (result.equals(""))) {
-            result = "/";
+        if (isProxied) {
+            result = requestRef.getIdentifier();
+        } else {
+            if (requestRef.hasQuery()) {
+                result = requestRef.getPath() + "?" + requestRef.getQuery();
+            } else {
+                result = requestRef.getPath();
+            }
+
+            if ((result == null) || (result.equals(""))) {
+                result = "/";
+            }
         }
 
         return result;
@@ -332,8 +340,8 @@ public class ClientConnection extends Connection<Client> {
         headStream.write(StringUtils.getAsciiBytes(request.getMethod()
                 .getName()));
         headStream.write(' ');
-        headStream.write(StringUtils.getAsciiBytes(getRequestUri(request
-                .getResourceRef())));
+        headStream.write(StringUtils.getAsciiBytes(getRequestUri(
+                request.getResourceRef(), getHelper().isProxying())));
         headStream.write(' ');
         headStream.write(StringUtils.getAsciiBytes(request.getProtocol()
                 .getTechnicalName()));

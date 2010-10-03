@@ -71,7 +71,6 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * @author Jerome Louvel
  */
 public abstract class BaseServerHelper extends BaseHelper<Server> {
-
     /** The acceptor task. */
     private volatile Acceptor acceptor;
 
@@ -210,6 +209,11 @@ public abstract class BaseServerHelper extends BaseHelper<Server> {
                 connection.setInboundBusy(false);
             }
         }
+    }
+
+    @Override
+    public boolean isProxying() {
+        return false;
     }
 
     /**

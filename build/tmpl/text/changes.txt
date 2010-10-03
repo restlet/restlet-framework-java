@@ -20,6 +20,8 @@ Changes log
          Reported by Nicolas Rinaudo.
        - Fix bug with automatic redirects by Directory when the URI
          contains query parameters. Reported by William Pietri.
+       - Internal HTTP client now uses absolute URIs for proxies 
+         requests.
     - Misc
        - Additional errors are now caught and logged in the HTTP 
          servers. Contributed by Marc Portier.
