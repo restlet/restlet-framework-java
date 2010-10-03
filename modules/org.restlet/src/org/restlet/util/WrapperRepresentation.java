@@ -175,6 +175,7 @@ public class WrapperRepresentation extends Representation {
         return getWrappedRepresentation().isAvailable();
     }
 
+    // [ifndef gwt] method
     @Override
     public boolean isSelectable() {
         return getWrappedRepresentation().isSelectable();
