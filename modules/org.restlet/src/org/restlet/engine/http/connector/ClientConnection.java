@@ -40,6 +40,7 @@ import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Form;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
@@ -255,7 +256,8 @@ public class ClientConnection extends Connection<Client> {
                 getSocket().getLocalAddress().toString());
         response.getServerInfo().setAgent(Engine.VERSION_HEADER);
         response.getServerInfo().setPort(getSocket().getPort());
-        response.setEntity(createInboundEntity(headers));
+        response.setEntity(createInboundEntity(headers, Method.HEAD
+                .equals(response.getRequest().getMethod())));
 
         try {
             copyResponseTransportHeaders(headers, response);

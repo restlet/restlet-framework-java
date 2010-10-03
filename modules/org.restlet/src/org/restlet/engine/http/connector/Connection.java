@@ -248,6 +248,21 @@ public abstract class Connection<T extends Connector> implements Notifiable {
      * @return The inbound message if available.
      */
     public Representation createInboundEntity(Series<Parameter> headers) {
+        return createInboundEntity(headers, false);
+    }
+
+    /**
+     * Returns the inbound message entity if available.
+     * 
+     * @param headers
+     *            The headers to use.
+     * @param ignoreContent
+     *            True to return an empty representation completed with the
+     *            entity headers.
+     * @return The inbound message if available.
+     */
+    public Representation createInboundEntity(Series<Parameter> headers,
+            boolean ignoreContent) {
         Representation result = null;
         long contentLength = HeaderUtils.getContentLength(headers);
         boolean chunkedEncoding = HeaderUtils.isChunkedEncoding(headers);
@@ -255,7 +270,8 @@ public abstract class Connection<T extends Connector> implements Notifiable {
         boolean connectionClosed = HeaderUtils.isConnectionClose(headers);
 
         // Create the representation
-        if ((contentLength != Representation.UNKNOWN_SIZE && contentLength != 0)
+        if (!ignoreContent
+                && (contentLength != Representation.UNKNOWN_SIZE && contentLength != 0)
                 || chunkedEncoding || connectionClosed) {
             InputStream inboundEntityStream = getInboundEntityStream(
                     contentLength, chunkedEncoding);
