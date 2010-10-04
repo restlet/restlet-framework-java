@@ -223,7 +223,9 @@ public class Application extends Restlet {
 
     /**
      * Returns the finder class used to instantiate resource classes. By
-     * default, it returns the {@link Finder} class.
+     * default, it returns the {@link Finder} class. This property is leveraged
+     * by {@link #setOutboundRoot(Class)} and {@link #setInboundRoot(Class)}
+     * methods.
      * 
      * @return the finder class to instantiate.
      */
@@ -366,11 +368,24 @@ public class Application extends Restlet {
     }
 
     /**
+     * Sets the outbound root Resource class.
+     * 
+     * @param outboundRootClass
+     *            The client root {@link ServerResource} subclass.
+     */
+    public synchronized void setOutboundRoot(
+            Class<? extends ServerResource> outboundRootClass) {
+        setClientRoot(outboundRootClass);
+    }
+
+    /**
      * Sets the client root Resource class.
      * 
      * @param clientRootClass
      *            The client root {@link ServerResource} subclass.
+     * @deprecated Use {@link #setOutboundRoot(Class)} instead
      */
+    @Deprecated
     public synchronized void setClientRoot(
             Class<? extends ServerResource> clientRootClass) {
         setOutboundRoot(Finder.createFinder(clientRootClass, getFinderClass(),
@@ -414,7 +429,9 @@ public class Application extends Restlet {
     }
 
     /**
-     * Sets the finder class to instantiate.
+     * Sets the finder class to instantiate. This property is leveraged by
+     * {@link #setOutboundRoot(Class)} and {@link #setInboundRoot(Class)}
+     * methods.
      * 
      * @param finderClass
      *            The finder class to instantiate.

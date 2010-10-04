@@ -17,6 +17,8 @@ Changes log
         to manipulate the registration of the NIO channel with its 
         associated selector and received asynchronous notifications
         of available content.
+      - Deprecated Application#setClientRoot, renamed into a 
+        setOutboundRoot method.
     - Enhancements
       - Improved the naming of files created by the FILE local 
         connector so that media type extension comes at the end.
