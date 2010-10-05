@@ -26,8 +26,6 @@ Changes log
         addition of the internal one. It is not complete yet but has
         excellent performance so far. Chunked encoding and a few other
         features are missing though.
-      - Redirector now supports relative URIs. 
-        Contributed by Marc Portier.
     - Bugs fixed
       - 
     - Misc
