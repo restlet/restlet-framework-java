@@ -58,9 +58,6 @@ import org.restlet.data.Status;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
- *      href="http://www.restlet.org/documentation/2.0/tutorial#part12">Tutorial:
- *      Reaching target Resources</a>
  * @author Jerome Louvel
  */
 public class Finder extends Restlet {

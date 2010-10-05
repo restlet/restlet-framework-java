@@ -70,8 +70,8 @@ import org.restlet.util.RouteList;
  * should be especially careful when storing state in member variables.
  * 
  * @see <a
- *      href="http://www.restlet.org/documentation/2.0/tutorial#part11">Tutorial:
- *      Routers and hierarchical URIs</a>
+ *      href="http://wiki.restlet.org/docs_2.0/13-restlet/27-restlet/326-restlet/376-restlet.html">User
+ *      Guide - Routers and hierarchical URIs</a>
  * @author Jerome Louvel
  */
 public class Router extends Restlet {
