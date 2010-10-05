@@ -74,10 +74,8 @@ import org.restlet.routing.Filter;
  * variable names in {@link org.restlet.routing.Template}. <br>
  * 
  * @see <a
- *      href="http://www.restlet.org/documentation/2.0/tutorial#part07">Tutorial:
- *      Access logging</a>
- * @see <a href="http://wiki.restlet.org/docs_2.0/101-restlet.html">Wiki:
- *      Logging</a>
+ *      href="http://wiki.restlet.org/docs_2.0/13-restlet/27-restlet/331-restlet/201-restlet.html">User
+ *      Guide - Access logging</a>
  * @see <a
  *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
  * @author Jerome Louvel

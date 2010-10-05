@@ -57,9 +57,6 @@ import org.restlet.service.StatusService;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
- *      href="http://www.restlet.org/documentation/2.0/tutorial#part08">Tutorial
- *      : Displaying error pages</a>
  * @author Jerome Louvel
  */
 public class StatusFilter extends Filter {
@@ -193,8 +190,7 @@ public class StatusFilter extends Filter {
         sb.append("</head>\n");
         sb.append("<body style=\"font-family: sans-serif;\">\n");
 
-        sb
-                .append("<p style=\"font-size: 1.2em;font-weight: bold;margin: 1em 0px;\">");
+        sb.append("<p style=\"font-size: 1.2em;font-weight: bold;margin: 1em 0px;\">");
         sb.append(getStatusInfo(status));
         sb.append("</p>\n");
         if (status.getDescription() != null) {
@@ -208,8 +204,7 @@ public class StatusFilter extends Filter {
         sb.append("\">here</a>.<br>\n");
 
         if (getContactEmail() != null) {
-            sb
-                    .append("For further assistance, you can contact the <a href=\"mailto:");
+            sb.append("For further assistance, you can contact the <a href=\"mailto:");
             sb.append(getContactEmail());
             sb.append("\">administrator</a>.<br>\n");
         }

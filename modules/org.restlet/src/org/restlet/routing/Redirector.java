@@ -64,8 +64,8 @@ import org.restlet.util.Resolver;
  * 
  * @see org.restlet.routing.Template
  * @see <a
- *      href="http://www.restlet.org/documentation/2.0/tutorial#part10">Tutorial:
- *      URI rewriting and redirection</a>
+ *      href="http://wiki.restlet.org/docs_2.0/13-restlet/27-restlet/326-restlet/375-restlet.html">User
+ *      Guide - URI rewriting and redirection</a>
  * @author Jerome Louvel
  */
 public class Redirector extends Restlet {

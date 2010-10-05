@@ -81,8 +81,8 @@ import org.restlet.representation.Variant;
  * should be especially careful when storing state in member variables.
  * 
  * @see <a
- *      href="http://www.restlet.org/documentation/2.0/tutorial#part06">Tutorial:
- *      Serving static files</a>
+ *      href="http://wiki.restlet.org/docs_2.0/13-restlet/27-restlet/326-restlet/374-restlet.html">User
+ *      Guide - Serving static files</a>
  * @author Jerome Louvel
  */
 public class Directory extends Finder {
