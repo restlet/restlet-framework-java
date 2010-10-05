@@ -69,8 +69,8 @@ import org.restlet.util.RouteList;
  * should be especially careful when storing state in member variables.
  * 
  * @see <a
- *      href="http://www.restlet.org/documentation/2.0/tutorial#part11">Tutorial:
- *      Routers and hierarchical URIs</a>
+ *      href="http://wiki.restlet.org/docs_2.0/13-restlet/27-restlet/326-restlet/376-restlet.html">User
+ *      Guide - Routers and hierarchical URIs</a>
  * @author Jerome Louvel
  */
 public class Router extends Restlet {
@@ -444,25 +444,27 @@ public class Router extends Restlet {
     public void detach(Class<?> targetClass) {
         for (int i = getRoutes().size() - 1; i >= 0; i--) {
             Restlet target = getRoutes().get(i).getNext();
-            if (target != null && Finder.class.isAssignableFrom(target.getClass())) {
+            if (target != null
+                    && Finder.class.isAssignableFrom(target.getClass())) {
                 Finder finder = (Finder) target;
-                if(finder.getTargetClass().equals(targetClass)){
+                if (finder.getTargetClass().equals(targetClass)) {
                     getRoutes().remove(i);
                 }
             }
         }
-        
+
         if (getDefaultRoute() != null) {
             Restlet target = getDefaultRoute().getNext();
-            if (target != null && Finder.class.isAssignableFrom(target.getClass())) {
+            if (target != null
+                    && Finder.class.isAssignableFrom(target.getClass())) {
                 Finder finder = (Finder) target;
-                if(finder.getTargetClass().equals(targetClass)){
+                if (finder.getTargetClass().equals(targetClass)) {
                     setDefaultRoute(null);
                 }
             }
         }
     }
-    
+
     /**
      * Detaches the target from this router. All routes routing to this target
      * Restlet are removed from the list of routes and the default route is set
@@ -829,8 +831,8 @@ public class Router extends Restlet {
     }
 
     /**
-     * Sets the score required to have a match. By default, it is set to {@code
-     * 0.5}.
+     * Sets the score required to have a match. By default, it is set to
+     * {@code 0.5}.
      * 
      * @param score
      *            The score required to have a match.

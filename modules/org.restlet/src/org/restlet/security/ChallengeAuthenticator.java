@@ -48,6 +48,9 @@ import org.restlet.data.Status;
  * @see ChallengeScheme
  * @see ChallengeRequest
  * @see ChallengeResponse
+ * @see <a
+ *      href="http://wiki.restlet.org/docs_2.0/13-restlet/27-restlet/46-restlet/112-restlet.html">User
+ *      Guide - Authentication</a>
  * @author Jerome Louvel
  */
 public class ChallengeAuthenticator extends Authenticator {
@@ -169,8 +172,7 @@ public class ChallengeAuthenticator extends Authenticator {
                                                 .getIdentifier() + ".");
                     } else {
                         getLogger()
-                                .fine(
-                                        "Authentication succeeded. Valid credentials provided.");
+                                .fine("Authentication succeeded. Valid credentials provided.");
                     }
                 }
                 break;
@@ -189,8 +191,7 @@ public class ChallengeAuthenticator extends Authenticator {
                 // Invalid credentials provided
                 if (loggable) {
                     getLogger()
-                            .fine(
-                                    "Authentication failed. Invalid credentials provided.");
+                            .fine("Authentication failed. Invalid credentials provided.");
                 }
 
                 if (!isOptional()) {
@@ -204,8 +205,7 @@ public class ChallengeAuthenticator extends Authenticator {
             case Verifier.RESULT_STALE:
                 if (loggable) {
                     getLogger()
-                            .fine(
-                                    "Authentication failed. Stale credentials provided.");
+                            .fine("Authentication failed. Stale credentials provided.");
                 }
 
                 if (!isOptional()) {
