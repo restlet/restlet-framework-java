@@ -42,6 +42,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.representation.Representation;
+import org.restlet.util.Resolver;
 
 /**
  * Rewrites URIs then redirects the call or the client to a new destination.
@@ -50,6 +51,12 @@ import org.restlet.representation.Representation;
  * {@link #MODE_CLIENT_SEE_OTHER}, {@link #MODE_CLIENT_TEMPORARY}) or
  * server-side redirections, similar to a reverse proxy (
  * {@link #MODE_SERVER_OUTBOUND} and {@link #MODE_SERVER_INBOUND}).<br>
+ * <br>
+ * When setting the redirection URIs, you can also used special URI variables to
+ * reuse most properties from the original request as well as URI template
+ * variables. For a complete list of properties, please see the {@link Resolver}
+ * class. For example "/target?referrer={fi}" would redirect to the relative
+ * URI, inserting the referrer URI as a query parameter.<br>
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
@@ -211,7 +218,8 @@ public class Redirector extends Restlet {
         rt.setLogger(getLogger());
 
         // Return the formatted target URI
-        return new Reference(rt.format(request, response));
+        return new Reference(request.getResourceRef(), rt.format(request,
+                response));
     }
 
     /**
@@ -327,8 +335,8 @@ public class Redirector extends Restlet {
 
         serverRedirect(next, targetRef, request, response);
         if (response.getEntity() != null
-                && !request.getResourceRef().getScheme().equalsIgnoreCase(
-                        targetRef.getScheme())) {
+                && !request.getResourceRef().getScheme()
+                        .equalsIgnoreCase(targetRef.getScheme())) {
             // Distinct protocol, this data cannot be exposed.
             response.getEntity().setLocationRef((Reference) null);
         }
