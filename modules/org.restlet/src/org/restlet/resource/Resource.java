@@ -88,9 +88,6 @@ import org.restlet.util.Series;
  * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source
  *      dissertation</a>
- * @see <a
- *      href="http://www.restlet.org/documentation/2.0/tutorial#part12">Tutorial
- *      : Reaching target Resources</a>
  * @see org.restlet.representation.Representation
  * @see org.restlet.resource.Finder
  * @author Jerome Louvel
@@ -407,8 +404,8 @@ public class Resource extends Handler {
                     getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 
                     // The list of all variants is transmitted to the client
-                    final ReferenceList refs = new ReferenceList(variants
-                            .size());
+                    final ReferenceList refs = new ReferenceList(
+                            variants.size());
                     for (final Variant variant : variants) {
                         if (variant.getIdentifier() != null) {
                             refs.add(variant.getIdentifier());
@@ -494,8 +491,7 @@ public class Resource extends Handler {
     public void handlePost() {
         if (!getRequest().isEntityAvailable()) {
             getLogger()
-                    .fine(
-                            "POST request received without any entity. Continuing processing.");
+                    .fine("POST request received without any entity. Continuing processing.");
         }
 
         try {

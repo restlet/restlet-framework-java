@@ -60,6 +60,8 @@ import org.restlet.resource.UniformResource;
  * Then, just create a instance of your class and set it on your Component or
  * Application via the setStatusService() methods.
  * 
+ * @see <a href="http://wiki.restlet.org/docs_2.0/202-restlet.html">User
+ *      Guide</a>
  * @author Jerome Louvel
  */
 public class StatusService extends Service {
@@ -178,9 +180,9 @@ public class StatusService extends Service {
      * @return The representation of the given status.
      */
     public Status getStatus(Throwable throwable, UniformResource resource) {
-        return getStatus(throwable, (resource == null) ? null : resource
-                .getRequest(), (resource == null) ? null : resource
-                .getResponse());
+        return getStatus(throwable,
+                (resource == null) ? null : resource.getRequest(),
+                (resource == null) ? null : resource.getResponse());
     }
 
     /**

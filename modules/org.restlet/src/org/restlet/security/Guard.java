@@ -85,9 +85,6 @@ import org.restlet.util.Resolver;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
- *      href="http://www.restlet.org/documentation/2.0/tutorial#part09">Tutorial:
- *      Guarding access to sensitive resources</a>
  * @author Jerome Louvel
  * @deprecated Use the {@link ChallengeAuthenticator} class instead.
  */
@@ -312,8 +309,7 @@ public class Guard extends Filter {
                                             .getIdentifier() + ".");
                 } else {
                     getLogger()
-                            .fine(
-                                    "Authentication succeeded. Valid credentials provided.");
+                            .fine("Authentication succeeded. Valid credentials provided.");
                 }
             }
 
