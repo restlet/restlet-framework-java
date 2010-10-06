@@ -581,7 +581,7 @@ public class BaseClientHelper extends BaseHelper<Client> {
         // Does this helper relies on a proxy?
         String proxyDomain = getProxyHost();
 
-        if (proxyDomain != null) {
+        if (proxyDomain != null && !"".equals(proxyDomain)) {
             hostDomain = proxyDomain;
             try {
                 hostPort = getProxyPort();
