@@ -14,7 +14,7 @@ Changes log
          instances. Reported by Dustin Jenkins.
        - Fixed potential thread blocks due to CountDownLatch.await()
          calls. They now properly time out. Suggested by Tim Peierls.
-	   - Fixed initialisation of the ClientInfo#userAgentTemplates 
+	   - Fixed initialization of the ClientInfo#userAgentTemplates 
          static variable. Reported by Michael Terrington.
 	   - Fixed the Content-length header sent by HEAD responses.
          Reported by Nicolas Rinaudo.
