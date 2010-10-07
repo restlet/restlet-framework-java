@@ -33,7 +33,6 @@ package org.restlet.engine.connector;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.io.NioUtils;
 import org.restlet.engine.io.ReadableSelectionChannel;
 
@@ -52,16 +51,16 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
     /** The reading state. */
     private volatile int state;
 
-    /** */
+    /** Reading the chunk size line. */
     private static final int STATE_CHUNK_SIZE = 1;
 
-    /** */
+    /** Reading the chunk data. */
     private static final int STATE_CHUNK_DATA = 2;
 
-    /** */
+    /** Reading the chunk trailer. */
     private static final int STATE_CHUNK_TRAILER = 3;
 
-    /** */
+    /** Reading the chunk end. */
     private static final int STATE_CHUNK_END = 4;
 
     /**

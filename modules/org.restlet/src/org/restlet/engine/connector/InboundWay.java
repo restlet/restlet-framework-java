@@ -162,11 +162,13 @@ public abstract class InboundWay extends Way {
         ReadableSelectionChannel result = null;
 
         if (chunked) {
-            getLogger()
-                    .warning(
-                            "Chunked encoding not supported (yet) in the NIO connector.");
+            // Wraps the remaining bytes into a special entity channel
+            // that will read and decode entity chunks
+            result = new ReadableChunkedChannel(this, getByteBuffer(),
+                    getConnection().getReadableSelectionChannel());
         } else {
             // Wraps the remaining bytes into a special entity channel
+            // that will limit the entity to its announced size
             result = new ReadableSizedChannel(this, getByteBuffer(),
                     getConnection().getReadableSelectionChannel(), size);
         }
