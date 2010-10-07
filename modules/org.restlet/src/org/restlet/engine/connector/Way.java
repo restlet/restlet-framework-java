@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import org.restlet.Message;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
+import org.restlet.engine.io.BufferState;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
 import org.restlet.util.Series;
@@ -62,6 +63,9 @@ public abstract class Way implements SelectionListener {
 
     /** The IO state. */
     private volatile IoState ioState;
+
+    /** The line builder state. */
+    private volatile BufferState lineBuilderState;
 
     /** The line builder. */
     private final StringBuilder lineBuilder;
@@ -90,6 +94,7 @@ public abstract class Way implements SelectionListener {
         this.byteBuffer = connection.getHelper().isDirectBuffers() ? ByteBuffer
                 .allocateDirect(bufferSize) : ByteBuffer.allocate(bufferSize);
         this.lineBuilder = new StringBuilder();
+        this.lineBuilderState = BufferState.IDLE;
         this.messages = new ConcurrentLinkedQueue<Response>();
         this.message = null;
         this.headers = null;
@@ -98,6 +103,27 @@ public abstract class Way implements SelectionListener {
         this.ioState = IoState.IDLE;
         this.registration = new SelectionRegistration(0, this);
     }
+
+    /**
+     * Recycles the way so it can be reused. Typically invoked by a connection
+     * pool.
+     */
+    public void clear() {
+        this.byteBuffer.clear();
+        this.headers = null;
+        this.ioState = IoState.IDLE;
+        this.lineBuilder.delete(0, this.lineBuilder.length());
+        this.message = null;
+        this.messages.clear();
+        this.messageState = MessageState.IDLE;
+    }
+
+    /**
+     * Returns the actual message, request or response.
+     * 
+     * @return The actual message, request or response.
+     */
+    protected abstract Message getActualMessage();
 
     /**
      * Returns the byte buffer.
@@ -154,6 +180,15 @@ public abstract class Way implements SelectionListener {
     }
 
     /**
+     * Returns the line builder state.
+     * 
+     * @return The line builder state.
+     */
+    protected BufferState getLineBuilderState() {
+        return lineBuilderState;
+    }
+
+    /**
      * Returns the logger.
      * 
      * @return The logger.
@@ -161,13 +196,6 @@ public abstract class Way implements SelectionListener {
     protected Logger getLogger() {
         return getConnection().getLogger();
     }
-
-    /**
-     * Returns the actual message, request or response.
-     * 
-     * @return The actual message, request or response.
-     */
-    protected abstract Message getActualMessage();
 
     /**
      * Returns the current message processed.
@@ -258,20 +286,6 @@ public abstract class Way implements SelectionListener {
     }
 
     /**
-     * Recycles the way so it can be reused. Typically invoked by a connection
-     * pool.
-     */
-    public void clear() {
-        this.byteBuffer.clear();
-        this.headers = null;
-        this.ioState = IoState.IDLE;
-        this.lineBuilder.delete(0, this.lineBuilder.length());
-        this.message = null;
-        this.messages.clear();
-        this.messageState = MessageState.IDLE;
-    }
-
-    /**
      * Reuses the way based on an updated connection.
      */
     public void reuse() {
@@ -295,6 +309,16 @@ public abstract class Way implements SelectionListener {
      */
     protected void setIoState(IoState ioState) {
         this.ioState = ioState;
+    }
+
+    /**
+     * Sets the line builder state.
+     * 
+     * @param lineBuilderState
+     *            The line builder state.
+     */
+    protected void setLineBuilderState(BufferState lineBuilderState) {
+        this.lineBuilderState = lineBuilderState;
     }
 
     /**

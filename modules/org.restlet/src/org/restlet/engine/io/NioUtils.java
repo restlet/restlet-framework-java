@@ -122,28 +122,46 @@ public class NioUtils {
     /**
      * Read the current message line (start line or header line).
      * 
-     * @return True if the message line was fully read.
+     * @param lineBuilder
+     *            The line builder to fill.
+     * @param builderState
+     *            The builder state.
+     * @param byteBuffer
+     *            The byte buffer to read from.
+     * @return The new builder state.
      * @throws IOException
      */
-    public static boolean fillLine(StringBuilder lineBuilder,
-            ByteBuffer byteBuffer) throws IOException {
-        boolean result = false;
+    public static BufferState fillLine(StringBuilder lineBuilder,
+            BufferState builderState, ByteBuffer byteBuffer) throws IOException {
+        BufferState result = builderState;
         int next;
 
-        while (!result && byteBuffer.hasRemaining()) {
+        if (result == BufferState.IDLE) {
+            result = BufferState.FILLING;
+        }
+
+        while ((result != BufferState.DRAINING) && byteBuffer.hasRemaining()) {
             next = (int) byteBuffer.get();
 
-            if (HeaderUtils.isCarriageReturn(next)) {
-                next = (int) byteBuffer.get();
+            switch (builderState) {
+            case FILLING:
+                if (HeaderUtils.isCarriageReturn(next)) {
+                    result = BufferState.FILLED;
+                } else {
+                    lineBuilder.append((char) next);
+                }
 
+                break;
+
+            case FILLED:
                 if (HeaderUtils.isLineFeed(next)) {
-                    result = true;
+                    result = BufferState.DRAINING;
                 } else {
                     throw new IOException(
-                            "Missing carriage return character at the end of HTTP line");
+                            "Missing line feed character at the end of the line");
                 }
-            } else {
-                lineBuilder.append((char) next);
+
+                break;
             }
         }
 

@@ -33,6 +33,7 @@ package org.restlet.engine.connector;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.engine.io.WrapperSelectionChannel;
 import org.restlet.util.SelectionRegistration;
@@ -48,13 +49,7 @@ public class ReadableWayChannel extends
         ReadableSelectionChannel {
 
     /** The buffer state. */
-    private volatile int bufferState;
-
-    /** Filling the buffer. */
-    protected static final int STATE_BUFFER_FILLING = 1;
-
-    /** Draining the buffer. */
-    protected static final int STATE_BUFFER_DRAINING = 2;
+    private volatile BufferState bufferState;
 
     /** The parent inbound way. */
     private final InboundWay inboundWay;
@@ -78,7 +73,7 @@ public class ReadableWayChannel extends
         setRegistration(new SelectionRegistration(0, null));
         this.inboundWay = inboundWay;
         this.buffer = remainingBuffer;
-        this.bufferState = STATE_BUFFER_DRAINING;
+        this.bufferState = BufferState.DRAINING;
     }
 
     /**
@@ -86,7 +81,7 @@ public class ReadableWayChannel extends
      * 
      * @return The byte buffer remaining from previous read processing.
      */
-    protected ByteBuffer getBuffer() {
+    protected ByteBuffer getByteBuffer() {
         return buffer;
     }
 
@@ -95,7 +90,7 @@ public class ReadableWayChannel extends
      * 
      * @return The buffer state.
      */
-    public int getBufferState() {
+    public BufferState getBufferState() {
         return bufferState;
     }
 
@@ -132,13 +127,13 @@ public class ReadableWayChannel extends
     public int read(ByteBuffer dst) throws IOException {
         int result = -1;
 
-        synchronized (getBuffer()) {
-            if ((getBuffer() != null) && (getBuffer().hasRemaining())) {
+        synchronized (getByteBuffer()) {
+            if ((getByteBuffer() != null) && (getByteBuffer().hasRemaining())) {
                 // First make sure that the remaining buffer is empty
-                result = Math.min(getBuffer().remaining(), dst.remaining());
+                result = Math.min(getByteBuffer().remaining(), dst.remaining());
 
                 for (int i = 0; i < result; i++) {
-                    dst.put(getBuffer().get());
+                    dst.put(getByteBuffer().get());
                 }
             } else {
                 result = getWrappedChannel().read(dst);
@@ -154,7 +149,7 @@ public class ReadableWayChannel extends
      * @param bufferState
      *            The buffer state.
      */
-    public void setBufferState(int bufferState) {
+    public void setBufferState(BufferState bufferState) {
         this.bufferState = bufferState;
     }
 }

@@ -33,6 +33,7 @@ package org.restlet.engine.connector;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.NioUtils;
 import org.restlet.engine.io.ReadableSelectionChannel;
 
@@ -47,6 +48,9 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
 
     /** The line builder to parse chunk size or trailer. */
     private final StringBuilder lineBuilder;
+
+    /** The line builder state. */
+    private volatile BufferState lineBuilderState;
 
     /** The chunk state. */
     private volatile int chunkState;
@@ -80,6 +84,7 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
             ByteBuffer remainingBuffer, ReadableSelectionChannel source) {
         super(inboundWay, remainingBuffer, source);
         this.lineBuilder = new StringBuilder();
+        this.lineBuilderState = BufferState.IDLE;
         this.chunkState = STATE_CHUNK_SIZE;
     }
 
@@ -92,30 +97,32 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
     protected boolean fillLine() throws IOException {
         boolean result = false;
 
-        synchronized (getBuffer()) {
+        synchronized (getByteBuffer()) {
             int size = 0;
 
-            if (getBufferState() == STATE_BUFFER_DRAINING) {
-                size = getBuffer().remaining();
+            if (getBufferState() == BufferState.DRAINING) {
+                size = getByteBuffer().remaining();
 
                 if (size == 0) {
-                    setBufferState(STATE_BUFFER_FILLING);
-                    getBuffer().clear();
+                    setBufferState(BufferState.FILLING);
+                    getByteBuffer().clear();
                 }
             }
 
-            if (getBufferState() == STATE_BUFFER_FILLING) {
+            if (getBufferState() == BufferState.FILLING) {
                 // Try to refill the remaining buffer to read line
-                size = getWrappedChannel().read(getBuffer());
+                size = getWrappedChannel().read(getByteBuffer());
 
                 if (size > 0) {
-                    setBufferState(STATE_BUFFER_DRAINING);
-                    getBuffer().flip();
+                    setBufferState(BufferState.DRAINING);
+                    getByteBuffer().flip();
                 }
             }
 
             if (size > 0) {
-                result = NioUtils.fillLine(getLineBuilder(), getBuffer());
+                setLineBuilderState(NioUtils.fillLine(getLineBuilder(),
+                        getLineBuilderState(), getByteBuffer()));
+                return getLineBuilderState() == BufferState.DRAINING;
             }
         }
 
@@ -129,6 +136,15 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
      */
     protected StringBuilder getLineBuilder() {
         return lineBuilder;
+    }
+
+    /**
+     * Returns the line builder state.
+     * 
+     * @return The line builder state.
+     */
+    protected BufferState getLineBuilderState() {
+        return lineBuilderState;
     }
 
     /**
@@ -227,5 +243,15 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
 
         postRead(result);
         return result;
+    }
+
+    /**
+     * Sets the line builder state.
+     * 
+     * @param lineBuilderState
+     *            The line builder state.
+     */
+    protected void setLineBuilderState(BufferState lineBuilderState) {
+        this.lineBuilderState = lineBuilderState;
     }
 }

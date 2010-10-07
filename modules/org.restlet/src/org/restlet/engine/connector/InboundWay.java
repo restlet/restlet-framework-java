@@ -39,6 +39,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.NioUtils;
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.representation.EmptyRepresentation;
@@ -133,11 +134,13 @@ public abstract class InboundWay extends Way {
     /**
      * Read the current message line (start line or header line).
      * 
-     * @return True if the message line was fully read.
+     * @return True if the line is ready for reading.
      * @throws IOException
      */
     protected boolean fillLine() throws IOException {
-        return NioUtils.fillLine(getLineBuilder(), getByteBuffer());
+        setLineBuilderState(NioUtils.fillLine(getLineBuilder(),
+                getLineBuilderState(), getByteBuffer()));
+        return getLineBuilderState() == BufferState.DRAINING;
     }
 
     /**
