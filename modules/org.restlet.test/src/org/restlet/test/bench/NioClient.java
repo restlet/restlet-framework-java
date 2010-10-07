@@ -4,7 +4,6 @@ import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
-import org.restlet.engine.log.TraceHandler;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
@@ -17,7 +16,7 @@ public class NioClient {
                 .add(0, new org.restlet.engine.connector.HttpClientHelper(null));
 
         Client client = new Client(new Context(), Protocol.HTTP);
-        client.getContext().getParameters().add("tracing", "true");
+        client.getContext().getParameters().add("tracing", "false");
         client.getContext().getParameters().add("minThreads", "1");
         client.getContext().getParameters().add("lowThreads", "30");
         client.getContext().getParameters().add("maxThreads", "40");

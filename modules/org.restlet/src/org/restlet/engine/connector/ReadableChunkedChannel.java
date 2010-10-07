@@ -91,15 +91,19 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
      */
     protected boolean fillLine() throws IOException {
         boolean result = false;
-        int remaining = getRemainingBuffer().remaining();
 
-        if (remaining == 0) {
-            // Try to refill the remaining buffer to read line
-            remaining = getWrappedChannel().read(getRemainingBuffer());
-        }
+        synchronized (getRemainingBuffer()) {
+            int remaining = getRemainingBuffer().remaining();
 
-        if (remaining > 0) {
-            result = NioUtils.fillLine(getLineBuilder(), getRemainingBuffer());
+            if (remaining == 0) {
+                // Try to refill the remaining buffer to read line
+                remaining = getWrappedChannel().read(getRemainingBuffer());
+            }
+
+            if (remaining > 0) {
+                result = NioUtils.fillLine(getLineBuilder(),
+                        getRemainingBuffer());
+            }
         }
 
         return result;
@@ -166,11 +170,27 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
 
                 if (result > 0) {
                     this.availableChunkSize -= result;
+
+                    if (this.availableChunkSize == 0) {
+                        // Read the end of line
+                        getLineBuilder().delete(0, getLineBuilder().length());
+                        fillLine();
+
+                        // Reading the next chunk
+                        this.state = STATE_CHUNK_SIZE;
+                    }
                 }
+            } else {
+                this.state = STATE_CHUNK_TRAILER;
             }
         }
 
         if (this.state == STATE_CHUNK_TRAILER) {
+            // TODO
+            this.state = STATE_CHUNK_END;
+        }
+
+        if (this.state == STATE_CHUNK_END) {
             // TODO
         }
 

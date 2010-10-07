@@ -37,6 +37,8 @@ public class NioServer {
         server.getContext().getParameters().add("maxQueued", "0");
         server.getContext().getParameters().add("workerThreads", "true");
         server.getContext().getParameters().add("pooledConnections", "true");
+        server.getContext().getParameters().add("ioMaxIdleTimeMs", "600000");
+
         // server.setNext(HelloServerResource.class);
         server.setNext(new Restlet() {
             @Override
