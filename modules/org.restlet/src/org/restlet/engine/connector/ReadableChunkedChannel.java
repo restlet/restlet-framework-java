@@ -48,8 +48,8 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
     /** The line builder to parse chunk size or trailer. */
     private final StringBuilder lineBuilder;
 
-    /** The reading state. */
-    private volatile int state;
+    /** The chunk state. */
+    private volatile int chunkState;
 
     /** Reading the chunk size line. */
     private static final int STATE_CHUNK_SIZE = 1;
@@ -80,7 +80,7 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
             ByteBuffer remainingBuffer, ReadableSelectionChannel source) {
         super(inboundWay, remainingBuffer, source);
         this.lineBuilder = new StringBuilder();
-        this.state = STATE_CHUNK_SIZE;
+        this.chunkState = STATE_CHUNK_SIZE;
     }
 
     /**
@@ -92,17 +92,28 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
     protected boolean fillLine() throws IOException {
         boolean result = false;
 
-        synchronized (getRemainingBuffer()) {
-            int remaining = getRemainingBuffer().remaining();
+        synchronized (getBuffer()) {
+            int remaining = 0;
 
-            if (remaining == 0) {
+            if (getBufferState() == STATE_BUFFER_DRAINING) {
+                remaining = getBuffer().remaining();
+
+                if (remaining == 0) {
+                    setBufferState(STATE_BUFFER_FILLING);
+                }
+            }
+
+            if (getBufferState() == STATE_BUFFER_FILLING) {
                 // Try to refill the remaining buffer to read line
-                remaining = getWrappedChannel().read(getRemainingBuffer());
+                remaining = getWrappedChannel().read(getBuffer());
+
+                if (remaining > 0) {
+                    setBufferState(STATE_BUFFER_DRAINING);
+                }
             }
 
             if (remaining > 0) {
-                result = NioUtils.fillLine(getLineBuilder(),
-                        getRemainingBuffer());
+                result = NioUtils.fillLine(getLineBuilder(), getBuffer());
             }
         }
 
@@ -129,67 +140,83 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
      */
     public int read(ByteBuffer dst) throws IOException {
         int result = 0;
+        boolean tryAgain = true;
 
-        if (this.state == STATE_CHUNK_SIZE) {
-            if (fillLine()) {
-                // The chunk size line was fully read into the line builder
-                int length = getLineBuilder().length();
+        while (tryAgain) {
+            switch (this.chunkState) {
 
-                if (length == 0) {
-                    throw new IOException(
-                            "An empty chunk size line was detected");
+            case STATE_CHUNK_SIZE:
+                if (fillLine()) {
+                    // The chunk size line was fully read into the line builder
+                    int length = getLineBuilder().length();
+
+                    if (length == 0) {
+                        throw new IOException(
+                                "An empty chunk size line was detected");
+                    }
+
+                    int index = (getLineBuilder().indexOf(";"));
+                    index = (index == -1) ? getLineBuilder().length() : index;
+
+                    try {
+                        this.availableChunkSize = Long
+                                .parseLong(getLineBuilder().substring(0, index)
+                                        .trim(), 16);
+                    } catch (NumberFormatException ex) {
+                        throw new IOException("\"" + getLineBuilder()
+                                + "\" has an invalid chunk size");
+                    }
+
+                    if (this.availableChunkSize == 0) {
+                        this.chunkState = STATE_CHUNK_TRAILER;
+                    } else {
+                        this.chunkState = STATE_CHUNK_DATA;
+                    }
+                } else {
+                    tryAgain = false;
                 }
+                break;
 
-                int index = (getLineBuilder().indexOf(";"));
-                index = (index == -1) ? getLineBuilder().length() : index;
+            case STATE_CHUNK_DATA:
+                if (this.availableChunkSize > 0) {
+                    if (this.availableChunkSize < dst.remaining()) {
+                        dst.limit((int) (this.availableChunkSize + dst
+                                .position()));
+                    }
 
-                try {
-                    this.availableChunkSize = Long.parseLong(getLineBuilder()
-                            .substring(0, index).trim(), 16);
-                } catch (NumberFormatException ex) {
-                    throw new IOException("\"" + getLineBuilder()
-                            + "\" has an invalid chunk size");
+                    result = super.read(dst);
+                    tryAgain = false;
+
+                    if (result > 0) {
+                        this.availableChunkSize -= result;
+                    }
                 }
 
                 if (this.availableChunkSize == 0) {
-                    this.state = STATE_CHUNK_TRAILER;
-                } else {
-                    this.state = STATE_CHUNK_DATA;
+                    // Try to read the end of line
+                    if (fillLine()) {
+                        // Done, reading the next chunk
+                        this.chunkState = STATE_CHUNK_SIZE;
+                        this.lineBuilder.delete(0, this.lineBuilder.length());
+                    } else {
+                        tryAgain = false;
+                    }
                 }
+
+                break;
+
+            case STATE_CHUNK_TRAILER:
+                // TODO
+                this.chunkState = STATE_CHUNK_END;
+                break;
+
+            case STATE_CHUNK_END:
+                // TODO
+                result = -1;
+                tryAgain = false;
+                break;
             }
-        }
 
-        if (this.state == STATE_CHUNK_DATA) {
-            if (this.availableChunkSize > 0) {
-                if (this.availableChunkSize < dst.remaining()) {
-                    dst.limit((int) (this.availableChunkSize + dst.position()));
-                }
-
-                result = super.read(dst);
-
-                if (result > 0) {
-                    this.availableChunkSize -= result;
-                }
-            }
-
-            if (this.availableChunkSize == 0) {
-                // Try to read the end of line
-                if (fillLine()) {
-                    // Done, reading the next chunk
-                    this.state = STATE_CHUNK_SIZE;
-                    this.lineBuilder.delete(0, this.lineBuilder.length());
-                }
-            }
-        }
-
-        if (this.state == STATE_CHUNK_TRAILER) {
-            // TODO
-            this.state = STATE_CHUNK_END;
-            result = -1;
-        }
-
-        if (this.state == STATE_CHUNK_END) {
-            // TODO
         }
 
         postRead(result);

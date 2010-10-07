@@ -47,11 +47,20 @@ public class ReadableWayChannel extends
         WrapperSelectionChannel<ReadableSelectionChannel> implements
         ReadableSelectionChannel {
 
+    /** The buffer state. */
+    private volatile int bufferState;
+
+    /** Filling the buffer. */
+    protected static final int STATE_BUFFER_FILLING = 1;
+
+    /** Draining the buffer. */
+    protected static final int STATE_BUFFER_DRAINING = 2;
+
     /** The parent inbound way. */
     private final InboundWay inboundWay;
 
     /** The byte buffer remaining from previous read processing. */
-    private final ByteBuffer remainingBuffer;
+    private final ByteBuffer buffer;
 
     /**
      * Constructor.
@@ -68,7 +77,26 @@ public class ReadableWayChannel extends
         super(source);
         setRegistration(new SelectionRegistration(0, null));
         this.inboundWay = inboundWay;
-        this.remainingBuffer = remainingBuffer;
+        this.buffer = remainingBuffer;
+        this.bufferState = STATE_BUFFER_DRAINING;
+    }
+
+    /**
+     * Returns the byte buffer remaining from previous read processing.
+     * 
+     * @return The byte buffer remaining from previous read processing.
+     */
+    protected ByteBuffer getBuffer() {
+        return buffer;
+    }
+
+    /**
+     * Returns the buffer state.
+     * 
+     * @return The buffer state.
+     */
+    public int getBufferState() {
+        return bufferState;
     }
 
     /**
@@ -81,12 +109,15 @@ public class ReadableWayChannel extends
     }
 
     /**
-     * Returns the byte buffer remaining from previous read processing.
+     * Post-read callback that calls {@link InboundWay#onCompleted()} if the end
+     * has been reached.
      * 
-     * @return The byte buffer remaining from previous read processing.
+     * @param length
      */
-    protected ByteBuffer getRemainingBuffer() {
-        return remainingBuffer;
+    protected void postRead(int length) {
+        if (length == -1) {
+            getInboundWay().onCompleted();
+        }
     }
 
     /**
@@ -101,15 +132,13 @@ public class ReadableWayChannel extends
     public int read(ByteBuffer dst) throws IOException {
         int result = -1;
 
-        synchronized (getRemainingBuffer()) {
-            if ((getRemainingBuffer() != null)
-                    && (getRemainingBuffer().hasRemaining())) {
+        synchronized (getBuffer()) {
+            if ((getBuffer() != null) && (getBuffer().hasRemaining())) {
                 // First make sure that the remaining buffer is empty
-                result = Math.min(getRemainingBuffer().remaining(),
-                        dst.remaining());
+                result = Math.min(getBuffer().remaining(), dst.remaining());
 
                 for (int i = 0; i < result; i++) {
-                    dst.put(getRemainingBuffer().get());
+                    dst.put(getBuffer().get());
                 }
             } else {
                 result = getWrappedChannel().read(dst);
@@ -120,14 +149,12 @@ public class ReadableWayChannel extends
     }
 
     /**
-     * Post-read callback that calls {@link InboundWay#onCompleted()} if the end
-     * has been reached.
+     * Sets the buffer state.
      * 
-     * @param length
+     * @param bufferState
+     *            The buffer state.
      */
-    protected void postRead(int length) {
-        if (length == -1) {
-            getInboundWay().onCompleted();
-        }
+    public void setBufferState(int bufferState) {
+        this.bufferState = bufferState;
     }
 }
