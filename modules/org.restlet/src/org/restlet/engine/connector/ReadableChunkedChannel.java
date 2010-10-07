@@ -93,26 +93,28 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
         boolean result = false;
 
         synchronized (getBuffer()) {
-            int remaining = 0;
+            int size = 0;
 
             if (getBufferState() == STATE_BUFFER_DRAINING) {
-                remaining = getBuffer().remaining();
+                size = getBuffer().remaining();
 
-                if (remaining == 0) {
+                if (size == 0) {
                     setBufferState(STATE_BUFFER_FILLING);
+                    getBuffer().clear();
                 }
             }
 
             if (getBufferState() == STATE_BUFFER_FILLING) {
                 // Try to refill the remaining buffer to read line
-                remaining = getWrappedChannel().read(getBuffer());
+                size = getWrappedChannel().read(getBuffer());
 
-                if (remaining > 0) {
+                if (size > 0) {
                     setBufferState(STATE_BUFFER_DRAINING);
+                    getBuffer().flip();
                 }
             }
 
-            if (remaining > 0) {
+            if (size > 0) {
                 result = NioUtils.fillLine(getLineBuilder(), getBuffer());
             }
         }
@@ -147,6 +149,8 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
 
             case STATE_CHUNK_SIZE:
                 if (fillLine()) {
+                    System.out.print("### New chunk detected. Size: ");
+
                     // The chunk size line was fully read into the line builder
                     int length = getLineBuilder().length();
 
@@ -162,6 +166,8 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
                         this.availableChunkSize = Long
                                 .parseLong(getLineBuilder().substring(0, index)
                                         .trim(), 16);
+
+                        System.out.println(this.availableChunkSize);
                     } catch (NumberFormatException ex) {
                         throw new IOException("\"" + getLineBuilder()
                                 + "\" has an invalid chunk size");
