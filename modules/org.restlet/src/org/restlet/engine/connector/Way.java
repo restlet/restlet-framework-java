@@ -112,10 +112,18 @@ public abstract class Way implements SelectionListener {
         this.byteBuffer.clear();
         this.headers = null;
         this.ioState = IoState.IDLE;
-        this.lineBuilder.delete(0, this.lineBuilder.length());
+        clearLineBuilder();
         this.message = null;
         this.messages.clear();
         this.messageState = MessageState.IDLE;
+    }
+
+    /**
+     * Clears the line builder and adjust its state.
+     */
+    protected void clearLineBuilder() {
+        getLineBuilder().delete(0, getLineBuilder().length());
+        setLineBuilderState(BufferState.IDLE);
     }
 
     /**

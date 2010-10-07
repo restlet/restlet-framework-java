@@ -274,7 +274,7 @@ public abstract class InboundWay extends Way {
      */
     protected Parameter readHeader() throws IOException {
         Parameter header = HeaderReader.readHeader(getLineBuilder());
-        getLineBuilder().delete(0, getLineBuilder().length());
+        clearLineBuilder();
         return header;
     }
 

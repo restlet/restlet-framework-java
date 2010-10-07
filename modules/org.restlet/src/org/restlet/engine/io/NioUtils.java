@@ -133,29 +133,31 @@ public class NioUtils {
      */
     public static BufferState fillLine(StringBuilder lineBuilder,
             BufferState builderState, ByteBuffer byteBuffer) throws IOException {
-        BufferState result = builderState;
         int next;
 
-        if (result == BufferState.IDLE) {
-            result = BufferState.FILLING;
+        if (builderState == BufferState.IDLE) {
+            builderState = BufferState.FILLING;
         }
 
-        while ((result != BufferState.DRAINING) && byteBuffer.hasRemaining()) {
+        while ((builderState != BufferState.DRAINING)
+                && byteBuffer.hasRemaining()) {
             next = (int) byteBuffer.get();
 
             switch (builderState) {
             case FILLING:
                 if (HeaderUtils.isCarriageReturn(next)) {
-                    result = BufferState.FILLED;
+                    builderState = BufferState.FILLED;
                 } else {
                     lineBuilder.append((char) next);
+                    System.out.print((char) next);
                 }
 
                 break;
 
             case FILLED:
                 if (HeaderUtils.isLineFeed(next)) {
-                    result = BufferState.DRAINING;
+                    builderState = BufferState.DRAINING;
+                    System.out.println();
                 } else {
                     throw new IOException(
                             "Missing line feed character at the end of the line");
@@ -165,7 +167,7 @@ public class NioUtils {
             }
         }
 
-        return result;
+        return builderState;
     }
 
     /**

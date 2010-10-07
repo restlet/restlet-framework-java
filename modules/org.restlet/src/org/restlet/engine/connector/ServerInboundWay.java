@@ -181,7 +181,7 @@ public class ServerInboundWay extends InboundWay {
             Response response = getHelper().createResponse(request);
             setMessage(response);
             setMessageState(MessageState.HEADERS);
-            getLineBuilder().delete(0, getLineBuilder().length());
+            clearLineBuilder();
         }
     }
 

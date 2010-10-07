@@ -564,7 +564,7 @@ public abstract class OutboundWay extends Way {
                         getByteBuffer().put(
                                 StringUtils.getLatin1Bytes(getLineBuilder()
                                         .toString()));
-                        getLineBuilder().delete(0, getLineBuilder().length());
+                        clearLineBuilder();
                     } else {
                         // Put the maximum number of characters
                         // into the byte buffer

@@ -89,6 +89,14 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
     }
 
     /**
+     * Clears the line builder and adjust its state.
+     */
+    protected void clearLineBuilder() {
+        getLineBuilder().delete(0, getLineBuilder().length());
+        setLineBuilderState(BufferState.IDLE);
+    }
+
+    /**
      * Read the current message line (start line or header line).
      * 
      * @return True if the message line was fully read.

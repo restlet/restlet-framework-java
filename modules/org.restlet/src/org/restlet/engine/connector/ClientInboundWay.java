@@ -239,7 +239,7 @@ public class ClientInboundWay extends InboundWay {
             // Set the current message object
             setMessage(response);
             setMessageState(MessageState.HEADERS);
-            getLineBuilder().delete(0, getLineBuilder().length());
+            clearLineBuilder();
         }
     }
 
