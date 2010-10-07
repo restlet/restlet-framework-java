@@ -128,7 +128,7 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
      *         been reached.
      */
     public int read(ByteBuffer dst) throws IOException {
-        int result = -1;
+        int result = 0;
 
         if (this.state == STATE_CHUNK_SIZE) {
             if (fillLine()) {
@@ -152,8 +152,7 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
                 }
 
                 if (this.availableChunkSize == 0) {
-                    this.state = STATE_CHUNK_END;
-                    result = -1;
+                    this.state = STATE_CHUNK_TRAILER;
                 } else {
                     this.state = STATE_CHUNK_DATA;
                 }
@@ -170,24 +169,23 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
 
                 if (result > 0) {
                     this.availableChunkSize -= result;
-
-                    if (this.availableChunkSize == 0) {
-                        // Read the end of line
-                        getLineBuilder().delete(0, getLineBuilder().length());
-                        fillLine();
-
-                        // Reading the next chunk
-                        this.state = STATE_CHUNK_SIZE;
-                    }
                 }
-            } else {
-                this.state = STATE_CHUNK_TRAILER;
+            }
+
+            if (this.availableChunkSize == 0) {
+                // Try to read the end of line
+                if (fillLine()) {
+                    // Done, reading the next chunk
+                    this.state = STATE_CHUNK_SIZE;
+                    this.lineBuilder.delete(0, this.lineBuilder.length());
+                }
             }
         }
 
         if (this.state == STATE_CHUNK_TRAILER) {
             // TODO
             this.state = STATE_CHUNK_END;
+            result = -1;
         }
 
         if (this.state == STATE_CHUNK_END) {
