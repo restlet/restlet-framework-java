@@ -190,7 +190,7 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
                         this.availableChunkSize = Long
                                 .parseLong(getLineBuilder().substring(0, index)
                                         .trim(), 16);
-
+                        clearLineBuilder();
                         System.out.println(this.availableChunkSize);
                     } catch (NumberFormatException ex) {
                         throw new IOException("\"" + getLineBuilder()
@@ -226,8 +226,8 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
                     // Try to read the end of line
                     if (fillLine()) {
                         // Done, reading the next chunk
+                        clearLineBuilder();
                         this.chunkState = STATE_CHUNK_SIZE;
-                        this.lineBuilder.delete(0, this.lineBuilder.length());
                     } else {
                         tryAgain = false;
                     }
