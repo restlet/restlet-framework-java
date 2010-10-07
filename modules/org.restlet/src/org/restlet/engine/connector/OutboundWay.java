@@ -297,7 +297,7 @@ public abstract class OutboundWay extends Way {
             }
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
-                    "Error while writing an HTTP message: ", e.getMessage());
+                    "Error while writing an HTTP message", e);
             getLogger().log(Level.INFO, "Error while writing an HTTP message",
                     e);
         }

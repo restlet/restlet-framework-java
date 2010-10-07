@@ -137,7 +137,7 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
                 }
 
                 int index = (getLineBuilder().indexOf(";"));
-                index = (index == -1) ? getLineBuilder().length() - 1 : index;
+                index = (index == -1) ? getLineBuilder().length() : index;
 
                 try {
                     this.availableChunkSize = Long.parseLong(getLineBuilder()
