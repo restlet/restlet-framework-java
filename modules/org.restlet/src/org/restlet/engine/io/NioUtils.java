@@ -149,7 +149,6 @@ public class NioUtils {
                     builderState = BufferState.FILLED;
                 } else {
                     lineBuilder.append((char) next);
-                    System.out.print((char) next);
                 }
 
                 break;
@@ -157,7 +156,6 @@ public class NioUtils {
             case FILLED:
                 if (HeaderUtils.isLineFeed(next)) {
                     builderState = BufferState.DRAINING;
-                    System.out.println();
                 } else {
                     throw new IOException(
                             "Missing line feed character at the end of the line");
