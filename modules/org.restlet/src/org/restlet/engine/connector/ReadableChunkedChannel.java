@@ -102,15 +102,11 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
             }
 
             if (size == 0) {
-                System.out.println("fillLineBuilder: refilling");
                 setBufferState(BufferState.FILLING);
                 getByteBuffer().clear();
 
                 if (super.refill()) {
                     size = getByteBuffer().remaining();
-
-                    System.out.println("fillLineBuilder: refilled with " + size
-                            + " bytes");
                 }
             }
 
@@ -152,9 +148,6 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
      *         been reached.
      */
     public int read(ByteBuffer dst) throws IOException {
-        System.out.println("read: " + this.chunkState + " | "
-                + getLineBuilderState() + " | " + getBufferState());
-
         int result = 0;
         boolean tryAgain = true;
 

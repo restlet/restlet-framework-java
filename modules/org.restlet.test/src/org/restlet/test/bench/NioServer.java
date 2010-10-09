@@ -44,7 +44,7 @@ public class NioServer {
             public void handle(Request request, Response response) {
                 try {
                     response.setEntity(new InputRepresentation(
-                            new FileInputStream("C://TEST/apache-tika-0.7-src.zip")));
+                            new FileInputStream("C://TEST/restlet-linux.zip")));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
