@@ -32,7 +32,7 @@ public class NioClient {
         cr.setRetryOnError(false);
         cr.setNext(client);
         Representation r = null;
-        ClientResource fr = new ClientResource("file://C/TEST/restlet-copy.zip");
+        ClientResource fr = new ClientResource("file://C/TEST/apache-copy.zip");
 
         System.out.println("Calling resource: " + uri + " " + iterations
                 + " times");

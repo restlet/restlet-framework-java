@@ -197,7 +197,6 @@ public class NbChannelInputStream extends InputStream {
                                 .log(Level.FINE,
                                         "Exception while registering or waiting for new content",
                                         e);
-                        e.printStackTrace();
                     }
 
                     bytesRead = readChannel();

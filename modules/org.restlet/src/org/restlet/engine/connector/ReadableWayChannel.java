@@ -55,7 +55,7 @@ public class ReadableWayChannel extends
     private final InboundWay inboundWay;
 
     /** The byte buffer remaining from previous read processing. */
-    private final ByteBuffer buffer;
+    private final ByteBuffer byteBuffer;
 
     /**
      * Constructor.
@@ -72,7 +72,7 @@ public class ReadableWayChannel extends
         super(source);
         setRegistration(new SelectionRegistration(0, null));
         this.inboundWay = inboundWay;
-        this.buffer = remainingBuffer;
+        this.byteBuffer = remainingBuffer;
         this.bufferState = BufferState.DRAINING;
     }
 
@@ -82,7 +82,7 @@ public class ReadableWayChannel extends
      * @return The byte buffer remaining from previous read processing.
      */
     protected ByteBuffer getByteBuffer() {
-        return buffer;
+        return byteBuffer;
     }
 
     /**

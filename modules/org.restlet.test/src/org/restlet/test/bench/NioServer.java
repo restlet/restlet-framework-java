@@ -17,12 +17,11 @@ public class NioServer {
 
     public static void main(String[] args) throws Exception {
         ConnectorHelper<Server> helper = null;
-        helper = new org.restlet.ext.jetty.HttpServerHelper(null);
+        // helper = new org.restlet.ext.jetty.HttpServerHelper(null);
         // helper = new org.restlet.ext.grizzly.HttpServerHelper(null);
         // helper = new org.restlet.ext.netty.HttpServerHelper(null);
-        // helper = new org.restlet.ext.simple.HttpServerHelper(null);
-        // helper = new
-        // org.restlet.engine.http.connector.HttpServerHelper(null);
+        helper = new org.restlet.ext.simple.HttpServerHelper(null);
+        // helper = new org.restlet.engine.http.connector.HttpServerHelper(null);
         // helper = new org.restlet.engine.connector.HttpServerHelper(null);
 
         // Register the selected connector
@@ -45,7 +44,7 @@ public class NioServer {
             public void handle(Request request, Response response) {
                 try {
                     response.setEntity(new InputRepresentation(
-                            new FileInputStream("C://TEST/restlet-linux.zip")));
+                            new FileInputStream("C://TEST/apache-tika-0.7-src.zip")));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }

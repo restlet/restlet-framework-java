@@ -53,19 +53,7 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
     private volatile BufferState lineBuilderState;
 
     /** The chunk state. */
-    private volatile int chunkState;
-
-    /** Reading the chunk size line. */
-    private static final int STATE_CHUNK_SIZE = 1;
-
-    /** Reading the chunk data. */
-    private static final int STATE_CHUNK_DATA = 2;
-
-    /** Reading the chunk trailer. */
-    private static final int STATE_CHUNK_TRAILER = 3;
-
-    /** Reading the chunk end. */
-    private static final int STATE_CHUNK_END = 4;
+    private volatile ChunkState chunkState;
 
     /**
      * Constructor.
@@ -85,7 +73,7 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
         super(inboundWay, remainingBuffer, source);
         this.lineBuilder = new StringBuilder();
         this.lineBuilderState = BufferState.IDLE;
-        this.chunkState = STATE_CHUNK_SIZE;
+        this.chunkState = ChunkState.SIZE;
     }
 
     /**
@@ -171,7 +159,7 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
         while (tryAgain) {
             switch (this.chunkState) {
 
-            case STATE_CHUNK_SIZE:
+            case SIZE:
                 if (fillLine()) {
                     System.out.print("### New chunk detected. Size: ");
 
@@ -198,16 +186,16 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
                     }
 
                     if (this.availableChunkSize == 0) {
-                        this.chunkState = STATE_CHUNK_TRAILER;
+                        this.chunkState = ChunkState.TRAILER;
                     } else {
-                        this.chunkState = STATE_CHUNK_DATA;
+                        this.chunkState = ChunkState.DATA;
                     }
                 } else {
                     tryAgain = false;
                 }
                 break;
 
-            case STATE_CHUNK_DATA:
+            case DATA:
                 if (this.availableChunkSize > 0) {
                     if (this.availableChunkSize < dst.remaining()) {
                         dst.limit((int) (this.availableChunkSize + dst
@@ -219,15 +207,15 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
 
                     if (result > 0) {
                         this.availableChunkSize -= result;
+                    } else {
+                        System.out.println("No chunk data read");
                     }
-                }
-
-                if (this.availableChunkSize == 0) {
+                } else if (this.availableChunkSize == 0) {
                     // Try to read the end of line
                     if (fillLine()) {
                         // Done, reading the next chunk
                         clearLineBuilder();
-                        this.chunkState = STATE_CHUNK_SIZE;
+                        this.chunkState = ChunkState.SIZE;
                     } else {
                         tryAgain = false;
                     }
@@ -235,12 +223,12 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
 
                 break;
 
-            case STATE_CHUNK_TRAILER:
+            case TRAILER:
                 // TODO
-                this.chunkState = STATE_CHUNK_END;
+                this.chunkState = ChunkState.END;
                 break;
 
-            case STATE_CHUNK_END:
+            case END:
                 // TODO
                 result = -1;
                 tryAgain = false;

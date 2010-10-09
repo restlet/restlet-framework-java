@@ -158,7 +158,8 @@ public class NioUtils {
                     builderState = BufferState.DRAINING;
                 } else {
                     throw new IOException(
-                            "Missing line feed character at the end of the line");
+                            "Missing line feed character at the end of the line. Found character \""
+                                    + (char) next + "\" (" + next + ") instead");
                 }
 
                 break;
