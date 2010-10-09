@@ -116,31 +116,76 @@ public class ReadableWayChannel extends
     }
 
     /**
-     * Reads some bytes and put them into the destination buffer. The bytes come
-     * from the underlying channel.
+     * Refills the byte buffer.
      * 
-     * @param dst
-     *            The destination buffer.
-     * @return The number of bytes read, or -1 if the end of the channel has
-     *         been reached.
+     * @return True if the refilling was successful.
+     * @throws IOException
      */
-    public int read(ByteBuffer dst) throws IOException {
-        int result = -1;
+    protected boolean refill() throws IOException {
+        boolean result = false;
 
-        synchronized (getByteBuffer()) {
-            if ((getByteBuffer() != null) && (getByteBuffer().hasRemaining())) {
-                // First make sure that the remaining buffer is empty
-                result = Math.min(getByteBuffer().remaining(), dst.remaining());
-
-                for (int i = 0; i < result; i++) {
-                    dst.put(getByteBuffer().get());
-                }
-            } else {
-                result = getWrappedChannel().read(dst);
-            }
+        if (getWrappedChannel().read(getByteBuffer()) > 0) {
+            setBufferState(BufferState.DRAINING);
+            getByteBuffer().flip();
+            result = true;
         }
 
         return result;
+    }
+
+    /**
+     * Reads some bytes and put them into the destination buffer. The bytes come
+     * from the underlying channel.
+     * 
+     * @param targetBuffer
+     *            The target buffer.
+     * @return The number of bytes read, or -1 if the end of the channel has
+     *         been reached.
+     */
+    public int read(ByteBuffer targetBuffer) throws IOException {
+        int totalRead = 0;
+        int currentRead = 0;
+        boolean tryAgain = true;
+
+        synchronized (getByteBuffer()) {
+            while (tryAgain) {
+                switch (getBufferState()) {
+                case FILLED:
+                    setBufferState(BufferState.DRAINING);
+                case DRAINING:
+                    if (getByteBuffer().remaining() == 0) {
+                        setBufferState(BufferState.FILLING);
+                        getByteBuffer().clear();
+                    } else {
+                        if (getByteBuffer().remaining() >= targetBuffer
+                                .remaining()) {
+                            // Target buffer will be full
+                            currentRead = targetBuffer.remaining();
+                            tryAgain = false;
+                        } else {
+                            // Target buffer will not be full
+                            currentRead = getByteBuffer().remaining();
+                        }
+
+                        // Copy the byte to the target buffer
+                        for (int i = 0; i < currentRead; i++) {
+                            targetBuffer.put(getByteBuffer().get());
+                        }
+
+                        totalRead += currentRead;
+                    }
+
+                    break;
+                case IDLE:
+                    setBufferState(BufferState.FILLING);
+                case FILLING:
+                    tryAgain = refill();
+                    break;
+                }
+            }
+        }
+
+        return totalRead;
     }
 
     /**

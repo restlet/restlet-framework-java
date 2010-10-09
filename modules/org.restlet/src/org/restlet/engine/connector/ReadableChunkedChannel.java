@@ -71,9 +71,10 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
     public ReadableChunkedChannel(InboundWay inboundWay,
             ByteBuffer remainingBuffer, ReadableSelectionChannel source) {
         super(inboundWay, remainingBuffer, source);
+        this.availableChunkSize = 0;
+        this.chunkState = ChunkState.SIZE;
         this.lineBuilder = new StringBuilder();
         this.lineBuilderState = BufferState.IDLE;
-        this.chunkState = ChunkState.SIZE;
     }
 
     /**
@@ -85,12 +86,12 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
     }
 
     /**
-     * Read the current message line (start line or header line).
+     * Read the current line builder (start line or header line).
      * 
      * @return True if the message line was fully read.
      * @throws IOException
      */
-    protected boolean fillLine() throws IOException {
+    protected boolean fillLineBuilder() throws IOException {
         boolean result = false;
 
         synchronized (getByteBuffer()) {
@@ -98,20 +99,11 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
 
             if (getBufferState() == BufferState.DRAINING) {
                 size = getByteBuffer().remaining();
-
-                if (size == 0) {
-                    setBufferState(BufferState.FILLING);
-                    getByteBuffer().clear();
-                }
             }
 
-            if (getBufferState() == BufferState.FILLING) {
-                // Try to refill the remaining buffer to read line
-                size = getWrappedChannel().read(getByteBuffer());
-
-                if (size > 0) {
-                    setBufferState(BufferState.DRAINING);
-                    getByteBuffer().flip();
+            if (size == 0) {
+                if (super.refill()) {
+                    size = getByteBuffer().remaining();
                 }
             }
 
@@ -160,7 +152,7 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
             switch (this.chunkState) {
 
             case SIZE:
-                if (fillLine()) {
+                if (fillLineBuilder()) {
                     System.out.print("### New chunk detected. Size: ");
 
                     // The chunk size line was fully read into the line builder
@@ -212,7 +204,7 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
                     }
                 } else if (this.availableChunkSize == 0) {
                     // Try to read the end of line
-                    if (fillLine()) {
+                    if (fillLineBuilder()) {
                         // Done, reading the next chunk
                         clearLineBuilder();
                         this.chunkState = ChunkState.SIZE;
