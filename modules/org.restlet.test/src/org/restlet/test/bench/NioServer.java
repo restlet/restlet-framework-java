@@ -17,10 +17,10 @@ public class NioServer {
 
     public static void main(String[] args) throws Exception {
         ConnectorHelper<Server> helper = null;
-        // helper = new org.restlet.ext.jetty.HttpServerHelper(null);
+        helper = new org.restlet.ext.jetty.HttpServerHelper(null);
         // helper = new org.restlet.ext.grizzly.HttpServerHelper(null);
         // helper = new org.restlet.ext.netty.HttpServerHelper(null);
-        helper = new org.restlet.ext.simple.HttpServerHelper(null);
+        // helper = new org.restlet.ext.simple.HttpServerHelper(null);
         // helper = new org.restlet.engine.http.connector.HttpServerHelper(null);
         // helper = new org.restlet.engine.connector.HttpServerHelper(null);
 

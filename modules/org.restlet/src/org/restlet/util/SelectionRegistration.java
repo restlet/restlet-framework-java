@@ -32,6 +32,10 @@ package org.restlet.util;
 
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
+
+import org.restlet.engine.io.IoUtils;
 
 /**
  * Represents a unique registration between a NIO selector and a selectable
@@ -66,6 +70,9 @@ public class SelectionRegistration {
         }
 
     }
+
+    /** The barrier used for blocking/unblocking support. */
+    private final CyclicBarrier barrier;
 
     /** The selection listener that will be notified. */
     private volatile SelectionListener listener;
@@ -112,6 +119,7 @@ public class SelectionRegistration {
             int interestOperations, SelectionListener listener) {
         this.canceled = false;
         this.selectableChannel = selectableChannel;
+        this.barrier = new CyclicBarrier(2);
         this.listener = listener;
         this.setInterestOperations(interestOperations);
     }
@@ -123,6 +131,19 @@ public class SelectionRegistration {
      */
     public void addInterestOperations(int interest) {
         setInterestOperations(getInterestOperations() & interest);
+    }
+
+    /**
+     * Blocks the calling thread.
+     * 
+     * @see #block()
+     */
+    public void block() {
+        try {
+            this.barrier.await(IoUtils.IO_TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -276,6 +297,21 @@ public class SelectionRegistration {
         return getName(getInterestOperations()) + ", "
                 + getName(getReadyOperations()) + ", "
                 + Boolean.toString(isCanceled());
+    }
+
+    /**
+     * Unblocks the optionally blocked thread.
+     * 
+     * @see #block()
+     */
+    public void unblock() {
+        try {
+            if (this.barrier.getNumberWaiting() == 1) {
+                this.barrier.await(IoUtils.IO_TIMEOUT, TimeUnit.MILLISECONDS);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -151,6 +151,9 @@ public abstract class ConnectionController extends Controller implements
     protected void onSelected(SelectionKey key)
             throws ClosedByInterruptException {
         // Notify the selected way
+        System.out.println("onSelected: " + key.interestOps() + " | "
+                + key.readyOps() + " | " + key.attachment());
+
         if (key.attachment() != null) {
             ((SelectionRegistration) key.attachment()).onSelected(key
                     .readyOps());

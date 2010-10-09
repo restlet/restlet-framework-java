@@ -102,8 +102,13 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
             }
 
             if (size == 0) {
+                System.out.println("fillLineBuilder: refilling");
+
                 if (super.refill()) {
                     size = getByteBuffer().remaining();
+
+                    System.out.println("fillLineBuilder: refilled with " + size
+                            + " bytes");
                 }
             }
 
@@ -145,6 +150,9 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
      *         been reached.
      */
     public int read(ByteBuffer dst) throws IOException {
+        System.out.println("read: " + this.chunkState + " | "
+                + getLineBuilderState() + " | " + getBufferState());
+
         int result = 0;
         boolean tryAgain = true;
 
@@ -203,9 +211,9 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
                         System.out.println("No chunk data read");
                     }
                 } else if (this.availableChunkSize == 0) {
-                    // Try to read the end of line
+                    // Try to read the chunk end delimiter
                     if (fillLineBuilder()) {
-                        // Done, reading the next chunk
+                        // Done, can read the next chunk
                         clearLineBuilder();
                         this.chunkState = ChunkState.SIZE;
                     } else {

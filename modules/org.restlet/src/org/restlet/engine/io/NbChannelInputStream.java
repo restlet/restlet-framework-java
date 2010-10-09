@@ -37,8 +37,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -54,7 +52,7 @@ import org.restlet.util.SelectionRegistration;
 public class NbChannelInputStream extends InputStream {
 
     /** The internal byte buffer. */
-    private final ByteBuffer bb;
+    private final ByteBuffer byteBuffer;
 
     /** The channel to read from. */
     private final ReadableByteChannel channel;
@@ -91,8 +89,8 @@ public class NbChannelInputStream extends InputStream {
             this.selectableChannel = null;
         }
 
-        this.bb = ByteBuffer.allocate(IoUtils.BUFFER_SIZE);
-        this.bb.flip();
+        this.byteBuffer = ByteBuffer.allocate(IoUtils.BUFFER_SIZE);
+        this.byteBuffer.flip();
         this.endReached = false;
         this.selectionRegistration = null;
     }
@@ -102,14 +100,14 @@ public class NbChannelInputStream extends InputStream {
         int result = -1;
 
         if (!this.endReached) {
-            if (!this.bb.hasRemaining()) {
+            if (!this.byteBuffer.hasRemaining()) {
                 // Let's refill
                 refill();
             }
 
             if (!this.endReached) {
                 // Let's return the next one
-                result = this.bb.get() & 0xff;
+                result = this.byteBuffer.get() & 0xff;
             }
         }
 
@@ -121,15 +119,15 @@ public class NbChannelInputStream extends InputStream {
         int result = -1;
 
         if (!this.endReached) {
-            if (!this.bb.hasRemaining()) {
+            if (!this.byteBuffer.hasRemaining()) {
                 // Let's try to refill
                 refill();
             }
 
             if (!this.endReached) {
                 // Let's return the next ones
-                result = Math.min(len, this.bb.remaining());
-                this.bb.get(b, off, result);
+                result = Math.min(len, this.byteBuffer.remaining());
+                this.byteBuffer.get(b, off, result);
             }
         }
 
@@ -145,9 +143,9 @@ public class NbChannelInputStream extends InputStream {
      */
     private int readChannel() throws IOException {
         int result = 0;
-        this.bb.clear();
-        result = this.channel.read(this.bb);
-        this.bb.flip();
+        this.byteBuffer.clear();
+        result = this.channel.read(this.byteBuffer);
+        this.byteBuffer.flip();
         return result;
     }
 
@@ -166,8 +164,6 @@ public class NbChannelInputStream extends InputStream {
                 // No bytes were read, try to register
                 // a select key to get more
                 if (selectionChannel != null) {
-                    final CountDownLatch latch = new CountDownLatch(1);
-
                     try {
                         if (this.selectionRegistration == null) {
                             this.selectionRegistration = this.selectionChannel
@@ -183,7 +179,7 @@ public class NbChannelInputStream extends InputStream {
                                             registration.suspend();
 
                                             // Unblock the user thread
-                                            latch.countDown();
+                                            selectionRegistration.unblock();
                                         }
                                     });
                         } else {
@@ -191,7 +187,7 @@ public class NbChannelInputStream extends InputStream {
                         }
 
                         // Block until new content arrives or a timeout occurs
-                        latch.await(IoUtils.IO_TIMEOUT, TimeUnit.MILLISECONDS);
+                        this.selectionRegistration.block();
                     } catch (Exception e) {
                         Context.getCurrentLogger()
                                 .log(Level.FINE,
