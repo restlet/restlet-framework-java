@@ -26,6 +26,8 @@ Changes log
          Contributed by Marc Portier.
        - Fixed bug when using the internal client in Sun Applet Viewer.
          Reported by Darin Jackson.
+       - Fixed bug when an URI was included in the URI query or 
+	     fragment.
     - Misc
        - Additional errors are now caught and logged in the HTTP 
          servers. Contributed by Marc Portier.
