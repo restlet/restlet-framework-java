@@ -126,8 +126,8 @@ public class Reference {
     static {
         // Initialize the map of valid characters.
         for (int character = 0; character < 127; character++) {
-            charValidityMap[character] = isReserved(character) || isUnreserved(character)
-                    || (character == '%');
+            charValidityMap[character] = isReserved(character)
+                    || isUnreserved(character) || (character == '%');
         }
     }
 
@@ -147,10 +147,8 @@ public class Reference {
             try {
                 result = java.net.URLDecoder.decode(toDecode, "UTF-8");
             } catch (UnsupportedEncodingException uee) {
-                Context
-                        .getCurrentLogger()
-                        .log(
-                                Level.WARNING,
+                Context.getCurrentLogger()
+                        .log(Level.WARNING,
                                 "Unable to decode the string with the UTF-8 character set.",
                                 uee);
             }
@@ -199,10 +197,8 @@ public class Reference {
             result = (characterSet == null) ? toDecode : java.net.URLDecoder
                     .decode(toDecode, characterSet.getName());
         } catch (UnsupportedEncodingException uee) {
-            Context
-                    .getCurrentLogger()
-                    .log(
-                            Level.WARNING,
+            Context.getCurrentLogger()
+                    .log(Level.WARNING,
                             "Unable to decode the string with the UTF-8 character set.",
                             uee);
         }
@@ -238,10 +234,8 @@ public class Reference {
             try {
                 result = java.net.URLEncoder.encode(toEncode, "UTF-8");
             } catch (UnsupportedEncodingException uee) {
-                Context
-                        .getCurrentLogger()
-                        .log(
-                                Level.WARNING,
+                Context.getCurrentLogger()
+                        .log(Level.WARNING,
                                 "Unable to encode the string with the UTF-8 character set.",
                                 uee);
             }
@@ -293,10 +287,8 @@ public class Reference {
             result = (characterSet == null) ? toEncode : java.net.URLEncoder
                     .encode(toEncode, characterSet.getName());
         } catch (UnsupportedEncodingException uee) {
-            Context
-                    .getCurrentLogger()
-                    .log(
-                            Level.WARNING,
+            Context.getCurrentLogger()
+                    .log(Level.WARNING,
                             "Unable to encode the string with the UTF-8 character set.",
                             uee);
         }
@@ -1950,8 +1942,7 @@ public class Reference {
                                 mergedPath = path;
                             } else {
                                 mergedPath = basePath.substring(0,
-                                        lastSlash + 1)
-                                        + path;
+                                        lastSlash + 1) + path;
                             }
                         }
 
@@ -2387,8 +2378,8 @@ public class Reference {
                         // Matrix found, make sure we append it
                         // after the extensions
                         sb.append(lastSegment.substring(0, matrixIndex))
-                                .append('.').append(extensions).append(
-                                        lastSegment.substring(matrixIndex));
+                                .append('.').append(extensions)
+                                .append(lastSegment.substring(matrixIndex));
                     } else {
                         // No matrix found, just append the extensions
                         sb.append(lastSegment).append('.').append(extensions);
@@ -2456,8 +2447,7 @@ public class Reference {
             // Existing fragment
             if (fragment != null) {
                 this.internalRef = this.internalRef.substring(0,
-                        this.fragmentIndex + 1)
-                        + fragment;
+                        this.fragmentIndex + 1) + fragment;
             } else {
                 this.internalRef = this.internalRef.substring(0,
                         this.fragmentIndex);
@@ -2714,8 +2704,7 @@ public class Reference {
                 // No fragment found
                 if (!emptyQueryString) {
                     this.internalRef = this.internalRef.substring(0,
-                            this.queryIndex + 1)
-                            + query;
+                            this.queryIndex + 1) + query;
                 } else {
                     this.internalRef = this.internalRef.substring(0,
                             this.queryIndex);
@@ -2845,8 +2834,7 @@ public class Reference {
             } else {
                 // No fragment found
                 this.internalRef = this.internalRef.substring(0,
-                        this.schemeIndex + 1)
-                        + schemeSpecificPart;
+                        this.schemeIndex + 1) + schemeSpecificPart;
             }
         } else {
             // No scheme found
@@ -3021,10 +3009,21 @@ public class Reference {
 
             this.queryIndex = this.internalRef.indexOf('?');
             this.fragmentIndex = this.internalRef.indexOf('#');
+
             if (hasQuery() && hasFragment()
                     && (this.queryIndex > this.fragmentIndex)) {
                 // Query sign inside fragment
                 this.queryIndex = -1;
+            }
+
+            if (hasQuery() && this.schemeIndex > this.queryIndex) {
+                // Colon sign inside query
+                this.schemeIndex = -1;
+            }
+
+            if (hasFragment() && this.schemeIndex > this.fragmentIndex) {
+                // Colon sign inside fragment
+                this.schemeIndex = -1;
             }
         } else {
             this.schemeIndex = -1;
