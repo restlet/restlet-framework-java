@@ -28,20 +28,17 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.connector;
+package org.restlet.engine.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.restlet.engine.io.BufferState;
-import org.restlet.engine.io.NioUtils;
-import org.restlet.engine.io.ReadableSelectionChannel;
 
 // [excludes gwt]
 /**
  * Readable byte channel capable of decoding chunked entities.
  */
-public class ReadableChunkedChannel extends ReadableWayChannel {
+public class ReadableChunkedChannel extends ReadableBufferedChannel {
 
     /** The available chunk size that should be read from the source channel. */
     private volatile long availableChunkSize;
@@ -58,8 +55,8 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
     /**
      * Constructor.
      * 
-     * @param inboundWay
-     *            The parent inbound way.
+     * @param completionListener
+     *            The listener to callback upon reading completion.
      * @param remainingBuffer
      *            The byte buffer remaining from previous read processing.
      * @param source
@@ -68,9 +65,9 @@ public class ReadableChunkedChannel extends ReadableWayChannel {
      *            The total available size that can be read from the source
      *            channel.
      */
-    public ReadableChunkedChannel(InboundWay inboundWay,
+    public ReadableChunkedChannel(CompletionListener completionListener,
             ByteBuffer remainingBuffer, ReadableSelectionChannel source) {
-        super(inboundWay, remainingBuffer, source);
+        super(completionListener, remainingBuffer, source);
         this.availableChunkSize = 0;
         this.chunkState = ChunkState.SIZE;
         this.lineBuilder = new StringBuilder();

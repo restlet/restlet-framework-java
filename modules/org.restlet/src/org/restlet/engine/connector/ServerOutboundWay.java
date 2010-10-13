@@ -143,7 +143,7 @@ public class ServerOutboundWay extends OutboundWay {
     }
 
     @Override
-    protected void onCompleted() {
+    public void onCompleted() {
         getMessages().remove(getMessage());
 
         if (!getMessage().getStatus().isInformational()) {

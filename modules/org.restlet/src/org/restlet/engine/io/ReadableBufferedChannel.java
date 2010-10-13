@@ -28,14 +28,11 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.connector;
+package org.restlet.engine.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.restlet.engine.io.BufferState;
-import org.restlet.engine.io.ReadableSelectionChannel;
-import org.restlet.engine.io.WrapperSelectionChannel;
 import org.restlet.util.SelectionRegistration;
 
 // [excludes gwt]
@@ -44,15 +41,15 @@ import org.restlet.util.SelectionRegistration;
  * partially read. It is capable of first using the remaining buffer before
  * reading more.
  */
-public class ReadableWayChannel extends
+public class ReadableBufferedChannel extends
         WrapperSelectionChannel<ReadableSelectionChannel> implements
         ReadableSelectionChannel {
 
     /** The buffer state. */
     private volatile BufferState bufferState;
 
-    /** The parent inbound way. */
-    private final InboundWay inboundWay;
+    /** The completion callback. */
+    private final CompletionListener completionListener;
 
     /** The byte buffer remaining from previous read processing. */
     private final ByteBuffer byteBuffer;
@@ -60,29 +57,20 @@ public class ReadableWayChannel extends
     /**
      * Constructor.
      * 
-     * @param inboundWay
-     *            The parent inbound way.
+     * @param completionListener
+     *            The listener to callback upon reading completion.
      * @param remainingBuffer
      *            The byte buffer remaining from previous read processing.
      * @param source
      *            The source channel.
      */
-    public ReadableWayChannel(InboundWay inboundWay,
+    public ReadableBufferedChannel(CompletionListener completionListener,
             ByteBuffer remainingBuffer, ReadableSelectionChannel source) {
         super(source);
         setRegistration(new SelectionRegistration(0, null));
-        this.inboundWay = inboundWay;
+        this.completionListener = completionListener;
         this.byteBuffer = remainingBuffer;
         this.bufferState = BufferState.DRAINING;
-    }
-
-    /**
-     * Returns the byte buffer remaining from previous read processing.
-     * 
-     * @return The byte buffer remaining from previous read processing.
-     */
-    protected ByteBuffer getByteBuffer() {
-        return byteBuffer;
     }
 
     /**
@@ -95,42 +83,33 @@ public class ReadableWayChannel extends
     }
 
     /**
-     * Returns the parent inbound way.
+     * Returns the byte buffer remaining from previous read processing.
      * 
-     * @return The parent inbound way.
+     * @return The byte buffer remaining from previous read processing.
      */
-    private InboundWay getInboundWay() {
-        return inboundWay;
+    protected ByteBuffer getByteBuffer() {
+        return byteBuffer;
     }
 
     /**
-     * Post-read callback that calls {@link InboundWay#onCompleted()} if the end
-     * has been reached.
+     * Returns the completion callback.
+     * 
+     * @return The completion callback.
+     */
+    private CompletionListener getCompletionListener() {
+        return completionListener;
+    }
+
+    /**
+     * Post-read callback that calls {@link CompletionListener#onCompleted()} if
+     * the end has been reached.
      * 
      * @param length
      */
     protected void postRead(int length) {
         if (length == -1) {
-            getInboundWay().onCompleted();
+            getCompletionListener().onCompleted();
         }
-    }
-
-    /**
-     * Refills the byte buffer.
-     * 
-     * @return True if the refilling was successful.
-     * @throws IOException
-     */
-    protected boolean refill() throws IOException {
-        boolean result = false;
-
-        if (getWrappedChannel().read(getByteBuffer()) > 0) {
-            setBufferState(BufferState.DRAINING);
-            getByteBuffer().flip();
-            result = true;
-        }
-
-        return result;
     }
 
     /**
@@ -186,6 +165,24 @@ public class ReadableWayChannel extends
         }
 
         return totalRead;
+    }
+
+    /**
+     * Refills the byte buffer.
+     * 
+     * @return True if the refilling was successful.
+     * @throws IOException
+     */
+    protected boolean refill() throws IOException {
+        boolean result = false;
+
+        if (getWrappedChannel().read(getByteBuffer()) > 0) {
+            setBufferState(BufferState.DRAINING);
+            getByteBuffer().flip();
+            result = true;
+        }
+
+        return result;
     }
 
     /**

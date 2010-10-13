@@ -112,7 +112,7 @@ public class ClientOutboundWay extends OutboundWay {
     }
 
     @Override
-    protected void onCompleted() {
+    public void onCompleted() {
         Request request = getMessage().getRequest();
 
         if (request.getOnSent() != null) {

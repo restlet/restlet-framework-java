@@ -261,7 +261,7 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
-    protected void onCompleted() {
+    public void onCompleted() {
         setHeaders(null);
         setHeaderIndex(0);
         setEntityIndex(0);

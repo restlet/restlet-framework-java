@@ -3,6 +3,7 @@ package org.restlet.test.bench;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
+import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -11,9 +12,11 @@ public class NioClient {
 
     public static void main(String[] args) throws Exception {
         // TraceHandler.register();
-        Engine.getInstance()
-                .getRegisteredClients()
-                .add(0, new org.restlet.engine.connector.HttpClientHelper(null));
+        ConnectorHelper<Client> helper;
+        helper = new org.restlet.engine.connector.HttpClientHelper(null);
+        // helper = new org.restlet.ext.httpclient.HttpClientHelper(null);
+        // helper = new org.restlet.ext.net.HttpClientHelper(null);
+        Engine.getInstance().getRegisteredClients().add(0, helper);
 
         Client client = new Client(new Context(), Protocol.HTTP);
         client.getContext().getParameters().add("tracing", "false");
@@ -51,5 +54,4 @@ public class NioClient {
         long avg = total / iterations;
         System.out.println("Done in " + total + ". avg per call: " + avg);
     }
-
 }

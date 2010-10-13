@@ -41,7 +41,9 @@ import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.ReadableChunkedChannel;
 import org.restlet.engine.io.ReadableSelectionChannel;
+import org.restlet.engine.io.ReadableSizedChannel;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
@@ -210,7 +212,7 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    protected void onCompleted() {
+    public void onCompleted() {
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Inbound message fully received");
         }

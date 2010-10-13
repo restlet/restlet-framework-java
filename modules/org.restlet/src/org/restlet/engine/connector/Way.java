@@ -40,6 +40,7 @@ import org.restlet.Message;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.engine.io.BufferState;
+import org.restlet.engine.io.CompletionListener;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
 import org.restlet.util.Series;
@@ -50,7 +51,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public abstract class Way implements SelectionListener {
+public abstract class Way implements SelectionListener, CompletionListener {
 
     /** The message headers. */
     private volatile Series<Parameter> headers;
@@ -264,7 +265,7 @@ public abstract class Way implements SelectionListener {
      * Callback method invoked when the current message has been completely
      * received or sent.
      */
-    protected void onCompleted() {
+    public void onCompleted() {
         setIoState(IoState.IDLE);
         setMessageState(MessageState.IDLE);
         setMessage(null);

@@ -28,18 +28,16 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.connector;
+package org.restlet.engine.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
-import org.restlet.engine.io.ReadableSelectionChannel;
 
 // [excludes gwt]
 /**
  * Readable byte channel enforcing a maximum size.
  */
-public class ReadableSizedChannel extends ReadableWayChannel {
+public class ReadableSizedChannel extends ReadableBufferedChannel {
 
     /** The total available size that should be read from the source channel. */
     private volatile long availableSize;
@@ -47,8 +45,8 @@ public class ReadableSizedChannel extends ReadableWayChannel {
     /**
      * Constructor.
      * 
-     * @param inboundWay
-     *            The parent inbound way.
+     * @param completionListener
+     *            The listener to callback upon reading completion.
      * @param remainingBuffer
      *            The byte buffer remaining from previous read processing.
      * @param source
@@ -57,10 +55,10 @@ public class ReadableSizedChannel extends ReadableWayChannel {
      *            The total available size that can be read from the source
      *            channel.
      */
-    public ReadableSizedChannel(InboundWay inboundWay,
+    public ReadableSizedChannel(CompletionListener completionListener,
             ByteBuffer remainingBuffer, ReadableSelectionChannel source,
             long availableSize) {
-        super(inboundWay, remainingBuffer, source);
+        super(completionListener, remainingBuffer, source);
         this.availableSize = availableSize;
     }
 
