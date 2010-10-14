@@ -100,12 +100,11 @@ public class RestletGuice {
         // DependencyInjection methods
         //
 
-        public Finder inject(Class<? extends ServerResource> cls) {
+        public Finder inject(Class<?> cls) {
             return new ServerResourceKeyFinder(Key.get(cls));
         }
 
-        public Finder inject(Class<? extends ServerResource> cls,
-                Class<? extends Annotation> qualifier) {
+        public Finder inject(Class<?> cls, Class<? extends Annotation> qualifier) {
             return new ServerResourceKeyFinder(Key.get(cls, qualifier));
         }
 
@@ -216,17 +215,16 @@ public class RestletGuice {
         }
 
         class ServerResourceKeyFinder extends KeyFinder {
-            private final Key<? extends ServerResource> serverResourceKey;
+            private final Key<?> serverResourceKey;
 
-            ServerResourceKeyFinder(
-                    Key<? extends ServerResource> serverResourceKey) {
+            ServerResourceKeyFinder(Key<?> serverResourceKey) {
                 super(serverResourceKey.getTypeLiteral().getType());
                 this.serverResourceKey = serverResourceKey;
             }
 
             @Override
             public ServerResource create(Request request, Response response) {
-                return getInjector().getInstance(serverResourceKey);
+                return ServerResource.class.cast(getInjector().getInstance(serverResourceKey));
             }
         }
 
