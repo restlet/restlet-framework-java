@@ -48,6 +48,7 @@ public class NioClient {
 
             System.out.println("Copying to the local file");
             fr.put(r);
+            System.out.println("Done!");
         }
 
         long total = (System.currentTimeMillis() - start);

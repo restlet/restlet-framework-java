@@ -33,7 +33,6 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-
 // [excludes gwt]
 /**
  * Readable byte channel capable of decoding chunked entities.

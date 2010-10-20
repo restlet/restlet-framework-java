@@ -67,7 +67,7 @@ public class NbChannelInputStream extends InputStream {
     private final SelectableChannel selectableChannel;
 
     /** The optional selection channel to read from. */
-    private final SelectionChannel selectionChannel;
+    private final ReadableSelectionChannel selectionChannel;
 
     /**
      * Constructor.
@@ -78,8 +78,8 @@ public class NbChannelInputStream extends InputStream {
     public NbChannelInputStream(ReadableByteChannel channel) {
         this.channel = channel;
 
-        if (channel instanceof SelectionChannel) {
-            this.selectionChannel = (SelectionChannel) channel;
+        if (channel instanceof ReadableSelectionChannel) {
+            this.selectionChannel = (ReadableSelectionChannel) channel;
             this.selectableChannel = null;
         } else if (channel instanceof SelectableChannel) {
             this.selectionChannel = null;
