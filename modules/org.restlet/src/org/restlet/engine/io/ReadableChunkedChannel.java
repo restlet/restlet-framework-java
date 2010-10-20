@@ -152,7 +152,7 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
 
             case SIZE:
                 if (fillLineBuilder()) {
-                    System.out.print("### New chunk detected. Size: ");
+                    System.out.print("New chunk detected. Size: ");
 
                     // The chunk size line was fully read into the line builder
                     int length = getLineBuilder().length();
@@ -220,9 +220,12 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
                 break;
 
             case END:
-                // TODO
-                result = -1;
-                tryAgain = false;
+                if (fillLineBuilder()) {
+                    if (getLineBuilder().length() == 0) {
+                        result = -1;
+                        tryAgain = false;
+                    }
+                }
                 break;
             }
 

@@ -30,7 +30,7 @@ public class NioClient {
         // String uri =
         // "http://www.restlet.org/downloads/2.1/restlet-jse-2.1snapshot.zip";
         String uri = "http://127.0.0.1:9999/";
-        int iterations = 1;
+        int iterations = 10;
         ClientResource cr = new ClientResource(uri);
         cr.setRetryOnError(false);
         cr.setNext(client);
@@ -48,11 +48,12 @@ public class NioClient {
 
             System.out.println("Copying to the local file");
             fr.put(r);
-            System.out.println("Done!");
+            System.out.println("Copy done!");
         }
 
         long total = (System.currentTimeMillis() - start);
         long avg = total / iterations;
-        System.out.println("Done in " + total + ". avg per call: " + avg);
+        System.out.println("Bench completed in " + total
+                + " ms. Average time per call: " + avg + " ms");
     }
 }
