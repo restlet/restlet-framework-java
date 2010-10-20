@@ -1,28 +1,25 @@
 package org.restlet.test.bench;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Server;
+import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
-import org.restlet.representation.InputRepresentation;
 
 public class NioServer {
 
     public static void main(String[] args) throws Exception {
         ConnectorHelper<Server> helper = null;
-        helper = new org.restlet.ext.jetty.HttpServerHelper(null);
+        // helper = new org.restlet.ext.jetty.HttpServerHelper(null);
         // helper = new org.restlet.ext.grizzly.HttpServerHelper(null);
         // helper = new org.restlet.ext.netty.HttpServerHelper(null);
         // helper = new org.restlet.ext.simple.HttpServerHelper(null);
         // helper = new org.restlet.engine.http.connector.HttpServerHelper(null);
-        // helper = new org.restlet.engine.connector.HttpServerHelper(null);
+        helper = new org.restlet.engine.connector.HttpServerHelper(null);
 
         // Register the selected connector
         Engine.getInstance().getRegisteredServers().add(0, helper);
@@ -42,16 +39,15 @@ public class NioServer {
         server.setNext(new Restlet() {
             @Override
             public void handle(Request request, Response response) {
-                try {
-                    response.setEntity(new InputRepresentation(
-                            new FileInputStream("C://TEST/restlet-linux.zip")));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    response.setEntity(new InputRepresentation(
+//                            new FileInputStream("C://TEST/restlet-linux.zip")));
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                }
 
-                // response.setEntity("hello, world!" +
-                // request.getEntityAsText(),
-                // MediaType.TEXT_PLAIN);
+                response.setEntity("hello, world!" + request.getEntityAsText(),
+                        MediaType.TEXT_PLAIN);
             }
         });
         server.start();

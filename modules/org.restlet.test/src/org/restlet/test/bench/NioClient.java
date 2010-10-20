@@ -30,25 +30,28 @@ public class NioClient {
         // String uri =
         // "http://www.restlet.org/downloads/2.1/restlet-jse-2.1snapshot.zip";
         String uri = "http://127.0.0.1:9999/";
-        int iterations = 10;
+        int iterations = 1000;
         ClientResource cr = new ClientResource(uri);
         cr.setRetryOnError(false);
         cr.setNext(client);
         Representation r = null;
-        ClientResource fr = new ClientResource("file://C/TEST/apache-copy.zip");
+        // ClientResource fr = new
+        // ClientResource("file://C/TEST/apache-copy.zip");
 
         System.out.println("Calling resource: " + uri + " " + iterations
                 + " times");
         long start = System.currentTimeMillis();
 
         for (int i = 0; i < iterations; i++) {
-            r = cr.post("Sample content posted");
-            // r.exhaust();
-            // System.out.println(r.getText());
+            // r = cr.post("Sample content posted");
 
-            System.out.println("Copying to the local file");
-            fr.put(r);
-            System.out.println("Copy done!");
+            r = cr.get();
+            r.exhaust();
+            // System.out.println(cr.get().getText());
+
+            // System.out.println("Copying to the local file");
+            // fr.put(r);
+            // System.out.println("Copy done!");
         }
 
         long total = (System.currentTimeMillis() - start);
