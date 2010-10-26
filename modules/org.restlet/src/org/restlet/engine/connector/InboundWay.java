@@ -289,7 +289,7 @@ public abstract class InboundWay extends Way {
     protected void readMessage() throws IOException {
         while (isProcessing() && fillLine()) {
             // Parse next ready lines
-            if (getMessageState() == MessageState.START_LINE) {
+            if (getMessageState() == MessageState.START) {
                 readStartLine();
             } else if (getMessageState() == MessageState.HEADERS) {
                 Parameter header = readHeader();

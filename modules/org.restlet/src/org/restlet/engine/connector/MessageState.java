@@ -41,11 +41,17 @@ public enum MessageState {
     IDLE,
 
     /** The start line is being processed. */
-    START_LINE,
+    START,
 
     /** The header lines are being processed. */
     HEADERS,
 
     /** The body is being processed. */
-    BODY;
+    BODY,
+
+    /** The trailer lines are being processed. */
+    TRAILERS,
+
+    /** The end line is being processed. */
+    END;
 }

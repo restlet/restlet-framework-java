@@ -44,7 +44,7 @@ public enum BufferState {
     /** Filling the buffer or builder. */
     FILLING,
 
-    /** End of filling detected by not yet ready for draining. */
+    /** End of filling detected but not yet ready for draining. */
     FILLED,
 
     /** Buffer or builder ready for reading or draining. */
