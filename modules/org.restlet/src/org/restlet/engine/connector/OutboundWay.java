@@ -169,14 +169,14 @@ public abstract class OutboundWay extends Way {
      * @throws IOException
      */
     protected void drainByteBuffer() throws IOException {
-        if ((getByteBuffer().position() > 0)
+        if ((getByteBuffer().hasRemaining())
                 && (getIoState() == IoState.PROCESSING)) {
-            // After filling the byte buffer, we can now flip it
-            // and start draining it.
-            getByteBuffer().flip();
             int bytesWritten = getConnection().getWritableSelectionChannel()
                     .write(getByteBuffer());
-            System.out.println("Bytes written: " + bytesWritten);
+
+            if (getLogger().isLoggable(Level.FINE)) {
+                getLogger().fine("Bytes written: " + bytesWritten);
+            }
 
             if (bytesWritten == 0) {
                 // The byte buffer hasn't been written, the socket
@@ -289,6 +289,12 @@ public abstract class OutboundWay extends Way {
                     }
                 }
             }
+        }
+
+        if (getByteBuffer().position() > 0) {
+            // After filling the byte buffer, we can now flip it
+            // and start draining it.
+            getByteBuffer().flip();
         }
     }
 
