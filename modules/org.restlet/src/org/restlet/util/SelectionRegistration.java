@@ -34,7 +34,9 @@ import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.engine.io.IoUtils;
 
 /**
@@ -235,6 +237,13 @@ public class SelectionRegistration {
     public void onSelected(int readyOperations) {
         this.readyOperations = readyOperations;
 
+        if (Context.getCurrentLogger().isLoggable(Level.INFO)) {
+            Context.getCurrentLogger().log(
+                    Level.INFO,
+                    "NIO selection (interest | ready | cancelled | attach): "
+                            + toString());
+        }
+
         if ((getListener() != null)
                 && ((getReadyOperations() & getInterestOperations()) != 0)) {
             getListener().onSelected(this);
@@ -293,7 +302,8 @@ public class SelectionRegistration {
     public String toString() {
         return getName(getInterestOperations()) + ", "
                 + getName(getReadyOperations()) + ", "
-                + Boolean.toString(isCanceled());
+                + Boolean.toString(isCanceled()) + ", "
+                + getListener().toString();
     }
 
     /**
