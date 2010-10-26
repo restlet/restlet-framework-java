@@ -151,7 +151,7 @@ public abstract class ConnectionController extends Controller implements
     protected void onSelected(SelectionKey key)
             throws ClosedByInterruptException {
         // Notify the selected way
-        if (getHelper().getLogger().isLoggable(Level.FINE)) {
+        if (getHelper().getLogger().isLoggable(Level.INFO)) {
             getHelper().getLogger().log(
                     Level.INFO,
                     "NIO selection: " + key.interestOps() + " | "
