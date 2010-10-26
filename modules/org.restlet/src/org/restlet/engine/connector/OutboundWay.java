@@ -79,9 +79,6 @@ public abstract class OutboundWay extends Way {
     /** The entity as a NIO readable byte channel. */
     private volatile ReadableByteChannel entityChannel;
 
-    /** The entity index. */
-    private volatile long entityIndex;
-
     /**
      * The entity's NIO selection key holding the link between the entity to be
      * written and the way.
@@ -105,7 +102,6 @@ public abstract class OutboundWay extends Way {
     public OutboundWay(Connection<?> connection) {
         super(connection, connection.getHelper().getOutboundBufferSize());
         this.entityChannel = null;
-        this.entityIndex = 0;
         this.entityKey = null;
         this.entityStream = null;
         this.entityType = null;
@@ -154,7 +150,6 @@ public abstract class OutboundWay extends Way {
     public void clear() {
         super.clear();
         this.entityChannel = null;
-        this.entityIndex = 0;
         this.entityKey = null;
         this.entityStream = null;
         this.entityType = null;
@@ -177,15 +172,6 @@ public abstract class OutboundWay extends Way {
      */
     public FileChannel getEntityFileChannel() {
         return (FileChannel) getEntityChannel();
-    }
-
-    /**
-     * Returns the entity index.
-     * 
-     * @return The entity index.
-     */
-    public long getEntityIndex() {
-        return entityIndex;
     }
 
     /**
@@ -264,7 +250,6 @@ public abstract class OutboundWay extends Way {
     public void onCompleted() {
         setHeaders(null);
         setHeaderIndex(0);
-        setEntityIndex(0);
 
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Outbound message sent");
@@ -311,16 +296,6 @@ public abstract class OutboundWay extends Way {
      */
     public void setEntityChannel(ReadableByteChannel entityChannel) {
         this.entityChannel = entityChannel;
-    }
-
-    /**
-     * Sets the entity index.
-     * 
-     * @param entityIndex
-     *            The entity index.
-     */
-    protected void setEntityIndex(long entityIndex) {
-        this.entityIndex = entityIndex;
     }
 
     /**
@@ -469,8 +444,6 @@ public abstract class OutboundWay extends Way {
         while (isProcessing() && getByteBuffer().hasRemaining()) {
             if (getMessageState() == MessageState.BODY) {
                 if (getActualMessage().isEntityAvailable()) {
-                    long entitySize = getActualMessage().getEntity().getSize();
-                    int available = getEntityStream().available();
                     int result = 0;
 
                     // Writing the body doesn't rely on the line builder
@@ -480,70 +453,44 @@ public abstract class OutboundWay extends Way {
                     case SYNC_CHANNEL:
                         result = getEntityChannel().read(getByteBuffer());
 
-                        if (result > 0) {
-                            setEntityIndex(getEntityIndex() + result);
-                        } else if (result == -1) {
-                            setEntityIndex(getEntityIndex() + available);
-                        }
-
                         // Detect end of entity reached
-                        if ((result == -1)
-                                || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
+                        if (result == -1) {
                             setMessageState(MessageState.IDLE);
                         }
                         break;
 
                     case STREAM:
-                        if (getByteBuffer().hasArray()) {
+                        int available = getEntityStream().available();
+
+                        if (getByteBuffer().hasArray() && (available > 0)) {
                             byte[] byteArray = getByteBuffer().array();
 
-                            if (available > 0) {
-                                // Non-blocking read guaranteed
-                                result = getEntityStream().read(
-                                        byteArray,
-                                        getByteBuffer().position(),
-                                        Math.min(available, getByteBuffer()
-                                                .remaining()));
+                            // Non-blocking read guaranteed
+                            result = getEntityStream().read(
+                                    byteArray,
+                                    getByteBuffer().position(),
+                                    Math.min(available, getByteBuffer()
+                                            .remaining()));
 
-                                if (result > 0) {
-                                    getByteBuffer()
-                                            .position(
-                                                    getByteBuffer().position()
-                                                            + result);
-                                    setEntityIndex(getEntityIndex() + result);
-                                } else if (result == -1) {
-                                    getByteBuffer().position(
-                                            getByteBuffer().position()
-                                                    + available);
-                                    setEntityIndex(getEntityIndex() + available);
-                                }
+                            if (result > 0) {
+                                getByteBuffer().position(
+                                        getByteBuffer().position() + result);
+                            } else if (result == -1) {
+                                getByteBuffer().position(
+                                        getByteBuffer().position() + available);
+                            }
 
-                                // Detect end of entity reached
-                                if ((result == -1)
-                                        || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
-                                    setMessageState(MessageState.IDLE);
-                                }
-                            } else {
-                                // Blocking read, need to launch a new
-                                // thread...
-                                getLogger()
-                                        .warning(
-                                                "Blocking BIO streams are not supported yet.");
+                            // Detect end of entity reached
+                            if (result == -1) {
+                                setMessageState(MessageState.IDLE);
                             }
                         } else {
                             ReadableByteChannel rbc = Channels
                                     .newChannel(getEntityStream());
                             result = rbc.read(getByteBuffer());
 
-                            if (result > 0) {
-                                setEntityIndex(getEntityIndex() + result);
-                            } else if (result == -1) {
-                                setEntityIndex(getEntityIndex() + available);
-                            }
-
                             // Detect end of entity reached
-                            if ((result == -1)
-                                    || ((entitySize != -1) && (getEntityIndex() >= entitySize))) {
+                            if (result == -1) {
                                 setMessageState(MessageState.IDLE);
                             }
                         }
@@ -613,7 +560,8 @@ public abstract class OutboundWay extends Way {
                 onCompleted();
             } else {
                 // The byte buffer has been fully written, but
-                // the socket channel wants more.
+                // the socket channel wants more, reset it.
+                getByteBuffer().clear();
             }
         }
     }

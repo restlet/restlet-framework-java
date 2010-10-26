@@ -153,7 +153,7 @@ public abstract class ConnectionController extends Controller implements
         // Notify the selected way
         if (getHelper().getLogger().isLoggable(Level.FINE)) {
             getHelper().getLogger().log(
-                    Level.FINE,
+                    Level.INFO,
                     "NIO selection: " + key.interestOps() + " | "
                             + key.readyOps() + " | " + key.attachment());
         }
