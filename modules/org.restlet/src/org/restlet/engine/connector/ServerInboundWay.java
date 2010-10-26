@@ -37,6 +37,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.io.IoState;
 import org.restlet.representation.Representation;
 
 /**

@@ -40,6 +40,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.http.header.HeaderReader;
 import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.io.BufferState;
+import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.NioUtils;
 import org.restlet.engine.io.ReadableChunkedChannel;
 import org.restlet.engine.io.ReadableSelectionChannel;

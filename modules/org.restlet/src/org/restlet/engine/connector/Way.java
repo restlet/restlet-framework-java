@@ -41,6 +41,7 @@ import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.CompletionListener;
+import org.restlet.engine.io.IoState;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
 import org.restlet.util.Series;

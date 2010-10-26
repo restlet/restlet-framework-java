@@ -47,6 +47,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.io.IoState;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.ReadableRepresentation;
@@ -550,7 +551,6 @@ public abstract class OutboundWay extends Way {
                 // channel can't write more. We needs to put the
                 // byte buffer in the filling state again and
                 // wait for a new NIO selection.
-                getByteBuffer().flip();
                 setIoState(IoState.INTEREST);
             } else if (getByteBuffer().hasRemaining()) {
                 // All the buffer couldn't be written. Compact the
