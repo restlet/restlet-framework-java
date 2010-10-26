@@ -499,8 +499,11 @@ public abstract class OutboundWay extends Way {
 
                             if (available > 0) {
                                 // Non-blocking read guaranteed
-                                result = getEntityStream().read(byteArray,
-                                        getByteBuffer().position(), available);
+                                result = getEntityStream().read(
+                                        byteArray,
+                                        getByteBuffer().position(),
+                                        Math.min(available, getByteBuffer()
+                                                .remaining()));
 
                                 if (result > 0) {
                                     getByteBuffer()
@@ -523,6 +526,9 @@ public abstract class OutboundWay extends Way {
                             } else {
                                 // Blocking read, need to launch a new
                                 // thread...
+                                getLogger()
+                                        .warning(
+                                                "Blocking BIO streams are not supported yet.");
                             }
                         } else {
                             ReadableByteChannel rbc = Channels
