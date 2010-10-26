@@ -543,6 +543,7 @@ public abstract class OutboundWay extends Way {
             getByteBuffer().flip();
             int bytesWritten = getConnection().getWritableSelectionChannel()
                     .write(getByteBuffer());
+            System.out.println("Bytes written: " + bytesWritten);
 
             if (bytesWritten == 0) {
                 // The byte buffer hasn't been written, the socket
