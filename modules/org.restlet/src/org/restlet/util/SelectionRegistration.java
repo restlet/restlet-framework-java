@@ -270,6 +270,13 @@ public class SelectionRegistration {
     }
 
     /**
+     * Sets interest in IO read operations.
+     */
+    public void setReadInterest() {
+        setInterestOperations(SelectionKey.OP_READ);
+    }
+
+    /**
      * Sets the IO operations ready.
      * 
      * @param readyOperations
@@ -277,6 +284,13 @@ public class SelectionRegistration {
      */
     public void setReadyOperations(int readyOperations) {
         this.readyOperations = readyOperations;
+    }
+
+    /**
+     * Sets interest in IO read operations.
+     */
+    public void setWriteInterest() {
+        setInterestOperations(SelectionKey.OP_WRITE);
     }
 
     /**
