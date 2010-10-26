@@ -34,6 +34,7 @@ import java.io.IOException;
 
 import org.restlet.Message;
 import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.http.header.HeaderUtils;
@@ -113,17 +114,18 @@ public class ClientOutboundWay extends OutboundWay {
 
     @Override
     public void onCompleted() {
-        Request request = getMessage().getRequest();
+        Response message = getMessage();
+        Request request = message.getRequest();
 
         if (request.getOnSent() != null) {
-            request.getOnSent().handle(request, getMessage());
+            request.getOnSent().handle(request, message);
         }
 
         // The request has been written
-        getMessages().remove(getMessage());
+        getMessages().remove(message);
 
         if (request.isExpectingResponse()) {
-            getConnection().getInboundWay().getMessages().add(getMessage());
+            getConnection().getInboundWay().getMessages().add(message);
         }
 
         super.onCompleted();

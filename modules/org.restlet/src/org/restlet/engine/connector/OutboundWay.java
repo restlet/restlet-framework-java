@@ -188,8 +188,8 @@ public abstract class OutboundWay extends Way {
                 // All the buffer couldn't be written. Compact the
                 // remaining bytes so that filling can happen again.
                 getByteBuffer().compact();
-            } else if (getMessageState() == MessageState.IDLE) {
-                // Message fully sent, ready for a new one
+            } else if (getMessageState() == MessageState.END) {
+                // Message fully written, ready for a new one
                 onCompleted();
             } else {
                 // The byte buffer has been fully written, but
@@ -206,7 +206,7 @@ public abstract class OutboundWay extends Way {
      */
     protected void fillByteBuffer() throws IOException {
         while (isProcessing() && getByteBuffer().hasRemaining()
-                & (getMessageState() != MessageState.END)) {
+                && (getMessageState() != MessageState.END)) {
             if (getMessageState() == MessageState.BODY) {
                 int result = 0;
 
