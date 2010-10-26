@@ -302,8 +302,7 @@ public class SelectionRegistration {
     public String toString() {
         return getName(getInterestOperations()) + ", "
                 + getName(getReadyOperations()) + ", "
-                + Boolean.toString(isCanceled()) + ", "
-                + getListener().toString();
+                + Boolean.toString(isCanceled());
     }
 
     /**

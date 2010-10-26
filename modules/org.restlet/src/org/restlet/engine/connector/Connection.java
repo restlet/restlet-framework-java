@@ -468,6 +468,13 @@ public class Connection<T extends Connector> implements SelectionListener {
     public void onSelected(SelectionRegistration registration) {
         this.lastActivity = System.currentTimeMillis();
 
+        if (getLogger().isLoggable(Level.INFO)) {
+            getLogger()
+                    .log(Level.INFO,
+                            "NIO selection (state | inbound | outbound): "
+                                    + toString());
+        }
+
         try {
             if ((registration == null) || registration.isReadable()) {
                 synchronized (getInboundWay().getByteBuffer()) {
@@ -612,7 +619,7 @@ public class Connection<T extends Connector> implements SelectionListener {
 
     @Override
     public String toString() {
-        return getState() + ", " + getInboundWay() + ", " + getOutboundWay();
+        return getState() + " | " + getInboundWay() + " | " + getOutboundWay();
     }
 
     /**
