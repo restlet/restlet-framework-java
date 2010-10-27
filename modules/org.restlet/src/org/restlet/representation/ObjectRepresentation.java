@@ -31,6 +31,7 @@
 package org.restlet.representation;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -46,125 +47,133 @@ import org.restlet.data.MediaType;
  *            The class to serialize, see {@link Serializable}
  */
 public class ObjectRepresentation<T extends Serializable> extends
-        OutputRepresentation {
-    /** The serializable object. */
-    private volatile T object;
+		OutputRepresentation {
+	/** The serializable object. */
+	private volatile T object;
 
-    /**
-     * Constructor reading the object from a serialized representation. This
-     * representation must have the proper media type:
-     * "application/x-java-serialized-object".
-     * 
-     * @param serializedRepresentation
-     *            The serialized representation.
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @throws IllegalArgumentException
-     */
-    @SuppressWarnings("unchecked")
-    public ObjectRepresentation(Representation serializedRepresentation)
-            throws IOException, ClassNotFoundException,
-            IllegalArgumentException {
-        super(MediaType.APPLICATION_JAVA_OBJECT);
+	/**
+	 * Constructor reading the object from a serialized representation. This
+	 * representation must have the proper media type:
+	 * "application/x-java-serialized-object".
+	 * 
+	 * @param serializedRepresentation
+	 *            The serialized representation.
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws IllegalArgumentException
+	 */
+	@SuppressWarnings("unchecked")
+	public ObjectRepresentation(Representation serializedRepresentation)
+			throws IOException, ClassNotFoundException,
+			IllegalArgumentException {
+		super(MediaType.APPLICATION_JAVA_OBJECT);
 
-        if (serializedRepresentation.getMediaType().equals(
-                MediaType.APPLICATION_JAVA_OBJECT)) {
-            setMediaType(MediaType.APPLICATION_JAVA_OBJECT);
-            ObjectInputStream ois = new ObjectInputStream(
-                    serializedRepresentation.getStream());
-            this.object = (T) ois.readObject();
-            ois.close();
-            // [ifndef android]
-        } else if (serializedRepresentation.getMediaType().equals(
-                MediaType.APPLICATION_JAVA_OBJECT_XML)) {
-            setMediaType(MediaType.APPLICATION_JAVA_OBJECT_XML);
-            java.beans.XMLDecoder decoder = new java.beans.XMLDecoder(
-                    serializedRepresentation.getStream());
-            this.object = (T) decoder.readObject();
-            decoder.close();
-            // [enddef]
-        } else {
-            throw new IllegalArgumentException(
-                    "The serialized representation must have this media type: "
-                            + MediaType.APPLICATION_JAVA_OBJECT.toString()
-                            + " or this one: "
-                            + MediaType.APPLICATION_JAVA_OBJECT_XML.toString());
-        }
-    }
+		if (serializedRepresentation.getMediaType().equals(
+				MediaType.APPLICATION_JAVA_OBJECT)) {
+			setMediaType(MediaType.APPLICATION_JAVA_OBJECT);
+			InputStream is = serializedRepresentation.getStream();
+			ObjectInputStream ois = new ObjectInputStream(is);
+			this.object = (T) ois.readObject();
+			if (is.read() != -1) {
+				throw new IOException(
+						"The input stream has not been fully read.");
+			}
+			ois.close();
+			// [ifndef android]
+		} else if (serializedRepresentation.getMediaType().equals(
+				MediaType.APPLICATION_JAVA_OBJECT_XML)) {
+			setMediaType(MediaType.APPLICATION_JAVA_OBJECT_XML);
+			InputStream is = serializedRepresentation.getStream();
+			java.beans.XMLDecoder decoder = new java.beans.XMLDecoder(is);
+			this.object = (T) decoder.readObject();
+			if (is.read() != -1) {
+				throw new IOException(
+						"The input stream has not been fully read.");
+			}
+			decoder.close();
+			// [enddef]
+		} else {
+			throw new IllegalArgumentException(
+					"The serialized representation must have this media type: "
+							+ MediaType.APPLICATION_JAVA_OBJECT.toString()
+							+ " or this one: "
+							+ MediaType.APPLICATION_JAVA_OBJECT_XML.toString());
+		}
+	}
 
-    /**
-     * Constructor for the {@link MediaType#APPLICATION_JAVA_OBJECT} type.
-     * 
-     * @param object
-     *            The serializable object.
-     */
-    public ObjectRepresentation(T object) {
-        super(MediaType.APPLICATION_JAVA_OBJECT);
-        this.object = object;
-    }
+	/**
+	 * Constructor for the {@link MediaType#APPLICATION_JAVA_OBJECT} type.
+	 * 
+	 * @param object
+	 *            The serializable object.
+	 */
+	public ObjectRepresentation(T object) {
+		super(MediaType.APPLICATION_JAVA_OBJECT);
+		this.object = object;
+	}
 
-    /**
-     * Constructor for either the {@link MediaType#APPLICATION_JAVA_OBJECT} type
-     * or the {@link MediaType#APPLICATION_XML} type. In the first case, the
-     * Java Object Serialization mechanism is used, based on
-     * {@link ObjectOutputStream}. In the latter case, the JavaBeans XML
-     * serialization is used, based on {@link java.beans.XMLEncoder}.
-     * 
-     * @param object
-     *            The serializable object.
-     * @param mediaType
-     *            The media type.
-     */
-    public ObjectRepresentation(T object, MediaType mediaType) {
-        super((mediaType == null) ? MediaType.APPLICATION_JAVA_OBJECT
-                : mediaType);
-        this.object = object;
-    }
+	/**
+	 * Constructor for either the {@link MediaType#APPLICATION_JAVA_OBJECT} type
+	 * or the {@link MediaType#APPLICATION_XML} type. In the first case, the
+	 * Java Object Serialization mechanism is used, based on
+	 * {@link ObjectOutputStream}. In the latter case, the JavaBeans XML
+	 * serialization is used, based on {@link java.beans.XMLEncoder}.
+	 * 
+	 * @param object
+	 *            The serializable object.
+	 * @param mediaType
+	 *            The media type.
+	 */
+	public ObjectRepresentation(T object, MediaType mediaType) {
+		super((mediaType == null) ? MediaType.APPLICATION_JAVA_OBJECT
+				: mediaType);
+		this.object = object;
+	}
 
-    /**
-     * Returns the represented object.
-     * 
-     * @return The represented object.
-     * @throws IOException
-     */
-    public T getObject() throws IOException {
-        return this.object;
-    }
+	/**
+	 * Returns the represented object.
+	 * 
+	 * @return The represented object.
+	 * @throws IOException
+	 */
+	public T getObject() throws IOException {
+		return this.object;
+	}
 
-    /**
-     * Releases the represented object.
-     */
-    @Override
-    public void release() {
-        setObject(null);
-        super.release();
-    }
+	/**
+	 * Releases the represented object.
+	 */
+	@Override
+	public void release() {
+		setObject(null);
+		super.release();
+	}
 
-    /**
-     * Sets the represented object.
-     * 
-     * @param object
-     *            The represented object.
-     */
-    public void setObject(T object) {
-        this.object = object;
-    }
+	/**
+	 * Sets the represented object.
+	 * 
+	 * @param object
+	 *            The represented object.
+	 */
+	public void setObject(T object) {
+		this.object = object;
+	}
 
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        if (MediaType.APPLICATION_JAVA_OBJECT.isCompatible(getMediaType())) {
-            ObjectOutputStream oos = new ObjectOutputStream(outputStream);
-            oos.writeObject(getObject());
-            oos.flush();
-            // [ifndef android]
-        } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
-                .isCompatible(getMediaType())) {
-            java.beans.XMLEncoder encoder = new java.beans.XMLEncoder(
-                    outputStream);
-            encoder.writeObject(getObject());
-            encoder.flush();
-            // [enddef]
-        }
-    }
+	@Override
+	public void write(OutputStream outputStream) throws IOException {
+		if (MediaType.APPLICATION_JAVA_OBJECT.isCompatible(getMediaType())) {
+			ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+			oos.writeObject(getObject());
+			oos.flush();
+			// [ifndef android]
+		} else if (MediaType.APPLICATION_JAVA_OBJECT_XML
+				.isCompatible(getMediaType())) {
+			java.beans.XMLEncoder encoder = new java.beans.XMLEncoder(
+					outputStream);
+			encoder.writeObject(getObject());
+			encoder.flush();
+			// [enddef]
+		}
+	}
 
 }
