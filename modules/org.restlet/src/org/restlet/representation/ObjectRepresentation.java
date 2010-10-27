@@ -74,10 +74,12 @@ public class ObjectRepresentation<T extends Serializable> extends
             InputStream is = serializedRepresentation.getStream();
             ObjectInputStream ois = new ObjectInputStream(is);
             this.object = (T) ois.readObject();
+
             if (is.read() != -1) {
                 throw new IOException(
                         "The input stream has not been fully read.");
             }
+
             ois.close();
             // [ifndef android]
         } else if (serializedRepresentation.getMediaType().equals(
@@ -86,10 +88,12 @@ public class ObjectRepresentation<T extends Serializable> extends
             InputStream is = serializedRepresentation.getStream();
             java.beans.XMLDecoder decoder = new java.beans.XMLDecoder(is);
             this.object = (T) decoder.readObject();
+
             if (is.read() != -1) {
                 throw new IOException(
                         "The input stream has not been fully read.");
             }
+
             decoder.close();
             // [enddef]
         } else {
@@ -171,7 +175,7 @@ public class ObjectRepresentation<T extends Serializable> extends
             java.beans.XMLEncoder encoder = new java.beans.XMLEncoder(
                     outputStream);
             encoder.writeObject(getObject());
-            encoder.flush();
+            encoder.close();
             // [enddef]
         }
     }
