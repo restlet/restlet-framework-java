@@ -31,8 +31,10 @@ Changes log
        - Fixed the deserialization of Java objects when using the 
          internal client or server connectors. The final and empty 
          chunk was not read. Reported by Rob Kooper.
-       - Fixed serialization of String parameter. Reported by 
-         Brian Cabana.
+       - Fixed serialization of String parameter in the GWT edition.
+         Reported by Brian Cabana.
+       - Fixed the usage of Collection as entity in the GWT edition.
+         Reported by Evan Wang.
     - Misc
        - Additional errors are now caught and logged in the HTTP 
          servers. Contributed by Marc Portier.
