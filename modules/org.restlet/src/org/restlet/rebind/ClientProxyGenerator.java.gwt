@@ -38,24 +38,24 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 
-import org.restlet.Client;
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.Uniform;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
-import org.restlet.engine.resource.GwtClientProxy;
-import org.restlet.representation.ObjectRepresentation;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientProxy;
-import org.restlet.resource.Delete;
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
-import org.restlet.resource.Put;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.Result;
+import org.restlet.client.Client;
+import org.restlet.client.Request;
+import org.restlet.client.Response;
+import org.restlet.client.Uniform;
+import org.restlet.client.data.Form;
+import org.restlet.client.data.MediaType;
+import org.restlet.client.data.Method;
+import org.restlet.client.data.Protocol;
+import org.restlet.client.engine.resource.GwtClientProxy;
+import org.restlet.client.representation.ObjectRepresentation;
+import org.restlet.client.representation.Representation;
+import org.restlet.client.resource.ClientProxy;
+import org.restlet.client.resource.Delete;
+import org.restlet.client.resource.Get;
+import org.restlet.client.resource.Post;
+import org.restlet.client.resource.Put;
+import org.restlet.client.resource.ResourceException;
+import org.restlet.client.resource.Result;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.ext.GeneratorContext;
@@ -155,6 +155,34 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             }
         } catch (Exception e) {
             getStob().addRootType(getLogger(), type);
+        }
+    }
+
+    /**
+     * Generates the name of the given parameter's type.
+     * 
+     * @param parameterType
+     *            the Java parameter's type.
+     * @param genericParameterType
+     *            I'ts
+     * @param parameterizedType
+     * @return
+     */
+    private String buildParameterTypeName(Class<?> parameterType,
+            java.lang.reflect.Type genericParameterType,
+            ParameterizedType parameterizedType) {
+        java.lang.reflect.Type type;
+        if (parameterizedType != null) {
+            type = parameterizedType.getActualTypeArguments()[0];
+        } else {
+            type = null;
+        }
+        if (type == null) {
+            return parameterType.getSimpleName();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            buildTypeName(genericParameterType, sb);
+            return sb.toString();
         }
     }
 
@@ -285,7 +313,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
             // The return type of the callback method.
             java.lang.reflect.Type callbackType = null;
-
+            String firstParameterTypeName = null;
             for (int i = 0; i < parameterTypes.length; i++) {
                 parameterType = parameterTypes[i];
                 genericParameterType = genericParameterTypes[i];
@@ -303,15 +331,9 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                         } else {
                             callbackType = null;
                         }
-
                         print("final ");
-                        if (callbackType == null) {
-                            print(parameterType.getSimpleName());
-                        } else {
-                            StringBuilder sb = new StringBuilder();
-                            buildTypeName(genericParameterType, sb);
-                            print(sb.toString());
-                        }
+                        print(buildParameterTypeName(parameterType,
+                                genericParameterType, parameterizedType));
                         print(" callback");
                     } else {
                         getLogger()
@@ -324,7 +346,19 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                                                 + "\" method without a callback as last parameter.");
                     }
                 } else {
-                    print(parameterType.getName() + " param" + (i + 1) + ", ");
+                    // By convention, only the first parameter can be passed as
+                    // single parameter of the callback method.
+                    if (i == 0) {
+                        firstParameterTypeName = buildParameterTypeName(
+                                parameterType, genericParameterType,
+                                parameterizedType);
+                        print(firstParameterTypeName);
+                    } else {
+                        print(buildParameterTypeName(parameterType,
+                                genericParameterType, parameterizedType));
+                    }
+
+                    print(" param" + (i + 1) + ", ");
                 }
             }
 
@@ -341,7 +375,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                     println("getClientResource().getRequest().setEntity((param1 == null) ? null : param1.getWebRepresentation());");
                 } else {
                     println("Representation requestEntity = new ObjectRepresentation<"
-                            + parameterType.getName()
+                            + firstParameterTypeName
                             + ">((SerializationStreamFactory) "
                             + getClassName() + ".this, param1);");
                     println("getClientResource().getRequest().setEntity(requestEntity);");
@@ -448,7 +482,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             composer.addImport(SerializationStreamFactory.class
                     .getCanonicalName());
             composer.addImport(MediaType.class.getCanonicalName());
-            
+
             this.sourceWriter = composer.createSourceWriter(getContext(),
                     printWriter);
             println();
