@@ -205,7 +205,11 @@ public class ObjectRepresentation<T> extends StringRepresentation {
                         .createStreamWriter();
 
                 // Serialize the object
-                objectWriter.writeObject(this.object);
+                if (isString()) {
+                    objectWriter.writeObject(this.object);                    
+                } else {
+                    objectWriter.writeString((String) this.object);                    
+                }
                 setText(objectWriter.toString());
             } catch (Exception e) {
                 e.printStackTrace();
