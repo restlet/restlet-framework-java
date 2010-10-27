@@ -35,6 +35,10 @@ Changes log
          Reported by Brian Cabana.
        - Fixed the usage of Collection as entity in the GWT edition.
          Reported by Evan Wang.
+       - Fixed bug in ObjectRepresentation preventing the writing of
+         </java> at the end of entities with media type
+         "application/x-java-serialized-object+xml". 
+         Reported by M. Maksin.
     - Misc
        - Additional errors are now caught and logged in the HTTP 
          servers. Contributed by Marc Portier.
