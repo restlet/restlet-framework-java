@@ -31,6 +31,8 @@ Changes log
        - Fixed the deserialization of Java objects when using the 
          internal client or server connectors. The final and empty 
          chunk was not read. Reported by Rob Kooper.
+       - Fixed serialization of String parameter. Reported by 
+         Brian Cabana.
     - Misc
        - Additional errors are now caught and logged in the HTTP 
          servers. Contributed by Marc Portier.
