@@ -250,13 +250,15 @@ public class SelectionRegistration {
     }
 
     /**
-     * Sets the IO operations interest.
+     * Sets the IO operations interest. Note that it also clears the ready
+     * operations.
      * 
      * @param interest
      *            The IO operations interest.
      */
     public void setInterestOperations(int interest) {
         this.interestOperations = interest;
+        setReadyOperations(0);
     }
 
     /**

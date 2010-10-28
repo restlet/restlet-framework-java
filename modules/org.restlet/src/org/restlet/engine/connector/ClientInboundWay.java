@@ -246,13 +246,14 @@ public class ClientInboundWay extends InboundWay {
 
     @Override
     public void updateState() {
-        super.updateState();
-
         if (getIoState() == IoState.IDLE) {
             if (!getMessages().isEmpty()) {
                 // Read the next response
                 setIoState(IoState.INTEREST);
             }
         }
+
+        // Now we can update the interest operations
+        super.updateState();
     }
 }
