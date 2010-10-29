@@ -160,7 +160,8 @@ public abstract class InboundWay extends Way {
      * 
      * @param size
      *            The expected entity size or -1 if unknown.
-     * 
+     * @param chunked
+     *            True if the entity is chunk encoded.
      * @return The inbound message entity channel if it exists.
      */
     protected ReadableSelectionChannel getEntityChannel(long size,

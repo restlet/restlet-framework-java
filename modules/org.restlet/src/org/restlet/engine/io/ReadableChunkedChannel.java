@@ -33,6 +33,8 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.restlet.Context;
+
 // [excludes gwt]
 /**
  * Readable byte channel capable of decoding chunked entities.
@@ -152,8 +154,6 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
 
             case SIZE:
                 if (fillLineBuilder()) {
-                    System.out.print("New chunk detected. Size: ");
-
                     // The chunk size line was fully read into the line builder
                     int length = getLineBuilder().length();
 
@@ -170,7 +170,9 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
                                 .parseLong(getLineBuilder().substring(0, index)
                                         .trim(), 16);
                         clearLineBuilder();
-                        System.out.println(this.availableChunkSize);
+                        Context.getCurrentLogger().info(
+                                "New chunk detected. Size: "
+                                        + this.availableChunkSize);
                     } catch (NumberFormatException ex) {
                         throw new IOException("\"" + getLineBuilder()
                                 + "\" has an invalid chunk size");
@@ -199,7 +201,7 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
                     if (result > 0) {
                         this.availableChunkSize -= result;
                     } else {
-                        System.out.println("No chunk data read");
+                        Context.getCurrentLogger().info("No chunk data read");
                     }
                 } else if (this.availableChunkSize == 0) {
                     // Try to read the chunk end delimiter

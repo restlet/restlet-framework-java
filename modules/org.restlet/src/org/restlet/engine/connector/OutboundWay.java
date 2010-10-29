@@ -106,7 +106,7 @@ public abstract class OutboundWay extends Way {
      */
     public OutboundWay(Connection<?> connection) {
         super(connection, connection.getHelper().getOutboundBufferSize());
-        this.byteBufferState = BufferState.IDLE;
+        this.byteBufferState = BufferState.FILLING;
         this.entityChannel = null;
         this.entityKey = null;
         this.entityStream = null;
@@ -155,7 +155,7 @@ public abstract class OutboundWay extends Way {
     @Override
     public void clear() {
         super.clear();
-        this.byteBufferState = BufferState.IDLE;
+        this.byteBufferState = BufferState.FILLING;
         this.entityChannel = null;
         this.entityKey = null;
         this.entityStream = null;
@@ -195,6 +195,7 @@ public abstract class OutboundWay extends Way {
                 // The byte buffer has been fully written, but
                 // the socket channel wants more, reset it.
                 getByteBuffer().clear();
+                setByteBufferState(BufferState.FILLING);
             }
         }
     }
@@ -295,6 +296,7 @@ public abstract class OutboundWay extends Way {
             // After filling the byte buffer, we can now flip it
             // and start draining it.
             getByteBuffer().flip();
+            setByteBufferState(BufferState.DRAINING);
         }
     }
 
@@ -418,17 +420,19 @@ public abstract class OutboundWay extends Way {
                 super.onSelected(registration);
 
                 while (isProcessing()) {
-                    // Write the message or part of it in the byte buffer
-                    fillByteBuffer();
+                    if (getByteBufferState() == BufferState.FILLING) {
+                        // Write the message or part of it in the byte buffer
+                        fillByteBuffer();
+                    } else if (getByteBufferState() == BufferState.DRAINING) {
+                        // Write the byte buffer or part of it to the socket
+                        drainByteBuffer();
 
-                    // Write the byte buffer or part of it to the socket
-                    drainByteBuffer();
+                        if (getMessageState() == MessageState.IDLE) {
+                            // Message fully sent, check if another is ready
+                            updateState();
 
-                    if (getMessageState() == MessageState.IDLE) {
-                        // Message fully sent, check if another is ready
-                        updateState();
-
-                        // super.onSelected(registration);
+                            // super.onSelected(registration);
+                        }
                     }
                 }
             }
