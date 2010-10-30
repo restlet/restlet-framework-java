@@ -32,6 +32,9 @@ package org.restlet.engine.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+
+import org.restlet.Context;
 
 // [excludes gwt]
 /**
@@ -84,6 +87,12 @@ public class ReadableSizedChannel extends ReadableBufferedChannel {
 
         if (result > 0) {
             this.availableSize -= result;
+
+            if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                Context.getCurrentLogger().fine(
+                        "Bytes read / available : " + result + " / "
+                                + this.availableSize);
+            }
         }
 
         postRead(result);

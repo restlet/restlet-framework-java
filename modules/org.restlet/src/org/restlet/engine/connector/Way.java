@@ -60,6 +60,9 @@ public abstract class Way implements SelectionListener, CompletionListener {
     /** The byte buffer. */
     private final ByteBuffer byteBuffer;
 
+    /** The byte buffer IO state. */
+    private volatile BufferState byteBufferState;
+
     /** The parent connection. */
     private final Connection<?> connection;
 
@@ -95,6 +98,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
     public Way(Connection<?> connection, int bufferSize) {
         this.byteBuffer = connection.getHelper().isDirectBuffers() ? ByteBuffer
                 .allocateDirect(bufferSize) : ByteBuffer.allocate(bufferSize);
+        this.byteBufferState = BufferState.FILLING;
         this.lineBuilder = new StringBuilder();
         this.lineBuilderState = BufferState.IDLE;
         this.messages = new ConcurrentLinkedQueue<Response>();
@@ -112,6 +116,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      */
     public void clear() {
         this.byteBuffer.clear();
+        this.byteBufferState = BufferState.FILLING;
         this.headers = null;
         this.ioState = IoState.IDLE;
         clearLineBuilder();
@@ -142,6 +147,15 @@ public abstract class Way implements SelectionListener, CompletionListener {
      */
     protected ByteBuffer getByteBuffer() {
         return byteBuffer;
+    }
+
+    /**
+     * Returns the byte buffer IO state.
+     * 
+     * @return The byte buffer IO state.
+     */
+    public BufferState getByteBufferState() {
+        return byteBufferState;
     }
 
     /**
@@ -292,6 +306,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
 
         if (!getByteBuffer().hasRemaining()) {
             getByteBuffer().clear();
+            setByteBufferState(BufferState.FILLING);
         }
     }
 
@@ -299,6 +314,16 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * Reuses the way based on an updated connection.
      */
     public void reuse() {
+    }
+
+    /**
+     * Sets the byte buffer IO state.
+     * 
+     * @param byteBufferState
+     *            The byte buffer IO state.
+     */
+    public void setByteBufferState(BufferState byteBufferState) {
+        this.byteBufferState = byteBufferState;
     }
 
     /**

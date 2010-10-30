@@ -469,11 +469,11 @@ public class Connection<T extends Connector> implements SelectionListener {
     public void onSelected(SelectionRegistration registration) {
         this.lastActivity = System.currentTimeMillis();
 
-        if (getLogger().isLoggable(Level.INFO)) {
-            getLogger().info(
-                    "NIO selection (interest | ready | cancelled | attach): "
+        if (getLogger().isLoggable(Level.FINE)) {
+            getLogger().fine(
+                    "NIO selection (interest | ready | cancelled): "
                             + registration.toString());
-            getLogger().log(Level.INFO,
+            getLogger().fine(
                     "Connection (state | inbound | outbound): " + toString());
         }
 

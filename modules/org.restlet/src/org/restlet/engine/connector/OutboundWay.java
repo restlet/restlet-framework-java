@@ -78,9 +78,6 @@ public abstract class OutboundWay extends Way {
                 + ((protocolVersion == null) ? "1.1" : protocolVersion);
     }
 
-    /** The byte buffer IO state. */
-    private volatile BufferState byteBufferState;
-
     /** The entity as a NIO readable byte channel. */
     private volatile ReadableByteChannel entityChannel;
 
@@ -106,7 +103,6 @@ public abstract class OutboundWay extends Way {
      */
     public OutboundWay(Connection<?> connection) {
         super(connection, connection.getHelper().getOutboundBufferSize());
-        this.byteBufferState = BufferState.FILLING;
         this.entityChannel = null;
         this.entityKey = null;
         this.entityStream = null;
@@ -155,7 +151,6 @@ public abstract class OutboundWay extends Way {
     @Override
     public void clear() {
         super.clear();
-        this.byteBufferState = BufferState.FILLING;
         this.entityChannel = null;
         this.entityKey = null;
         this.entityStream = null;
@@ -301,15 +296,6 @@ public abstract class OutboundWay extends Way {
     }
 
     /**
-     * Returns the byte buffer IO state.
-     * 
-     * @return The byte buffer IO state.
-     */
-    public BufferState getByteBufferState() {
-        return byteBufferState;
-    }
-
-    /**
      * Returns the entity as a NIO readable byte channel.
      * 
      * @return The entity as a NIO readable byte channel.
@@ -404,8 +390,8 @@ public abstract class OutboundWay extends Way {
         setHeaders(null);
         setHeaderIndex(0);
 
-        if (getLogger().isLoggable(Level.FINER)) {
-            getLogger().finer("Outbound message sent");
+        if (getLogger().isLoggable(Level.FINE)) {
+            getLogger().fine("Outbound message sent");
         }
 
         super.onCompleted();
@@ -442,16 +428,6 @@ public abstract class OutboundWay extends Way {
             getLogger().log(Level.INFO, "Error while writing an HTTP message",
                     e);
         }
-    }
-
-    /**
-     * Sets the byte buffer IO state.
-     * 
-     * @param byteBufferState
-     *            The byte buffer IO state.
-     */
-    public void setByteBufferState(BufferState byteBufferState) {
-        this.byteBufferState = byteBufferState;
     }
 
     /**
