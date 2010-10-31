@@ -54,9 +54,6 @@ import org.restlet.util.Series;
  */
 public abstract class Way implements SelectionListener, CompletionListener {
 
-    /** The message headers. */
-    private volatile Series<Parameter> headers;
-
     /** The byte buffer. */
     private final ByteBuffer byteBuffer;
 
@@ -66,14 +63,17 @@ public abstract class Way implements SelectionListener, CompletionListener {
     /** The parent connection. */
     private final Connection<?> connection;
 
+    /** The message headers. */
+    private volatile Series<Parameter> headers;
+
     /** The IO state. */
     private volatile IoState ioState;
 
-    /** The line builder state. */
-    private volatile BufferState lineBuilderState;
-
     /** The line builder. */
     private final StringBuilder lineBuilder;
+
+    /** The line builder state. */
+    private volatile BufferState lineBuilderState;
 
     /** The current message exchanged. */
     private volatile Response message;
@@ -154,7 +154,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * 
      * @return The byte buffer IO state.
      */
-    public BufferState getByteBufferState() {
+    protected BufferState getByteBufferState() {
         return byteBufferState;
     }
 
@@ -172,7 +172,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * 
      * @return The response headers to be written.
      */
-    public Series<Parameter> getHeaders() {
+    protected Series<Parameter> getHeaders() {
         return headers;
     }
 
@@ -322,7 +322,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * @param byteBufferState
      *            The byte buffer IO state.
      */
-    public void setByteBufferState(BufferState byteBufferState) {
+    protected void setByteBufferState(BufferState byteBufferState) {
         this.byteBufferState = byteBufferState;
     }
 
@@ -332,7 +332,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * @param headers
      *            The response headers.
      */
-    public void setHeaders(Series<Parameter> headers) {
+    protected void setHeaders(Series<Parameter> headers) {
         this.headers = headers;
     }
 

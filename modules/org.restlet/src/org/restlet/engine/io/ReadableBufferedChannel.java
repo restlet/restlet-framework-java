@@ -46,7 +46,7 @@ public class ReadableBufferedChannel extends
         ReadableSelectionChannel {
 
     /** The buffer state. */
-    private volatile BufferState bufferState;
+    private volatile BufferState byteBufferState;
 
     /** The completion callback. */
     private final CompletionListener completionListener;
@@ -70,16 +70,7 @@ public class ReadableBufferedChannel extends
         setRegistration(new SelectionRegistration(0, null));
         this.completionListener = completionListener;
         this.byteBuffer = remainingBuffer;
-        this.bufferState = BufferState.DRAINING;
-    }
-
-    /**
-     * Returns the buffer state.
-     * 
-     * @return The buffer state.
-     */
-    public BufferState getBufferState() {
-        return bufferState;
+        this.byteBufferState = BufferState.DRAINING;
     }
 
     /**
@@ -89,6 +80,15 @@ public class ReadableBufferedChannel extends
      */
     protected ByteBuffer getByteBuffer() {
         return byteBuffer;
+    }
+
+    /**
+     * Returns the byte buffer state.
+     * 
+     * @return The byte buffer state.
+     */
+    protected BufferState getByteBufferState() {
+        return byteBufferState;
     }
 
     /**
@@ -128,14 +128,11 @@ public class ReadableBufferedChannel extends
 
         synchronized (getByteBuffer()) {
             while (tryAgain) {
-                switch (getBufferState()) {
+                switch (getByteBufferState()) {
                 case FILLED:
-                    setBufferState(BufferState.DRAINING);
+                    setByteBufferState(BufferState.DRAINING);
                 case DRAINING:
-                    if (getByteBuffer().remaining() == 0) {
-                        setBufferState(BufferState.FILLING);
-                        getByteBuffer().clear();
-                    } else {
+                    if (getByteBuffer().remaining() > 0) {
                         if (getByteBuffer().remaining() >= targetBuffer
                                 .remaining()) {
                             // Target buffer will be full
@@ -154,9 +151,13 @@ public class ReadableBufferedChannel extends
                         totalRead += currentRead;
                     }
 
+                    if (getByteBuffer().remaining() == 0) {
+                        setByteBufferState(BufferState.FILLING);
+                        getByteBuffer().clear();
+                    }
                     break;
                 case IDLE:
-                    setBufferState(BufferState.FILLING);
+                    setByteBufferState(BufferState.FILLING);
                 case FILLING:
                     tryAgain = refill();
                     break;
@@ -177,7 +178,7 @@ public class ReadableBufferedChannel extends
         boolean result = false;
 
         if (getWrappedChannel().read(getByteBuffer()) > 0) {
-            setBufferState(BufferState.DRAINING);
+            setByteBufferState(BufferState.DRAINING);
             getByteBuffer().flip();
             result = true;
         }
@@ -191,7 +192,7 @@ public class ReadableBufferedChannel extends
      * @param bufferState
      *            The buffer state.
      */
-    public void setBufferState(BufferState bufferState) {
-        this.bufferState = bufferState;
+    protected void setByteBufferState(BufferState bufferState) {
+        this.byteBufferState = bufferState;
     }
 }

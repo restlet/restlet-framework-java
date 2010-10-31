@@ -92,27 +92,32 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
     protected boolean fillLineBuilder() throws IOException {
         boolean result = false;
 
-        synchronized (getByteBuffer()) {
-            int size = 0;
+        if (getLineBuilderState() != BufferState.DRAINING) {
+            synchronized (getByteBuffer()) {
+                int byteBufferSize = 0;
 
-            if (getBufferState() == BufferState.DRAINING) {
-                size = getByteBuffer().remaining();
-            }
+                if (getByteBufferState() == BufferState.DRAINING) {
+                    byteBufferSize = getByteBuffer().remaining();
+                }
 
-            if (size == 0) {
-                setBufferState(BufferState.FILLING);
-                getByteBuffer().clear();
+                if (byteBufferSize == 0) {
+                    setByteBufferState(BufferState.FILLING);
+                    getByteBuffer().clear();
 
-                if (super.refill()) {
-                    size = getByteBuffer().remaining();
+                    if (super.refill()) {
+                        byteBufferSize = getByteBuffer().remaining();
+                    }
+                }
+
+                if (byteBufferSize > 0) {
+                    // Some bytes are available, fill the line builder
+                    setLineBuilderState(NioUtils.fillLine(getLineBuilder(),
+                            getLineBuilderState(), getByteBuffer()));
+                    return getLineBuilderState() == BufferState.DRAINING;
                 }
             }
-
-            if (size > 0) {
-                setLineBuilderState(NioUtils.fillLine(getLineBuilder(),
-                        getLineBuilderState(), getByteBuffer()));
-                return getLineBuilderState() == BufferState.DRAINING;
-            }
+        } else {
+            result = true;
         }
 
         return result;
@@ -169,13 +174,14 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
                         this.availableChunkSize = Long
                                 .parseLong(getLineBuilder().substring(0, index)
                                         .trim(), 16);
-                        clearLineBuilder();
                         Context.getCurrentLogger().info(
                                 "New chunk detected. Size: "
                                         + this.availableChunkSize);
                     } catch (NumberFormatException ex) {
                         throw new IOException("\"" + getLineBuilder()
                                 + "\" has an invalid chunk size");
+                    } finally {
+                        clearLineBuilder();
                     }
 
                     if (this.availableChunkSize == 0) {
