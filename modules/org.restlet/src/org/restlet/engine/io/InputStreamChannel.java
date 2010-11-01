@@ -138,6 +138,8 @@ public class InputStreamChannel implements ReadableByteChannel,
                     // Create or reuse a specific byte array as buffer
                     result = read(target, available);
                 }
+            }else{
+                result = -1;
             }
         } else {
             // Potentially blocking read

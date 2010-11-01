@@ -193,14 +193,14 @@ public abstract class OutboundWay extends Way {
      * @throws IOException
      */
     protected void fillByteBuffer() throws IOException {
-        while (isProcessing() && getByteBuffer().hasRemaining()) {
+        while (isProcessing() && getByteBuffer().hasRemaining()
+                && (getMessageState() != MessageState.END)) {
             if (getMessageState() == MessageState.BODY) {
                 int result = getEntityChannel().read(getByteBuffer());
 
                 // Detect end of entity reached
                 if (result == -1) {
                     setMessageState(MessageState.END);
-                    onCompleted();
                 }
             } else {
                 // Write the start line or the headers,
@@ -353,8 +353,6 @@ public abstract class OutboundWay extends Way {
                         if (getMessageState() == MessageState.IDLE) {
                             // Message fully sent, check if another is ready
                             updateState();
-
-                            // super.onSelected(registration);
                         }
                     }
                 }
