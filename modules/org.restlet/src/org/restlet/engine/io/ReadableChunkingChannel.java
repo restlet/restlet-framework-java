@@ -41,6 +41,9 @@ import java.nio.channels.ReadableByteChannel;
 public class ReadableChunkingChannel extends
         WrapperChannel<ReadableByteChannel> implements ReadableByteChannel {
 
+    /** The constant chunk part containing the size of the chunk data. */
+    private final int chunkSizeLength;
+
     /**
      * Constructor.
      * 
@@ -50,8 +53,34 @@ public class ReadableChunkingChannel extends
      *            The total available size that can be read from the source
      *            channel.
      */
-    public ReadableChunkingChannel(ReadableByteChannel source) {
+    public ReadableChunkingChannel(ReadableByteChannel source, int maxBufferSize) {
         super(source);
+
+        // Compute the constant chunk part containing the size of the chunk data
+        this.chunkSizeLength = Integer.toHexString(maxBufferSize).length();
+    }
+
+    /**
+     * Returns an hexadecimal chunk size string with a constant length, adding
+     * the necessary number of leading zeroes.
+     * 
+     * @param dst
+     *            The destination buffer.
+     * @param chunkDataSize
+     *            The chunk data size value.
+     * @return The hexadecimal chunk size string.
+     */
+    private void putChunkSizeString(ByteBuffer dst, int chunkDataSize) {
+        String chunkDataSizeString = Integer.toHexString(chunkDataSize);
+
+        // Add necessary leading zeroes
+        for (int i = chunkDataSizeString.length(); i < this.chunkSizeLength; i++) {
+            dst.putChar('0');
+        }
+
+        dst.put(chunkDataSizeString.getBytes());
+        dst.put((byte) 13);
+        dst.put((byte) 10);
     }
 
     /**
@@ -65,6 +94,38 @@ public class ReadableChunkingChannel extends
      */
     public int read(ByteBuffer dst) throws IOException {
         int result = 0;
+        int chunkStart = dst.position();
+        int maxChunkDataSize = dst.remaining() - this.chunkSizeLength - 4;
+        int chunkDataSize = 0;
+
+        if (maxChunkDataSize > 0) {
+            // Read the chunk data in the buffer
+            dst.position(chunkStart + this.chunkSizeLength + 2);
+            dst.limit(dst.position() + maxChunkDataSize);
+            chunkDataSize = getWrappedChannel().read(dst);
+            dst.limit(dst.position() + 2);
+            dst.put((byte) 13);
+            dst.put((byte) 10);
+
+            if (chunkDataSize != 0) {
+                // Rewind and put the chunk size in the buffer
+                dst.position(chunkStart);
+
+                if (chunkDataSize == -1) {
+                    putChunkSizeString(dst, 0);
+                } else {
+                    putChunkSizeString(dst, chunkDataSize);
+                }
+
+                dst.position(dst.position() + chunkDataSize + 2);
+                result = dst.position() - chunkStart;
+            } else {
+                // Nothing read on the wrapped channel. Try again later.
+            }
+        } else {
+            // Not enough space in the buffer to read a chunk. Try again later.
+        }
+
         return result;
     }
 }

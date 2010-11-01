@@ -497,7 +497,8 @@ public abstract class OutboundWay extends Way {
                     }
 
                     if (getActualMessage().getEntity().getSize() == Representation.UNKNOWN_SIZE) {
-                        setEntityChannel(new ReadableChunkingChannel(rbc));
+                        setEntityChannel(new ReadableChunkingChannel(rbc,
+                                getByteBuffer().capacity()));
                     } else {
                         setEntityChannel(new ReadableSizedChannel(rbc,
                                 getActualMessage().getEntity().getSize()));
