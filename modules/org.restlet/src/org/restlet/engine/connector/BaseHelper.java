@@ -111,7 +111,8 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>maxIoIdleTimeMs</td>
  * <td>int</td>
  * <td>30000</td>
- * <td>Maximum time to wait on an idle IO operation.</td>
+ * <td>Maximum time to wait on an idle IO operation. For an unlimited wait, use
+ * '0' as value.</td>
  * </tr>
  * <tr>
  * <td>maxThreadIdleTimeMs</td>
@@ -365,7 +366,7 @@ public abstract class BaseHelper<T extends Connector> extends
 
     /**
      * Returns the time for an idle IO connection to wait for an operation
-     * before being closed.
+     * before being closed. For an unlimited wait, use '0' as value.
      * 
      * @return The time for an idle IO connection to wait for an operation
      *         before being closed.

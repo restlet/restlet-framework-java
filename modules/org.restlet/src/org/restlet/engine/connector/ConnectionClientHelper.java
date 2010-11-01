@@ -59,7 +59,6 @@ import org.restlet.Response;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.io.IoState;
-import org.restlet.engine.io.IoUtils;
 
 /**
  * Base client helper based on NIO non blocking sockets. Here is the list of
@@ -664,10 +663,15 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
                 getController().wakeup();
 
                 // Await on the latch
-                if (!latch.await(IoUtils.IO_TIMEOUT, TimeUnit.MILLISECONDS)) {
-                    // Timeout detected
-                    response.setStatus(Status.CONNECTOR_ERROR_INTERNAL,
-                            "The calling thread timed out while waiting for a response to unblock it.");
+                if (getMaxIoIdleTimeMs() <= 0) {
+                    latch.await();
+                } else {
+                    if (!latch.await(getMaxIoIdleTimeMs(),
+                            TimeUnit.MILLISECONDS)) {
+                        // Timeout detected
+                        response.setStatus(Status.CONNECTOR_ERROR_INTERNAL,
+                                "The calling thread timed out while waiting for a response to unblock it.");
+                    }
                 }
             } else {
                 // Add the message to the outbound queue for processing

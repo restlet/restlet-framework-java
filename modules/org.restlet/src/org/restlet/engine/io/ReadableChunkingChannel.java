@@ -121,6 +121,7 @@ public class ReadableChunkingChannel extends
                 result = dst.position() - chunkStart;
             } else {
                 // Nothing read on the wrapped channel. Try again later.
+                dst.position(chunkStart);
             }
         } else {
             // Not enough space in the buffer to read a chunk. Try again later.
