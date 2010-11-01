@@ -46,7 +46,9 @@ Changes log
        - Updated Netty to version 3.2.2.
        - Optimized writing from NIO channels to BIO output streams.
        - Updated Simple to version 4.1.20.
-       - Added support of GWT 2.1.
+       - Added support of GWT 2.1. The behaviour of the log API 
+         introduced in GWT 2.1 may not work as expected according to 
+         the GWT documentation.
    
 - 2.0.1 (2010-09-08)
     - Bugs fixed
