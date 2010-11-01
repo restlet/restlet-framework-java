@@ -31,6 +31,7 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
@@ -42,8 +43,8 @@ import org.restlet.engine.http.header.HeaderUtils;
 import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.ReadableBufferedChannel;
 import org.restlet.engine.io.ReadableChunkedChannel;
-import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.engine.io.ReadableSizedChannel;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ReadableRepresentation;
@@ -101,9 +102,23 @@ public abstract class InboundWay extends Way {
         // Create the representation
         if ((contentLength != Representation.UNKNOWN_SIZE && contentLength != 0)
                 || chunkedEncoding || connectionClose) {
-            ReadableSelectionChannel inboundEntityChannel = getEntityChannel(
-                    contentLength, chunkedEncoding);
-            setEntityRegistration(inboundEntityChannel.getRegistration());
+            ReadableByteChannel inboundEntityChannel = null;
+
+            // Wraps the remaining bytes into a special buffer channel
+            ReadableBufferedChannel rbc = new ReadableBufferedChannel(this,
+                    getByteBuffer(), getConnection()
+                            .getReadableSelectionChannel());
+
+            if (chunkedEncoding) {
+                // Wrap the buffer channel to decode chunks
+                inboundEntityChannel = new ReadableChunkedChannel(rbc);
+            } else {
+                // Wrap the buffer channel to control its announced size
+                inboundEntityChannel = new ReadableSizedChannel(rbc,
+                        contentLength);
+            }
+
+            setEntityRegistration(rbc.getRegistration());
 
             if (inboundEntityChannel != null) {
                 result = new ReadableRepresentation(inboundEntityChannel, null,
@@ -153,34 +168,6 @@ public abstract class InboundWay extends Way {
      */
     protected int getBuilderIndex() {
         return builderIndex;
-    }
-
-    /**
-     * Returns the inbound message entity channel if it exists.
-     * 
-     * @param size
-     *            The expected entity size or -1 if unknown.
-     * @param chunked
-     *            True if the entity is chunk encoded.
-     * @return The inbound message entity channel if it exists.
-     */
-    protected ReadableSelectionChannel getEntityChannel(long size,
-            boolean chunked) {
-        ReadableSelectionChannel result = null;
-
-        if (chunked) {
-            // Wraps the remaining bytes into a special entity channel
-            // that will read and decode entity chunks
-            result = new ReadableChunkedChannel(this, getByteBuffer(),
-                    getConnection().getReadableSelectionChannel());
-        } else {
-            // Wraps the remaining bytes into a special entity channel
-            // that will limit the entity to its announced size
-            result = new ReadableSizedChannel(this, getByteBuffer(),
-                    getConnection().getReadableSelectionChannel(), size);
-        }
-
-        return result;
     }
 
     /**

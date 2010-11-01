@@ -54,6 +54,12 @@ public class ReadableBufferedChannel extends
     /** The byte buffer remaining from previous read processing. */
     private final ByteBuffer byteBuffer;
 
+    /** The line builder to parse chunk size or trailer. */
+    private final StringBuilder lineBuilder;
+
+    /** The line builder state. */
+    private volatile BufferState lineBuilderState;
+
     /**
      * Constructor.
      * 
@@ -71,6 +77,54 @@ public class ReadableBufferedChannel extends
         this.completionListener = completionListener;
         this.byteBuffer = remainingBuffer;
         this.byteBufferState = BufferState.DRAINING;
+        this.lineBuilder = new StringBuilder();
+        this.lineBuilderState = BufferState.IDLE;
+    }
+
+    /**
+     * Clears the line builder and adjust its state.
+     */
+    protected void clearLineBuilder() {
+        getLineBuilder().delete(0, getLineBuilder().length());
+        setLineBuilderState(BufferState.IDLE);
+    }
+
+    /**
+     * Read the current line builder (start line or header line).
+     * 
+     * @return True if the message line was fully read.
+     * @throws IOException
+     */
+    protected boolean fillLineBuilder() throws IOException {
+        boolean result = false;
+
+        if (getLineBuilderState() != BufferState.DRAINING) {
+            int byteBufferSize = 0;
+
+            if (getByteBufferState() == BufferState.DRAINING) {
+                byteBufferSize = getByteBuffer().remaining();
+            }
+
+            if (byteBufferSize == 0) {
+                setByteBufferState(BufferState.FILLING);
+                getByteBuffer().clear();
+
+                if (refill()) {
+                    byteBufferSize = getByteBuffer().remaining();
+                }
+            }
+
+            if (byteBufferSize > 0) {
+                // Some bytes are available, fill the line builder
+                setLineBuilderState(NioUtils.fillLine(getLineBuilder(),
+                        getLineBuilderState(), getByteBuffer()));
+                return getLineBuilderState() == BufferState.DRAINING;
+            }
+        } else {
+            result = true;
+        }
+
+        return result;
     }
 
     /**
@@ -101,13 +155,31 @@ public class ReadableBufferedChannel extends
     }
 
     /**
+     * Returns the line builder to parse chunk size or trailer.
+     * 
+     * @return The line builder to parse chunk size or trailer.
+     */
+    protected StringBuilder getLineBuilder() {
+        return lineBuilder;
+    }
+
+    /**
+     * Returns the line builder state.
+     * 
+     * @return The line builder state.
+     */
+    protected BufferState getLineBuilderState() {
+        return lineBuilderState;
+    }
+
+    /**
      * Post-read callback that calls {@link CompletionListener#onCompleted()} if
      * the end has been reached.
      * 
      * @param length
      */
     protected void postRead(int length) {
-        if (length == -1) {
+        if ((length == -1) && (getCompletionListener() != null)) {
             getCompletionListener().onCompleted();
         }
     }
@@ -194,5 +266,15 @@ public class ReadableBufferedChannel extends
      */
     protected void setByteBufferState(BufferState bufferState) {
         this.byteBufferState = bufferState;
+    }
+
+    /**
+     * Sets the line builder state.
+     * 
+     * @param lineBuilderState
+     *            The line builder state.
+     */
+    protected void setLineBuilderState(BufferState lineBuilderState) {
+        this.lineBuilderState = lineBuilderState;
     }
 }

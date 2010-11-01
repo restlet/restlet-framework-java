@@ -77,6 +77,15 @@ public class WrapperSelectionChannel<T extends SelectionChannel> extends
     }
 
     /**
+     * Indicates if the wrapped channel is blocking.
+     * 
+     * @return True if the wrapped channel is blocking.
+     */
+    public boolean isBlocking() {
+        return getWrappedChannel().isBlocking();
+    }
+
+    /**
      * Sets the NIO registration.
      * 
      * @param registration

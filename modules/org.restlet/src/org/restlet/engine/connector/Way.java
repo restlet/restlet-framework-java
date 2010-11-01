@@ -273,7 +273,8 @@ public abstract class Way implements SelectionListener, CompletionListener {
      */
     protected boolean isProcessing() {
         return (getIoState() == IoState.PROCESSING)
-                && (getMessageState() != MessageState.IDLE);
+                && (getMessageState() != MessageState.IDLE)
+                && (getMessageState() != MessageState.END);
     }
 
     /**

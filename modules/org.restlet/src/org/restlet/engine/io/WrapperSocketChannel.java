@@ -68,4 +68,13 @@ public class WrapperSocketChannel extends WrapperChannel<SocketChannel>
         return registration;
     }
 
+    /**
+     * Indicates if the channel is blocking.
+     * 
+     * @return True if the channel is blocking.
+     */
+    public boolean isBlocking() {
+        return getWrappedChannel().isBlocking();
+    }
+
 }

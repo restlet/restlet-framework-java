@@ -33,32 +33,25 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
-import java.util.logging.Level;
-
-import org.restlet.Context;
 
 // [excludes gwt]
 /**
- * Readable byte channel enforcing a maximum size.
+ * Readable byte channel capable of encoding chunked entities.
  */
-public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
-        implements ReadableByteChannel {
-
-    /** The total available size that should be read from the source channel. */
-    private volatile long availableSize;
+public class ReadableChunkingChannel extends
+        WrapperChannel<ReadableByteChannel> implements ReadableByteChannel {
 
     /**
      * Constructor.
      * 
      * @param source
      *            The source channel.
-     * @param availableSize
+     * @param remainingChunkSize
      *            The total available size that can be read from the source
      *            channel.
      */
-    public ReadableSizedChannel(ReadableByteChannel source, long availableSize) {
+    public ReadableChunkingChannel(ReadableByteChannel source) {
         super(source);
-        this.availableSize = availableSize;
     }
 
     /**
@@ -71,34 +64,7 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
      *         been reached.
      */
     public int read(ByteBuffer dst) throws IOException {
-        int result = -1;
-
-        if (this.availableSize > 0) {
-            if (this.availableSize < dst.remaining()) {
-                dst.limit((int) (this.availableSize + dst.position()));
-            }
-
-            result = getWrappedChannel().read(dst);
-        }
-
-        if (result > 0) {
-            this.availableSize -= result;
-
-            if (Context.getCurrentLogger().isLoggable(Level.INFO)) {
-                Context.getCurrentLogger().info(
-                        "Bytes read / available : " + result + " / "
-                                + this.availableSize);
-            }
-
-            if (this.availableSize == 0) {
-                Context.getCurrentLogger().info("Channel fully read.");
-            }
-        }
-
-        if (getWrappedChannel() instanceof ReadableBufferedChannel) {
-            ((ReadableBufferedChannel) getWrappedChannel()).postRead(result);
-        }
-
+        int result = 0;
         return result;
     }
 }

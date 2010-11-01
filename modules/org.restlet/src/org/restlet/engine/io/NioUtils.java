@@ -30,6 +30,7 @@
 
 package org.restlet.engine.io;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -178,7 +179,15 @@ public class NioUtils {
      * @return A readable byte channel.
      */
     public static ReadableByteChannel getChannel(InputStream inputStream) {
-        return (inputStream != null) ? Channels.newChannel(inputStream) : null;
+        ReadableByteChannel result = null;
+
+        if (inputStream instanceof FileInputStream) {
+            result = ((FileInputStream) inputStream).getChannel();
+        } else if (inputStream != null) {
+            result = new InputStreamChannel(inputStream);
+        }
+
+        return result;
     }
 
     /**

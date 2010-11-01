@@ -32,6 +32,7 @@ package org.restlet.engine.io;
 
 import java.nio.channels.ReadableByteChannel;
 
+
 /**
  * Readable byte channel that is based on a selectable channel.
  * 

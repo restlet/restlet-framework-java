@@ -39,7 +39,7 @@ import org.restlet.util.SelectionRegistration;
  * 
  * @author Jerome Louvel
  */
-public interface SelectionChannel extends Channel {
+public interface SelectionChannel extends Channel, BlockableChannel {
 
     /**
      * Returns the NIO registration.

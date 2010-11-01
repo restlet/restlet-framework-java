@@ -28,22 +28,22 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.connector;
+package org.restlet.engine.io;
+
+import java.nio.channels.Channel;
 
 /**
- * Enumeration of entity IO types.
+ * NIO channel that can indicate if it is blocking or non blocking.
  * 
  * @author Jerome Louvel
  */
-public enum EntityType {
+public interface BlockableChannel extends Channel {
 
-    /** NIO blocking byte channel. */
-    BLOCKING,
-
-    /** NIO non-blocking byte channel. */
-    NON_BLOCKING,
-
-    /** NIO transferable file channel. */
-    TRANSFERABLE;
+    /**
+     * Indicates if the channel is likely to block upon IO operations.
+     * 
+     * @return True if the channel is likely to block upon IO operations.
+     */
+    public boolean isBlocking();
 
 }

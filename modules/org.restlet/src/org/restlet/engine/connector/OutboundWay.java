@@ -31,8 +31,6 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectableChannel;
@@ -47,11 +45,12 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.io.BlockableChannel;
 import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.IoState;
+import org.restlet.engine.io.ReadableChunkingChannel;
+import org.restlet.engine.io.ReadableSizedChannel;
 import org.restlet.engine.util.StringUtils;
-import org.restlet.representation.FileRepresentation;
-import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.util.SelectionRegistration;
 import org.restlet.util.Series;
@@ -81,17 +80,14 @@ public abstract class OutboundWay extends Way {
     /** The entity as a NIO readable byte channel. */
     private volatile ReadableByteChannel entityChannel;
 
+    /** The type of the entity channel. */
+    private volatile EntityType entityChannelType;
+
     /**
      * The entity's NIO selection key holding the link between the entity to be
      * written and the way.
      */
-    private volatile SelectionKey entityKey;
-
-    /** The entity as a BIO input stream. */
-    private volatile InputStream entityStream;
-
-    /** The entity type. */
-    private volatile EntityType entityType;
+    private volatile SelectionKey entitySelectionKey;
 
     /** The header index. */
     private volatile int headerIndex;
@@ -104,9 +100,7 @@ public abstract class OutboundWay extends Way {
     public OutboundWay(Connection<?> connection) {
         super(connection, connection.getHelper().getOutboundBufferSize());
         this.entityChannel = null;
-        this.entityKey = null;
-        this.entityStream = null;
-        this.entityType = null;
+        this.entitySelectionKey = null;
         this.headerIndex = 0;
     }
 
@@ -152,9 +146,7 @@ public abstract class OutboundWay extends Way {
     public void clear() {
         super.clear();
         this.entityChannel = null;
-        this.entityKey = null;
-        this.entityStream = null;
-        this.entityType = null;
+        this.entitySelectionKey = null;
         this.headerIndex = 0;
     }
 
@@ -169,8 +161,8 @@ public abstract class OutboundWay extends Way {
             int bytesWritten = getConnection().getWritableSelectionChannel()
                     .write(getByteBuffer());
 
-            if (getLogger().isLoggable(Level.FINE)) {
-                getLogger().fine("Bytes written: " + bytesWritten);
+            if (getLogger().isLoggable(Level.INFO)) {
+                getLogger().info("Bytes written: " + bytesWritten);
             }
 
             if (bytesWritten == 0) {
@@ -201,60 +193,14 @@ public abstract class OutboundWay extends Way {
      * @throws IOException
      */
     protected void fillByteBuffer() throws IOException {
-        while (isProcessing() && getByteBuffer().hasRemaining()
-                && (getMessageState() != MessageState.END)) {
+        while (isProcessing() && getByteBuffer().hasRemaining()) {
             if (getMessageState() == MessageState.BODY) {
-                int result = 0;
+                int result = getEntityChannel().read(getByteBuffer());
 
-                // Writing the body doesn't rely on the line builder
-                switch (getEntityType()) {
-                case ASYNC_CHANNEL:
-                case FILE_CHANNEL:
-                case SYNC_CHANNEL:
-                    result = getEntityChannel().read(getByteBuffer());
-
-                    // Detect end of entity reached
-                    if (result == -1) {
-                        setMessageState(MessageState.END);
-                    }
-                    break;
-
-                case STREAM:
-                    int available = getEntityStream().available();
-
-                    if (getByteBuffer().hasArray() && (available > 0)) {
-                        byte[] byteArray = getByteBuffer().array();
-
-                        // Non-blocking read guaranteed
-                        result = getEntityStream()
-                                .read(byteArray,
-                                        getByteBuffer().position(),
-                                        Math.min(available, getByteBuffer()
-                                                .remaining()));
-
-                        if (result > 0) {
-                            getByteBuffer().position(
-                                    getByteBuffer().position() + result);
-                        } else if (result == -1) {
-                            getByteBuffer().position(
-                                    getByteBuffer().position() + available);
-                        }
-
-                        // Detect end of entity reached
-                        if (result == -1) {
-                            setMessageState(MessageState.END);
-                        }
-                    } else {
-                        ReadableByteChannel rbc = Channels
-                                .newChannel(getEntityStream());
-                        result = rbc.read(getByteBuffer());
-
-                        // Detect end of entity reached
-                        if (result == -1) {
-                            setMessageState(MessageState.END);
-                        }
-                    }
-                    break;
+                // Detect end of entity reached
+                if (result == -1) {
+                    setMessageState(MessageState.END);
+                    onCompleted();
                 }
             } else {
                 // Write the start line or the headers,
@@ -305,6 +251,15 @@ public abstract class OutboundWay extends Way {
     }
 
     /**
+     * Returns the type of the entity channel.
+     * 
+     * @return The type of the entity channel.
+     */
+    protected EntityType getEntityChannelType() {
+        return entityChannelType;
+    }
+
+    /**
      * Returns the entity as a NIO file channel.
      * 
      * @return The entity as a NIO file channel.
@@ -329,16 +284,6 @@ public abstract class OutboundWay extends Way {
     }
 
     /**
-     * Returns the entity's NIO selection key holding the link between the
-     * entity to be written and the way.
-     * 
-     * @return The entity's NIO selection key.
-     */
-    public SelectionKey getEntityKey() {
-        return entityKey;
-    }
-
-    /**
      * Returns the entity as a NIO non-blocking selectable channel.
      * 
      * @return The entity as a NIO non-blocking selectable channel.
@@ -348,21 +293,13 @@ public abstract class OutboundWay extends Way {
     }
 
     /**
-     * Returns the entity as a BIO input stream.
+     * Returns the entity's NIO selection key holding the link between the
+     * entity to be written and the way.
      * 
-     * @return The entity as a BIO input stream.
+     * @return The entity's NIO selection key.
      */
-    public InputStream getEntityStream() {
-        return entityStream;
-    }
-
-    /**
-     * Returns the entity type.
-     * 
-     * @return The entity type.
-     */
-    public EntityType getEntityType() {
-        return entityType;
+    public SelectionKey getEntitySelectionKey() {
+        return entitySelectionKey;
     }
 
     /**
@@ -441,34 +378,24 @@ public abstract class OutboundWay extends Way {
     }
 
     /**
+     * Sets the type of the entity channel.
+     * 
+     * @param entityChannelType
+     *            The type of the entity channel.
+     */
+    protected void setEntityChannelType(EntityType entityChannelType) {
+        this.entityChannelType = entityChannelType;
+    }
+
+    /**
      * Sets the entity's NIO selection key holding the link between the entity
      * to be written and the way.
      * 
      * @param entityKey
      *            The entity's NIO selection key.
      */
-    public void setEntityKey(SelectionKey entityKey) {
-        this.entityKey = entityKey;
-    }
-
-    /**
-     * Sets the entity as a BIO input stream.
-     * 
-     * @param entityStream
-     *            The entity as a BIO input stream.
-     */
-    public void setEntityStream(InputStream entityStream) {
-        this.entityStream = entityStream;
-    }
-
-    /**
-     * Sets the entity type.
-     * 
-     * @param entityType
-     *            The entity type.
-     */
-    public void setEntityType(EntityType entityType) {
-        this.entityType = entityType;
+    public void setEntitySelectionKey(SelectionKey entityKey) {
+        this.entitySelectionKey = entityKey;
     }
 
     /**
@@ -544,30 +471,38 @@ public abstract class OutboundWay extends Way {
                 // Prepare entity writing if available
                 if (getActualMessage().isEntityAvailable()) {
                     setMessageState(MessageState.BODY);
+                    ReadableByteChannel rbc = getActualMessage().getEntity()
+                            .getChannel();
 
-                    if (getActualMessage().getEntity() instanceof FileRepresentation) {
-                        FileRepresentation fr = (FileRepresentation) getActualMessage()
-                                .getEntity();
-                        setEntityChannel(fr.getChannel());
-                        setEntityType(EntityType.FILE_CHANNEL);
-                    } else if (getActualMessage().getEntity() instanceof ReadableRepresentation) {
-                        ReadableRepresentation rr = (ReadableRepresentation) getActualMessage()
-                                .getEntity();
-                        setEntityChannel(rr.getChannel());
-                        setEntityType(EntityType.SYNC_CHANNEL);
+                    if (rbc instanceof FileChannel) {
+                        setEntityChannelType(EntityType.TRANSFERABLE);
+                    } else if (rbc instanceof BlockableChannel) {
+                        BlockableChannel bc = (BlockableChannel) rbc;
 
-                        if (getEntityChannel() instanceof SelectableChannel) {
-                            SelectableChannel sc = (SelectableChannel) getEntityChannel();
+                        if (bc.isBlocking()) {
+                            setEntityChannelType(EntityType.BLOCKING);
+                        } else {
+                            setEntityChannelType(EntityType.NON_BLOCKING);
+                        }
+                    } else if (rbc instanceof SelectableChannel) {
+                        SelectableChannel sc = (SelectableChannel) rbc;
 
-                            if (!sc.isBlocking()) {
-                                setEntityType(EntityType.ASYNC_CHANNEL);
-                            }
+                        if (sc.isBlocking()) {
+                            setEntityChannelType(EntityType.BLOCKING);
+                        } else {
+                            setEntityChannelType(EntityType.NON_BLOCKING);
                         }
                     } else {
-                        setEntityStream(getActualMessage().getEntity()
-                                .getStream());
-                        setEntityType(EntityType.STREAM);
+                        setEntityChannelType(EntityType.BLOCKING);
                     }
+
+                    if (getActualMessage().getEntity().getSize() == Representation.UNKNOWN_SIZE) {
+                        setEntityChannel(new ReadableChunkingChannel(rbc));
+                    } else {
+                        setEntityChannel(new ReadableSizedChannel(rbc,
+                                getActualMessage().getEntity().getSize()));
+                    }
+
                 } else {
                     setMessageState(MessageState.END);
                 }
