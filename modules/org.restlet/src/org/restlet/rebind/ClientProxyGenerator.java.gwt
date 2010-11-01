@@ -808,7 +808,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
         c = TypeSerializerCreator.class.getDeclaredConstructor(
                 TreeLogger.class, SerializableTypeOracle.class,
                 SerializableTypeOracle.class, GeneratorContext.class,
-                String.class);
+                String.class, String.class);
         result = c.newInstance(getLogger(), getSto(), getSto(), getContext(),
                 getTypeSerializerQualifiedName(getClassType()),
                 getTypeSerializerSimpleName(getClassType()));
