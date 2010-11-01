@@ -61,19 +61,43 @@ public class Logger {
         return new Logger(name, resourceBundleName);
     }
 
+    private Level level;
+
     private String name;
+
+    private Logger parent;
+
+    private boolean useParentHandlers;
 
     @SuppressWarnings("unused")
     private String resourceBundleName;
 
     public Logger() {
         super();
+        this.level = Level.INFO;
+        this.useParentHandlers = false;
     }
 
     protected Logger(String name, String resourceBundleName) {
         this();
         this.name = name;
         this.resourceBundleName = resourceBundleName;
+    }
+
+    public Level getLevel() {
+        return this.level;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public Logger getParent() {
+        return this.parent;
+    }
+
+    public boolean getUseParentHandlers() {
+        return useParentHandlers;
     }
 
     public void fine(String msg) {
@@ -100,6 +124,12 @@ public class Logger {
         log(level, msg, null);
     }
 
+    public void log(LogRecord record) {
+        if(record != null && record.getLevel()!=null){
+            log(record.getLevel(), record.getMessage());
+        }
+    }
+
     public void log(Level level, String msg, Throwable thrown) {
         if (level.hashCode() > Level.WARNING.hashCode()) {
             log(System.err, level, msg, thrown);
@@ -122,6 +152,22 @@ public class Logger {
 
     public void severe(String msg) {
         log(Level.SEVERE, msg);
+    }
+
+    public void setLevel(Level newLevel) {
+        this.level = newLevel;
+    }
+
+    public void setParent(Logger newParent) {
+        this.parent = newParent;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setUseParentHandlers(boolean newUseParentHandlers) {
+        this.useParentHandlers = newUseParentHandlers;
     }
 
     public void warning(String msg) {

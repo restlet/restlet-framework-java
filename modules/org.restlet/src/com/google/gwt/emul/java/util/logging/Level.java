@@ -56,6 +56,57 @@ public class Level {
 
     public static final Level WARNING = new Level("WARNING", 900);
 
+    public static synchronized Level parse(String name) throws IllegalArgumentException {
+	// Check the name
+        if ("OFF".equals(name)) {
+            return OFF;
+        } else if("SEVERE".equals(name)) {
+            return SEVERE;
+        } else if("WARNING".equals(name)) {
+            return WARNING;
+        } else if("INFO".equals(name)) {
+            return INFO;
+        } else if("FINEST".equals(name)) {
+            return FINEST;
+        } else if("FINER".equals(name)) {
+            return FINER;
+        } else if("FINE".equals(name)) {
+            return FINE;
+        } else if("CONFIG".equals(name)) {
+            return CONFIG;
+        } else if("ALL".equals(name)) {
+            return ALL;
+        }
+
+        // Could be an integer
+        try {
+            int x = Integer.parseInt(name);
+            if (x == Integer.MAX_VALUE) {
+                return OFF;
+            } else if(x == 1000) {
+                return SEVERE;
+            } else if(x == 900) {
+                return WARNING;
+            } else if(x == 800) {
+                return INFO;
+            } else if(x == 300) {
+                return FINEST;
+            } else if(x == 400) {
+                return FINER;
+            } else if(x == 500) {
+                return FINE;
+            } else if(x == 700) {
+                return CONFIG;
+            } else if(x == Integer.MIN_VALUE) {
+                return ALL;
+            }
+            return new Level(name, x);
+        } catch (NumberFormatException ex) {
+        }
+        // OK, we've tried everything and failed
+        throw new IllegalArgumentException("Bad level \"" + name + "\"");
+    }
+
     private String name;
 
     private int value;
@@ -81,5 +132,8 @@ public class Level {
     public int hashCode() {
         return this.value;
     }
-    
+
+    public int intValue() {
+	return value;
+    }    
 }
