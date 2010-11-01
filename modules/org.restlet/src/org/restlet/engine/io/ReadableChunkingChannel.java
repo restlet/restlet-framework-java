@@ -44,6 +44,7 @@ public class ReadableChunkingChannel extends
     /** The constant chunk part containing the size of the chunk data. */
     private final int chunkSizeLength;
 
+    /** Indicates if the last chunk has already been written. */
     private boolean lastChunkWritten;
 
     /**

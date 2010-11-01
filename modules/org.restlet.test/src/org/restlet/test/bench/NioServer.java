@@ -27,7 +27,7 @@ public class NioServer {
 
         // Create and start a connector instance
         Server server = new Server(new Context(), Protocol.HTTP, 9999);
-        server.getContext().getParameters().add("tracing", "true");
+        server.getContext().getParameters().add("tracing", "false");
         server.getContext().getParameters().add("minThreads", "1");
         server.getContext().getParameters().add("lowThreads", "30");
         server.getContext().getParameters().add("maxThreads", "40");
