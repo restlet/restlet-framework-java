@@ -5,18 +5,18 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-	   - Fixed bug in Netty HTTPS connector preventing the handling
-	     of several connections, persistent connections and chunked
+       - Fixed bug in Netty HTTPS connector preventing the handling
+         of several connections, persistent connections and chunked
          encoding. Reported by Laurent Rustuel.
-	   - Fixed issue with Netty when an unknown parameter was passed.
-	   - Fixed content negotiation issues with methods accepting 
+       - Fixed issue with Netty when an unknown parameter was passed.
+       - Fixed content negotiation issues with methods accepting 
          Representation parameters or returning Representation 
          instances. Reported by Dustin Jenkins.
        - Fixed potential thread blocks due to CountDownLatch.await()
          calls. They now properly time out. Suggested by Tim Peierls.
-	   - Fixed initialization of the ClientInfo#userAgentTemplates 
+       - Fixed initialization of the ClientInfo#userAgentTemplates 
          static variable. Reported by Michael Terrington.
-	   - Fixed the Content-length header sent by HEAD responses.
+       - Fixed the Content-length header sent by HEAD responses.
          Reported by Nicolas Rinaudo.
        - Fix bug with automatic redirects by Directory when the URI
          contains query parameters. Reported by William Pietri.
@@ -27,7 +27,7 @@ Changes log
        - Fixed bug when using the internal client in Sun Applet Viewer.
          Reported by Darin Jackson.
        - Fixed bug when an URI was included in the URI query or 
-	     fragment.
+         fragment.
        - Fixed the deserialization of Java objects when using the 
          internal client or server connectors. The final and empty 
          chunk was not read. Reported by Rob Kooper.
@@ -42,11 +42,12 @@ Changes log
     - Misc
        - Additional errors are now caught and logged in the HTTP 
          servers. Contributed by Marc Portier.
-	   - Updated Jetty to version 7.1.6. Suggested by Marc Portier.
-	   - Updated Netty to version 3.2.2.
-	   - Optimized writing from NIO channels to BIO output streams.
-	   - Updated Simple to version 4.1.20.
-	   
+       - Updated Jetty to version 7.1.6. Suggested by Marc Portier.
+       - Updated Netty to version 3.2.2.
+       - Optimized writing from NIO channels to BIO output streams.
+       - Updated Simple to version 4.1.20.
+       - Added support of GWT 2.1.
+   
 - 2.0.1 (2010-09-08)
     - Bugs fixed
        - When cloning the prototype request, the ClientResource wasn't
@@ -399,38 +400,38 @@ Changes log
       - Added ServletUtils class to the Servlet extension with two
         methods to easily retrieve the Servlet request/response.
     - Bugs fixed
-        - Fixed HeaderReader#addValues method.
-          Reported by Carsten Lohmann. 
-        - Fixed the resolver hash model provided by the Freemarker 
-          extension when underlying resolvers return TemplateModel 
-          values and allowed access to Freemarker configuration shared 
-          variables. Reported by sirthias.
-        - Fixed the StringWriter implementation for the GWT edition.
-          Reported by Kelly McLaughlin.
-        - Fixed potential bug with ATOM mappings (customizable feeds 
-          feature). Reported by Thomas Conté.
-        - Fixed generation of HTML representations for WADL resources.
-          Reported by Carsten Lohmann.
-        - Fixed formatting of Date instances for the GWT edition.
-          Reported by Kelly McLaughlin.
-        - Fixed support of latin1 characters in credentials for 
-          the HTTP_BASIC scheme.
-        - ResourceException caught by UniformResource where not setting
-          the response status properly, always using a 500 status code.
-          Reported by Tal Liron.
-        - Fixed issues with local conversions using RIAP for example.
-          Now, the object converters (default, JAXB, JiBX, XStream, 
-          Jackson and GWT) know about to retrieve the wrapped local
-          object without serializing/deserializing it.
-          Reported by Valdis Rigdon.
-        - Fixed support of latin1 characters in writing headers.
-        - Internal client connector was always pipelining requests.
-        - Fixed support of generic types and arrays for the GWT edition.
-        - Fixed handling of Cookies. Reported by Rob Heittman.
-        - Fixed potential NPE in DimensionReader class.
-          Reported and contributed by Rob Heittman.
-        - Fixed parsing of multi valued "www-authenticate" headers.
-        - Fixed redirecting the internal server connector to file URIs.
+      - Fixed HeaderReader#addValues method.
+        Reported by Carsten Lohmann. 
+      - Fixed the resolver hash model provided by the Freemarker 
+        extension when underlying resolvers return TemplateModel 
+        values and allowed access to Freemarker configuration shared 
+        variables. Reported by sirthias.
+      - Fixed the StringWriter implementation for the GWT edition.
+        Reported by Kelly McLaughlin.
+      - Fixed potential bug with ATOM mappings (customizable feeds 
+        feature). Reported by Thomas Conté.
+      - Fixed generation of HTML representations for WADL resources.
+        Reported by Carsten Lohmann.
+      - Fixed formatting of Date instances for the GWT edition.
+        Reported by Kelly McLaughlin.
+      - Fixed support of latin1 characters in credentials for 
+        the HTTP_BASIC scheme.
+      - ResourceException caught by UniformResource where not setting
+        the response status properly, always using a 500 status code.
+        Reported by Tal Liron.
+      - Fixed issues with local conversions using RIAP for example.
+        Now, the object converters (default, JAXB, JiBX, XStream, 
+        Jackson and GWT) know about to retrieve the wrapped local
+        object without serializing/deserializing it.
+        Reported by Valdis Rigdon.
+      - Fixed support of latin1 characters in writing headers.
+      - Internal client connector was always pipelining requests.
+      - Fixed support of generic types and arrays for the GWT edition.
+      - Fixed handling of Cookies. Reported by Rob Heittman.
+      - Fixed potential NPE in DimensionReader class.
+        Reported and contributed by Rob Heittman.
+      - Fixed parsing of multi valued "www-authenticate" headers.
+      - Fixed redirecting the internal server connector to file URIs.
     - Misc
         - Updated Simple framework library to version 4.1.20.
                 
@@ -706,10 +707,10 @@ Changes log
         - Added Service#context property.
         - Added Component(String) constructor for XML configuration.
         - Completed XML configuration XSD scheme to match more of Restlet API.
-        - Added LogService#logPropertiesRef to easily read log properties from 
-		  a URI at start time.
-		- Added setDefaultAttachment() method to SpringHost and SpringRouter.
-		- Updated component configuration parsing logic.
+        - Added LogService#logPropertiesRef to easily read log properties from
+          a URI at start time.
+        - Added setDefaultAttachment() method to SpringHost and SpringRouter.
+        - Updated component configuration parsing logic.
     - Bugs fixed
         - Fixed issue in DomRepresentation with createTransformer()
           method. Fix contributed by Remi Dewitte. 
@@ -1710,7 +1711,7 @@ Changes log
           by a more explicit "forwardedAddresses" property. Also, added
           a new getUpstreamAddress() method. Adjusted the Resolver 
           class to add a new "ciua" variable. Change suggested by 
-          John D. Mitchell. Initial patch provided by Remi Dewitte. 	
+          John D. Mitchell. Initial patch provided by Remi Dewitte.
         - Added ClientInfo#subject property returning a JAAS Subject.
           Can contain several principals and credentials. Deprecated 
           the ChallengeResponse#getPrincipal() method.
@@ -1731,12 +1732,12 @@ Changes log
           order to customize the default behavior. 
           Suggested by Cliff Binstock.
         - Upgraded db4o to version 7.7.67.
-		- Refactored engine support for the StatusService. Removed
-		  ApplicationStatusFilter and ComponentStatusFilter.
-		- Extracted all internal classes of ByteUtils into the new
-		  org.restlet.engine.io package for easier reuse and 
-		  maintenance.
-		- Clarified Javadocs in Reference#getPath() methods.
+        - Refactored engine support for the StatusService. Removed
+          ApplicationStatusFilter and ComponentStatusFilter.
+        - Extracted all internal classes of ByteUtils into the new
+          org.restlet.engine.io package for easier reuse and 
+          maintenance.
+        - Clarified Javadocs in Reference#getPath() methods.
         - Fixed potential NPE in Reference#decode() method.
         - Clarified Javadocs in FileRepresentation and methods 
           Representation#getDownloadName(), setDownloadName() in order
@@ -1750,6 +1751,6 @@ Changes log
           to prevent issues with Tomcat 5.0 and "Content-Length: 0" 
           headers sending the response immediately. 
           Reported by Eirik Bjorsnos. 
-		- The internal HTTP client no longer forces the user agent name
-		  if one has already been specified by the user. Contributed by
-		  Kevin Conaway.
+        - The internal HTTP client no longer forces the user agent name
+          if one has already been specified by the user. Contributed by
+          Kevin Conaway.
