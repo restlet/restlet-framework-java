@@ -35,27 +35,28 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 
-import org.restlet.client.Client;
-import org.restlet.client.Request;
-import org.restlet.client.Response;
-import org.restlet.client.Uniform;
-import org.restlet.client.data.Form;
-import org.restlet.client.data.MediaType;
-import org.restlet.client.data.Method;
-import org.restlet.client.data.Protocol;
-import org.restlet.client.engine.resource.GwtClientProxy;
-import org.restlet.client.representation.ObjectRepresentation;
-import org.restlet.client.representation.Representation;
-import org.restlet.client.resource.ClientProxy;
-import org.restlet.client.resource.Delete;
-import org.restlet.client.resource.Get;
-import org.restlet.client.resource.Post;
-import org.restlet.client.resource.Put;
-import org.restlet.client.resource.ResourceException;
-import org.restlet.client.resource.Result;
+import org.restlet.Client;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Uniform;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Protocol;
+import org.restlet.engine.resource.GwtClientProxy;
+import org.restlet.representation.ObjectRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientProxy;
+import org.restlet.resource.Delete;
+import org.restlet.resource.Get;
+import org.restlet.resource.Post;
+import org.restlet.resource.Put;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Result;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.ext.GeneratorContext;
@@ -594,7 +595,33 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             // Log serialization information
             OutputStream los = getContext().tryCreateResource(getLogger(),
                     getClassType().getQualifiedSourceName() + ".restlet.log");
-            getStob().setLogOutputStream(los);
+            java.lang.reflect.Method setLogOs = null;
+            Object setLogOsParameter = null;
+            try {
+                setLogOs = getStob().getClass().getDeclaredMethod(
+                        "setLogOutputStream", OutputStream.class);
+                setLogOsParameter = los;
+            } catch (SecurityException e1) {
+            } catch (NoSuchMethodException e) {
+                try {
+                    setLogOs = getStob().getClass().getDeclaredMethod(
+                            "setLogOutputWriter", PrintWriter.class);
+                    setLogOsParameter = new PrintWriter(los);
+                } catch (SecurityException e1) {
+                } catch (NoSuchMethodException e1) {
+                }
+            }
+            if (setLogOs != null) {
+                try {
+                    setLogOs.invoke(getStob(), setLogOsParameter);
+                } catch (Throwable e) {
+                    getLogger().log(Type.WARN,
+                            "Cannot set the log writer " + setLogOs.getName());
+                }
+            } else {
+                getLogger().log(Type.WARN,
+                        "Cannot set the log writer for the compilation phase.");
+            }
             this.sto = getStob().build(getLogger());
 
             if (los != null) {
@@ -608,8 +635,12 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 try {
                     tsc = getTypeSerializerCreatorGwt2_0();
                 } catch (Exception e2) {
-                    getLogger().log(TreeLogger.ERROR, "", e2);
-                    throw new UnableToCompleteException();
+                    try {
+                        tsc = getTypeSerializerCreatorGwt2_1();
+                    } catch (Exception e3) {
+                        getLogger().log(TreeLogger.ERROR, "", e3);
+                        throw new UnableToCompleteException();
+                    }
                 }
             }
             if (tsc != null) {
@@ -763,6 +794,29 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
     }
 
     /**
+     * Instantiates a TypeSerializerCreator instance using the GWT2.1
+     * constructor.
+     * 
+     * @return An instance of a TypeSerializerCreator.
+     * @throws Exception
+     */
+    private TypeSerializerCreator getTypeSerializerCreatorGwt2_1()
+            throws Exception {
+        TypeSerializerCreator result = null;
+
+        Constructor<TypeSerializerCreator> c = null;
+        c = TypeSerializerCreator.class.getDeclaredConstructor(
+                TreeLogger.class, SerializableTypeOracle.class,
+                SerializableTypeOracle.class, GeneratorContext.class,
+                String.class);
+        result = c.newInstance(getLogger(), getSto(), getSto(), getContext(),
+                getTypeSerializerQualifiedName(getClassType()),
+                getTypeSerializerSimpleName(getClassType()));
+
+        return result;
+    }
+
+    /**
      * Returns the qualified name of the given type serializer.
      * 
      * @param type
@@ -779,6 +833,24 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
         if (packageName != null && packageName.length() > 0) {
             sb.append(packageName).append(".");
         }
+        // Add the class name
+        String className = classOrInterface.getName();
+        className = className.replace('.', '_');
+        sb.append(className).append("_TypeSerializer");
+        return sb.toString();
+    }
+
+    /**
+     * Returns the simple name of the given type serializer.
+     * 
+     * @param type
+     *            The type serializer's type object.
+     * @return The simple name of the given type serializer.
+     */
+    private String getTypeSerializerSimpleName(JClassType type) {
+        StringBuilder sb = new StringBuilder();
+        JType leafType = type.getLeafType();
+        JClassType classOrInterface = leafType.isClassOrInterface();
         // Add the class name
         String className = classOrInterface.getName();
         className = className.replace('.', '_');
