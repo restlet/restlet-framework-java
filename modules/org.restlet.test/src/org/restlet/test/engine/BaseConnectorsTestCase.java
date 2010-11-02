@@ -37,8 +37,8 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
-import org.restlet.engine.http.connector.HttpClientHelper;
-import org.restlet.engine.http.connector.HttpServerHelper;
+import org.restlet.engine.connector.HttpClientHelper;
+import org.restlet.engine.connector.HttpServerHelper;
 import org.restlet.test.RestletTestCase;
 
 /**

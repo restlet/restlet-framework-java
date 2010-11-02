@@ -161,8 +161,8 @@ public abstract class OutboundWay extends Way {
             int bytesWritten = getConnection().getWritableSelectionChannel()
                     .write(getByteBuffer());
 
-            if (getLogger().isLoggable(Level.INFO)) {
-                getLogger().info("Bytes written: " + bytesWritten);
+            if (getLogger().isLoggable(Level.FINE)) {
+                getLogger().fine("Bytes written: " + bytesWritten);
             }
 
             if (bytesWritten == 0) {
@@ -344,8 +344,14 @@ public abstract class OutboundWay extends Way {
 
                 while (isProcessing()) {
                     if (getByteBufferState() == BufferState.FILLING) {
-                        // Write the message or part of it in the byte buffer
-                        fillByteBuffer();
+                        if (getMessageState() == MessageState.END) {
+                            // Message fully written, ready for a new one
+                            onCompleted();
+                        } else {
+                            // Write the message or part of it in the byte
+                            // buffer
+                            fillByteBuffer();
+                        }
                     } else if (getByteBufferState() == BufferState.DRAINING) {
                         // Write the byte buffer or part of it to the socket
                         drainByteBuffer();

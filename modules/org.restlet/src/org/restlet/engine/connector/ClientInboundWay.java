@@ -117,11 +117,6 @@ public class ClientInboundWay extends InboundWay {
 
     @Override
     protected void onReceived() {
-        // Check if the server wants to close the connection
-        if (HeaderUtils.isConnectionClose(getHeaders())) {
-            getConnection().setState(ConnectionState.CLOSING);
-        }
-
         // Update the response
         getMessage().setEntity(createEntity(getHeaders()));
 
@@ -146,7 +141,7 @@ public class ClientInboundWay extends InboundWay {
         getHelper().getInboundMessages().add(getMessage());
 
         if (getMessage().isEntityAvailable()) {
-            // Let's wit for the entity to be consumed by the caller
+            // Let's wait for the entity to be consumed by the caller
             setIoState(IoState.IDLE);
         } else {
             // The response has been completely read

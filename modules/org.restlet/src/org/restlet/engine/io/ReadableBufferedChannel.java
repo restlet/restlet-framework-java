@@ -118,6 +118,12 @@ public class ReadableBufferedChannel extends
                 // Some bytes are available, fill the line builder
                 setLineBuilderState(NioUtils.fillLine(getLineBuilder(),
                         getLineBuilderState(), getByteBuffer()));
+
+                if (getByteBuffer().remaining() == 0) {
+                    setByteBufferState(BufferState.FILLING);
+                    getByteBuffer().clear();
+                }
+
                 return getLineBuilderState() == BufferState.DRAINING;
             }
         } else {

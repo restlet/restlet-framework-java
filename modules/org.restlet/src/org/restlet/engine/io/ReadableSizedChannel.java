@@ -84,14 +84,16 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
         if (result > 0) {
             this.availableSize -= result;
 
-            if (Context.getCurrentLogger().isLoggable(Level.INFO)) {
-                Context.getCurrentLogger().info(
+            if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                Context.getCurrentLogger().fine(
                         "Bytes read / available : " + result + " / "
                                 + this.availableSize);
             }
 
             if (this.availableSize == 0) {
-                Context.getCurrentLogger().info("Channel fully read.");
+                if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                    Context.getCurrentLogger().fine("Channel fully read.");
+                }
             }
         }
 

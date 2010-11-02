@@ -32,12 +32,9 @@ package org.restlet.engine.http.io;
 
 import java.io.InputStream;
 
-import org.restlet.engine.http.connector.Connection;
-import org.restlet.engine.http.connector.ConnectionState;
-
 /**
- * Input stream that synchronizes the state of a {@link Connection} instance and
- * an input stream.
+ * Input stream that synchronizes the state of a connection instance and an
+ * input stream.
  */
 public abstract class InputEntityStream extends InputStream {
 

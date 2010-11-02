@@ -22,10 +22,11 @@ Changes log
     - Enhancements
       - Improved the naming of files created by the FILE local 
         connector so that media type extension comes at the end.
-      - Added a new non-blocking NIO/HTTP connector in the engine, in
-        addition of the internal one. It is not complete yet but has
-        excellent performance so far. Chunked encoding and a few other
-        features are missing though.
+      - Added a fully new non-blocking NIO/HTTP connector in the engine, 
+        in replacement of the previous one based on blocking BIO. 
+        It has much better performance (latency, throughput and 
+        scalability) and supports persistent connections and chunked
+        encoding.
     - Bugs fixed
       - 
     - Misc

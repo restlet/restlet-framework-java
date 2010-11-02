@@ -699,7 +699,7 @@ public class Engine {
     public void registerDefaultConnectors() {
         // [ifndef gae, gwt]
         getRegisteredClients().add(
-                new org.restlet.engine.http.connector.HttpClientHelper(null));
+                new org.restlet.engine.connector.HttpClientHelper(null));
         // [enddef]
         // [ifndef gwt]
         getRegisteredClients().add(
@@ -715,7 +715,7 @@ public class Engine {
         // [enddef]
         // [ifndef gae, gwt]
         getRegisteredServers().add(
-                new org.restlet.engine.http.connector.HttpServerHelper(null));
+                new org.restlet.engine.connector.HttpServerHelper(null));
         // [enddef]
         // [ifdef gwt] uncomment
         // getRegisteredClients().add(

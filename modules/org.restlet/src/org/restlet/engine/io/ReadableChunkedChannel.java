@@ -33,6 +33,7 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
+import java.util.logging.Level;
 
 import org.restlet.Context;
 
@@ -99,9 +100,12 @@ public class ReadableChunkedChannel extends
                         this.remainingChunkSize = Long.parseLong(
                                 getWrappedChannel().getLineBuilder()
                                         .substring(0, index).trim(), 16);
-                        Context.getCurrentLogger().info(
-                                "New chunk detected. Size: "
-                                        + this.remainingChunkSize);
+
+                        if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                            Context.getCurrentLogger().fine(
+                                    "New chunk detected. Size: "
+                                            + this.remainingChunkSize);
+                        }
                     } catch (NumberFormatException ex) {
                         throw new IOException("\""
                                 + getWrappedChannel().getLineBuilder()
@@ -133,7 +137,10 @@ public class ReadableChunkedChannel extends
                     if (result > 0) {
                         this.remainingChunkSize -= result;
                     } else {
-                        Context.getCurrentLogger().info("No chunk data read");
+                        if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                            Context.getCurrentLogger().fine(
+                                    "No chunk data read");
+                        }
                     }
                 } else if (this.remainingChunkSize == 0) {
                     // Try to read the chunk end delimiter
