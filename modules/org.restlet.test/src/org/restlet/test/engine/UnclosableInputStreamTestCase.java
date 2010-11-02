@@ -33,7 +33,7 @@ package org.restlet.test.engine;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.restlet.engine.http.io.UnclosableInputStream;
+import org.restlet.engine.io.UnclosableInputStream;
 import org.restlet.test.RestletTestCase;
 
 

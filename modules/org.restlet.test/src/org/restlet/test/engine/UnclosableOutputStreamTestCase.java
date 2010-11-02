@@ -34,7 +34,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.restlet.engine.http.io.UnclosableOutputStream;
+import org.restlet.engine.io.UnclosableOutputStream;
 import org.restlet.test.RestletTestCase;
 
 

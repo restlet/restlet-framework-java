@@ -28,28 +28,29 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.http.io;
+package org.restlet.engine.io;
 
-import java.io.FilterOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 
 // [excludes gwt]
 /**
- * OutputStream decorator to trap close() calls so that the decorated stream
- * does not get closed.
+ * InputStream decorator to trap {@code close()} calls so that the underlying
+ * stream is not closed.
  * 
  * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
+ * 
  */
-public class UnclosableOutputStream extends FilterOutputStream {
+public class UnclosableInputStream extends FilterInputStream {
 
     /**
      * Constructor.
      * 
      * @param source
-     *            The decorated source stream.
+     *            The source input stream.
      */
-    public UnclosableOutputStream(OutputStream source) {
+    public UnclosableInputStream(InputStream source) {
         super(source);
     }
 

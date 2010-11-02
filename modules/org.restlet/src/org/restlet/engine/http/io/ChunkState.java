@@ -30,43 +30,22 @@
 
 package org.restlet.engine.http.io;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
-import org.restlet.engine.io.IoUtils;
-
-// [excludes gwt]
 /**
- * Buffered output stream that prevents the underlying stream from being closed.
+ * Enumeration of the chunk decoding IO states.
  * 
  * @author Jerome Louvel
  */
-public class OutboundStream extends BufferedOutputStream {
+public enum ChunkState {
 
-    /**
-     * Constructor.
-     * 
-     * @param source
-     *            The decorated source stream.
-     */
-    public OutboundStream(OutputStream source) {
-        super(source, IoUtils.BUFFER_SIZE);
-    }
+    /** Reading the chunk size line. */
+    SIZE,
 
-    /**
-     * Constructor.
-     * 
-     * @param source
-     *            The decorated source stream.
-     * @param size
-     *            the buffer size.
-     */
-    public OutboundStream(OutputStream source, int size) {
-        super(source, size);
-    }
+    /** Reading the chunked data. */
+    DATA,
 
-    @Override
-    public void close() throws IOException {
-    }
+    /** Reading the chunk trailer. */
+    TRAILER,
+
+    /** Reading the chunk end. */
+    END;
 }

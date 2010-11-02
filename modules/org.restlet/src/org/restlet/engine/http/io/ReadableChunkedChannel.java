@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.io;
+package org.restlet.engine.http.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -36,6 +36,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.engine.io.ReadableBufferedChannel;
+import org.restlet.engine.io.WrapperChannel;
 
 // [excludes gwt]
 /**

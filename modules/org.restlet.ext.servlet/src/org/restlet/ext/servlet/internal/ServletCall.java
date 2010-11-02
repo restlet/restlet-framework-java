@@ -54,8 +54,8 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.http.ServerCall;
 import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.http.io.UnclosableInputStream;
-import org.restlet.engine.http.io.UnclosableOutputStream;
+import org.restlet.engine.io.UnclosableInputStream;
+import org.restlet.engine.io.UnclosableOutputStream;
 import org.restlet.util.Series;
 
 /**

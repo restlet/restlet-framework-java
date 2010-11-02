@@ -84,7 +84,7 @@ public class ReadableBufferedChannel extends
     /**
      * Clears the line builder and adjust its state.
      */
-    protected void clearLineBuilder() {
+    public void clearLineBuilder() {
         getLineBuilder().delete(0, getLineBuilder().length());
         setLineBuilderState(BufferState.IDLE);
     }
@@ -95,7 +95,7 @@ public class ReadableBufferedChannel extends
      * @return True if the message line was fully read.
      * @throws IOException
      */
-    protected boolean fillLineBuilder() throws IOException {
+    public boolean fillLineBuilder() throws IOException {
         boolean result = false;
 
         if (getLineBuilderState() != BufferState.DRAINING) {
@@ -165,7 +165,7 @@ public class ReadableBufferedChannel extends
      * 
      * @return The line builder to parse chunk size or trailer.
      */
-    protected StringBuilder getLineBuilder() {
+    public StringBuilder getLineBuilder() {
         return lineBuilder;
     }
 
@@ -184,7 +184,7 @@ public class ReadableBufferedChannel extends
      * 
      * @param length
      */
-    protected void postRead(int length) {
+    public void postRead(int length) {
         if ((length == -1) && (getCompletionListener() != null)) {
             getCompletionListener().onCompleted();
         }
