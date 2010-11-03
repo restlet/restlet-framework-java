@@ -62,6 +62,9 @@ public abstract class RestletTestCase extends TestCase {
         Engine.getInstance()
                 .getRegisteredServers()
                 .add(0, new org.restlet.engine.connector.HttpServerHelper(null));
+        Engine.getInstance()
+                .getRegisteredClients()
+                .add(0, new org.restlet.engine.connector.HttpClientHelper(null));
     }
 
     @Override
