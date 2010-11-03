@@ -6,12 +6,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.restlet.${edition.id}</groupId>
-		<artifactId>org.restlet.parent</artifactId>
-		<version>${ant["version-maven"]}</version>
-	</parent>
-
 	<artifactId>org.restlet.lib.<#if package.mavenArtifactId??>${package.mavenArtifactId}<#else>${package.name}</#if></artifactId>
 		<#if package.mavenVersion??>
 	<version>${package.mavenVersion}</version>
@@ -50,8 +44,8 @@
 			<version>${package.mavenVersion}</version>
 						<#else>
 			<version>${dependency.library.minorVersion}<#if dependency.library.versionSuffix??>.${dependency.library.versionSuffix}</#if></version>
-                		</#if>
-            		</#if>
+						</#if>
+					</#if>
 					<#if dependency.mavenScope??><scope>${dependency.mavenScope}</scope></#if>
 		</dependency>
 				</#list>
