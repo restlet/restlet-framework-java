@@ -50,7 +50,10 @@ public class LoggerFacade {
      * @return The logger.
      */
     public Logger getAnonymousLogger() {
+        // [ifndef gwt] instruction
         return Logger.getAnonymousLogger();
+        // [ifdef gwt] instruction uncomment
+        //return Logger.getLogger("");
     }
 
     /**
