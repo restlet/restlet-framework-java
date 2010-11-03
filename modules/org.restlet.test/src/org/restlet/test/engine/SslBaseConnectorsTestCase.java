@@ -65,10 +65,6 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private final boolean enableApacheClient = true;
 
-    private final boolean enableGrizzlyServer = true;
-
-    private final boolean enableNettyServer = true;
-
     private final boolean enableJdkNetClient = true;
 
     private final boolean enableJettyServer = true;
@@ -176,34 +172,6 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
         // Restore a clean engine
         org.restlet.engine.Engine.setInstance(new Engine());
-    }
-
-    public void testSslGrizzlyAndApache() throws Exception {
-        if (this.enableGrizzlyServer && this.enableApacheClient) {
-            runTest(new org.restlet.ext.grizzly.HttpsServerHelper(null),
-                    new org.restlet.ext.httpclient.HttpClientHelper(null));
-        }
-    }
-
-    public void testSslGrizzlyAndJdkNet() throws Exception {
-        if (this.enableGrizzlyServer && this.enableJdkNetClient) {
-            runTest(new org.restlet.ext.grizzly.HttpsServerHelper(null),
-                    new org.restlet.ext.net.HttpClientHelper(null));
-        }
-    }
-
-    public void testSslNettyAndApache() throws Exception {
-        if (this.enableNettyServer && this.enableApacheClient) {
-            runTest(new org.restlet.ext.netty.HttpsServerHelper(null),
-                    new org.restlet.ext.httpclient.HttpClientHelper(null));
-        }
-    }
-
-    public void testSslNettyAndJdkNet() throws Exception {
-        if (this.enableNettyServer && this.enableJdkNetClient) {
-            runTest(new org.restlet.ext.netty.HttpsServerHelper(null),
-                    new org.restlet.ext.net.HttpClientHelper(null));
-        }
     }
 
     public void testSslJettyAndApache() throws Exception {

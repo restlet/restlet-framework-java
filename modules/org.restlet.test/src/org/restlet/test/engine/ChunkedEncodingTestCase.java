@@ -241,24 +241,6 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     @Override
-    public void testNettyAndApache() throws Exception {
-        this.checkedForChunkedResponse = false;
-        super.testNettyAndApache();
-    }
-
-    @Override
-    public void testNettyAndDefault() throws Exception {
-        this.checkedForChunkedResponse = false;
-        super.testNettyAndDefault();
-    }
-
-    @Override
-    public void testNettyAndJdkNet() throws Exception {
-        this.checkedForChunkedResponse = false;
-        super.testNettyAndJdkNet();
-    }
-
-    @Override
     public void testSimpleAndDefault() throws Exception {
         // Simple will not send a chunked response when a client sends
         // Connection: close, which the default client helper does
