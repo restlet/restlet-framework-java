@@ -28,28 +28,29 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.connector;
+package org.restlet.engine;
 
 import org.restlet.data.Method;
-import org.restlet.engine.ProtocolHelper;
 
 /**
- * Protocol helper for the WEBDAV protocol.
+ * Protocol helper for the HTTP protocol.
  * 
  * @author Thierry Boileau
  * 
  */
-public class WebDavProtocolHelper extends ProtocolHelper {
+public class HttpProtocolHelper extends ProtocolHelper {
 
     @Override
     public void registerMethods() {
-        Method.register(Method.COPY);
-        Method.register(Method.LOCK);
-        Method.register(Method.MKCOL);
-        Method.register(Method.MOVE);
-        Method.register(Method.PROPFIND);
-        Method.register(Method.PROPPATCH);
-        Method.register(Method.UNLOCK);
+        Method.register(Method.ALL);
+        Method.register(Method.CONNECT);
+        Method.register(Method.DELETE);
+        Method.register(Method.GET);
+        Method.register(Method.HEAD);
+        Method.register(Method.OPTIONS);
+        Method.register(Method.POST);
+        Method.register(Method.PUT);
+        Method.register(Method.TRACE);
     }
 
 }
