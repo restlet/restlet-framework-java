@@ -393,9 +393,13 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
 
                 if (socketAddress.equals(currConn.getSocketAddress())) {
                     if (currConn.getState().equals(ConnectionState.OPEN)
+                            && currConn.getInboundWay().getMessageState()
+                                    .equals(MessageState.IDLE)
                             && currConn.getInboundWay().getIoState()
                                     .equals(IoState.IDLE)
                             && currConn.getInboundWay().getMessages().isEmpty()
+                            && currConn.getOutboundWay().getMessageState()
+                                    .equals(MessageState.IDLE)
                             && currConn.getOutboundWay().getIoState()
                                     .equals(IoState.IDLE)
                             && currConn.getOutboundWay().getMessages()

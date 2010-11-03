@@ -205,7 +205,7 @@ public class ReadableBufferedChannel extends
      *         been reached.
      */
     public int read(ByteBuffer targetBuffer) throws IOException {
-        int totalRead = 0;
+        int result = 0;
         int currentRead = 0;
         boolean tryAgain = true;
 
@@ -231,7 +231,7 @@ public class ReadableBufferedChannel extends
                             targetBuffer.put(getByteBuffer().get());
                         }
 
-                        totalRead += currentRead;
+                        result += currentRead;
                     }
 
                     if (getByteBuffer().remaining() == 0) {
@@ -248,7 +248,7 @@ public class ReadableBufferedChannel extends
             }
         }
 
-        return totalRead;
+        return result;
     }
 
     /**

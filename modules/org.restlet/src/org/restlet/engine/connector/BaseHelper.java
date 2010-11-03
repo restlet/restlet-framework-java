@@ -78,7 +78,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>minThreads</td>
  * <td>int</td>
- * <td>5</td>
+ * <td>1</td>
  * <td>Minimum number of worker threads waiting to service calls, even if they
  * are idle.</td>
  * </tr>
@@ -152,7 +152,8 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>boolean</td>
  * <td>true</td>
  * <td>Indicates if direct NIO buffers should be allocated instead of regular
- * buffers. See NIO's ByteBuffer Javadocs.</td>
+ * buffers. See NIO's ByteBuffer Javadocs. Note that tracing must be disabled to
+ * use direct buffers.</td>
  * </tr>
  * <tr>
  * <td>transport</td>
@@ -418,7 +419,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getMinThreads() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "minThreads", "5"));
+                "minThreads", "1"));
     }
 
     /**
@@ -502,13 +503,15 @@ public abstract class BaseHelper<T extends Connector> extends
     public abstract boolean isControllerDaemon();
 
     /**
-     * Indicates if direct NIO buffers should be used.
+     * Indicates if direct NIO buffers should be used. Note that tracing must be
+     * disabled to use direct buffers.
      * 
      * @return True if direct NIO buffers should be used.
      */
     public boolean isDirectBuffers() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "directBuffers", "true"));
+        return !isTracing()
+                && Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                        "directBuffers", "true"));
     }
 
     /**
