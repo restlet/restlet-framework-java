@@ -91,6 +91,8 @@ public class HeaderTestCase extends RestletTestCase {
 
     private Component component;
 
+    private Client client;
+
     /**
      * Handle a new request built according to the parameters and return the
      * response object.
@@ -101,22 +103,22 @@ public class HeaderTestCase extends RestletTestCase {
      * @throws Exception
      */
     private Response getWithParams(Parameter... parameters) throws Exception {
-        final Client client = new Client(Protocol.HTTP);
-        final Request request = new Request(Method.GET, "http://localhost:"
+        Request request = new Request(Method.GET, "http://localhost:"
                 + TEST_PORT);
-        final Form headers = getHttpHeaders(request);
-        for (final Parameter p : parameters) {
+        Form headers = getHttpHeaders(request);
+
+        for (Parameter p : parameters) {
             headers.add(p);
         }
 
         Response result = client.handle(request);
-        client.stop();
         return result;
     }
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        this.client = new Client(Protocol.HTTP);
 
         if (this.component == null) {
             this.component = new Component();
@@ -132,6 +134,7 @@ public class HeaderTestCase extends RestletTestCase {
 
     @Override
     public void tearDown() throws Exception {
+        this.client.stop();
         this.component.stop();
         this.component = null;
         super.tearDown();
@@ -139,22 +142,21 @@ public class HeaderTestCase extends RestletTestCase {
 
     /** test with no test header */
     public void test0() throws Exception {
-        final Response response = getWithParams();
+        Response response = getWithParams();
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(null, response.getEntity().getText());
     }
 
     /** test with one test header */
     public void test1() throws Exception {
-        final Response response = getWithParams(new Parameter(TEST_HEADER, "a"));
+        Response response = getWithParams(new Parameter(TEST_HEADER, "a"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("a\n", response.getEntity().getText());
     }
 
     /** test with two test headers */
     public void test2() throws Exception {
-        final Response response = getWithParams(
-                new Parameter(TEST_HEADER, "a"),
+        Response response = getWithParams(new Parameter(TEST_HEADER, "a"),
                 new Parameter(TEST_HEADER, "b"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("a\nb\n", response.getEntity().getText());
