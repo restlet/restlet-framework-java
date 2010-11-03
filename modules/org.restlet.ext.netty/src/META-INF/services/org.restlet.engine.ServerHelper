@@ -1,2 +1,0 @@
-org.restlet.ext.netty.HttpServerHelper	# HTTP
-org.restlet.ext.netty.HttpsServerHelper	# HTTPS

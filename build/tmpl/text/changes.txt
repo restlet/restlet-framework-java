@@ -30,4 +30,11 @@ Changes log
     - Bugs fixed
       - 
     - Misc
-	
+	  - Removed the Grizzly and Netty extensions which were still 
+	    considered experimental at this point. The new internal
+		connector based on non-blocking NIO now provides similar
+		advantages and is already more complete from a HTTP coverage
+		point of view. Users of these connectors are encouraged to
+		leverage the NIO internal connector or the two other extensions
+		that are still available in 2.1 (Jetty and Simple connectors).
+		
