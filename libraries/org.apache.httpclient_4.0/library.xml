@@ -17,6 +17,6 @@
 		http://hc.apache.org/httpcomponents-client/download.html
 	</downloadUri>
 	<javadocs>
-		<link href="http://hc.apache.org/httpcomponents-client/httpclient/apidocs/" />
+		<link href="http://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/" />
 	</javadocs>
 </library>

@@ -236,7 +236,7 @@ public class Application extends Restlet {
     /**
      * Returns the finder class used to instantiate resource classes. By
      * default, it returns the {@link Finder} class. This property is leveraged
-     * by {@link #setOutboundRoot(Class)} and {@link #setInboundRoot(Class)}
+     * by {@link #setClientRoot(Class)} and {@link #setInboundRoot(Class)}
      * methods.
      * 
      * @return the finder class to instantiate.
