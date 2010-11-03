@@ -247,8 +247,9 @@ public class ClientInboundWay extends InboundWay {
                 setIoState(IoState.INTEREST);
             }
         }
-        
+
         // Update the registration
         super.updateState();
     }
+
 }

@@ -12,6 +12,7 @@ public class NioClient {
 
     public static void main(String[] args) throws Exception {
         // TraceHandler.register();
+
         ConnectorHelper<Client> helper;
         helper = new org.restlet.engine.connector.HttpClientHelper(null);
         // helper = new org.restlet.ext.httpclient.HttpClientHelper(null);
