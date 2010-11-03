@@ -32,8 +32,6 @@ package org.restlet.test.resource;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -45,6 +43,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Router;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test annotated resource that reimplements of one the annotated method from
@@ -52,17 +51,15 @@ import org.restlet.routing.Router;
  * 
  * @author Thierry Boileau
  */
-public class AnnotatedResource11TestCase extends TestCase {
+public class AnnotatedResource11TestCase extends RestletTestCase {
 
     private static class TestApplication extends Application {
-
         @Override
         public Restlet createInboundRoot() {
             Router router = new Router(getContext());
             router.attach("/test", MyResource11.class);
             return router;
         }
-
     }
 
     private Component c;
@@ -70,11 +67,11 @@ public class AnnotatedResource11TestCase extends TestCase {
     private Client client;
 
     protected void setUp() throws Exception {
+        super.setUp();
         c = new Component();
         c.getServers().add(Protocol.HTTP, 8182);
         c.getDefaultHost().attach(new TestApplication());
         c.start();
-
         client = new Client(Protocol.HTTP);
     }
 
@@ -82,6 +79,7 @@ public class AnnotatedResource11TestCase extends TestCase {
     protected void tearDown() throws Exception {
         c.stop();
         c = null;
+        super.tearDown();
     }
 
     /**

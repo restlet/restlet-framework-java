@@ -45,10 +45,8 @@ import org.restlet.test.RestletTestCase;
 public class ByteUtilsTestCase extends RestletTestCase {
 
     public void testGetStream() throws IOException {
-        final StringWriter writer = new StringWriter();
-
-        final OutputStream out = BioUtils.getStream(writer);
-
+        StringWriter writer = new StringWriter();
+        OutputStream out = BioUtils.getStream(writer);
         out.write("test".getBytes());
         out.flush();
         out.close();

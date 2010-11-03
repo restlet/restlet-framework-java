@@ -35,8 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -53,12 +51,13 @@ import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.engine.application.TunnelFilter;
 import org.restlet.engine.header.HeaderConstants;
+import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
 
 /**
  * Tests cases for the tunnel filter.
  */
-public class TunnelFilterTestCase extends TestCase {
+public class TunnelFilterTestCase extends RestletTestCase {
 
     /** . */
     private static final String EFFECTED = "http://example.org/adf.asdf/af.html";
@@ -234,8 +233,9 @@ public class TunnelFilterTestCase extends TestCase {
     }
 
     @Override
-    public void setUp() {
-        final Application app = new Application(new Context());
+    public void setUp() throws Exception {
+        super.setUp();
+        Application app = new Application(new Context());
         Application.setCurrent(app);
         this.tunnelFilter = new TunnelFilter(app.getContext());
         this.tunnelFilter.getApplication().getTunnelService()
@@ -247,7 +247,6 @@ public class TunnelFilterTestCase extends TestCase {
         this.tunnelFilter = null;
         this.request = null;
         this.response = null;
-
         super.tearDown();
     }
 
@@ -370,8 +369,8 @@ public class TunnelFilterTestCase extends TestCase {
         tunnelFilter.getTunnelService().setMethodTunnel(true);
         Map<String, Object> attributesHeader = new HashMap<String, Object>();
         Series<Parameter> headers = new Form();
-        headers.add(HeaderConstants.HEADER_X_HTTP_METHOD_OVERRIDE, Method.GET
-                .getName());
+        headers.add(HeaderConstants.HEADER_X_HTTP_METHOD_OVERRIDE,
+                Method.GET.getName());
         headers.add(HeaderConstants.HEADER_X_FORWARDED_FOR, "TEST");
         attributesHeader.put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
 

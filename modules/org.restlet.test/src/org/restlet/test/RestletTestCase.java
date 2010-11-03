@@ -59,6 +59,11 @@ public abstract class RestletTestCase extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         Engine.clearThreadLocalVariables();
+
+        // Restore a clean engine
+        org.restlet.engine.Engine.setInstance(new Engine());
+
+        // Prefer the internal connectors
         Engine.getInstance()
                 .getRegisteredServers()
                 .add(0, new org.restlet.engine.connector.HttpServerHelper(null));

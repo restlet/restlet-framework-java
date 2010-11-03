@@ -32,8 +32,6 @@ package org.restlet.test.resource;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
@@ -41,17 +39,19 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ResourceException;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test the annotated resources, client and server sides.
  * 
  * @author Jerome Louvel
  */
-public class AnnotatedResource8TestCase extends TestCase {
+public class AnnotatedResource8TestCase extends RestletTestCase {
 
     private ClientResource clientResource;
 
     protected void setUp() throws Exception {
+        super.setUp();
         Finder finder = new Finder();
         finder.setTargetClass(MyResource8.class);
 

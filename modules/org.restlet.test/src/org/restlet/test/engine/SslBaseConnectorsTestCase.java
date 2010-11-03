@@ -113,9 +113,8 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     }
 
     @Override
-    public void setUp() {
-        // Restore a clean engine
-        org.restlet.engine.Engine.setInstance(new Engine());
+    public void setUp() throws Exception {
+        super.setUp();
 
         try {
             if (!testKeystoreFile.exists()) {

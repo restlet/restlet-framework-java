@@ -32,8 +32,6 @@ package org.restlet.test.connector;
 
 import java.io.Serializable;
 
-import junit.framework.TestCase;
-
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -47,13 +45,14 @@ import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Unit test case for the RIAP Internal routing protocol.
  * 
  * @author Marc Portier (mpo@outerthought.org)
  */
-public class RiapTestCase extends TestCase {
+public class RiapTestCase extends RestletTestCase {
 
     private static final String DEFAULT_MSG = "no-default";
 

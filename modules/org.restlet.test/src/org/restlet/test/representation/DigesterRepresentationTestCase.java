@@ -100,6 +100,7 @@ public class DigesterRepresentationTestCase extends RestletTestCase {
 
     @Override
     protected void setUp() throws Exception {
+        super.setUp();
         component = new Component();
         component.getServers().add(Protocol.HTTP, TEST_PORT);
         component.getDefaultHost().attach(new TestDigestApplication());
@@ -110,6 +111,7 @@ public class DigesterRepresentationTestCase extends RestletTestCase {
     protected void tearDown() throws Exception {
         component.stop();
         component = null;
+        super.tearDown();
     }
 
     /**
@@ -121,7 +123,7 @@ public class DigesterRepresentationTestCase extends RestletTestCase {
     @Test
     public void testGet() throws IOException, NoSuchAlgorithmException {
         Client client = new Client(Protocol.HTTP);
-        
+
         // Test partial Get.
         Request request = new Request(Method.PUT, "http://localhost:"
                 + TEST_PORT + "/");
@@ -141,7 +143,7 @@ public class DigesterRepresentationTestCase extends RestletTestCase {
             digester = new DigesterRepresentation(response.getEntity());
             digester.exhaust();
             assertTrue(digester.checkDigest());
-            
+
             client.stop();
         } catch (Exception e) {
             fail(e.getMessage());

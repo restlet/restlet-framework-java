@@ -51,7 +51,7 @@ import org.restlet.test.RestletTestCase;
 public class AtomTestCase extends RestletTestCase {
 
     public void testCategories() throws Exception {
-        final Categories atomCategories = new Categories(
+        Categories atomCategories = new Categories(
                 "clap://class/org/restlet/test/ext/atom/categories.xml");
         assertEquals(new Reference("http://example.com/cats/big3"),
                 atomCategories.getScheme());
@@ -77,8 +77,7 @@ public class AtomTestCase extends RestletTestCase {
 
         // Write the feed into a file.
         final File feedFile = new File(testDir, "feed.xml");
-        atomFeed
-                .write(new BufferedOutputStream(new FileOutputStream(feedFile)));
+        atomFeed.write(new BufferedOutputStream(new FileOutputStream(feedFile)));
 
         // Get the service from the file
         final FileRepresentation fileRepresentation = new FileRepresentation(

@@ -36,18 +36,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
 
 import org.restlet.data.Reference;
 import org.restlet.engine.util.AlphaNumericComparator;
 import org.restlet.resource.Directory;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test case for the alphanum algorithm used by {@link Directory}.
  * 
  * @author Davide Angelocola
  */
-public class AlphaNumericComparatorTestCase extends TestCase {
+public class AlphaNumericComparatorTestCase extends RestletTestCase {
 
     private static List<Reference> refs(String... uris) {
         List<Reference> result = new LinkedList<Reference>();

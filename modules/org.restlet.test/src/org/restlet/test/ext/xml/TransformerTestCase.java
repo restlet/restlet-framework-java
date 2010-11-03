@@ -32,21 +32,21 @@ package org.restlet.test.ext.xml;
 
 import java.io.ByteArrayOutputStream;
 
-import junit.framework.TestCase;
-
 import org.restlet.Component;
 import org.restlet.data.MediaType;
-import org.restlet.ext.xml.Transformer;
 import org.restlet.ext.xml.TransformRepresentation;
+import org.restlet.ext.xml.Transformer;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test case for the Transformer class.
  * 
  * @author Jerome Louvel
  */
-public class TransformerTestCase extends TestCase {
+public class TransformerTestCase extends RestletTestCase {
+
     class FailureTracker {
         boolean allOk = true;
 

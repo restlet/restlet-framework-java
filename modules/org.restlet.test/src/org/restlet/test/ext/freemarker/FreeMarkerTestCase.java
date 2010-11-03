@@ -48,13 +48,6 @@ import freemarker.template.Configuration;
  * @author Jerome Louvel
  */
 public class FreeMarkerTestCase extends RestletTestCase {
-    public static void main(String[] args) {
-        try {
-            new FreeMarkerTestCase().testTemplate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public void testTemplate() throws Exception {
         // Create a temporary directory for the tests

@@ -30,24 +30,24 @@
 
 package org.restlet.test.resource;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.Form;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test the annotated resources, client and server sides.
  * 
  * @author Jerome Louvel
  */
-public class AnnotatedResource12TestCase extends TestCase {
+public class AnnotatedResource12TestCase extends RestletTestCase {
 
     private ClientResource clientResource;
 
     private MyResource12 myResource;
 
     protected void setUp() throws Exception {
+        super.setUp();
         Finder finder = new Finder();
         finder.setTargetClass(MyServerResource12.class);
 

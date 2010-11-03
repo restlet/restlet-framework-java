@@ -109,8 +109,8 @@ public class JavaMailTestCase extends RestletTestCase {
             throws Exception {
         final Client client = new Client(protocol);
         client.getContext().getParameters().add("debug", DEBUG);
-        client.getContext().getParameters().add("startTls",
-                Boolean.toString(startTls).toLowerCase());
+        client.getContext().getParameters()
+                .add("startTls", Boolean.toString(startTls).toLowerCase());
 
         request.setEntity(MAIL, MediaType.APPLICATION_XML);
         final Response response = client.handle(request);
@@ -120,11 +120,12 @@ public class JavaMailTestCase extends RestletTestCase {
 
     @Override
     protected void setUp() throws Exception {
-        final File keyStoreFile = new File(_TRUSTSTORE);
+        super.setUp();
+        File keyStoreFile = new File(_TRUSTSTORE);
 
         if (keyStoreFile.exists()) {
-            System.setProperty("javax.net.ssl.trustStore", keyStoreFile
-                    .getCanonicalPath());
+            System.setProperty("javax.net.ssl.trustStore",
+                    keyStoreFile.getCanonicalPath());
         }
     }
 
@@ -182,8 +183,8 @@ public class JavaMailTestCase extends RestletTestCase {
         response.getEntity().write(System.out);
         System.out.println();
 
-        final DomRepresentation dom = new DomRepresentation(response
-                .getEntity());
+        final DomRepresentation dom = new DomRepresentation(
+                response.getEntity());
         for (final Node node : dom.getNodes("/emails/email")) {
             final NamedNodeMap attrs = node.getAttributes();
             final String href = attrs.getNamedItem("href").getNodeValue();

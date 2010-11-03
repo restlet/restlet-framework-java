@@ -56,6 +56,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
  * @author Rhett Sutphin
  */
 public class SpringBeanRouterTestCase extends RestletTestCase {
+
     private static class TestAuthenticator extends ChallengeAuthenticator {
         private TestAuthenticator() throws IllegalArgumentException {
             super(null, ChallengeScheme.HTTP_BASIC, "Test");
@@ -137,7 +138,6 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         this.factory = new DefaultListableBeanFactory();
-
         registerServerResourceBeanDefinition("ore", ORE_URI);
         registerServerResourceBeanDefinition("fish", FISH_URI);
         registerBeanDefinition("someOtherBean", null, String.class, null);

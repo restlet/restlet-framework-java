@@ -495,11 +495,20 @@ public class Connection<T extends Connector> implements SelectionListener {
         this.lastActivity = System.currentTimeMillis();
 
         if (getLogger().isLoggable(Level.FINE)) {
+            String trace = null;
+
+            if (isClientSide()) {
+                trace = "Client ";
+            } else {
+                trace = "Server ";
+            }
+
             getLogger().fine(
-                    "NIO selection (interest | ready | cancelled): "
+                    trace + "connection (state | inbound | outbound): "
+                            + toString());
+            getLogger().fine(
+                    trace + "NIO selection (interest | ready | cancelled): "
                             + registration.toString());
-            getLogger().fine(
-                    "Connection (state | inbound | outbound): " + toString());
         }
 
         try {

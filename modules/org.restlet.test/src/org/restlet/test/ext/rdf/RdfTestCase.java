@@ -30,17 +30,16 @@
 
 package org.restlet.test.ext.rdf;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.MediaType;
 import org.restlet.ext.rdf.RdfRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Unit test case for the RIAP Internal routing protocol.
  */
-public class RdfTestCase extends TestCase {
+public class RdfTestCase extends RestletTestCase {
 
     public void testN3() throws Exception {
         Representation rep = new StringRepresentation(

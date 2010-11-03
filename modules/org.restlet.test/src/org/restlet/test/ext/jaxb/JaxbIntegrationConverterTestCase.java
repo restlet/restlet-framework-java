@@ -85,12 +85,12 @@ public class JaxbIntegrationConverterTestCase extends RestletTestCase {
     }
 
     public void tearDown() throws Exception {
-        super.tearDown();
         if (component != null) {
             component.stop();
         }
 
         this.component = null;
+        super.tearDown();
     }
 
     protected Application createApplication(Component component) {

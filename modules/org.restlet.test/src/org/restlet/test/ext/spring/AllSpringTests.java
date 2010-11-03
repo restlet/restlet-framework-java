@@ -40,6 +40,7 @@ import junit.framework.TestSuite;
  * @author Rhett Sutphin
  */
 public class AllSpringTests extends TestCase {
+
     public static Test suite() {
         final TestSuite suite = new TestSuite();
         suite.setName("all spring-ext tests");
@@ -48,4 +49,5 @@ public class AllSpringTests extends TestCase {
         suite.addTestSuite(SpringTestCase.class);
         return suite;
     }
+
 }

@@ -54,6 +54,7 @@ import org.restlet.test.jaxrs.wrappers.WrapperClassesTests;
  * @see #suite()
  */
 public class AllClassTests extends TestCase {
+
     public static Test suite() {
         final TestSuite mySuite = new TestSuite();
         mySuite.setName("All class tests");
@@ -78,4 +79,5 @@ public class AllClassTests extends TestCase {
         mySuite.addTestSuite(WrapperClassesTests.class);
         return mySuite;
     }
+
 }

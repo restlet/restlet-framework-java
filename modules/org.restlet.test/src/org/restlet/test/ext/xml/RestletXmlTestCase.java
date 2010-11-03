@@ -43,8 +43,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import junit.framework.TestCase;
-
 import org.junit.Before;
 import org.restlet.data.MediaType;
 import org.restlet.engine.util.DefaultSaxHandler;
@@ -52,6 +50,7 @@ import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.test.RestletTestCase;
 import org.xml.sax.SAXException;
 
 /**
@@ -60,7 +59,7 @@ import org.xml.sax.SAXException;
  * and validating an invalid restlet.xml which violates the Component.xsd
  * schema.
  */
-public class RestletXmlTestCase extends TestCase {
+public class RestletXmlTestCase extends RestletTestCase {
     private static final String _XML_BODY = "<server protocol=\"HTTP\" port=\"9090\"/>\n"
             + "<server protocol=\"HTTP\" port=\"9091\"/>\n"
             + "<defaultHost hostPort=\"9091\">\n"
@@ -101,7 +100,8 @@ public class RestletXmlTestCase extends TestCase {
     @Override
     @Before
     protected void setUp() throws Exception {
-        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        super.setUp();        
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setValidating(false);
         dbf.setNamespaceAware(true);
         dbf.setXIncludeAware(true);
@@ -122,7 +122,6 @@ public class RestletXmlTestCase extends TestCase {
         builder = dbf.newDocumentBuilder();
         builder.setErrorHandler(handler);
         builder.setEntityResolver(handler);
-
         validator = schema.newValidator();
     }
 

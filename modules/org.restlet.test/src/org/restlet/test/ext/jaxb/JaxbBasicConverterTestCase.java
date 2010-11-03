@@ -28,43 +28,38 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test.ext.gwt;
+package org.restlet.test.ext.jaxb;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 
-import junit.framework.TestCase;
+import javax.xml.bind.JAXBException;
 
-import org.restlet.ext.gwt.GwtConverter;
+import org.restlet.data.MediaType;
+import org.restlet.ext.jaxb.JaxbRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
+import org.restlet.service.ConverterService;
+import org.restlet.test.RestletTestCase;
 
 /**
- * Tests basic conversion using the GwtConverter.
+ * Tests basic Conversion using the JaxbConverter
  * 
- * @author Thierry Boileau
+ * @author Sanjay Acharya
  */
-public class GwtConverterTest extends TestCase {
+public class JaxbBasicConverterTestCase extends RestletTestCase {
 
-    public void testObjectToRepresentation() throws IOException {
-        MyBean myBean = new MyBean();
-        myBean.setList(new ArrayList<String>());
-        myBean.getList().add("list1");
-        myBean.getList().add("list2");
-        myBean.setMap(new HashMap<String, String>());
-        myBean.getMap().put("key1", "value1");
-        myBean.getMap().put("key2", "value2");
-        myBean.setName("myname");
-        Representation rep = new GwtConverter().toRepresentation(myBean, null,
-                null);
-
-        assertNotNull(rep);
-        String test = rep.getText();
-        System.out.println(test);
-        assertTrue(test.contains("myname"));
-        assertTrue(test.contains("list2"));
-        assertTrue(test.contains("key1"));
-        assertTrue(test.contains("value2"));
+    public void testObjectionToRepresentation() {
+        ConverterService cs = new ConverterService();
+        Representation rep = cs.toRepresentation(new Sample(), new Variant(
+                MediaType.APPLICATION_XML), null);
+        assertTrue(rep instanceof JaxbRepresentation<?>);
     }
 
+    public void testRepresentationToObject() throws IOException, JAXBException {
+        ConverterService cs = new ConverterService();
+        JaxbRepresentation<Sample> sampleRep = new JaxbRepresentation<Sample>(
+                MediaType.APPLICATION_XML, new Sample());
+        Object rep = cs.toObject(sampleRep, Sample.class, null);
+        assertTrue(rep instanceof Sample);
+    }
 }

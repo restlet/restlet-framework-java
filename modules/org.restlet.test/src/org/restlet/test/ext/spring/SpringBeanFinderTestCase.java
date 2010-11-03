@@ -45,6 +45,7 @@ import org.springframework.context.support.StaticApplicationContext;
  * @author Rhett Sutphin
  */
 public class SpringBeanFinderTestCase extends RestletTestCase {
+
     private static class AnotherResource extends ServerResource {
     }
 
@@ -112,7 +113,6 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         this.beanFactory = null;
         this.applicationContext = null;
         this.finder = null;
-
         super.tearDown();
     }
 

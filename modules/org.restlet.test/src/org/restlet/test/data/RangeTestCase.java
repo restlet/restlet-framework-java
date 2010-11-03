@@ -162,6 +162,7 @@ public class RangeTestCase extends RestletTestCase {
 
     @Override
     protected void setUp() throws Exception {
+        super.setUp();
         component = new Component();
         component.getServers().add(Protocol.HTTP, TEST_PORT);
         component.getClients().add(Protocol.FILE);
@@ -173,6 +174,7 @@ public class RangeTestCase extends RestletTestCase {
     protected void tearDown() throws Exception {
         component.stop();
         component = null;
+        super.tearDown();
     }
 
     /**

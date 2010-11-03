@@ -42,10 +42,9 @@ import org.restlet.test.RestletTestCase;
 public class WadlTestCase extends RestletTestCase {
 
     public void testWadl() throws Exception {
-        final WadlComponent comp = new WadlComponent(
+        WadlComponent comp = new WadlComponent(
                 "clap://class/org/restlet/test/ext/wadl/YahooSearch.wadl");
-
-        final WadlApplication app = (WadlApplication) comp.getHosts().get(0)
+        WadlApplication app = (WadlApplication) comp.getHosts().get(0)
                 .getRoutes().get(0).getNext();
         assertNotNull(app);
         assertEquals(app.getInboundRoot(), app.getRouter());

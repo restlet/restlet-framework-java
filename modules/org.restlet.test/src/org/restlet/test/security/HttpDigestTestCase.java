@@ -30,8 +30,6 @@
 
 package org.restlet.test.security;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.restlet.Application;
 import org.restlet.Component;
@@ -51,13 +49,14 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Router;
 import org.restlet.security.MapVerifier;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Restlet unit tests for HTTP DIGEST authentication client/server.
  * 
  * @author Jerome Louvel
  */
-public class HttpDigestTestCase extends TestCase {
+public class HttpDigestTestCase extends RestletTestCase {
 
     private Component component;
 
@@ -88,15 +87,13 @@ public class HttpDigestTestCase extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
+        super.setUp();
         component = new Component();
         Server server = component.getServers().add(Protocol.HTTP, 0);
         Application application = new MyApplication();
         component.getDefaultHost().attach(application);
         component.start();
-
         port = server.getEphemeralPort();
-
-        super.setUp();
     }
 
     @Override

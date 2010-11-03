@@ -48,6 +48,7 @@ import org.restlet.test.RestletTestCase;
  * @author Jerome Louvel
  */
 public class RedirectTestCase extends RestletTestCase {
+
     private void testCall(Context context, Method method, String uri)
             throws Exception {
         final Response response = context.getClientDispatcher().handle(
@@ -72,8 +73,7 @@ public class RedirectTestCase extends RestletTestCase {
         // Create the proxy Restlet
         final String target = "http://localhost:" + (TEST_PORT + 1) + "{rr}";
         final Redirector proxy = new Redirector(proxyComponent.getContext()
-                .createChildContext(), target,
-                Redirector.MODE_SERVER_OUTBOUND);
+                .createChildContext(), target, Redirector.MODE_SERVER_OUTBOUND);
 
         // Create a new Restlet that will display some path information.
         final Restlet trace = new Restlet(originComponent.getContext()
