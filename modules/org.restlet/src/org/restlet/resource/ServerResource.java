@@ -112,6 +112,7 @@ public abstract class ServerResource extends UniformResource {
     /** Modifiable list of variants. */
     private volatile List<Variant> variants;
 
+
     /**
      * Initializer block to ensure that the basic properties are initialized
      * consistently across constructors.
@@ -123,7 +124,6 @@ public abstract class ServerResource extends UniformResource {
         this.negotiated = true;
         this.variants = null;
     }
-
     /**
      * Default constructor. Note that the
      * {@link #init(Context, Request, Response)}() method will be invoked right
@@ -385,14 +385,7 @@ public abstract class ServerResource extends UniformResource {
                 } else if (method.equals(Method.OPTIONS)) {
                     result = options();
                 } else {
-                    AnnotationInfo annotationInfo = getAnnotation(method,
-                            getRequestEntity());
-
-                    if (annotationInfo != null) {
-                        result = doHandle(annotationInfo, null);
-                    } else {
-                        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-                    }
+                    result = doHandle(method, getRequestEntity());
                 }
             } else {
                 setStatus(Status.CLIENT_ERROR_NOT_FOUND);
@@ -471,6 +464,37 @@ public abstract class ServerResource extends UniformResource {
             result = toRepresentation(resultObject, variant);
         }
 
+        return result;
+    }
+
+    /**
+     * Handles a call and checks the request's method and entity. If the method
+     * is not supported, the response status is set to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}. If the request's entity
+     * is no supported, the response status is set to
+     * {@link Status#CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE}.
+     * 
+     * @param method
+     *            The request method.
+     * @param entity
+     *            The request entity (can be null, or unavailable).
+     * @return The response entity.
+     * @throws ResourceException
+     */
+    private Representation doHandle(Method method, Representation entity) {
+        Representation result = null;
+        if (getAnnotation(method) != null) {
+            // We know the method is supported, let's check the entity.
+            AnnotationInfo annotationInfo = getAnnotation(method, entity);
+            if (annotationInfo != null) {
+                result = doHandle(annotationInfo, null);
+            } else {
+                // The request entity is not supported.
+                setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+            }
+        } else {
+            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        }
         return result;
     }
 
@@ -1053,16 +1077,7 @@ public abstract class ServerResource extends UniformResource {
      */
     protected Representation post(Representation entity)
             throws ResourceException {
-        Representation result = null;
-        AnnotationInfo annotationInfo = getAnnotation(Method.POST, entity);
-
-        if (annotationInfo != null) {
-            result = doHandle(annotationInfo, null);
-        } else {
-            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-        }
-
-        return result;
+        return doHandle(Method.POST, entity);
     }
 
     /**
@@ -1110,7 +1125,7 @@ public abstract class ServerResource extends UniformResource {
      * The default behavior is to set the response status to
      * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
-     * @param representation
+     * @param entity
      *            The representation to store.
      * @return The optional result entity.
      * @throws ResourceException
@@ -1118,19 +1133,9 @@ public abstract class ServerResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
      *      PUT method</a>
      */
-    protected Representation put(Representation representation)
+    protected Representation put(Representation entity)
             throws ResourceException {
-        Representation result = null;
-        AnnotationInfo annotationInfo = getAnnotation(Method.PUT,
-                representation);
-
-        if (annotationInfo != null) {
-            result = doHandle(annotationInfo, null);
-        } else {
-            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-        }
-
-        return result;
+        return doHandle(Method.PUT, entity);
     }
 
     /**
