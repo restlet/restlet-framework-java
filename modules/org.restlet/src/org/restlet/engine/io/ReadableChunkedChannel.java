@@ -55,9 +55,6 @@ public class ReadableChunkedChannel extends
      * 
      * @param source
      *            The source channel.
-     * @param remainingChunkSize
-     *            The total available size that can be read from the source
-     *            channel.
      */
     public ReadableChunkedChannel(ReadableBufferedChannel source) {
         super(source);

@@ -408,8 +408,10 @@ public abstract class Representation extends RepresentationInfo {
     // [ifndef gwt] method
     /**
      * Indicates if the representation content supports NIO selection. In this
-     * case, the {@link #register(org.restlet.util.SelectionListener)} method
-     * can be called to be notifier when new content is ready for reading.
+     * case, the
+     * {@link org.restlet.engine.connector.ConnectionController#register(org.restlet.util.SelectionListener)}
+     * method can be called to be notified when new content is ready for
+     * reading.
      * 
      * @return True if the representation content supports NIO selection.
      * @see #register(org.restlet.util.SelectionListener)

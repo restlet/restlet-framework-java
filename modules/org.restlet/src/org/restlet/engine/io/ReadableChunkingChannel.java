@@ -53,7 +53,7 @@ public class ReadableChunkingChannel extends
      * 
      * @param source
      *            The source channel.
-     * @param remainingChunkSize
+     * @param maxBufferSize
      *            The total available size that can be read from the source
      *            channel.
      */
