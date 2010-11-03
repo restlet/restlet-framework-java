@@ -384,14 +384,7 @@ public abstract class ServerResource extends UniformResource {
                 } else if (method.equals(Method.OPTIONS)) {
                     result = options();
                 } else {
-                    AnnotationInfo annotationInfo = getAnnotation(method,
-                            getRequestEntity());
-
-                    if (annotationInfo != null) {
-                        result = doHandle(annotationInfo, null);
-                    } else {
-                        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-                    }
+                    result = doHandle(method, result);
                 }
             } else {
                 setStatus(Status.CLIENT_ERROR_NOT_FOUND);
@@ -474,6 +467,37 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
+     * Handles a call and checks the request's method and entity. If the method
+     * is not supported, the response status is set to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}. If the request's entity
+     * is no supported, the response status is set to
+     * {@link Status#CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE}.
+     * 
+     * @param method
+     *            The request method.
+     * @param entity
+     *            The request entity (can be null, or unavailable).
+     * @return The response entity.
+     * @throws ResourceException
+     */
+    private Representation doHandle(Method method, Representation entity) {
+        Representation result = null;
+        if (getAnnotation(method) != null) {
+            // We know the method is supported, let's check the entity.
+            AnnotationInfo annotationInfo = getAnnotation(method, entity);
+            if (annotationInfo != null) {
+                result = doHandle(annotationInfo, null);
+            } else {
+                // The request entity is not supported.
+                setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+            }
+        } else {
+            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        }
+        return result;
+    }
+
+    /**
      * Effectively handles a call with content negotiation of the response
      * entity. The default behavior is to dispatch the call to one of the
      * {@link #get(Variant)}, {@link #post(Representation,Variant)},
@@ -518,9 +542,8 @@ public abstract class ServerResource extends UniformResource {
                         result = options(variant);
                     }
                 } else if (variant instanceof VariantInfo) {
-                    result = doHandle(
-                            ((VariantInfo) variant).getAnnotationInfo(),
-                            variant);
+                    result = doHandle(((VariantInfo) variant)
+                            .getAnnotationInfo(), variant);
                 } else {
                     setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
                 }
@@ -837,7 +860,8 @@ public abstract class ServerResource extends UniformResource {
                         && (getResponseEntity() == null || !getResponseEntity()
                                 .isAvailable())) {
                     getLogger()
-                            .fine("A response with a 200 (Ok) status should have an entity. Changing the status to 204 (No content).");
+                            .fine(
+                                    "A response with a 200 (Ok) status should have an entity. Changing the status to 204 (No content).");
                     setStatus(Status.SUCCESS_NO_CONTENT);
                 }
             } catch (Throwable t) {
@@ -1052,16 +1076,7 @@ public abstract class ServerResource extends UniformResource {
      */
     protected Representation post(Representation entity)
             throws ResourceException {
-        Representation result = null;
-        AnnotationInfo annotationInfo = getAnnotation(Method.POST, entity);
-
-        if (annotationInfo != null) {
-            result = doHandle(annotationInfo, null);
-        } else {
-            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-        }
-
-        return result;
+        return doHandle(Method.POST, entity);
     }
 
     /**
