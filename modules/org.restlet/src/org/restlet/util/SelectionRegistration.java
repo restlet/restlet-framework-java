@@ -371,13 +371,13 @@ public class SelectionRegistration {
     public SelectionKey update() {
         if (this.selectionKey.isValid()) {
             if (isCanceling()) {
-                Context.getCurrentLogger().log(Level.INFO,
+                Context.getCurrentLogger().log(Level.FINE,
                         "Cancelling of the selection key requested");
                 this.selectionKey.cancel();
             } else {
                 try {
                     Context.getCurrentLogger().log(
-                            Level.INFO,
+                            Level.FINE,
                             "Update key (old | new) : "
                                     + SelectionRegistration
                                             .getName(this.selectionKey
@@ -388,14 +388,14 @@ public class SelectionRegistration {
                     this.selectionKey.interestOps(getInterestOperations());
                 } catch (CancelledKeyException cke) {
                     Context.getCurrentLogger()
-                            .log(Level.INFO,
+                            .log(Level.FINE,
                                     "Unable to update a cancelled key, registering again",
                                     cke);
                     this.selectionKey = register(this.selectionKey.selector());
                 }
             }
         } else {
-            Context.getCurrentLogger().log(Level.INFO,
+            Context.getCurrentLogger().log(Level.FINE,
                     "Invalid key detected, registering again");
             this.selectionKey = register(this.selectionKey.selector());
         }

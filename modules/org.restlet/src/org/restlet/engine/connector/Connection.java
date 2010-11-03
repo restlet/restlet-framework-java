@@ -267,7 +267,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * @return The socket port.
      */
     public int getPort() {
-        return getSocket().getPort();
+        return (getSocket() == null) ? -1 : getSocket().getPort();
     }
 
     /**
@@ -485,7 +485,8 @@ public class Connection<T extends Connector> implements SelectionListener {
      * Callback method invoked when the connection has been selected for IO
      * operations it registered interest in. By default it updates the timestamp
      * that allows the detection of expired connections and calls
-     * {@link Way#onSelected(SelectionRegistration)} on the inbound or outbound way.
+     * {@link Way#onSelected(SelectionRegistration)} on the inbound or outbound
+     * way.
      * 
      * @param registration
      *            The registered selection key.
