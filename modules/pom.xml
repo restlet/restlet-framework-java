@@ -87,12 +87,12 @@
 		<lib-jcip-annotations-version>1.0</lib-jcip-annotations-version>
 		<lib-jdom-version>1.1</lib-jdom-version>
 		<lib-jettison-version>1.2</lib-jettison-version>
-		<lib-jetty-ajp-version>7.0.1.v20091125</lib-jetty-ajp-version>
-		<lib-jetty-continuation-version>7.0.1.v20091125</lib-jetty-continuation-version>
-		<lib-jetty-http-version>7.0.1.v20091125</lib-jetty-http-version>
-		<lib-jetty-io-version>7.0.1.v20091125</lib-jetty-io-version>
-		<lib-jetty-server-version>7.0.1.v20091125</lib-jetty-server-version>
-		<lib-jetty-util-version>7.0.1.v20091125</lib-jetty-util-version>
+		<lib-jetty-ajp-version>7.1.6.v20100715</lib-jetty-ajp-version>
+		<lib-jetty-continuation-version>7.1.6.v20100715</lib-jetty-continuation-version>
+		<lib-jetty-http-version>7.1.6.v20100715</lib-jetty-http-version>
+		<lib-jetty-io-version>7.1.6.v20100715</lib-jetty-io-version>
+		<lib-jetty-server-version>7.1.6.v20100715</lib-jetty-server-version>
+		<lib-jetty-util-version>7.1.6.v20100715</lib-jetty-util-version>
 		<lib-jetty4-version>4.2</lib-jetty4-version>
 		<lib-jibx-version>1.2.2</lib-jibx-version>
 		<lib-jline-version>0.9.94</lib-jline-version>
@@ -112,7 +112,7 @@
 		<lib-mime4j-version>0.6</lib-mime4j-version>
 		<lib-mina-version>1.1.7</lib-mina-version>
 		<lib-mina-ssl-version>1.1.7</lib-mina-ssl-version>
-		<lib-netty-version>3.1.5.GA</lib-netty-version>
+		<lib-netty-version>3.2.2</lib-netty-version>
 		<lib-oauth-version>20090617</lib-oauth-version>
 		<lib-osgi-version>4.0.0</lib-osgi-version>
 		<lib-pool-version>1.5</lib-pool-version>
@@ -125,7 +125,7 @@
 		<lib-com.sun.script-version>1.0</lib-com.sun.script-version>
 		<lib-javax.script-version>1.0</lib-javax.script-version>
 		<lib-servlet-version>2.5</lib-servlet-version>
-		<lib-simple-version>4.1.20</lib-simple-version>
+		<lib-simple-version>4.1.21</lib-simple-version>
 		<lib-slf4j-version>1.5.8</lib-slf4j-version>
 		<lib-solr-version>1.4.0</lib-solr-version>
 		<lib-solr-common-version>1.4.0</lib-solr-common-version>

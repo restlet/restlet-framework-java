@@ -16,7 +16,7 @@
 		<dependency>
 			<groupId>org.simpleframework</groupId>
 			<artifactId>simple</artifactId>
-			<version>4.1.20</version>
+			<version>4.1.21</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
