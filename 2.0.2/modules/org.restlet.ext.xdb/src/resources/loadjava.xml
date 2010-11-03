@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project name="loadjava" default="..." basedir=".">
+
+    <!-- $Id: loadjava.xml,v 1.4 2006/05/30 11:49:44 mochoa Exp $
+     - You need to pass these properties: login, file
+     - login string must be using syntax of -oci8 option of loadjava.
+     - it means using a valid SQLNet connect string.
+     - ex:
+     -   <loadjava-with-public-synonym
+     -     login="scott/tiger@sqlnet_connect_string"
+     -     file="../bin/Toolkit8i.jar"/>
+     -
+     -   <loadjava
+     -     login="scott/tiger@sqlnet_connect_string"
+     -     file="../bin/Toolkit8i.jar"/>
+     -
+     -   <dropjava
+     -     login="scott/tiger@sqlnet_connect_string"
+     -     file="../bin/Toolkit8i.jar"/>
+     -
+     -->
+
+    <path id="aurora.classpath">
+     <pathelement path="${ORACLE_HOME}/jdbc/lib/ojdbc5.jar"/>
+     <pathelement path="${ORACLE_HOME}/javavm/lib/aurora.zip"/>
+    </path>
+
+   <!--
+     - This macro loads a java resource to on Oracle JVM server
+     - using loadjava interface and admin tool.
+     - Also grant access to everybody and creates public synonym
+     - To execute this macro, provide these parameters:
+     -   login   Full connect string to the database server.
+     -   file    File to be upload (file.jar|file.class|file.java).
+     -->
+     <macrodef name="loadjava-with-public-synonym" description="Load Java with public synonym to OJVM">
+        <attribute name="login" default="LOGIN NOT SET"/>
+        <attribute name="file" default="FILE NOT SET"/>
+        <attribute name="dir" default="."/>
+        <attribute name="authid" default="-nodefiner"/>
+        <attribute name="failonerror" default="true"/>
+        <!-- load resource -->
+        <sequential>
+          <java failonerror="@{failonerror}" classname="oracle.aurora.server.tools.loadjava.LoadJavaMain" 
+                fork="yes"
+                dir="@{dir}">
+            <classpath refid="aurora.classpath" />
+            <arg value="@{authid}"/>
+            <arg value="-r"/>
+            <arg value="-v"/>
+            <arg value="-s"/>
+            <arg value="-g"/>
+            <arg value="public"/>
+            <arg value="-u"/>
+            <arg value="@{login}"/>
+            <arg value="@{file}"/>
+          </java>
+        </sequential>
+    </macrodef>
+
+    <!--
+     - This macro loads a java resource to on Oracle JVM server
+     - using loadjava interface and admin tool.
+     -->
+     <macrodef name="loadjava-with-resolver" description="Load Java with resolver spec into OJVM">
+        <attribute name="login" default="LOGIN NOT SET"/>
+        <attribute name="file" default="FILE NOT SET"/>
+        <attribute name="dir" default="."/>
+        <attribute name="resolver" default="RESOLVER NOT SET"/>
+        <attribute name="authid" default="-nodefiner"/>
+        <attribute name="failonerror" default="true"/>
+	      <!-- load resource -->
+        <sequential>
+          <java failonerror="@{failonerror}" classname="oracle.aurora.server.tools.loadjava.LoadJavaMain"
+                fork="yes"
+                dir="@{dir}">
+            <classpath refid="aurora.classpath" />
+            <arg value="@{authid}"/>
+            <arg value="-r"/>
+            <arg value="-v"/>
+            <arg value="-s"/>
+            <arg value="-resolver"/>
+            <arg value="@{resolver}"/>
+            <arg value="-u"/>
+            <arg value="@{login}"/>
+            <arg value="@{file}"/>
+          </java>
+        </sequential>
+    </macrodef>
+
+    <!--
+     - This macro loads a java resource to on Oracle JVM server
+     - using loadjava interface and admin tool.
+     -->
+     <macrodef name="loadjava-with-resolver-and-grant" description="Load Java with resolver spec and grant into OJVM">
+        <attribute name="login" default="LOGIN NOT SET"/>
+        <attribute name="file" default="FILE NOT SET"/>
+        <attribute name="dir" default="."/>
+        <attribute name="resolver" default="RESOLVER NOT SET"/>
+        <attribute name="grant" default="GRANT NOT SET"/>
+        <attribute name="authid" default="-nodefiner"/>
+        <attribute name="failonerror" default="true"/>
+        <!-- load resource -->
+        <sequential>
+          <java failonerror="@{failonerror}" classname="oracle.aurora.server.tools.loadjava.LoadJavaMain"
+                fork="yes"
+                dir="@{dir}">
+            <classpath refid="aurora.classpath" />
+            <arg value="@{authid}"/>
+            <arg value="-r"/>
+            <arg value="-v"/>
+            <arg value="-s"/>
+            <arg value="-resolver"/>
+            <arg value="@{resolver}"/>
+            <arg value="-g"/>
+            <arg value="@{grant}"/>
+            <arg value="-u"/>
+            <arg value="@{login}"/>
+            <arg value="@{file}"/>
+          </java>
+        </sequential>
+    </macrodef>
+
+    <!--
+     - This macro loads a java resource to on Oracle JVM server
+     - using loadjava interface and admin tool.
+     - To execute this macro, give these parameters:
+     -   login   Full connect string to the database server.
+     -   file    File to be upload (file.jar|file.class|file.java).
+     -->
+     <macrodef name="loadjava" description="Load Java without public synonym to OJVM">
+        <attribute name="login" default="LOGIN NOT SET"/>
+        <attribute name="file" default="FILE NOT SET"/>
+        <attribute name="dir" default="."/>
+        <attribute name="authid" default="-nodefiner"/>
+        <attribute name="failonerror" default="true"/>
+        <!-- load resource -->
+        <sequential>
+          <java failonerror="@{failonerror}" classname="oracle.aurora.server.tools.loadjava.LoadJavaMain"
+                fork="yes"
+                dir="@{dir}">
+            <classpath refid="aurora.classpathh" />
+            <arg value="@{authid}"/>
+            <arg value="-r"/>
+            <arg value="-v"/>
+            <arg value="-u"/>
+            <arg value="@{login}"/>
+            <arg value="@{file}"/>
+          </java>
+        </sequential>
+    </macrodef>
+
+    <!--
+     - This macro removes a java resource from on Oracle JVM server
+     - using dropjava interface and admin tool.
+     - To execute this macro, give these parameters:
+     -   login   Full connect string to the database server.
+     -   file    File to be drop (file.jar|file.class|file.java).
+     -->
+     <macrodef name="dropjava" description="Drop Java from OJVM">
+        <attribute name="login" default="LOGIN NOT SET"/>
+        <attribute name="file" default="FILE NOT SET"/>
+        <attribute name="dir" default="."/>
+        <attribute name="failonerror" default="true"/>
+        <!-- drop resource -->
+        <sequential>
+          <java failonerror="@{failonerror}"
+                classname="oracle.aurora.server.tools.loadjava.DropJavaMain"
+                fork="yes"
+                dir="@{dir}">
+            <classpath refid="aurora.classpath" />
+            <arg value="-v"/>
+            <arg value="-u"/>
+            <arg value="@{login}"/>
+            <arg value="@{file}"/>
+          </java>
+        </sequential>
+    </macrodef>
+
+</project>
