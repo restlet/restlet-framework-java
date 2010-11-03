@@ -124,39 +124,39 @@ public class AnnotatedResource9TestCase extends TestCase {
         response.getEntity().release();
 
         request = new Request(method, "http://localhost:8182/test");
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_HTML));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         response.getEntity().release();
 
         request = new Request(method, "http://localhost:8182/test");
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         response.getEntity().release();
 
         request = new Request(method, "http://localhost:8182/test");
         request.setEntity(text, MediaType.TEXT_PLAIN);
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_HTML));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         assertEquals("si-html+txt", response.getEntity().getText());
 
         request = new Request(method, "http://localhost:8182/test");
         request.setEntity(form.getWebRepresentation());
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("si-string+form", response.getEntity().getText());
 
         request = new Request(method, "http://localhost:8182/test");
         request.setEntity(text, MediaType.TEXT_PLAIN);
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("si-string+text", response.getEntity().getText());
@@ -188,39 +188,39 @@ public class AnnotatedResource9TestCase extends TestCase {
         response.getEntity().release();
 
         request = new Request(method, "http://localhost:8182/test");
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_HTML));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         response.getEntity().release();
 
         request = new Request(method, "http://localhost:8182/test");
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         response.getEntity().release();
 
         request = new Request(method, "http://localhost:8182/test");
         request.setEntity(text, MediaType.TEXT_PLAIN);
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_HTML));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         assertEquals("sni-html+txt", response.getEntity().getText());
 
         request = new Request(method, "http://localhost:8182/test");
         request.setEntity(form.getWebRepresentation());
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         assertEquals("sni-html+form", response.getEntity().getText());
 
         request = new Request(method, "http://localhost:8182/test");
         request.setEntity(text, MediaType.TEXT_PLAIN);
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("sni-string+text", response.getEntity().getText());
@@ -246,39 +246,39 @@ public class AnnotatedResource9TestCase extends TestCase {
         response.getEntity().release();
 
         request = new Request(method, "http://localhost:8182/test");
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_HTML));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         response.getEntity().release();
 
         request = new Request(method, "http://localhost:8182/test");
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         response.getEntity().release();
 
         request = new Request(method, "http://localhost:8182/test");
         request.setEntity(text, MediaType.TEXT_PLAIN);
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_HTML));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("usi-string+text", response.getEntity().getText());
 
         request = new Request(method, "http://localhost:8182/test");
         request.setEntity(form.getWebRepresentation());
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("usi-string+form", response.getEntity().getText());
 
         request = new Request(method, "http://localhost:8182/test");
         request.setEntity(text, MediaType.TEXT_PLAIN);
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("usi-string+text", response.getEntity().getText());
@@ -286,8 +286,8 @@ public class AnnotatedResource9TestCase extends TestCase {
         request = new Request(AnnotatedResource9TestCase.USI,
                 "http://localhost:8182/test");
         request.setEntity(form.getWebRepresentation());
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("usi-string+form", response.getEntity().getText());
@@ -295,8 +295,8 @@ public class AnnotatedResource9TestCase extends TestCase {
         request = new Request(AnnotatedResource9TestCase.USI,
                 "http://localhost:8182/test");
         request.setEntity(form.getWebRepresentation());
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_HTML));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("usi-string+form", response.getEntity().getText());
@@ -323,39 +323,39 @@ public class AnnotatedResource9TestCase extends TestCase {
         response.getEntity().release();
 
         request = new Request(method, "http://localhost:8182/test");
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_HTML));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         response.getEntity().release();
 
         request = new Request(method, "http://localhost:8182/test");
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         response.getEntity().release();
 
         request = new Request(method, "http://localhost:8182/test");
         request.setEntity(text, MediaType.TEXT_PLAIN);
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_HTML));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         assertEquals("usni-html+txt", response.getEntity().getText());
 
         request = new Request(method, "http://localhost:8182/test");
         request.setEntity(form.getWebRepresentation());
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_HTML));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_HTML));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
         assertEquals("usni-html+form", response.getEntity().getText());
 
         request = new Request(method, "http://localhost:8182/test");
         request.setEntity(text, MediaType.TEXT_PLAIN);
-        request.getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.TEXT_PLAIN));
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.TEXT_PLAIN));
         response = client.handle(request);
         assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
         assertEquals("usni-string+text", response.getEntity().getText());

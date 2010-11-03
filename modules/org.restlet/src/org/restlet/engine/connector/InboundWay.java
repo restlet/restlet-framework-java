@@ -211,7 +211,7 @@ public abstract class InboundWay extends Way {
         }
 
         if (getHeaders() != null) {
-            getHeaders().clear();
+            setHeaders(null);
         }
 
         super.onCompleted();
