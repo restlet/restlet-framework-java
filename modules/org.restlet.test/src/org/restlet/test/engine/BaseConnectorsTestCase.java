@@ -68,7 +68,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     protected abstract Application createApplication(Component component);
 
     // Helper methods
-    private void runTest(ConnectorHelper<Server> server,
+    protected void runTest(ConnectorHelper<Server> server,
             ConnectorHelper<Client> client) throws Exception {
         Engine nre = new Engine(false);
         nre.getRegisteredServers().add(server);
@@ -85,7 +85,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
-    private String start() throws Exception {
+    protected String start() throws Exception {
         this.component = new Component();
         final Server server = this.component.getServers().add(Protocol.HTTP, 0);
         // server.getContext().getParameters().add("tracing", "true");
@@ -97,7 +97,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         return "http://localhost:" + server.getEphemeralPort() + "/test";
     }
 
-    private void stop() throws Exception {
+    protected void stop() throws Exception {
         if ((this.component != null) && this.component.isStarted()) {
             this.component.stop();
         }

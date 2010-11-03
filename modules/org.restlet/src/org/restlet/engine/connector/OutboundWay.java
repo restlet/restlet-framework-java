@@ -426,8 +426,6 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public void updateState() {
-        super.updateState();
-
         // Update the IO state if necessary
         if ((getIoState() == IoState.IDLE) && !getMessages().isEmpty()) {
             if (getMessage() == null) {
@@ -435,6 +433,9 @@ public abstract class OutboundWay extends Way {
                 setMessage(getMessages().peek());
             }
         }
+        
+        // Update the registration
+        super.updateState();
     }
 
     /**
