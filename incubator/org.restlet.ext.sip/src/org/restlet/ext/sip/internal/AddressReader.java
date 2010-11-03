@@ -30,16 +30,16 @@
 
 package org.restlet.ext.sip.internal;
 
-import static org.restlet.engine.http.header.HeaderUtils.isComma;
-import static org.restlet.engine.http.header.HeaderUtils.isLinearWhiteSpace;
-import static org.restlet.engine.http.header.HeaderUtils.isSemiColon;
+import static org.restlet.engine.header.HeaderUtils.isComma;
+import static org.restlet.engine.header.HeaderUtils.isLinearWhiteSpace;
+import static org.restlet.engine.header.HeaderUtils.isSemiColon;
 
 import java.io.IOException;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.engine.http.header.HeaderReader;
-import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.header.HeaderReader;
+import org.restlet.engine.header.HeaderUtils;
 import org.restlet.ext.sip.Address;
 
 /**

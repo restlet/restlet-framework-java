@@ -32,7 +32,7 @@ package org.restlet.ext.sip.internal;
 
 import java.util.List;
 
-import org.restlet.engine.http.header.HeaderWriter;
+import org.restlet.engine.header.HeaderWriter;
 import org.restlet.ext.sip.OptionTag;
 
 /**

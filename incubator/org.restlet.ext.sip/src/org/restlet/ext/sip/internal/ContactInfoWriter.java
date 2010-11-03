@@ -33,8 +33,8 @@ package org.restlet.ext.sip.internal;
 import java.util.List;
 
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.header.HeaderWriter;
-import org.restlet.engine.http.header.PreferenceWriter;
+import org.restlet.engine.header.HeaderWriter;
+import org.restlet.engine.header.PreferenceWriter;
 import org.restlet.ext.sip.ContactInfo;
 
 /**

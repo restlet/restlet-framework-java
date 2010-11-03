@@ -13,6 +13,7 @@
 	<description>Support for the Atom syndication and the AtomPub (Atom Publication Protocol) standards in their 1.0 version.</description>
 
 	<dependencies>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>

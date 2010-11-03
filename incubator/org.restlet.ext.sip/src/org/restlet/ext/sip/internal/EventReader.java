@@ -30,13 +30,13 @@
 
 package org.restlet.ext.sip.internal;
 
-import static org.restlet.engine.http.header.HeaderUtils.isComma;
-import static org.restlet.engine.http.header.HeaderUtils.isSpace;
+import static org.restlet.engine.header.HeaderUtils.isComma;
+import static org.restlet.engine.header.HeaderUtils.isSpace;
 
 import java.io.IOException;
 
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.header.HeaderReader;
+import org.restlet.engine.header.HeaderReader;
 import org.restlet.ext.sip.Event;
 import org.restlet.ext.sip.EventType;
 

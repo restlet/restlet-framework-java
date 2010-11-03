@@ -19,6 +19,7 @@
 			<artifactId>junit</artifactId>
 			<version>4.8.1</version>
 		</dependency>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>
@@ -98,13 +99,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.grizzly</artifactId>
-<!--			<version>2.1-SNAPSHOT</version> -->
-			<version>${version}</version>
-			
-		</dependency>
-		<dependency>
-			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet.ext.httpclient</artifactId>
 <!--			<version>2.1-SNAPSHOT</version> -->
 			<version>${version}</version>
@@ -113,13 +107,6 @@
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet.ext.net</artifactId>
-<!--			<version>2.1-SNAPSHOT</version> -->
-			<version>${version}</version>
-			
-		</dependency>
-		<dependency>
-			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.netty</artifactId>
 <!--			<version>2.1-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
@@ -183,6 +170,13 @@
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet.example</artifactId>
+<!--			<version>2.1-SNAPSHOT</version> -->
+			<version>${version}</version>
+			
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.dev</groupId>
+			<artifactId>org.restlet.ext.xdb</artifactId>
 <!--			<version>2.1-SNAPSHOT</version> -->
 			<version>${version}</version>
 			

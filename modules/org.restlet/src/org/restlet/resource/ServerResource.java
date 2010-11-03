@@ -384,7 +384,7 @@ public abstract class ServerResource extends UniformResource {
                 } else if (method.equals(Method.OPTIONS)) {
                     result = options();
                 } else {
-                    result = doHandle(method, result);
+                    result = doHandle(method, getRequestEntity());
                 }
             } else {
                 setStatus(Status.CLIENT_ERROR_NOT_FOUND);
@@ -1124,7 +1124,7 @@ public abstract class ServerResource extends UniformResource {
      * The default behavior is to set the response status to
      * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
-     * @param representation
+     * @param entity
      *            The representation to store.
      * @return The optional result entity.
      * @throws ResourceException
@@ -1132,19 +1132,9 @@ public abstract class ServerResource extends UniformResource {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
      *      PUT method</a>
      */
-    protected Representation put(Representation representation)
+    protected Representation put(Representation entity)
             throws ResourceException {
-        Representation result = null;
-        AnnotationInfo annotationInfo = getAnnotation(Method.PUT,
-                representation);
-
-        if (annotationInfo != null) {
-            result = doHandle(annotationInfo, null);
-        } else {
-            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-        }
-
-        return result;
+        return doHandle(Method.PUT, entity);
     }
 
     /**

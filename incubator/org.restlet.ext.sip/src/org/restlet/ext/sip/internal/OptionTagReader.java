@@ -32,7 +32,7 @@ package org.restlet.ext.sip.internal;
 
 import java.io.IOException;
 
-import org.restlet.engine.http.header.HeaderReader;
+import org.restlet.engine.header.HeaderReader;
 import org.restlet.ext.sip.OptionTag;
 
 /**

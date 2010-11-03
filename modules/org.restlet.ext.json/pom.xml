@@ -16,13 +16,14 @@
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-servlet</artifactId>
-			<version>2.0.3</version>
+			<version>2.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.jse</groupId>
 			<artifactId>org.restlet.lib.org.json</artifactId>
 			<version>${lib-json-version}</version>
 		</dependency>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>

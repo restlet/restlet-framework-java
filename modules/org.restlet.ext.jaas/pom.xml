@@ -13,6 +13,7 @@
 	<description>Support for JAAS based security.</description>
 
 	<dependencies>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>

@@ -36,9 +36,9 @@ import org.restlet.Client;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
-import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.nio.ClientInboundWay;
-import org.restlet.engine.nio.Connection;
+import org.restlet.engine.connector.ClientInboundWay;
+import org.restlet.engine.connector.Connection;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.sip.SipResponse;
 import org.restlet.ext.sip.SipStatus;
 import org.restlet.util.Series;
@@ -68,8 +68,8 @@ public class SipClientInboundWay extends ClientInboundWay {
 
         for (Parameter header : headers) {
             if (header.getName().equalsIgnoreCase(HeaderConstants.HEADER_VIA)) {
-                SipRecipientInfoReader.addValues(header,
-                        sr.getSipRecipientsInfo());
+                SipRecipientInfoReader.addValues(header, sr
+                        .getSipRecipientsInfo());
             }
         }
 

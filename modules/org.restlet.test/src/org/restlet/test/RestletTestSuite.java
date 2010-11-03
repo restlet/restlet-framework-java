@@ -130,6 +130,14 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(VelocityTestCase.class);
         addTestSuite(WadlTestCase.class);
         addTest(ODataTestSuite.suite());
+
+        // Tests based on extension only supported by the JEE edition.
+        // [ifdef jee]
+        addTestSuite(org.restlet.test.ext.xdb.ChunkedInputStreamTestCase.class);
+        addTestSuite(org.restlet.test.ext.xdb.ChunkedOutputStreamTestCase.class);
+        addTestSuite(org.restlet.test.ext.xdb.InputEntityStreamTestCase.class);
+        // [enddef]
+
         // TODO Fix Zip client test case
         // addTestSuite(ZipClientTestCase.class);
 

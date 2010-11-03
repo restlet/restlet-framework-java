@@ -32,10 +32,10 @@ package org.restlet.ext.sip.internal;
 
 import org.restlet.Server;
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.header.DateWriter;
-import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.nio.Connection;
-import org.restlet.engine.nio.ServerOutboundWay;
+import org.restlet.engine.connector.Connection;
+import org.restlet.engine.connector.ServerOutboundWay;
+import org.restlet.engine.header.DateWriter;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;

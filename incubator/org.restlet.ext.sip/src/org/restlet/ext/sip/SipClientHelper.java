@@ -34,10 +34,10 @@ import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Protocol;
-import org.restlet.engine.nio.BaseClientHelper;
-import org.restlet.engine.nio.Connection;
-import org.restlet.engine.nio.InboundWay;
-import org.restlet.engine.nio.OutboundWay;
+import org.restlet.engine.connector.Connection;
+import org.restlet.engine.connector.ConnectionClientHelper;
+import org.restlet.engine.connector.InboundWay;
+import org.restlet.engine.connector.OutboundWay;
 import org.restlet.ext.sip.internal.SipClientInboundWay;
 import org.restlet.ext.sip.internal.SipClientOutboundWay;
 
@@ -46,7 +46,7 @@ import org.restlet.ext.sip.internal.SipClientOutboundWay;
  * 
  * @author Jerome Louvel
  */
-public class SipClientHelper extends BaseClientHelper {
+public class SipClientHelper extends ConnectionClientHelper {
 
     /**
      * Constructor.

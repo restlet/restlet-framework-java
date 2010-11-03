@@ -10,7 +10,7 @@ import org.restlet.Server;
 import org.restlet.Uniform;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
-import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
@@ -39,8 +39,8 @@ public class B2buaRedirector extends Redirector {
         client.getContext().getParameters().add("proxyHost", "localhost");
         client.getContext().getParameters().add("proxyPort", arguments[0]);
         client.getContext().getParameters().add("tracing", "false");
-        client.getContext().getParameters()
-                .add("pipeliningConnections", "false");
+        client.getContext().getParameters().add("pipeliningConnections",
+                "false");
 
         c.getDefaultHost().attachDefault(
                 new B2buaRedirector(null, "sip:localhost:8182"));

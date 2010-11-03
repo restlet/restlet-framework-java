@@ -31,10 +31,10 @@
 package org.restlet.ext.sip.internal;
 
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.http.header.TagWriter;
-import org.restlet.engine.nio.ClientOutboundWay;
-import org.restlet.engine.nio.Connection;
+import org.restlet.engine.connector.ClientOutboundWay;
+import org.restlet.engine.connector.Connection;
+import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.header.TagWriter;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.util.Series;
@@ -83,27 +83,29 @@ public class SipClientOutboundWay extends ClientOutboundWay {
             sipRequest = (SipRequest) getMessage().getRequest();
 
             if (sipRequest.getCallId() != null) {
-                headers.add(SipConstants.HEADER_CALL_ID, sipRequest.getCallId());
+                headers
+                        .add(SipConstants.HEADER_CALL_ID, sipRequest
+                                .getCallId());
             }
 
             if (sipRequest.getCallSequence() != null) {
-                headers.add(SipConstants.HEADER_CALL_SEQ,
-                        sipRequest.getCallSequence());
+                headers.add(SipConstants.HEADER_CALL_SEQ, sipRequest
+                        .getCallSequence());
             }
 
             if (sipRequest.getFrom() != null) {
-                headers.add(HeaderConstants.HEADER_FROM,
-                        AddressWriter.write(sipRequest.getFrom()));
+                headers.add(HeaderConstants.HEADER_FROM, AddressWriter
+                        .write(sipRequest.getFrom()));
             }
 
             if (sipRequest.getTo() != null) {
-                headers.add(SipConstants.HEADER_TO,
-                        AddressWriter.write(sipRequest.getTo()));
+                headers.add(SipConstants.HEADER_TO, AddressWriter
+                        .write(sipRequest.getTo()));
             }
 
             if (sipRequest.getAlertInfo() != null) {
-                headers.add(SipConstants.HEADER_ALERT_INFO,
-                        AddressWriter.write(sipRequest.getAlertInfo()));
+                headers.add(SipConstants.HEADER_ALERT_INFO, AddressWriter
+                        .write(sipRequest.getAlertInfo()));
             }
 
             if (!sipRequest.getAllowedEventTypes().isEmpty()) {
@@ -112,43 +114,43 @@ public class SipClientOutboundWay extends ClientOutboundWay {
             }
 
             if (!sipRequest.getCallerInfo().isEmpty()) {
-                headers.add(SipConstants.HEADER_CALL_INFO,
-                        AddressWriter.write(sipRequest.getCallerInfo()));
+                headers.add(SipConstants.HEADER_CALL_INFO, AddressWriter
+                        .write(sipRequest.getCallerInfo()));
             }
 
             if (!sipRequest.getContact().isEmpty()) {
-                headers.add(SipConstants.HEADER_CONTACT,
-                        ContactInfoWriter.write(sipRequest.getContact()));
+                headers.add(SipConstants.HEADER_CONTACT, ContactInfoWriter
+                        .write(sipRequest.getContact()));
             }
 
             if (sipRequest.getEvent() != null) {
-                headers.add(SipConstants.HEADER_EVENT,
-                        EventWriter.write(sipRequest.getEvent()));
+                headers.add(SipConstants.HEADER_EVENT, EventWriter
+                        .write(sipRequest.getEvent()));
             }
 
             if (sipRequest.getMimeVersion() != null) {
-                headers.add(SipConstants.HEADER_MIME_VERSION,
-                        sipRequest.getMimeVersion());
+                headers.add(SipConstants.HEADER_MIME_VERSION, sipRequest
+                        .getMimeVersion());
             }
 
             if (sipRequest.getOrganization() != null) {
-                headers.add(SipConstants.HEADER_ORGANIZATION,
-                        sipRequest.getOrganization());
+                headers.add(SipConstants.HEADER_ORGANIZATION, sipRequest
+                        .getOrganization());
             }
 
             if (!sipRequest.getRecordedRoutes().isEmpty()) {
-                headers.add(SipConstants.HEADER_RECORD_ROUTE,
-                        AddressWriter.write(sipRequest.getRecordedRoutes()));
+                headers.add(SipConstants.HEADER_RECORD_ROUTE, AddressWriter
+                        .write(sipRequest.getRecordedRoutes()));
             }
 
             if (sipRequest.getReplyTo() != null) {
-                headers.add(SipConstants.HEADER_REPLY_TO,
-                        AddressWriter.write(sipRequest.getReplyTo()));
+                headers.add(SipConstants.HEADER_REPLY_TO, AddressWriter
+                        .write(sipRequest.getReplyTo()));
             }
 
             if (!sipRequest.getSupported().isEmpty()) {
-                headers.add(SipConstants.HEADER_SUPPORTED,
-                        OptionTagWriter.write(sipRequest.getSupported()));
+                headers.add(SipConstants.HEADER_SUPPORTED, OptionTagWriter
+                        .write(sipRequest.getSupported()));
             }
 
             if (!sipRequest.getInReplyTo().isEmpty()) {
@@ -168,33 +170,33 @@ public class SipClientOutboundWay extends ClientOutboundWay {
             }
 
             if (!sipRequest.getProxyRequires().isEmpty()) {
-                headers.add(SipConstants.HEADER_PROXY_REQUIRE,
-                        OptionTagWriter.write(sipRequest.getProxyRequires()));
+                headers.add(SipConstants.HEADER_PROXY_REQUIRE, OptionTagWriter
+                        .write(sipRequest.getProxyRequires()));
             }
 
             if (sipRequest.getReferTo() != null) {
-                headers.add(SipConstants.HEADER_REFER_TO,
-                        AddressWriter.write(sipRequest.getReferTo()));
+                headers.add(SipConstants.HEADER_REFER_TO, AddressWriter
+                        .write(sipRequest.getReferTo()));
             }
 
             if (!sipRequest.getRequires().isEmpty()) {
-                headers.add(SipConstants.HEADER_REQUIRE,
-                        OptionTagWriter.write(sipRequest.getProxyRequires()));
+                headers.add(SipConstants.HEADER_REQUIRE, OptionTagWriter
+                        .write(sipRequest.getProxyRequires()));
             }
 
             if (!sipRequest.getRoutes().isEmpty()) {
-                headers.add(SipConstants.HEADER_ROUTE,
-                        AddressWriter.write(sipRequest.getRoutes()));
+                headers.add(SipConstants.HEADER_ROUTE, AddressWriter
+                        .write(sipRequest.getRoutes()));
             }
 
             if (sipRequest.getSipIfMatch() != null) {
-                headers.add(HeaderConstants.HEADER_IF_MATCH,
-                        TagWriter.write(sipRequest.getSipIfMatch()));
+                headers.add(HeaderConstants.HEADER_IF_MATCH, TagWriter
+                        .write(sipRequest.getSipIfMatch()));
             }
 
             if (sipRequest.getSubject() != null) {
-                headers.add(SipConstants.HEADER_SUBJECT,
-                        sipRequest.getSubject());
+                headers.add(SipConstants.HEADER_SUBJECT, sipRequest
+                        .getSubject());
             }
 
             if (sipRequest.getSubscriptionState() != null) {

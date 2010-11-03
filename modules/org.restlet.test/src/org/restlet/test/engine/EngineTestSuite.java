@@ -60,7 +60,6 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpCallTestCase.class);
         addTestSuite(ImmutableDateTestCase.class);
-        addTestSuite(InputEntityStreamTestCase.class);
         addTestSuite(UnclosableInputStreamTestCase.class);
         addTestSuite(UnclosableOutputStreamTestCase.class);
         addTestSuite(PreferencesTestCase.class);
@@ -68,18 +67,18 @@ public class EngineTestSuite extends TestSuite {
         // edition.
         // [ifndef gae]
         addTestSuite(AuthenticationTestCase.class);
+        addTestSuite(TunnelFilterTestCase.class);
+        addTestSuite(UserAgentTunnelFilterTestCase.class);
+        // [enddef]
+        // [ifndef gae,jee]
         addTestSuite(ChunkedEncodingPutTestCase.class);
         addTestSuite(ChunkedEncodingTestCase.class);
-        addTestSuite(ChunkedInputStreamTestCase.class);
-        addTestSuite(ChunkedOutputStreamTestCase.class);
         addTestSuite(GetTestCase.class);
         addTestSuite(GetChunkedTestCase.class);
         addTestSuite(PostPutTestCase.class);
         addTestSuite(RemoteClientAddressTestCase.class);
         addTestSuite(SslGetTestCase.class);
         addTestSuite(SslClientContextGetTestCase.class);
-        addTestSuite(TunnelFilterTestCase.class);
-        addTestSuite(UserAgentTunnelFilterTestCase.class);
         // [enddef]
     }
 }

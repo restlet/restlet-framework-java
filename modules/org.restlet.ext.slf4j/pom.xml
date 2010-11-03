@@ -18,6 +18,7 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.5.8</version>
 		</dependency>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>

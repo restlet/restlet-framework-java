@@ -127,7 +127,7 @@ public class AnnotatedResource1TestCase extends TestCase {
             clientResource.put(new StringRepresentation("wxyz",
                     MediaType.APPLICATION_GNU_ZIP));
         } catch (ResourceException re) {
-            assertEquals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, re.getStatus());
+            assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, re.getStatus());
         }
     }
 

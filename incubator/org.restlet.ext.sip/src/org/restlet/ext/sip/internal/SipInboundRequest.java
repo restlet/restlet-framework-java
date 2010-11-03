@@ -54,17 +54,17 @@ import org.restlet.data.RecipientInfo;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.data.Warning;
-import org.restlet.engine.http.header.CacheDirectiveReader;
-import org.restlet.engine.http.header.CookieReader;
-import org.restlet.engine.http.header.ExpectationReader;
-import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.http.header.HeaderReader;
-import org.restlet.engine.http.header.PreferenceReader;
-import org.restlet.engine.http.header.RangeReader;
-import org.restlet.engine.http.header.RecipientInfoReader;
-import org.restlet.engine.http.header.WarningReader;
-import org.restlet.engine.nio.Connection;
-import org.restlet.engine.nio.InboundRequest;
+import org.restlet.engine.connector.Connection;
+import org.restlet.engine.connector.InboundRequest;
+import org.restlet.engine.header.CacheDirectiveReader;
+import org.restlet.engine.header.CookieReader;
+import org.restlet.engine.header.ExpectationReader;
+import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.header.HeaderReader;
+import org.restlet.engine.header.PreferenceReader;
+import org.restlet.engine.header.RangeReader;
+import org.restlet.engine.header.RecipientInfoReader;
+import org.restlet.engine.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.sip.Address;
@@ -508,12 +508,12 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
                 for (Parameter header : getHeaders()) {
                     if (header.getName().equalsIgnoreCase(
                             HeaderConstants.HEADER_IF_MODIFIED_SINCE)) {
-                        ifModifiedSince = HeaderReader.readDate(
-                                header.getValue(), false);
+                        ifModifiedSince = HeaderReader.readDate(header
+                                .getValue(), false);
                     } else if (header.getName().equalsIgnoreCase(
                             HeaderConstants.HEADER_IF_UNMODIFIED_SINCE)) {
-                        ifUnmodifiedSince = HeaderReader.readDate(
-                                header.getValue(), false);
+                        ifUnmodifiedSince = HeaderReader.readDate(header
+                                .getValue(), false);
                     }
                 }
 
@@ -1115,10 +1115,9 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
         // Set the protocol used for this request
         Protocol serverProtocol = getConnection().getHelper().getHelped()
                 .getProtocols().get(0);
-        setProtocol(new Protocol(serverProtocol.getSchemeName(),
-                serverProtocol.getName(), serverProtocol.getDescription(),
-                serverProtocol.getDefaultPort(),
-                serverProtocol.isConfidential(), version));
+        setProtocol(new Protocol(serverProtocol.getSchemeName(), serverProtocol
+                .getName(), serverProtocol.getDescription(), serverProtocol
+                .getDefaultPort(), serverProtocol.isConfidential(), version));
 
         // Parse the host header
         String host = (getHeaders() == null) ? null : getHeaders()

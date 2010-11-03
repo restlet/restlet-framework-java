@@ -13,6 +13,7 @@
 	<description>Integration with java.net.HttpURLConnection class.</description>
 
 	<dependencies>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>

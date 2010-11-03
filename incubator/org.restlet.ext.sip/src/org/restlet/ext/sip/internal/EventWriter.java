@@ -31,7 +31,7 @@
 package org.restlet.ext.sip.internal;
 
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.header.HeaderWriter;
+import org.restlet.engine.header.HeaderWriter;
 import org.restlet.ext.sip.Event;
 
 /**

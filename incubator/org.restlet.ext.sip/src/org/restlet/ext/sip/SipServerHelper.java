@@ -37,10 +37,10 @@ import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.RecipientInfo;
-import org.restlet.engine.nio.BaseServerHelper;
-import org.restlet.engine.nio.Connection;
-import org.restlet.engine.nio.OutboundWay;
-import org.restlet.engine.nio.ServerInboundWay;
+import org.restlet.engine.connector.Connection;
+import org.restlet.engine.connector.ConnectionServerHelper;
+import org.restlet.engine.connector.OutboundWay;
+import org.restlet.engine.connector.ServerInboundWay;
 import org.restlet.ext.sip.internal.SipInboundRequest;
 import org.restlet.ext.sip.internal.SipServerInboundWay;
 import org.restlet.ext.sip.internal.SipServerOutboundWay;
@@ -50,7 +50,7 @@ import org.restlet.ext.sip.internal.SipServerOutboundWay;
  * 
  * @author Jerome Louvel
  */
-public class SipServerHelper extends BaseServerHelper {
+public class SipServerHelper extends ConnectionServerHelper {
 
     @Override
     protected Request createRequest(Connection<Server> connection,

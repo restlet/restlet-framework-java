@@ -31,8 +31,8 @@
 package org.restlet.ext.sip.internal;
 
 import org.restlet.Server;
-import org.restlet.engine.nio.Connection;
-import org.restlet.engine.nio.ServerInboundWay;
+import org.restlet.engine.connector.Connection;
+import org.restlet.engine.connector.ServerInboundWay;
 
 /**
  * SIP server inbound way.
