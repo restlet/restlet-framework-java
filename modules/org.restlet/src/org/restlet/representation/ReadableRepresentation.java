@@ -33,9 +33,7 @@ package org.restlet.representation;
 import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.NioUtils;
 
@@ -86,24 +84,6 @@ public class ReadableRepresentation extends ChannelRepresentation {
         ReadableByteChannel result = this.channel;
         setAvailable(false);
         return result;
-    }
-
-    /**
-     * Closes and releases the readable channel.
-     */
-    @Override
-    public void release() {
-        if (this.channel != null) {
-            try {
-                this.channel.close();
-            } catch (IOException e) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Error while releasing the representation.", e);
-            }
-
-            this.channel = null;
-        }
-        super.release();
     }
 
     /**

@@ -125,8 +125,7 @@ public abstract class InboundWay extends Way {
                         contentLength) {
                     @Override
                     public void release() {
-                        super.release();
-                        onCompleted();
+                        getConnection().close(false);
                     }
                 };
 

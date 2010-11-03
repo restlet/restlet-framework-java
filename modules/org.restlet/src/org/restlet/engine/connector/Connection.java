@@ -130,6 +130,20 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
+     * Clears the connection so it can be reused. Typically invoked by a
+     * connection pool.
+     */
+    public void clear() {
+        this.readableSelectionChannel = null;
+        this.socketChannel = null;
+        this.registration = null;
+        this.state = null;
+        this.writableSelectionChannel = null;
+        this.inboundWay.clear();
+        this.outboundWay.clear();
+    }
+
+    /**
      * Closes the connection. By default, set the state to
      * {@link ConnectionState#CLOSED}.
      * 
@@ -138,12 +152,22 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public void close(boolean graceful) {
         if (graceful) {
+            getLogger().log(
+                    Level.FINE,
+                    "Closing a connection to " + getSocketAddress()
+                            + " gracefully");
+
             if (getRegistration() != null) {
-                getRegistration().cancel();
+                getRegistration().setCanceling(true);
             }
 
             setState(ConnectionState.CLOSING);
         } else {
+            getLogger().log(
+                    Level.FINE,
+                    "Closing a connection to " + getSocketAddress()
+                            + " immediately");
+
             try {
                 if ((getSocket() != null) && !getSocket().isClosed()) {
                     // Flush the output stream
@@ -256,6 +280,17 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
+     * Returns the socket's NIO registration holding the link between the
+     * {@link SocketChannel} and the {@link Connection}.
+     * 
+     * @return The socket's NIO registration holding the link between the
+     *         channel and the connection.
+     */
+    protected SelectionRegistration getRegistration() {
+        return registration;
+    }
+
+    /**
      * Returns the underlying socket.
      * 
      * @return The underlying socket.
@@ -281,17 +316,6 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public SocketChannel getSocketChannel() {
         return socketChannel;
-    }
-
-    /**
-     * Returns the socket's NIO registration holding the link between the
-     * {@link SocketChannel} and the {@link Connection}.
-     * 
-     * @return The socket's NIO registration holding the link between the
-     *         channel and the connection.
-     */
-    protected SelectionRegistration getRegistration() {
-        return registration;
     }
 
     /**
@@ -521,20 +545,6 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
-     * Clears the connection so it can be reused. Typically invoked by a
-     * connection pool.
-     */
-    public void clear() {
-        this.readableSelectionChannel = null;
-        this.socketChannel = null;
-        this.registration = null;
-        this.state = null;
-        this.writableSelectionChannel = null;
-        this.inboundWay.clear();
-        this.outboundWay.clear();
-    }
-
-    /**
      * Reuses the connection and associates it to the given socket.
      * 
      * @param socketChannel
@@ -627,18 +637,22 @@ public class Connection<T extends Connector> implements SelectionListener {
     /**
      * Updates the connection states.
      */
-    public void updateState() {
+    public boolean updateState() {
+        boolean result = false;
+
         if ((getState() != ConnectionState.CLOSING)
                 && (getState() != ConnectionState.CLOSED)) {
             getInboundWay().updateState();
             getOutboundWay().updateState();
 
             // Update the registration
-            getRegistration().setInterestOperations(
+            result = getRegistration().setInterestOperations(
                     getInboundWay().getRegistration().getInterestOperations()
                             | getOutboundWay().getRegistration()
                                     .getInterestOperations());
         }
+
+        return result;
     }
 
 }

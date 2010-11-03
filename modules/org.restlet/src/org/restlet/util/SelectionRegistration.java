@@ -30,11 +30,16 @@
 
 package org.restlet.util;
 
+import java.nio.channels.CancelledKeyException;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.engine.io.IoUtils;
 
 /**
@@ -66,7 +71,7 @@ public class SelectionRegistration {
         case 0:
             return "NONE";
         default:
-            return "?";
+            return Integer.toString(operation);
         }
 
     }
@@ -87,10 +92,13 @@ public class SelectionRegistration {
     private volatile int previousInterest;
 
     /** Indicates if that registration has been canceled. */
-    private volatile boolean canceled;
+    private volatile boolean canceling;
 
     /** The parent selectable channel. */
     private final SelectableChannel selectableChannel;
+
+    /** The active selection key. */
+    private volatile SelectionKey selectionKey;
 
     /**
      * Constructor.
@@ -117,7 +125,7 @@ public class SelectionRegistration {
      */
     public SelectionRegistration(SelectableChannel selectableChannel,
             int interestOperations, SelectionListener listener) {
-        this.canceled = false;
+        this.canceling = false;
         this.selectableChannel = selectableChannel;
         this.barrier = new CyclicBarrier(2);
         this.listener = listener;
@@ -144,13 +152,6 @@ public class SelectionRegistration {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Cancel registration.
-     */
-    public void cancel() {
-        this.canceled = true;
     }
 
     /**
@@ -190,12 +191,12 @@ public class SelectionRegistration {
     }
 
     /**
-     * Indicates if the registration has been canceled.
+     * Indicates if a canceling of the registration has been requested.
      * 
      * @return True if the registration has been canceled.
      */
-    public boolean isCanceled() {
-        return this.canceled;
+    public boolean isCanceling() {
+        return this.canceling;
     }
 
     /**
@@ -242,6 +243,25 @@ public class SelectionRegistration {
     }
 
     /**
+     * Effectively registers the {@link #getSelectableChannel()} with the given
+     * {@link Selector} for the {@link #getInterestOperations()} operations.
+     * 
+     * @param selector
+     *            The NIO selector to register to.
+     */
+    public SelectionKey register(Selector selector) {
+        try {
+            this.selectionKey = getSelectableChannel().register(selector,
+                    getInterestOperations(), this);
+        } catch (ClosedChannelException cce) {
+            Context.getCurrentLogger().log(Level.INFO,
+                    "Unable to register again", cce);
+        }
+
+        return this.selectionKey;
+    }
+
+    /**
      * Resume interest in new listener notifications. This should be called
      * after a {@link #suspend()} call.
      */
@@ -250,15 +270,28 @@ public class SelectionRegistration {
     }
 
     /**
+     * Sets interest in canceling the registration.
+     * 
+     * @param canceling
+     *            True if a canceling request is made.
+     */
+    public void setCanceling(boolean canceling) {
+        this.canceling = canceling;
+    }
+
+    /**
      * Sets the IO operations interest. Note that it also clears the ready
      * operations.
      * 
      * @param interest
      *            The IO operations interest.
+     * @return True if the operations effectively changed.
      */
-    public void setInterestOperations(int interest) {
+    public boolean setInterestOperations(int interest) {
+        boolean result = (this.interestOperations != interest);
         this.interestOperations = interest;
         setReadyOperations(0);
+        return result;
     }
 
     /**
@@ -309,7 +342,7 @@ public class SelectionRegistration {
     public String toString() {
         return getName(getInterestOperations()) + ", "
                 + getName(getReadyOperations()) + ", "
-                + Boolean.toString(isCanceled());
+                + Boolean.toString(isCanceling());
     }
 
     /**
@@ -325,6 +358,49 @@ public class SelectionRegistration {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Effectively updates the registration of the
+     * {@link #getSelectableChannel()} with the given {@link Selector} for the
+     * {@link #getInterestOperations()} operations.
+     * 
+     * @return The updated selection key or a new one if it was registered
+     *         again.
+     */
+    public SelectionKey update() {
+        if (this.selectionKey.isValid()) {
+            if (isCanceling()) {
+                Context.getCurrentLogger().log(Level.INFO,
+                        "Cancelling of the selection key requested");
+                this.selectionKey.cancel();
+            } else {
+                try {
+                    Context.getCurrentLogger().log(
+                            Level.INFO,
+                            "Update key (old | new) : "
+                                    + SelectionRegistration
+                                            .getName(this.selectionKey
+                                                    .interestOps())
+                                    + " | "
+                                    + SelectionRegistration
+                                            .getName(getInterestOperations()));
+                    this.selectionKey.interestOps(getInterestOperations());
+                } catch (CancelledKeyException cke) {
+                    Context.getCurrentLogger()
+                            .log(Level.INFO,
+                                    "Unable to update a cancelled key, registering again",
+                                    cke);
+                    this.selectionKey = register(this.selectionKey.selector());
+                }
+            }
+        } else {
+            Context.getCurrentLogger().log(Level.INFO,
+                    "Invalid key detected, registering again");
+            this.selectionKey = register(this.selectionKey.selector());
+        }
+
+        return this.selectionKey;
     }
 
 }

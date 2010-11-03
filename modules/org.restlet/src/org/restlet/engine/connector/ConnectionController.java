@@ -58,6 +58,9 @@ public abstract class ConnectionController extends Controller implements
     /** The list of new selection registrations. */
     private final Queue<SelectionRegistration> newRegistrations;
 
+    /** The list of new selection registrations. */
+    private final Queue<SelectionRegistration> updatedRegistrations;
+
     /**
      * Constructor.
      * 
@@ -67,17 +70,16 @@ public abstract class ConnectionController extends Controller implements
     public ConnectionController(ConnectionHelper<?> helper) {
         super(helper);
         this.newRegistrations = new ConcurrentLinkedQueue<SelectionRegistration>();
+        this.updatedRegistrations = new ConcurrentLinkedQueue<SelectionRegistration>();
         this.selector = createSelector();
     }
 
     /**
      * Control each connection for messages to read or write.
      * 
-     * @param overloaded
-     *            Indicates if the controller is overloaded.
      * @throws IOException
      */
-    protected void controlConnections(boolean overloaded) throws IOException {
+    protected void controlConnections() throws IOException {
         // Close connections or register interest in NIO operations
         for (Connection<?> conn : getHelper().getConnections()) {
             if (conn.getState() == ConnectionState.CLOSED) {
@@ -91,8 +93,8 @@ public abstract class ConnectionController extends Controller implements
                 getHelper().getLogger().fine(
                         "Closing connection with no IO activity during "
                                 + getHelper().getMaxIoIdleTimeMs() + " ms.");
-            } else {
-                conn.updateState();
+            } else if (conn.updateState()) {
+                getUpdatedRegistrations().add(conn.getRegistration());
             }
         }
     }
@@ -118,10 +120,10 @@ public abstract class ConnectionController extends Controller implements
     @Override
     protected void doRun(long sleepTime) throws IOException {
         super.doRun(sleepTime);
-        updateKeys();
         registerKeys();
+        updateKeys();
         selectKeys(sleepTime);
-        controlConnections(isOverloaded());
+        controlConnections();
     }
 
     /**
@@ -143,17 +145,26 @@ public abstract class ConnectionController extends Controller implements
     }
 
     /**
-     * Callback when a key has been selected.
+     * Returns the queue of updated selection registrations.
      * 
-     * @param key
-     *            The selected key.
+     * @return The queue of updated selection registrations.
      */
-    protected void onSelected(SelectionKey key)
+    protected Queue<SelectionRegistration> getUpdatedRegistrations() {
+        return this.updatedRegistrations;
+    }
+
+    /**
+     * Called back when a ready key has been selected.
+     * 
+     * @param selectedKey
+     *            The selected key selected.
+     */
+    protected void onSelected(SelectionKey selectedKey)
             throws ClosedByInterruptException {
         // Notify the selected way
-        if (key.attachment() != null) {
-            ((SelectionRegistration) key.attachment()).onSelected(key
-                    .readyOps());
+        if (selectedKey.attachment() != null) {
+            ((SelectionRegistration) selectedKey.attachment())
+                    .onSelected(selectedKey.readyOps());
         }
     }
 
@@ -180,15 +191,12 @@ public abstract class ConnectionController extends Controller implements
 
     /**
      * Registers all the new selection registration requests.
-     * 
-     * @throws IOException
      */
-    protected void registerKeys() throws IOException {
+    protected void registerKeys() {
         SelectionRegistration newRegistration = getNewRegistrations().poll();
 
         while (newRegistration != null) {
-            newRegistration.getSelectableChannel().register(getSelector(),
-                    newRegistration.getInterestOperations(), newRegistration);
+            newRegistration.register(getSelector());
             newRegistration = getNewRegistrations().poll();
         }
     }
@@ -205,13 +213,11 @@ public abstract class ConnectionController extends Controller implements
             ClosedByInterruptException {
         // Select the connections ready for NIO operations
         if (getSelector().select(sleepTime) > 0) {
-            for (Iterator<SelectionKey> selectedKeys = getSelector()
-                    .selectedKeys().iterator(); selectedKeys.hasNext();) {
+            for (Iterator<SelectionKey> keys = getSelector().selectedKeys()
+                    .iterator(); keys.hasNext();) {
                 // Retrieve the next selected key
-                onSelected(selectedKeys.next());
-
-                // Remove the processed key from the set
-                selectedKeys.remove();
+                onSelected(keys.next());
+                keys.remove();
             }
         }
     }
@@ -228,18 +234,12 @@ public abstract class ConnectionController extends Controller implements
      * @throws IOException
      */
     protected void updateKeys() throws IOException {
-        SelectionRegistration registration = null;
+        SelectionRegistration updatedRegistration = getUpdatedRegistrations()
+                .poll();
 
-        for (SelectionKey key : getSelector().keys()) {
-            if (key.attachment() instanceof SelectionRegistration) {
-                registration = (SelectionRegistration) key.attachment();
-
-                if (registration.isCanceled()) {
-                    key.cancel();
-                } else if (key.isValid()) {
-                    key.interestOps(registration.getInterestOperations());
-                }
-            }
+        while (updatedRegistration != null) {
+            updatedRegistration.update();
+            updatedRegistration = getUpdatedRegistrations().poll();
         }
     }
 

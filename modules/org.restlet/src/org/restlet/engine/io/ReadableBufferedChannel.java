@@ -89,6 +89,11 @@ public class ReadableBufferedChannel extends
         setLineBuilderState(BufferState.IDLE);
     }
 
+    @Override
+    public void close() throws IOException {
+        // Don't actually close to protect the persistent connection
+    }
+
     /**
      * Read the current line builder (start line or header line).
      * 

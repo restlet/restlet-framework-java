@@ -221,7 +221,7 @@ public class NbChannelInputStream extends InputStream {
             this.endReached = true;
 
             if (this.selectionRegistration != null) {
-                this.selectionRegistration.cancel();
+                this.selectionRegistration.setCanceling(true);
             }
         }
     }
