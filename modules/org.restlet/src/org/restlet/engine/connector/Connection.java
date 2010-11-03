@@ -627,6 +627,12 @@ public class Connection<T extends Connector> implements SelectionListener {
      *            The state of the connection.
      */
     public void setState(ConnectionState state) {
+        if (getLogger().isLoggable(Level.FINE)) {
+            getLogger().fine(
+                    "Connection state (old | new) : " + this.state + " | "
+                            + state);
+        }
+
         this.state = state;
     }
 

@@ -376,15 +376,18 @@ public class SelectionRegistration {
                 this.selectionKey.cancel();
             } else {
                 try {
-                    Context.getCurrentLogger().log(
-                            Level.FINE,
-                            "Update key (old | new) : "
-                                    + SelectionRegistration
-                                            .getName(this.selectionKey
-                                                    .interestOps())
-                                    + " | "
-                                    + SelectionRegistration
-                                            .getName(getInterestOperations()));
+                    if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                        Context.getCurrentLogger()
+                                .log(Level.FINE,
+                                        "Update key (old | new) : "
+                                                + SelectionRegistration
+                                                        .getName(this.selectionKey
+                                                                .interestOps())
+                                                + " | "
+                                                + SelectionRegistration
+                                                        .getName(getInterestOperations()));
+                    }
+
                     this.selectionKey.interestOps(getInterestOperations());
                 } catch (CancelledKeyException cke) {
                     Context.getCurrentLogger()
@@ -402,5 +405,4 @@ public class SelectionRegistration {
 
         return this.selectionKey;
     }
-
 }

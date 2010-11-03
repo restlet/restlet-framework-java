@@ -119,8 +119,6 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
         } catch (IOException ex) {
             fail(ex.getMessage());
-        } finally {
-            entity.release();
         }
     }
 
@@ -194,8 +192,8 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         Client c = new Client(Protocol.HTTP);
         final Response r = c.handle(request);
         try {
-            assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
-                    .getStatus());
+            assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK,
+                    r.getStatus());
             assertXML(new DomRepresentation(r.getEntity()));
         } finally {
             r.release();
@@ -204,53 +202,20 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     private void sendPut(String uri) throws Exception {
-        final Request request = new Request(Method.PUT, uri, createTestXml());
+        Request request = new Request(Method.PUT, uri, createTestXml());
         Client c = new Client(Protocol.HTTP);
-        final Response r = c.handle(request);
+        Response r = c.handle(request);
 
         try {
-            if (this.checkedForChunkedResponse) {
-                checkForChunkedHeader(r);
-            }
-            assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
-                    .getStatus());
+            checkForChunkedHeader(r);
+            assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK,
+                    r.getStatus());
             assertXML(new DomRepresentation(r.getEntity()));
         } finally {
             r.release();
             c.stop();
         }
 
-    }
-
-    @Override
-    public void setUp() {
-        this.checkedForChunkedResponse = true;
-    }
-
-    @Override
-    public void testJettyAndApache() throws Exception {
-        super.testJettyAndApache();
-    }
-
-    @Override
-    public void testJettyAndDefault() throws Exception {
-        // Jetty will not send a chunked response when a client sends
-        // Connection: close, which the default client helper does
-        this.checkedForChunkedResponse = false;
-        super.testJettyAndDefault();
-    }
-
-    @Override
-    public void testSimpleAndDefault() throws Exception {
-        // Simple will not send a chunked response when a client sends
-        // Connection: close, which the default client helper does
-        this.checkedForChunkedResponse = false;
-        super.testSimpleAndDefault();
-    }
-
-    @Override
-    public void testSimpleAndJdkNet() throws Exception {
-        super.testSimpleAndJdkNet();
     }
 
 }
