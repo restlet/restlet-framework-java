@@ -138,7 +138,7 @@ public class InputStreamChannel implements ReadableByteChannel,
                     // Create or reuse a specific byte array as buffer
                     result = read(target, available);
                 }
-            }else{
+            } else {
                 result = -1;
             }
         } else {
@@ -161,15 +161,11 @@ public class InputStreamChannel implements ReadableByteChannel,
      */
     private int read(ByteBuffer target, int bytesToRead) throws IOException {
         int result = 0;
-
-        if (this.buffer.length < bytesToRead) {
-            this.buffer = new byte[bytesToRead];
-        }
-
-        result = getInputStream().read(this.buffer, 0, bytesToRead);
+        result = getInputStream().read(this.buffer, 0,
+                Math.min(this.buffer.length, bytesToRead));
 
         if (result > 0) {
-            target.put(buffer, 0, result);
+            target.put(this.buffer, 0, result);
         }
 
         return result;
