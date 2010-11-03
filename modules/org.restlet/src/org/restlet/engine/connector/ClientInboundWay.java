@@ -40,8 +40,8 @@ import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.io.IoState;
 import org.restlet.util.Series;
 

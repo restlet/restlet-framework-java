@@ -39,7 +39,7 @@ import org.restlet.Server;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
-import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.header.HeaderUtils;
 import org.restlet.util.Series;
 
 /**

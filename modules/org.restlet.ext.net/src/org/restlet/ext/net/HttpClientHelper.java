@@ -40,7 +40,7 @@ import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
-import org.restlet.engine.http.ClientCall;
+import org.restlet.engine.adapter.ClientCall;
 import org.restlet.ext.net.internal.HttpUrlConnectionCall;
 
 /**
@@ -108,7 +108,7 @@ import org.restlet.ext.net.internal.HttpUrlConnectionCall;
  *      Features</a>
  * @author Jerome Louvel
  */
-public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
+public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelper {
     /**
      * Constructor.
      * 

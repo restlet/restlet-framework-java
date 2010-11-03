@@ -34,7 +34,7 @@ import java.net.InetSocketAddress;
 import java.util.logging.Level;
 
 import org.restlet.Server;
-import org.restlet.engine.http.HttpServerHelper;
+import org.restlet.engine.adapter.HttpServerHelper;
 import org.simpleframework.transport.connect.Connection;
 import org.simpleframework.http.core.ContainerServer;
 

@@ -36,8 +36,8 @@ import java.util.Map;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Product;
-import org.restlet.engine.http.header.ProductReader;
-import org.restlet.engine.http.header.ProductWriter;
+import org.restlet.engine.header.ProductReader;
+import org.restlet.engine.header.ProductWriter;
 import org.restlet.test.RestletTestCase;
 
 /**

@@ -34,8 +34,8 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
-import org.restlet.engine.http.header.CookieSettingReader;
-import org.restlet.engine.http.header.CookieSettingWriter;
+import org.restlet.engine.header.CookieSettingReader;
+import org.restlet.engine.header.CookieSettingWriter;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 
 /**

@@ -52,7 +52,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
 import org.restlet.data.Tag;
-import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.util.FormUtils;
 import org.restlet.util.Series;
 

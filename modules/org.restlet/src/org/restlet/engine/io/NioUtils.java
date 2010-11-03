@@ -47,7 +47,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.engine.Edition;
-import org.restlet.engine.http.header.HeaderUtils;
+import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.Representation;
 
 // [excludes gwt]

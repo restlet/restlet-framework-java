@@ -35,9 +35,9 @@ import java.util.List;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.RecipientInfo;
-import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.http.header.RecipientInfoReader;
-import org.restlet.engine.http.header.RecipientInfoWriter;
+import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.header.RecipientInfoReader;
+import org.restlet.engine.header.RecipientInfoWriter;
 import org.restlet.test.RestletTestCase;
 
 /**

@@ -32,7 +32,7 @@ package org.restlet.data;
 
 import java.util.List;
 
-import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.header.HeaderConstants;
 
 /**
  * Directive for caching mechanisms along the call chain. This overrides the

@@ -52,7 +52,7 @@ import org.restlet.Uniform;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Edition;
-import org.restlet.engine.http.ClientCall;
+import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.util.SystemUtils;

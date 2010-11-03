@@ -32,7 +32,7 @@ package org.restlet.test.engine;
 
 import junit.framework.TestCase;
 
-import org.restlet.engine.http.header.ContentType;
+import org.restlet.engine.header.ContentType;
 
 /**
  * Test {@link ContentType}

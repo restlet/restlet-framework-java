@@ -136,7 +136,7 @@ import org.restlet.ext.jetty.internal.JettyCall;
  * @author Jerome Louvel
  */
 public abstract class JettyServerHelper extends
-        org.restlet.engine.http.HttpServerHelper {
+        org.restlet.engine.adapter.HttpServerHelper {
     /**
      * Jetty server wrapped by a parent Restlet HTTP server connector.
      * 

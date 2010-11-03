@@ -160,7 +160,7 @@ import org.restlet.engine.io.IoState;
  */
 public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
 
-    private static final String CONNECTOR_LATCH = "org.restlet.engine.http.connector.latch";
+    private static final String CONNECTOR_LATCH = "org.restlet.engine.connector.latch";
 
     /**
      * Constructor.

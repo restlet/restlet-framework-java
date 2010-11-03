@@ -35,9 +35,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.engine.http.Call;
-import org.restlet.engine.http.HttpRequest;
-import org.restlet.engine.http.HttpResponse;
+import org.restlet.engine.adapter.Call;
+import org.restlet.engine.adapter.HttpRequest;
+import org.restlet.engine.adapter.HttpResponse;
 import org.restlet.ext.servlet.internal.ServletCall;
 
 /**

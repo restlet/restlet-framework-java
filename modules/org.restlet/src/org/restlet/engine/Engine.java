@@ -48,8 +48,8 @@ import org.restlet.Response;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.engine.http.HttpProtocolHelper;
-import org.restlet.engine.http.WebDavProtocolHelper;
+import org.restlet.engine.connector.HttpProtocolHelper;
+import org.restlet.engine.connector.WebDavProtocolHelper;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.log.LoggerFacade;
 
@@ -408,7 +408,7 @@ public class Engine {
                     // [enddef]
                     // [ifdef gwt] instruction uncomment
                     // result = new
-                    // org.restlet.engine.http.GwtHttpClientHelper(client);
+                    // org.restlet.engine.adapter.GwtHttpClientHelper(client);
                 }
             }
 
@@ -688,7 +688,7 @@ public class Engine {
      */
     public void registerDefaultAuthentications() {
         getRegisteredAuthenticators().add(
-                new org.restlet.engine.http.security.HttpBasicHelper());
+                new org.restlet.engine.security.HttpBasicHelper());
         getRegisteredAuthenticators().add(
                 new org.restlet.engine.security.SmtpPlainHelper());
     }
@@ -719,7 +719,7 @@ public class Engine {
         // [enddef]
         // [ifdef gwt] uncomment
         // getRegisteredClients().add(
-        // new org.restlet.engine.http.GwtHttpClientHelper(null));
+        // new org.restlet.engine.adapter.GwtHttpClientHelper(null));
         // [enddef]
     }
 

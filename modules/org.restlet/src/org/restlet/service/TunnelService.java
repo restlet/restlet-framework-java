@@ -34,7 +34,7 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.data.ClientInfo;
 import org.restlet.engine.application.TunnelFilter;
-import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.routing.Filter;
 
 /**

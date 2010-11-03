@@ -40,7 +40,7 @@ import javax.mail.Part;
 import javax.mail.internet.MimeBodyPart;
 
 import org.restlet.data.MediaType;
-import org.restlet.engine.http.header.ContentType;
+import org.restlet.engine.header.ContentType;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.InputRepresentation;

@@ -46,10 +46,10 @@ import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
-import org.restlet.engine.http.header.ChallengeRequestReader;
-import org.restlet.engine.http.header.ChallengeWriter;
-import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.http.header.ParameterReader;
+import org.restlet.engine.header.ChallengeRequestReader;
+import org.restlet.engine.header.ChallengeWriter;
+import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.header.ParameterReader;
 import org.restlet.util.Series;
 
 /**

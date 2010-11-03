@@ -52,7 +52,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.engine.application.TunnelFilter;
-import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.util.Series;
 
 /**

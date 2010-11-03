@@ -48,7 +48,7 @@ import javax.net.ssl.SSLSession;
 import org.restlet.Server;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.engine.http.ServerCall;
+import org.restlet.engine.adapter.ServerCall;
 import org.restlet.util.Series;
 import org.simpleframework.http.Request;
 import org.simpleframework.http.Response;

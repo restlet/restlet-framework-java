@@ -58,7 +58,7 @@ import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
-import org.restlet.engine.http.ClientCall;
+import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.ext.httpclient.internal.HttpIdleConnectionReaper;
@@ -163,7 +163,7 @@ import org.restlet.ext.httpclient.internal.HttpMethodCall;
  *      Features</a>
  * @author Jerome Louvel
  */
-public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
+public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelper {
     private volatile DefaultHttpClient httpClient;
 
     /** the idle connection reaper. */

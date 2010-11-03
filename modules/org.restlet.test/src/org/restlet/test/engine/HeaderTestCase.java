@@ -37,10 +37,10 @@ import java.util.List;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.MediaType;
-import org.restlet.engine.http.header.EncodingReader;
-import org.restlet.engine.http.header.HeaderReader;
-import org.restlet.engine.http.header.PreferenceReader;
-import org.restlet.engine.http.header.TokenReader;
+import org.restlet.engine.header.EncodingReader;
+import org.restlet.engine.header.HeaderReader;
+import org.restlet.engine.header.PreferenceReader;
+import org.restlet.engine.header.TokenReader;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.test.RestletTestCase;
 

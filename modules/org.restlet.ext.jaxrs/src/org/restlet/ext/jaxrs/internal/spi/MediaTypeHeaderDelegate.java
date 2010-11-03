@@ -34,7 +34,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.RuntimeDelegate;
 import javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate;
 
-import org.restlet.engine.http.header.ContentType;
+import org.restlet.engine.header.ContentType;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 
 /**

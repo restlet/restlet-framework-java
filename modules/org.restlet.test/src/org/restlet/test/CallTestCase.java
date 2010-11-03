@@ -39,10 +39,10 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.http.Call;
+import org.restlet.engine.adapter.Call;
 
 /**
- * Test {@link org.restlet.Call}.
+ * Test {@link org.restlet.engine.adapter.Call}.
  * 
  * @author Lars Heuer (heuer[at]semagia.com)
  */

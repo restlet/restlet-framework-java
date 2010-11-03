@@ -54,7 +54,7 @@ import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.engine.Engine;
-import org.restlet.engine.http.ServerCall;
+import org.restlet.engine.adapter.ServerCall;
 import org.restlet.ext.servlet.ServerServlet;
 import org.restlet.ext.xdb.internal.XdbServletCall;
 import org.restlet.ext.xdb.internal.XdbServletWarClient;

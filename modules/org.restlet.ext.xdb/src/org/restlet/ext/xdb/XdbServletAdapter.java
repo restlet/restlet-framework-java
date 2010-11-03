@@ -45,9 +45,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Reference;
-import org.restlet.engine.http.HttpRequest;
-import org.restlet.engine.http.HttpResponse;
-import org.restlet.engine.http.adapter.ServerAdapter;
+import org.restlet.engine.adapter.HttpRequest;
+import org.restlet.engine.adapter.HttpResponse;
+import org.restlet.engine.adapter.ServerAdapter;
 import org.restlet.ext.servlet.internal.ServletLogger;
 import org.restlet.ext.xdb.internal.XdbServletCall;
 

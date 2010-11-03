@@ -51,10 +51,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.http.ServerCall;
-import org.restlet.engine.http.io.ChunkedInputStream;
-import org.restlet.engine.http.io.ChunkedOutputStream;
-import org.restlet.engine.http.io.SizedInputStream;
+import org.restlet.engine.adapter.ServerCall;
 import org.restlet.util.Series;
 
 /**
