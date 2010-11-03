@@ -15,7 +15,7 @@
 		http://java.sun.com/products/servlet/download.html
 	</downloadUri>
 	<javadocs>
-		<link href="http://java.sun.com/javaee/5/docs/api/" />
+		<link href="http://download.oracle.com/javaee/5/api/" />
 	</javadocs>
 </library>
 
