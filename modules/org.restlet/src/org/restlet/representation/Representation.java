@@ -342,7 +342,9 @@ public abstract class Representation extends RepresentationInfo {
     }
 
     /**
-     * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.<br>
+     * Returns the total size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+     * When ranges are used, this might not be the actual size available. For
+     * this purpose, you can use the {@link #getAvailableSize()} method.<br>
      * <br>
      * Note that when used with HTTP connectors, this property maps to the
      * "Content-Length" header.
@@ -521,7 +523,8 @@ public abstract class Representation extends RepresentationInfo {
     }
 
     /**
-     * Sets the expected size in bytes if known, -1 otherwise.<br>
+     * Sets the expected size in bytes if known, -1 otherwise. For this purpose,
+     * you can use the {@link #getAvailableSize()} method.<br>
      * <br>
      * Note that when used with HTTP connectors, this property maps to the
      * "Content-Length" header.

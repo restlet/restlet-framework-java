@@ -66,7 +66,7 @@ public class InputStreamChannel implements ReadableByteChannel,
         this.open = true;
 
         try {
-            this.blocking = (inputStream.available() == 0);
+            this.blocking = (inputStream.available() <= 0);
         } catch (IOException ioe) {
             this.blocking = true;
         }
