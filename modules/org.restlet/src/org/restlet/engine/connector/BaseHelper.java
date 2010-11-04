@@ -150,7 +150,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>directBuffers</td>
  * <td>boolean</td>
- * <td>true</td>
+ * <td>false</td>
  * <td>Indicates if direct NIO buffers should be allocated instead of regular
  * buffers. See NIO's ByteBuffer Javadocs. Note that tracing must be disabled to
  * use direct buffers.</td>
@@ -511,7 +511,7 @@ public abstract class BaseHelper<T extends Connector> extends
     public boolean isDirectBuffers() {
         return !isTracing()
                 && Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                        "directBuffers", "true"));
+                        "directBuffers", "false"));
     }
 
     /**

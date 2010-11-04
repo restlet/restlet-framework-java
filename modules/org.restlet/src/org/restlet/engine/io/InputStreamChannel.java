@@ -161,11 +161,16 @@ public class InputStreamChannel implements ReadableByteChannel,
      */
     private int read(ByteBuffer target, int bytesToRead) throws IOException {
         int result = 0;
+
+        if (this.buffer.length < IoUtils.BUFFER_SIZE) {
+            this.buffer = new byte[IoUtils.BUFFER_SIZE];
+        }
+
         result = getInputStream().read(this.buffer, 0,
-                Math.min(this.buffer.length, bytesToRead));
+                Math.min(bytesToRead, IoUtils.BUFFER_SIZE));
 
         if (result > 0) {
-            target.put(this.buffer, 0, result);
+            target.put(buffer, 0, result);
         }
 
         return result;
