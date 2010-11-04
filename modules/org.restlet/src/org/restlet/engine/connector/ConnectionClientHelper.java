@@ -392,7 +392,8 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
                 Connection<Client> currConn = iterator.next();
 
                 if (socketAddress.equals(currConn.getSocketAddress())) {
-                    if (currConn.getState().equals(ConnectionState.OPEN)
+                    if (currConn.isPersistent()
+                            && currConn.getState().equals(ConnectionState.OPEN)
                             && currConn.getInboundWay().getMessageState()
                                     .equals(MessageState.IDLE)
                             && currConn.getInboundWay().getIoState()
