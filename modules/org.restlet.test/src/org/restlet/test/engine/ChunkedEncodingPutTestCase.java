@@ -78,7 +78,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
      *            the size of the representation
      * @return A DomRepresentation.
      */
-    private static Representation createChunckedRepresentation(int size) {
+    private static Representation createChunkedRepresentation(int size) {
         final StringBuilder builder = new StringBuilder();
         for (int i = 0; i < size; i++) {
             builder.append("a");
@@ -120,7 +120,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
     private void sendPut(String uri, int size) throws Exception {
         Request request = new Request(Method.PUT, uri,
-                createChunckedRepresentation(size));
+                createChunkedRepresentation(size));
         Client c = new Client(Protocol.HTTP);
         Response r = c.handle(request);
 
@@ -130,7 +130,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
             }
 
             assertNotNull(r.getEntity());
-            assertEquals(createChunckedRepresentation(size).getText(), r
+            assertEquals(createChunkedRepresentation(size).getText(), r
                     .getEntity().getText());
         } finally {
             r.release();
