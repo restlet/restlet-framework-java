@@ -240,7 +240,7 @@ import org.restlet.routing.VirtualHost;
  * computed offset path used to attach applications when (and only when) the
  * auto-wiring feature is set, is added to the component's context.
  * 
- * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
+ * @see <a href="http://www.oracle.com/technetwork/java/javaee/">J2EE home page</a>
  * @author Jerome Louvel
  */
 public class ServerServlet extends HttpServlet {

@@ -77,7 +77,7 @@ import org.restlet.routing.Filter;
  *      href="http://wiki.restlet.org/docs_2.0/13-restlet/27-restlet/331-restlet/201-restlet.html">User
  *      Guide - Access logging</a>
  * @see <a
- *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
+ *      href="http://download.oracle.com/javase/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
  * @author Jerome Louvel
  */
 public class LogService extends Service {

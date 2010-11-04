@@ -82,7 +82,7 @@ import org.restlet.representation.InputRepresentation;
  * </table>
  * 
  * @see <a
- *      href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking
+ *      href="http://download.oracle.com/javase/1.5.0/docs/guide/net/index.html">Networking
  *      Features</a>
  * @author Jerome Louvel
  */

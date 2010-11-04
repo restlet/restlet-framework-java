@@ -8,4 +8,4 @@ available as an optional package for use with Java SE platform and is also
 included in the Java EE platform."
 
 For more information:
-http://java.sun.com/products/javamail/
+http://www.oracle.com/technetwork/java/index-jsp-139225.html

@@ -545,9 +545,7 @@ public final class BioUtils {
      * As this method uses the InputstreamReader class, the default character
      * set is used for decoding the input stream.
      * 
-     * @see <a href=
-     *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
-     *      >InputStreamReader class</a>
+     * @see InputStreamReader
      * @see #toString(InputStream, CharacterSet)
      * @param inputStream
      *            The input stream.
@@ -561,9 +559,7 @@ public final class BioUtils {
      * Converts an input stream to a string using the specified character set
      * for decoding the input stream. Once read, the input stream is closed.
      * 
-     * @see <a href=
-     *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
-     *      >InputStreamReader class</a>
+     * @see InputStreamReader
      * @param inputStream
      *            The input stream.
      * @param characterSet
@@ -613,9 +609,8 @@ public final class BioUtils {
     /**
      * Converts a reader to a string.
      * 
-     * @see <a
-     *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader
-     *      class</a>
+     * @see InputStreamReader
+     * 
      * @param reader
      *            The characters reader.
      * @return The converted string.

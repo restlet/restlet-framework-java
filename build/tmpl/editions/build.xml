@@ -565,7 +565,7 @@
 				<package name="org.restlet*" />
 			</group>
 
-			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="http://download.oracle.com/javase/1.5.0/docs/api/" />
 			<doclet name="org.umlgraph.doclet.UmlGraphDoc" path="${tools}/umlgraph/umlgraph.jar">
 				<param name="-attributes" />
 				<param name="-operations" />

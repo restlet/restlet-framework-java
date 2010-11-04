@@ -1,7 +1,7 @@
 <module id="core" type="core" package="org.restlet">
 	<name>Restlet Core</name>
 	<description>
-		RESTful Web framework for Java (API and engine).
+		RESTful web framework for Java (API and engine).
 	</description>
 	<distributions>
 		<distribution id="classic" />

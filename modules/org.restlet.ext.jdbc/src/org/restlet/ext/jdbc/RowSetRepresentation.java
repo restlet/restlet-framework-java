@@ -49,9 +49,7 @@ import org.restlet.representation.WriterRepresentation;
  * Give access to the JdbcResult instance and to the WebRowSet for retrieval of
  * the connected ResultSet in the same JVM (for advanced use cases).
  * 
- * @see <a href=
- *      "http://java.sun.com/j2se/1.5.0/docs/api/javax/sql/rowset/WebRowSet.html"
- *      >WebRowSet Interface</a>
+ * @see WebRowSet
  * @author Thierry Boileau
  * @author Jerome Louvel
  */

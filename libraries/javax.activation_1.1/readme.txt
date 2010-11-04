@@ -9,4 +9,4 @@ operations available on it; and instantiate the appropriate bean to perform the
 operation(s)."
 
 For more information:
-http://java.sun.com/products/javabeans/jaf/
+http://www.oracle.com/technetwork/java/javase/tech/index-jsp-138795.html

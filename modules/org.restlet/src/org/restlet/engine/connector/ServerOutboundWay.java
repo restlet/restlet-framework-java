@@ -95,7 +95,7 @@ public class ServerOutboundWay extends OutboundWay {
         // Additional verifications
         if (!response.isEntityAvailable()) {
             if ((response.getEntity() != null)
-                    && response.getEntity().getSize() != 0) {
+                    && response.getEntity().getAvailableSize() != 0) {
                 getLogger()
                         .warning(
                                 "A response with an unavailable and potentially non empty entity was returned. Ignoring the entity for resource \""

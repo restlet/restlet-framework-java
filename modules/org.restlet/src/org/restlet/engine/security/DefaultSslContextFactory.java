@@ -55,7 +55,7 @@ import org.restlet.util.Series;
  * </p>
  * <p>
  * There is more information in the <a href=
- * "http://java.sun.com/j2se/1.5.0/docs/guide/security/jsse/JSSERefGuide.html"
+ * "http://download.oracle.com/javase/1.5.0/docs/guide/security/jsse/JSSERefGuide.html"
  * >JSSE Reference Guide</a>.
  * </p>
  * 

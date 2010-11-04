@@ -10,10 +10,10 @@
 		<distribution id="classic" />
 	</distributions>
 	<homeUri>
-		http://java.sun.com/products/javamail/
+		http://www.oracle.com/technetwork/java/index-jsp-139225.html
 	</homeUri>
 	<downloadUri>
-		http://java.sun.com/products/javamail/downloads/index.html
+		http://www.oracle.com/technetwork/java/index-138643.html
 	</downloadUri>
 	<javadocs>
 		<link href="http://java.sun.com/products/javamail/javadocs/" />

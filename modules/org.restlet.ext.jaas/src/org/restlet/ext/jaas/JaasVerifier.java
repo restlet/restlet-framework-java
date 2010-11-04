@@ -49,10 +49,10 @@ import org.restlet.security.Verifier;
  * 
  * @author Jerome Louvel
  * @see <a
- *      href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jaas/tutorials/index.html">JAAS
+ *      href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jaas/tutorials/index.html">JAAS
  *      Tutorials</a>
  * @see <a
- *      href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jaas/JAASRefGuide.html">JAAS
+ *      href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jaas/JAASRefGuide.html">JAAS
  *      Reference Guide</a>
  */
 public class JaasVerifier implements Verifier {

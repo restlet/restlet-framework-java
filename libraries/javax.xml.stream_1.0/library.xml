@@ -11,7 +11,7 @@
 		<distribution id="classic" />
 	</distributions>
 	<homeUri>
-		http://java.sun.com/webservices/docs/2.0/sjsxp/index.html
+		http://download.oracle.com/docs/cd/E17802_01/webservices/webservices/docs/2.0/sjsxp/index.html
 	</homeUri>
 	<downloadUri>
 		http://download.java.net/maven/1/javax.xml.stream/jars/
