@@ -284,6 +284,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
         setIoState(IoState.IDLE);
         setMessageState(MessageState.IDLE);
         setMessage(null);
+        setHeaders(null);
     }
 
     /**

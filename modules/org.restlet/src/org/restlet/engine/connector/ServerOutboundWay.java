@@ -151,7 +151,9 @@ public class ServerOutboundWay extends OutboundWay {
             getConnection().getInboundWay().getMessages().remove(getMessage());
         }
 
-        if (!getConnection().isPersistent()) {
+        // Check if we need to close the connection
+        if (!getConnection().isPersistent()
+                || HeaderUtils.isConnectionClose(getHeaders())) {
             getConnection().close(true);
         }
 

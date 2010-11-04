@@ -205,15 +205,6 @@ public abstract class InboundWay extends Way {
             getLogger().finer("Inbound message fully received");
         }
 
-        // Check if the server wants to close the connection
-        if (HeaderUtils.isConnectionClose(getHeaders())) {
-            getConnection().setState(ConnectionState.CLOSING);
-        }
-
-        if (getHeaders() != null) {
-            setHeaders(null);
-        }
-
         super.onCompleted();
     }
 

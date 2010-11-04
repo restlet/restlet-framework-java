@@ -116,6 +116,17 @@ public class ClientInboundWay extends InboundWay {
     }
 
     @Override
+    public void onCompleted() {
+        // Check if we need to close the connection
+        if (!getConnection().isPersistent()
+                || HeaderUtils.isConnectionClose(getHeaders())) {
+            getConnection().close(true);
+        }
+
+        super.onCompleted();
+    }
+
+    @Override
     protected void onReceived() {
         // Update the response
         getMessage().setEntity(createEntity(getHeaders()));

@@ -324,13 +324,11 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public void onCompleted() {
-        setHeaders(null);
-        setHeaderIndex(0);
-
         if (getLogger().isLoggable(Level.FINE)) {
-            getLogger().fine("Outbound message sent");
+            getLogger().fine("Outbound message fully sent");
         }
 
+        setHeaderIndex(0);
         super.onCompleted();
     }
 
