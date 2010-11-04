@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -185,6 +186,7 @@ public class RangeTestCase extends RestletTestCase {
     @Test
     public void testGet() throws Exception {
         Client client = new Client(Protocol.HTTP);
+
         // Test partial Get.
         Request request = new Request(Method.GET, "http://localhost:"
                 + TEST_PORT + "/testGet");
@@ -192,6 +194,7 @@ public class RangeTestCase extends RestletTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("1234567890", response.getEntity().getText());
         assertEquals(10, response.getEntity().getSize());
+        assertEquals(10, response.getEntity().getAvailableSize());
 
         request = new Request(Method.GET, "http://localhost:" + TEST_PORT
                 + "/testGet");
@@ -200,6 +203,7 @@ public class RangeTestCase extends RestletTestCase {
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("1234567890", response.getEntity().getText());
         assertEquals(10, response.getEntity().getSize());
+        assertEquals(10, response.getEntity().getAvailableSize());
         assertEquals(0, response.getEntity().getRange().getIndex());
         assertEquals(10, response.getEntity().getRange().getSize());
 
@@ -207,7 +211,8 @@ public class RangeTestCase extends RestletTestCase {
         response = client.handle(request);
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("12", response.getEntity().getText());
-        assertEquals(2, response.getEntity().getSize());
+        assertEquals(10, response.getEntity().getSize());
+        assertEquals(2, response.getEntity().getAvailableSize());
         assertEquals(0, response.getEntity().getRange().getIndex());
         assertEquals(2, response.getEntity().getRange().getSize());
 
@@ -215,7 +220,8 @@ public class RangeTestCase extends RestletTestCase {
         response = client.handle(request);
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("34", response.getEntity().getText());
-        assertEquals(2, response.getEntity().getSize());
+        assertEquals(10, response.getEntity().getSize());
+        assertEquals(2, response.getEntity().getAvailableSize());
         assertEquals(2, response.getEntity().getRange().getIndex());
         assertEquals(2, response.getEntity().getRange().getSize());
 
@@ -223,7 +229,8 @@ public class RangeTestCase extends RestletTestCase {
         response = client.handle(request);
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("3456789", response.getEntity().getText());
-        assertEquals(7, response.getEntity().getSize());
+        assertEquals(10, response.getEntity().getSize());
+        assertEquals(7, response.getEntity().getAvailableSize());
         assertEquals(2, response.getEntity().getRange().getIndex());
         assertEquals(7, response.getEntity().getRange().getSize());
 
@@ -231,17 +238,19 @@ public class RangeTestCase extends RestletTestCase {
         response = client.handle(request);
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("4567890", response.getEntity().getText());
-        assertEquals(7, response.getEntity().getSize());
+        assertEquals(10, response.getEntity().getSize());
+        assertEquals(7, response.getEntity().getAvailableSize());
         assertEquals(3, response.getEntity().getRange().getIndex());
         assertEquals(7, response.getEntity().getRange().getSize());
 
-        request.setRanges(Arrays.asList(new Range(1, Range.SIZE_MAX)));
+        request.setRanges(Arrays.asList(new Range(2, Range.SIZE_MAX)));
         response = client.handle(request);
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
-        assertEquals("234567890", response.getEntity().getText());
-        assertEquals(9, response.getEntity().getSize());
-        assertEquals(1, response.getEntity().getRange().getIndex());
-        assertEquals(9, response.getEntity().getRange().getSize());
+        assertEquals("34567890", response.getEntity().getText());
+        assertEquals(10, response.getEntity().getSize());
+        assertEquals(8, response.getEntity().getAvailableSize());
+        assertEquals(2, response.getEntity().getRange().getIndex());
+        assertEquals(8, response.getEntity().getRange().getSize());
 
         client.stop();
     }
@@ -254,6 +263,7 @@ public class RangeTestCase extends RestletTestCase {
     @Test
     public void testConditionalRanges() throws Exception {
         Client client = new Client(Protocol.HTTP);
+
         // Test partial Get.
         Request request = new Request(Method.GET, "http://localhost:"
                 + TEST_PORT + "/testGet");
@@ -265,7 +275,8 @@ public class RangeTestCase extends RestletTestCase {
         response = client.handle(request);
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("234567890", response.getEntity().getText());
-        assertEquals(9, response.getEntity().getSize());
+        assertEquals(10, response.getEntity().getSize());
+        assertEquals(9, response.getEntity().getAvailableSize());
         assertEquals(1, response.getEntity().getRange().getIndex());
         assertEquals(9, response.getEntity().getRange().getSize());
 
@@ -283,10 +294,10 @@ public class RangeTestCase extends RestletTestCase {
      * 
      * @throws IOException
      */
-    @Test
     public void testPut() throws IOException {
         BioUtils.delete(testDir, true);
-        Client client = new Client(Protocol.HTTP);
+        Client client = new Client(new Context(), Protocol.HTTP);
+        client.getContext().getParameters().add("tracing", "true");
 
         // PUT on a file that does not exist
         Request request = new Request(Method.PUT, "http://localhost:"

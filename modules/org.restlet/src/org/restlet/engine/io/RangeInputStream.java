@@ -60,6 +60,9 @@ public class RangeInputStream extends FilterInputStream {
     /** The end index inside the source stream. */
     private final long endIndex;
 
+    /** The range size available. */
+    private volatile int availableSize;
+
     /**
      * Constructs a stream exposing only a range of a given source stream.
      * 
@@ -75,6 +78,8 @@ public class RangeInputStream extends FilterInputStream {
         this.range = range;
         this.position = 0;
         this.totalSize = totalSize;
+        this.availableSize = (int) range.getSize();
+
         if (totalSize == Representation.UNKNOWN_SIZE) {
             if (range.getIndex() == Range.INDEX_LAST) {
                 if (range.getSize() == Range.SIZE_MAX) {
@@ -117,9 +122,7 @@ public class RangeInputStream extends FilterInputStream {
 
     @Override
     public int available() throws IOException {
-        // Might need a smarter logic to restrict available bytes to the
-        // range
-        return super.available();
+        return this.availableSize;
     }
 
     @Override
@@ -139,6 +142,10 @@ public class RangeInputStream extends FilterInputStream {
             result = super.read();
         }
 
+        if ((result != -1) && (this.availableSize > 0)) {
+            this.availableSize--;
+        }
+
         return result;
     }
 
@@ -147,35 +154,42 @@ public class RangeInputStream extends FilterInputStream {
         // Reach the start index.
         while (!(position >= startIndex)) {
             long skipped = skip(startIndex - position);
+
             if (skipped <= 0) {
                 throw new IOException("Cannot skip ahead in FilterInputStream");
             }
+
             position += skipped;
         }
 
-        int n = -1;
+        int result = -1;
+
         if (endIndex != -1) {
             // Read up until the end index
             if (position > endIndex) {
                 // The end index is reached.
-                n = -1;
+                result = -1;
             } else {
-                // Take care to read the right number of octets according to the
+                // Take care to read the right number of bytes according to the
                 // end index and the buffer size.
-                n = super.read(b, off,
+                result = super.read(b, off,
                         ((position + len) > endIndex) ? (int) (endIndex
                                 - position + 1) : len);
             }
         } else {
             // Read normally up until the end of the stream.
-            n = super.read(b, off, len);
+            result = super.read(b, off, len);
         }
 
-        if (n > 0) {
+        if (result > 0) {
             // Move the cursor.
-            position += n;
+            position += result;
         }
 
-        return n;
+        if ((result != -1) && (this.availableSize > 0)) {
+            this.availableSize -= result;
+        }
+
+        return result;
     }
 }

@@ -149,7 +149,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpBasicTestCase.class);
         addTestSuite(HttpDigestTestCase.class);
-        // addTestSuite(RangeTestCase.class);
+        addTestSuite(RangeTestCase.class);
         addTestSuite(RangeRepresentationTestCase.class);
         addTestSuite(RedirectTestCase.class);
         addTestSuite(SecurityTestCase.class);
