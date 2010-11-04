@@ -421,7 +421,7 @@ public abstract class OutboundWay extends Way {
      */
     protected boolean shouldBeChunked(Representation entity) {
         return (entity != null)
-                && (entity.getSize() == Representation.UNKNOWN_SIZE);
+                && (entity.getAvailableSize() == Representation.UNKNOWN_SIZE);
     }
 
     @Override
@@ -433,7 +433,7 @@ public abstract class OutboundWay extends Way {
                 setMessage(getMessages().peek());
             }
         }
-        
+
         // Update the registration
         super.updateState();
     }
@@ -501,12 +501,13 @@ public abstract class OutboundWay extends Way {
                         setEntityChannelType(EntityType.BLOCKING);
                     }
 
-                    if (getActualMessage().getEntity().getSize() == Representation.UNKNOWN_SIZE) {
+                    if (getActualMessage().getEntity().getAvailableSize() == Representation.UNKNOWN_SIZE) {
                         setEntityChannel(new ReadableChunkingChannel(rbc,
                                 getByteBuffer().capacity()));
                     } else {
                         setEntityChannel(new ReadableSizedChannel(rbc,
-                                getActualMessage().getEntity().getSize()));
+                                getActualMessage().getEntity()
+                                        .getAvailableSize()));
                     }
 
                 } else {
