@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 
+import org.restlet.engine.util.StringUtils;
 
 // [excludes gwt]
 /**
@@ -86,7 +87,7 @@ public class ReadableChunkingChannel extends
             result++;
         }
 
-        dst.put(chunkDataSizeString.getBytes());
+        dst.put(StringUtils.getAsciiBytes(chunkDataSizeString));
         dst.put((byte) 13);
         dst.put((byte) 10);
         result += 2;

@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.application;
+package org.restlet.engine.io;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
@@ -70,7 +70,7 @@ public class RangeInputStream extends FilterInputStream {
      * @param range
      *            The range to satisfy.
      */
-    protected RangeInputStream(InputStream in, long totalSize, Range range) {
+    public RangeInputStream(InputStream in, long totalSize, Range range) {
         super(in);
         this.range = range;
         this.position = 0;

@@ -716,9 +716,9 @@ public class Engine {
         getRegisteredClients().add(
                 new org.restlet.engine.local.ZipClientHelper(null));
         getRegisteredClients().add(
-                new org.restlet.engine.riap.RiapClientHelper(null));
+                new org.restlet.engine.local.RiapClientHelper(null));
         getRegisteredServers().add(
-                new org.restlet.engine.riap.RiapServerHelper(null));
+                new org.restlet.engine.local.RiapServerHelper(null));
         // [enddef]
         // [ifndef gae, gwt]
         getRegisteredServers().add(

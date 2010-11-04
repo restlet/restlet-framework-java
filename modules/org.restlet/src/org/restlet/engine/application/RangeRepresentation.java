@@ -39,6 +39,7 @@ import java.nio.channels.WritableByteChannel;
 import org.restlet.data.Range;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.RangeInputStream;
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperRepresentation;
 
