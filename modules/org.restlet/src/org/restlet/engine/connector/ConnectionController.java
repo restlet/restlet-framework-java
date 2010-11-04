@@ -118,6 +118,13 @@ public abstract class ConnectionController extends Controller implements
     }
 
     @Override
+    protected void doInit() {
+        // Done in the controller for thread safety reason regarding the byte
+        // buffers part of the pooled connections
+        getHelper().createConnectionPool();
+    }
+
+    @Override
     protected void doRun(long sleepTime) throws IOException {
         super.doRun(sleepTime);
         registerKeys();

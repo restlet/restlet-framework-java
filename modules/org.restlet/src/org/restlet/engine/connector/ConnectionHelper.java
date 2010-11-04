@@ -97,7 +97,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
     private final Set<Connection<T>> connections;
 
     /** The connection pool. */
-    volatile ConnectionPool<T> connectionPool;
+    private volatile ConnectionPool<T> connectionPool;
 
     /**
      * Constructor.
@@ -170,6 +170,16 @@ public abstract class ConnectionHelper<T extends Connector> extends
     protected abstract Connection<T> createConnection(
             SocketChannel socketChannel, ConnectionController controller,
             SocketAddress socketAddress) throws IOException;
+
+    /**
+     * Creates the connection pool.
+     */
+    public void createConnectionPool() {
+        if (isPooledConnection()) {
+            this.connectionPool = new ConnectionPool<T>(this,
+                    getInitialConnections());
+        }
+    }
 
     /**
      * Creates an inbound way for the given connection.
@@ -301,14 +311,4 @@ public abstract class ConnectionHelper<T extends Connector> extends
      *         proxy.
      */
     public abstract boolean isProxying();
-
-    @Override
-    public void start() throws Exception {
-        super.start();
-
-        if (isPooledConnection()) {
-            this.connectionPool = new ConnectionPool<T>(this,
-                    getInitialConnections());
-        }
-    }
 }

@@ -54,50 +54,6 @@ public abstract class Controller {
     protected boolean running;
 
     /**
-     * Listens on the given server socket for incoming connections.
-     */
-    public void run() {
-        setRunning(true);
-        long sleepTime = getHelper().getControllerSleepTimeMs();
-
-        while (isRunning()) {
-            try {
-                if (getHelper().isWorkerThreads()) {
-                    if (isOverloaded()
-                            && !getHelper().isWorkerServiceOverloaded()) {
-                        setOverloaded(false);
-                        getHelper()
-                                .getLogger()
-                                .info("Connector overload ended. Accepting new work again");
-                        getHelper().traceWorkerService();
-                    } else if (getHelper().isWorkerServiceOverloaded()) {
-                        setOverloaded(true);
-                        getHelper()
-                                .getLogger()
-                                .info("Connector overload detected. Stop accepting new work");
-                        getHelper().traceWorkerService();
-                    }
-                }
-
-                doRun(sleepTime);
-            } catch (Exception ex) {
-                this.helper.getLogger().log(Level.WARNING,
-                        "Unexpected error while controlling connector", ex);
-            }
-        }
-    }
-
-    /**
-     * Do the actual controller work. Called by the {@link #run()} to provide an
-     * easy method to overload.
-     * 
-     * @param sleepTime
-     */
-    protected void doRun(long sleepTime) throws IOException {
-        controlHelper();
-    }
-
-    /**
      * Constructor.
      * 
      * @param helper
@@ -128,6 +84,22 @@ public abstract class Controller {
         }
 
         return result;
+    }
+
+    /**
+     * Initializes the controller before entering the control loop.
+     */
+    protected void doInit() {
+    }
+
+    /**
+     * Do the actual controller work. Called by the {@link #run()} to provide an
+     * easy method to overload.
+     * 
+     * @param sleepTime
+     */
+    protected void doRun(long sleepTime) throws IOException {
+        controlHelper();
     }
 
     /**
@@ -179,14 +151,6 @@ public abstract class Controller {
     protected abstract void handleInbound(final Response response);
 
     /**
-     * Handle the given outbound message.
-     * 
-     * @param response
-     *            The message to handle.
-     */
-    protected abstract void handleOutbound(final Response response);
-
-    /**
      * Handle the given inbound message.
      * 
      * @param response
@@ -216,6 +180,14 @@ public abstract class Controller {
             }
         }
     }
+
+    /**
+     * Handle the given outbound message.
+     * 
+     * @param response
+     *            The message to handle.
+     */
+    protected abstract void handleOutbound(final Response response);
 
     /**
      * Handle the given outbound message.
@@ -264,6 +236,41 @@ public abstract class Controller {
      */
     public boolean isRunning() {
         return running;
+    }
+
+    /**
+     * Listens on the given server socket for incoming connections.
+     */
+    public void run() {
+        doInit();
+        setRunning(true);
+        long sleepTime = getHelper().getControllerSleepTimeMs();
+
+        while (isRunning()) {
+            try {
+                if (getHelper().isWorkerThreads()) {
+                    if (isOverloaded()
+                            && !getHelper().isWorkerServiceOverloaded()) {
+                        setOverloaded(false);
+                        getHelper()
+                                .getLogger()
+                                .info("Connector overload ended. Accepting new work again");
+                        getHelper().traceWorkerService();
+                    } else if (getHelper().isWorkerServiceOverloaded()) {
+                        setOverloaded(true);
+                        getHelper()
+                                .getLogger()
+                                .info("Connector overload detected. Stop accepting new work");
+                        getHelper().traceWorkerService();
+                    }
+                }
+
+                doRun(sleepTime);
+            } catch (Exception ex) {
+                this.helper.getLogger().log(Level.WARNING,
+                        "Unexpected error while controlling connector", ex);
+            }
+        }
     }
 
     /**
