@@ -272,15 +272,19 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * @return True if the processing of the next message is possible.
      */
     protected boolean isProcessing() {
-        return (getIoState() == IoState.PROCESSING)
+        return (getConnection().getState() == ConnectionState.OPEN)
+                && (getIoState() == IoState.PROCESSING)
                 && (getMessageState() != MessageState.IDLE);
     }
 
     /**
      * Callback method invoked when the current message has been completely
      * received or sent.
+     * 
+     * @param endReached
+     *            Indicates if the end of the socket channel was reached.
      */
-    public void onCompleted() {
+    public void onCompleted(boolean endReached) {
         setIoState(IoState.IDLE);
         setMessageState(MessageState.IDLE);
         setMessage(null);

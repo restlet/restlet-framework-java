@@ -109,7 +109,7 @@ public class ServerInboundWay extends InboundWay {
 
         if (!getMessage().getRequest().isEntityAvailable()) {
             // The request has been completely read
-            onCompleted();
+            onCompleted(false);
         }
     }
 

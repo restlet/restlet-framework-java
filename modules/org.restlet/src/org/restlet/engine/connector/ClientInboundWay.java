@@ -116,14 +116,14 @@ public class ClientInboundWay extends InboundWay {
     }
 
     @Override
-    public void onCompleted() {
+    public void onCompleted(boolean endReached) {
         // Check if we need to close the connection
-        if (!getConnection().isPersistent()
+        if (endReached || !getConnection().isPersistent()
                 || HeaderUtils.isConnectionClose(getHeaders())) {
             getConnection().close(true);
         }
 
-        super.onCompleted();
+        super.onCompleted(endReached);
     }
 
     @Override
@@ -156,7 +156,7 @@ public class ClientInboundWay extends InboundWay {
             setIoState(IoState.IDLE);
         } else {
             // The response has been completely read
-            onCompleted();
+            onCompleted(false);
         }
     }
 

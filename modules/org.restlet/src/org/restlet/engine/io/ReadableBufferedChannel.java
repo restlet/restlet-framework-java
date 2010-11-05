@@ -114,7 +114,7 @@ public class ReadableBufferedChannel extends
                 setByteBufferState(BufferState.FILLING);
                 getByteBuffer().clear();
 
-                if (refill()) {
+                if (refill() > 0) {
                     byteBufferSize = getByteBuffer().remaining();
                 }
             }
@@ -187,11 +187,13 @@ public class ReadableBufferedChannel extends
      * Post-read callback that calls {@link CompletionListener#onCompleted()} if
      * the end has been reached.
      * 
-     * @param length
+     * @param bytesRead
+     *            The number of bytes read, or -1 if the end of the channel has
+     *            been reached.
      */
-    public void postRead(int length) {
-        if ((length == -1) && (getCompletionListener() != null)) {
-            getCompletionListener().onCompleted();
+    public void postRead(int bytesRead) {
+        if ((bytesRead == -1) && (getCompletionListener() != null)) {
+            getCompletionListener().onCompleted((bytesRead == -1));
         }
     }
 
@@ -242,7 +244,14 @@ public class ReadableBufferedChannel extends
                 case IDLE:
                     setByteBufferState(BufferState.FILLING);
                 case FILLING:
-                    tryAgain = refill();
+                    int refillCount = refill();
+
+                    if (refillCount == -1) {
+                        result = -1;
+                        tryAgain = false;
+                    } else if (refillCount > 0) {
+                        tryAgain = true;
+                    }
                     break;
                 }
             }
@@ -254,19 +263,19 @@ public class ReadableBufferedChannel extends
     /**
      * Refills the byte buffer.
      * 
-     * @return True if the refilling was successful.
+     * @return The number of bytes read and added to the buffer or -1 if end of
+     *         channel reached.
      * @throws IOException
      */
-    protected boolean refill() throws IOException {
-        boolean result = false;
+    protected int refill() throws IOException {
+        int readCount = getWrappedChannel().read(getByteBuffer());
 
-        if (getWrappedChannel().read(getByteBuffer()) > 0) {
+        if (readCount > 0) {
             setByteBufferState(BufferState.DRAINING);
             getByteBuffer().flip();
-            result = true;
         }
 
-        return result;
+        return readCount;
     }
 
     /**

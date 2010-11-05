@@ -200,12 +200,12 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    public void onCompleted() {
+    public void onCompleted(boolean endReached) {
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Inbound message fully received");
         }
 
-        super.onCompleted();
+        super.onCompleted(endReached);
     }
 
     /**
@@ -237,8 +237,8 @@ public abstract class InboundWay extends Way {
                         // Socket channel exhausted
                         setIoState(IoState.INTEREST);
                     } else if (result == -1) {
-                        // End of channel reached
-                        setIoState(IoState.CANCELING);
+                        // End of connection detected
+                        getConnection().close(true);
                     } else {
                         while (isProcessing() && getByteBuffer().hasRemaining()) {
                             // Bytes are available in the buffer

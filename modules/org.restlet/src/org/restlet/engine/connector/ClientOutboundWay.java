@@ -113,22 +113,25 @@ public class ClientOutboundWay extends OutboundWay {
     }
 
     @Override
-    public void onCompleted() {
+    public void onCompleted(boolean endReached) {
         Response message = getMessage();
-        Request request = message.getRequest();
 
-        if (request.getOnSent() != null) {
-            request.getOnSent().handle(request, message);
+        if (message != null) {
+            Request request = message.getRequest();
+
+            if (request.getOnSent() != null) {
+                request.getOnSent().handle(request, message);
+            }
+
+            // The request has been written
+            getMessages().remove(message);
+
+            if (request.isExpectingResponse()) {
+                getConnection().getInboundWay().getMessages().add(message);
+            }
         }
 
-        // The request has been written
-        getMessages().remove(message);
-
-        if (request.isExpectingResponse()) {
-            getConnection().getInboundWay().getMessages().add(message);
-        }
-
-        super.onCompleted();
+        super.onCompleted(endReached);
     }
 
     @Override

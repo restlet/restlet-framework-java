@@ -170,9 +170,6 @@ public class Connection<T extends Connector> implements SelectionListener {
 
             try {
                 if ((getSocket() != null) && !getSocket().isClosed()) {
-                    // Flush the output stream
-                    getSocket().getOutputStream().flush();
-
                     if (!(getSocket() instanceof SSLSocket)) {
                         getSocket().shutdownInput();
                         getSocket().shutdownOutput();

@@ -143,7 +143,7 @@ public class ServerOutboundWay extends OutboundWay {
     }
 
     @Override
-    public void onCompleted() {
+    public void onCompleted(boolean endReached) {
         getMessages().remove(getMessage());
 
         if (!getMessage().getStatus().isInformational()) {
@@ -157,7 +157,7 @@ public class ServerOutboundWay extends OutboundWay {
             getConnection().close(true);
         }
 
-        super.onCompleted();
+        super.onCompleted(endReached);
     }
 
     @Override
