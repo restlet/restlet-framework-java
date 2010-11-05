@@ -79,10 +79,6 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
             }
 
             result = getWrappedChannel().read(dst);
-        } else {
-            // Should be 0
-            int finalRead = getWrappedChannel().read(dst);
-            Context.getCurrentLogger().info("Final read : " + finalRead);
         }
 
         if (result > 0) {
