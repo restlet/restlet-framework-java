@@ -35,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
@@ -320,6 +321,19 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
             IOException {
         SocketChannel result = SocketChannel.open();
         result.configureBlocking(false);
+
+        Socket socket = result.socket();
+        // socket.setKeepAlive(true);
+        // socket.setOOBInline();
+        // socket.setPerformancePreferences(connectionTime, latency, bandwidth);
+        // socket.setReceiveBufferSize();
+        // socket.setReuseAddress(true);
+        // socket.setSoLinger(on, linger);
+        // socket.setSendBufferSize(size);
+        // socket.setSoTimeout(timeout);
+        // socket.setTcpNoDelay(false);
+        // socket.setTrafficClass(tc);
+
         InetSocketAddress address = new InetSocketAddress(hostDomain, hostPort);
         result.connect(address);
         return result;
