@@ -111,8 +111,8 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>maxIoIdleTimeMs</td>
  * <td>int</td>
  * <td>30000</td>
- * <td>Maximum time to wait on an idle IO operation. For an unlimited wait, use
- * '0' as value.</td>
+ * <td>Maximum time for an idle IO connection or request to wait for an
+ * operation before being closed. For an unlimited wait, use '0' as value.</td>
  * </tr>
  * <tr>
  * <td>maxThreadIdleTimeMs</td>
@@ -138,13 +138,13 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>inboundBufferSize</td>
  * <td>int</td>
- * <td>8*1024</td>
+ * <td>8192</td>
  * <td>Size of the content buffer for receiving messages.</td>
  * </tr>
  * <tr>
  * <td>outboundBufferSize</td>
  * <td>int</td>
- * <td>32*1024</td>
+ * <td>8192</td>
  * <td>Size of the content buffer for sending messages.</td>
  * </tr>
  * <tr>
@@ -154,6 +154,13 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>Indicates if direct NIO buffers should be allocated instead of regular
  * buffers. See NIO's ByteBuffer Javadocs. Note that tracing must be disabled to
  * use direct buffers.</td>
+ * </tr>
+ * <tr>
+ * <td>throttleTimeMs</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>Time to wait between socket write operations in milliseconds. Can prevent
+ * TCP buffer overflows.</td>
  * </tr>
  * <tr>
  * <td>transport</td>
@@ -366,15 +373,26 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Returns the time for an idle IO connection to wait for an operation
-     * before being closed. For an unlimited wait, use '0' as value.
+     * Returns the time for an idle IO connection or request to wait for an
+     * operation before being closed. For an unlimited wait, use '0' as value.
      * 
      * @return The time for an idle IO connection to wait for an operation
      *         before being closed.
      */
     public int getMaxIoIdleTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxIoIdleTimeMs", "3000000"));
+                "maxIoIdleTimeMs", "30000"));
+    }
+
+    /**
+     * Returns the time to wait between socket write operations in milliseconds.
+     * Can prevent TCP buffer overflows.
+     * 
+     * @return The time to wait between socket write operations in milliseconds.
+     */
+    public int getThrottleTimeMs() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "throttleTimeMs", "0"));
     }
 
     /**
@@ -429,7 +447,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getOutboundBufferSize() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "outboundBufferSize", Integer.toString(32 * 1024)));
+                "outboundBufferSize", Integer.toString(8 * 1024)));
     }
 
     /**

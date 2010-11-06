@@ -85,11 +85,47 @@ import org.restlet.engine.io.IoState;
  * <td>The port of the HTTP proxy.</td>
  * </tr>
  * <tr>
- * <td>tcpNoDelay</td>
+ * <td>socketKeepAlive</td>
+ * <td>boolean</td>
+ * <td>true</td>
+ * <td>Indicates if a TCP connection should be automatically kept alive after 2
+ * hours of inactivity.</td>
+ * </tr>
+ * <tr>
+ * <td>socketOobInline</td>
  * <td>boolean</td>
  * <td>false</td>
- * <td>Indicate if Nagle's TCP_NODELAY algorithm should be used.</td>
+ * <td>Indicates if urgent TCP data received on the socket will be received
+ * through the socket input stream.</td>
  * </tr>
+ * <tr>
+ * <td>socketLingerTimeMs</td>
+ * <td>int</td>
+ * <td>-1</td>
+ * <td>Time to block when a socket close is requested or -1 to not block at all.
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>socketNoDelay</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Enables Nagle's algorithm if set to false, preventing sending of small
+ * TCP packets.</td>
+ * </tr>
+ * <tr>
+ * <td>socketSendBufferSize</td>
+ * <td>int</td>
+ * <td>8192</td>
+ * <td>The hinted size of the underlying TCP buffers used by the platform for
+ * outbound network I/O.</td>
+ * </tr>
+ * <tr>
+ * <td>socketTrafficClass</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>Type of service to set in IP packets.</td>
+ * </tr>
+ * <tr>
  * <td>keystorePath</td>
  * <td>String</td>
  * <td>${user.home}/.keystore</td>
@@ -322,17 +358,17 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
         SocketChannel result = SocketChannel.open();
         result.configureBlocking(false);
 
+        // Configure socket
         Socket socket = result.socket();
-        // socket.setKeepAlive(true);
-        // socket.setOOBInline();
-        // socket.setPerformancePreferences(connectionTime, latency, bandwidth);
-        // socket.setReceiveBufferSize();
-        // socket.setReuseAddress(true);
-        // socket.setSoLinger(on, linger);
-        // socket.setSendBufferSize(size);
-        // socket.setSoTimeout(timeout);
-        // socket.setTcpNoDelay(false);
-        // socket.setTrafficClass(tc);
+        socket.setKeepAlive(isSocketKeepAlive());
+        socket.setOOBInline(isSocketOobInline());
+        socket.setReceiveBufferSize(getSocketReceiveBufferSize());
+        socket.setReuseAddress(isSocketReuseAddress());
+        socket.setSoLinger(getSocketLingerTimeMs() > 0, getSocketLingerTimeMs());
+        socket.setSendBufferSize(getSocketSendBufferSize());
+        socket.setSoTimeout(getMaxIoIdleTimeMs());
+        socket.setTcpNoDelay(isSocketNoDelay());
+        socket.setTrafficClass(getSocketTrafficClass());
 
         InetSocketAddress address = new InetSocketAddress(hostDomain, hostPort);
         result.connect(address);
@@ -619,23 +655,49 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
     }
 
     /**
+     * Returns the time to block when a socket close is requested or -1 to not
+     * block at all.
+     * 
+     * @return The time to block when a socket close is requested or -1 to not
+     *         block at all.
+     */
+    public int getSocketLingerTimeMs() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "socketLingerTimeMs", "-1"));
+
+    }
+
+    /**
+     * Returns the hinted size of the underlying TCP buffers used by the
+     * platform for outbound network I/O.
+     * 
+     * @return The hinted size of the underlying TCP buffers used by the
+     *         platform for outbound network I/O.
+     */
+    public int getSocketSendBufferSize() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "socketSendBufferSize", "8192"));
+
+    }
+
+    /**
+     * Returns the type of service to set in IP packets.
+     * 
+     * @return The type of service to set in IP packets.
+     */
+    public int getSocketTrafficClass() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "socketTrafficClass", "0"));
+
+    }
+
+    /**
      * Returns the SSL keystore type.
      * 
      * @return The SSL keystore type.
      */
     public String getSslProtocol() {
         return getHelpedParameters().getFirstValue("sslProtocol", "TLS");
-    }
-
-    /**
-     * Indicates if the protocol will use Nagle's algorithm
-     * 
-     * @return True to enable TCP_NODELAY, false to disable.
-     * @see java.net.Socket#setTcpNoDelay(boolean)
-     */
-    public boolean getTcpNoDelay() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "tcpNoDelay", "false"));
     }
 
     /**
@@ -761,6 +823,41 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
     @Override
     public boolean isProxying() {
         return getProxyHost() != null;
+    }
+
+    /**
+     * Indicates if a TCP connection should be automatically kept alive after 2
+     * hours of inactivity.
+     * 
+     * @return True if a TCP connection should be automatically kept alive after
+     *         2 hours of inactivity.
+     */
+    public boolean isSocketKeepAlive() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "socketKeepAlive", "true"));
+    }
+
+    /**
+     * Enables Nagle's algorithm if set to false, preventing sending of small
+     * TCP packets.
+     * 
+     * @return True if Nagle's algorithm should be disabled.
+     */
+    public boolean isSocketNoDelay() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "socketNoDelay", "false"));
+    }
+
+    /**
+     * Indicates if urgent TCP data received on the socket will be received
+     * through the socket input stream.
+     * 
+     * @return True if urgent TCP data received on the socket will be received
+     *         through the socket input stream.
+     */
+    public boolean isSocketOobInline() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "socketOobInline", "false"));
     }
 
     /**

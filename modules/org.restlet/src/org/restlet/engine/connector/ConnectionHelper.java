@@ -87,6 +87,20 @@ import org.restlet.Connector;
  * <td>true</td>
  * <td>Indicates if connections should be pooled to save instantiation time.</td>
  * </tr>
+ * <tr>
+ * <td>socketReceiveBufferSize</td>
+ * <td>int</td>
+ * <td>8192</td>
+ * <td>The hinted size of the underlying TCP buffers used by the platform for
+ * inbound network I/O.</td>
+ * </tr>
+ * <tr>
+ * <td>socketReuseAddress</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if sockets can be reused right away even if they are busy (in
+ * TIME_WAIT or 2MSL wait state).</td>
+ * </tr>
  * </table>
  * 
  * @author Jerome Louvel
@@ -273,6 +287,19 @@ public abstract class ConnectionHelper<T extends Connector> extends
     }
 
     /**
+     * Returns the hinted size of the underlying TCP buffers used by the
+     * platform for inbound network I/O.
+     * 
+     * @return The hinted size of the underlying TCP buffers used by the
+     *         platform for inbound network I/O.
+     */
+    public int getSocketReceiveBufferSize() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "socketReceiveBufferSize", "8192"));
+
+    }
+
+    /**
      * Indicates if persistent connections should be used if possible.
      * 
      * @return True if persistent connections should be used if possible.
@@ -311,4 +338,16 @@ public abstract class ConnectionHelper<T extends Connector> extends
      *         proxy.
      */
     public abstract boolean isProxying();
+
+    /**
+     * Indicates if sockets can be reused right away even if they are busy (in
+     * TIME_WAIT or 2MSL wait state).
+     * 
+     * @return True if sockets can be reused right away even if they are busy
+     *         (in TIME_WAIT or 2MSL wait state).
+     */
+    public boolean isSocketReuseAddress() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "socketReuseAddress", "false"));
+    }
 }

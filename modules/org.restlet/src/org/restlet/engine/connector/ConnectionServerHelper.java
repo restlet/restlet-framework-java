@@ -134,9 +134,14 @@ public abstract class ConnectionServerHelper extends ConnectionHelper<Server> {
     protected ServerSocketChannel createServerSocketChannel()
             throws IOException {
         ServerSocketChannel result = ServerSocketChannel.open();
-        result.socket().setReuseAddress(true);
-        result.socket().setSoTimeout(getMaxIoIdleTimeMs());
-        result.socket().bind(createSocketAddress());
+
+        // Configure the server socket
+        ServerSocket socket = result.socket();
+        socket.setReceiveBufferSize(getSocketReceiveBufferSize());
+        socket.setReuseAddress(isSocketReuseAddress());
+        socket.setSoTimeout(getMaxIoIdleTimeMs());
+        socket.bind(createSocketAddress());
+
         result.configureBlocking(false);
         return result;
     }

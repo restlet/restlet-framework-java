@@ -166,6 +166,13 @@ public abstract class OutboundWay extends Way {
                 getLogger().fine("Bytes written: " + bytesWritten);
             }
 
+            if (getHelper().getThrottleTimeMs() > 0) {
+                try {
+                    Thread.sleep(getHelper().getThrottleTimeMs());
+                } catch (InterruptedException e) {
+                }
+            }
+
             if (bytesWritten == 0) {
                 // The byte buffer hasn't been written, the socket
                 // channel can't write more. We needs to put the
