@@ -38,7 +38,7 @@ import org.restlet.data.Protocol;
  * 
  * @author Jerome Louvel
  */
-public class HttpServerHelper extends ConnectionServerHelper {
+public class HttpServerHelper extends ServerConnectionHelper {
 
     /**
      * Constructor.

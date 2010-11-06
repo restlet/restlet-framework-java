@@ -195,7 +195,7 @@ import org.restlet.engine.io.IoState;
  * 
  * @author Jerome Louvel
  */
-public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
+public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
     private static final String CONNECTOR_LATCH = "org.restlet.engine.connector.latch";
 
@@ -205,7 +205,7 @@ public abstract class ConnectionClientHelper extends ConnectionHelper<Client> {
      * @param connector
      *            The helped client connector.
      */
-    public ConnectionClientHelper(Client connector) {
+    public ClientConnectionHelper(Client connector) {
         super(connector, true);
     }
 

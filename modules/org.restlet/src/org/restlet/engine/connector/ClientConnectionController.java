@@ -45,7 +45,7 @@ public class ClientConnectionController extends ConnectionController {
      * @param helper
      *            The target client helper.
      */
-    public ClientConnectionController(ConnectionClientHelper helper) {
+    public ClientConnectionController(ClientConnectionHelper helper) {
         super(helper);
     }
 
@@ -54,8 +54,8 @@ public class ClientConnectionController extends ConnectionController {
      * 
      * @return The parent client helper.
      */
-    protected ConnectionClientHelper getHelper() {
-        return (ConnectionClientHelper) super.getHelper();
+    protected ClientConnectionHelper getHelper() {
+        return (ClientConnectionHelper) super.getHelper();
     }
 
     @Override

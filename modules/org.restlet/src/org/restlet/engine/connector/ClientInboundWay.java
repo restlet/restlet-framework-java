@@ -98,8 +98,8 @@ public class ClientInboundWay extends InboundWay {
     }
 
     @Override
-    public ConnectionClientHelper getHelper() {
-        return (ConnectionClientHelper) super.getHelper();
+    public ClientConnectionHelper getHelper() {
+        return (ClientConnectionHelper) super.getHelper();
     }
 
     @Override
