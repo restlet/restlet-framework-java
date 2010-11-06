@@ -66,7 +66,7 @@ public class ClientConnectionController extends ConnectionController {
 
     @Override
     protected void handleOutbound(Response response) {
-        handleOutbound(response, false);
+        handleOutbound(response, true);
     }
 
 }
