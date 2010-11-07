@@ -179,7 +179,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             type = null;
         }
         if (type == null) {
-            return parameterType.getSimpleName();
+            return parameterType.getName();
         } else {
             StringBuilder sb = new StringBuilder();
             buildTypeName(genericParameterType, sb);
