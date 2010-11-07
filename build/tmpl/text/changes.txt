@@ -9,6 +9,7 @@ Changes log
 	     of several connections, persistent connections and chunked
 	   - Fixed Representation#availableSize computation issue when
 	     total size is unknown and fixed ranged entity writing.
+       - Fixed generation of GWT proxies. Reported by Evan Wang.
     - Misc
 	   - 
 
