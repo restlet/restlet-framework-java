@@ -1,0 +1,40 @@
+   
+===========
+Changes log  
+===========
+
+- @version-full@ (@release-date@)
+    - API changes
+      - Removed deprecated classes and code.
+      - The Route class has been reintroduced with a lighter
+        behavior not depending on URI templates.
+      - Added an UniformResource#setApplication() setter to be able
+        to explicitly set the parent application used to pick up the
+        ConverterService or MetadataService. This property is also 
+        carried on by the copy constructor. Suggested by John Logdson.
+      - Added UniformResource#toString() for easier debugging.
+      - Added Representation#isSelectable() and getRegistration() method
+        to manipulate the registration of the NIO channel with its 
+        associated selector and received asynchronous notifications
+        of available content.
+      - Deprecated Application#setClientRoot, renamed into a 
+        setOutboundRoot method.
+    - Enhancements
+      - Improved the naming of files created by the FILE local 
+        connector so that media type extension comes at the end.
+      - Added a fully new non-blocking NIO/HTTP connector in the engine, 
+        in replacement of the previous one based on blocking BIO. 
+        It has much better performance (latency, throughput and 
+        scalability) and supports persistent connections and chunked
+        encoding.
+    - Bugs fixed
+      - 
+    - Misc
+      - Removed the Grizzly and Netty extensions which were still 
+        considered experimental at this point. The new internal
+        connector based on non-blocking NIO now provides similar
+        advantages and is already more complete from a HTTP coverage
+        point of view. Users of these connectors are encouraged to
+        leverage the NIO internal connector or the two other extensions
+        that are still available in 2.1 (Jetty and Simple connectors).
+      - Added library GWT 2.1.0, removed support of GWT 2.0.

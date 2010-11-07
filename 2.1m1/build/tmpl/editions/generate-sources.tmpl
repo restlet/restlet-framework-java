@@ -1,0 +1,51 @@
+ -->
+<#noparse>
+      <delete includeEmptyDirs="true" verbose="false" quiet="true">
+         <fileset dir="${mod}" />
+      </delete>
+</#noparse>
+<#list edition.modules as module>
+      <!-- copy and filter the java source code -->
+      <copy todir="<#noparse>${mod}</#noparse>/${module.package}" overwrite="true" includeEmptyDirs="false">
+         <fileset dir="<#noparse>${mods}</#noparse>/${module.package}" excludes="bin/**">
+   <#if module.source[editionKey]??>${module.source[editionKey].sets!""}</#if>
+            <include name="**/*.java" />
+         </fileset>
+   <#if (module.source[editionKey]??) && (module.source[editionKey].mappers??)><chainedmapper>${module.source[editionKey].mappers}</chainedmapper></#if>
+         <filterchain>
+            <filterreader classname="filter.EditionFilterReader" classpathref="forge-path">
+               <param name="edition" value="${editionKey}" />
+            </filterreader>
+       <#if (module.source[editionKey]??) && (module.source[editionKey].filters??)>${module.source[editionKey].filters}</#if>
+         </filterchain>
+      </copy>
+      <!-- copy and filter the non Java code -->
+      <copy todir="<#noparse>${mod}</#noparse>/${module.package}" overwrite="true" includeEmptyDirs="false">
+         <fileset dir="<#noparse>${mods}</#noparse>/${module.package}" excludes="bin/**">
+   <#compress>
+         <#list editions?keys as ed>
+            <#if ed != edition.id><exclude name="**/*.${ed}*" /></#if>
+         </#list>
+   </#compress>
+   <#if module.source[editionKey]??>${module.source[editionKey].sets!""}</#if>
+            <exclude name="**/*.java" />
+         </fileset>
+   <#if (module.source[editionKey]??) && (module.source[editionKey].mappers??)><chainedmapper>${module.source[editionKey].mappers}</chainedmapper></#if>
+   <#if (module.source[editionKey]??) && (module.source[editionKey].filters??)><filterchain>${module.source[editionKey].filters}</filterchain></#if>
+      </copy>
+   <#if module.primaryLibrary??>
+      <replace dir="<#noparse>${mod}</#noparse>/${module.package}" includes="**/package.html" token="@minor-version@" value="${module.primaryLibrary.minorVersion}" />
+      <replace dir="<#noparse>${mod}</#noparse>/${module.package}" includes="**/package.html" token="@home-uri@" value="${module.primaryLibrary.homeUri}" />
+   </#if>
+   <#if edition.postSource??>${edition.postSource?replace("\\$\\{module\\.package\\}", module.package, "r")}</#if>
+</#list>
+<#noparse>
+      <replace dir="${mod}" includes="**/MANIFEST.MF*" token="Bundle-Version: ${version-minor}" value="Bundle-Version: ${version-manifest}" />
+      <replace dir="${mod}" includes="**/Engine.java" token="@major-number@" value="${major-number}" />
+      <replace dir="${mod}" includes="**/Engine.java" token="@minor-number@" value="${minor-number}" />
+      <replace dir="${mod}" includes="**/Engine.java" token="@release-type@" value="${release-type}" />
+      <replace dir="${mod}" includes="**/Engine.java" token="@release-number@" value="${release-number}" />
+      <replace dir="${mod}" includes="**/Edition.java" token="final Edition CURRENT = Edition.JSE;" value="final Edition CURRENT = Edition.</#noparse>${editionKey?upper_case}<#noparse>;" />
+</#noparse>
+
+<!--
