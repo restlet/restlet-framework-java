@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.0.3 (2010-11-07)
     - Bugs fixed
 	   - Fixed bug in Netty HTTPS connector preventing the handling
 	     of several connections, persistent connections and chunked
