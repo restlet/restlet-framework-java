@@ -93,6 +93,12 @@ public abstract class Controller {
     }
 
     /**
+     * Method called-back with the controller stops running.
+     */
+    protected void doRelease() {
+    }
+
+    /**
      * Do the actual controller work. Called by the {@link #run()} to provide an
      * easy method to overload.
      * 
@@ -271,6 +277,8 @@ public abstract class Controller {
                         "Unexpected error while controlling connector", ex);
             }
         }
+
+        doRelease();
     }
 
     /**

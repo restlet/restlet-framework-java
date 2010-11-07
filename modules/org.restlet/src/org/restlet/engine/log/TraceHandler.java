@@ -71,6 +71,7 @@ public class TraceHandler extends Handler {
     public void publish(LogRecord record) {
         System.out.println("[" + record.getLevel().getLocalizedName() + "]["
                 + record.getLoggerName() + "] " + record.getMessage());
+        System.out.flush();
     }
 
 }

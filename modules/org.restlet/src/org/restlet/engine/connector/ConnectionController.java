@@ -125,6 +125,16 @@ public abstract class ConnectionController extends Controller implements
     }
 
     @Override
+    protected void doRelease() {
+        try {
+            getSelector().close();
+        } catch (IOException e) {
+            getHelper().getLogger().log(Level.WARNING,
+                    "Unable to close the NIO selector", e);
+        }
+    }
+
+    @Override
     protected void doRun(long sleepTime) throws IOException {
         super.doRun(sleepTime);
         registerKeys();
