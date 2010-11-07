@@ -1,0 +1,52 @@
+<library id="jetty" dir="org.eclipse.jetty">
+	<package id="jetty-ajp" name="org.eclipse.jetty.ajp">
+		<maven>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-ajp</artifactId>
+		</maven>
+	</package>
+	<package id="jetty-continuation" name="org.eclipse.jetty.continuation">
+		<maven>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-continuation</artifactId>
+		</maven>
+	</package>
+	<package id="jetty-http" name="org.eclipse.jetty.http">
+		<maven>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-http</artifactId>
+		</maven>
+	</package>
+	<package id="jetty-io" name="org.eclipse.jetty.io">
+		<maven>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-io</artifactId>
+		</maven>
+	</package>
+	<package id="jetty-server" name="org.eclipse.jetty.server">
+		<maven>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+		</maven>
+	</package>
+	<package id="jetty-util" name="org.eclipse.jetty.util">
+		<maven>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+		</maven>
+	</package>
+	<version>7.1</version>
+	<release>6.v20100715</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://www.eclipse.org/jetty/
+	</homeUri>
+	<downloadUri>
+		http://download.eclipse.org/jetty/
+	</downloadUri>
+	<javadocs>
+		<link href="http://download.eclipse.org/jetty/stable-7/apidocs/" />
+	</javadocs>
+</library>

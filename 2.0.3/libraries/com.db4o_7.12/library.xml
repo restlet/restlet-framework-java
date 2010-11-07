@@ -1,0 +1,42 @@
+<library id="db4o" dir="com.db4o">
+	<name>Db4o - object database framework</name>
+	<description>Db4o - object database framework.</description>
+	<package id="db4o" name="com.db4o">
+		<maven>
+			<groupId>com.db4o</groupId>
+		</maven>
+	</package>
+	<package id="db4o-nativequery" name="com.db4o.nativequery">
+		<maven>
+			<groupId>com.db4o</groupId>
+		</maven>
+	</package>
+	<package id="db4o-instrumentation" name="com.db4o.instrumentation">
+		<maven>
+			<groupId>com.db4o</groupId>
+		</maven>
+	</package>
+	<package id="db4o-optional" name="com.db4o.optional">
+		<maven>
+			<groupId>com.db4o</groupId>
+		</maven>
+	</package>
+	<package id="db4o-ta" name="com.db4o.ta">
+		<maven>
+			<groupId>com.db4o</groupId>
+		</maven>
+	</package>
+	<package id="db4o-tools" name="com.db4o.tools">
+		<maven>
+			<groupId>com.db4o</groupId>
+		</maven>
+	</package>
+	<version>7.12</version>
+	<release>132</release>
+	<distributions>
+		<distribution id="maven" />
+	</distributions>
+	<dependency type="library" id="bloat" />
+	<homeUri>http://www.db4o.com/</homeUri>
+	<downloadUri>http://developer.db4o.com/Downloads.aspx</downloadUri>
+</library>
