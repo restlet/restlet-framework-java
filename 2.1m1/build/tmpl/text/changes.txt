@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.1 Milestone 1 (11/07/2010)
     - API changes
       - Removed deprecated classes and code.
       - The Route class has been reintroduced with a lighter
