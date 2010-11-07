@@ -51,8 +51,8 @@ import org.restlet.security.Authenticator;
  * {@link JaxRsApplication#JaxRsApplication(Context)}.
  * <ul>
  * <li>Add your {@link Application}(s) by calling {@link #add(Application)}.</li>
- * <li>If you need authentication, set a {@link Authenticator} and perhaps an
- * {@link RoleChecker}, see {@link #setGuard(Authenticator)}.</li>
+ * <li>If you need authentication, set a {@link Authenticator} see
+ * {@link #setGuard(Authenticator)}.</li>
  * </ul>
  * At least add the JaxRsApplication to a {@link Component}.
  * </p>
@@ -234,7 +234,7 @@ public class JaxRsApplication extends org.restlet.Application {
      * Set the Guard from the org.restlet.security package. This should be
      * called before the root Restlet is created.
      * <p>
-     * This replaced the guard set via {@link #setGuard(Authenticator))}.
+     * This replaced the guard set via {@link #setGuard(Authenticator)}.
      * 
      * @param guard
      *            the Guard to use.
