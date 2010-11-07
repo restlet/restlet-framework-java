@@ -5,6 +5,16 @@ Changes log
 
 - @version-full@ (@release-date@)
     - API changes
+      - 
+    - Enhancements
+      -
+    - Bugs fixed
+      - 
+    - Misc
+      -
+
+- 2.1 Milestone 1 (11/07/2010)
+    - API changes
       - Removed deprecated classes and code.
       - The Route class has been reintroduced with a lighter
         behavior not depending on URI templates.
@@ -27,8 +37,6 @@ Changes log
         It has much better performance (latency, throughput and 
         scalability) and supports persistent connections and chunked
         encoding.
-    - Bugs fixed
-      - 
     - Misc
       - Removed the Grizzly and Netty extensions which were still 
         considered experimental at this point. The new internal
