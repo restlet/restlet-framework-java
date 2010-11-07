@@ -411,7 +411,7 @@ public abstract class Representation extends RepresentationInfo {
     /**
      * Indicates if the representation content supports NIO selection. In this
      * case, the
-     * {@link org.restlet.engine.connector.ConnectionController#register(org.restlet.util.SelectionListener)}
+     * {@link org.restlet.engine.connector.ConnectionController#register(java.nio.channels.SelectableChannel, int, org.restlet.util.SelectionListener)}
      * method can be called to be notified when new content is ready for
      * reading.
      * 

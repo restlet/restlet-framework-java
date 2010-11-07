@@ -184,7 +184,7 @@ public class ReadableBufferedChannel extends
     }
 
     /**
-     * Post-read callback that calls {@link CompletionListener#onCompleted()} if
+     * Post-read callback that calls {@link CompletionListener#onCompleted(boolean)} if
      * the end has been reached.
      * 
      * @param bytesRead
