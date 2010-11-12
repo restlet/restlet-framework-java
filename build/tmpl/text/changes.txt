@@ -5,7 +5,11 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-	   -
+	   - Extension headers on responses were now supported by the
+	     JAX-RS extension. Reported by Jim Stabile and fix suggested
+	     by Simon Temple.
+	   - Invalid log traces for connectors without protocols, such as
+	     dispatchers, were removed.
 
 - 2.0.3 (2010-11-07)
     - Bugs fixed
