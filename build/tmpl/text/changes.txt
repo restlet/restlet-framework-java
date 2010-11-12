@@ -7,7 +7,18 @@ Changes log
     - API changes
       - 
     - Enhancements
-      -
+      - Simplified the default console logging by replacing Java's default
+        verbose log formatter by a single line formatter. This formatter
+        can be modified via the static Engine#logFormatter property.
+      - Added easy programmatic control of log configuration via 
+        Engine#logLevel and restletLogLevel static properties.
+        If regular log configuration is used via system properties, it 
+        is taking over for backward compatibility.
+      - In addition to java.util.logging.SimpleFormatter, two new ones are
+        added: org.restlet.engine.log.SimplerFormatter and the new default
+        org.restlet.engine.log.SimplestFormatter.
+      - Removed TraceHandler class, replaced by configurable ConsoleHander
+        formatters.
     - Bugs fixed
       - 
     - Misc

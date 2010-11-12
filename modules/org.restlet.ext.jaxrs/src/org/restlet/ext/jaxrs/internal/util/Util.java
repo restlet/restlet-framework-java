@@ -76,6 +76,7 @@ import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.engine.header.ContentType;
 import org.restlet.engine.header.DimensionWriter;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
@@ -307,8 +308,18 @@ public class Util {
         }
 
         HeaderUtils.copyResponseTransportHeaders(headers, restletResponse);
-        HeaderUtils.extractEntityHeaders(headers, restletResponse
-                .getEntity());
+        HeaderUtils.extractEntityHeaders(headers, restletResponse.getEntity());
+
+        // Copy extension headers
+        @SuppressWarnings("unchecked")
+        Series<Parameter> extensionHeaders = (Series<Parameter>) jaxRsHeaders
+                .getFirst(HeaderConstants.ATTRIBUTE_HEADERS);
+
+        if (extensionHeaders != null) {
+            Map<String, Object> attributes = new HashMap<String, Object>();
+            attributes.put(HeaderConstants.ATTRIBUTE_HEADERS, extensionHeaders);
+            restletResponse.setAttributes(attributes);
+        }
     }
 
     /**
