@@ -10,6 +10,8 @@ Changes log
 	     by Simon Temple.
 	   - Invalid log traces for connectors without protocols, such as
 	     dispatchers, were removed.
+	   - Fixed AccessControlException caused by an unnecessary call to
+	     System.getProperties(). Reported by Matthias Reichl.
 
 - 2.0.3 (2010-11-07)
     - Bugs fixed

@@ -55,8 +55,8 @@ public class IoUtils {
 
         // [ifndef gwt]
         try {
-            result = Integer.parseInt(System.getProperties().getProperty(
-                    "org.restlet.engine.io.buffer.size"));
+            result = Integer.parseInt(System
+                    .getProperty("org.restlet.engine.io.buffer.size"));
         } catch (NumberFormatException nfe) {
             result = BUFFER_SIZE;
         }
