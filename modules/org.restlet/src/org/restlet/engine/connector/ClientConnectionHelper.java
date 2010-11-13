@@ -732,6 +732,8 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     @Override
     public void handle(Request request, Response response) {
         try {
+            getLogger().finer("Handling request...");
+
             if (isSynchronous(request) && request.isExpectingResponse()) {
                 // Prepare the latch to block the caller thread
                 CountDownLatch latch = new CountDownLatch(1);
@@ -773,6 +775,8 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     @Override
     public void handleInbound(Response response) {
         if (response != null) {
+            getLogger().finer("Handling response...");
+
             if (response.getRequest().getOnResponse() != null) {
                 response.getRequest().getOnResponse()
                         .handle(response.getRequest(), response);
@@ -885,14 +889,14 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
     @Override
     public void start() throws Exception {
-        getLogger().info("Starting the NIO " + getProtocols() + " client");
+        getLogger().info("Starting the internal " + getProtocols() + " client");
 
         super.start();
     }
 
     @Override
     public void stop() throws Exception {
-        getLogger().info("Stopping the NIO " + getProtocols() + " client");
+        getLogger().info("Stopping the internal" + getProtocols() + " client");
         super.stop();
     }
 

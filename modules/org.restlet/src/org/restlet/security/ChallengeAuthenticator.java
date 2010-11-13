@@ -152,7 +152,8 @@ public class ChallengeAuthenticator extends Authenticator {
     @Override
     protected boolean authenticate(Request request, Response response) {
         boolean result = false;
-        final boolean loggable = getLogger().isLoggable(Level.FINE);
+        boolean loggable = request.isLoggable()
+                && getLogger().isLoggable(Level.FINE);
 
         if (getVerifier() != null) {
             switch (getVerifier().verify(request, response)) {

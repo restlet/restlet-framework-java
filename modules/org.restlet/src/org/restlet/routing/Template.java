@@ -715,14 +715,33 @@ public class Template {
      * @return The number of matched characters or -1 if no character matched.
      */
     public int parse(String formattedString, Map<String, Object> variables) {
+        return parse(formattedString, variables, true);
+    }
+
+    /**
+     * Attempts to parse a formatted reference. If the parsing succeeds, the
+     * given request's attributes are updated.<br>
+     * Note that the values parsed are directly extracted from the formatted
+     * reference and are therefore not percent-decoded.
+     * 
+     * @see Reference#decode(String)
+     * 
+     * @param formattedString
+     *            The string to parse.
+     * @param variables
+     *            The map of variables to update.
+     * @param loggable
+     *            True if the parsing should be logged.
+     * @return The number of matched characters or -1 if no character matched.
+     */
+    public int parse(String formattedString, Map<String, Object> variables,
+            boolean loggable) {
         int result = -1;
 
         if (formattedString != null) {
             try {
-
-                final Matcher matcher = getRegexPattern().matcher(
-                        formattedString);
-                final boolean matched = ((getMatchingMode() == MODE_EQUALS) && matcher
+                Matcher matcher = getRegexPattern().matcher(formattedString);
+                boolean matched = ((getMatchingMode() == MODE_EQUALS) && matcher
                         .matches())
                         || ((getMatchingMode() == MODE_STARTS_WITH) && matcher
                                 .lookingAt());
@@ -734,18 +753,24 @@ public class Template {
                     // Update the attributes with the variables value
                     String attributeName = null;
                     String attributeValue = null;
+
                     for (int i = 0; i < getRegexVariables().size(); i++) {
                         attributeName = getRegexVariables().get(i);
                         attributeValue = matcher.group(i + 1);
+                        Variable var = getVariables().get(attributeName);
 
-                        final Variable var = getVariables().get(attributeName);
                         if ((var != null) && var.isDecodingOnParse()) {
-                            variables.put(attributeName, Reference
-                                    .decode(attributeValue));
-                        } else {
-                            variables.put(attributeName, attributeValue);
+                            attributeValue = Reference.decode(attributeValue);
                         }
 
+                        if (loggable) {
+                            getLogger().fine(
+                                    "Template variable \"" + attributeName
+                                            + "\" matched with value \""
+                                            + attributeValue + "\"");
+                        }
+
+                        variables.put(attributeName, attributeValue);
                     }
                 }
             } catch (StackOverflowError soe) {
@@ -773,7 +798,8 @@ public class Template {
      * @return The number of matched characters or -1 if no character matched.
      */
     public int parse(String formattedString, Request request) {
-        return parse(formattedString, request.getAttributes());
+        return parse(formattedString, request.getAttributes(),
+                request.isLoggable());
     }
 
     /**

@@ -75,12 +75,12 @@ public class HostRoute extends Route {
     protected int beforeHandle(Request request, Response response) {
         request.getResourceRef().setBaseRef(request.getHostRef());
 
-        if (getLogger().isLoggable(Level.FINE)) {
+        if (request.isLoggable() && getLogger().isLoggable(Level.FINE)) {
             getLogger().fine(
-                    "New base URI: " + request.getResourceRef().getBaseRef());
-            getLogger().fine(
-                    "New remaining part: "
-                            + request.getResourceRef().getRemainingPart());
+                    "Base URI: \"" + request.getResourceRef().getBaseRef()
+                            + "\". Remaining part: \""
+                            + request.getResourceRef().getRemainingPart()
+                            + "\"");
         }
 
         return CONTINUE;

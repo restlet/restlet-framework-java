@@ -97,6 +97,9 @@ public class Request extends Message {
     /** The host reference. */
     private volatile Reference hostRef;
 
+    /** Indicates if the call is loggable. */
+    private volatile boolean loggable;
+
     /** The maximum number of intermediaries. */
     private volatile int maxForwards;
 
@@ -164,6 +167,7 @@ public class Request extends Message {
         this.conditions = null;
         this.cookies = null;
         this.hostRef = null;
+        this.loggable = true;
         this.maxForwards = -1;
         this.method = method;
         this.originalRef = null;
@@ -614,6 +618,15 @@ public class Request extends Message {
     }
 
     /**
+     * Indicates if the call is loggable
+     * 
+     * @return True if the call is loggable
+     */
+    public boolean isLoggable() {
+        return loggable;
+    }
+
+    /**
      * Sets the authentication response sent by a client to an origin server.
      * Note that when used with HTTP connectors, this property maps to the
      * "Authorization" header.
@@ -689,6 +702,16 @@ public class Request extends Message {
      */
     public void setHostRef(String hostUri) {
         setHostRef(new Reference(hostUri));
+    }
+
+    /**
+     * Indicates if the call is loggable
+     * 
+     * @param loggable
+     *            True if the call is loggable
+     */
+    public void setLoggable(boolean loggable) {
+        this.loggable = loggable;
     }
 
     /**

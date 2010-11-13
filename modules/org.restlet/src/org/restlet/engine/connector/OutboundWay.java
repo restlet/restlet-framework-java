@@ -162,8 +162,8 @@ public abstract class OutboundWay extends Way {
             int bytesWritten = getConnection().getWritableSelectionChannel()
                     .write(getByteBuffer());
 
-            if (getLogger().isLoggable(Level.FINE)) {
-                getLogger().fine("Bytes written: " + bytesWritten);
+            if (getLogger().isLoggable(Level.FINER)) {
+                getLogger().finer("Bytes written: " + bytesWritten);
             }
 
             if (getHelper().getThrottleTimeMs() > 0) {
@@ -332,8 +332,8 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public void onCompleted(boolean endReached) {
-        if (getLogger().isLoggable(Level.FINE)) {
-            getLogger().fine("Outbound message fully sent");
+        if (getLogger().isLoggable(Level.FINER)) {
+            getLogger().finer("Outbound message fully sent");
         }
 
         setHeaderIndex(0);

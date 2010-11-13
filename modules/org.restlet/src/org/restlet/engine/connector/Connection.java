@@ -152,10 +152,12 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public void close(boolean graceful) {
         if (graceful) {
-            getLogger().log(
-                    Level.FINE,
-                    "Closing a connection to " + getSocketAddress()
-                            + " gracefully");
+            if (getLogger().isLoggable(Level.FINER)) {
+                getLogger().log(
+                        Level.FINER,
+                        "Closing connection to " + getSocketAddress()
+                                + " gracefully");
+            }
 
             if (getRegistration() != null) {
                 getRegistration().setCanceling(true);
@@ -163,10 +165,12 @@ public class Connection<T extends Connector> implements SelectionListener {
 
             setState(ConnectionState.CLOSING);
         } else {
-            getLogger().log(
-                    Level.FINE,
-                    "Closing a connection to " + getSocketAddress()
-                            + " immediately");
+            if (getLogger().isLoggable(Level.FINER)) {
+                getLogger().log(
+                        Level.FINER,
+                        "Closing connection to " + getSocketAddress()
+                                + " immediately");
+            }
 
             try {
                 if ((getSocket() != null) && !getSocket().isClosed()) {
@@ -491,7 +495,7 @@ public class Connection<T extends Connector> implements SelectionListener {
     public void onSelected(SelectionRegistration registration) {
         this.lastActivity = System.currentTimeMillis();
 
-        if (getLogger().isLoggable(Level.FINE)) {
+        if (getLogger().isLoggable(Level.FINER)) {
             String trace = null;
 
             if (isClientSide()) {
@@ -500,10 +504,10 @@ public class Connection<T extends Connector> implements SelectionListener {
                 trace = "Server ";
             }
 
-            getLogger().fine(
+            getLogger().finer(
                     trace + "connection (state | inbound | outbound): "
                             + toString());
-            getLogger().fine(
+            getLogger().finer(
                     trace + "NIO selection (interest | ready | cancelled): "
                             + registration.toString());
         }
@@ -633,8 +637,8 @@ public class Connection<T extends Connector> implements SelectionListener {
      *            The state of the connection.
      */
     public void setState(ConnectionState state) {
-        if (getLogger().isLoggable(Level.FINE)) {
-            getLogger().fine(
+        if (getLogger().isLoggable(Level.FINEST)) {
+            getLogger().finest(
                     "Connection state (old | new) : " + this.state + " | "
                             + state);
         }

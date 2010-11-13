@@ -33,11 +33,13 @@ package org.restlet.service;
 import java.util.logging.LogManager;
 
 import org.restlet.Context;
+import org.restlet.Request;
 import org.restlet.data.Reference;
 import org.restlet.engine.log.LogFilter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.routing.Filter;
+import org.restlet.routing.Template;
 
 /**
  * Service providing access logging service. The implementation is fully based
@@ -81,6 +83,7 @@ import org.restlet.routing.Filter;
  * @author Jerome Louvel
  */
 public class LogService extends Service {
+
     /** The access logger name. */
     private volatile String loggerName;
 
@@ -92,6 +95,9 @@ public class LogService extends Service {
 
     /** Indicates if the identity check (as specified by RFC1413) is enabled. */
     private volatile boolean identityCheck;
+
+    /** The URI template of loggable resource references. */
+    private volatile Template loggableTemplate;
 
     /**
      * Constructor.
@@ -108,6 +114,7 @@ public class LogService extends Service {
      */
     public LogService(boolean enabled) {
         super(enabled);
+        this.loggableTemplate = null;
         this.loggerName = null;
         this.logFormat = null;
         this.logPropertiesRef = null;
@@ -127,6 +134,18 @@ public class LogService extends Service {
      */
     public String getLogFormat() {
         return this.logFormat;
+    }
+
+    /**
+     * Returns the URI template of loggable resource references. Returns null by
+     * default, meaning the all requests are loggable, independant of their
+     * target resource URI reference.
+     * 
+     * @return The URI template of loggable resource references.
+     * @see Request#getResourceRef()
+     */
+    public Template getLoggableTemplate() {
+        return loggableTemplate;
     }
 
     /**
@@ -162,6 +181,20 @@ public class LogService extends Service {
     }
 
     /**
+     * Indicates if the call should be logged during the processing chain. By
+     * default, it tries to match the request URI with the
+     * {@link #getLoggableTemplate()} URI template otherwise is returns true.
+     * 
+     * @param request
+     *            The request to log.
+     * @return True if the call should be logged during the processing chain.
+     */
+    public boolean isLoggable(Request request) {
+        return (getLoggableTemplate() == null) ? true : getLoggableTemplate()
+                .match(request.getResourceRef().getTargetRef().toString()) > 0;
+    }
+
+    /**
      * Indicates if the identity check (as specified by RFC1413) is enabled.
      * 
      * @param identityCheck
@@ -176,11 +209,36 @@ public class LogService extends Service {
      * one of IIS 6.
      * 
      * @param format
-     *            The format to use when loggin calls.
+     *            The format to use when logging calls.
      * @see org.restlet.routing.Template for format syntax and variables.
      */
     public void setLogFormat(String format) {
         this.logFormat = format;
+    }
+
+    /**
+     * Sets the URI template of loggable resource references.
+     * 
+     * @param loggableTemplateRef
+     *            The URI template of loggable resource references.
+     * @see #setLoggableTemplate(Template)
+     */
+    public void setLoggableTemplate(String loggableTemplateRef) {
+        if (loggableTemplateRef != null) {
+            this.loggableTemplate = new Template(loggableTemplateRef);
+        } else {
+            this.loggableTemplate = null;
+        }
+    }
+
+    /**
+     * Sets the URI template of loggable resource references.
+     * 
+     * @param loggableTemplate
+     *            The URI template of loggable resource references.
+     */
+    public void setLoggableTemplate(Template loggableTemplate) {
+        this.loggableTemplate = loggableTemplate;
     }
 
     /**

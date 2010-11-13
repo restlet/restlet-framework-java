@@ -85,13 +85,12 @@ public class ServerRouter extends Router {
                 VirtualHost vhost = ((HostRoute) route).getVirtualHost();
 
                 if (getComponent().getDefaultHost() == vhost) {
-                    getLogger().fine("The default host was selected.");
+                    getLogger().fine("Default virtual host selected");
                 } else {
                     getLogger().fine(
-                            "This virtual host was selected: \""
-                                    + vhost.getHostScheme() + "\", \""
-                                    + vhost.getHostDomain() + "\", \""
-                                    + vhost.getHostPort() + "\"");
+                            "Virtual host selected: \"" + vhost.getHostScheme()
+                                    + "\", \"" + vhost.getHostDomain()
+                                    + "\", \"" + vhost.getHostPort() + "\"");
                 }
             } else {
                 super.logRoute(route);
@@ -123,7 +122,8 @@ public class ServerRouter extends Router {
             }
         };
 
-        setDefaultRoute(new org.restlet.routing.TemplateRoute(this, "", noHostMatched));
+        setDefaultRoute(new org.restlet.routing.TemplateRoute(this, "",
+                noHostMatched));
 
         // Start the router
         super.start();

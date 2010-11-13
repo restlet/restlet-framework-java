@@ -106,7 +106,7 @@ public class LogFilter extends Filter {
      */
     @Override
     protected void afterHandle(Request request, Response response) {
-        if (this.logLogger.isLoggable(Level.INFO)) {
+        if (request.isLoggable() && this.logLogger.isLoggable(Level.INFO)) {
             // Format the call into a log entry
             if (this.logTemplate != null) {
                 this.logLogger.log(Level.INFO, format(request, response));
@@ -114,8 +114,8 @@ public class LogFilter extends Filter {
                 long startTime = (Long) request.getAttributes().get(
                         "org.restlet.startTime");
                 int duration = (int) (System.currentTimeMillis() - startTime);
-                this.logLogger.log(Level.INFO, formatDefault(request, response,
-                        duration));
+                this.logLogger.log(Level.INFO,
+                        formatDefault(request, response, duration));
             }
         }
     }
@@ -134,6 +134,16 @@ public class LogFilter extends Filter {
     protected int beforeHandle(Request request, Response response) {
         request.getAttributes().put("org.restlet.startTime",
                 System.currentTimeMillis());
+
+        // Set the log level for the given request
+        request.setLoggable(this.logService.isLoggable(request));
+
+        if (request.isLoggable() && this.logLogger.isLoggable(Level.INFO)) {
+            this.logLogger
+                    .info("Processing request to: \""
+                            + request.getResourceRef().getTargetRef()
+                                    .toString() + "\"");
+        }
 
         return CONTINUE;
     }

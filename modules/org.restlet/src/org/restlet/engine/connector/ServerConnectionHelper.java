@@ -193,7 +193,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
     @Override
     public void handleInbound(Response response) {
         if ((response != null) && (response.getRequest() != null)) {
-            getLogger().fine("Handling inbound message");
+            getLogger().finer("Handling request...");
 
             // Effectively handle the request
             handle(response.getRequest(), response);
@@ -211,7 +211,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
     @Override
     public void handleOutbound(Response response) {
         if (response != null) {
-            getLogger().fine("Handling outbound message");
+            getLogger().finer("Handling response...");
             InboundRequest request = (InboundRequest) response.getRequest();
             Connection<Server> connection = request.getConnection();
 
@@ -296,7 +296,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
     @Override
     public synchronized void start() throws Exception {
         getLogger().info(
-                "Starting the NIO " + getProtocols() + " server on port "
+                "Starting the internal " + getProtocols() + " server on port "
                         + getHelped().getPort());
 
         // Create the server socket channel
@@ -323,7 +323,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
 
     @Override
     public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the NIO " + getProtocols() + " server");
+        getLogger().info("Stopping the internal " + getProtocols() + " server");
 
         // Stop the controller
         super.stop();

@@ -89,10 +89,15 @@ public abstract class ConnectionController extends Controller implements
                     && conn.isEmpty()) {
                 conn.close(false);
             } else if (conn.hasTimedOut()) {
+                if (getHelper().getLogger().isLoggable(Level.FINE)) {
+                    getHelper().getLogger().fine(
+                            "Closing connection with \""
+                                    + conn.getSocketAddress()
+                                    + "\" due to lack of activity during "
+                                    + getHelper().getMaxIoIdleTimeMs() + " ms");
+                }
+
                 conn.close(false);
-                getHelper().getLogger().fine(
-                        "Closing connection with no IO activity during "
-                                + getHelper().getMaxIoIdleTimeMs() + " ms.");
             } else if (conn.updateState()) {
                 getUpdatedRegistrations().add(conn.getRegistration());
             }

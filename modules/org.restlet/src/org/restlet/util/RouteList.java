@@ -91,7 +91,8 @@ public final class RouteList extends WrapperList<Route> {
         Route result = null;
         float bestScore = 0F;
         float score;
-        for (final Route current : this) {
+
+        for (Route current : this) {
             score = current.score(request, response);
 
             if ((score > bestScore) && (score >= requiredScore)) {

@@ -371,14 +371,14 @@ public class SelectionRegistration {
     public SelectionKey update() {
         if (this.selectionKey.isValid()) {
             if (isCanceling()) {
-                Context.getCurrentLogger().log(Level.FINE,
+                Context.getCurrentLogger().log(Level.FINER,
                         "Cancelling of the selection key requested");
                 this.selectionKey.cancel();
             } else {
                 try {
-                    if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                    if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
                         Context.getCurrentLogger()
-                                .log(Level.FINE,
+                                .log(Level.FINEST,
                                         "Update key (old | new) : "
                                                 + SelectionRegistration
                                                         .getName(this.selectionKey

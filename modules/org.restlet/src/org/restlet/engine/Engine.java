@@ -129,7 +129,7 @@ public class Engine {
     private static volatile Level logLevel = Level.INFO;
 
     /** The org.restlet log level . */
-    private static volatile Level restletLogLevel = Level.INFO;
+    private static volatile Level restletLogLevel;
 
     /** The org.restlet log level . */
     private static volatile boolean logConfigured = false;
@@ -152,7 +152,6 @@ public class Engine {
         if ((System.getProperty("java.util.logging.config.file") == null)
                 && (System.getProperty("java.util.logging.config.class") == null)) {
             StringBuilder sb = new StringBuilder();
-
             sb.append("handlers=");
             sb.append(ConsoleHandler.class.getCanonicalName()).append('\n');
 

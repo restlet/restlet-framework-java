@@ -381,8 +381,8 @@ public abstract class Way implements SelectionListener, CompletionListener {
         if (this.messageState != messageState) {
             this.messageState = messageState;
 
-            if (getLogger().isLoggable(Level.FINE)) {
-                getLogger().fine("New message state: " + messageState);
+            if (getLogger().isLoggable(Level.FINEST)) {
+                getLogger().finest("New message state: " + messageState);
             }
         }
     }

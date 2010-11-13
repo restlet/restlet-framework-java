@@ -591,7 +591,10 @@ public class Router extends Restlet {
             }
         }
 
-        logRoute(result);
+        if (request.isLoggable()) {
+            logRoute(result);
+        }
+
         return result;
     }
 
@@ -664,9 +667,9 @@ public class Router extends Restlet {
     protected void logRoute(Route route) {
         if (getLogger().isLoggable(Level.FINE)) {
             if (getDefaultRoute() == route) {
-                getLogger().fine("The default route was selected.");
+                getLogger().fine("The default route was selected");
             } else {
-                getLogger().fine("This route was selected: " + route);
+                getLogger().fine("Selected route: " + route);
             }
         }
     }

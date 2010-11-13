@@ -611,6 +611,15 @@ public abstract class UniformResource {
     }
 
     /**
+     * Indicates if the call is loggable
+     * 
+     * @return True if the call is loggable
+     */
+    public boolean isLoggable() {
+        return getRequest() == null ? null : getRequest().isLoggable();
+    }
+
+    /**
      * Releases the resource by calling {@link #doRelease()}.
      */
     public final void release() {

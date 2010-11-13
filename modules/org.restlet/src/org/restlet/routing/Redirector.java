@@ -195,7 +195,7 @@ public class Redirector extends Restlet {
      */
     protected Reference getTargetRef(Request request, Response response) {
         // Create the template
-        final Template rt = new Template(this.targetTemplate);
+        Template rt = new Template(this.targetTemplate);
         rt.setLogger(getLogger());
 
         // Return the formatted target URI
@@ -227,39 +227,57 @@ public class Redirector extends Restlet {
 
         switch (this.mode) {
         case MODE_CLIENT_PERMANENT:
-            getLogger().log(Level.INFO,
-                    "Permanently redirecting client to: " + targetRef);
+            if (request.isLoggable()) {
+                getLogger().log(Level.INFO,
+                        "Permanently redirecting client to: " + targetRef);
+            }
+
             response.redirectPermanent(targetRef);
             break;
 
         case MODE_CLIENT_FOUND:
-            getLogger().log(Level.INFO,
-                    "Redirecting client to found location: " + targetRef);
+            if (request.isLoggable()) {
+                getLogger().log(Level.INFO,
+                        "Redirecting client to found location: " + targetRef);
+            }
+
             response.setLocationRef(targetRef);
             response.setStatus(Status.REDIRECTION_FOUND);
             break;
 
         case MODE_CLIENT_SEE_OTHER:
-            getLogger().log(Level.INFO,
-                    "Redirecting client to another location: " + targetRef);
+            if (request.isLoggable()) {
+                getLogger().log(Level.INFO,
+                        "Redirecting client to another location: " + targetRef);
+            }
+
             response.redirectSeeOther(targetRef);
             break;
 
         case MODE_CLIENT_TEMPORARY:
-            getLogger().log(Level.INFO,
-                    "Temporarily redirecting client to: " + targetRef);
+            if (request.isLoggable()) {
+                getLogger().log(Level.INFO,
+                        "Temporarily redirecting client to: " + targetRef);
+            }
+
             response.redirectTemporary(targetRef);
             break;
 
         case MODE_SERVER_OUTBOUND:
-            getLogger().log(Level.INFO,
-                    "Redirecting via client dispatcher to: " + targetRef);
+            if (request.isLoggable()) {
+                getLogger().log(Level.INFO,
+                        "Redirecting via client dispatcher to: " + targetRef);
+            }
+
             outboundServerRedirect(targetRef, request, response);
             break;
 
         case MODE_SERVER_INBOUND:
-            getLogger().log(Level.INFO,
-                    "Redirecting via server dispatcher to: " + targetRef);
+            if (request.isLoggable()) {
+                getLogger().log(Level.INFO,
+                        "Redirecting via server dispatcher to: " + targetRef);
+            }
+
             inboundServerRedirect(targetRef, request, response);
             break;
         }

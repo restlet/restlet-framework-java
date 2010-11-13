@@ -210,9 +210,16 @@ public class ConverterService extends Service {
 
         if (ch != null) {
             try {
-                Context.getCurrentLogger().fine(
-                        "The following converter was selected for the "
-                                + source + " object: " + ch);
+                boolean loggable = (resource == null) ? true : resource
+                        .isLoggable();
+
+                if (loggable
+                        && Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                    Context.getCurrentLogger().fine(
+                            "Converter selected for "
+                                    + source.getClass().getSimpleName() + ": "
+                                    + ch.getClass().getSimpleName());
+                }
 
                 if (target == null) {
                     List<VariantInfo> variants = ch.getVariants(source

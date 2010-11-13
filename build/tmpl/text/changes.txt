@@ -5,7 +5,9 @@ Changes log
 
 - @version-full@ (@release-date@)
     - API changes
-      - 
+      -  Added Request#loggable property, LogService#isLoggable(Request)
+         method and LogService#loggableTemplate to enable selective request 
+         logging. Suggested by John Logdson.
     - Enhancements
       - Simplified the default console logging by replacing Java's default
         verbose log formatter by a single line formatter. This formatter
@@ -19,6 +21,10 @@ Changes log
         org.restlet.engine.log.SimplestFormatter.
       - Removed TraceHandler class, replaced by configurable ConsoleHander
         formatters.
+      - Improved the precision of log messages, for example giving the list
+        of template variables matched and their value. 
+        Suggested by John Logdson.
+      - Optimized routing when 0 characters are matched on an URI template.
     - Bugs fixed
       - 
     - Misc

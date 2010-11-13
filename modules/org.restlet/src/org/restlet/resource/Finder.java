@@ -237,9 +237,12 @@ public class Finder extends Restlet {
                 // If the current status is a success but we couldn't
                 // find the target resource for the request's URI,
                 // then we set the response status to 404 (Not Found).
-                getLogger().warning(
-                        "No target resource was defined for this finder: "
-                                + toString());
+                if (getLogger().isLoggable(Level.WARNING)) {
+                    getLogger().warning(
+                            "No target resource was defined for this finder: "
+                                    + toString());
+                }
+
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else {
                 targetResource.init(getContext(), request, response);
@@ -267,6 +270,12 @@ public class Finder extends Restlet {
      */
     public void setTargetClass(Class<? extends ServerResource> targetClass) {
         this.targetClass = targetClass;
+    }
+
+    @Override
+    public String toString() {
+        return getTargetClass() == null ? "Finder with no target class"
+                : "Finder for " + getTargetClass().getSimpleName();
     }
 
 }

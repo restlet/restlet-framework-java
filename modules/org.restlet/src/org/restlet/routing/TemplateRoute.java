@@ -120,22 +120,22 @@ public class TemplateRoute extends Route {
     protected int beforeHandle(Request request, Response response) {
         // 1 - Parse the template variables and adjust the base reference
         if (getTemplate() != null) {
-            final String remainingPart = request.getResourceRef()
-                    .getRemainingPart(false, isMatchingQuery());
-            final int matchedLength = getTemplate().parse(remainingPart,
-                    request);
+            String remainingPart = request.getResourceRef().getRemainingPart(
+                    false, isMatchingQuery());
+            int matchedLength = getTemplate().parse(remainingPart, request);
 
-            if (getLogger().isLoggable(Level.FINER)) {
-                getLogger().finer(
-                        "Attempting to match this pattern: "
-                                + getTemplate().getPattern() + " >> "
-                                + matchedLength);
-            }
+            if (matchedLength == 0) {
+                if (request.isLoggable() && getLogger().isLoggable(Level.FINER)) {
+                    getLogger().finer("No characters were matched");
+                }
+            } else if (matchedLength > 0) {
+                if (request.isLoggable() && getLogger().isLoggable(Level.FINER)) {
+                    getLogger().finer(
+                            "" + matchedLength + " characters were matched");
+                }
 
-            if (matchedLength != -1) {
                 // Updates the context
-                final String matchedPart = remainingPart.substring(0,
-                        matchedLength);
+                String matchedPart = remainingPart.substring(0, matchedLength);
                 Reference baseRef = request.getResourceRef().getBaseRef();
 
                 if (baseRef == null) {
@@ -147,22 +147,40 @@ public class TemplateRoute extends Route {
 
                 request.getResourceRef().setBaseRef(baseRef);
 
-                if (getLogger().isLoggable(Level.FINE)) {
-                    getLogger().fine(
-                            "New base URI: "
-                                    + request.getResourceRef().getBaseRef());
-                    getLogger().fine(
-                            "New remaining part: "
-                                    + request.getResourceRef()
-                                            .getRemainingPart(false,
-                                                    isMatchingQuery()));
-                }
+                if (request.isLoggable()) {
+                    if (getLogger().isLoggable(Level.FINE)) {
+                        remainingPart = request.getResourceRef()
+                                .getRemainingPart(false, isMatchingQuery());
 
-                if (getLogger().isLoggable(Level.FINE)) {
-                    getLogger().fine(
-                            "Delegating the call to the target Restlet");
+                        if ((remainingPart != null)
+                                && (!"".equals(remainingPart))) {
+                            getLogger().fine(
+                                    "New base URI: \""
+                                            + request.getResourceRef()
+                                                    .getBaseRef()
+                                            + "\". New remaining part: \""
+                                            + remainingPart + "\"");
+                        } else {
+                            getLogger().fine(
+                                    "New base URI: \""
+                                            + request.getResourceRef()
+                                                    .getBaseRef()
+                                            + "\". No remaining part to match");
+                        }
+                    }
+
+                    if (getLogger().isLoggable(Level.FINER)) {
+                        getLogger().finer(
+                                "Delegating the call to the target Restlet");
+                    }
                 }
             } else {
+                if (request.isLoggable() && getLogger().isLoggable(Level.FINE)) {
+                    getLogger().fine(
+                            "Unable to match this pattern: "
+                                    + getTemplate().getPattern());
+                }
+
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             }
         }
@@ -232,7 +250,7 @@ public class TemplateRoute extends Route {
                 }
             }
 
-            if (getLogger().isLoggable(Level.FINER)) {
+            if (request.isLoggable() && getLogger().isLoggable(Level.FINER)) {
                 getLogger().finer(
                         "Call score for the \"" + getTemplate().getPattern()
                                 + "\" URI pattern: " + result);

@@ -1395,6 +1395,16 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Indicates if the call is loggable
+     * 
+     * @param loggable
+     *            True if the call is loggable
+     */
+    public void setLoggable(boolean loggable) {
+        getRequest().setLoggable(loggable);
+    }
+
+    /**
      * Sets the method called.
      * 
      * @param method
