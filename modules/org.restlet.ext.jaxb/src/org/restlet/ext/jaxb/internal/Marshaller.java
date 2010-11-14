@@ -65,8 +65,8 @@ public class Marshaller<T> {
             javax.xml.bind.Marshaller m = null;
 
             try {
-                m = JaxbRepresentation.getContext(getContextPath())
-                        .createMarshaller();
+                m = JaxbRepresentation.getContext(getContextPath(),
+                        getClassLoader()).createMarshaller();
                 m.setProperty("jaxb.formatted.output", getJaxbRepresentation()
                         .isFormattedOutput());
 
@@ -101,9 +101,12 @@ public class Marshaller<T> {
     /** The JAXB context path. */
     private final String contextPath;
 
+    /** The JAXB classloader. */
+    private final ClassLoader classLoader;
+
     // This is a factory class.
     public Marshaller(JaxbRepresentation<T> jaxbRepresentation) {
-        this(jaxbRepresentation, null);
+        this(jaxbRepresentation, null, null);
     }
 
     /**
@@ -113,11 +116,14 @@ public class Marshaller<T> {
      *            The JAXB representation to marshal.
      * @param contextPath
      *            The JAXB context path.
+     * @param classLoader
+     *            The JAXB classloader.
      */
     public Marshaller(JaxbRepresentation<T> jaxbRepresentation,
-            String contextPath) {
+            String contextPath, ClassLoader classLoader) {
         this.jaxbRepresentation = jaxbRepresentation;
         this.contextPath = contextPath;
+        this.classLoader = classLoader;
     }
 
     /**
@@ -127,6 +133,15 @@ public class Marshaller<T> {
      */
     public String getContextPath() {
         return this.contextPath;
+    }
+
+    /**
+     * Returns the JAXB classloader.
+     * 
+     * @return The JAXB classloader.
+     */
+    public ClassLoader getClassLoader() {
+        return this.classLoader;
     }
 
     /**

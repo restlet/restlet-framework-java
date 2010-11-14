@@ -67,16 +67,21 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     /**
      * Returns the JAXB context, if possible from the cached contexts.
      * 
+     * @param contextPath
+     * 
+     * @param classLoader
+     * 
      * @return The JAXB context.
      * @throws JAXBException
      */
-    public static synchronized JAXBContext getContext(String contextPath)
-            throws JAXBException {
+    public static synchronized JAXBContext getContext(String contextPath,
+            ClassLoader classLoader) throws JAXBException {
         // Contexts are thread-safe so reuse those.
         JAXBContext result = contexts.get(contextPath);
 
         if (result == null) {
-            result = JAXBContext.newInstance(contextPath);
+            result = classLoader == null ? JAXBContext.newInstance(contextPath)
+                    : JAXBContext.newInstance(contextPath, classLoader);
             contexts.put(contextPath, result);
         }
 
@@ -88,6 +93,11 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
      * Java to schema (JAXB-annotated) mapped classes.
      */
     private volatile String contextPath;
+
+    /**
+     * The classloader to use for JAXB annotated classes.
+     */
+    private volatile ClassLoader classLoader;
 
     /**
      * Indicates if the resulting XML data should be formatted with line breaks
@@ -125,10 +135,27 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
      *            The Java object.
      */
     public JaxbRepresentation(MediaType mediaType, T object) {
+        this(mediaType, object, (object != null) ? object.getClass()
+                .getClassLoader() : null);
+    }
+
+    /**
+     * Creates a JAXB representation from an existing JAXB content tree.
+     * 
+     * @param mediaType
+     *            The representation's media type.
+     * @param object
+     *            The Java object.
+     * @param classloader
+     *            The classloader to use for JAXB annotated classes.
+     */
+    private JaxbRepresentation(MediaType mediaType, T object,
+            ClassLoader classloader) {
         super(mediaType);
-        this.object = object;
+        this.classLoader = classloader;
         this.contextPath = (object != null) ? object.getClass().getPackage()
                 .getName() : null;
+        this.object = object;
         this.validationEventHandler = null;
         this.xmlRepresentation = null;
     }
@@ -148,7 +175,8 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
      *             If unmarshalling XML fails.
      */
     public JaxbRepresentation(Representation xmlRepresentation, Class<T> type) {
-        this(xmlRepresentation, type.getPackage().getName(), null);
+        this(xmlRepresentation, type.getPackage().getName(), null, type
+                .getClassLoader());
     }
 
     /**
@@ -169,7 +197,8 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
      */
     public JaxbRepresentation(Representation xmlRepresentation, Class<T> type,
             ValidationEventHandler validationHandler) {
-        this(xmlRepresentation, type.getPackage().getName(), validationHandler);
+        this(xmlRepresentation, type.getPackage().getName(), validationHandler,
+                type.getClassLoader());
     }
 
     /**
@@ -188,7 +217,7 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
      */
     public JaxbRepresentation(Representation xmlRepresentation,
             String contextPath) {
-        this(xmlRepresentation, contextPath, null);
+        this(xmlRepresentation, contextPath, null, null);
     }
 
     /**
@@ -209,7 +238,31 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
      */
     public JaxbRepresentation(Representation xmlRepresentation,
             String contextPath, ValidationEventHandler validationHandler) {
+        this(xmlRepresentation, contextPath, validationHandler, null);
+    }
+
+    /**
+     * Creates a new JAXB representation, converting the input XML into a Java
+     * content tree. The XML is validated.
+     * 
+     * @param xmlRepresentation
+     *            The XML wrapped in a representation.
+     * @param contextPath
+     *            The list of Java package names for JAXB.
+     * @param validationHandler
+     *            A handler for dealing with validation failures.
+     * @param classLoader
+     *            The classloader to use for JAXB annotated classes.
+     * @throws JAXBException
+     *             If the incoming XML does not validate against the schema.
+     * @throws IOException
+     *             If unmarshalling XML fails.
+     */
+    private JaxbRepresentation(Representation xmlRepresentation,
+            String contextPath, ValidationEventHandler validationHandler,
+            ClassLoader classLoader) {
         super(xmlRepresentation.getMediaType());
+        this.classLoader = classLoader;
         this.contextPath = contextPath;
         this.object = null;
         this.validationEventHandler = validationHandler;
@@ -229,13 +282,22 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     }
 
     /**
+     * Returns the classloader to use for JAXB annotated classes.
+     * 
+     * @return The classloader to use for JAXB annotated classes.
+     */
+    private ClassLoader getClassLoader() {
+        return this.classLoader;
+    }
+
+    /**
      * Returns the JAXB context.
      * 
      * @return The JAXB context.
      * @throws JAXBException
      */
     public JAXBContext getContext() throws JAXBException {
-        return getContext(getContextPath());
+        return getContext(getContextPath(), getClassLoader());
     }
 
     /**
@@ -295,7 +357,8 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     public T getObject() throws IOException {
         if ((this.object == null) && (this.xmlRepresentation != null)) {
             // Try to unmarshal the wrapped XML representation
-            final Unmarshaller<T> u = new Unmarshaller<T>(this.contextPath);
+            final Unmarshaller<T> u = new Unmarshaller<T>(this.contextPath,
+                    this.classLoader);
             if (getValidationEventHandler() != null) {
                 try {
                     u.setEventHandler(getValidationEventHandler());
@@ -461,15 +524,16 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     @Override
     public void write(Writer writer) throws IOException {
         try {
-            new Marshaller<T>(this, this.contextPath).marshal(getObject(),
-                    writer);
+            new Marshaller<T>(this, this.contextPath, getClassLoader())
+                    .marshal(getObject(), writer);
         } catch (JAXBException e) {
             Context.getCurrentLogger().log(Level.WARNING,
                     "JAXB marshalling error caught.", e);
 
             // Maybe the tree represents a failure, try that.
             try {
-                new Marshaller<T>(this, "failure").marshal(getObject(), writer);
+                new Marshaller<T>(this, "failure", getClassLoader()).marshal(
+                        getObject(), writer);
             } catch (JAXBException e2) {
                 // We don't know what package this tree is from.
                 throw new IOException(e.getMessage());

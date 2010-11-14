@@ -12,6 +12,8 @@ Changes log
 	     dispatchers, were removed.
 	   - Fixed AccessControlException caused by an unnecessary call to
 	     System.getProperties(). Reported by Matthias Reichl.
+       - The JAXB extension now has better support for classloader.
+         Contributed by Eric Hough.
 
 - 2.0.3 (2010-11-07)
     - Bugs fixed
