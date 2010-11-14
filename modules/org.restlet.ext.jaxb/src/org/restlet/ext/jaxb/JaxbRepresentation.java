@@ -66,8 +66,24 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
      * Returns the JAXB context, if possible from the cached contexts.
      * 
      * @param contextPath
+     *            The JAXB context path.
+     * 
+     * @return The JAXB context.
+     * @throws JAXBException
+     */
+    public static synchronized JAXBContext getContext(String contextPath)
+            throws JAXBException {
+        return getContext(contextPath, null);
+    }
+
+    /**
+     * Returns the JAXB context, if possible from the cached contexts.
+     * 
+     * @param contextPath
+     *            The JAXB context path.
      * 
      * @param classLoader
+     *            The JAXB classloader to use for annotated JAXB classes.
      * 
      * @return The JAXB context.
      * @throws JAXBException
@@ -78,8 +94,9 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
         JAXBContext result = contexts.get(contextPath);
 
         if (result == null) {
-            result = classLoader == null ? JAXBContext.newInstance(contextPath)
-                    : JAXBContext.newInstance(contextPath, classLoader);
+            result = (classLoader == null) ? JAXBContext
+                    .newInstance(contextPath) : JAXBContext.newInstance(
+                    contextPath, classLoader);
             contexts.put(contextPath, result);
         }
 
