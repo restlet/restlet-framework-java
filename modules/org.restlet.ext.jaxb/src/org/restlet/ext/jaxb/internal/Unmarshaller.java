@@ -65,8 +65,8 @@ public class Unmarshaller<T> {
         protected synchronized javax.xml.bind.Unmarshaller initialValue() {
             javax.xml.bind.Unmarshaller m = null;
             try {
-                m = JaxbRepresentation.getContext(getContextPath())
-                        .createUnmarshaller();
+                m = JaxbRepresentation.getContext(getContextPath(),
+                        getClassLoader()).createUnmarshaller();
             } catch (Exception e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Problem creating Unmarshaller", e);
@@ -76,11 +76,29 @@ public class Unmarshaller<T> {
         }
     };
 
+    /** The JAXB classloader. */
+    private final ClassLoader classLoader;
+
     /**
      * Constructor.
+     * 
+     * @param contextPath
+     *            The JAXB context path.
+     * @param classloader
+     *            The JAXB classloader.
      */
-    public Unmarshaller(String contextPath) {
+    public Unmarshaller(String contextPath, ClassLoader classloader) {
         this.contextPath = contextPath;
+        this.classLoader = classloader;
+    }
+
+    /**
+     * Returns the JAXB classloader.
+     * 
+     * @return The JAXB classloader.
+     */
+    public ClassLoader getClassLoader() {
+        return this.classLoader;
     }
 
     /**
