@@ -915,8 +915,7 @@ public class Engine {
             BufferedReader reader = null;
             try {
                 reader = new BufferedReader(new InputStreamReader(
-                        configUrl.openStream(), "utf-8"),
-                        IoUtils.getBufferSize());
+                        configUrl.openStream(), "utf-8"), IoUtils.BUFFER_SIZE);
                 String line = reader.readLine();
 
                 while (line != null) {

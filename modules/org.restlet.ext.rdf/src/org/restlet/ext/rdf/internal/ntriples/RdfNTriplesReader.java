@@ -92,7 +92,7 @@ public class RdfNTriplesReader extends RdfReader {
         this.startTokenIndex = 0;
 
         this.br = new BufferedReader(getRdfRepresentation().getReader(),
-                IoUtils.getBufferSize());
+                IoUtils.BUFFER_SIZE);
     }
 
     /**

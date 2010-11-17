@@ -622,7 +622,7 @@ public final class BioUtils {
             try {
                 StringBuilder sb = new StringBuilder();
                 BufferedReader br = (reader instanceof BufferedReader) ? (BufferedReader) reader
-                        : new BufferedReader(reader, IoUtils.getBufferSize());
+                        : new BufferedReader(reader, IoUtils.BUFFER_SIZE);
                 char[] buffer = new char[2048];
                 int charsRead = br.read(buffer);
 

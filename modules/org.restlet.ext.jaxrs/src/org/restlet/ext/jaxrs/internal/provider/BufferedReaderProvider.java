@@ -68,6 +68,6 @@ public class BufferedReaderProvider implements
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         return new BufferedReader(ReaderProvider.getReader(entityStream),
-                IoUtils.getBufferSize());
+                IoUtils.BUFFER_SIZE);
     }
 }

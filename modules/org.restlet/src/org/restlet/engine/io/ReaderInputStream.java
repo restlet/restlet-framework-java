@@ -74,7 +74,7 @@ public class ReaderInputStream extends InputStream {
     public ReaderInputStream(Reader reader, CharacterSet characterSet)
             throws IOException {
         this.reader = (reader instanceof BufferedReader) ? (BufferedReader) reader
-                : new BufferedReader(reader, IoUtils.getBufferSize());
+                : new BufferedReader(reader, IoUtils.BUFFER_SIZE);
         this.pipedInputStream = new PipedInputStream();
         this.pipedOutputStream = new PipedOutputStream(this.pipedInputStream);
 

@@ -100,7 +100,7 @@ public class ProviderTestService {
     @Path("BufferedReader")
     @Produces("application/octet-stream")
     public BufferedReader bufferedReaderGet() {
-        return new BufferedReader(readerGet(), IoUtils.getBufferSize());
+        return new BufferedReader(readerGet(), IoUtils.BUFFER_SIZE);
     }
 
     @POST
@@ -239,12 +239,12 @@ public class ProviderTestService {
 
     @POST
     @Path("jaxbElement")
-    @Consumes( { "text/xml", "application/xml" })
+    @Consumes({ "text/xml", "application/xml" })
     @Produces("text/plain")
     public String jaxbPost(JAXBElement<Person> person) {
         if (person == null) {
-            throw new WebApplicationException(Response.serverError().entity(
-                    "the JAXBElement is null").build());
+            throw new WebApplicationException(Response.serverError()
+                    .entity("the JAXBElement is null").build());
         }
         if (person.getValue() == null) {
             return null;
@@ -254,12 +254,12 @@ public class ProviderTestService {
 
     @POST
     @Path("jaxbElement/rootElement")
-    @Consumes( { "text/xml", "application/xml" })
+    @Consumes({ "text/xml", "application/xml" })
     @Produces("text/plain")
     public String jaxbPostRootElement(JAXBElement<Person> person) {
         if (person == null) {
-            throw new WebApplicationException(Response.serverError().entity(
-                    "the JAXBElement is null").build());
+            throw new WebApplicationException(Response.serverError()
+                    .entity("the JAXBElement is null").build());
         }
         if (person.getValue() == null) {
             return null;
@@ -269,7 +269,7 @@ public class ProviderTestService {
 
     @POST
     @Path("jaxb")
-    @Consumes( { "text/xml", "application/xml" })
+    @Consumes({ "text/xml", "application/xml" })
     @Produces("text/plain")
     public String jaxbPost(Person person) {
         return person.toString();

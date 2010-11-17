@@ -206,7 +206,7 @@ public class NbChannelInputStream extends InputStream {
                         if (selector != null) {
                             selectionKey = this.selectableChannel.register(
                                     selector, SelectionKey.OP_READ);
-                            selector.select(IoUtils.IO_TIMEOUT);
+                            selector.select(IoUtils.TIMEOUT_MS);
                         }
                     } finally {
                         NioUtils.release(selector, selectionKey);

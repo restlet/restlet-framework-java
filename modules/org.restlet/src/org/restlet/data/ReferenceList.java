@@ -86,8 +86,7 @@ public class ReferenceList extends WrapperList<Reference> {
     public ReferenceList(Representation uriList) throws IOException {
         BufferedReader br = null;
         try {
-            br = new BufferedReader(uriList.getReader(), IoUtils
-                    .getBufferSize());
+            br = new BufferedReader(uriList.getReader(), IoUtils.BUFFER_SIZE);
 
             String line = br.readLine();
 

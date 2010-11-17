@@ -39,29 +39,31 @@ import java.io.BufferedReader;
  */
 public class IoUtils {
 
-    /** The buffer size. */
-    public static final int BUFFER_SIZE = 8192;
-
-    /** The number of milliseconds after which IO operation will time out. */
-    public static final int IO_TIMEOUT = 60000;
+    /**
+     * The size to use when instantiating buffered items such as instances of
+     * the {@link BufferedReader} class. It looks for the System property
+     * "org.restlet.engine.io.bufferSize" and if not defined, uses the "8192"
+     * default value.
+     */
+    public static final int BUFFER_SIZE = getProperty(
+            "org.restlet.engine.io.bufferSize", 8192);
 
     /**
-     * Returns the size to use when instantiating buffered items such as
-     * instances of the {@link BufferedReader} class. It looks for the System
-     * property "org.restlet.engine.io.buffer.size" and if not defined, uses the
-     * {@link #BUFFER_SIZE}.
-     * 
-     * @return The size to use when instantiating buffered items.
+     * The number of milliseconds after which IO operation will time out. It
+     * looks for the System property "org.restlet.engine.io.timeoutMs" and if
+     * not defined, uses the "60000" default value.
      */
-    public static int getBufferSize() {
-        int result = BUFFER_SIZE;
+    public final static int TIMEOUT_MS = getProperty(
+            "org.restlet.engine.io.timeoutMs", 60000);
+
+    private static int getProperty(String name, int defaultValue) {
+        int result = defaultValue;
 
         // [ifndef gwt]
         try {
-            result = Integer.parseInt(System
-                    .getProperty("org.restlet.engine.io.buffer.size"));
+            result = Integer.parseInt(System.getProperty("name"));
         } catch (NumberFormatException nfe) {
-            result = BUFFER_SIZE;
+            result = defaultValue;
         }
         // [enddef]
 

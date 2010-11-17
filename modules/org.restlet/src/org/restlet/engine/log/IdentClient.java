@@ -78,8 +78,8 @@ public class IdentClient {
             try {
                 // Compose the IDENT request
                 final StringBuilder sb = new StringBuilder();
-                sb.append(clientPort).append(" , ").append(serverPort).append(
-                        "\r\n");
+                sb.append(clientPort).append(" , ").append(serverPort)
+                        .append("\r\n");
                 final String request = sb.toString();
 
                 // Send the request to the remote server
@@ -91,8 +91,8 @@ public class IdentClient {
                         StringUtils.getAsciiBytes(request));
 
                 // Read the response
-                in = new BufferedReader(new InputStreamReader(socket
-                        .getInputStream()), IoUtils.getBufferSize());
+                in = new BufferedReader(new InputStreamReader(
+                        socket.getInputStream()), IoUtils.BUFFER_SIZE);
                 final String response = in.readLine();
 
                 // Parse the response

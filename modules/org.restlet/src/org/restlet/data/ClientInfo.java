@@ -163,7 +163,7 @@ public final class ClientInfo {
                             reader = new BufferedReader(new InputStreamReader(
                                     userAgentPropertiesUrl.openStream(),
                                     CharacterSet.UTF_8.getName()),
-                                    IoUtils.getBufferSize());
+                                    IoUtils.BUFFER_SIZE);
                             String line = reader.readLine();
                             for (; line != null; line = reader.readLine()) {
                                 if ((line.trim().length() > 0)

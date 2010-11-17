@@ -148,7 +148,7 @@ public class SelectionRegistration {
      */
     public void block() {
         try {
-            this.barrier.await(IoUtils.IO_TIMEOUT, TimeUnit.MILLISECONDS);
+            this.barrier.await(IoUtils.TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -353,7 +353,7 @@ public class SelectionRegistration {
     public void unblock() {
         try {
             if (this.barrier.getNumberWaiting() == 1) {
-                this.barrier.await(IoUtils.IO_TIMEOUT, TimeUnit.MILLISECONDS);
+                this.barrier.await(IoUtils.TIMEOUT_MS, TimeUnit.MILLISECONDS);
             }
         } catch (Exception e) {
             e.printStackTrace();

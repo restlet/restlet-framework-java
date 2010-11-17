@@ -342,7 +342,7 @@ public class NioUtils {
                 while (selected == 0) {
                     selectionKey = selectableChannel.register(selector,
                             operations);
-                    selected = selector.select(IoUtils.IO_TIMEOUT);
+                    selected = selector.select(IoUtils.TIMEOUT_MS);
                 }
             } finally {
                 NioUtils.release(selector, selectionKey);

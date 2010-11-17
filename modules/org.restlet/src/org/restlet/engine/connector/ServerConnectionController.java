@@ -72,7 +72,7 @@ public class ServerConnectionController extends ConnectionController {
      * @throws InterruptedException
      */
     public void await() throws InterruptedException {
-        if (!this.latch.await(IoUtils.IO_TIMEOUT, TimeUnit.MILLISECONDS)) {
+        if (!this.latch.await(IoUtils.TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
             // Timeout detected
             getHelper()
                     .getLogger()
