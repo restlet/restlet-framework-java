@@ -166,8 +166,11 @@ public class InputStreamChannel implements ReadableByteChannel,
             this.buffer = new byte[IoUtils.BUFFER_SIZE];
         }
 
-        result = getInputStream().read(this.buffer, 0,
-                Math.min(bytesToRead, IoUtils.BUFFER_SIZE));
+        result = getInputStream().read(
+                this.buffer,
+                0,
+                Math.min(Math.min(bytesToRead, IoUtils.BUFFER_SIZE), target
+                        .remaining()));
 
         if (result > 0) {
             target.put(buffer, 0, result);

@@ -26,7 +26,7 @@ Changes log
         Suggested by John Logdson.
       - Optimized routing when 0 characters are matched on an URI template.
     - Bugs fixed
-      - 
+      - Fixed writing of big representations. Reported by Tom Andersson.  
     - Misc
       -
 
