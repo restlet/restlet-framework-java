@@ -41,42 +41,42 @@ import org.restlet.data.RecipientInfo;
  */
 public class RecipientInfoWriter extends HeaderWriter<RecipientInfo> {
 
-    /**
-     * Creates a via header from the given recipients info.
-     * 
-     * @param recipientsInfo
-     *            The recipients info.
-     * @return Returns the Via header.
-     */
-    public static String write(List<RecipientInfo> recipientsInfo) {
-        return new RecipientInfoWriter().append(recipientsInfo).toString();
-    }
+	/**
+	 * Creates a via header from the given recipients info.
+	 * 
+	 * @param recipientsInfo
+	 *            The recipients info.
+	 * @return Returns the Via header.
+	 */
+	public static String write(List<RecipientInfo> recipientsInfo) {
+		return new RecipientInfoWriter().append(recipientsInfo).toString();
+	}
 
-    @Override
-    public RecipientInfoWriter append(RecipientInfo recipientInfo) {
-        if (recipientInfo.getProtocol() != null) {
-            appendToken(recipientInfo.getProtocol().getName());
-            append('/');
-            appendToken(recipientInfo.getProtocol().getVersion());
-            appendSpace();
+	@Override
+	public RecipientInfoWriter append(RecipientInfo recipientInfo) {
+		if (recipientInfo.getProtocol() != null) {
+			appendToken(recipientInfo.getProtocol().getName());
+			append('/');
+			appendToken(recipientInfo.getProtocol().getVersion());
+			appendSpace();
 
-            if (recipientInfo.getName() != null) {
-                appendToken(recipientInfo.getName());
+			if (recipientInfo.getName() != null) {
+				append(recipientInfo.getName());
 
-                if (recipientInfo.getComment() != null) {
-                    appendSpace();
-                    appendComment(recipientInfo.getComment());
-                }
-            } else {
-                throw new IllegalArgumentException(
-                        "The name (host or pseudonym) of a recipient can't be null");
-            }
-        } else {
-            throw new IllegalArgumentException(
-                    "The protocol of a recipient can't be null");
-        }
+				if (recipientInfo.getComment() != null) {
+					appendSpace();
+					appendComment(recipientInfo.getComment());
+				}
+			} else {
+				throw new IllegalArgumentException(
+						"The name (host or pseudonym) of a recipient can't be null");
+			}
+		} else {
+			throw new IllegalArgumentException(
+					"The protocol of a recipient can't be null");
+		}
 
-        return this;
-    }
+		return this;
+	}
 
 }
