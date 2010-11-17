@@ -61,7 +61,7 @@ public class RecipientInfoWriter extends HeaderWriter<RecipientInfo> {
             appendSpace();
 
             if (recipientInfo.getName() != null) {
-                appendToken(recipientInfo.getName());
+                append(recipientInfo.getName());
 
                 if (recipientInfo.getComment() != null) {
                     appendSpace();
