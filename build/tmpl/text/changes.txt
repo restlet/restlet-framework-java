@@ -28,6 +28,8 @@ Changes log
       - Added IoUtils.TIMEOUT_MS constant to globally configure I/O related
         timeouts. Its value is 60 seconds by default, but can be configured
         via the "org.restlet.engine.io.timeoutMs" system property. 
+      - Added server-side support for Amazon Web Services (S3) authentication.
+        Contributed by Jean-Philippe Steinmetz.
     - Bugs fixed
       - Fixed writing of big representations. Reported by Tom Andersson. 
       - Fixed IoUtils.BUFFER_SIZE constant to be properly configurable via

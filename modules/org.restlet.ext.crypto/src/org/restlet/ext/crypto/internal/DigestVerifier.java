@@ -38,7 +38,6 @@ import org.restlet.data.Reference;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.ext.crypto.DigestAuthenticator;
 import org.restlet.ext.crypto.DigestUtils;
-import org.restlet.ext.crypto.DigestVerifier;
 import org.restlet.security.LocalVerifier;
 import org.restlet.security.User;
 
@@ -49,7 +48,8 @@ import org.restlet.security.User;
  * 
  * @author Jerome Louvel
  */
-public class HttpDigestVerifier extends DigestVerifier<LocalVerifier> {
+public class DigestVerifier extends
+        org.restlet.ext.crypto.DigestVerifier<LocalVerifier> {
 
     /** The associated digest authenticator. */
     private DigestAuthenticator digestAuthenticator;
@@ -65,7 +65,7 @@ public class HttpDigestVerifier extends DigestVerifier<LocalVerifier> {
      * @param wrappedVerifier
      *            The wrapped secret verifier.
      */
-    public HttpDigestVerifier(DigestAuthenticator digestAuthenticator,
+    public DigestVerifier(DigestAuthenticator digestAuthenticator,
             LocalVerifier wrappedVerifier, String wrappedAlgorithm) {
         super(Digest.ALGORITHM_HTTP_DIGEST, wrappedVerifier, wrappedAlgorithm);
         this.digestAuthenticator = digestAuthenticator;
@@ -134,9 +134,9 @@ public class HttpDigestVerifier extends DigestVerifier<LocalVerifier> {
             }
 
             try {
-                if (!HttpDigestHelper.isNonceValid(nonce,
-                        getDigestAuthenticator().getServerKey(),
-                        getDigestAuthenticator().getMaxServerNonceAge())) {
+                if (!DigestHelper.isNonceValid(nonce, getDigestAuthenticator()
+                        .getServerKey(), getDigestAuthenticator()
+                        .getMaxServerNonceAge())) {
                     // Nonce expired, send challenge request with stale=true
                     result = RESULT_STALE;
                 }
@@ -165,15 +165,14 @@ public class HttpDigestVerifier extends DigestVerifier<LocalVerifier> {
                         char[] a1 = getWrappedSecretDigest(username);
                         if (a1 != null) {
                             String a2 = DigestUtils.toMd5(request.getMethod()
-                                    .toString()
-                                    + ":" + requestUri);
+                                    .toString() + ":" + requestUri);
                             StringBuilder expectedResponse = new StringBuilder()
                                     .append(a1).append(':').append(nonce);
                             if (!AuthenticatorUtils.anyNull(qop, cnonce, nc)) {
-                                expectedResponse.append(':')
-                                        .append(
-                                                AuthenticatorUtils
-                                                        .formatNonceCount(nc))
+                                expectedResponse
+                                        .append(':')
+                                        .append(AuthenticatorUtils
+                                                .formatNonceCount(nc))
                                         .append(':').append(cnonce).append(':')
                                         .append(qop);
                             }

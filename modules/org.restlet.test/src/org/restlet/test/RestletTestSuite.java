@@ -52,6 +52,8 @@ import org.restlet.test.data.ReferenceTestCase;
 import org.restlet.test.data.StatusTestCase;
 import org.restlet.test.engine.EngineTestSuite;
 import org.restlet.test.ext.atom.AtomTestCase;
+import org.restlet.test.ext.crypto.HttpAwsS3UtilsTestCase;
+import org.restlet.test.ext.crypto.HttpAwsS3VerifierTestCase;
 import org.restlet.test.ext.freemarker.FreeMarkerTestCase;
 import org.restlet.test.ext.gwt.GwtConverterTestCase;
 import org.restlet.test.ext.jaxb.JaxbBasicConverterTestCase;
@@ -110,6 +112,8 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(FormTestCase.class);
         addTestSuite(FreeMarkerTestCase.class);
         addTestSuite(GwtConverterTestCase.class);
+        addTestSuite(HttpAwsS3UtilsTestCase.class);
+        addTestSuite(HttpAwsS3VerifierTestCase.class);
         addTestSuite(JaxbBasicConverterTestCase.class);
         addTestSuite(JaxbIntegrationConverterTestCase.class);
         addTestSuite(LanguageTestCase.class);

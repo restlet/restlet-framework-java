@@ -55,7 +55,7 @@ import org.restlet.util.Series;
  * 
  * @author Thierry Boileau
  */
-public class HttpSharedKeyLiteHelper extends AuthenticatorHelper {
+public class SharedKeyLiteHelper extends AuthenticatorHelper {
 
     /**
      * Returns the canonicalized resource name.
@@ -79,7 +79,7 @@ public class HttpSharedKeyLiteHelper extends AuthenticatorHelper {
     /**
      * Constructor.
      */
-    public HttpSharedKeyLiteHelper() {
+    public SharedKeyLiteHelper() {
         super(ChallengeScheme.HTTP_AZURE_SHAREDKEY_LITE, true, false);
     }
 

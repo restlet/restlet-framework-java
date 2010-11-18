@@ -39,7 +39,6 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Digest;
 import org.restlet.data.Reference;
 import org.restlet.ext.crypto.internal.CryptoUtils;
-import org.restlet.ext.crypto.internal.HttpDigestVerifier;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.LocalVerifier;
 import org.restlet.security.Verifier;
@@ -88,7 +87,8 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
         this.domainRefs = domainRefs;
         this.maxServerNonceAge = DEFAULT_MAX_SERVER_NONCE_AGE;
         this.serverKey = serverKey;
-        setVerifier(new HttpDigestVerifier(this, null, null));
+        setVerifier(new org.restlet.ext.crypto.internal.DigestVerifier(this,
+                null, null));
     }
 
     /**
@@ -230,7 +230,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
     @Override
     public void setVerifier(Verifier verifier) {
         if (ChallengeScheme.HTTP_DIGEST.equals(getScheme())) {
-            if (!(verifier instanceof HttpDigestVerifier)) {
+            if (!(verifier instanceof DigestVerifier)) {
                 throw new IllegalArgumentException(
                         "Only subclasses on HttpDigestVerifier are allowed. You might want to set the \"wrappedVerifier\" property instead.");
             }

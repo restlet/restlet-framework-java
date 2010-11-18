@@ -44,7 +44,6 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.header.HeaderConstants;
-import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
@@ -53,40 +52,46 @@ import org.restlet.ext.crypto.DigestUtils;
 import org.restlet.util.Series;
 
 /**
- * Implements the HTTP authentication for the Amazon S3 service.
+ * Implements the Shared Key authentication for Azure services. This concerns
+ * Blob and Queues on Azure Storage.<br>
+ * <br>
+ * More documentation is available <a
+ * href="http://msdn.microsoft.com/en-us/library/dd179428.aspx">here</a>
  * 
- * @author Jerome Louvel
+ * @author Thierry Boileau
  */
-public class HttpAwsS3Helper extends AuthenticatorHelper {
+public class SharedKeyHelper extends AuthenticatorHelper {
 
     /**
-     * Returns the canonicalized AMZ headers.
+     * Returns the canonicalized Azure headers.
      * 
      * @param requestHeaders
      *            The list of request headers.
-     * @return The canonicalized AMZ headers.
+     * @return The canonicalized Azure headers.
      */
-    private static String getCanonicalizedAmzHeaders(
+    private static String getCanonicalizedAzureHeaders(
             Series<Parameter> requestHeaders) {
-        // Filter out all the AMZ headers required for AWS authentication
-        final SortedMap<String, String> amzHeaders = new TreeMap<String, String>();
+        // Filter out all the Azure headers required for SharedKey
+        // authentication
+        final SortedMap<String, String> azureHeaders = new TreeMap<String, String>();
         String headerName;
         for (final Parameter param : requestHeaders) {
             headerName = param.getName().toLowerCase();
-            if (headerName.startsWith("x-amz-")) {
-                if (!amzHeaders.containsKey(headerName)) {
-                    amzHeaders.put(headerName, requestHeaders
+            if (headerName.startsWith("x-ms-")) {
+                if (!azureHeaders.containsKey(headerName)) {
+                    azureHeaders.put(headerName, requestHeaders
                             .getValues(headerName));
                 }
             }
         }
 
-        // Concatenate all AMZ headers
+        // Concatenate all Azure headers
         final StringBuilder sb = new StringBuilder();
-        for (Iterator<String> iterator = amzHeaders.keySet().iterator(); iterator
+        for (Iterator<String> iterator = azureHeaders.keySet().iterator(); iterator
                 .hasNext();) {
             String key = iterator.next();
-            sb.append(key).append(':').append(amzHeaders.get(key)).append("\n");
+            sb.append(key).append(':').append(azureHeaders.get(key)).append(
+                    "\n");
         }
 
         return sb.toString();
@@ -100,34 +105,22 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
      * @return The canonicalized resource name.
      */
     private static String getCanonicalizedResourceName(Reference resourceRef) {
-        final StringBuilder sb = new StringBuilder();
+        Form form = resourceRef.getQueryAsForm();
 
-        String hostName = resourceRef.getHostDomain();
-        if (hostName.endsWith(".s3.amazonaws.com")) {
-            // The bucket name needs to be extracted
-            String bucketName = hostName.substring(0, hostName.length() - 17);
-            sb.append("/" + bucketName);
+        Parameter param = form.getFirst("comp", true);
+        if (param != null) {
+            StringBuilder sb = new StringBuilder(resourceRef.getPath());
+            return sb.append("?").append("comp=").append(param.getValue())
+                    .toString();
         }
-
-        sb.append(resourceRef.getPath());
-
-        final Form query = resourceRef.getQueryAsForm();
-        if (query.getFirst("acl", true) != null) {
-            sb.append("?acl");
-        } else if (query.getFirst("torrent", true) != null) {
-            sb.append("?torrent");
-        } else if (query.getFirst("location", true) != null) {
-            sb.append("?location");
-        }
-
-        return sb.toString();
+        return resourceRef.getPath();
     }
 
     /**
      * Constructor.
      */
-    public HttpAwsS3Helper() {
-        super(ChallengeScheme.HTTP_AWS_S3, true, false);
+    public SharedKeyHelper() {
+        super(ChallengeScheme.HTTP_AZURE_SHAREDKEY, true, false);
     }
 
     @Override
@@ -141,8 +134,8 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
         // Setup the Date header
         String date = "";
 
-        if (httpHeaders.getFirstValue("X-Amz-Date", true) == null) {
-            // X-Amz-Date header didn't override the standard Date header
+        if (httpHeaders.getFirstValue("x-ms-date", true) == null) {
+            // X-ms-Date header didn't override the standard Date header
             date = httpHeaders.getFirstValue(HeaderConstants.HEADER_DATE, true);
             if (date == null) {
                 // Add a fresh Date header
@@ -151,8 +144,7 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
                 httpHeaders.add(HeaderConstants.HEADER_DATE, date);
             }
         }
-
-        // Setup the Content-MD5 header
+        // Setup the ContentType header
         String contentMd5 = httpHeaders.getFirstValue(
                 HeaderConstants.HEADER_CONTENT_MD5, true);
         if (contentMd5 == null) {
@@ -191,10 +183,10 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
             }
         }
 
-        // Setup the canonicalized AmzHeaders
-        final String canonicalizedAmzHeaders = getCanonicalizedAmzHeaders(httpHeaders);
+        // Setup the canonicalized AzureHeaders
+        final String canonicalizedAzureHeaders = getCanonicalizedAzureHeaders(httpHeaders);
 
-        // Setup the canonicalized resource name
+        // Setup the canonicalized path
         final String canonicalizedResource = getCanonicalizedResourceName(request
                 .getResourceRef());
 
@@ -202,13 +194,13 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
         final StringBuilder rest = new StringBuilder();
         rest.append(methodName).append('\n').append(contentMd5).append('\n')
                 .append(contentType).append('\n').append(date).append('\n')
-                .append(canonicalizedAmzHeaders).append(canonicalizedResource);
+                .append(canonicalizedAzureHeaders).append('/').append(
+                        challenge.getIdentifier())
+                .append(canonicalizedResource);
 
-        // Append the AWS credentials
+        // Append the SharedKey credentials
         cw.append(challenge.getIdentifier()).append(':').append(
-                Base64.encode(DigestUtils.toHMac(rest.toString(), BioUtils
-                        .toByteArray(challenge.getSecret())), false));
-
+                Base64.encode(DigestUtils.toHMac256(rest.toString(), Base64
+                        .decode(challenge.getSecret())), true));
     }
-
 }
