@@ -35,7 +35,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Protocol;
 import org.restlet.engine.connector.Connection;
-import org.restlet.engine.connector.ConnectionClientHelper;
+import org.restlet.engine.connector.ClientConnectionHelper;
 import org.restlet.engine.connector.InboundWay;
 import org.restlet.engine.connector.OutboundWay;
 import org.restlet.ext.sip.internal.SipClientInboundWay;
@@ -46,7 +46,7 @@ import org.restlet.ext.sip.internal.SipClientOutboundWay;
  * 
  * @author Jerome Louvel
  */
-public class SipClientHelper extends ConnectionClientHelper {
+public class SipClientHelper extends ClientConnectionHelper {
 
     /**
      * Constructor.
