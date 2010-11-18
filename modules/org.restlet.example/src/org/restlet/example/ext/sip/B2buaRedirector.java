@@ -1,4 +1,4 @@
-package org.restlet.ext.sip.example;
+package org.restlet.example.ext.sip;
 
 import org.restlet.Client;
 import org.restlet.Component;

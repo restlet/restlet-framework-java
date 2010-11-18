@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.sip.example;
+package org.restlet.example.ext.sip;
 
 import java.io.InputStream;
 import java.util.Map;

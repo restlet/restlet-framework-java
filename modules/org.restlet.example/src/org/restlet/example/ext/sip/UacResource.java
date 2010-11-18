@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.sip.example;
+package org.restlet.example.ext.sip;
 
 import org.restlet.ext.sip.Ack;
 import org.restlet.ext.sip.Bye;
