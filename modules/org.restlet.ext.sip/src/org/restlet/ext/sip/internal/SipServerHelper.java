@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.sip;
+package org.restlet.ext.sip.internal;
 
 import java.util.ArrayList;
 
@@ -41,9 +41,7 @@ import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.ServerConnectionHelper;
 import org.restlet.engine.connector.OutboundWay;
 import org.restlet.engine.connector.ServerInboundWay;
-import org.restlet.ext.sip.internal.SipInboundRequest;
-import org.restlet.ext.sip.internal.SipServerInboundWay;
-import org.restlet.ext.sip.internal.SipServerOutboundWay;
+import org.restlet.ext.sip.SipResponse;
 
 /**
  * Standalone SIP server helper.
