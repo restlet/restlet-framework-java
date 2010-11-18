@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.sip.test;
+package org.restlet.test.ext.sip;
 
 import junit.framework.TestCase;
 
