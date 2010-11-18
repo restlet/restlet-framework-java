@@ -16,6 +16,8 @@ Changes log
          Contributed by Eric Hough.
        - Fixed the writing of the Via header.
          Reported by Guido Schmidt.
+       - Fixed annotation processing on XStream deserialization.
+         Contributed by Bruno Gieder.
 
 - 2.0.3 (2010-11-07)
     - Bugs fixed

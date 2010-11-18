@@ -187,6 +187,13 @@ public class XstreamConverter extends ConverterHelper {
                     && XstreamRepresentation.class.isAssignableFrom(target)) {
                 result = xstreamSource;
             } else {
+                if (target != null) {
+                    // XStream 1.3.1 does not process annotations when called
+                    // using fromXML(InputStream) despite autoProcessAnnotations
+                    // being set to "true". This call forces the processing.
+                    xstreamSource.getXstream().processAnnotations(target);
+                }
+
                 result = xstreamSource.getObject();
             }
         }
