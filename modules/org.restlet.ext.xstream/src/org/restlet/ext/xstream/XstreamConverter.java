@@ -82,8 +82,9 @@ public class XstreamConverter extends ConverterHelper {
      *            The source representation to unmarshal.
      * @return The unmarshaling {@link XstreamRepresentation}.
      */
-    protected <T> XstreamRepresentation<T> create(Representation source) {
-        return new XstreamRepresentation<T>(source);
+    protected <T> XstreamRepresentation<T> create(Representation source, Class<T> target) {
+        XstreamRepresentation<T> representation = new XstreamRepresentation<T>(source, target);
+        return representation;
     }
 
     @Override
@@ -173,12 +174,15 @@ public class XstreamConverter extends ConverterHelper {
 
         if (source instanceof XstreamRepresentation) {
             xstreamSource = (XstreamRepresentation<?>) source;
+            if (target != null) xstreamSource.getXstream().processAnnotations(target);
+            
         } else if (VARIANT_JSON.isCompatible(source)) {
-            xstreamSource = create(source);
+            xstreamSource = create(source, target);
+            
         } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
                 || VARIANT_APPLICATION_XML.isCompatible(source)
                 || VARIANT_TEXT_XML.isCompatible(source)) {
-            xstreamSource = create(source);
+            xstreamSource = create(source, target);
         }
 
         if (xstreamSource != null) {

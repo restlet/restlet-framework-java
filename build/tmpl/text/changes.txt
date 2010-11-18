@@ -33,6 +33,8 @@ Changes log
       - Fixed IoUtils.BUFFER_SIZE constant to be properly configurable via
         the "org.restlet.engine.io.bufferSize" system property. 
         Reported by Tom Andersson.
+      - Fixed auto-detection of XStream annotations. 
+        Contributed by Bruno Grieder.
     - Misc
       -
 

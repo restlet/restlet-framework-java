@@ -63,6 +63,9 @@ public class XstreamRepresentation<T> extends WriterRepresentation {
     /** The (parsed) object to format. */
     private T object;
 
+    /** The target class of the object to serialize. */
+    private Class<T> targetClass;
+
     /** The representation to parse. */
     private Representation representation;
 
@@ -94,10 +97,26 @@ public class XstreamRepresentation<T> extends WriterRepresentation {
      * 
      * @param representation
      *            The representation to parse.
+     * @deprecated Use {@link #XstreamRepresentation(Representation, Class)}
+     *             instead.
      */
     public XstreamRepresentation(Representation representation) {
+        this(representation, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param representation
+     *            The representation to parse.
+     * @param targetClass
+     *            The target class of the object to serialize.
+     */
+    public XstreamRepresentation(Representation representation,
+            Class<T> targetClass) {
         super(representation.getMediaType());
         this.object = null;
+        this.targetClass = targetClass;
         this.representation = representation;
         this.jsonDriverClass = JettisonMappedXmlDriver.class;
         this.xmlDriverClass = DomDriver.class;
@@ -157,9 +176,14 @@ public class XstreamRepresentation<T> extends WriterRepresentation {
         T result = null;
 
         if (this.object != null) {
+            getXstream().processAnnotations(this.object.getClass());
             result = this.object;
         } else if (this.representation != null) {
             try {
+                if (this.targetClass != null) {
+                    getXstream().processAnnotations(this.targetClass);
+                }
+
                 result = (T) getXstream().fromXML(
                         this.representation.getStream());
             } catch (IOException e) {
