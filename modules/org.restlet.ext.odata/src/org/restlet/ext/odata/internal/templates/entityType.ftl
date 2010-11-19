@@ -54,7 +54,11 @@ import ${t.fullClassName};
 public <#if type.abstractType>abstract </#if>class ${className} {
 
 <#list type.properties?sort_by("name") as property>
+  <#if property.type??>
     private ${property.type.className} ${property.propertyName}<#if property.defaultValue??> = property.defaultValue</#if>;
+  <#else>
+    // private [error: no defined type] ${property.propertyName}<#if property.defaultValue??> = property.defaultValue</#if>;
+  </#if>
 </#list>
 <#list type.complexProperties?sort_by("name") as property>
     private ${property.complexType.className} ${property.propertyName};
@@ -89,8 +93,9 @@ public <#if type.abstractType>abstract </#if>class ${className} {
         this.${key.normalizedName} = ${key.normalizedName};
 </#list></#if>
     }
-    
+
 <#list type.properties?sort_by("name") as property>
+  <#if property.type??>
    /**
     * Returns the value of the "${property.propertyName}" attribute.
     *
@@ -99,7 +104,7 @@ public <#if type.abstractType>abstract </#if>class ${className} {
    <#if property.getterAccess??>${property.getterAccess}<#else>public</#if> ${property.type.className} get${property.normalizedName?cap_first}() {
       return ${property.propertyName};
    }
-   
+  </#if>
 </#list>
 <#list type.complexProperties?sort_by("name") as property>
    /**
@@ -150,6 +155,7 @@ public <#if type.abstractType>abstract </#if>class ${className} {
 
 </#if>
 <#list type.properties?sort_by("name") as property>
+  <#if property.type??>
    /**
     * Sets the value of the "${property.normalizedName}" attribute.
     *
@@ -159,7 +165,7 @@ public <#if type.abstractType>abstract </#if>class ${className} {
    <#if property.setterAccess??>${property.setterAccess}<#else>public</#if> void set${property.normalizedName?cap_first}(${property.type.className} ${property.propertyName}) {
       this.${property.propertyName} = ${property.propertyName};
    }
-   
+  </#if>
 </#list>
 <#list type.complexProperties?sort_by("name") as property>
    /**
