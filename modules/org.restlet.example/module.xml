@@ -21,6 +21,7 @@
       <dependency type="module" id="jibx" />
       <dependency type="module" id="json" />
       <dependency type="module" id="rdf" />
+      <dependency type="module" id="sip" />
       <dependency type="module" id="spring" />
       <dependency type="module" id="velocity" />
       <dependency type="module" id="xml" />
