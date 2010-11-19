@@ -61,7 +61,11 @@ public <#if type.abstractType>abstract </#if>class ${className} {
   </#if>
 </#list>
 <#list type.complexProperties?sort_by("name") as property>
+  <#if property.complexType??>
     private ${property.complexType.className} ${property.propertyName};
+  <#else>
+    // private [error: no defined type] ${property.propertyName};
+  </#if>
 </#list>
 <#list type.associations?sort_by("name") as association>
     private <#if association.toRole.toMany>List<${association.toRole.type.className}><#else>${association.toRole.type.className}</#if> ${association.normalizedName};
@@ -107,6 +111,7 @@ public <#if type.abstractType>abstract </#if>class ${className} {
   </#if>
 </#list>
 <#list type.complexProperties?sort_by("name") as property>
+   <#if property.complexType??>
    /**
     * Returns the value of the "${property.propertyName}" attribute.
     *
@@ -115,7 +120,7 @@ public <#if type.abstractType>abstract </#if>class ${className} {
    <#if property.getterAccess??>${property.getterAccess}<#else>public</#if> ${property.complexType.className} get${property.normalizedName?cap_first}() {
       return ${property.propertyName};
    }
-   
+   </#if>   
 </#list>
 <#list type.associations?sort_by("name") as association>
    /**
@@ -168,6 +173,7 @@ public <#if type.abstractType>abstract </#if>class ${className} {
   </#if>
 </#list>
 <#list type.complexProperties?sort_by("name") as property>
+   <#if property.complexType??>
    /**
     * Sets the value of the "${property.normalizedName}" attribute.
     *
@@ -177,6 +183,7 @@ public <#if type.abstractType>abstract </#if>class ${className} {
    <#if property.setterAccess??>${property.setterAccess}<#else>public</#if> void set${property.normalizedName?cap_first}(${property.complexType.className} ${property.propertyName}) {
       this.${property.propertyName} = ${property.propertyName};
    }
+   </#if>
    
 </#list>
 <#list type.associations?sort_by("name") as association>

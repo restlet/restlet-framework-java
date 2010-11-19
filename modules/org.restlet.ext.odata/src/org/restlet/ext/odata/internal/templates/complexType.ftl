@@ -59,6 +59,13 @@ public <#if type.abstractType>abstract </#if>class ${className} {
     // private [error: no defined type] ${property.propertyName}<#if property.defaultValue??> = property.defaultValue</#if>;
   </#if>
 </#list>
+<#list type.complexProperties?sort_by("name") as property>
+  <#if property.complexType??>
+    private ${property.complexType.className} ${property.propertyName};
+  <#else>
+    // private [error: no defined type] ${property.propertyName};
+  </#if>
+</#list>
 
     /**
      * Constructor without parameter.
@@ -79,6 +86,20 @@ public <#if type.abstractType>abstract </#if>class ${className} {
       return ${property.propertyName};
    }
   </#if>
+
+</#list>
+<#list type.complexProperties?sort_by("name") as property>
+   <#if property.complexType??>
+   /**
+    * Returns the value of the "${property.propertyName}" attribute.
+    *
+    * @return The value of the "${property.propertyName}" attribute.
+    */
+   <#if property.getterAccess??>${property.getterAccess}<#else>public</#if> ${property.complexType.className} get${property.normalizedName?cap_first}() {
+      return ${property.propertyName};
+   }
+   </#if>   
+
 </#list>
 <#list type.properties?sort_by("name") as property>
   <#if property.type??>
@@ -92,5 +113,20 @@ public <#if type.abstractType>abstract </#if>class ${className} {
       this.${property.propertyName} = ${property.propertyName};
    }
   </#if>
+
+</#list>
+<#list type.complexProperties?sort_by("name") as property>
+   <#if property.complexType??>
+   /**
+    * Sets the value of the "${property.normalizedName}" attribute.
+    *
+    * @param ${property.propertyName}
+    *     The value of the "${property.normalizedName}" attribute.
+    */
+   <#if property.setterAccess??>${property.setterAccess}<#else>public</#if> void set${property.normalizedName?cap_first}(${property.complexType.className} ${property.propertyName}) {
+      this.${property.propertyName} = ${property.propertyName};
+   }
+   </#if>
+   
 </#list>
 }
