@@ -82,7 +82,7 @@ public class Generator {
 
         String errorMessage = null;
 
-        if (args.length == 0) {
+        if (args == null || args.length == 0) {
             errorMessage = "Missing mandatory argument: URI of the OData service.";
         }
 
