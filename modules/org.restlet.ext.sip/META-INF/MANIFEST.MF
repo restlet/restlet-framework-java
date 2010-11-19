@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.restlet.ext.sip
 Bundle-Version: 2.1
 Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet.ext.sip,
- org.restlet.ext.sip.example,
  org.restlet.ext.sip.internal
 Import-Package: org.junit,
  org.restlet,
