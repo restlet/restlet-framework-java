@@ -116,6 +116,7 @@ public class EntityContainer extends NamedObject {
 
     /**
      * Returns the schema.
+     * 
      * @return The schema.
      */
     public Schema getSchema() {
@@ -184,7 +185,9 @@ public class EntityContainer extends NamedObject {
 
     /**
      * Sets the schema.
-     * @param schema The schema.
+     * 
+     * @param schema
+     *            The schema.
      */
     public void setSchema(Schema schema) {
         this.schema = schema;
