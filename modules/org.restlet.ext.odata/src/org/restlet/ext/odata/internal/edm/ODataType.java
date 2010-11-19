@@ -48,6 +48,9 @@ public class ODataType extends NamedObject implements Comparable<ODataType> {
     /** The parent type this type inherits from. */
     private ODataType baseType;
 
+    /** The list of complex properties. */
+    private List<ComplexProperty> complexProperties;
+
     /** The list of properties. */
     private List<Property> properties;
 
@@ -104,6 +107,18 @@ public class ODataType extends NamedObject implements Comparable<ODataType> {
     }
 
     /**
+     * Returns the list of complex properties.
+     * 
+     * @return The list of complex properties.
+     */
+    public List<ComplexProperty> getComplexProperties() {
+        if (complexProperties == null) {
+            complexProperties = new ArrayList<ComplexProperty>();
+        }
+        return complexProperties;
+    }
+
+    /**
      * Returns the package name related to this entity type.
      * 
      * @return The package name related to this entity type.
@@ -123,6 +138,14 @@ public class ODataType extends NamedObject implements Comparable<ODataType> {
         for (Property property : getProperties()) {
             if (property.getType() != null) {
                 result.addAll(property.getType().getImportedJavaClasses());
+            }
+        }
+
+        for (ComplexProperty property : getComplexProperties()) {
+            if (property.getComplexType() != null) {
+                if (!property.getComplexType().getSchema().equals(getSchema())) {
+                    result.add(property.getComplexType().getFullClassName());
+                }
             }
         }
 
@@ -196,6 +219,16 @@ public class ODataType extends NamedObject implements Comparable<ODataType> {
      */
     public void setBaseType(ODataType baseType) {
         this.baseType = baseType;
+    }
+
+    /**
+     * Sets the list of complex properties.
+     * 
+     * @param complexProperties
+     *            The list of complex properties.
+     */
+    public void setComplexProperties(List<ComplexProperty> complexProperties) {
+        this.complexProperties = complexProperties;
     }
 
     /**

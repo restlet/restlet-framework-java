@@ -60,9 +60,6 @@ public class EntityType extends ODataType {
     /** The property of the entity that stores the blob reference. */
     private Property blobValueRefProperty;
 
-    /** The list of complex properties. */
-    private List<ComplexProperty> complexProperties;
-
     /** The list of properties that identifies an instance of this type. */
     private List<Property> keys;
 
@@ -119,18 +116,6 @@ public class EntityType extends ODataType {
     }
 
     /**
-     * Returns the list of complex properties.
-     * 
-     * @return The list of complex properties.
-     */
-    public List<ComplexProperty> getComplexProperties() {
-        if (complexProperties == null) {
-            complexProperties = new ArrayList<ComplexProperty>();
-        }
-        return complexProperties;
-    }
-
-    /**
      * Returns the set of imported Java classes.
      * 
      * @return The set of imported Java classes.
@@ -142,12 +127,6 @@ public class EntityType extends ODataType {
             if (property.getToRole().isToMany()) {
                 result.add("java.util.List");
                 break;
-            }
-        }
-
-        for (ComplexProperty property : getComplexProperties()) {
-            if (!property.getComplexType().getSchema().equals(getSchema())) {
-                result.add(property.getComplexType().getFullClassName());
             }
         }
 
@@ -231,16 +210,6 @@ public class EntityType extends ODataType {
      */
     public void setBlobValueRefProperty(Property blobValueRefProperty) {
         this.blobValueRefProperty = blobValueRefProperty;
-    }
-
-    /**
-     * Sets the list of complex properties.
-     * 
-     * @param complexProperties
-     *            The list of complex properties.
-     */
-    public void setComplexProperties(List<ComplexProperty> complexProperties) {
-        this.complexProperties = complexProperties;
     }
 
     /**
