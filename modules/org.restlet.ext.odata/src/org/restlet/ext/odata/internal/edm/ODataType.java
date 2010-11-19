@@ -121,7 +121,9 @@ public class ODataType extends NamedObject implements Comparable<ODataType> {
         Set<String> result = new TreeSet<String>();
 
         for (Property property : getProperties()) {
-            result.addAll(property.getType().getImportedJavaClasses());
+            if (property.getType() != null) {
+                result.addAll(property.getType().getImportedJavaClasses());
+            }
         }
 
         return result;

@@ -421,8 +421,10 @@ public class ReflectUtils {
      */
     public static void setProperty(Object entity, Property property,
             String propertyValue) throws Exception {
-        invokeSetter(entity, property.getNormalizedName(), TypeUtils.fromEdm(
-                propertyValue, property.getType().getName()));
+        if (property.getType() != null) {
+            invokeSetter(entity, property.getNormalizedName(), TypeUtils
+                    .fromEdm(propertyValue, property.getType().getName()));
+        }
     }
 
     /**
