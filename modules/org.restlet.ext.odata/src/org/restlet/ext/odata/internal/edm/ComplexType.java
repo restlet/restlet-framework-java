@@ -42,49 +42,49 @@ import java.util.List;
  */
 public class ComplexType extends ODataType {
 
-    /** The list of complex types this type inherits from. */
-    private List<ComplexType> complexTypes;
+	/** The list of complex types this type inherits from. */
+	private List<ComplexType> complexTypes;
 
-    /**
-     * Constructor.
-     * 
-     * @param name
-     *            The name of this type.
-     */
-    public ComplexType(String name) {
-        super(name);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param name
+	 *            The name of this type.
+	 */
+	public ComplexType(String name) {
+		super(name);
+	}
 
-    /**
-     * Returns the parent type this type inherits from.
-     * 
-     * @return The parent type this type inherits from.
-     */
-    @Override
-    public ComplexType getBaseType() {
-        return (ComplexType) super.getBaseType();
-    }
+	/**
+	 * Returns the parent type this type inherits from.
+	 * 
+	 * @return The parent type this type inherits from.
+	 */
+	@Override
+	public ComplexType getBaseType() {
+		return (ComplexType) super.getBaseType();
+	}
 
-    /**
-     * Returns the list of complex types this type inherits from.
-     * 
-     * @return The list of complex types this type inherits from.
-     */
-    public List<ComplexType> getComplexTypes() {
-        if (complexTypes == null) {
-            complexTypes = new ArrayList<ComplexType>();
-        }
-        return complexTypes;
-    }
+	/**
+	 * Returns the list of complex types this type inherits from.
+	 * 
+	 * @return The list of complex types this type inherits from.
+	 */
+	public List<ComplexType> getComplexTypes() {
+		if (complexTypes == null) {
+			complexTypes = new ArrayList<ComplexType>();
+		}
+		return complexTypes;
+	}
 
-    /**
-     * Sets the list of complex types this type inherits from.
-     * 
-     * @param complexTypes
-     *            The list of complex types this type inherits from.
-     */
-    public void setComplexTypes(List<ComplexType> complexTypes) {
-        this.complexTypes = complexTypes;
-    }
+	/**
+	 * Sets the list of complex types this type inherits from.
+	 * 
+	 * @param complexTypes
+	 *            The list of complex types this type inherits from.
+	 */
+	public void setComplexTypes(List<ComplexType> complexTypes) {
+		this.complexTypes = complexTypes;
+	}
 
 }

@@ -18,6 +18,8 @@ Changes log
          Reported by Guido Schmidt.
        - Fixed annotation processing on XStream deserialization.
          Contributed by Bruno Gieder.
+       - Fixed parsing of complex types in the OData extension.
+         Reported by Alex Bass.
 
 - 2.0.3 (2010-11-07)
     - Bugs fixed
