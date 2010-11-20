@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec1;
+package org.restlet.example.book.restlet.ch08.sec2;
 
 import org.restlet.data.Form;
 import org.restlet.data.LocalReference;
@@ -20,6 +20,8 @@ public class MailServerResource extends ServerResource {
 
     @Override
     protected Representation get() throws ResourceException {
+        String templateName = null;
+
         // Create the mail bean
         Mail mail = new Mail();
         mail.setId((String) getRequestAttributes().get("mailId"));
@@ -29,14 +31,19 @@ public class MailServerResource extends ServerResource {
         mail.setAccountRef(new Reference(getReference(), "..").getTargetRef()
                 .toString());
 
+        if (getClientInfo().isAuthenticated()) {
+            templateName = "/Mail.ftl";
+        } else {
+            templateName = "/Login.ftl";
+        }
+
         // Load the FreeMarker template
-        Representation mailFtl = new ClientResource(
+        Representation ftl = new ClientResource(
                 LocalReference.createClapReference(getClass().getPackage())
-                        + "/Mail.ftl").get();
+                        + templateName).get();
 
         // Wraps the bean with a FreeMarker representation
-        return new TemplateRepresentation(mailFtl,
-                mail, MediaType.TEXT_HTML);
+        return new TemplateRepresentation(ftl, mail, MediaType.TEXT_HTML);
     }
 
     @Override

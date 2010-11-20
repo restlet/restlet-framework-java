@@ -26,14 +26,12 @@ public class MailServerResource extends ServerResource {
                 .toString());
 
         // Load the FreeMarker template
-        Representation mailFtl = new ClientResource(LocalReference
-                .createClapReference(getClass().getPackage())
-                + "/Mail.ftl").get();
+        Representation mailFtl = new ClientResource(
+                LocalReference.createClapReference(getClass().getPackage())
+                        + "/Mail.ftl").get();
 
         // Wraps the bean with a FreeMarker representation
-        TemplateRepresentation result = new TemplateRepresentation(mailFtl,
-                mail, MediaType.TEXT_HTML);
-        return result;
+        return new TemplateRepresentation(mailFtl, mail, MediaType.TEXT_HTML);
     }
 
 }
