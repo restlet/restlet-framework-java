@@ -8,13 +8,16 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
+import org.restlet.data.LocalReference;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.ext.freemarker.TemplateRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.Verifier;
 
 public class CookieAuthenticator extends ChallengeAuthenticator {
-
-    private CookieSetting cookieSetting;
 
     public CookieAuthenticator(Context context, boolean optional, String realm) {
         super(context, optional, ChallengeScheme.HTTP_COOKIE, realm);
@@ -27,25 +30,6 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     public CookieAuthenticator(Context context, String realm) {
         super(context, ChallengeScheme.HTTP_COOKIE, realm);
-    }
-
-    @Override
-    protected void afterHandle(Request request, Response response) {
-        super.afterHandle(request, response);
-        Cookie cookie = request.getCookies().getFirst("Credentials");
-
-        if (request.getClientInfo().isAuthenticated() && (cookie == null)) {
-            String identifier = request.getChallengeResponse().getIdentifier();
-            String secret = new String(request.getChallengeResponse()
-                    .getSecret());
-            CookieSetting cookieSetting = new CookieSetting("Credentials",
-                    identifier + "=" + secret);
-            cookieSetting.setAccessRestricted(true);
-            cookieSetting.setPath("/");
-            cookieSetting.setComment("Unsecured cookie based authentication");
-            cookieSetting.setMaxAge(30);
-            response.getCookieSettings().add(cookieSetting);
-        }
     }
 
     @Override
@@ -79,23 +63,35 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
         return super.beforeHandle(request, response);
     }
 
-    /**
-     * Returns the modifiable {@link CookieSetting} prototype.
-     * 
-     * @return The modifiable {@link CookieSetting} prototype.
-     */
-    public CookieSetting getCookieSetting() {
-        return cookieSetting;
+    @Override
+    public void challenge(Response response, boolean stale) {
+        // Load the FreeMarker template
+        Representation ftl = new ClientResource(
+                LocalReference.createClapReference(getClass().getPackage())
+                        + "/Login.ftl").get();
+
+        // Wraps the bean with a FreeMarker representation
+        response.setEntity(new TemplateRepresentation(ftl, response
+                .getRequest().getResourceRef(), MediaType.TEXT_HTML));
     }
 
-    /**
-     * Sets the modifiable {@link CookieSetting} prototype.
-     * 
-     * @param cookieSetting
-     *            The modifiable {@link CookieSetting} prototype.
-     */
-    public void setCookieSetting(CookieSetting cookieSetting) {
-        this.cookieSetting = cookieSetting;
+    @Override
+    protected void afterHandle(Request request, Response response) {
+        super.afterHandle(request, response);
+        Cookie cookie = request.getCookies().getFirst("Credentials");
+
+        if (request.getClientInfo().isAuthenticated() && (cookie == null)) {
+            String identifier = request.getChallengeResponse().getIdentifier();
+            String secret = new String(request.getChallengeResponse()
+                    .getSecret());
+            CookieSetting cookieSetting = new CookieSetting("Credentials",
+                    identifier + "=" + secret);
+            cookieSetting.setAccessRestricted(true);
+            cookieSetting.setPath("/");
+            cookieSetting.setComment("Unsecured cookie based authentication");
+            cookieSetting.setMaxAge(30);
+            response.getCookieSettings().add(cookieSetting);
+        }
     }
 
 }

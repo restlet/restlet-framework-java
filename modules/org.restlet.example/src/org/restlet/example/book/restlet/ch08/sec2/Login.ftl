@@ -3,7 +3,7 @@
 <title>Mail login</title>
 </head>
 <body>
-<form action="${id}?login=true" method="POST">
+<form action="?login=true" method="POST">
 <table>
     <tbody>
         <tr>

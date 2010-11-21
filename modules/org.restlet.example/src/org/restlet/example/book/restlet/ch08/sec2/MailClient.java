@@ -1,5 +1,6 @@
 package org.restlet.example.book.restlet.ch08.sec2;
 
+import org.restlet.data.Cookie;
 import org.restlet.data.Form;
 import org.restlet.resource.ClientResource;
 
@@ -11,6 +12,10 @@ public class MailClient {
     public static void main(String[] args) throws Exception {
         ClientResource mailClient = new ClientResource(
                 "http://localhost:8182/accounts/123/mails/abc");
+
+        mailClient.getRequest().getCookies()
+                .add(new Cookie("Credentials", "scott=tiger"));
+
         Form form = new Form();
         form.add("subject", "Message to Jérôme");
         form.add("content", "Doh!\n\nAllo?");

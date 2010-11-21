@@ -20,30 +20,22 @@ public class MailServerResource extends ServerResource {
 
     @Override
     protected Representation get() throws ResourceException {
-        String templateName = null;
-
         // Create the mail bean
         Mail mail = new Mail();
-        mail.setId((String) getRequestAttributes().get("mailId"));
         mail.setStatus("received");
         mail.setSubject("Message to self");
         mail.setContent("Doh!");
         mail.setAccountRef(new Reference(getReference(), "..").getTargetRef()
                 .toString());
 
-        if (getClientInfo().isAuthenticated()) {
-            templateName = "/Mail.ftl";
-        } else {
-            templateName = "/Login.ftl";
-        }
-
         // Load the FreeMarker template
-        Representation ftl = new ClientResource(
+        Representation mailFtl = new ClientResource(
                 LocalReference.createClapReference(getClass().getPackage())
-                        + templateName).get();
+                        + "/Mail.ftl").get();
 
         // Wraps the bean with a FreeMarker representation
-        return new TemplateRepresentation(ftl, mail, MediaType.TEXT_HTML);
+        return new TemplateRepresentation(mailFtl,
+                mail, MediaType.TEXT_HTML);
     }
 
     @Override

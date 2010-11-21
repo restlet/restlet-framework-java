@@ -22,7 +22,6 @@ public class MailServerResource extends ServerResource {
     protected Representation get() throws ResourceException {
         // Create the mail bean
         Mail mail = new Mail();
-        mail.setId((String) getRequestAttributes().get("mailId"));
         mail.setStatus("received");
         mail.setSubject("Message to self");
         mail.setContent("Doh!");

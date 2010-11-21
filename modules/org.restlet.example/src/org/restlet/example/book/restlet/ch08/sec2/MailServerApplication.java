@@ -41,7 +41,6 @@ public class MailServerApplication extends Application {
         CookieAuthenticator authenticator = new CookieAuthenticator(
                 getContext(), "Cookie Test");
         authenticator.setVerifier(verifier);
-        authenticator.setOptional(true);
         authenticator.setNext(router);
         return authenticator;
     }

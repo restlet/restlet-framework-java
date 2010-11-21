@@ -5,8 +5,6 @@ package org.restlet.example.book.restlet.ch08.sec1;
  */
 public class Mail {
 
-    private String id;
-
     private String status;
 
     private String subject;
@@ -23,10 +21,6 @@ public class Mail {
         return content;
     }
 
-    public String getId() {
-        return id;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -41,10 +35,6 @@ public class Mail {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setStatus(String status) {

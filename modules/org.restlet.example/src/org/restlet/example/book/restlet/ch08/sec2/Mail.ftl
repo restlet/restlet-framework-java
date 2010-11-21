@@ -3,7 +3,7 @@
 <title>Example mail</title>
 </head>
 <body>
-<form action="${id}?method=PUT" method="POST">
+<form action="?method=PUT" method="POST">
 <table>
     <tbody>
         <tr>
