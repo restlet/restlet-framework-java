@@ -11,6 +11,7 @@ import org.restlet.data.Form;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Status;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -73,6 +74,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
         // Wraps the bean with a FreeMarker representation
         response.setEntity(new TemplateRepresentation(ftl, response
                 .getRequest().getResourceRef(), MediaType.TEXT_HTML));
+        response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
     }
 
     @Override
