@@ -103,15 +103,19 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
     }
 
     private Object findBean() {
-        if (getApplicationContext() != null
+        if (getBeanFactory() == null && getApplicationContext() == null) {
+            throw new IllegalStateException(
+                    "Either a beanFactory or an applicationContext is required for SpringBeanFinder.");
+        } else if (getApplicationContext() != null
                 && getApplicationContext().containsBean(getBeanName())) {
             return getApplicationContext().getBean(getBeanName());
         } else if (getBeanFactory() != null
                 && getBeanFactory().containsBean(getBeanName())) {
             return getBeanFactory().getBean(getBeanName());
+        } else {
+            throw new IllegalStateException(
+                    String.format("No bean named %s present.", getBeanName()));
         }
-        throw new IllegalStateException(
-                "Either a beanFactory or an applicationContext is required for SpringBeanFinder.");
     }
 
     /**

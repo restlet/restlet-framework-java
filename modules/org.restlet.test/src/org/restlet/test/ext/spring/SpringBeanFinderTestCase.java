@@ -128,6 +128,32 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         }
     }
 
+    public void testBeanResolutionFailsWhenNoMatchingBeanButThereIsABeanFactory()
+            throws Exception {
+        try {
+            this.finder.setBeanFactory(beanFactory);
+            this.finder.create();
+            fail("Exception not thrown");
+        } catch (IllegalStateException iae) {
+            assertEquals(
+                    "No bean named " + BEAN_NAME + " present.",
+                    iae.getMessage());
+        }
+    }
+
+    public void testBeanResolutionFailsWhenNoMatchingBeanButThereIsAnApplicationContext()
+            throws Exception {
+        try {
+            this.finder.setApplicationContext(applicationContext);
+            this.finder.create();
+            fail("Exception not thrown");
+        } catch (IllegalStateException iae) {
+            assertEquals(
+                    "No bean named " + BEAN_NAME + " present.",
+                    iae.getMessage());
+        }
+    }
+
     public void testExceptionWhenResourceBeanIsWrongType() throws Exception {
         registerBeanFactoryBean(BEAN_NAME, String.class);
 
