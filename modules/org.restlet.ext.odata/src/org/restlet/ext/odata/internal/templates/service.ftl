@@ -34,7 +34,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.ext.odata.Query;
-import org.restlet.ext.odata.Service;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -52,7 +51,7 @@ import ${entitySet.type.fullClassName};
  */
 </#compress>
 
-public class ${className} extends Service {
+public class ${className} extends org.restlet.ext.odata.Service {
 
     /**
      * Constructor.
@@ -71,7 +70,7 @@ public class ${className} extends Service {
      *            The entity to add to the service.
      * @throws Exception 
      */
-    public void addEntity(${type.className} entity) throws Exception {
+    public void addEntity(${type.fullClassName} entity) throws Exception {
         <#if entityContainer.defaultEntityContainer>addEntity("/${entitySet.name}", entity);<#else>addEntity("/${entityContainer.name}.${entitySet.name}", entity);</#if>
     }
 
@@ -82,8 +81,8 @@ public class ${className} extends Service {
      *            The path to this entity relatively to the service URI.
      * @return A query object.
      */
-    public Query<${type.className}> create${type.className}Query(String subpath) {
-        return createQuery(subpath, ${type.className}.class);
+    public Query<${type.fullClassName}> create${type.className}Query(String subpath) {
+        return createQuery(subpath, ${type.fullClassName}.class);
     }
 
     <#if (type.blob && type.blobValueRefProperty?? && type.blobValueRefProperty.name??)>
@@ -94,7 +93,7 @@ public class ${className} extends Service {
      *            The given media resource.
      * @return The binary representation of the given media resource.
      */
-    public Representation getValue(${type.className} entity) throws ResourceException {
+    public Representation getValue(${type.fullClassName} entity) throws ResourceException {
         Reference ref = getValueRef(entity);
         if (ref != null) {
             ClientResource cr = createResource(ref);
@@ -113,7 +112,7 @@ public class ${className} extends Service {
      *            The requested media types of the representation.
      * @return The given media resource.
      */
-    public Representation getValue(${type.className} entity,
+    public Representation getValue(${type.fullClassName} entity,
             List<Preference<MediaType>> acceptedMediaTypes)
             throws ResourceException {
         Reference ref = getValueRef(entity);
@@ -135,7 +134,7 @@ public class ${className} extends Service {
      *            The requested media type of the representation
      * @return The given media resource.
      */
-    public Representation getValue(${type.className} entity, MediaType mediaType)
+    public Representation getValue(${type.fullClassName} entity, MediaType mediaType)
             throws ResourceException {
         Reference ref = getValueRef(entity);
         if (ref != null) {
@@ -153,7 +152,7 @@ public class ${className} extends Service {
      *            The media resource.
      * @return The reference of the binary representation of the given entity.
      */
-    public Reference getValueRef(${type.className} entity) {
+    public Reference getValueRef(${type.fullClassName} entity) {
         if (entity != null) {
             return entity.get${type.blobValueRefProperty.name?cap_first}();
         }
@@ -170,7 +169,7 @@ public class ${className} extends Service {
      *            The new representation.
      * @throws ResourceException
      */
-    public void setValue(${type.className} entity, Representation blob)
+    public void setValue(${type.fullClassName} entity, Representation blob)
             throws ResourceException {
         Reference ref = entity.get${type.blobValueEditRefProperty.name?cap_first}();
 
