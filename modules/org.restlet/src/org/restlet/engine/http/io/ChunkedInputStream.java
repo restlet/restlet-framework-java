@@ -113,7 +113,7 @@ public class ChunkedInputStream extends InputEntityStream {
         final int cr = this.source.read();
         final int lf = this.source.read();
 
-        if ((cr != '\r') && (lf != '\n')) {
+        if ((cr != '\r') || (lf != '\n')) {
             this.source.unread(lf);
             this.source.unread(cr);
         }
@@ -195,8 +195,8 @@ public class ChunkedInputStream extends InputEntityStream {
         int result = -1;
 
         if (canRead()) {
-            result = this.source.read(b, off, Math.min(len,
-                    (int) (this.chunkSize - this.position)));
+            result = this.source.read(b, off,
+                    Math.min(len, (int) (this.chunkSize - this.position)));
             this.position += result;
 
             if (len - result > 0) {

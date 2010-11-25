@@ -20,6 +20,8 @@ Changes log
          Contributed by Bruno Gieder.
        - Fixed parsing of complex types in the OData extension.
          Reported by Alex Bass.
+       - Fixed potential IndexOutOfBoundsException when receiving
+         chunked content. Reported by Mark Thornton.
 
 - 2.0.3 (2010-11-07)
     - Bugs fixed
