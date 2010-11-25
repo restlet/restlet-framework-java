@@ -161,7 +161,7 @@ public class AwsUtils {
 
         return sb.toString();
     }
-
+    
     /**
      * Returns the AWS S3 authentication compatible signature for the given
      * request and secret.
@@ -173,13 +173,32 @@ public class AwsUtils {
      * @return The AWS S3 compatible signature
      */
     public static String getSignature(Request request, char[] secret) {
-        String stringToSign = getStringToSign(request);
+        Form headers = (Form) request.getAttributes().get(
+            "org.restlet.http.headers");
+        return getSignature(request, headers, secret);
+    }
+
+    /**
+     * Returns the AWS S3 authentication compatible signature for the given
+     * request and secret.
+     * 
+     * @param request
+     *            The request to create the signature for
+     * @param headers
+     *            The HTTP headers associated with the request
+     * @param secret
+     *            The user secret to sign with
+     * @return The AWS S3 compatible signature
+     */
+    public static String getSignature(Request request,
+            Series<Parameter> headers, char[] secret) {
+        String stringToSign = getStringToSign(request, headers);
         String sig = Base64.encode(
                 DigestUtils.toHMac(stringToSign, BioUtils.toByteArray(secret)),
                 false);
         return sig;
     }
-
+    
     /**
      * Returns the string to sign.
      * 
@@ -189,7 +208,20 @@ public class AwsUtils {
      */
     public static String getStringToSign(Request request) {
         Form headers = (Form) request.getAttributes().get(
-                "org.restlet.http.headers");
+            "org.restlet.http.headers");
+        return getStringToSign(request, headers);
+    }
+
+    /**
+     * Returns the string to sign.
+     * 
+     * @param request
+     *            The request to generate the signature string from
+     * @param headers
+     *            The HTTP headers associated with the request
+     * @return The string to sign
+     */
+    public static String getStringToSign(Request request, Series<Parameter> headers) {
         String canonicalizedAmzHeaders = getCanonicalizedAmzHeaders(headers);
         String canonicalizedResource = getCanonicalizedResourceName(request
                 .getResourceRef());

@@ -60,6 +60,7 @@ public class AwsHelper extends AuthenticatorHelper {
         cw.append(challenge.getIdentifier())
                 .append(':')
                 .append(AwsUtils.getSignature(request,
+                        httpHeaders,
                         challenge.getSecret()));
     }
 
