@@ -61,7 +61,7 @@ public class AuthenticationTestCase extends RestletTestCase {
     /**
      * Test Amazon S3 authentication.
      */
-    public void _testAwsS3() {
+    public void testAwsS3() {
         AwsHelper helper = new AwsHelper();
 
         // Example Object GET
