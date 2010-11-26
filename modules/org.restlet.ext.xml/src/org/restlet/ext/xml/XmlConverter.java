@@ -97,12 +97,12 @@ public class XmlConverter extends ConverterHelper {
                 result = 0.5F;
             } else if (MediaType.APPLICATION_ALL_XML.isCompatible(target
                     .getMediaType())) {
-                result = 1.0F;
+                result = 0.8F;
             } else if (MediaType.APPLICATION_XML.isCompatible(target
                     .getMediaType())) {
-                result = 1.0F;
+                result = 0.9F;
             } else if (MediaType.TEXT_XML.isCompatible(target.getMediaType())) {
-                result = 1.0F;
+                result = 0.9F;
             } else {
                 result = 0.5F;
             }
@@ -122,12 +122,12 @@ public class XmlConverter extends ConverterHelper {
                         .isAssignableFrom(target))) {
             if (MediaType.APPLICATION_ALL_XML.isCompatible(source
                     .getMediaType())) {
-                result = 1.0F;
+                result = 0.8F;
             } else if (MediaType.APPLICATION_XML.isCompatible(source
                     .getMediaType())) {
-                result = 1.0F;
+                result = 0.9F;
             } else if (MediaType.TEXT_XML.isCompatible(source.getMediaType())) {
-                result = 1.0F;
+                result = 0.9F;
             } else {
                 result = 0.5F;
             }
@@ -174,9 +174,9 @@ public class XmlConverter extends ConverterHelper {
         if (Document.class.isAssignableFrom(entity)
                 || DomRepresentation.class.isAssignableFrom(entity)
                 || SaxRepresentation.class.isAssignableFrom(entity)) {
-            updatePreferences(preferences, MediaType.APPLICATION_ALL_XML, 1.0F);
-            updatePreferences(preferences, MediaType.APPLICATION_XML, 1.0F);
-            updatePreferences(preferences, MediaType.TEXT_XML, 1.0F);
+            updatePreferences(preferences, MediaType.APPLICATION_ALL_XML, 0.8F);
+            updatePreferences(preferences, MediaType.APPLICATION_XML, 0.9F);
+            updatePreferences(preferences, MediaType.TEXT_XML, 0.9F);
         }
     }
 }

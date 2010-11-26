@@ -23,6 +23,9 @@ Changes log
        - Fixed potential IndexOutOfBoundsException when receiving
          chunked content. Reported by Mark Thornton.
        - Fixed ROME 1.0 JAR to use the latest version.
+       - Fixed scoring issues between the Atom and XML extension
+         for the Feed and Service classes which extend the 
+         SaxRepresentation classes.
 
 - 2.0.3 (2010-11-07)
     - Bugs fixed
