@@ -428,6 +428,16 @@ public class Entry extends SaxRepresentation {
      * @param title
      *            The human-readable title for the entry.
      */
+    public void setTitle(String title) {
+        setTitle(new Text(title));
+    }
+
+    /**
+     * Sets the human-readable title for the entry.
+     * 
+     * @param title
+     *            The human-readable title for the entry.
+     */
     public void setTitle(Text title) {
         this.title = title;
     }

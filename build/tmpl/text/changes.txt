@@ -5,9 +5,11 @@ Changes log
 
 - @version-full@ (@release-date@)
     - API changes
-      -  Added Request#loggable property, LogService#isLoggable(Request)
-         method and LogService#loggableTemplate to enable selective request 
-         logging. Suggested by John Logdson.
+      - Added Request#loggable property, LogService#isLoggable(Request)
+        method and LogService#loggableTemplate to enable selective request 
+        logging. Suggested by John Logdson.
+      - Added setters with String parameters in addition to Text ones to
+        the Feed and Entry classes.
     - Enhancements
       - Simplified the default console logging by replacing Java's default
         verbose log formatter by a single line formatter. This formatter

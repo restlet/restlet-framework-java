@@ -98,13 +98,13 @@ public class Feed extends SaxRepresentation {
     /** Image that provides visual identification for a feed. */
     private volatile Reference logo;
 
-    /** Information about rights held in and over an entry. */
+    /** Information about rights held in and over an feed. */
     private volatile Text rights;
 
-    /** Short summary, abstract, or excerpt of an entry. */
+    /** Short summary, abstract, or excerpt of an feed. */
     private volatile Text subtitle;
 
-    /** The human-readable title for the entry. */
+    /** The human-readable title for the feed. */
     private volatile Text title;
 
     /** Most recent moment when the entry was modified in a significant way. */
@@ -155,8 +155,8 @@ public class Feed extends SaxRepresentation {
      * @throws IOException
      */
     public Feed(Context context, String feedUri) throws IOException {
-        this(context.getClientDispatcher().handle(
-                new Request(Method.GET, feedUri)).getEntity());
+        this(context.getClientDispatcher()
+                .handle(new Request(Method.GET, feedUri)).getEntity());
     }
 
     /**
@@ -198,9 +198,9 @@ public class Feed extends SaxRepresentation {
     }
 
     /**
-     * Returns the authors of the entry.
+     * Returns the authors of the feed.
      * 
-     * @return The authors of the entry.
+     * @return The authors of the feed.
      */
     public List<Person> getAuthors() {
         // Lazy initialization with double-check.
@@ -228,9 +228,9 @@ public class Feed extends SaxRepresentation {
     }
 
     /**
-     * Returns the categories associated with the entry.
+     * Returns the categories associated with the feed.
      * 
-     * @return The categories associated with the entry.
+     * @return The categories associated with the feed.
      */
     public List<Category> getCategories() {
         // Lazy initialization with double-check.
@@ -247,9 +247,9 @@ public class Feed extends SaxRepresentation {
     }
 
     /**
-     * Returns the contributors to the entry.
+     * Returns the contributors to the feed.
      * 
-     * @return The contributors to the entry.
+     * @return The contributors to the feed.
      */
     public List<Person> getContributors() {
         // Lazy initialization with double-check.
@@ -305,9 +305,9 @@ public class Feed extends SaxRepresentation {
     }
 
     /**
-     * Returns the permanent, universally unique identifier for the entry.
+     * Returns the permanent, universally unique identifier for the feed.
      * 
-     * @return The permanent, universally unique identifier for the entry.
+     * @return The permanent, universally unique identifier for the feed.
      */
     public String getId() {
         return this.id;
@@ -342,27 +342,27 @@ public class Feed extends SaxRepresentation {
     }
 
     /**
-     * Returns the information about rights held in and over an entry.
+     * Returns the information about rights held in and over an feed.
      * 
-     * @return The information about rights held in and over an entry.
+     * @return The information about rights held in and over an feed.
      */
     public Text getRights() {
         return this.rights;
     }
 
     /**
-     * Returns the short summary, abstract, or excerpt of an entry.
+     * Returns the short summary, abstract, or excerpt of an feed.
      * 
-     * @return The short summary, abstract, or excerpt of an entry.
+     * @return The short summary, abstract, or excerpt of an feed.
      */
     public Text getSubtitle() {
         return this.subtitle;
     }
 
     /**
-     * Returns the human-readable title for the entry.
+     * Returns the human-readable title for the feed.
      * 
-     * @return The human-readable title for the entry.
+     * @return The human-readable title for the feed.
      */
     public Text getTitle() {
         return this.title;
@@ -425,10 +425,10 @@ public class Feed extends SaxRepresentation {
     }
 
     /**
-     * Sets the permanent, universally unique identifier for the entry.
+     * Sets the permanent, universally unique identifier for the feed.
      * 
      * @param id
-     *            The permanent, universally unique identifier for the entry.
+     *            The permanent, universally unique identifier for the feed.
      */
     public void setId(String id) {
         this.id = id;
@@ -445,41 +445,71 @@ public class Feed extends SaxRepresentation {
     }
 
     /**
-     * Sets the information about rights held in and over an entry.
+     * Sets the information about rights held in and over an feed.
      * 
      * @param rights
-     *            The information about rights held in and over an entry.
+     *            The information about rights held in and over an feed.
+     */
+    public void setRights(String rights) {
+        setRights(rights);
+    }
+
+    /**
+     * Sets the information about rights held in and over an feed.
+     * 
+     * @param rights
+     *            The information about rights held in and over an feed.
      */
     public void setRights(Text rights) {
         this.rights = rights;
     }
 
     /**
-     * Sets the short summary, abstract, or excerpt of an entry.
+     * Sets the short summary, abstract, or excerpt of an feed.
      * 
      * @param subtitle
-     *            The short summary, abstract, or excerpt of an entry.
+     *            The short summary, abstract, or excerpt of an feed.
+     */
+    public void setSubtitle(String subtitle) {
+        setSubtitle(new Text(subtitle));
+    }
+
+    /**
+     * Sets the short summary, abstract, or excerpt of an feed.
+     * 
+     * @param subtitle
+     *            The short summary, abstract, or excerpt of an feed.
      */
     public void setSubtitle(Text subtitle) {
         this.subtitle = subtitle;
     }
 
     /**
-     * Sets the human-readable title for the entry.
+     * Sets the human-readable title for the feed.
      * 
      * @param title
-     *            The human-readable title for the entry.
+     *            The human-readable title for the feed.
+     */
+    public void setTitle(String title) {
+        setTitle(new Text(title));
+    }
+
+    /**
+     * Sets the human-readable title for the feed.
+     * 
+     * @param title
+     *            The human-readable title for the feed.
      */
     public void setTitle(Text title) {
         this.title = title;
     }
 
     /**
-     * Sets the most recent moment when the entry was modified in a significant
+     * Sets the most recent moment when the feed was modified in a significant
      * way.
      * 
      * @param updated
-     *            The most recent moment when the entry was modified in a
+     *            The most recent moment when the feed was modified in a
      *            significant way.
      */
     public void setUpdated(Date updated) {
