@@ -42,7 +42,7 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author Kevin Conaway
  */
-public class ByteUtilsTestCase extends RestletTestCase {
+public class BioUtilsTestCase extends RestletTestCase {
 
     public void testGetStream() throws IOException {
         StringWriter writer = new StringWriter();
