@@ -3,7 +3,7 @@ package org.restlet.example.book.restlet.ch08.sec1.sub3;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
-public class MergeSitesServicesServerResource extends ServerResource {
+public class HelloServerResource extends ServerResource {
 
     @Get("html")
     public String toHtml() {

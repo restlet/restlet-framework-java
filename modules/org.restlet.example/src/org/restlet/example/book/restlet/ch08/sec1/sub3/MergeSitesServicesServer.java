@@ -19,15 +19,15 @@ public class MergeSitesServicesServer {
             public Restlet createInboundRoot() {
                 Router router = new Router(getContext());
 
-                String tmpDirUri = "file:///"
+                // Serve static files (images, etc.)
+                String rootUri = "file:///"
                         + System.getProperty("java.io.tmpdir");
-                // Serve static files (images, etc)
-                Directory directory = new Directory(getContext(), tmpDirUri);
+                Directory directory = new Directory(getContext(), rootUri);
                 directory.setListingAllowed(true);
                 router.attach("/static", directory);
 
-                // Attach Resources
-                router.attach("/hello", MergeSitesServicesServerResource.class);
+                // Attach the hello web service
+                router.attach("/hello", HelloServerResource.class);
 
                 return router;
             }
