@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec1;
+package org.restlet.example.book.restlet.ch08.sec1.sub1;
 
 import org.restlet.data.Form;
 import org.restlet.resource.ClientResource;

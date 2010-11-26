@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.misc;
+package org.restlet.example.book.restlet.ch08.sec1.sub3;
 
 import org.restlet.Application;
 import org.restlet.Component;
@@ -22,13 +22,12 @@ public class MergeSitesServicesServer {
                 String tmpDirUri = "file:///"
                         + System.getProperty("java.io.tmpdir");
                 // Serve static files (images, etc)
-                Directory directory = new Directory(getContext(),
-                        tmpDirUri);
+                Directory directory = new Directory(getContext(), tmpDirUri);
+                directory.setListingAllowed(true);
                 router.attach("/static", directory);
 
                 // Attach Resources
-                router.attach("/hello",
-                        MergeSitesServicesServerResource.class);
+                router.attach("/hello", MergeSitesServicesServerResource.class);
 
                 return router;
             }

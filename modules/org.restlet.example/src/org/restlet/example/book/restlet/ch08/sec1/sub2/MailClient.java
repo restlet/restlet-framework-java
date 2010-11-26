@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec2;
+package org.restlet.example.book.restlet.ch08.sec1.sub2;
 
 import org.restlet.data.Cookie;
 import org.restlet.data.Form;
