@@ -3,7 +3,7 @@ package org.restlet.example.book.restlet.ch08.sec1.sub5;
 /**
  * The mail representation bean.
  */
-public class Mail {
+public class MailRepresentation {
 
     private String status;
 

@@ -20,8 +20,8 @@ public class MailServerResource extends ServerResource {
 
     @Override
     protected Representation get() throws ResourceException {
-        // Create the mail bean
-        Mail mail = new Mail();
+        // Create the mail representation bean
+        MailRepresentation mail = new MailRepresentation();
         mail.setStatus("received");
         mail.setSubject("Message to self");
         mail.setContent("Doh!");
@@ -34,8 +34,7 @@ public class MailServerResource extends ServerResource {
                         + "/Mail.ftl").get();
 
         // Wraps the bean with a FreeMarker representation
-        return new TemplateRepresentation(mailFtl,
-                mail, MediaType.TEXT_HTML);
+        return new TemplateRepresentation(mailFtl, mail, MediaType.TEXT_HTML);
     }
 
     @Override

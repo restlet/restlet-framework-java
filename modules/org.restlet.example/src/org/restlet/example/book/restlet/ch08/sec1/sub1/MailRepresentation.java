@@ -1,9 +1,9 @@
-package org.restlet.example.book.restlet.ch08.sec1.sub2;
+package org.restlet.example.book.restlet.ch08.sec1.sub1;
 
 /**
  * The mail representation bean.
  */
-public class Mail {
+public class MailRepresentation {
 
     private String status;
 

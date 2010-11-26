@@ -21,7 +21,7 @@ public class MailServerResource extends ServerResource {
     @Override
     protected Representation get() throws ResourceException {
         // Create the mail bean
-        Mail mail = new Mail();
+        MailRepresentation mail = new MailRepresentation();
         mail.setStatus("received");
         mail.setSubject("Message to self");
         mail.setContent("Doh!");
