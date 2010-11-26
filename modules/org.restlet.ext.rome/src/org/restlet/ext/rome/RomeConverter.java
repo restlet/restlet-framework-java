@@ -122,7 +122,17 @@ public class RomeConverter extends ConverterHelper {
     public Representation toRepresentation(Object source, Variant target,
             UniformResource resource) throws IOException {
         if (source instanceof SyndFeed) {
-            return new SyndFeedRepresentation((SyndFeed) source);
+            SyndFeed feed = (SyndFeed) source;
+
+            if (feed.getFeedType() == null) {
+                if (VARIANT_APPLICATION_RSS.isCompatible(target)) {
+                    feed.setFeedType("rss_2.0");
+                } else {
+                    feed.setFeedType("atom_1.0");
+                }
+            }
+
+            return new SyndFeedRepresentation(feed);
         }
 
         return null;

@@ -26,6 +26,7 @@ Changes log
        - Fixed scoring issues between the Atom and XML extension
          for the Feed and Service classes which extend the 
          SaxRepresentation classes.
+       - Fixed converter issues with the ROME extension.
 
 - 2.0.3 (2010-11-07)
     - Bugs fixed
