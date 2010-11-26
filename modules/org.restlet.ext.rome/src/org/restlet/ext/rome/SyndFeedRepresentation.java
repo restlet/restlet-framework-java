@@ -28,8 +28,33 @@ import com.sun.syndication.io.SyndFeedOutput;
  */
 public class SyndFeedRepresentation extends WriterRepresentation {
 
+    /**
+     * Converts a feed type to a media type.
+     * 
+     * @param feedType
+     *            The source feed type.
+     * @return The result media type or null.
+     */
+    public static MediaType getMediaType(String feedType) {
+        MediaType result = null;
+
+        if (feedType != null) {
+            result = feedType.startsWith("atom") ? MediaType.APPLICATION_ATOM
+                    : MediaType.APPLICATION_RSS;
+        }
+
+        return result;
+    }
+
     /** The syndication feed. */
     private volatile SyndFeed feed;
+
+    /**
+     * Constructs a UTF8 RSS 2.0 feed.
+     */
+    public SyndFeedRepresentation() {
+        this("rss_2.0");
+    }
 
     /**
      * Constructor that parses the given feed representation.
@@ -43,23 +68,11 @@ public class SyndFeedRepresentation extends WriterRepresentation {
         try {
             this.feed = new SyndFeedInput().build(feedRepresentation
                     .getReader());
-
-            if (this.feed.getFeedType().startsWith("atom")) {
-                setMediaType(MediaType.APPLICATION_ATOM);
-            } else {
-                setMediaType(MediaType.APPLICATION_RSS);
-            }
+            setMediaType(getMediaType(this.feed.getFeedType()));
         } catch (Exception e) {
             Context.getCurrentLogger().log(Level.WARNING,
                     "Unable to parse feed", e);
         }
-    }
-
-    /**
-     * Constructs a UTF8 RSS 2.0 feed.
-     */
-    public SyndFeedRepresentation() {
-        this("rss_2.0");
     }
 
     /**
@@ -96,8 +109,7 @@ public class SyndFeedRepresentation extends WriterRepresentation {
      */
     public SyndFeedRepresentation(String feedType, List<?> entries,
             CharacterSet characterSet) {
-        super(feedType.startsWith("atom") ? MediaType.APPLICATION_ATOM
-                : MediaType.APPLICATION_RSS);
+        super(getMediaType(feedType));
         setCharacterSet(characterSet);
         this.feed = new SyndFeedImpl();
         this.feed.setFeedType(feedType);
@@ -111,9 +123,7 @@ public class SyndFeedRepresentation extends WriterRepresentation {
      *            The feed (must have a valid feedType!)
      */
     public SyndFeedRepresentation(SyndFeed feed) {
-        super(
-                feed.getFeedType().startsWith("atom") ? MediaType.APPLICATION_ATOM
-                        : MediaType.APPLICATION_RSS);
+        super(getMediaType(feed.getFeedType()));
         this.feed = feed;
     }
 
@@ -130,6 +140,11 @@ public class SyndFeedRepresentation extends WriterRepresentation {
     public void write(Writer writer) throws IOException {
         try {
             SyndFeedOutput output = new SyndFeedOutput();
+
+            if (this.feed.getFeedType() == null) {
+                this.feed.setFeedType("atom_1.0");
+            }
+
             output.output(this.feed, writer);
         } catch (FeedException e) {
             IOException ioe = new IOException("Feed exception");
