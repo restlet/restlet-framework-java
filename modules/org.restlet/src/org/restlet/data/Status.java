@@ -270,21 +270,21 @@ public final class Status {
             415);
 
     /**
-     * A client connector faces an error during the communication with the
-     * remote server (interruption, timeout, etc). The status code is 1001.
+     * The client connector faced an error during the communication with the
+     * remote server (interruption, timeout, etc.). The status code is 1001.
      */
     public static final Status CONNECTOR_ERROR_COMMUNICATION = new Status(1001);
 
     /**
-     * A client connector can not connect to the remote server. The status code
-     * is 1000.
+     * The client connector could not connect to the remote server. The status
+     * code is 1000.
      */
     public static final Status CONNECTOR_ERROR_CONNECTION = new Status(1000);
 
     /**
-     * Generic status code sent by a client connector when an error occurs
-     * during the process of a request to its server or the process of a
-     * response to its client. The status code is 1002.
+     * The client connector faced an internal error during the process of a
+     * request to its server or the process of a response to its client. The
+     * status code is 1002.
      */
     public static final Status CONNECTOR_ERROR_INTERNAL = new Status(1002);
 
@@ -552,7 +552,7 @@ public final class Status {
     /**
      * The server has fulfilled the request but does not need to return an
      * entity-body (for example after a DELETE), and might want to return
-     * updated metainformation.
+     * updated meta-information.
      * 
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.5">HTTP
@@ -561,9 +561,9 @@ public final class Status {
     public static final Status SUCCESS_NO_CONTENT = new Status(204);
 
     /**
-     * The request has succeeded but the returned metainformation in the
-     * entity-header do not come from the origin server, but is gathered from a
-     * local or a third-party copy.
+     * The request has succeeded but the returned meta-information in the
+     * entity-header does not come from the origin server, but is gathered from
+     * a local or a third-party copy.
      * 
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.2.4">HTTP
@@ -1118,10 +1118,10 @@ public final class Status {
                 result = "The request has been accepted for processing, but the processing has not been completed";
                 break;
             case 203:
-                result = "The returned metainformation is not the definitive set as available from the origin server";
+                result = "The returned meta-information is not the definitive set as available from the origin server";
                 break;
             case 204:
-                result = "The server has fulfilled the request but does not need to return an entity-body, and might want to return updated metainformation";
+                result = "The server has fulfilled the request but does not need to return an entity-body, and might want to return updated meta-information";
                 break;
             case 205:
                 result = "The server has fulfilled the request and the user agent should reset the document view which caused the request to be sent";
