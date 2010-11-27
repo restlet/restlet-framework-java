@@ -13,6 +13,8 @@ public class OldServerResource extends ServerResource {
         // Redirects the client to another location.
         redirectPermanent("http://localhost:8182/");
 
+        System.out.println("Redirecting client to new location...");
+
         // Add an optional message for the client.
         return "Resource moved... \n";
     }

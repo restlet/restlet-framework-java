@@ -8,6 +8,7 @@ Export-Package: org.restlet.ext.fileupload
 Import-Package: javax.servlet;resolution:=optional,
  javax.servlet.http;resolution:=optional,
  org.apache.commons.fileupload,
+ org.apache.commons.fileupload.disk,
  org.restlet,
  org.restlet.data,
  org.restlet.representation,
