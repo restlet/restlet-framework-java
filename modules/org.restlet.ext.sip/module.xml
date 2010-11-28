@@ -1,4 +1,4 @@
-<module id="sip" excludes="gwt" type="standard" package="org.restlet.ext.sip">
+<module id="sip" excludes="gae,gwt" type="standard" package="org.restlet.ext.sip">
    <name>Restlet Extension - SIP</name>
    <description>
       Support for Session Initiation Protocol (SIP).
