@@ -39,7 +39,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -54,9 +53,7 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.io.IoUtils;
-import org.restlet.engine.io.ReaderInputStream;
 import org.restlet.engine.log.LoggerFacade;
-import org.restlet.engine.log.SimplestFormatter;
 
 /**
  * Engine supporting the Restlet API. The engine acts as a registry of various
@@ -122,8 +119,9 @@ public class Engine {
     /** Complete version header. */
     public static final String VERSION_HEADER = "Restlet-Framework/" + VERSION;
 
+    // [ifndef gwt] member
     /** The general log formatter. */
-    private static volatile Class<? extends Formatter> logFormatter = SimplestFormatter.class;
+    private static volatile Class<? extends Formatter> logFormatter = org.restlet.engine.log.SimplestFormatter.class;
 
     /** The general log level . */
     private static volatile Level logLevel = Level.INFO;
@@ -149,22 +147,30 @@ public class Engine {
      * Updates the global log configuration of the JVM programmatically.
      */
     public static void configureLog() {
+        // [ifndef gwt]
         if ((System.getProperty("java.util.logging.config.file") == null)
                 && (System.getProperty("java.util.logging.config.class") == null)) {
             StringBuilder sb = new StringBuilder();
             sb.append("handlers=");
-            sb.append(ConsoleHandler.class.getCanonicalName()).append('\n');
+            sb
+                    .append(
+                            java.util.logging.ConsoleHandler.class
+                                    .getCanonicalName()).append('\n');
 
             if (getLogLevel() != null) {
                 sb.append(".level=" + getLogLevel().getName()).append('\n');
             }
 
             if (getRestletLogLevel() != null) {
-                sb.append("org.restlet.level=" + getRestletLogLevel().getName())
+                sb
+                        .append(
+                                "org.restlet.level="
+                                        + getRestletLogLevel().getName())
                         .append('\n');
             }
 
-            String handler = ConsoleHandler.class.getCanonicalName();
+            String handler = java.util.logging.ConsoleHandler.class
+                    .getCanonicalName();
             sb.append(handler + ".formatter="
                     + getLogFormatter().getCanonicalName() + "\n");
 
@@ -174,7 +180,8 @@ public class Engine {
 
             try {
                 LogManager.getLogManager().readConfiguration(
-                        new ReaderInputStream(new StringReader(sb.toString()),
+                        new org.restlet.engine.io.ReaderInputStream(
+                                new StringReader(sb.toString()),
                                 CharacterSet.DEFAULT));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -182,6 +189,9 @@ public class Engine {
                 logConfigured = true;
             }
         }
+        // [enddef]
+        // [ifdef gwt] instruction uncomment
+        // logConfigured = true;
     }
 
     /**
@@ -209,6 +219,7 @@ public class Engine {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the general log formatter.
      * 
@@ -351,6 +362,7 @@ public class Engine {
         instance = engine;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the general log formatter.
      * 
@@ -472,8 +484,10 @@ public class Engine {
                 discoverConverters();
                 // [enddef]
             } catch (IOException e) {
-                Context.getCurrentLogger()
-                        .log(Level.WARNING,
+                Context
+                        .getCurrentLogger()
+                        .log(
+                                Level.WARNING,
                                 "An error occured while discovering the engine helpers.",
                                 e);
             }
@@ -514,15 +528,16 @@ public class Engine {
                 if (connector.getProtocols().containsAll(client.getProtocols())) {
                     // [ifndef gwt]
                     if ((helperClass == null)
-                            || connector.getClass().getCanonicalName()
-                                    .equals(helperClass)) {
+                            || connector.getClass().getCanonicalName().equals(
+                                    helperClass)) {
                         try {
-                            result = connector.getClass()
-                                    .getConstructor(Client.class)
-                                    .newInstance(client);
+                            result = connector.getClass().getConstructor(
+                                    Client.class).newInstance(client);
                         } catch (Exception e) {
-                            Context.getCurrentLogger()
-                                    .log(Level.SEVERE,
+                            Context
+                                    .getCurrentLogger()
+                                    .log(
+                                            Level.SEVERE,
                                             "Exception during the instantiation of the client connector.",
                                             e);
                         }
@@ -537,13 +552,15 @@ public class Engine {
             if (result == null) {
                 // Couldn't find a matching connector
                 StringBuilder sb = new StringBuilder();
-                sb.append("No available client connector supports the required protocols: ");
+                sb
+                        .append("No available client connector supports the required protocols: ");
 
                 for (Protocol p : client.getProtocols()) {
                     sb.append("'").append(p.getName()).append("' ");
                 }
 
-                sb.append(". Please add the JAR of a matching connector to your classpath.");
+                sb
+                        .append(". Please add the JAR of a matching connector to your classpath.");
 
                 Context.getCurrentLogger().log(Level.WARNING, sb.toString());
             }
@@ -574,17 +591,19 @@ public class Engine {
                 connector = iter.next();
 
                 if ((helperClass == null)
-                        || connector.getClass().getCanonicalName()
-                                .equals(helperClass)) {
+                        || connector.getClass().getCanonicalName().equals(
+                                helperClass)) {
                     if (connector.getProtocols().containsAll(
                             server.getProtocols())) {
                         try {
-                            result = connector.getClass()
-                                    .getConstructor(org.restlet.Server.class)
-                                    .newInstance(server);
+                            result = connector.getClass().getConstructor(
+                                    org.restlet.Server.class).newInstance(
+                                    server);
                         } catch (Exception e) {
-                            Context.getCurrentLogger()
-                                    .log(Level.SEVERE,
+                            Context
+                                    .getCurrentLogger()
+                                    .log(
+                                            Level.SEVERE,
                                             "Exception while instantiation the server connector.",
                                             e);
                         }
@@ -595,13 +614,15 @@ public class Engine {
             if (result == null) {
                 // Couldn't find a matching connector
                 final StringBuilder sb = new StringBuilder();
-                sb.append("No available server connector supports the required protocols: ");
+                sb
+                        .append("No available server connector supports the required protocols: ");
 
                 for (final Protocol p : server.getProtocols()) {
                     sb.append("'").append(p.getName()).append("' ");
                 }
 
-                sb.append(". Please add the JAR of a matching connector to your classpath.");
+                sb
+                        .append(". Please add the JAR of a matching connector to your classpath.");
 
                 Context.getCurrentLogger().log(Level.WARNING, sb.toString());
             }
@@ -875,7 +896,7 @@ public class Engine {
      * @param constructorClass
      *            The constructor parameter class to look for.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings( { "unchecked", "rawtypes" })
     public void registerHelper(ClassLoader classLoader, String provider,
             List helpers, Class constructorClass) {
         if ((provider != null) && (!provider.equals(""))) {
@@ -914,8 +935,8 @@ public class Engine {
         try {
             BufferedReader reader = null;
             try {
-                reader = new BufferedReader(new InputStreamReader(
-                        configUrl.openStream(), "utf-8"), IoUtils.BUFFER_SIZE);
+                reader = new BufferedReader(new InputStreamReader(configUrl
+                        .openStream(), "utf-8"), IoUtils.BUFFER_SIZE);
                 String line = reader.readLine();
 
                 while (line != null) {
@@ -1006,9 +1027,11 @@ public class Engine {
                                         if (context != null) {
                                             final Response response = context
                                                     .getClientDispatcher()
-                                                    .handle(new Request(
-                                                            Method.GET,
-                                                            this.url.toString()));
+                                                    .handle(
+                                                            new Request(
+                                                                    Method.GET,
+                                                                    this.url
+                                                                            .toString()));
 
                                             if (response.getStatus()
                                                     .isSuccess()) {

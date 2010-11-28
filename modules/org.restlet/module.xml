@@ -86,6 +86,7 @@
          <exclude name="src/org/restlet/engine/header/ExpectationWriter.java" />
          <exclude name="src/org/restlet/engine/http/security/**" />
          <exclude name="src/org/restlet/engine/internal/**" />
+         <exclude name="src/org/restlet/engine/io/ReaderInputStream.java" />
          <exclude name="src/org/restlet/engine/io/Trace*" />
          <exclude name="src/org/restlet/engine/io/*Channel*" />
          <exclude name="src/org/restlet/engine/local/**" />
@@ -95,7 +96,7 @@
          <exclude name="src/org/restlet/engine/log/IdentClient.java" />
          <exclude name="src/org/restlet/engine/log/LogFilter.java" />
          <exclude name="src/org/restlet/engine/log/LoggingThreadFactory.java" />
-         <exclude name="src/org/restlet/engine/log/TraceHandler.java" />
+         <exclude name="src/org/restlet/engine/log/*Formatter.java" />
          <exclude name="src/org/restlet/engine/security/**" />
          <exclude name="src/org/restlet/engine/util/AlphabeticalComparator.java" />
          <exclude name="src/org/restlet/engine/util/AlphaNumericComparator.java" />
