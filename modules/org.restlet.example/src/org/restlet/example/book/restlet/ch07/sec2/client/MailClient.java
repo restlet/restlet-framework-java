@@ -16,7 +16,7 @@ public class MailClient {
      */
     public static void main(String[] args) throws Exception {
         System.out.println("\n1) Set-up the service client resource\n");
-        ClientResource service = new ClientResource("http://localhost:8182");
+        ClientResource service = new ClientResource("http://localhost:8082");
 
         System.out.println("\n2) Describe the application\n");
         System.out.println(service.options().getText());

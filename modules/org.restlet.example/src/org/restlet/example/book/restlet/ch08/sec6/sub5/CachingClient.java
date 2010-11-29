@@ -6,7 +6,7 @@ import org.restlet.resource.ClientResource;
 public class CachingClient {
     public static void main(String[] args) throws Exception {
         ClientResource resource = new ClientResource(
-                "http://localhost:8182/");
+                "http://localhost:8082/");
         // Get a representation
         Representation rep = resource.get();
         System.out.println(resource.getStatus());

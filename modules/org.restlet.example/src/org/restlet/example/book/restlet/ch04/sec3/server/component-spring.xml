@@ -18,7 +18,7 @@
 
 	<bean id="server" class="org.restlet.ext.spring.SpringServer">
 		<constructor-arg value="http" />
-		<constructor-arg value="8182" />
+		<constructor-arg value="8082" />
 
 		<property name="parameters">
 			<props>

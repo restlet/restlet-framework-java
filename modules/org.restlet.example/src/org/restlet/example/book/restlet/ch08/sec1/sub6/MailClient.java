@@ -16,7 +16,7 @@ public class MailClient {
 
     public static void main(String[] args) throws Exception {
         ClientResource mailClient = new ClientResource(
-                "http://localhost:8182/accounts/123/feeds/xyz");
+                "http://localhost:8082/accounts/123/feeds/xyz");
 
         // Display the retrieved Atom feed and entries
         Feed atomFeed = mailClient.get(Feed.class);

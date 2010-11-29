@@ -10,7 +10,7 @@ public class MailClient {
 
     public static void main(String[] args) throws Exception {
         ClientResource mailClient = new ClientResource(
-                "http://localhost:8182/accounts/123/mails/abc");
+                "http://localhost:8082/accounts/123/mails/abc");
         Form form = new Form();
         form.add("subject", "Message to Jérôme");
         form.add("content", "Doh!\n\nAllo?");

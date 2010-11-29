@@ -36,7 +36,7 @@ public class MailServerComponent extends Component {
         getClients().add(Protocol.CLAP);
 
         // Adds a HTTP server connector
-        Server server = getServers().add(Protocol.HTTP, 8182);
+        Server server = getServers().add(Protocol.HTTP, 8082);
         server.getContext().getParameters().set("tracing", "true");
 
         // Configure the default virtual host

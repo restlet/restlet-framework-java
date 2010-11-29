@@ -19,7 +19,7 @@ public class MailServerApplication extends Application {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        Server mailServer = new Server(Protocol.HTTP, 8182);
+        Server mailServer = new Server(Protocol.HTTP, 8082);
         mailServer.setNext(new MailServerApplication());
         mailServer.start();
     }
@@ -40,11 +40,11 @@ public class MailServerApplication extends Application {
     @Override
     public Restlet createInboundRoot() {
         Router router = new Router(getContext());
-        router.attach("http://localhost:8182/", 
+        router.attach("http://localhost:8082/", 
                 RootServerResource.class);
-        router.attach("http://localhost:8182/accounts/",
+        router.attach("http://localhost:8082/accounts/",
                 AccountsServerResource.class);
-        router.attach("http://localhost:8182/accounts/{accountId}",
+        router.attach("http://localhost:8082/accounts/{accountId}",
                 AccountServerResource.class);
         return router;
     }

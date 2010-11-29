@@ -19,7 +19,7 @@ public class MailServerApplication extends Application {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        Server mailServer = new Server(Protocol.HTTP, 8182);
+        Server mailServer = new Server(Protocol.HTTP, 8082);
         mailServer.setNext(new MailServerApplication());
         mailServer.start();
     }
@@ -46,9 +46,9 @@ public class MailServerApplication extends Application {
         blocker.setNext(tracer);
 
         Router router = new Router(getContext());
-        router.attach("http://localhost:8182/", tracer);
-        router.attach("http://localhost:8182/accounts/", tracer);
-        router.attach("http://localhost:8182/accounts/{accountId}", blocker);
+        router.attach("http://localhost:8082/", tracer);
+        router.attach("http://localhost:8082/accounts/", tracer);
+        router.attach("http://localhost:8082/accounts/{accountId}", blocker);
 
         return router;
     }

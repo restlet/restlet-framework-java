@@ -5,7 +5,7 @@ import org.restlet.resource.ClientResource;
 public class TraceClient {
     public static void main(String[] args) throws Exception {
         ClientResource resource = new ClientResource(
-                "http://localhost:8182/?key=value");
+                "http://localhost:8082/?key=value");
         resource.get().write(System.out);
     }
 }

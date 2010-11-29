@@ -5,7 +5,7 @@ import org.restlet.resource.ClientResource;
 public class DynamicContentClient {
     public static void main(String[] args) throws Exception {
         ClientResource resource = new ClientResource(
-                "http://localhost:8182/");
+                "http://localhost:8082/");
         resource.get().write(System.out);
     }
 

@@ -6,7 +6,7 @@ import org.restlet.resource.ClientResource;
 public class ConditionalClient {
     public static void main(String[] args) throws Exception {
         ClientResource resource = new ClientResource(
-                "http://localhost:8182/");
+                "http://localhost:8082/");
         Representation rep = resource.get();
 
         System.out.println("Putting if tag has changed.");

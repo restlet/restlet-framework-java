@@ -23,7 +23,7 @@ public class MailClient {
     public static void main(String[] args) throws Exception {
         System.out.println("\n1) Set-up the service client resource\n");
         Client client = new Client(new Context(), Protocol.HTTP);
-        ClientResource service = new ClientResource("http://localhost:8182");
+        ClientResource service = new ClientResource("http://localhost:8082");
         service.setNext(client);
 
         System.out.println("\n2) Display the root resource\n");
