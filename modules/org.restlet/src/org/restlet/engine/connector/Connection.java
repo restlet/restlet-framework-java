@@ -173,10 +173,12 @@ public class Connection<T extends Connector> implements SelectionListener {
             }
 
             try {
-                if ((getSocket() != null) && !getSocket().isClosed()) {
-                    if (!(getSocket() instanceof SSLSocket)) {
-                        getSocket().shutdownInput();
-                        getSocket().shutdownOutput();
+                Socket socket = getSocket();
+
+                if ((socket != null) && !socket.isClosed()) {
+                    if (!(socket instanceof SSLSocket)) {
+                        socket.shutdownInput();
+                        socket.shutdownOutput();
                     }
                 }
             } catch (IOException ex) {
@@ -187,7 +189,9 @@ public class Connection<T extends Connector> implements SelectionListener {
             }
 
             try {
-                if ((getSocket() != null) && !getSocket().isClosed()) {
+                Socket socket = getSocket();
+
+                if ((socket != null) && !socket.isClosed()) {
                     getSocket().close();
                 }
             } catch (IOException ex) {
