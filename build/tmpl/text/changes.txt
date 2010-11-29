@@ -29,6 +29,9 @@ Changes log
        - Fixed converter issues with the ROME extension.
        - Fixed SpringBeanFinder throwing misleading exceptions 
          when resource not found. Contributed by Rhett Sutphin.
+       - Fixed double-instantiation of prototype resources in
+         SpringBeanRouter.  Reported by George Calm; contributed by
+         Rhett Sutphin.
 
 - 2.0.3 (2010-11-07)
     - Bugs fixed

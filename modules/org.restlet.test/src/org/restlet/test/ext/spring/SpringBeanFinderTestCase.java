@@ -51,14 +51,33 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
     }
 
     private static class SomeResource extends Resource {
+        private static int instantiationCount = 0;
+
+        private SomeResource() {
+            incrementInstantiationCount();
+        }
+
+        public synchronized static void resetInstantiationCount() {
+            instantiationCount = 0;
+        }
+
+        private synchronized static void incrementInstantiationCount() {
+            instantiationCount++;
+        }
+
+        public synchronized static int getInstantiationCount() {
+            return instantiationCount;
+        }
     }
 
     private static class SomeServerResource extends ServerResource {
+        private static int instantiationCount = 0;
         private String src;
 
         @SuppressWarnings("unused")
         public SomeServerResource() {
             setSrc("constructor");
+            incrementInstantiationCount();
         }
 
         public String getSrc() {
@@ -67,6 +86,18 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
 
         public void setSrc(String src) {
             this.src = src;
+        }
+
+        public synchronized static void resetInstantiationCount() {
+            instantiationCount = 0;
+        }
+
+        private synchronized static void incrementInstantiationCount() {
+            instantiationCount++;
+        }
+
+        public synchronized static int getInstantiationCount() {
+            return instantiationCount;
         }
     }
 
@@ -84,7 +115,7 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
     }
 
     private void registerApplicationContextBean(String beanName,
-            Class<SomeResource> resourceClass) {
+            Class<?> resourceClass) {
         this.applicationContext.registerPrototype(beanName, resourceClass);
         this.applicationContext.refresh();
     }
@@ -155,19 +186,13 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         }
     }
 
-    public void testExceptionWhenResourceBeanIsWrongType() throws Exception {
+    public void testNullWhenResourceBeanIsWrongType() throws Exception {
         registerBeanFactoryBean(BEAN_NAME, String.class);
 
         this.finder.setBeanFactory(beanFactory);
 
-        try {
-            this.finder.create();
-            fail("Exception not thrown");
-        } catch (ClassCastException cce) {
-            assertEquals(
-                    "fish does not resolve to an instance of org.restlet.resource.ServerResource",
-                    cce.getMessage());
-        }
+        Resource actual = this.finder.createResource();
+        assertNull("Should have returned null", actual);
     }
 
     public void testExceptionWhenServerResourceBeanIsWrongType()
@@ -252,5 +277,57 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         assertNotNull("Resource not found", actual);
         assertTrue("Resource not the correct type",
                 actual instanceof SomeResource);
+    }
+
+    public void testServerResourceNotInstantiatedFromBeanFactoryWhenCreateResourceCalled() throws Exception {
+        SomeServerResource.resetInstantiationCount();
+        registerBeanFactoryBean(BEAN_NAME, SomeServerResource.class);
+        this.finder.setBeanFactory(beanFactory);
+
+        assertNull(this.finder.createResource());
+
+        assertEquals("Should not have been instantiated",
+            0, SomeServerResource.getInstantiationCount());
+    }
+
+    public void testServerResourceNotInstantiatedFromApplicationContextWhenCreateResourceCalled() throws Exception {
+        SomeServerResource.resetInstantiationCount();
+        registerApplicationContextBean(BEAN_NAME, SomeServerResource.class);
+        this.finder.setApplicationContext(applicationContext);
+
+        assertNull(this.finder.createResource());
+
+        assertEquals("Should not have been instantiated",
+            0, SomeServerResource.getInstantiationCount());
+    }
+
+    public void testResourceNotInstantiatedFromBeanFactoryWhenCreateCalled() throws Exception {
+        SomeResource.resetInstantiationCount();
+        registerBeanFactoryBean(BEAN_NAME, SomeResource.class);
+        this.finder.setBeanFactory(beanFactory);
+
+        try {
+            this.finder.create();
+        } catch (ClassCastException e) {
+            // expected
+        }
+
+        assertEquals("Should not have been instantiated",
+            0, SomeResource.getInstantiationCount());
+    }
+
+    public void testResourceNotInstantiatedFromApplicationContextWhenCreateCalled() throws Exception {
+        SomeResource.resetInstantiationCount();
+        registerApplicationContextBean(BEAN_NAME, SomeResource.class);
+        this.finder.setApplicationContext(applicationContext);
+
+        try {
+            this.finder.create();
+        } catch (ClassCastException e) {
+            // expected
+        }
+
+        assertEquals("Should not have been instantiated",
+            0, SomeResource.getInstantiationCount());
     }
 }

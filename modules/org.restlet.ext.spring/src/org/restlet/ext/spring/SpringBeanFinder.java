@@ -31,6 +31,7 @@
 package org.restlet.ext.spring;
 
 import org.restlet.Context;
+import org.restlet.resource.Resource;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.springframework.beans.factory.BeanFactory;
@@ -91,39 +92,38 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
 
     @Override
     public ServerResource create() {
-        final Object resource = findBean();
+        final ServerResource resource = findBean(ServerResource.class);
 
-        if (!(resource instanceof ServerResource)) {
+        if (resource == null) {
             throw new ClassCastException(getBeanName()
                     + " does not resolve to an instance of "
                     + org.restlet.resource.ServerResource.class.getName());
         }
 
-        return (org.restlet.resource.ServerResource) resource;
+        return resource;
     }
 
     @SuppressWarnings("deprecation")
     @Override
     public org.restlet.resource.Resource createResource() {
-        Object resource = findBean();
-
-        if (!(resource instanceof org.restlet.resource.Resource)) {
-            resource = null;
-        }
-
-        return (org.restlet.resource.Resource) resource;
+        return findBean(Resource.class);
     }
 
-    private Object findBean() {
+    @SuppressWarnings({ "unchecked" })
+    private <T> T findBean(Class<T> expectedType) {
         if (getBeanFactory() == null && getApplicationContext() == null) {
             throw new IllegalStateException(
                     "Either a beanFactory or an applicationContext is required for SpringBeanFinder.");
-        } else if (getApplicationContext() != null
-                && getApplicationContext().containsBean(getBeanName())) {
-            return getApplicationContext().getBean(getBeanName());
-        } else if (getBeanFactory() != null
-                && getBeanFactory().containsBean(getBeanName())) {
-            return getBeanFactory().getBean(getBeanName());
+        }
+        BeanFactory effectiveFactory = getApplicationContext();
+        if (effectiveFactory == null) effectiveFactory = getBeanFactory();
+
+        if (effectiveFactory.containsBean(getBeanName())) {
+            if (expectedType.isAssignableFrom(effectiveFactory.getType(getBeanName()))) {
+                return (T) effectiveFactory.getBean(getBeanName());
+            } else {
+                return null;
+            }
         } else {
             throw new IllegalStateException(String.format(
                     "No bean named %s present.", getBeanName()));
