@@ -14,9 +14,9 @@ public class FirstResourceClientMain {
 
         // Define our Restlet client resources.
         ClientResource app = new ClientResource(
-                "http://localhost:8182/firstResource");
+                "http://localhost:8111/firstResource");
         ClientResource itemsResource = new ClientResource(
-                "http://localhost:8182/firstResource/items");
+                "http://localhost:8111/firstResource/items");
         ClientResource itemResource = null;
 
         // Displays the WADL documentation of the application

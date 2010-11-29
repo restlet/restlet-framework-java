@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
-<feed xml:base="http://localhost:8182/Cafe.svc/"
+<feed xml:base="http://localhost:8111/Cafe.svc/"
 	xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
 	xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
 	xmlns="http://www.w3.org/2005/Atom">
 	<title type="text">Cafes</title>
-	<id>http://localhost:8182/Cafe.svc/Cafes</id>
+	<id>http://localhost:8111/Cafe.svc/Cafes</id>
 	<updated>2010-02-17T11:28:13Z</updated>
 	<link rel="self" title="Cafes" href="Cafes" />
 	<entry>
-		<id>http://localhost:8182/Cafe.svc/Cafes('1')</id>
+		<id>http://localhost:8111/Cafe.svc/Cafes('1')</id>
 		<title type="text"></title>
 		<updated>2010-02-17T11:28:13Z</updated>
 		<author>
@@ -32,7 +32,7 @@
 	</entry>
 	<entry>
 		<id>
-			http://localhost:8182/Cafe.svc/Cafes('2')</id>
+			http://localhost:8111/Cafe.svc/Cafes('2')</id>
 		<title type="text"></title>
 		<updated>2010-02-17T11:28:13Z</updated>
 		<author>

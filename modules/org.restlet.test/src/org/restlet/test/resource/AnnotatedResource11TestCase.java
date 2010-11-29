@@ -71,7 +71,7 @@ public class AnnotatedResource11TestCase extends TestCase {
 
     protected void setUp() throws Exception {
         c = new Component();
-        c.getServers().add(Protocol.HTTP, 8182);
+        c.getServers().add(Protocol.HTTP, 8111);
         c.getDefaultHost().attach(new TestApplication());
         c.start();
 
@@ -93,13 +93,13 @@ public class AnnotatedResource11TestCase extends TestCase {
     public void test() throws IOException, ResourceException {
 
         client = new Client(Protocol.HTTP);
-        Request request = new Request(Method.GET, "http://localhost:8182/test");
+        Request request = new Request(Method.GET, "http://localhost:8111/test");
         Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("asText-txt", response.getEntity().getText());
         response.getEntity().release();
 
-        request = new Request(Method.POST, "http://localhost:8182/test");
+        request = new Request(Method.POST, "http://localhost:8111/test");
         response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("accept", response.getEntity().getText());

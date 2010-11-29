@@ -85,8 +85,8 @@ public class HeadersTest {
             }
         };
 
-        // Create the HTTP server and listen on port 8182
-        final Server server = new Server(Protocol.HTTP, 8182, restlet);
+        // Create the HTTP server and listen on port 8111
+        final Server server = new Server(Protocol.HTTP, 8111, restlet);
         server.start();
     }
 

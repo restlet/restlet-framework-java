@@ -63,7 +63,7 @@ import org.restlet.data.Protocol;
  * 
  * &lt;bean id=&quot;server&quot; class=&quot;org.restlet.ext.spring.SpringServer&quot;&gt;
  *         &lt;constructor-arg value=&quot;http&quot; /&gt;
- *         &lt;constructor-arg value=&quot;8182&quot; /&gt;
+ *         &lt;constructor-arg value=&quot;8111&quot; /&gt;
  *         &lt;property name=&quot;parameters&quot;&gt;
  *                 &lt;props&gt;
  *                         &lt;prop key=&quot;key1&quot;&gt;value1&lt;/prop&gt;

@@ -42,7 +42,7 @@ import org.restlet.resource.ServerResource;
 public class MyServerResource1 extends ServerResource implements MyResource1 {
 
     public static void main(String[] args) throws Exception {
-        Server server = new Server(Protocol.HTTP, 8182);
+        Server server = new Server(Protocol.HTTP, 8111);
         server.setNext(MyServerResource1.class);
         server.start();
     }

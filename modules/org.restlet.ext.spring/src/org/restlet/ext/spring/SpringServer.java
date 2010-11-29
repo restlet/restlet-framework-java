@@ -43,7 +43,7 @@ import org.restlet.data.Protocol;
  * <pre>
  * &lt;bean id=&quot;server&quot; class=&quot;org.restlet.ext.spring.SpringServer&quot;&gt;
  *      &lt;constructor-arg value=&quot;http&quot; /&gt;
- *      &lt;constructor-arg value=&quot;8182&quot; /&gt;
+ *      &lt;constructor-arg value=&quot;8111&quot; /&gt;
  * &lt;/bean&gt;
  * </pre>
  * 

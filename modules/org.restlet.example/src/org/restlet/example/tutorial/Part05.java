@@ -45,7 +45,7 @@ public class Part05 extends ServerResource {
     public static void main(String[] args) throws Exception {
         // Create a new Restlet component and add a HTTP server connector to it
         Component component = new Component();
-        component.getServers().add(Protocol.HTTP, 8182);
+        component.getServers().add(Protocol.HTTP, 8111);
 
         // Then attach it to the local host
         component.getDefaultHost().attach("/trace", Part05.class);
