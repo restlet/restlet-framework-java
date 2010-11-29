@@ -138,9 +138,9 @@ public class LogFilter extends Filter {
         // Set the log level for the given request
         request.setLoggable(this.logService.isLoggable(request));
 
-        if (request.isLoggable() && this.logLogger.isLoggable(Level.INFO)) {
+        if (request.isLoggable() && this.logLogger.isLoggable(Level.FINE)) {
             this.logLogger
-                    .info("Processing request to: \""
+                    .fine("Processing request to: \""
                             + request.getResourceRef().getTargetRef()
                                     .toString() + "\"");
         }

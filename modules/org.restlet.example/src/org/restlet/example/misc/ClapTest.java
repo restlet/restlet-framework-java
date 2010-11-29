@@ -46,7 +46,7 @@ public class ClapTest {
     public static void main(String[] args) throws Exception {
 
         final Component component = new Component();
-        component.getServers().add(Protocol.HTTP, 8182);
+        component.getServers().add(Protocol.HTTP, 8111);
         component.getClients().add(Protocol.CLAP);
 
         final Application application = new Application() {

@@ -28,7 +28,7 @@ public class ODataCafeCustoFeedsTestCase extends RestletTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        component.getServers().add(Protocol.HTTP, 8182);
+        component.getServers().add(Protocol.HTTP, 8111);
         component.getClients().add(Protocol.CLAP);
 
         component

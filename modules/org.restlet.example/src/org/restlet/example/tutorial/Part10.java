@@ -55,7 +55,7 @@ public class Part10 extends Application {
     public static void main(String[] args) throws Exception {
         // Create a component
         Component component = new Component();
-        component.getServers().add(Protocol.HTTP, 8182);
+        component.getServers().add(Protocol.HTTP, 8111);
 
         // Create an application
         Application application = new Part10();
@@ -77,7 +77,7 @@ public class Part10 extends Application {
 
         // While routing requests to the redirector, extract the "kwd" query
         // parameter. For instance :
-        // http://localhost:8182/search?kwd=myKeyword1+myKeyword2
+        // http://localhost:8111/search?kwd=myKeyword1+myKeyword2
         // will be routed to
         // http://www.google.com/search?q=site:mysite.org+myKeyword1%20myKeyword2
         Extractor extractor = new Extractor(getContext(), redirector);

@@ -43,7 +43,7 @@ import org.restlet.resource.ClientResource;
 public class Part09b {
     public static void main(String[] args) throws Exception {
         // Prepare the request
-        ClientResource resource = new ClientResource("http://localhost:8182/");
+        ClientResource resource = new ClientResource("http://localhost:8111/");
 
         // Add the client authentication to the call
         ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;

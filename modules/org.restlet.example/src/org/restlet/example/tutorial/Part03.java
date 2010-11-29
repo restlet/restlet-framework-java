@@ -43,8 +43,8 @@ import org.restlet.resource.ServerResource;
 public class Part03 extends ServerResource {
 
     public static void main(String[] args) throws Exception {
-        // Create the HTTP server and listen on port 8182
-        new Server(Protocol.HTTP, 8182, Part03.class).start();
+        // Create the HTTP server and listen on port 8111
+        new Server(Protocol.HTTP, 8111, Part03.class).start();
     }
 
     @Get

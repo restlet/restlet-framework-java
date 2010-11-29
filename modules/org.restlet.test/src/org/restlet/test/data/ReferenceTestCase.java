@@ -502,8 +502,8 @@ public class ReferenceTestCase extends RestletTestCase {
     }
 
     public void testQueryWithUri() {
-        Reference ref = new Reference(new Reference("http://localhost:8182/"),
-                "http://localhost:8182/contrats/123?srvgwt=localhost:9997");
+        Reference ref = new Reference(new Reference("http://localhost:8111/"),
+                "http://localhost:8111/contrats/123?srvgwt=localhost:9997");
         assertEquals("contrats/123?srvgwt=localhost:9997", ref.getRelativeRef()
                 .toString());
     }

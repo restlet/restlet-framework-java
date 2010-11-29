@@ -23,7 +23,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         Component component = new Component();
-        component.getServers().add(Protocol.HTTP, 8182);
+        component.getServers().add(Protocol.HTTP, 8111);
         component.getDefaultHost().attach(new MainApp());
         component.start();
     }

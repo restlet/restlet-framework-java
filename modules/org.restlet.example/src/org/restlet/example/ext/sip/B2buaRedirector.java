@@ -24,9 +24,9 @@ public class B2buaRedirector extends Redirector {
 
     public static void main(String[] args) throws Exception {
         String[] arguments = new String[1];
-        arguments[0] = "8182";
+        arguments[0] = "8111";
 
-        // Start the origin server on port 8182
+        // Start the origin server on port 8111
         UacServerResource.main(arguments);
 
         Component c = new Component();
@@ -43,7 +43,7 @@ public class B2buaRedirector extends Redirector {
                 "false");
 
         c.getDefaultHost().attachDefault(
-                new B2buaRedirector(null, "sip:localhost:8182"));
+                new B2buaRedirector(null, "sip:localhost:8111"));
         c.start();
     }
 
