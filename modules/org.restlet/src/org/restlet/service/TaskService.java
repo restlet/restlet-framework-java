@@ -33,15 +33,18 @@ package org.restlet.service;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
 
 import org.restlet.Application;
 import org.restlet.Context;
@@ -50,8 +53,9 @@ import org.restlet.engine.Engine;
 import org.restlet.routing.VirtualHost;
 
 /**
- * Application service capable of running tasks asynchronously. The service
- * instance returned will not invoke the runnable task in the current thread.<br>
+ * Application service capable of running and scheduling tasks asynchronously.
+ * The service instance returned will not invoke the runnable task in the
+ * current thread.<br>
  * <br>
  * In addition to allowing pooling, this method will ensure that the threads
  * executing the tasks will have the thread local variables copied from the
@@ -68,7 +72,7 @@ import org.restlet.routing.VirtualHost;
  * @author Doug Lea (docs of ExecutorService in public domain)
  * @author Tim Peierls
  */
-public class TaskService extends Service implements ExecutorService {
+public class TaskService extends Service implements ScheduledExecutorService {
 
     /**
      * The default thread factory
@@ -99,8 +103,9 @@ public class TaskService extends Service implements ExecutorService {
      *            The JDK service to wrap.
      * @return The wrapper service to use.
      */
-    public static ExecutorService wrap(final ExecutorService executorService) {
-        return new AbstractExecutorService() {
+    public static ScheduledExecutorService wrap(
+            final ScheduledExecutorService executorService) {
+        return new ScheduledExecutorService() {
 
             public boolean awaitTermination(long timeout, TimeUnit unit)
                     throws InterruptedException {
@@ -132,6 +137,27 @@ public class TaskService extends Service implements ExecutorService {
                 });
             }
 
+            public <T> List<Future<T>> invokeAll(Collection<Callable<T>> tasks)
+                    throws InterruptedException {
+                return executorService.invokeAll(tasks);
+            }
+
+            public <T> List<Future<T>> invokeAll(Collection<Callable<T>> tasks,
+                    long timeout, TimeUnit unit) throws InterruptedException {
+                return executorService.invokeAll(tasks, timeout, unit);
+            }
+
+            public <T> T invokeAny(Collection<Callable<T>> tasks)
+                    throws InterruptedException, ExecutionException {
+                return executorService.invokeAny(tasks);
+            }
+
+            public <T> T invokeAny(Collection<Callable<T>> tasks, long timeout,
+                    TimeUnit unit) throws InterruptedException,
+                    ExecutionException, TimeoutException {
+                return executorService.invokeAny(tasks, timeout, unit);
+            }
+
             public boolean isShutdown() {
                 return executorService.isShutdown();
             }
@@ -140,12 +166,46 @@ public class TaskService extends Service implements ExecutorService {
                 return executorService.isTerminated();
             }
 
+            public <V> ScheduledFuture<V> schedule(Callable<V> callable,
+                    long delay, TimeUnit unit) {
+                return executorService.schedule(callable, delay, unit);
+            }
+
+            public ScheduledFuture<?> schedule(Runnable command, long delay,
+                    TimeUnit unit) {
+                return executorService.schedule(command, delay, unit);
+            }
+
+            public ScheduledFuture<?> scheduleAtFixedRate(Runnable command,
+                    long initialDelay, long period, TimeUnit unit) {
+                return executorService.scheduleAtFixedRate(command,
+                        initialDelay, period, unit);
+            }
+
+            public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
+                    long initialDelay, long delay, TimeUnit unit) {
+                return executorService.scheduleWithFixedDelay(command,
+                        initialDelay, delay, unit);
+            }
+
             public void shutdown() {
                 executorService.shutdown();
             }
 
             public List<Runnable> shutdownNow() {
                 return executorService.shutdownNow();
+            }
+
+            public <T> Future<T> submit(Callable<T> task) {
+                return executorService.submit(task);
+            }
+
+            public Future<?> submit(Runnable task) {
+                return executorService.submit(task);
+            }
+
+            public <T> Future<T> submit(Runnable task, T result) {
+                return executorService.submit(task, result);
             }
         };
     }
@@ -157,14 +217,24 @@ public class TaskService extends Service implements ExecutorService {
     private volatile boolean shutdownAllowed;
 
     /** The wrapped JDK executor service. */
-    private volatile ExecutorService wrapped;
+    private volatile ScheduledExecutorService wrapped;
+
+    /** The core pool size defining the maximum number of threads. */
+    private volatile int corePoolSize;
+
+    /**
+     * Constructor. Set the core pool size to 4 by default.
+     */
+    public TaskService() {
+        this(4);
+    }
 
     /**
      * Constructor.
      */
-    public TaskService() {
+    public TaskService(int corePoolSize) {
+        this.corePoolSize = corePoolSize;
         this.shutdownAllowed = false;
-        setWrapped(wrap(createExecutorService()));
     }
 
     /**
@@ -181,6 +251,7 @@ public class TaskService extends Service implements ExecutorService {
      */
     public boolean awaitTermination(long timeout, TimeUnit unit)
             throws InterruptedException {
+        startIfNeeded();
         return getWrapped().awaitTermination(timeout, unit);
     }
 
@@ -189,11 +260,13 @@ public class TaskService extends Service implements ExecutorService {
      * calls {@link Executors#newCachedThreadPool(ThreadFactory)}, passing the
      * result of {@link #createThreadFactory()} as a parameter.
      * 
-     * 
+     * @param corePoolSize
+     *            The core pool size defining the maximum number of threads.
      * @return A new JDK executor service.
      */
-    protected ExecutorService createExecutorService() {
-        return Executors.newCachedThreadPool(createThreadFactory());
+    protected ScheduledExecutorService createExecutorService(int corePoolSize) {
+        return Executors.newScheduledThreadPool(corePoolSize,
+                createThreadFactory());
     }
 
     /**
@@ -213,7 +286,17 @@ public class TaskService extends Service implements ExecutorService {
      *            The command to execute.
      */
     public void execute(Runnable command) {
+        startIfNeeded();
         getWrapped().execute(command);
+    }
+
+    /**
+     * Returns the core pool size defining the maximum number of threads.
+     * 
+     * @return The core pool size defining the maximum number of threads.
+     */
+    public int getCorePoolSize() {
+        return corePoolSize;
     }
 
     /**
@@ -221,7 +304,7 @@ public class TaskService extends Service implements ExecutorService {
      * 
      * @return The wrapped JDK executor service.
      */
-    private ExecutorService getWrapped() {
+    private ScheduledExecutorService getWrapped() {
         return wrapped;
     }
 
@@ -238,8 +321,9 @@ public class TaskService extends Service implements ExecutorService {
      *            The task to execute.
      * @return The list of futures.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public List invokeAll(Collection tasks) throws InterruptedException {
+    public <T> List<Future<T>> invokeAll(Collection<Callable<T>> tasks)
+            throws InterruptedException {
+        startIfNeeded();
         return getWrapped().invokeAll(tasks);
     }
 
@@ -265,9 +349,9 @@ public class TaskService extends Service implements ExecutorService {
      *            The time unit.
      * @return The list of futures.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public List invokeAll(Collection tasks, long timeout, TimeUnit unit)
-            throws InterruptedException {
+    public <T> List<Future<T>> invokeAll(Collection<Callable<T>> tasks,
+            long timeout, TimeUnit unit) throws InterruptedException {
+        startIfNeeded();
         return getWrapped().invokeAll(tasks, timeout, unit);
     }
 
@@ -287,9 +371,9 @@ public class TaskService extends Service implements ExecutorService {
      *            The task to execute.
      * @return The result returned by one of the tasks.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Object invokeAny(Collection tasks) throws InterruptedException,
-            ExecutionException {
+    public <T> T invokeAny(Collection<Callable<T>> tasks)
+            throws InterruptedException, ExecutionException {
+        startIfNeeded();
         return getWrapped().invokeAny(tasks);
     }
 
@@ -313,9 +397,10 @@ public class TaskService extends Service implements ExecutorService {
      *            The time unit.
      * @return The result returned by one of the tasks.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Object invokeAny(Collection tasks, long timeout, TimeUnit unit)
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public <T> T invokeAny(Collection<Callable<T>> tasks, long timeout,
+            TimeUnit unit) throws InterruptedException, ExecutionException,
+            TimeoutException {
+        startIfNeeded();
         return getWrapped().invokeAny(tasks, timeout, unit);
     }
 
@@ -325,7 +410,7 @@ public class TaskService extends Service implements ExecutorService {
      * @return True if this executor has been shut down.
      */
     public boolean isShutdown() {
-        return getWrapped().isShutdown();
+        return (getWrapped() == null) || getWrapped().isShutdown();
     }
 
     /**
@@ -347,7 +432,128 @@ public class TaskService extends Service implements ExecutorService {
      * @return True if all tasks have completed following shut down.
      */
     public boolean isTerminated() {
-        return getWrapped().isTerminated();
+        return (getWrapped() == null) || getWrapped().isTerminated();
+    }
+
+    /**
+     * Creates and executes a ScheduledFuture that becomes enabled after the
+     * given delay.
+     * 
+     * @param callable
+     *            The function to execute.
+     * @param delay
+     *            The time from now to delay execution.
+     * @param unit
+     *            The time unit of the delay parameter.
+     * @return a ScheduledFuture that can be used to extract result or cancel.
+     * @throws RejectedExecutionException
+     *             if task cannot be scheduled for execution.
+     * @throws NullPointerException
+     *             if callable is null
+     */
+    public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay,
+            TimeUnit unit) {
+        startIfNeeded();
+        return getWrapped().schedule(callable, delay, unit);
+    }
+
+    /**
+     * Creates and executes a one-shot action that becomes enabled after the
+     * given delay.
+     * 
+     * @param command
+     *            The task to execute.
+     * @param delay
+     *            The time from now to delay execution.
+     * @param unit
+     *            The time unit of the delay parameter.
+     * @return a Future representing pending completion of the task, and whose
+     *         <tt>get()</tt> method will return <tt>null</tt> upon completion.
+     * @throws RejectedExecutionException
+     *             if task cannot be scheduled for execution.
+     * @throws NullPointerException
+     *             if command is null
+     */
+    public ScheduledFuture<?> schedule(Runnable command, long delay,
+            TimeUnit unit) {
+        startIfNeeded();
+        return getWrapped().schedule(command, delay, unit);
+    }
+
+    /**
+     * Creates and executes a periodic action that becomes enabled first after
+     * the given initial delay, and subsequently with the given period; that is
+     * executions will commence after <tt>initialDelay</tt> then
+     * <tt>initialDelay+period</tt>, then <tt>initialDelay + 2 * period</tt>,
+     * and so on. If any execution of the task encounters an exception,
+     * subsequent executions are suppressed. Otherwise, the task will only
+     * terminate via cancellation or termination of the executor.
+     * 
+     * @param command
+     *            The task to execute.
+     * @param initialDelay
+     *            The time to delay first execution.
+     * @param period
+     *            The period between successive executions.
+     * @param unit
+     *            The time unit of the initialDelay and period parameters
+     * @return a Future representing pending completion of the task, and whose
+     *         <tt>get()</tt> method will throw an exception upon cancellation.
+     * @throws RejectedExecutionException
+     *             if task cannot be scheduled for execution.
+     * @throws NullPointerException
+     *             if command is null
+     * @throws IllegalArgumentException
+     *             if period less than or equal to zero.
+     */
+    public ScheduledFuture<?> scheduleAtFixedRate(Runnable command,
+            long initialDelay, long period, TimeUnit unit) {
+        startIfNeeded();
+        return getWrapped().scheduleAtFixedRate(command, initialDelay, period,
+                unit);
+    }
+
+    /**
+     * Creates and executes a periodic action that becomes enabled first after
+     * the given initial delay, and subsequently with the given delay between
+     * the termination of one execution and the commencement of the next. If any
+     * execution of the task encounters an exception, subsequent executions are
+     * suppressed. Otherwise, the task will only terminate via cancellation or
+     * termination of the executor.
+     * 
+     * @param command
+     *            The task to execute.
+     * @param initialDelay
+     *            The time to delay first execution.
+     * @param delay
+     *            The delay between the termination of one execution and the
+     *            commencement of the next.
+     * @param unit
+     *            The time unit of the initialDelay and delay parameters
+     * @return a Future representing pending completion of the task, and whose
+     *         <tt>get()</tt> method will throw an exception upon cancellation.
+     * @throws RejectedExecutionException
+     *             if task cannot be scheduled for execution.
+     * @throws NullPointerException
+     *             if command is null
+     * @throws IllegalArgumentException
+     *             if delay less than or equal to zero.
+     */
+    public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
+            long initialDelay, long delay, TimeUnit unit) {
+        startIfNeeded();
+        return getWrapped().scheduleWithFixedDelay(command, initialDelay,
+                delay, unit);
+    }
+
+    /**
+     * Sets the core pool size defining the maximum number of threads.
+     * 
+     * @param corePoolSize
+     *            The core pool size defining the maximum number of threads.
+     */
+    public void setCorePoolSize(int corePoolSize) {
+        this.corePoolSize = corePoolSize;
     }
 
     /**
@@ -367,7 +573,7 @@ public class TaskService extends Service implements ExecutorService {
      * @param wrapped
      *            The wrapped JDK executor service.
      */
-    private void setWrapped(ExecutorService wrapped) {
+    private void setWrapped(ScheduledExecutorService wrapped) {
         this.wrapped = wrapped;
     }
 
@@ -376,7 +582,7 @@ public class TaskService extends Service implements ExecutorService {
      * executed, but no new tasks will be accepted.
      */
     public void shutdown() {
-        if (isShutdownAllowed()) {
+        if (isShutdownAllowed() && (getWrapped() != null)) {
             getWrapped().shutdown();
         }
     }
@@ -389,24 +595,38 @@ public class TaskService extends Service implements ExecutorService {
      * @return The list of tasks that never commenced execution;
      */
     public List<Runnable> shutdownNow() {
-        return isShutdownAllowed() ? getWrapped().shutdownNow() : Collections
-                .<Runnable> emptyList();
+        return isShutdownAllowed() && (getWrapped() != null) ? getWrapped()
+                .shutdownNow() : Collections.<Runnable> emptyList();
     }
 
     @Override
     public synchronized void start() throws Exception {
-        if (getWrapped().isShutdown()) {
-            setWrapped(wrap(createExecutorService()));
+        if ((getWrapped() == null) || getWrapped().isShutdown()) {
+            setWrapped(wrap(createExecutorService(getCorePoolSize())));
         }
 
         super.start();
+    }
+
+    /**
+     * Starts the task service if needed.
+     */
+    private void startIfNeeded() {
+        if (!isStarted()) {
+            try {
+                start();
+            } catch (Exception e) {
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to start the task service", e);
+            }
+        }
     }
 
     @Override
     public synchronized void stop() throws Exception {
         super.stop();
 
-        if (!getWrapped().isShutdown()) {
+        if ((getWrapped() != null) && !getWrapped().isShutdown()) {
             getWrapped().shutdown();
         }
     }
@@ -421,6 +641,7 @@ public class TaskService extends Service implements ExecutorService {
      *         get() method will return the given result upon completion.
      */
     public <T> Future<T> submit(Callable<T> task) {
+        startIfNeeded();
         return getWrapped().submit(task);
     }
 
@@ -432,6 +653,7 @@ public class TaskService extends Service implements ExecutorService {
      *         get() method will return the given result upon completion.
      */
     public Future<?> submit(Runnable task) {
+        startIfNeeded();
         return getWrapped().submit(task);
     }
 
@@ -445,6 +667,7 @@ public class TaskService extends Service implements ExecutorService {
      *         get() method will return the given result upon completion.
      */
     public <T> Future<T> submit(Runnable task, T result) {
+        startIfNeeded();
         return getWrapped().submit(task, result);
     }
 

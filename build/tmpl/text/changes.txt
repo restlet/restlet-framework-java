@@ -10,6 +10,9 @@ Changes log
         logging. Suggested by John Logdson.
       - Added setters with String parameters in addition to Text ones to
         the Feed and Entry classes.
+      - The org.restlet.service.TaskService is now a ScheduledExecutorService
+        capable of running delayed commands at fixed intervals for example.
+        Suggested by Kristoffer Gronowski.
     - Enhancements
       - Simplified the default console logging by replacing Java's default
         verbose log formatter by a single line formatter. This formatter
