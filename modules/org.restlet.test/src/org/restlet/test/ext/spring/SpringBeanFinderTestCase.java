@@ -30,8 +30,6 @@
 
 package org.restlet.test.ext.spring;
 
-import java.util.Arrays;
-
 import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ServerResource;
@@ -41,6 +39,8 @@ import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.StaticApplicationContext;
+
+import java.util.Arrays;
 
 /**
  * @author Rhett Sutphin
@@ -125,6 +125,32 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
         } catch (IllegalStateException iae) {
             assertEquals(
                     "Either a beanFactory or an applicationContext is required for SpringBeanFinder.",
+                    iae.getMessage());
+        }
+    }
+
+    public void testBeanResolutionFailsWhenNoMatchingBeanButThereIsABeanFactory()
+            throws Exception {
+        try {
+            this.finder.setBeanFactory(beanFactory);
+            this.finder.create();
+            fail("Exception not thrown");
+        } catch (IllegalStateException iae) {
+            assertEquals(
+                    "No bean named " + BEAN_NAME + " present.",
+                    iae.getMessage());
+        }
+    }
+
+    public void testBeanResolutionFailsWhenNoMatchingBeanButThereIsAnApplicationContext()
+            throws Exception {
+        try {
+            this.finder.setApplicationContext(applicationContext);
+            this.finder.create();
+            fail("Exception not thrown");
+        } catch (IllegalStateException iae) {
+            assertEquals(
+                    "No bean named " + BEAN_NAME + " present.",
                     iae.getMessage());
         }
     }
