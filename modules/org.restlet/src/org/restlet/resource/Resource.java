@@ -258,7 +258,7 @@ public class Resource extends Handler {
         try {
             result = represent(variant);
         } catch (ResourceException re) {
-            getResponse().setStatus(re.getStatus(), re);
+            getResponse().setStatus(re.getStatus());
         }
 
         return result;
@@ -340,7 +340,7 @@ public class Resource extends Handler {
             try {
                 removeRepresentations();
             } catch (ResourceException re) {
-                getResponse().setStatus(re.getStatus(), re);
+                getResponse().setStatus(re.getStatus());
             }
         }
     }
@@ -497,7 +497,7 @@ public class Resource extends Handler {
         try {
             acceptRepresentation(getRequest().getEntity());
         } catch (ResourceException re) {
-            getResponse().setStatus(re.getStatus(), re);
+            getResponse().setStatus(re.getStatus());
         }
     }
 
@@ -567,7 +567,7 @@ public class Resource extends Handler {
             try {
                 storeRepresentation(getRequest().getEntity());
             } catch (ResourceException re) {
-                getResponse().setStatus(re.getStatus(), re);
+                getResponse().setStatus(re.getStatus());
             }
 
             // HTTP specification says that PUT may return
