@@ -43,7 +43,8 @@ Changes log
       - Fixed auto-detection of XStream annotations. 
         Contributed by Bruno Grieder.
     - Misc
-      -
+      - Moved UniformResource#doCatch() logic down to ServerResource as it
+        was specific to server-side and kept a simpler log trace.
 
 - 2.1 Milestone 1 (11/07/2010)
     - API changes

@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.Request;
@@ -95,7 +96,6 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public abstract class ServerResource extends UniformResource {
-
     /** Indicates if annotations are supported. */
     private volatile boolean annotated;
 
@@ -228,6 +228,50 @@ public abstract class ServerResource extends UniformResource {
         //
         // result = refs.getTextRepresentation();
         return result;
+    }
+
+    /**
+     * Invoked when an error or an exception is caught during initialization,
+     * handling or releasing. By default, updates the responses's status with
+     * the result of
+     * {@link org.restlet.service.StatusService#getStatus(Throwable, UniformResource)}
+     * .
+     * 
+     * @param throwable
+     *            The caught error or exception.
+     */
+    protected void doCatch(Throwable throwable) {
+        Level level = Level.INFO;
+        Status status = null;
+
+        if (throwable instanceof ResourceException) {
+            ResourceException re = (ResourceException) throwable;
+
+            if (re.getCause() != null) {
+                // What is most interesting is the embedded cause
+                throwable = re.getCause();
+                status = getStatusService().getStatus(throwable, this);
+            } else {
+                status = re.getStatus();
+            }
+        } else {
+            status = getStatusService().getStatus(throwable, this);
+        }
+
+        if (status.isServerError()) {
+            level = Level.WARNING;
+        } else if (status.isConnectorError()) {
+            level = Level.INFO;
+        } else if (status.isClientError()) {
+            level = Level.FINE;
+        }
+
+        getLogger().log(level, "Exception or error caught in server resource",
+                throwable);
+
+        if (getResponse() != null) {
+            getResponse().setStatus(status);
+        }
     }
 
     /**
@@ -542,8 +586,9 @@ public abstract class ServerResource extends UniformResource {
                         result = options(variant);
                     }
                 } else if (variant instanceof VariantInfo) {
-                    result = doHandle(((VariantInfo) variant)
-                            .getAnnotationInfo(), variant);
+                    result = doHandle(
+                            ((VariantInfo) variant).getAnnotationInfo(),
+                            variant);
                 } else {
                     setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
                 }
@@ -860,8 +905,7 @@ public abstract class ServerResource extends UniformResource {
                         && (getResponseEntity() == null || !getResponseEntity()
                                 .isAvailable())) {
                     getLogger()
-                            .fine(
-                                    "A response with a 200 (Ok) status should have an entity. Changing the status to 204 (No content).");
+                            .fine("A response with a 200 (Ok) status should have an entity. Changing the status to 204 (No content).");
                     setStatus(Status.SUCCESS_NO_CONTENT);
                 }
             } catch (Throwable t) {
