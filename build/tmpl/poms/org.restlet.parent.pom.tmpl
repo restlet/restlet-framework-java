@@ -1,8 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
 
+	<properties>
+<#list project.libraries?values?sort_by("id") as library>
+   <#list library.packages?sort as package>
+      <#if package.mavenVersion??>
+		<lib-${package.id}-version>${package.mavenVersion}</lib-${package.id}-version>
+      <#else>
+   	     <#if library.versionSuffix??>
+		<lib-${package.id}-version>${library.minorVersion}.${library.versionSuffix}</lib-${package.id}-version>
+         <#else>
+		<lib-${package.id}-version>${library.minorVersion}</lib-${package.id}-version>
+         </#if>
+      </#if>
+   </#list>
+</#list>
+	</properties>
+
+	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.restlet.dev</groupId>
 	<artifactId>${ant["parent-maven-artifactId"]}</artifactId>
 	<version>${ant["parent-maven-version"]}</version>
@@ -50,22 +66,6 @@
 			<url>https://source.db4o.com/maven/</url>
 		</repository>
 	</repositories>
-
-	<properties>
-<#list project.libraries?values?sort_by("id") as library>
-   <#list library.packages?sort as package>
-      <#if package.mavenVersion??>
-		<lib-${package.id}-version>${package.mavenVersion}</lib-${package.id}-version>
-      <#else>
-   	     <#if library.versionSuffix??>
-		<lib-${package.id}-version>${library.minorVersion}.${library.versionSuffix}</lib-${package.id}-version>
-         <#else>
-		<lib-${package.id}-version>${library.minorVersion}</lib-${package.id}-version>
-         </#if>
-      </#if>
-   </#list>
-</#list>
-	</properties>
 
 	<modules>
 <#list project.modules?values?sort_by("id") as module>
