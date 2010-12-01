@@ -61,7 +61,7 @@ public class IoUtils {
 
         // [ifndef gwt]
         try {
-            result = Integer.parseInt(System.getProperty("name"));
+            result = Integer.parseInt(System.getProperty(name));
         } catch (NumberFormatException nfe) {
             result = defaultValue;
         }
