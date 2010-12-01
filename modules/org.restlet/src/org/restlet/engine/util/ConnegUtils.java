@@ -62,10 +62,14 @@ public class ConnegUtils {
 
         if (supported != null) {
             for (Preference<T> pref : preferences) {
-                if (supported.contains(pref.getMetadata())
-                        && (pref.getQuality() > maxQuality)) {
-                    result = pref.getMetadata();
-                    maxQuality = pref.getQuality();
+                if (pref.getQuality() > maxQuality) {
+                    for (T m : supported) {
+                        if (pref.getMetadata().includes(m)) {
+                            result = pref.getMetadata();
+                            maxQuality = pref.getQuality();
+                            break;
+                        }
+                    }
                 }
             }
         }
