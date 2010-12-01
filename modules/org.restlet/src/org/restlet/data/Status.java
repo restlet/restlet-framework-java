@@ -1000,8 +1000,8 @@ public final class Status {
      * @param uri
      *            The URI of the specification describing the method.
      */
-    public Status(int code, Throwable throwable, final String name,
-            final String description, final String uri) {
+    public Status(int code, Throwable throwable, String name,
+            String description, String uri) {
         this.name = checkName(name);
         this.description = description;
         this.throwable = throwable;
@@ -1017,7 +1017,7 @@ public final class Status {
      * @param description
      *            The description to associate.
      */
-    public Status(final Status status, final String description) {
+    public Status(Status status, String description) {
         this(status.getCode(), status.getName(), description, status.getUri());
     }
 
@@ -1029,7 +1029,7 @@ public final class Status {
      * @param throwable
      *            The related error or exception.
      */
-    public Status(final Status status, final Throwable throwable) {
+    public Status(Status status, Throwable throwable) {
         this(status.getCode(), throwable, status.getName(),
                 (throwable == null) ? null : throwable.getMessage(), status
                         .getUri());
@@ -1045,8 +1045,7 @@ public final class Status {
      * @param description
      *            The description to associate.
      */
-    public Status(final Status status, final Throwable throwable,
-            final String description) {
+    public Status(Status status, Throwable throwable, String description) {
         this(status.getCode(), throwable, status.getName(), description, status
                 .getUri());
     }

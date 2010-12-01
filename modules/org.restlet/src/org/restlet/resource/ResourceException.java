@@ -50,7 +50,7 @@ public class ResourceException extends RuntimeException {
      * @param code
      *            The specification code of the encapsulated status.
      */
-    public ResourceException(final int code) {
+    public ResourceException(int code) {
         this(new Status(code));
     }
 
@@ -66,8 +66,8 @@ public class ResourceException extends RuntimeException {
      * @param uri
      *            The URI of the specification describing the method.
      */
-    public ResourceException(final int code, final String name,
-            final String description, final String uri) {
+    public ResourceException(int code, String name, String description,
+            String uri) {
         this(new Status(code, name, description, uri));
     }
 
@@ -85,8 +85,8 @@ public class ResourceException extends RuntimeException {
      * @param cause
      *            The wrapped cause error or exception.
      */
-    public ResourceException(final int code, final String name,
-            final String description, final String uri, final Throwable cause) {
+    public ResourceException(int code, String name, String description,
+            String uri, Throwable cause) {
         this(new Status(code, cause, name, description, uri), cause);
     }
 
@@ -98,7 +98,7 @@ public class ResourceException extends RuntimeException {
      * @param cause
      *            The wrapped cause error or exception.
      */
-    public ResourceException(final int code, final Throwable cause) {
+    public ResourceException(int code, Throwable cause) {
         this(new Status(code, cause), cause);
     }
 
@@ -108,7 +108,7 @@ public class ResourceException extends RuntimeException {
      * @param status
      *            The status to associate.
      */
-    public ResourceException(final Status status) {
+    public ResourceException(Status status) {
         this(status, (Throwable) null);
     }
 
@@ -120,7 +120,7 @@ public class ResourceException extends RuntimeException {
      * @param description
      *            The description of the encapsulated status.
      */
-    public ResourceException(final Status status, final String description) {
+    public ResourceException(Status status, String description) {
         this(new Status(status, description));
     }
 
@@ -134,8 +134,7 @@ public class ResourceException extends RuntimeException {
      * @param cause
      *            The wrapped cause error or exception.
      */
-    public ResourceException(final Status status, final String description,
-            final Throwable cause) {
+    public ResourceException(Status status, String description, Throwable cause) {
         this(new Status(status, cause, description), cause);
     }
 
@@ -147,7 +146,7 @@ public class ResourceException extends RuntimeException {
      * @param cause
      *            The wrapped cause error or exception.
      */
-    public ResourceException(final Status status, final Throwable cause) {
+    public ResourceException(Status status, Throwable cause) {
         super((status == null) ? null : status.getName(), cause);
         this.status = status;
     }
@@ -160,7 +159,7 @@ public class ResourceException extends RuntimeException {
      * @param cause
      *            The wrapped cause error or exception.
      */
-    public ResourceException(final Throwable cause) {
+    public ResourceException(Throwable cause) {
         this(new Status(Status.SERVER_ERROR_INTERNAL, cause), cause);
     }
 
