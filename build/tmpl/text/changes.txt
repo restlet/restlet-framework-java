@@ -32,7 +32,9 @@ Changes log
        - Fixed double-instantiation of prototype resources in
          SpringBeanRouter.  Reported by George Calm; contributed by
          Rhett Sutphin.
-
+       - Relaxed ConnegUtils#getPreferredMetadata algorithm.
+         Reported by Rickard Öberg.
+         
 - 2.0.3 (2010-11-07)
     - Bugs fixed
        - Fixed Representation#availableSize computation issue when
