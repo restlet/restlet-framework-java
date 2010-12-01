@@ -4,7 +4,6 @@ import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
-import org.restlet.example.book.restlet.ch01.HelloServerResource;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MapVerifier;
 
