@@ -33,7 +33,7 @@
 				</#if>
 			<artifactId><#if dependency.library.distributions?contains("maven")>org.restlet.lib.</#if><#if package.mavenArtifactId??>${package.mavenArtifactId}<#else>${package.name}</#if></artifactId>
 				<#if dependency.library.distributions?contains("maven")>
-			<version><#noparse>${lib-</#noparse>${dependency.library.id}-version}</version>
+			<version>${dependency.library.minorVersion}<#if dependency.library.versionSuffix??>.${dependency.library.versionSuffix}</#if></version>
 				<#else>
 					<#if package.mavenVersion??>
 			<version>${package.mavenVersion}</version>
