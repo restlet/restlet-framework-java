@@ -35,7 +35,7 @@ Changes log
        - Fixed status description lost when throwing ResourceException
          inside the deprecated Resource class.
          Reported by Rhett Sutphin.         
-       - Relaxed ConnegUtils#getPreferredMetadata algorithm.
+       - Fixed ConnegUtils#getPreferredMetadata algorithm.
          Reported by Rickard Öberg.
          
 - 2.0.3 (2010-11-07)
