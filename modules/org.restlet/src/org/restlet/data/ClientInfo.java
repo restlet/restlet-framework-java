@@ -55,7 +55,7 @@ import org.restlet.representation.Variant;
  * Each HTTP client (mainly browsers and web crawlers) defines its own
  * "user-agent" header which can be seen as the "signature" of the client.
  * Unfortunately, there is no rule to identify clearly a kind a client and its
- * version (let's say firefox 2.x, Internet Explorer IE 7.0, Opera, etc)
+ * version (let's say Firefox 2.x, Internet Explorer IE 7.0, Opera, etc)
  * according to its signature. Each signature follow its own rules which may
  * vary according to the version of the client.<br>
  * <br>

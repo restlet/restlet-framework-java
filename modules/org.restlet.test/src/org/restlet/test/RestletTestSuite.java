@@ -39,7 +39,7 @@ import org.restlet.test.connector.FileClientTestCase;
 import org.restlet.test.connector.RestartTestCase;
 import org.restlet.test.connector.RiapTestCase;
 import org.restlet.test.data.AuthenticationInfoTestCase;
-import org.restlet.test.data.ConnegTestCase;
+import org.restlet.test.data.ClientInfoTestCase;
 import org.restlet.test.data.CookieTestCase;
 import org.restlet.test.data.FileReferenceTestCase;
 import org.restlet.test.data.FormTestCase;
@@ -106,7 +106,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(CallTestCase.class);
         addTestSuite(ComponentXmlConfigTestCase.class);
         addTestSuite(CookieTestCase.class);
-        addTestSuite(ConnegTestCase.class);
+        addTestSuite(ClientInfoTestCase.class);
         addTestSuite(FileClientTestCase.class);
         addTestSuite(FileReferenceTestCase.class);
         addTestSuite(FilterTestCase.class);

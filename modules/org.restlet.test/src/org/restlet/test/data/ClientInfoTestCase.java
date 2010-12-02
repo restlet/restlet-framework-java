@@ -46,7 +46,7 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author Jerome Louvel
  */
-public class ConnegTestCase extends RestletTestCase {
+public class ClientInfoTestCase extends RestletTestCase {
 
     MetadataService ms;
 
@@ -102,8 +102,7 @@ public class ConnegTestCase extends RestletTestCase {
 
         // Testing quality priority over parent metadata
         variants.clear();
-        variants
-                .add(new Variant(MediaType.APPLICATION_XML, Language.ENGLISH_US));
+        variants.add(new Variant(MediaType.APPLICATION_XML, Language.ENGLISH_US));
         variants.add(new Variant(MediaType.TEXT_XML, Language.FRENCH_FRANCE));
         pv = ci.getPreferredVariant(variants, ms);
 
@@ -112,8 +111,7 @@ public class ConnegTestCase extends RestletTestCase {
 
         // Leveraging parent media types
         variants.clear();
-        variants
-                .add(new Variant(MediaType.APPLICATION_XML, Language.ENGLISH_US));
+        variants.add(new Variant(MediaType.APPLICATION_XML, Language.ENGLISH_US));
         variants.add(new Variant(MediaType.APPLICATION_XML,
                 Language.FRENCH_FRANCE));
         pv = ci.getPreferredVariant(variants, ms);
@@ -121,5 +119,21 @@ public class ConnegTestCase extends RestletTestCase {
         assertEquals(MediaType.APPLICATION_XML, pv.getMediaType());
         assertEquals(Language.ENGLISH_US, pv.getLanguages().get(0));
 
+    }
+
+    /**
+     * Conneg tests for IE which accepts all media types.
+     */
+    public void testConnegIO() throws Exception {
+        ClientInfo ci = new ClientInfo();
+        ci.getAcceptedMediaTypes().add(
+                new Preference<MediaType>(MediaType.ALL, 1.0F));
+
+        List<MediaType> types = new ArrayList<MediaType>();
+        types.add(MediaType.TEXT_XML);
+        types.add(MediaType.APPLICATION_JSON);
+        MediaType pmt = ci.getPreferredMediaType(types);
+
+        assertEquals(MediaType.TEXT_XML, pmt);
     }
 }
