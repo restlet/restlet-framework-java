@@ -117,7 +117,7 @@ public class JsonRepresentation extends WriterRepresentation {
      *            The map to convert to JSON.
      * @see org.json.JSONObject#JSONObject(Map)
      */
-    public JsonRepresentation(Map<Object, Object> map) {
+    public JsonRepresentation(Map<String, Object> map) {
         this(new JSONObject(map));
     }
 

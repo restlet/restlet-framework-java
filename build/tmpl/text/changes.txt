@@ -13,6 +13,9 @@ Changes log
       - The org.restlet.service.TaskService is now a ScheduledExecutorService
         capable of running delayed commands at fixed intervals for example.
         Suggested by Kristoffer Gronowski.
+      - JsonRepresentation(Map<Object,Object>) signature changed to the more
+        precise JsonRepresentation(Map<String, Object) one.
+        Suggested by Tim Peierls.
     - Enhancements
       - Simplified the default console logging by replacing Java's default
         verbose log formatter by a single line formatter. This formatter
