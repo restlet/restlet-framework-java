@@ -40,7 +40,7 @@ import org.restlet.Context;
  * 
  * <pre>
  * {@code
- * public synchroized Restlet createInboundRoot(){
+ * public synchronized Restlet createInboundRoot(){
  *   ClientStore clientStore = ClientStoreFactory.getInstance();
  *   clientStore.createClient("1234567890","1234567890", "http://localhost:8080");
  *  

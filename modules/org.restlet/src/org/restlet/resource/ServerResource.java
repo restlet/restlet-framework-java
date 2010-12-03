@@ -837,6 +837,7 @@ public abstract class ServerResource extends UniformResource {
             // Add annotation-based variants in priority
             if (isAnnotated() && hasAnnotations()) {
                 List<Variant> annoVariants = null;
+                method = (Method.HEAD.equals(method)) ? Method.GET : method;
 
                 for (AnnotationInfo annotationInfo : getAnnotations()) {
                     if (annotationInfo.isCompatible(method, getRequestEntity(),
