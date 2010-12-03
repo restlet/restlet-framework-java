@@ -36,7 +36,9 @@ Changes log
          inside the deprecated Resource class.
          Reported by Rhett Sutphin.         
        - Fixed ConnegUtils#getPreferredMetadata algorithm.
-         Reported by Rickard Öberg.
+         Reported by Rickard Oberg.
+       - Fixed lack of "Vary" HTTP header with HEAD calls on the
+         ServerResource class.
          
 - 2.0.3 (2010-11-07)
     - Bugs fixed
