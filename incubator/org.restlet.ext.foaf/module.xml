@@ -1,5 +1,5 @@
 <module id="foaf" excludes="*" type="standards"
-   package="org.restlet.ext.sesame">
+   package="org.restlet.ext.foaf">
    <label>Restlet Extension - FOAF</label>
    <description>
       Support of the FOAF (Friend-Of-A-Friend) standard.
@@ -7,5 +7,6 @@
 
    <dependencies>
       <dependency type="module" id="core" />
+      <dependency type="module" id="rdf" />
    </dependencies>
 </module>

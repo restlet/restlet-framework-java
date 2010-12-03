@@ -52,8 +52,15 @@
 	</properties>
 
 	<modules>
+		<module>org.restlet.ext.atl</module>
+		<module>org.restlet.ext.emf</module>
+		<module>org.restlet.ext.foaf</module>
+		<module>org.restlet.ext.guice</module>
+		<module>org.restlet.ext.jmx</module>
+		<module>org.restlet.ext.qvt</module>
+		<module>org.restlet.ext.oauth</module>
+		<module>org.restlet.ext.openid</module>
 		<module>org.restlet.ext.webdav</module>
-		<module>org.restlet.ext.sip</module>
 	</modules>
 
 	<licenses>
