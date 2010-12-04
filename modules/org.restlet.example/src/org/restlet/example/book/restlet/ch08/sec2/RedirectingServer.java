@@ -7,11 +7,11 @@ import org.restlet.example.book.restlet.ch01.HelloServerResource;
 public class RedirectingServer {
 
     public static void main(String[] args) throws Exception {
-        // Launching the HelloServerResource on port 8082
-        new Server(Protocol.HTTP, 8082, HelloServerResource.class).start();
+        // Launching the HelloServerResource on port 8111
+        new Server(Protocol.HTTP, 8111, HelloServerResource.class).start();
 
-        // Launching the RedirectionResource on port 8183
-        new Server(Protocol.HTTP, 8183, OldServerResource.class).start();
+        // Launching the RedirectionResource on port 8113
+        new Server(Protocol.HTTP, 8113, OldServerResource.class).start();
     }
 
 }

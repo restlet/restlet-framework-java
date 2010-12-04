@@ -10,12 +10,12 @@ public class OldServerResource extends ServerResource {
 
     @Get
     public String redirect() {
-        // Redirects the client to another location.
-        redirectPermanent("http://localhost:8082/");
+        // Sets the response status to 301 (Moved Permanently)
+        redirectPermanent("http://localhost:8111/");
 
         System.out.println("Redirecting client to new location...");
 
-        // Add an optional message for the client.
+        // Add explanation message entity 
         return "Resource moved... \n";
     }
 }

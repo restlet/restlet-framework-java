@@ -5,8 +5,7 @@ import org.restlet.resource.ClientResource;
 public class RedirectedClient {
 
     public static void main(String[] args) throws Exception {
-        ClientResource resource = new ClientResource(
-                "http://localhost:8183/");
+        ClientResource resource = new ClientResource("http://localhost:8113/");
         resource.get().write(System.out);
     }
 
