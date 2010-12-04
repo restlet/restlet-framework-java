@@ -44,6 +44,7 @@ import org.restlet.security.Role;
 import org.restlet.service.ConnectorService;
 import org.restlet.service.ConverterService;
 import org.restlet.service.DecoderService;
+import org.restlet.service.EncoderService;
 import org.restlet.service.MetadataService;
 import org.restlet.service.RangeService;
 import org.restlet.service.StatusService;
@@ -63,7 +64,9 @@ import org.restlet.util.ServiceList;
  * <li>"connectorService" to declare necessary client and server connectors.</li>
  * <li>"converterService" to convert between regular objects and
  * representations.</li>
- * <li>"decoderService" to automatically decode or uncompress request entities.</li>
+ * <li>"decoderService" to automatically decode or uncompress received entities.
+ * </li>
+ * <li>"encoderService" to automatically encode or compress sent entities.</li>
  * <li>"metadataService" to provide access to metadata and their associated
  * extension names.</li>
  * <li>"rangeService" to automatically exposes ranges of response entities.</li>
@@ -158,6 +161,7 @@ public class Application extends Restlet {
         this.services.add(new TunnelService(true, true));
         this.services.add(new StatusService());
         this.services.add(new DecoderService());
+        this.services.add(new EncoderService(false));
         this.services.add(new RangeService());
         this.services.add(new ConnectorService());
         this.services.add(new ConverterService());
@@ -219,6 +223,15 @@ public class Application extends Restlet {
      */
     public DecoderService getDecoderService() {
         return getServices().get(DecoderService.class);
+    }
+
+    /**
+     * Returns the encoder service. The service is disabled by default.
+     * 
+     * @return The encoder service.
+     */
+    public EncoderService getEncoderService() {
+        return getServices().get(EncoderService.class);
     }
 
     /**
@@ -368,17 +381,6 @@ public class Application extends Restlet {
     }
 
     /**
-     * Sets the outbound root Resource class.
-     * 
-     * @param outboundRootClass
-     *            The client root {@link ServerResource} subclass.
-     */
-    public synchronized void setOutboundRoot(
-            Class<? extends ServerResource> outboundRootClass) {
-        setClientRoot(outboundRootClass);
-    }
-
-    /**
      * Sets the client root Resource class.
      * 
      * @param clientRootClass
@@ -429,6 +431,16 @@ public class Application extends Restlet {
     }
 
     /**
+     * Sets the encoder service.
+     * 
+     * @param encoderService
+     *            The encoder service.
+     */
+    public void setEncoderService(EncoderService encoderService) {
+        getServices().set(encoderService);
+    }
+
+    /**
      * Sets the finder class to instantiate. This property is leveraged by
      * {@link #setOutboundRoot(Class)} and {@link #setInboundRoot(Class)}
      * methods.
@@ -474,6 +486,17 @@ public class Application extends Restlet {
      */
     public void setMetadataService(MetadataService metadataService) {
         getServices().set(metadataService);
+    }
+
+    /**
+     * Sets the outbound root Resource class.
+     * 
+     * @param outboundRootClass
+     *            The client root {@link ServerResource} subclass.
+     */
+    public synchronized void setOutboundRoot(
+            Class<? extends ServerResource> outboundRootClass) {
+        setClientRoot(outboundRootClass);
     }
 
     /**

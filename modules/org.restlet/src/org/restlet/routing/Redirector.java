@@ -185,7 +185,9 @@ public class Redirector extends Restlet {
     }
 
     /**
-     * Returns the target reference to redirect to.
+     * Returns the target reference to redirect to by automatically resolving
+     * URI template variables found using the {@link Template} class using the
+     * request and response as data models.
      * 
      * @param request
      *            The request to handle.
@@ -337,7 +339,7 @@ public class Redirector extends Restlet {
 
     /**
      * Optionally rewrites the response entity returned in the
-     * {@link #MODE_SERVER_INBOUND} and {@value #MODE_SERVER_OUTBOUND} modes. By
+     * {@link #MODE_SERVER_INBOUND} and {@link #MODE_SERVER_OUTBOUND} modes. By
      * default, it just returns the initial entity without any modification.
      * 
      * @param initialEntity

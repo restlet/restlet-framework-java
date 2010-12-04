@@ -16,6 +16,8 @@ Changes log
       - JsonRepresentation(Map<Object,Object>) signature changed to the more
         precise JsonRepresentation(Map<String, Object) one.
         Suggested by Tim Peierls.
+      - Added an EncoderService to automatically compress sent entities
+        on both client and server side. Disabled by default on Application.
     - Enhancements
       - Simplified the default console logging by replacing Java's default
         verbose log formatter by a single line formatter. This formatter
@@ -38,6 +40,7 @@ Changes log
         via the "org.restlet.engine.io.timeoutMs" system property. 
       - Added server-side support for Amazon Web Services (S3) authentication.
         Contributed by Jean-Philippe Steinmetz.
+      - Added support for DecoderService on the client-side as well.
     - Bugs fixed
       - Fixed writing of big representations. Reported by Tom Andersson. 
       - Fixed IoUtils.BUFFER_SIZE constant to be properly configurable via

@@ -30,8 +30,6 @@
 
 package org.restlet.engine.application;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,10 +38,10 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
-import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
+import org.restlet.service.EncoderService;
 
 // [excludes gwt]
 /**
@@ -63,106 +61,34 @@ import org.restlet.routing.Filter;
  * @author Jerome Louvel
  */
 public class Encoder extends Filter {
-    /**
-     * Indicates if the encoding should always occur, regardless of the size.
-     */
-    public static final int ENCODE_ALL_SIZES = -1;
 
-    /**
-     * Returns the list of default encoded media types. This can be overridden
-     * by subclasses. By default, all media types are encoded (except those
-     * explicitly ignored).
-     * 
-     * @return The list of default encoded media types.
-     */
-    public static List<MediaType> getDefaultAcceptedMediaTypes() {
-        final List<MediaType> result = new ArrayList<MediaType>();
-        result.add(MediaType.ALL);
-        return result;
-    }
+    /** Indicates if the request entity should be encoded. */
+    private final boolean encodingRequest;
 
-    /**
-     * Returns the list of default ignored media types. This can be overridden
-     * by subclasses. By default, all archive, audio, image and video media
-     * types are ignored.
-     * 
-     * @return The list of default ignored media types.
-     */
-    public static List<MediaType> getDefaultIgnoredMediaTypes() {
-        final List<MediaType> result = Arrays.<MediaType> asList(
-                MediaType.APPLICATION_CAB, MediaType.APPLICATION_GNU_ZIP,
-                MediaType.APPLICATION_ZIP, MediaType.APPLICATION_GNU_TAR,
-                MediaType.APPLICATION_JAVA_ARCHIVE,
-                MediaType.APPLICATION_STUFFIT, MediaType.APPLICATION_TAR,
-                MediaType.AUDIO_ALL, MediaType.IMAGE_ALL, MediaType.VIDEO_ALL);
-        return result;
-    }
+    /** Indicates if the response entity should be encoded. */
+    private final boolean encodingResponse;
 
-    /**
-     * The media types that should be encoded.
-     */
-    private volatile List<MediaType> acceptedMediaTypes;
-
-    /**
-     * Indicates if the request entity should be encoded.
-     */
-    private volatile boolean encodingRequest;
-
-    /**
-     * Indicates if the response entity should be encoded.
-     */
-    private volatile boolean encodingResponse;
-
-    /**
-     * The media types that should be ignored.
-     */
-    private volatile List<MediaType> ignoredMediaTypes;
-
-    /**
-     * The minimal size necessary for encoding.
-     */
-    private volatile long mininumSize;
-
-    /**
-     * Constructor using the default media types and with
-     * {@link #ENCODE_ALL_SIZES} setting. This constructor will only encode
-     * response entities after call handling.
-     * 
-     * @param context
-     *            The context.
-     */
-    public Encoder(Context context) {
-        this(context, false, true, ENCODE_ALL_SIZES,
-                getDefaultAcceptedMediaTypes(), getDefaultIgnoredMediaTypes());
-    }
+    /** The parent encoder service. */
+    private final EncoderService encoderService;
 
     /**
      * Constructor.
      * 
      * @param context
      *            The context.
-     * @param encodingInput
+     * @param encodingRequest
      *            Indicates if the request entities should be encoded.
-     * @param encodingOutput
+     * @param encodingResponse
      *            Indicates if the response entities should be encoded.
-     * @param minimumSize
-     *            The minimal size of the representation where compression
-     *            should be used.
-     * @param acceptedMediaTypes
-     *            The media types that should be encoded.
-     * @param ignoredMediaTypes
-     *            The media types that should be ignored.
+     * @param encoderService
+     *            The parent encoder service.
      */
-    public Encoder(Context context, boolean encodingInput,
-            boolean encodingOutput, long minimumSize,
-            List<MediaType> acceptedMediaTypes,
-            List<MediaType> ignoredMediaTypes) {
+    public Encoder(Context context, boolean encodingRequest,
+            boolean encodingResponse, EncoderService encoderService) {
         super(context);
-        this.encodingRequest = encodingInput;
-        this.encodingResponse = encodingOutput;
-        this.mininumSize = minimumSize;
-        this.acceptedMediaTypes = acceptedMediaTypes;
-        this.ignoredMediaTypes = ignoredMediaTypes;
+        this.encodingRequest = encodingRequest;
+        this.encodingResponse = encodingResponse;
+        this.encoderService = encoderService;
     }
 
     /**
@@ -177,7 +103,8 @@ public class Encoder extends Filter {
     @Override
     public void afterHandle(Request request, Response response) {
         // Check if encoding of the response entity is needed
-        if (isEncodingResponse() && canEncode(response.getEntity())) {
+        if (isEncodingResponse()
+                && getEncoderService().canEncode(response.getEntity())) {
             response.setEntity(encode(request.getClientInfo(),
                     response.getEntity()));
         }
@@ -196,66 +123,13 @@ public class Encoder extends Filter {
     @Override
     public int beforeHandle(Request request, Response response) {
         // Check if encoding of the request entity is needed
-        if (isEncodingRequest() && canEncode(request.getEntity())) {
+        if (isEncodingRequest()
+                && getEncoderService().canEncode(request.getEntity())) {
             request.setEntity(encode(request.getClientInfo(),
                     request.getEntity()));
         }
 
         return CONTINUE;
-    }
-
-    /**
-     * Indicates if a representation can be encoded.
-     * 
-     * @param representation
-     *            The representation to test.
-     * @return True if the call can be encoded.
-     */
-    public boolean canEncode(Representation representation) {
-        // Test the existence of the representation and that no existing
-        // encoding applies
-        boolean result = false;
-        if (representation != null) {
-            boolean identity = true;
-            for (final Iterator<Encoding> iter = representation.getEncodings()
-                    .iterator(); identity && iter.hasNext();) {
-                identity = (iter.next().equals(Encoding.IDENTITY));
-            }
-            result = identity;
-        }
-
-        if (result) {
-            // Test the size of the representation
-            result = (getMinimumSize() == ENCODE_ALL_SIZES)
-                    || (representation.getSize() == Representation.UNKNOWN_SIZE)
-                    || (representation.getSize() >= getMinimumSize());
-        }
-
-        if (result) {
-            // Test the acceptance of the media type
-            final MediaType mediaType = representation.getMediaType();
-            boolean accepted = false;
-            for (final Iterator<MediaType> iter = getAcceptedMediaTypes()
-                    .iterator(); !accepted && iter.hasNext();) {
-                accepted = iter.next().includes(mediaType);
-            }
-
-            result = accepted;
-        }
-
-        if (result) {
-            // Test the rejection of the media type
-            final MediaType mediaType = representation.getMediaType();
-            boolean rejected = false;
-            for (final Iterator<MediaType> iter = getIgnoredMediaTypes()
-                    .iterator(); !rejected && iter.hasNext();) {
-                rejected = iter.next().includes(mediaType);
-            }
-
-            result = !rejected;
-        }
-
-        return result;
     }
 
     /**
@@ -278,15 +152,6 @@ public class Encoder extends Filter {
         }
 
         return result;
-    }
-
-    /**
-     * Returns the media types that should be encoded.
-     * 
-     * @return The media types that should be encoded.
-     */
-    public List<MediaType> getAcceptedMediaTypes() {
-        return this.acceptedMediaTypes;
     }
 
     /**
@@ -325,23 +190,12 @@ public class Encoder extends Filter {
     }
 
     /**
-     * Returns the media types that should be ignored.
+     * Returns the parent encoder service.
      * 
-     * @return The media types that should be ignored.
+     * @return The parent encoder service.
      */
-    public List<MediaType> getIgnoredMediaTypes() {
-        return this.ignoredMediaTypes;
-    }
-
-    /**
-     * Returns the minimum size a representation must have before compression is
-     * done.
-     * 
-     * @return The minimum size a representation must have before compression is
-     *         done.
-     */
-    public long getMinimumSize() {
-        return this.mininumSize;
+    public EncoderService getEncoderService() {
+        return encoderService;
     }
 
     /**
@@ -370,38 +224,6 @@ public class Encoder extends Filter {
      */
     public boolean isEncodingResponse() {
         return this.encodingResponse;
-    }
-
-    /**
-     * Indicates if the request entity should be encoded.
-     * 
-     * @param encodingRequest
-     *            True if the request entity should be encoded.
-     */
-    public void setEncodingRequest(boolean encodingRequest) {
-        this.encodingRequest = encodingRequest;
-    }
-
-    /**
-     * Indicates if the response entity should be encoded.
-     * 
-     * @param encodingResponse
-     *            True if the response entity should be encoded.
-     */
-    public void setEncodingResponse(boolean encodingResponse) {
-        this.encodingResponse = encodingResponse;
-    }
-
-    /**
-     * Sets the minimum size a representation must have before compression is
-     * done.
-     * 
-     * @param mininumSize
-     *            The minimum size a representation must have before compression
-     *            is done.
-     */
-    public void setMinimumSize(long mininumSize) {
-        this.mininumSize = mininumSize;
     }
 
 }

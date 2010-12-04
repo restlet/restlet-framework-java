@@ -41,7 +41,7 @@ import org.restlet.routing.Filter;
 
 // [excludes gwt]
 /**
- * Filter decompressing entities.
+ * Filter uncompressing entities.
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
@@ -50,15 +50,16 @@ import org.restlet.routing.Filter;
  * @author Jerome Louvel
  */
 public class Decoder extends Filter {
+
     /**
      * Indicates if the request entity should be decoded.
      */
-    private volatile boolean decodingRequest;
+    private final boolean decodingRequest;
 
     /**
      * Indicates if the response entity should be decoded.
      */
-    private volatile boolean decodingResponse;
+    private final boolean decodingResponse;
 
     /**
      * Constructor to only decode request entities before handling.
@@ -196,26 +197,6 @@ public class Decoder extends Filter {
      */
     public boolean isDecodingResponse() {
         return this.decodingResponse;
-    }
-
-    /**
-     * Indicates if the request entity should be decoded.
-     * 
-     * @param decodingRequest
-     *            True if the request entity should be decoded.
-     */
-    public void setDecodingRequest(boolean decodingRequest) {
-        this.decodingRequest = decodingRequest;
-    }
-
-    /**
-     * Indicates if the response entity should be decoded.
-     * 
-     * @param decodingResponse
-     *            True if the response entity should be decoded.
-     */
-    public void setDecodingResponse(boolean decodingResponse) {
-        this.decodingResponse = decodingResponse;
     }
 
 }

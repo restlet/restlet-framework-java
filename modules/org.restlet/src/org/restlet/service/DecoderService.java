@@ -35,7 +35,9 @@ import org.restlet.engine.application.Decoder;
 import org.restlet.routing.Filter;
 
 /**
- * Application service automatically decoding or uncompressing request entities.
+ * Application service automatically decoding or uncompressing received
+ * entities. This service works both for received requests entities on the
+ * server-side and received response entities on the client-side.
  * 
  * @author Jerome Louvel
  */
@@ -61,6 +63,11 @@ public class DecoderService extends Service {
     @Override
     public Filter createInboundFilter(Context context) {
         return new Decoder(context, true, false);
+    }
+
+    @Override
+    public Filter createOutboundFilter(Context context) {
+        return new Decoder(context, false, true);
     }
 
 }
