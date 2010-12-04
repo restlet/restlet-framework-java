@@ -49,7 +49,8 @@ import org.restlet.routing.Filter;
 /**
  * Filter compressing entities. The best encoding is automatically selected
  * based on the preferences of the client and on the encoding supported by NRE:
- * GZip, Zip and Deflate.<br>
+ * GZip, Zip and Deflate.
+ * <p>
  * If the {@link org.restlet.representation.Representation} has an unknown size,
  * it will always be a candidate for encoding. Candidate representations need to
  * respect media type criteria by the lists of accepted and ignored media types.
@@ -178,8 +179,8 @@ public class Encoder extends Filter {
     public void afterHandle(Request request, Response response) {
         // Check if encoding of the response entity is needed
         if (isEncodingResponse() && canEncode(response.getEntity())) {
-            response.setEntity(encode(request.getClientInfo(), response
-                    .getEntity()));
+            response.setEntity(encode(request.getClientInfo(),
+                    response.getEntity()));
         }
     }
 
@@ -197,8 +198,8 @@ public class Encoder extends Filter {
     public int beforeHandle(Request request, Response response) {
         // Check if encoding of the request entity is needed
         if (isEncodingRequest() && canEncode(request.getEntity())) {
-            request.setEntity(encode(request.getClientInfo(), request
-                    .getEntity()));
+            request.setEntity(encode(request.getClientInfo(),
+                    request.getEntity()));
         }
 
         return CONTINUE;

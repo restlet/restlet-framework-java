@@ -16,10 +16,9 @@ public class DynamicContentServerResource extends ServerResource {
 
     @Get
     public Representation represent() {
-        // Inline sub class of WriterRepresentation that writes its dynamic
-        // content.
-        Representation result = new WriterRepresentation(
-                MediaType.TEXT_PLAIN) {
+        // Inline sub class of WriterRepresentation that writes
+        // its dynamic content.
+        Representation result = new WriterRepresentation(MediaType.TEXT_PLAIN) {
 
             @Override
             public void write(Writer writer) throws IOException {
