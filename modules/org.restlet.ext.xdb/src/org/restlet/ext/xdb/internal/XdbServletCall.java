@@ -33,7 +33,6 @@ package org.restlet.ext.xdb.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
 import java.util.Arrays;
@@ -141,12 +140,6 @@ public class XdbServletCall extends ServerCall {
     }
 
     @Override
-    public ReadableByteChannel getRequestEntityChannel(long size) {
-        // Can't do anything
-        return null;
-    }
-
-    @Override
     public InputStream getRequestEntityStream(long size) {
         if (this.requestEntityStream == null) {
             try {
@@ -162,12 +155,6 @@ public class XdbServletCall extends ServerCall {
             }
         }
         return this.requestEntityStream;
-    }
-
-    @Override
-    public ReadableByteChannel getRequestHeadChannel() {
-        // Not available
-        return null;
     }
 
     @Override

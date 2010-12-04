@@ -33,7 +33,6 @@ package org.restlet.ext.servlet.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.security.Principal;
 import java.security.cert.Certificate;
@@ -168,24 +167,12 @@ public class ServletCall extends ServerCall {
     }
 
     @Override
-    public ReadableByteChannel getRequestEntityChannel(long size) {
-        // Can't do anything
-        return null;
-    }
-
-    @Override
     public InputStream getRequestEntityStream(long size) {
         try {
             return new UnclosableInputStream(getRequest().getInputStream());
         } catch (IOException e) {
             return null;
         }
-    }
-
-    @Override
-    public ReadableByteChannel getRequestHeadChannel() {
-        // Not available
-        return null;
     }
 
     /**

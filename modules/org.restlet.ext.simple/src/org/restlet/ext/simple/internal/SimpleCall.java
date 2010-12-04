@@ -33,7 +33,6 @@ package org.restlet.ext.simple.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
@@ -157,34 +156,12 @@ public class SimpleCall extends ServerCall {
     }
 
     @Override
-    public ReadableByteChannel getRequestEntityChannel(long size) {
-        // No performance benefit getting request channel
-        // try {
-        // return this.request.getByteChannel();
-        // } catch (Exception ex) {
-        // return null;
-        // }
-        return null;
-    }
-
-    @Override
     public InputStream getRequestEntityStream(long size) {
         try {
             return this.request.getInputStream();
         } catch (Exception ex) {
             return null;
         }
-    }
-
-    @Override
-    public ReadableByteChannel getRequestHeadChannel() {
-        // No performance benefit getting request channel
-        // try {
-        // return this.request.getByteChannel();
-        // } catch (Exception ex) {
-        // return null;
-        // }
-        return null;
     }
 
     /**

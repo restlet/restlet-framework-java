@@ -33,7 +33,6 @@ package org.restlet.ext.jetty.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
 import java.util.Arrays;
@@ -137,11 +136,6 @@ public class JettyCall extends ServerCall {
     }
 
     @Override
-    public ReadableByteChannel getRequestEntityChannel(long size) {
-        return null;
-    }
-
-    @Override
     public InputStream getRequestEntityStream(long size) {
         try {
             return getConnection().getRequest().getInputStream();
@@ -150,12 +144,6 @@ public class JettyCall extends ServerCall {
                     "Unable to get request entity stream", e);
             return null;
         }
-    }
-
-    @Override
-    public ReadableByteChannel getRequestHeadChannel() {
-        // Not available
-        return null;
     }
 
     /**

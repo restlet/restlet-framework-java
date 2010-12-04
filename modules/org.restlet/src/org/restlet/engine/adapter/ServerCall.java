@@ -33,7 +33,7 @@ package org.restlet.engine.adapter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.ReadableByteChannel;
+import java.io.PushbackInputStream;
 import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
 import java.util.List;
@@ -57,7 +57,6 @@ import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
-import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.service.ConnectorService;
 
@@ -154,7 +153,6 @@ public abstract class ServerCall extends Call {
     public Representation getRequestEntity() {
         Representation result = null;
         long contentLength = getContentLength();
-
         boolean chunkedEncoding = HeaderUtils
                 .isChunkedEncoding(getRequestHeaders());
         // In some cases there is an entity without a content-length header
@@ -162,18 +160,34 @@ public abstract class ServerCall extends Call {
                 .isConnectionClose(getRequestHeaders());
 
         // Create the representation
-        if ((contentLength != Representation.UNKNOWN_SIZE && contentLength != 0)
+        if (((contentLength != Representation.UNKNOWN_SIZE) && (contentLength != 0))
                 || chunkedEncoding || connectionClosed) {
             // Create the result representation
             InputStream requestStream = getRequestEntityStream(contentLength);
-            ReadableByteChannel requestChannel = getRequestEntityChannel(contentLength);
+
+            if (connectionClosed) {
+                // We need to detect if there is really an entity or not as only
+                // the end of connection can let us know at this point
+                PushbackInputStream pbi = new PushbackInputStream(requestStream);
+
+                try {
+                    int next = pbi.read();
+
+                    if (next != -1) {
+                        pbi.unread(next);
+                    } else {
+                        requestStream = null;
+                    }
+                } catch (IOException e) {
+                    getLogger().fine("Unable to read request entity");
+                }
+            }
 
             if (requestStream != null) {
                 result = new InputRepresentation(requestStream, null,
                         contentLength);
-            } else if (requestChannel != null) {
-                result = new ReadableRepresentation(requestChannel, null,
-                        contentLength);
+            } else {
+                result = new EmptyRepresentation();
             }
 
             result.setSize(contentLength);
@@ -210,16 +224,6 @@ public abstract class ServerCall extends Call {
     }
 
     /**
-     * Returns the request entity channel if it exists.
-     * 
-     * @param size
-     *            The expected entity size or -1 if unknown.
-     * 
-     * @return The request entity channel if it exists.
-     */
-    public abstract ReadableByteChannel getRequestEntityChannel(long size);
-
-    /**
      * Returns the request entity stream if it exists.
      * 
      * @param size
@@ -228,13 +232,6 @@ public abstract class ServerCall extends Call {
      * @return The request entity stream if it exists.
      */
     public abstract InputStream getRequestEntityStream(long size);
-
-    /**
-     * Returns the request head channel if it exists.
-     * 
-     * @return The request head channel if it exists.
-     */
-    public abstract ReadableByteChannel getRequestHeadChannel();
 
     /**
      * Returns the request head stream if it exists.

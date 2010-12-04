@@ -529,6 +529,7 @@ public abstract class ServerResource extends UniformResource {
         if (getAnnotation(method) != null) {
             // We know the method is supported, let's check the entity.
             AnnotationInfo annotationInfo = getAnnotation(method, entity);
+
             if (annotationInfo != null) {
                 result = doHandle(annotationInfo, null);
             } else {
