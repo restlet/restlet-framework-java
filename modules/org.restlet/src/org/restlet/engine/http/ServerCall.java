@@ -33,6 +33,7 @@ package org.restlet.engine.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PushbackInputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
@@ -168,12 +169,32 @@ public abstract class ServerCall extends Call {
             InputStream requestStream = getRequestEntityStream(contentLength);
             ReadableByteChannel requestChannel = getRequestEntityChannel(contentLength);
 
+            if ((requestStream != null) && connectionClosed) {
+                // We need to detect if there is really an entity or not as only
+                // the end of connection can let us know at this point
+                PushbackInputStream pbi = new PushbackInputStream(requestStream);
+
+                try {
+                    int next = pbi.read();
+
+                    if (next != -1) {
+                        pbi.unread(next);
+                    } else {
+                        requestStream = null;
+                    }
+                } catch (IOException e) {
+                    getLogger().fine("Unable to read request entity");
+                }
+            }
+
             if (requestStream != null) {
                 result = new InputRepresentation(requestStream, null,
                         contentLength);
             } else if (requestChannel != null) {
                 result = new ReadableRepresentation(requestChannel, null,
                         contentLength);
+            } else {
+                result = new EmptyRepresentation();
             }
 
             result.setSize(contentLength);

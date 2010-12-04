@@ -39,6 +39,9 @@ Changes log
          Reported by Rickard Oberg.
        - Fixed lack of "Vary" HTTP header with HEAD calls on the
          ServerResource class.
+       - Request with no entity are now detected at connector level when 
+         non persistent connections are used without setting the 
+         Content-Length header properly either. Reported by David Fogel.       
          
 - 2.0.3 (2010-11-07)
     - Bugs fixed
