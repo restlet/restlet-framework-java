@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec6.sub6;
+package org.restlet.example.book.restlet.ch08.sec3.sub6;
 
 import org.restlet.data.Tag;
 import org.restlet.representation.Representation;

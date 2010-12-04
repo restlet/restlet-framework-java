@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec6.sub5;
+package org.restlet.example.book.restlet.ch08.sec3.sub5;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;

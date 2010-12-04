@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec6.sub1;
+package org.restlet.example.book.restlet.ch08.sec3.sub1;
 
 import java.io.IOException;
 import java.io.Writer;

@@ -1,11 +1,12 @@
-package org.restlet.example.book.restlet.ch08.sec5.sec5;
+package org.restlet.example.book.restlet.ch08.sec3.sub1;
 
 import org.restlet.resource.ClientResource;
 
-public class TraceClient {
+public class DynamicContentClient {
     public static void main(String[] args) throws Exception {
         ClientResource resource = new ClientResource(
-                "http://localhost:8082/?key=value");
+                "http://localhost:8082/");
         resource.get().write(System.out);
     }
+
 }

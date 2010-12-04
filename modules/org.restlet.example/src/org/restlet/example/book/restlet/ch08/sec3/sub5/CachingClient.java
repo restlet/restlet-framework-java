@@ -1,18 +1,20 @@
-package org.restlet.example.book.restlet.ch08.sec6.sub6;
+package org.restlet.example.book.restlet.ch08.sec3.sub5;
 
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
-public class ConditionalClient {
+public class CachingClient {
     public static void main(String[] args) throws Exception {
         ClientResource resource = new ClientResource(
                 "http://localhost:8082/");
+        // Get a representation
         Representation rep = resource.get();
+        System.out.println(resource.getStatus());
 
-        System.out.println("Putting if tag has changed.");
-        resource.getConditions().getNoneMatch().add(rep.getTag());
-        resource.put(rep);
-
+        // Get a new Representation, if modified
+        resource.getConditions().setModifiedSince(
+                rep.getModificationDate());
+        rep = resource.get();
         System.out.println(resource.getStatus());
     }
 
