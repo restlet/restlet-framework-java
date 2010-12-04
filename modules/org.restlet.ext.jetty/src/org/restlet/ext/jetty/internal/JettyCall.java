@@ -33,7 +33,6 @@ package org.restlet.ext.jetty.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -192,16 +191,6 @@ public class JettyCall extends ServerCall {
     @Override
     public String getRequestUri() {
         return getConnection().getRequest().getUri().toString();
-    }
-
-    /**
-     * Returns the response channel if it exists.
-     * 
-     * @return The response channel if it exists.
-     */
-    @Override
-    public WritableByteChannel getResponseEntityChannel() {
-        return null;
     }
 
     /**

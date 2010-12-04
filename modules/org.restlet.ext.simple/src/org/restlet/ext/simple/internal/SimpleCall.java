@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.SocketChannel;
-import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.List;
@@ -205,20 +204,6 @@ public class SimpleCall extends ServerCall {
     @Override
     public String getRequestUri() {
         return this.request.getTarget();
-    }
-
-    /**
-     * Returns the response channel if it exists.
-     * 
-     * @return The response channel if it exists.
-     */
-    @Override
-    public WritableByteChannel getResponseEntityChannel() {
-        try {
-            return this.response.getByteChannel();
-        } catch (Exception ex) {
-            return null;
-        }
     }
 
     /**

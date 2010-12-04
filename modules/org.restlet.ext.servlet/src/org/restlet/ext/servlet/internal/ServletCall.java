@@ -33,7 +33,6 @@ package org.restlet.ext.servlet.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.WritableByteChannel;
 import java.security.Principal;
 import java.security.cert.Certificate;
 import java.util.Arrays;
@@ -233,17 +232,6 @@ public class ServletCall extends ServerCall {
      */
     public HttpServletResponse getResponse() {
         return this.response;
-    }
-
-    /**
-     * Returns the response channel if it exists, null otherwise.
-     * 
-     * @return The response channel if it exists, null otherwise.
-     */
-    @Override
-    public WritableByteChannel getResponseEntityChannel() {
-        // Can't do anything
-        return null;
     }
 
     /**

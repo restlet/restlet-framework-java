@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PushbackInputStream;
-import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
 import java.util.List;
 import java.util.logging.Level;
@@ -241,13 +240,6 @@ public abstract class ServerCall extends Call {
     public abstract InputStream getRequestHeadStream();
 
     /**
-     * Returns the response channel if it exists.
-     * 
-     * @return The response channel if it exists.
-     */
-    public abstract WritableByteChannel getResponseEntityChannel();
-
-    /**
      * Returns the response entity stream if it exists.
      * 
      * @return The response entity stream if it exists.
@@ -445,10 +437,8 @@ public abstract class ServerCall extends Call {
                 writeResponseHead(response);
 
                 if (responseEntity != null) {
-                    WritableByteChannel responseEntityChannel = getResponseEntityChannel();
                     OutputStream responseEntityStream = getResponseEntityStream();
-                    writeResponseBody(responseEntity, responseEntityChannel,
-                            responseEntityStream);
+                    writeResponseBody(responseEntity, responseEntityStream);
 
                     if (responseEntityStream != null) {
                         try {
@@ -496,19 +486,14 @@ public abstract class ServerCall extends Call {
      * 
      * @param entity
      *            The representation to write as entity of the body.
-     * @param responseEntityChannel
-     *            The response entity channel or null if a stream is used.
      * @param responseEntityStream
      *            The response entity stream or null if a channel is used.
      * @throws IOException
      */
     protected void writeResponseBody(Representation entity,
-            WritableByteChannel responseEntityChannel,
             OutputStream responseEntityStream) throws IOException {
         // Send the entity to the client
-        if (responseEntityChannel != null) {
-            entity.write(responseEntityChannel);
-        } else if (responseEntityStream != null) {
+        if (responseEntityStream != null) {
             entity.write(responseEntityStream);
             responseEntityStream.flush();
         }
