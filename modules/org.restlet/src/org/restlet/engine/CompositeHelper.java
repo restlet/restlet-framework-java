@@ -43,12 +43,13 @@ import org.restlet.routing.Filter;
  * 
  * @author Jerome Louvel
  */
-public abstract class ChainHelper<T extends Restlet> extends RestletHelper<T> {
-    /** The first Restlet. */
-    private volatile Restlet first;
+public class CompositeHelper<T extends Restlet> extends RestletHelper<T> {
 
-    /** The last Filter. */
-    private volatile Filter last;
+    /** The first inbound Restlet. */
+    private volatile Restlet firstInbound;
+
+    /** The last inbound Filter. */
+    private volatile Filter lastInbound;
 
     /**
      * Constructor.
@@ -56,24 +57,24 @@ public abstract class ChainHelper<T extends Restlet> extends RestletHelper<T> {
      * @param helped
      *            The helped Restlet.
      */
-    public ChainHelper(T helped) {
+    public CompositeHelper(T helped) {
         super(helped);
-        this.first = null;
+        this.firstInbound = null;
     }
 
     /**
-     * Adds a new filter to the chain.
+     * Adds a new inbound filter to the chain.
      * 
      * @param filter
-     *            The filter to add.
+     *            The inbound filter to add.
      */
-    protected synchronized void addFilter(Filter filter) {
-        if (getLast() != null) {
-            getLast().setNext(filter);
-            setLast(filter);
+    protected synchronized void addInboundFilter(Filter filter) {
+        if (getLastInbound() != null) {
+            getLastInbound().setNext(filter);
+            setLastInbound(filter);
         } else {
-            setFirst(filter);
-            setLast(filter);
+            setFirstInbound(filter);
+            setLastInbound(filter);
         }
     }
 
@@ -81,40 +82,39 @@ public abstract class ChainHelper<T extends Restlet> extends RestletHelper<T> {
      * Clears the chain. Sets the first and last filters to null.
      */
     public void clear() {
-        setFirst(null);
-        setNext(null);
+        setFirstInbound(null);
+        setInboundNext(null);
     }
 
     /**
-     * Returns the first Restlet.
+     * Returns the first inbound Restlet.
      * 
-     * @return the first Restlet.
+     * @return the first inbound Restlet.
      */
-    protected Restlet getFirst() {
-        return this.first;
+    protected Restlet getFirstInbound() {
+        return this.firstInbound;
     }
 
     /**
-     * Returns the last Filter.
+     * Returns the last inbound Filter.
      * 
-     * @return the last Filter.
+     * @return the last inbound Filter.
      */
-    protected Filter getLast() {
-        return this.last;
+    protected Filter getLastInbound() {
+        return this.lastInbound;
     }
 
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
-        if (getFirst() != null) {
-            getFirst().handle(request, response);
+        if (getFirstInbound() != null) {
+            getFirstInbound().handle(request, response);
         } else {
             response.setStatus(Status.SERVER_ERROR_INTERNAL);
             getHelped()
                     .getLogger()
-                    .log(
-                            Level.SEVERE,
+                    .log(Level.SEVERE,
                             "The "
                                     + getHelped().getClass().getName()
                                     + " class has no Restlet defined to process calls. Maybe it wasn't properly started.");
@@ -122,37 +122,49 @@ public abstract class ChainHelper<T extends Restlet> extends RestletHelper<T> {
     }
 
     /**
-     * Sets the first Restlet.
+     * Sets the first inbound Restlet.
      * 
      * @param first
-     *            The first Restlet.
+     *            The first inbound Restlet.
      */
-    protected void setFirst(Restlet first) {
-        this.first = first;
+    protected void setFirstInbound(Restlet first) {
+        this.firstInbound = first;
     }
 
     /**
-     * Sets the last Filter.
-     * 
-     * @param last
-     *            The last Filter.
-     */
-    protected void setLast(Filter last) {
-        this.last = last;
-    }
-
-    /**
-     * Sets the next Restlet after the chain.
+     * Sets the next Restlet after the inbound chain.
      * 
      * @param next
-     *            The Restlet to process after the chain.
+     *            The Restlet to process after the inbound chain.
      */
-    protected synchronized void setNext(Restlet next) {
-        if (getFirst() == null) {
-            setFirst(next);
+    protected synchronized void setInboundNext(Restlet next) {
+        if (getFirstInbound() == null) {
+            setFirstInbound(next);
         } else {
-            getLast().setNext(next);
+            getLastInbound().setNext(next);
         }
+    }
+
+    /**
+     * Sets the last inbound Filter.
+     * 
+     * @param last
+     *            The last inbound Filter.
+     */
+    protected void setLastInbound(Filter last) {
+        this.lastInbound = last;
+    }
+
+    @Override
+    public void start() throws Exception {
+    }
+
+    @Override
+    public void stop() throws Exception {
+    }
+
+    @Override
+    public void update() throws Exception {
     }
 
 }

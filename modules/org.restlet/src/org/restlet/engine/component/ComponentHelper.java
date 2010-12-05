@@ -38,7 +38,7 @@ import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.ChainHelper;
+import org.restlet.engine.CompositeHelper;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Route;
 import org.restlet.routing.VirtualHost;
@@ -49,7 +49,7 @@ import org.restlet.service.Service;
  * 
  * @author Jerome Louvel
  */
-public class ComponentHelper extends ChainHelper<Component> {
+public class ComponentHelper extends CompositeHelper<Component> {
     /** The internal client router. */
     private final ClientRouter clientRouter;
 
@@ -209,13 +209,13 @@ public class ComponentHelper extends ChainHelper<Component> {
                             .createChildContext());
 
                     if (inboundFilter != null) {
-                        addFilter(inboundFilter);
+                        addInboundFilter(inboundFilter);
                     }
                 }
             }
 
             // Re-attach the original filter's attached Restlet
-            setNext(getServerRouter());
+            setInboundNext(getServerRouter());
         }
     }
 
@@ -260,7 +260,7 @@ public class ComponentHelper extends ChainHelper<Component> {
         setServerRouter(new ServerRouter(getHelped()));
 
         // Replace the old server router
-        setNext(getServerRouter());
+        setInboundNext(getServerRouter());
 
         // Stop the old server router
         if (oldRouter != null) {

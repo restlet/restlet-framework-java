@@ -33,7 +33,7 @@ package org.restlet.engine.application;
 import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.engine.ChainHelper;
+import org.restlet.engine.CompositeHelper;
 import org.restlet.routing.Filter;
 import org.restlet.service.Service;
 
@@ -43,7 +43,7 @@ import org.restlet.service.Service;
  * 
  * @author Jerome Louvel
  */
-public class ApplicationHelper extends ChainHelper<Application> {
+public class ApplicationHelper extends CompositeHelper<Application> {
     /**
      * Constructor.
      * 
@@ -83,13 +83,13 @@ public class ApplicationHelper extends ChainHelper<Application> {
                 inboundFilter = service.createInboundFilter(getContext());
 
                 if (inboundFilter != null) {
-                    addFilter(inboundFilter);
+                    addInboundFilter(inboundFilter);
                 }
             }
         }
 
         // Attach the Application's server root Restlet
-        setNext(getHelped().getInboundRoot());
+        setInboundNext(getHelped().getInboundRoot());
     }
 
     @Override
