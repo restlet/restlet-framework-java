@@ -50,7 +50,10 @@ import org.restlet.routing.Filter;
 public class EncoderService extends Service {
 
     /** Indicates if the encoding should always occur, regardless of the size. */
-    public static final int ENCODE_ALL_SIZES = -1;
+    public static final int ANY_SIZE = -1;
+
+    /** Indicates if the default minimum size for encoding to occur. */
+    public static final int DEFAULT_SIZE = 1000;
 
     /**
      * Returns the list of default encoded media types. This can be overridden
@@ -105,14 +108,14 @@ public class EncoderService extends Service {
     }
 
     /**
-     * Constructor.
+     * Constructor. The default minimum size
      * 
      * @param enabled
      *            True if the service has been enabled.
      */
     public EncoderService(boolean enabled) {
         super(enabled);
-        this.mininumSize = ENCODE_ALL_SIZES;
+        this.mininumSize = DEFAULT_SIZE;
         this.acceptedMediaTypes = getDefaultAcceptedMediaTypes();
         this.ignoredMediaTypes = getDefaultIgnoredMediaTypes();
     }
@@ -136,12 +139,13 @@ public class EncoderService extends Service {
                     .iterator(); identity && iter.hasNext();) {
                 identity = (iter.next().equals(Encoding.IDENTITY));
             }
+
             result = identity;
         }
 
         if (result) {
             // Test the size of the representation
-            result = (getMinimumSize() == EncoderService.ENCODE_ALL_SIZES)
+            result = (getMinimumSize() == EncoderService.ANY_SIZE)
                     || (representation.getSize() == Representation.UNKNOWN_SIZE)
                     || (representation.getSize() >= getMinimumSize());
         }

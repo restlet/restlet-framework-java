@@ -101,10 +101,8 @@ public abstract class Restlet implements Uniform {
 
         // [ifndef gwt]
         if (Engine.getInstance() == null) {
-            Context
-                    .getCurrentLogger()
-                    .severe(
-                            "Unable to fully initialize the Restlet. No Restlet engine available.");
+            Context.getCurrentLogger()
+                    .severe("Unable to fully initialize the Restlet. No Restlet engine available.");
             throw new RuntimeException(
                     "Unable to fully initialize the Restlet. No Restlet engine available.");
         }

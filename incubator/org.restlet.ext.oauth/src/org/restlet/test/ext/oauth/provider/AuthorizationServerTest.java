@@ -32,7 +32,7 @@ import org.restlet.ext.oauth.provider.OAuthError;
 import org.restlet.ext.oauth.provider.OAuthForm;
 import org.restlet.ext.oauth.provider.OAuthUser;
 import org.restlet.ext.oauth.util.OAuthUtils;
-import org.restlet.ext.oauth.util.OAuthAuthenticationHelper;
+import org.restlet.ext.oauth.util.OAuthHelper;
 import org.restlet.ext.oauth.util.OAuthParameters;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -104,7 +104,7 @@ public class AuthorizationServerTest {
         for (AuthenticatorHelper helper : authenticators) {
             System.out.println("Found default auth helper : " + helper);
         }
-        authenticators.add(new OAuthAuthenticationHelper());
+        authenticators.add(new OAuthHelper());
 
         System.out.println(Engine.getInstance().getRegisteredClients().get(0));
     }

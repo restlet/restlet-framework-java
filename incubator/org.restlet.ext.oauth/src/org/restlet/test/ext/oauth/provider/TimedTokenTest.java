@@ -22,7 +22,7 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.ext.oauth.provider.OAuthUser;
 import org.restlet.ext.oauth.util.OAuthUtils;
-import org.restlet.ext.oauth.util.OAuthAuthenticationHelper;
+import org.restlet.ext.oauth.util.OAuthHelper;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -86,7 +86,7 @@ public class TimedTokenTest {
         for (AuthenticatorHelper helper : authenticators) {
             System.out.println("Found default auth helper : " + helper);
         }
-        authenticators.add(new OAuthAuthenticationHelper());
+        authenticators.add(new OAuthHelper());
 
         System.out.println(Engine.getInstance().getRegisteredClients().get(0));
     }

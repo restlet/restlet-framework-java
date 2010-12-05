@@ -57,9 +57,9 @@ import org.restlet.util.Series;
  * 
  * @author Kristoffer Gronowski
  */
-public class OAuthAuthenticationHelper extends AuthenticatorHelper {
+public class OAuthHelper extends AuthenticatorHelper {
 
-    public OAuthAuthenticationHelper() {
+    public OAuthHelper() {
         super(ChallengeScheme.HTTP_OAUTH, true, true);
     }
 
