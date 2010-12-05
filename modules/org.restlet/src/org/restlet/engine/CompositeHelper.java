@@ -51,6 +51,12 @@ public class CompositeHelper<T extends Restlet> extends RestletHelper<T> {
     /** The last inbound Filter. */
     private volatile Filter lastInbound;
 
+    /** The first outbound Restlet. */
+    private volatile Restlet firstOutbound;
+
+    /** The last outbound Filter. */
+    private volatile Filter lastOutbound;
+
     /**
      * Constructor.
      * 
@@ -60,6 +66,7 @@ public class CompositeHelper<T extends Restlet> extends RestletHelper<T> {
     public CompositeHelper(T helped) {
         super(helped);
         this.firstInbound = null;
+        this.firstOutbound = null;
     }
 
     /**
@@ -79,11 +86,29 @@ public class CompositeHelper<T extends Restlet> extends RestletHelper<T> {
     }
 
     /**
+     * Adds a new outbound filter to the chain.
+     * 
+     * @param filter
+     *            The outbound filter to add.
+     */
+    protected synchronized void addOutboundFilter(Filter filter) {
+        if (getLastOutbound() != null) {
+            getLastOutbound().setNext(filter);
+            setLastOutbound(filter);
+        } else {
+            setFirstOutbound(filter);
+            setLastOutbound(filter);
+        }
+    }
+
+    /**
      * Clears the chain. Sets the first and last filters to null.
      */
     public void clear() {
         setFirstInbound(null);
         setInboundNext(null);
+        setFirstOutbound(null);
+        setOutboundNext(null);
     }
 
     /**
@@ -96,12 +121,30 @@ public class CompositeHelper<T extends Restlet> extends RestletHelper<T> {
     }
 
     /**
+     * Returns the first outbound Restlet.
+     * 
+     * @return the first outbound Restlet.
+     */
+    protected Restlet getFirstOutbound() {
+        return this.firstOutbound;
+    }
+
+    /**
      * Returns the last inbound Filter.
      * 
      * @return the last inbound Filter.
      */
     protected Filter getLastInbound() {
         return this.lastInbound;
+    }
+
+    /**
+     * Returns the last outbound Filter.
+     * 
+     * @return the last outbound Filter.
+     */
+    protected Filter getLastOutbound() {
+        return this.lastOutbound;
     }
 
     @Override
@@ -132,6 +175,16 @@ public class CompositeHelper<T extends Restlet> extends RestletHelper<T> {
     }
 
     /**
+     * Sets the first outbound Restlet.
+     * 
+     * @param first
+     *            The first outbound Restlet.
+     */
+    protected void setFirstOutbound(Restlet first) {
+        this.firstOutbound = first;
+    }
+
+    /**
      * Sets the next Restlet after the inbound chain.
      * 
      * @param next
@@ -153,6 +206,30 @@ public class CompositeHelper<T extends Restlet> extends RestletHelper<T> {
      */
     protected void setLastInbound(Filter last) {
         this.lastInbound = last;
+    }
+
+    /**
+     * Sets the last outbound Filter.
+     * 
+     * @param last
+     *            The last outbound Filter.
+     */
+    protected void setLastOutbound(Filter last) {
+        this.lastOutbound = last;
+    }
+
+    /**
+     * Sets the next Restlet after the outbound chain.
+     * 
+     * @param next
+     *            The Restlet to process after the outbound chain.
+     */
+    protected synchronized void setOutboundNext(Restlet next) {
+        if (getFirstOutbound() == null) {
+            setFirstOutbound(next);
+        } else {
+            getLastOutbound().setNext(next);
+        }
     }
 
     @Override
