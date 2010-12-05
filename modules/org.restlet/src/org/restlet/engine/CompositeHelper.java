@@ -43,7 +43,8 @@ import org.restlet.routing.Filter;
  * 
  * @author Jerome Louvel
  */
-public class CompositeHelper<T extends Restlet> extends RestletHelper<T> {
+public abstract class CompositeHelper<T extends Restlet> extends
+        RestletHelper<T> {
 
     /** The first inbound Restlet. */
     private volatile Restlet firstInbound;
@@ -230,18 +231,6 @@ public class CompositeHelper<T extends Restlet> extends RestletHelper<T> {
         } else {
             getLastOutbound().setNext(next);
         }
-    }
-
-    @Override
-    public void start() throws Exception {
-    }
-
-    @Override
-    public void stop() throws Exception {
-    }
-
-    @Override
-    public void update() throws Exception {
     }
 
 }

@@ -90,15 +90,22 @@ public class ApplicationHelper extends CompositeHelper<Application> {
     /** Start hook. */
     @Override
     public synchronized void start() throws Exception {
-        // Attach the service inbound filters
-        Filter inboundFilter = null;
+        Filter filter = null;
 
         for (Service service : getHelped().getServices()) {
             if (service.isEnabled()) {
-                inboundFilter = service.createInboundFilter(getContext());
+                // Attach the service inbound filters
+                filter = service.createInboundFilter(getContext());
 
-                if (inboundFilter != null) {
-                    addInboundFilter(inboundFilter);
+                if (filter != null) {
+                    addInboundFilter(filter);
+                }
+
+                // Attach the service outbound filters
+                filter = service.createOutboundFilter(getContext());
+
+                if (filter != null) {
+                    addOutboundFilter(filter);
                 }
             }
         }
