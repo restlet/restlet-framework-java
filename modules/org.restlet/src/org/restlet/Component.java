@@ -38,7 +38,6 @@ import java.util.logging.Level;
 
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
-import org.restlet.engine.RestletHelper;
 import org.restlet.engine.component.ComponentHelper;
 import org.restlet.engine.component.ComponentXmlParser;
 import org.restlet.engine.component.InternalRouter;
@@ -151,7 +150,7 @@ public class Component extends Restlet {
     private volatile VirtualHost defaultHost;
 
     /** The helper provided by the implementation. */
-    private volatile RestletHelper<Component> helper;
+    private volatile ComponentHelper helper;
 
     /** The modifiable list of virtual hosts. */
     private final List<VirtualHost> hosts;
@@ -273,7 +272,7 @@ public class Component extends Restlet {
      * 
      * @return The helper provided by the implementation.
      */
-    private RestletHelper<Component> getHelper() {
+    private ComponentHelper getHelper() {
         return this.helper;
     }
 
@@ -407,6 +406,12 @@ public class Component extends Restlet {
                 }
             }
         }
+    }
+
+    @Override
+    public void setContext(Context context) {
+        super.setContext(context);
+        getServices().setContext(context);
     }
 
     /**

@@ -31,6 +31,7 @@
 package org.restlet.engine.application;
 
 import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.CompositeHelper;
@@ -70,6 +71,20 @@ public class ApplicationHelper extends CompositeHelper<Application> {
 
         // Actually handle call
         super.handle(request, response);
+    }
+
+    /**
+     * Sets the context.
+     * 
+     * @param context
+     *            The context.
+     */
+    public void setContext(Context context) {
+        if (getLastOutbound() == null) {
+            setFirstOutbound(context.getClientDispatcher());
+        } else {
+            getLastOutbound().setNext(context.getClientDispatcher());
+        }
     }
 
     /** Start hook. */

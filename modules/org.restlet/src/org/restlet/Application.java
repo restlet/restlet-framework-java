@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.engine.Engine;
-import org.restlet.engine.RestletHelper;
 import org.restlet.engine.application.ApplicationHelper;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.resource.Finder;
@@ -113,7 +112,7 @@ public class Application extends Restlet {
     private volatile Class<? extends Finder> finderClass;
 
     /** The helper provided by the implementation. */
-    private volatile RestletHelper<Application> helper;
+    private volatile ApplicationHelper helper;
 
     /** The modifiable list of roles. */
     private final List<Role> roles;
@@ -251,7 +250,7 @@ public class Application extends Restlet {
      * 
      * @return The helper provided by the implementation.
      */
-    private RestletHelper<Application> getHelper() {
+    private ApplicationHelper getHelper() {
         return this.helper;
     }
 
@@ -407,6 +406,7 @@ public class Application extends Restlet {
     @Override
     public void setContext(Context context) {
         super.setContext(context);
+        getHelper().setContext(context);
         getServices().setContext(context);
     }
 
