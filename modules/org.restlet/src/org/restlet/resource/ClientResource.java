@@ -469,6 +469,14 @@ public class ClientResource extends UniformResource {
         return handle(Method.DELETE, mediaType);
     }
 
+    /**
+     * By default, it throws a new resource exception.
+     */
+    @Override
+    protected void doError(Status errorStatus) {
+        throw new ResourceException(errorStatus);
+    }
+
     @Override
     protected void doRelease() throws ResourceException {
         if ((getNext() != null) && this.nextCreated) {
@@ -575,7 +583,7 @@ public class ClientResource extends UniformResource {
             result.setReference(new Reference(getReference().getTargetRef(),
                     relativeRef).getTargetRef());
         } else {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+            doError(Status.CLIENT_ERROR_BAD_REQUEST,
                     "The child URI is not relative.");
         }
 
@@ -703,7 +711,7 @@ public class ClientResource extends UniformResource {
             result = new ClientResource(this);
             result.setReference(getReference().getParentRef());
         } else {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+            doError(Status.CLIENT_ERROR_BAD_REQUEST,
                     "The resource URI is not hierarchical.");
         }
 
@@ -876,7 +884,7 @@ public class ClientResource extends UniformResource {
         Response response = handle(request);
 
         if (response.getStatus().isError()) {
-            throw new ResourceException(response.getStatus());
+            doError(response.getStatus());
         } else {
             result = (response == null) ? null : response.getEntity();
         }
@@ -1693,8 +1701,7 @@ public class ClientResource extends UniformResource {
                         // Handle the response
                         if (isSynchronous) {
                             if (response.getStatus().isError()) {
-                                throw new ResourceException(
-                                        response.getStatus());
+                                doError(response.getStatus());
                             }
 
                             if (!annotation.getJavaOutputType().equals(

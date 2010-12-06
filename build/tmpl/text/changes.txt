@@ -18,6 +18,12 @@ Changes log
         Suggested by Tim Peierls.
       - Added an EncoderService to automatically compress sent entities
         on both client and server side. Disabled by default on Application.
+      - Added UniformResource#requestCacheDirectives and 
+        responseCacheDirectives properties.
+      - Added UniformResource#doError(Status) and doError(Status, msg)
+        methods to allow interception and customization of the default
+        behavior (such as throwing a ResourceException on the client-side).
+        Suggested by Florian Bucklers.
     - Enhancements
       - Simplified the default console logging by replacing Java's default
         verbose log formatter by a single line formatter. This formatter

@@ -113,7 +113,7 @@ public final class Tag {
      * @param opaqueTag
      *            The tag value.
      */
-    public Tag(final String opaqueTag) {
+    public Tag(String opaqueTag) {
         this(opaqueTag, true);
     }
 
@@ -148,7 +148,7 @@ public final class Tag {
      * @param object
      *            The object to compare to.
      * @param checkWeakness
-     *            the equality test takes care or not of the weakness.
+     *            The equality test takes care or not of the weakness.
      * 
      * @return True if both tags are equal.
      */

@@ -170,7 +170,7 @@ public abstract class ServerResource extends UniformResource {
         if (annotationInfo != null) {
             result = doHandle(annotationInfo, null);
         } else {
-            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
 
         return result;
@@ -203,7 +203,7 @@ public abstract class ServerResource extends UniformResource {
             result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
                     variant);
         } else {
-            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
 
         return result;
@@ -300,7 +300,7 @@ public abstract class ServerResource extends UniformResource {
                     if ((getStatus() == null)
                             || (getStatus().isSuccess() && !Status.SUCCESS_NO_CONTENT
                                     .equals(getStatus()))) {
-                        setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                        doError(Status.CLIENT_ERROR_NOT_FOUND);
                     } else {
                         // Keep the current status as the developer might prefer
                         // a special status like 'method not authorized'.
@@ -310,7 +310,11 @@ public abstract class ServerResource extends UniformResource {
                             resultInfo);
 
                     if (status != null) {
-                        setStatus(status);
+                        if (status.isError()) {
+                            doError(status);
+                        } else {
+                            setStatus(status);
+                        }
                     }
                 }
             } else {
@@ -318,7 +322,11 @@ public abstract class ServerResource extends UniformResource {
                         resultInfo);
 
                 if (status != null) {
-                    setStatus(status);
+                    if (status.isError()) {
+                        doError(status);
+                    } else {
+                        setStatus(status);
+                    }
                 }
             }
 
@@ -346,6 +354,14 @@ public abstract class ServerResource extends UniformResource {
         }
 
         return result;
+    }
+
+    /**
+     * By default, it sets the status on the response.
+     */
+    @Override
+    protected void doError(Status errorStatus) {
+        setStatus(errorStatus);
     }
 
     /**
@@ -431,7 +447,7 @@ public abstract class ServerResource extends UniformResource {
                     result = doHandle(method, getRequestEntity());
                 }
             } else {
-                setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                doError(Status.CLIENT_ERROR_NOT_FOUND);
             }
         }
 
@@ -526,6 +542,7 @@ public abstract class ServerResource extends UniformResource {
      */
     private Representation doHandle(Method method, Representation entity) {
         Representation result = null;
+
         if (getAnnotation(method) != null) {
             // We know the method is supported, let's check the entity.
             AnnotationInfo annotationInfo = getAnnotation(method, entity);
@@ -534,10 +551,10 @@ public abstract class ServerResource extends UniformResource {
                 result = doHandle(annotationInfo, null);
             } else {
                 // The request entity is not supported.
-                setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+                doError(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
             }
         } else {
-            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
         return result;
     }
@@ -591,10 +608,10 @@ public abstract class ServerResource extends UniformResource {
                             ((VariantInfo) variant).getAnnotationInfo(),
                             variant);
                 } else {
-                    setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                    doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
                 }
             } else {
-                setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                doError(Status.CLIENT_ERROR_NOT_FOUND);
             }
         }
 
@@ -624,7 +641,7 @@ public abstract class ServerResource extends UniformResource {
 
             if (preferredVariant == null) {
                 // No variant was found matching the client preferences
-                setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+                doError(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
                 result = describeVariants();
             } else {
                 // Update the variant dimensions used for content negotiation
@@ -660,7 +677,7 @@ public abstract class ServerResource extends UniformResource {
         if (annotationInfo != null) {
             result = doHandle(annotationInfo, null);
         } else {
-            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
 
         return result;
@@ -690,7 +707,7 @@ public abstract class ServerResource extends UniformResource {
             result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
                     variant);
         } else {
-            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
 
         return result;
@@ -884,7 +901,7 @@ public abstract class ServerResource extends UniformResource {
         // If the resource is not available after initialization and if this a
         // retrieval method, then return a "not found" response.
         if (!isExisting() && getMethod().isSafe()) {
-            setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            doError(Status.CLIENT_ERROR_NOT_FOUND);
         } else {
             try {
                 if (isConditional()) {
@@ -1063,7 +1080,7 @@ public abstract class ServerResource extends UniformResource {
         if (annotationInfo != null) {
             result = doHandle(annotationInfo, null);
         } else {
-            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
 
         return result;
@@ -1096,7 +1113,7 @@ public abstract class ServerResource extends UniformResource {
             result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
                     variant);
         } else {
-            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
 
         return result;
@@ -1155,7 +1172,7 @@ public abstract class ServerResource extends UniformResource {
             result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
                     variant);
         } else {
-            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
 
         return result;
@@ -1214,7 +1231,7 @@ public abstract class ServerResource extends UniformResource {
             result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
                     variant);
         } else {
-            setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         }
 
         return result;

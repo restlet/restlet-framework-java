@@ -40,6 +40,7 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.CacheDirective;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
@@ -119,7 +120,7 @@ public abstract class UniformResource {
     private volatile Response response;
 
     /**
-     * Invoked when an error or an exception is caught during initialization,
+     * Invoked when a {@link Throwable} is caught during initialization,
      * handling or releasing. By default, updates the responses's status with
      * the result of
      * {@link org.restlet.service.StatusService#getStatus(Throwable, UniformResource)}
@@ -131,6 +132,27 @@ public abstract class UniformResource {
     protected void doCatch(Throwable throwable) {
         getLogger().log(Level.INFO, "Exception or error caught in resource",
                 throwable);
+    }
+
+    /**
+     * Invoked when an error response status is received.
+     * 
+     * @param errorStatus
+     *            The error status received.
+     */
+    protected void doError(Status errorStatus) {
+    }
+
+    /**
+     * Invoked when an error response status is received.
+     * 
+     * @param errorStatus
+     *            The error status received.
+     * @param errorMessage
+     *            The custom error message.
+     */
+    protected final void doError(Status errorStatus, String errorMessage) {
+        doError(new Status(errorStatus, errorMessage));
     }
 
     /**
@@ -454,6 +476,18 @@ public abstract class UniformResource {
     }
 
     /**
+     * Returns the request cache directives.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Cache-Control" header.
+     * 
+     * @return The cache directives.
+     */
+    public List<CacheDirective> getRequestCacheDirectives() {
+        return getRequest() == null ? null : getRequest().getCacheDirectives();
+    }
+
+    /**
      * Returns the request entity representation.
      * 
      * @return The request entity representation.
@@ -479,6 +513,19 @@ public abstract class UniformResource {
      */
     public Map<String, Object> getResponseAttributes() {
         return getResponse() == null ? null : getResponse().getAttributes();
+    }
+
+    /**
+     * Returns the response cache directives.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Cache-Control" header.
+     * 
+     * @return The cache directives.
+     */
+    public List<CacheDirective> getResponseCacheDirectives() {
+        return getResponse() == null ? null : getResponse()
+                .getCacheDirectives();
     }
 
     /**
