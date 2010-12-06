@@ -75,7 +75,7 @@ public class UacClientResource implements UacResource {
 
     public void acknowledge() {
         this.proxy.acknowledge();
-        System.out.println("acknowledge");
+        System.out.println("acknowledge\n");
         try {
             if (this.clientResource.getResponseEntity() != null) {
                 this.clientResource.getResponseEntity().exhaust();
@@ -87,21 +87,23 @@ public class UacClientResource implements UacResource {
 
     public void start() {
         this.proxy.start();
-        System.out.println("start");
+        System.out.println("start\n");
         try {
             this.clientResource.getResponseEntity().exhaust();
         } catch (Exception e) {
             System.out.println("start " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void stop() {
         this.proxy.stop();
-        System.out.println("stop");
+        System.out.println("stop\n");
         try {
             this.clientResource.getResponseEntity().exhaust();
         } catch (Exception e) {
             System.out.println("stop " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

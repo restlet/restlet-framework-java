@@ -68,7 +68,7 @@ public class UacServerResource extends SipServerResource implements UacResource 
         InputStream is = cl.getResourceAsStream("UacServerResource.properties");
 
         if (is == null) {
-            is = cl.getResourceAsStream("org/restlet/ext/sip/example/UacServerResource.properties");
+            is = cl.getResourceAsStream("org/restlet/example/ext/sip/UacServerResource.properties");
         }
 
         if (is != null) {

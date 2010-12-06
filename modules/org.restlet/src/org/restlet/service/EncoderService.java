@@ -53,7 +53,7 @@ public class EncoderService extends Service {
     public static final int ANY_SIZE = -1;
 
     /** Indicates if the default minimum size for encoding to occur. */
-    public static final int DEFAULT_SIZE = 1000;
+    public static final int DEFAULT_MINIMUM_SIZE = 1000;
 
     /**
      * Returns the list of default encoded media types. This can be overridden
@@ -115,7 +115,7 @@ public class EncoderService extends Service {
      */
     public EncoderService(boolean enabled) {
         super(enabled);
-        this.mininumSize = DEFAULT_SIZE;
+        this.mininumSize = DEFAULT_MINIMUM_SIZE;
         this.acceptedMediaTypes = getDefaultAcceptedMediaTypes();
         this.ignoredMediaTypes = getDefaultIgnoredMediaTypes();
     }
