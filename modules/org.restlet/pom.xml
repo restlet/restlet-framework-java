@@ -10,7 +10,7 @@
 
 	<artifactId>org.restlet</artifactId>
 	<name>Restlet Core</name>
-	<description>RESTful Web framework for Java (API and engine).</description>
+	<description>RESTful web framework for Java (API and engine).</description>
 
 	<dependencies>
 		<dependency>

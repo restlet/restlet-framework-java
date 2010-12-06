@@ -148,6 +148,7 @@
 		<module>org.restlet.ext.rome</module>
 		<module>org.restlet.ext.servlet</module>
 		<module>org.restlet.ext.simple</module>
+		<module>org.restlet.ext.sip</module>
 		<module>org.restlet.ext.slf4j</module>
 		<module>org.restlet.ext.spring</module>
 		<module>org.restlet.ext.ssl</module>
