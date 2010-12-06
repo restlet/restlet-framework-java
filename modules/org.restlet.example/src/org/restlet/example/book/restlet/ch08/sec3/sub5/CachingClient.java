@@ -4,18 +4,14 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 public class CachingClient {
+
     public static void main(String[] args) throws Exception {
-        ClientResource resource = new ClientResource(
-                "http://localhost:8082/");
+        ClientResource resource = new ClientResource("http://localhost:8111/");
+
         // Get a representation
         Representation rep = resource.get();
-        System.out.println(resource.getStatus());
-
-        // Get a new Representation, if modified
-        resource.getConditions().setModifiedSince(
-                rep.getModificationDate());
-        rep = resource.get();
-        System.out.println(resource.getStatus());
+        System.out.println("Modified: " + rep.getModificationDate());
+        System.out.println("Expires: " + rep.getExpirationDate());
+        System.out.println("E-Tag: " + rep.getTag());
     }
-
 }
