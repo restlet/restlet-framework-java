@@ -97,7 +97,7 @@ import org.restlet.Connector;
  * <tr>
  * <td>socketReuseAddress</td>
  * <td>boolean</td>
- * <td>false</td>
+ * <td>true</td>
  * <td>Indicates if sockets can be reused right away even if they are busy (in
  * TIME_WAIT or 2MSL wait state).</td>
  * </tr>
@@ -348,6 +348,6 @@ public abstract class ConnectionHelper<T extends Connector> extends
      */
     public boolean isSocketReuseAddress() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "socketReuseAddress", "false"));
+                "socketReuseAddress", "true"));
     }
 }

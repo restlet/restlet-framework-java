@@ -53,6 +53,8 @@ Changes log
     - Misc
       - Moved UniformResource#doCatch() logic down to ServerResource as it
         was specific to server-side and kept a simpler log trace.
+      - Made TCP socket reuse active by default on internal connector.
+        Reported by John Logdson.
 
 - 2.1 Milestone 1 (11/07/2010)
     - API changes
