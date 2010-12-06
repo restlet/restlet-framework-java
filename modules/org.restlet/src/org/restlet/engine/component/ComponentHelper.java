@@ -205,14 +205,18 @@ public class ComponentHelper extends CompositeHelper<Component> {
             for (Service service : getHelped().getServices()) {
                 if (service.isEnabled()) {
                     // Attach the service inbound filters
-                    filter = service.createInboundFilter(getContext());
+                    filter = service
+                            .createInboundFilter((getContext() == null) ? null
+                                    : getContext().createChildContext());
 
                     if (filter != null) {
                         addInboundFilter(filter);
                     }
 
                     // Attach the service outbound filters
-                    filter = service.createOutboundFilter(getContext());
+                    filter = service
+                            .createOutboundFilter((getContext() == null) ? null
+                                    : getContext().createChildContext());
 
                     if (filter != null) {
                         addOutboundFilter(filter);

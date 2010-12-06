@@ -81,6 +81,7 @@ public abstract class CompositeHelper<T extends Restlet> extends
             getLastInbound().setNext(filter);
             setLastInbound(filter);
         } else {
+            filter.setNext(getFirstInbound());
             setFirstInbound(filter);
             setLastInbound(filter);
         }
@@ -97,6 +98,7 @@ public abstract class CompositeHelper<T extends Restlet> extends
             getLastOutbound().setNext(filter);
             setLastOutbound(filter);
         } else {
+            filter.setNext(getFirstOutbound());
             setFirstOutbound(filter);
             setLastOutbound(filter);
         }
@@ -126,7 +128,7 @@ public abstract class CompositeHelper<T extends Restlet> extends
      * 
      * @return the first outbound Restlet.
      */
-    protected Restlet getFirstOutbound() {
+    public Restlet getFirstOutbound() {
         return this.firstOutbound;
     }
 

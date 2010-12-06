@@ -192,7 +192,7 @@ public class Connection<T extends Connector> implements SelectionListener {
                 Socket socket = getSocket();
 
                 if ((socket != null) && !socket.isClosed()) {
-                    getSocket().close();
+                    socket.close();
                 }
             } catch (IOException ex) {
                 getLogger().log(Level.FINE, "Unable to properly close socket",

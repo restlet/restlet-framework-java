@@ -32,12 +32,14 @@ package org.restlet;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Filter;
 
 import org.restlet.engine.Engine;
 import org.restlet.engine.application.ApplicationHelper;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
+import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
 import org.restlet.security.Role;
 import org.restlet.service.ConnectorService;
@@ -177,7 +179,7 @@ public class Application extends Restlet {
      * initial application Restlet. The default implementation returns null by
      * default. This method is intended to be overridden by subclasses.
      * 
-     * @return The server root Restlet.
+     * @return The inbound root Restlet.
      */
     public Restlet createInboundRoot() {
         return null;
@@ -185,16 +187,20 @@ public class Application extends Restlet {
 
     /**
      * Creates a outbound root Restlet that will receive all outgoing calls from
-     * ClientResource. In general, instances of Router, Filter or Finder classes
-     * will be used as initial application Restlet. The default implementation
-     * returns the {@link Context#getClientDispatcher()} by default. This method
-     * is intended to be overridden by subclasses.
+     * ClientResource. In general, instances of {@link Router} and
+     * {@link Filter} classes will be used. The default implementation returns a
+     * Restlet giving access to the the outbound service layer and finally to
+     * the {@link Context#getClientDispatcher()}.
+     * <p>
+     * This method is intended to be overridden by subclasses but in order to
+     * benefit from the outbound service filtering layer, the original outbound
+     * root must be careful attached again at the end of the user filtering
+     * layer.
      * 
-     * @return The server root Restlet.
+     * @return The outbound root Restlet.
      */
     public Restlet createOutboundRoot() {
-        return (getContext() != null) ? getContext().getClientDispatcher()
-                : null;
+        return getHelper().getFirstOutbound();
     }
 
     /**

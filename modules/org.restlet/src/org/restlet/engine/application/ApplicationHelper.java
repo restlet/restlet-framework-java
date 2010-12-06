@@ -80,10 +80,12 @@ public class ApplicationHelper extends CompositeHelper<Application> {
      *            The context.
      */
     public void setContext(Context context) {
-        if (getLastOutbound() == null) {
-            setFirstOutbound(context.getClientDispatcher());
-        } else {
-            getLastOutbound().setNext(context.getClientDispatcher());
+        if (context != null) {
+            if (getLastOutbound() == null) {
+                setFirstOutbound(context.getClientDispatcher());
+            } else {
+                getLastOutbound().setNext(context.getClientDispatcher());
+            }
         }
     }
 
@@ -95,14 +97,18 @@ public class ApplicationHelper extends CompositeHelper<Application> {
         for (Service service : getHelped().getServices()) {
             if (service.isEnabled()) {
                 // Attach the service inbound filters
-                filter = service.createInboundFilter(getContext());
+                filter = service
+                        .createInboundFilter((getContext() == null) ? null
+                                : getContext().createChildContext());
 
                 if (filter != null) {
                     addInboundFilter(filter);
                 }
 
                 // Attach the service outbound filters
-                filter = service.createOutboundFilter(getContext());
+                filter = service
+                        .createOutboundFilter((getContext() == null) ? null
+                                : getContext().createChildContext());
 
                 if (filter != null) {
                     addOutboundFilter(filter);

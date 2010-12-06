@@ -41,6 +41,8 @@ Changes log
       - Added server-side support for Amazon Web Services (S3) authentication.
         Contributed by Jean-Philippe Steinmetz.
       - Added support for DecoderService on the client-side as well.
+      - Implemented the automatic filtering of outbound services, via the
+        Application#outboundRoot property.
     - Bugs fixed
       - Fixed writing of big representations. Reported by Tom Andersson. 
       - Fixed IoUtils.BUFFER_SIZE constant to be properly configurable via

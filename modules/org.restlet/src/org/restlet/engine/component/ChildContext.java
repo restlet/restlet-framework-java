@@ -60,11 +60,9 @@ public class ChildContext extends Context {
                 }
             } else if (!(restlet instanceof Component)
                     && (context instanceof ComponentContext)) {
-                context
-                        .getLogger()
-                        .severe(
-                                "For security reasons, don't pass the component context to child Restlets anymore. Use the Context#createChildContext() method instead."
-                                        + restlet.getClass());
+                context.getLogger()
+                        .severe("For security reasons, don't pass the component context to child Restlets anymore. Use the Context#createChildContext() method instead. "
+                                + restlet.getClass());
             }
         }
     }
