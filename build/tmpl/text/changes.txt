@@ -24,6 +24,10 @@ Changes log
         methods to allow interception and customization of the default
         behavior (such as throwing a ResourceException on the client-side).
         Suggested by Florian Bucklers.
+      - Facilitating the creationg of ClientResource subclasses by changing
+        the visibility of handle(...) methods from private to protected.
+        Leveraged by the SipClientResource in the SIP extension.
+        Reported by Phil Dunks.
     - Enhancements
       - Simplified the default console logging by replacing Java's default
         verbose log formatter by a single line formatter. This formatter

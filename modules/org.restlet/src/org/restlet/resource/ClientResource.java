@@ -786,7 +786,7 @@ public class ClientResource extends UniformResource {
      *            The request method to use.
      * @return The optional response entity.
      */
-    private Representation handle(Method method) {
+    protected Representation handle(Method method) {
         return handle(method, (Representation) null, getClientInfo());
     }
 
@@ -804,7 +804,7 @@ public class ClientResource extends UniformResource {
      * @return The response entity object.
      * @throws ResourceException
      */
-    private <T> T handle(Method method, Class<T> resultClass)
+    protected <T> T handle(Method method, Class<T> resultClass)
             throws ResourceException {
         return handle(method, null, resultClass);
     }
@@ -819,7 +819,7 @@ public class ClientResource extends UniformResource {
      *            The preferred result media type.
      * @return The optional response entity.
      */
-    private Representation handle(Method method, MediaType mediaType) {
+    protected Representation handle(Method method, MediaType mediaType) {
         return handle(method, (Representation) null, mediaType);
     }
 
@@ -837,7 +837,7 @@ public class ClientResource extends UniformResource {
      * @return The response object entity.
      * @throws ResourceException
      */
-    private <T> T handle(Method method, Object entity, Class<T> resultClass)
+    protected <T> T handle(Method method, Object entity, Class<T> resultClass)
             throws ResourceException {
         T result = null;
         org.restlet.service.ConverterService cs = getConverterService();
@@ -870,7 +870,7 @@ public class ClientResource extends UniformResource {
      *            The client preferences.
      * @return The optional response entity.
      */
-    private Representation handle(Method method, Representation entity,
+    protected Representation handle(Method method, Representation entity,
             ClientInfo clientInfo) {
         Representation result = null;
 
@@ -904,7 +904,7 @@ public class ClientResource extends UniformResource {
      *            The preferred result media type.
      * @return The optional response entity.
      */
-    private Representation handle(Method method, Representation entity,
+    protected Representation handle(Method method, Representation entity,
             MediaType mediaType) {
         return handle(method, entity, new ClientInfo(mediaType));
     }
@@ -920,7 +920,7 @@ public class ClientResource extends UniformResource {
      * @return The response created.
      * @see #getNext()
      */
-    private Response handle(Request request) {
+    protected Response handle(Request request) {
         Response response = createResponse(request);
         Uniform next = getNext();
 
@@ -954,7 +954,7 @@ public class ClientResource extends UniformResource {
      * @param next
      *            The next handler handling the call.
      */
-    private void handle(Request request, Response response,
+    protected void handle(Request request, Response response,
             List<Reference> references, int retryAttempt, Uniform next) {
         if (next != null) {
             // Actually handle the call

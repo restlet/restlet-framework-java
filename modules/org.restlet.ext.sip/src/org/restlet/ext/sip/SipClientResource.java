@@ -36,8 +36,6 @@ import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.Uniform;
-import org.restlet.data.ClientInfo;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.ext.sip.internal.SipInboundRequest;
@@ -416,121 +414,6 @@ public class SipClientResource extends ClientResource {
      */
     public Address getTo() {
         return getRequest().getTo();
-    }
-
-    /**
-     * Handles the call by invoking the next handler. The prototype request is
-     * retrieved via {@link #getRequest()} and cloned and the response is set as
-     * the latest with {@link #setResponse(Response)}. If necessary the
-     * {@link #setNext(Uniform)} method is called as well with a {@link Client}
-     * instance matching the request protocol.
-     * 
-     * @return The optional response entity.
-     * @see #getNext()
-     */
-    @Override
-    public Representation handle() {
-        // TODO refactor ClientResource.
-        // if (getRequest() instanceof SipRequest) {
-        // SipResponse response = handle(new SipRequest(
-        // (SipRequest) getRequest()));
-        // return (response == null) ? null : response.getEntity();
-        // }
-        return null;
-
-    }
-
-    /**
-     * Handles the call by cloning the prototype request, setting the method and
-     * entity.
-     * 
-     * @param method
-     *            The request method to use.
-     * @return The optional response entity.
-     */
-    private Representation handle(Method method) {
-        // TODO refactor ClientResource.
-        // return handle(method, (Representation) null, getClientInfo());
-        return null;
-    }
-
-    /**
-     * Handles the call by cloning the prototype request, setting the method and
-     * entity.
-     * 
-     * @param method
-     *            The request method to use.
-     * @param entity
-     *            The request entity to set.
-     * @param clientInfo
-     *            The client preferences.
-     * @return The optional response entity.
-     */
-    private Representation handle(Method method, Representation entity,
-            ClientInfo clientInfo) {
-        Representation result = null;
-
-        // Prepare the request by cloning the prototype request
-        // TODO refactor ClientResource.
-        // SipRequest request;
-        // if (getRequest() instanceof SipRequest) {
-        // request = new SipRequest((SipRequest) getRequest());
-        // request.setMethod(method);
-        // request.setEntity(entity);
-        // request.setClientInfo(clientInfo);
-        //
-        // // Actually handle the call
-        // Response response = handle(request);
-        //
-        // if (response.getStatus().isError()) {
-        // throw new ResourceException(response.getStatus());
-        // } else {
-        // result = (response == null) ? null : response.getEntity();
-        // }
-        // }
-
-        return result;
-    }
-
-    /**
-     * Handles the call by invoking the next handler. Then a new response is
-     * created and the {@link #handle(Request, Response)} method is invoked and
-     * the response set as the latest response with
-     * {@link #setResponse(Response)}.
-     * 
-     * @param request
-     *            The request to handle.
-     * @return The response created.
-     * @see #getNext()
-     */
-    @SuppressWarnings("unused")
-    private SipResponse handle(SipInboundRequest request) {
-        // TODO refactor ClientResource.
-        return null;
-    }
-
-    /**
-     * Handle the call and follow redirection for safe methods.
-     * 
-     * @param request
-     *            The request to send.
-     * @param response
-     *            The response to update.
-     * @param references
-     *            The references that caused a redirection to prevent infinite
-     *            loops.
-     * @param retryAttempt
-     *            The number of remaining attempts.
-     * @param next
-     *            The next handler handling the call.
-     */
-    @SuppressWarnings("unused")
-    private void handle(SipInboundRequest request, SipResponse response,
-            List<Reference> references, int retryAttempt, Uniform next) {
-        if (next != null) {
-            // Actually handle the call
-            next.handle(request, response);
-        }
     }
 
     /**
