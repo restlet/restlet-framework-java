@@ -83,8 +83,17 @@ public class SipServerResource extends ServerResource {
      * 
      * @return The request's list of Via entries.
      */
-    public List<SipRecipientInfo> getSipRecipientsInfo() {
+    public List<SipRecipientInfo> getSipRequestRecipientsInfo() {
         return getRequest().getSipRecipientsInfo();
+    }
+
+    /**
+     * Returns the response's list of Via entries.
+     * 
+     * @return The response's list of Via entries.
+     */
+    public List<SipRecipientInfo> getSipResponseRecipientsInfo() {
+        return getResponse().getSipRecipientsInfo();
     }
 
     /**

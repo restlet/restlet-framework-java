@@ -354,6 +354,33 @@ public class SipClientResource extends ClientResource {
         return new SipResponse(request);
     }
 
+    /**
+     * Returns the request's call id.
+     * 
+     * @return The request's call id.
+     */
+    public String getCallId() {
+        return getRequest().getCallId();
+    }
+
+    /**
+     * Returns the request's call sequence.
+     * 
+     * @return The request's call sequence.
+     */
+    public String getCallSequence() {
+        return getRequest().getCallSequence();
+    }
+
+    /**
+     * Returns the request initiator's address.
+     * 
+     * @return The request initiator's address.
+     */
+    public Address getFrom() {
+        return getRequest().getFrom();
+    }
+
     @Override
     public SipRequest getRequest() {
         return (SipRequest) super.getRequest();
@@ -362,6 +389,33 @@ public class SipClientResource extends ClientResource {
     @Override
     public SipResponse getResponse() {
         return (SipResponse) super.getResponse();
+    }
+
+    /**
+     * Returns the request's list of Via entries.
+     * 
+     * @return The request's list of Via entries.
+     */
+    public List<SipRecipientInfo> getSipRequestRecipientsInfo() {
+        return getRequest().getSipRecipientsInfo();
+    }
+
+    /**
+     * Returns the response's list of Via entries.
+     * 
+     * @return The response's list of Via entries.
+     */
+    public List<SipRecipientInfo> getSipResponseRecipientsInfo() {
+        return getResponse().getSipRecipientsInfo();
+    }
+
+    /**
+     * Returns the request recipient's address.
+     * 
+     * @return The request recipient's address.
+     */
+    public Address getTo() {
+        return getRequest().getTo();
     }
 
     /**
