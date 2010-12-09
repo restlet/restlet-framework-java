@@ -464,6 +464,21 @@ public class SipClientResource extends ClientResource {
     }
 
     /**
+     * Indicates that the user or service is being invited to participate in a
+     * session.
+     * 
+     * @param representation
+     *            An optional representation.
+     * @throws ResourceException
+     * @see <a http://tools.ietf.org/html/rfc2543#section-4.2.1">INVITE
+     *      method</a>
+     */
+    public Representation invite(Representation representation)
+            throws ResourceException {
+        return handle(SipMethod.INVITE, representation, getClientInfo());
+    }
+
+    /**
      * Informs subscribers of changes in state to which the subscriber has a
      * subscription.
      * 
