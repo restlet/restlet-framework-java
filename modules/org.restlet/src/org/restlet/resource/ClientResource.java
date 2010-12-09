@@ -875,7 +875,7 @@ public class ClientResource extends UniformResource {
         Representation result = null;
 
         // Prepare the request by cloning the prototype request
-        Request request = new Request(getRequest());
+        Request request = createRequest(getRequest());
         request.setMethod(method);
         request.setEntity(entity);
         request.setClientInfo(clientInfo);
