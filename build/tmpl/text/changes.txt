@@ -53,6 +53,8 @@ Changes log
       - Added support for DecoderService on the client-side as well.
       - Implemented the automatic filtering of outbound services, via the
         Application#outboundRoot property.
+      - Added ConfidentialAuthorizer to limit access to resource to secure
+        protocols such as HTTPS.
     - Bugs fixed
       - Fixed writing of big representations. Reported by Tom Andersson. 
       - Fixed IoUtils.BUFFER_SIZE constant to be properly configurable via

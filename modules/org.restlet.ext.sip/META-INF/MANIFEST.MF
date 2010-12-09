@@ -1,4 +1,3 @@
-Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - SIP
 Bundle-SymbolicName: org.restlet.ext.sip

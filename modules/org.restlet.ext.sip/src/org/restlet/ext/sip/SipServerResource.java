@@ -42,15 +42,6 @@ import org.restlet.resource.ServerResource;
 public class SipServerResource extends ServerResource {
 
     /**
-     * Returns the request's call id.
-     * 
-     * @return The request's call id.
-     */
-    public String getCallId() {
-        return getRequest().getCallId();
-    }
-
-    /**
      * Returns the request's call sequence.
      * 
      * @return The request's call sequence.
@@ -73,9 +64,27 @@ public class SipServerResource extends ServerResource {
         return (SipRequest) super.getRequest();
     }
 
+    /**
+     * Returns the request's call ID.
+     * 
+     * @return The request's call ID.
+     */
+    public String getRequestCallId() {
+        return getRequest().getCallId();
+    }
+
     @Override
     public SipResponse getResponse() {
         return (SipResponse) super.getResponse();
+    }
+
+    /**
+     * Returns the response's call ID.
+     * 
+     * @return The response's call ID.
+     */
+    public String getResponseCallId() {
+        return getResponse().getCallId();
     }
 
     /**
@@ -103,5 +112,15 @@ public class SipServerResource extends ServerResource {
      */
     public Address getTo() {
         return getRequest().getTo();
+    }
+
+    /**
+     * Sets the response's call ID.
+     * 
+     * @param callId
+     *            The call ID.
+     */
+    public void setResponseCallId(String callId) {
+        getResponse().setCallId(callId);
     }
 }
