@@ -163,6 +163,9 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_MATHML = register(
             "application/mathml+xml", "MathML XML document");
 
+    public static final MediaType APPLICATION_MSML = register(
+            "application/msml+xml", "Media Server Markup Language");
+
     // [ifndef gwt] member
     public static final MediaType APPLICATION_MSOFFICE_DOCM = register(
             "application/vnd.ms-word.document.macroEnabled.12",
@@ -395,6 +398,9 @@ public final class MediaType extends Metadata {
     // [ifndef gwt] member
     public static final MediaType APPLICATION_RTF = register("application/rtf",
             "Rich Text Format document");
+
+    public static final MediaType APPLICATION_SDP = register("application/sdp",
+            "Session Description Protocol");
 
     // [ifndef gwt] member
     public static final MediaType APPLICATION_SPARQL_RESULTS_JSON = register(
