@@ -67,6 +67,7 @@ Changes log
         was specific to server-side and kept a simpler log trace.
       - Made TCP socket reuse active by default on internal connector.
         Reported by John Logdson.
+      - Lowered log traces for Directory. Suggested by Rickard Oberg.       
 
 - 2.1 Milestone 1 (11/07/2010)
     - API changes

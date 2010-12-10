@@ -394,7 +394,7 @@ public class DirectoryServerResource extends ServerResource {
             }
 
             // Log results
-            getLogger().info("Converted target URI: " + this.targetUri);
+            getLogger().fine("Converted target URI: " + this.targetUri);
             getLogger().fine("Converted base name : " + this.baseName);
         } catch (IOException ioe) {
             throw new ResourceException(ioe);
@@ -582,7 +582,7 @@ public class DirectoryServerResource extends ServerResource {
             if (variantsGet != null) {
                 result = variantsGet;
             } else {
-                getLogger().info("Getting variants for : " + getTargetUri());
+                getLogger().fine("Getting variants for: " + getTargetUri());
 
                 if ((this.directoryContent != null) && (getReference() != null)
                         && (getReference().getBaseRef() != null)) {
