@@ -31,9 +31,7 @@
 package org.restlet.engine.header;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
