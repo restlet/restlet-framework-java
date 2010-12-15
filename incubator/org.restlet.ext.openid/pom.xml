@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.restlet.dev</groupId>
-		<artifactId>org.restlet.parent</artifactId>
+		<artifactId>org.restlet.incubator</artifactId>
 		<version>2.1-SNAPSHOT</version>
 	</parent>
 
@@ -12,11 +12,42 @@
 	<name>Restlet Extension - OpenID</name>
 	<description>Support for OpenID authentication.</description>
 
+    
 	<dependencies>
 		<dependency>
-			<groupId>org.restlet.dev</groupId>
+			<groupId>org.restlet.jse</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>2.1-SNAPSHOT</version>
 		</dependency>
+    
+    <dependency>
+      <groupId>org.restlet.jse</groupId>
+      <artifactId>org.restlet.ext.xml</artifactId>
+      <version>2.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.restlet.jse</groupId>
+      <artifactId>org.restlet.ext.json</artifactId>
+      <version>2.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+  
+    <dependency>
+      <groupId>org.openid4java</groupId>
+      <artifactId>openid4java-consumer</artifactId>
+      <version>0.9.5</version>
+    </dependency>
+    
+    <!--
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.4</version>
+    </dependency>
+    -->
+    
+    
 	</dependencies>
 </project>
