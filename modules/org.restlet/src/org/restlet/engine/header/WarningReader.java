@@ -31,7 +31,9 @@
 package org.restlet.engine.header;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
@@ -44,6 +46,7 @@ import org.restlet.engine.util.DateUtils;
  * @author Thierry Boileau
  */
 public class WarningReader extends HeaderReader<Warning> {
+
     /**
      * Adds values to the given collection.
      * 
@@ -72,9 +75,16 @@ public class WarningReader extends HeaderReader<Warning> {
         Warning result = new Warning();
 
         String code = readToken();
-        String agent = readRawValue();
+        skipSpaces();
+        String agent = readRawText();
+        skipSpaces();
         String text = readQuotedString();
-        String date = readQuotedString();
+        // The date is not mandatory
+        skipSpaces();
+        String date = null;
+        if (peek() != -1) {
+            date = readQuotedString();
+        }
 
         if ((code == null) || (agent == null) || (text == null)) {
             throw new IOException("Warning header malformed.");
@@ -83,7 +93,10 @@ public class WarningReader extends HeaderReader<Warning> {
         result.setStatus(Status.valueOf(Integer.parseInt(code)));
         result.setAgent(agent);
         result.setText(text);
-        result.setDate(DateUtils.parse(date));
+        if (date != null) {
+            result.setDate(DateUtils.parse(date));
+        }
+
         return result;
     }
 
