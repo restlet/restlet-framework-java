@@ -43,6 +43,7 @@ Changes log
          non persistent connections are used without setting the 
          Content-Length header properly either. Reported by David Fogel.       
        - Fixed parsing of Warning header. Reported by John Logsdon.
+       - Fixed support of GWT 2.1.
 
 - 2.0.3 (2010-11-07)
     - Bugs fixed
