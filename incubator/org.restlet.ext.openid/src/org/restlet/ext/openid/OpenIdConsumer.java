@@ -271,18 +271,15 @@ public class OpenIdConsumer extends ServerResource {
                             + authReq.getParameterValue(key.toString()));
                 }
 
-                // ClientResource opResource = new
-                // ClientResource(authReq.getOPEndpoint());
-                // opResource.post(msg.getWebRepresentation());
-                // log.info("Sent POST to OP - Status = "+opResource.getResponse().getStatus());
-
-                Redirector dispatcher = new Redirector(getContext(),
-                        authReq.getOPEndpoint(),
-                        Redirector.MODE_SERVER_OUTBOUND);
-                Request req = getRequest();
-                req.setEntity(msg.getWebRepresentation());
-                req.setMethod(Method.POST);
-                dispatcher.handle(getRequest(), getResponse());
+//                Redirector dispatcher = new Redirector(getContext(),
+//                        authReq.getOPEndpoint(),
+//                        Redirector.MODE_SERVER_OUTBOUND);
+//                Request req = getRequest();
+//                req.setEntity(msg.getWebRepresentation());
+//                req.setMethod(Method.POST);
+//                dispatcher.handle(getRequest(), getResponse());
+                
+                return generateForm(authReq);
             }
         } catch (DiscoveryException e) {
             // TODO Auto-generated catch block
@@ -420,5 +417,29 @@ public class OpenIdConsumer extends ServerResource {
         }
         return location;
     }
+    
+    private Representation generateForm( AuthRequest authReq ) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("<html>");
+		sb.append("<head>");
+		sb.append("<title>OpenID HTML FORM Redirection</title>");
+    	sb.append("</head>");
+    	sb.append("<body onload=\"document.forms['openid-form-redirection'].submit();\">");
+    	sb.append("<form name=\"openid-form-redirection\" action=\"");
+    	sb.append(authReq.getOPEndpoint());
+    	sb.append("\" method=\"post\" accept-charset=\"utf-8\">");
+    	for( Object key : authReq.getParameterMap().keySet() ) {
+    		sb.append(" <input type=\"hidden\" name=\"");
+    		sb.append(key.toString());
+    				//${parameter.key}
+    		sb.append("\" value=\"");
+    		sb.append(authReq.getParameterMap().get(key));
+    		sb.append("\"/>");
+    	}
+    	sb.append("</form>");
+		sb.append("</body>");
+		sb.append("</html>");
+		return new StringRepresentation(sb.toString(),MediaType.TEXT_HTML);
+	}
 
 }
