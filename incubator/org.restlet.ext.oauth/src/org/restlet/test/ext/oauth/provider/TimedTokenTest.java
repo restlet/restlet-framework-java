@@ -23,6 +23,7 @@ import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.ext.oauth.provider.OAuthUser;
 import org.restlet.ext.oauth.util.OAuthUtils;
 import org.restlet.ext.oauth.util.OAuthHelper;
+import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -104,6 +105,8 @@ public class TimedTokenTest {
                 + serverPort + "/client/webclient");
         Representation r = cr.get();
         assertNotNull(r);
+	    r = OpenIdFormFrowarder.handleFormRedirect(r, cr);
+	    assertNotNull(r);
         String text = r.getText();
         assertEquals("Response text test", text, "TestSuccessful");
         assertEquals("Response content type test", r.getMediaType(),

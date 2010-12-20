@@ -43,6 +43,7 @@ import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.provider.OAuthServerResource;
 import org.restlet.ext.oauth.provider.OAuthUser;
+import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
@@ -189,7 +190,13 @@ public class OAuthUtils {
                             + authResource.getResponse().getLocationRef());
             authResource.setReference(authResource.getResponse()
                     .getLocationRef());
-            authResource.get();
+            r = authResource.get();
+            //Check if it is a OpenID form forward
+		    try {
+				r = OpenIdFormFrowarder.handleFormRedirect(r, authResource);
+			} catch( IOException e ) {
+				Context.getCurrentLogger().log(Level.WARNING, "Failed in OpenID FW", e );
+			}
         }
 
         r.release();
