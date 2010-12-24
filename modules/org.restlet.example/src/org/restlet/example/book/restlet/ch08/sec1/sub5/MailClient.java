@@ -12,7 +12,7 @@ public class MailClient {
         ClientResource mailClient = new ClientResource(
                 "http://localhost:8111/accounts/123/mails/abc");
         Form form = new Form();
-        form.add("subject", "Message to Jérôme");
+        form.add("subject", "Message to JÃ©rÃ´me");
         form.add("content", "Doh!\n\nAllo?");
         mailClient.put(form).write(System.out);
     }
