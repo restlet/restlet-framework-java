@@ -68,6 +68,9 @@ Changes log
       - Made TCP socket reuse active by default on internal connector.
         Reported by John Logdson.
       - Lowered log traces for Directory. Suggested by Rickard Oberg.       
+      - Moved exception to status conversion logic from UniformResource and
+        ServerResource doCatch() methods to the StatusService.
+        Suggested by Rhett Sutphin.
 
 - 2.1 Milestone 1 (11/07/2010)
     - API changes

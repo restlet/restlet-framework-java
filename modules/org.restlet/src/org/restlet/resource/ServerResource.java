@@ -242,21 +242,7 @@ public abstract class ServerResource extends UniformResource {
      */
     protected void doCatch(Throwable throwable) {
         Level level = Level.INFO;
-        Status status = null;
-
-        if (throwable instanceof ResourceException) {
-            ResourceException re = (ResourceException) throwable;
-
-            if (re.getCause() != null) {
-                // What is most interesting is the embedded cause
-                throwable = re.getCause();
-                status = getStatusService().getStatus(throwable, this);
-            } else {
-                status = re.getStatus();
-            }
-        } else {
-            status = getStatusService().getStatus(throwable, this);
-        }
+        Status status = getStatusService().getStatus(throwable, this);
 
         if (status.isServerError()) {
             level = Level.WARNING;
