@@ -5,6 +5,7 @@ import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.example.book.restlet.ch08.sec1.sub5.MailRepresentation;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
