@@ -3,15 +3,15 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.0.3 (2010-11-07)
     - Bugs fixed
-	   - Extension headers on responses were now supported by the
-	     JAX-RS extension. Reported by Jim Stabile and fix suggested
-	     by Simon Temple.
-	   - Invalid log traces for connectors without protocols, such as
-	     dispatchers, were removed.
-	   - Fixed AccessControlException caused by an unnecessary call to
-	     System.getProperties(). Reported by Matthias Reichl.
+       - Extension headers on responses were now supported by the
+         JAX-RS extension. Reported by Jim Stabile and fix suggested
+         by Simon Temple.
+       - Invalid log traces for connectors without protocols, such as
+         dispatchers, were removed.
+       - Fixed AccessControlException caused by an unnecessary call to
+         System.getProperties(). Reported by Matthias Reichl.
        - The JAXB extension now has better support for classloader.
          Contributed by Eric Hough.
        - Fixed the writing of the Via header.
