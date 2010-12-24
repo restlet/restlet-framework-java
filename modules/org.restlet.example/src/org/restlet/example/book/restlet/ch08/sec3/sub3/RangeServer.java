@@ -14,7 +14,7 @@ public class RangeServer {
         // Plug the server resource.
         app.setInboundRoot(HelloServerResource.class);
 
-        // Instantiating the HTTP server and listening on port 8082
+        // Instantiating the HTTP server and listening on port 8111
         new Server(Protocol.HTTP, 8111, app).start();
     }
 

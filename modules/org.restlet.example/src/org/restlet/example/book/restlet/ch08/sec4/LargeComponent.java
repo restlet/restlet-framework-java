@@ -1,13 +1,13 @@
-package org.restlet.example.book.restlet.ch05.sec6.server;
+package org.restlet.example.book.restlet.ch08.sec4;
 
 import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
 /**
- * RESTful component containing the mail server application.
+ * RESTful component containing several applications.
  */
-public class MailServerComponent extends Component {
+public class LargeComponent extends Component {
 
     /**
      * Launches the mail server component.
@@ -17,7 +17,7 @@ public class MailServerComponent extends Component {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        new MailServerComponent().start();
+        new LargeComponent().start();
     }
 
     /**
@@ -25,16 +25,7 @@ public class MailServerComponent extends Component {
      * 
      * @throws Exception
      */
-    public MailServerComponent() throws Exception {
-        // Set basic properties
-        setName("RESTful Mail Server component");
-        setDescription("Example for 'Restlet in Action' book");
-        setOwner("Noelios Technologies");
-        setAuthor("The Restlet Team");
-
-        // Add a CLAP client connector
-        getClients().add(Protocol.CLAP);
-
+    public LargeComponent() throws Exception {
         // Adds a HTTP server connector
         Server server = getServers().add(Protocol.HTTP, 8111);
         server.getContext().getParameters().set("tracing", "true");

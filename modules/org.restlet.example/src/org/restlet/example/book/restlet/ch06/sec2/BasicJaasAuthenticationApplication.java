@@ -83,7 +83,7 @@ public class BasicJaasAuthenticationApplication extends Application {
 
     public static void main(String[] args) throws Exception {
         Component component = new Component();
-        component.getServers().add(Protocol.HTTP, 8082);
+        component.getServers().add(Protocol.HTTP, 8111);
 
         component.getDefaultHost().attachDefault(
                 new BasicJaasAuthenticationApplication());

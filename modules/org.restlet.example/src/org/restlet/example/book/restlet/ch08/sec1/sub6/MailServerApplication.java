@@ -19,7 +19,7 @@ public class MailServerApplication extends Application {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        Server mailServer = new Server(Protocol.HTTP, 8082);
+        Server mailServer = new Server(Protocol.HTTP, 8111);
         mailServer.setNext(new MailServerApplication());
         mailServer.start();
     }
@@ -31,7 +31,7 @@ public class MailServerApplication extends Application {
     public Restlet createInboundRoot() {
         Router router = new Router(getContext());
         router.attach(
-                "http://localhost:8082/accounts/{accountId}/feeds/{feedId}",
+                "http://localhost:8111/accounts/{accountId}/feeds/{feedId}",
                 FeedServerResource.class);
         return router;
     }

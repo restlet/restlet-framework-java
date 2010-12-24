@@ -9,7 +9,7 @@ public class MailClient {
 
     public static void main(String[] args) throws Exception {
         ClientResource mailClient = new ClientResource(
-                "http://localhost:8082/accounts/chunkylover53/mails/123");
+                "http://localhost:8111/accounts/chunkylover53/mails/123");
         mailClient.get().write(System.out);
     }
 

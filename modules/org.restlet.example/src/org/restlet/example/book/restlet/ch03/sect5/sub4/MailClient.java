@@ -9,7 +9,7 @@ public class MailClient {
 
     public static void main(String[] args) throws Exception {
         RootResource mailRoot = ClientResource.create(
-                "http://localhost:8082/", RootResource.class);
+                "http://localhost:8111/", RootResource.class);
         String result = mailRoot.represent();
         System.out.println(result);
     }

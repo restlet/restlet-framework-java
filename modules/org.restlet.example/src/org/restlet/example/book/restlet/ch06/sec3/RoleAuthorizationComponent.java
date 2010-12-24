@@ -94,7 +94,7 @@ public class RoleAuthorizationComponent extends Component {
 
     public static void main(String[] args) throws Exception {
         SecurityManagerDemoComponent component = new SecurityManagerDemoComponent();
-        component.getServers().add(Protocol.HTTP, 8082);
+        component.getServers().add(Protocol.HTTP, 8111);
 
         component.start();
     }

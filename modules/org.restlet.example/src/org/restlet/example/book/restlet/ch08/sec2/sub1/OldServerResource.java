@@ -4,7 +4,7 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
 /**
- * Resource that simply redirects to the port 8082.
+ * Resource that simply redirects to the port 8111.
  */
 public class OldServerResource extends ServerResource {
 
