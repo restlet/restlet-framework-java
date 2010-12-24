@@ -1,0 +1,14 @@
+<module id="jaas" excludes="gwt" type="standard" package="org.restlet.ext.jaas">
+   <name>Restlet Extension - JAAS</name>
+   <description>
+      Support for JAAS based security.
+	</description>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
+
+   <dependencies>
+      <dependency type="module" id="core" />
+   </dependencies>
+</module>

@@ -1,0 +1,18 @@
+<library id="io">
+	<package name="org.apache.commons.io">
+		<maven>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</maven>
+	</package>
+	<version>1.4</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://commons.apache.org/io/
+	</homeUri>
+	<downloadUri>
+		http://commons.apache.org/downloads/download_io.cgi
+	</downloadUri>
+</library>
