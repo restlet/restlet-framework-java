@@ -1,0 +1,18 @@
+package org.restlet.example.book.restlet.ch05.sec3.sub2;
+
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+
+/**
+ * Mail client retrieving a mail then storing it again on the same resource.
+ */
+public class MailClient {
+
+    public static void main(String[] args) throws Exception {
+        ClientResource mailClient = new ClientResource(
+                "http://localhost:8111/accounts/chunkylover53/mails/123");
+        Representation mailRepresentation = mailClient.get();
+        mailClient.put(mailRepresentation);
+    }
+
+}

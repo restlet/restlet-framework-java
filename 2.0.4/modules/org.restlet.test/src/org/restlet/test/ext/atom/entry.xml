@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:app="http://www.w3.org/2007/app">
+	<title type="text">BitWorking | Joe Gregorio</title>
+	<link
+		href="http://bitworking.org/projects/apptestsite/app.cgi/service/entry/"
+		rel="self" />
+	<link href="http://bitworking.org/" rel="alternate" />
+	<link href="?page=1" rel="next" />
+	<icon>http://bitworking.org/favicon.ico</icon>
+	<updated>2008-12-17T07:54:25.981880-04:00</updated>
+	<author>
+		<name>Joe Gregorio</name>
+	</author>
+	<id>http://bitworking.org/</id>
+	<entry>
+		<title>Iñtërnâtiônàlizætiøn - 3</title>
+		<link href="http://bitworking.org/news/448/acdhlkgcke" />
+		<link href="448/" rel="edit" />
+		<link href="448/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/448/acdhlkgcke</id>
+		<updated>2008-12-17T07:54:25.981880-04:00</updated>
+		<app:edited>2008-12-17T07:54:25.981880-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">
+				<p>
+					<i>A test of utf-8</i>
+				</p>
+			</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Iñtërnâtiônàlizætiøn - 2</title>
+		<link href="http://bitworking.org/news/447/aahdkdfllb" />
+		<link href="447/" rel="edit" />
+		<link href="447/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/447/aahdkdfllb</id>
+		<updated>2008-12-17T07:54:21.357192-04:00</updated>
+		<app:edited>2008-12-17T07:54:21.357192-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">
+				<p>
+					<i>A test of utf-8</i>
+				</p>
+			</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Iñtërnâtiônàlizætiøn - 1</title>
+		<link href="http://bitworking.org/news/446/iddjklgibj" />
+		<link href="446/" rel="edit" />
+		<link href="446/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/446/iddjklgibj</id>
+		<updated>2008-12-17T07:54:15.394080-04:00</updated>
+		<app:edited>2008-12-17T07:54:15.394080-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">
+				<p>
+					<i>A test of utf-8</i>
+				</p>
+			</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Iñtërnâtiônàlizætiøn - 1</title>
+		<link href="http://bitworking.org/news/445/iddjklgibj" />
+		<link href="445/" rel="edit" />
+		<link href="445/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/445/iddjklgibj</id>
+		<updated>2008-12-17T07:54:15.393666-04:00</updated>
+		<app:edited>2008-12-17T07:54:15.393666-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">
+				<p>
+					<i>A test of utf-8</i>
+				</p>
+			</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Internationalization - 2</title>
+		<link href="http://bitworking.org/news/443/ebdkghflkl" />
+		<link href="443/" rel="edit" />
+		<link href="443/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/443/ebdkghflkl</id>
+		<updated>2008-12-11T15:08:15.004401-04:00</updated>
+		<app:edited>2008-12-11T15:08:15.004401-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">
+				<p>
+					<i>A test of utf-8</i>
+				</p>
+			</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Iñtërnâtiônàlizætiøn - 3</title>
+		<link href="http://bitworking.org/news/444/ldeghjiiil" />
+		<link href="444/" rel="edit" />
+		<link href="444/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/444/ldeghjiiil</id>
+		<updated>2008-12-11T15:07:20.580724-04:00</updated>
+		<app:edited>2008-12-11T15:07:20.580724-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">
+				<p>
+					<i>A test of utf-8</i>
+				</p>
+			</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Iñtërnâtiônàlizætiøn - 1</title>
+		<link href="http://bitworking.org/news/442/kjaejeebej" />
+		<link href="442/" rel="edit" />
+		<link href="442/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/442/kjaejeebej</id>
+		<updated>2008-12-11T15:07:05.605048-04:00</updated>
+		<app:edited>2008-12-11T15:07:05.605048-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">
+				<p>
+					<i>A test of utf-8</i>
+				</p>
+			</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Iñtërnâtiônàlizætiøn - 3</title>
+		<link href="http://bitworking.org/news/438/jdjaibcjhf" />
+		<link href="438/" rel="edit" />
+		<link href="438/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/438/jdjaibcjhf</id>
+		<updated>2008-12-07T18:47:29.458480-04:00</updated>
+		<app:edited>2008-12-07T18:47:29.458480-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">
+				<p>
+					<i>A test of utf-8</i>
+				</p>
+			</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Iñtërnâtiônàlizætiøn - 2</title>
+		<link href="http://bitworking.org/news/437/fhghiiadig" />
+		<link href="437/" rel="edit" />
+		<link href="437/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/437/fhghiiadig</id>
+		<updated>2008-12-07T18:47:26.875868-04:00</updated>
+		<app:edited>2008-12-07T18:47:26.875868-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">
+				<p>
+					<i>A test of utf-8</i>
+				</p>
+			</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Iñtërnâtiônàlizætiøn - 1</title>
+		<link href="http://bitworking.org/news/436/kcklfafehd" />
+		<link href="436/" rel="edit" />
+		<link href="436/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/436/kcklfafehd</id>
+		<updated>2008-12-07T18:47:24.110337-04:00</updated>
+		<app:edited>2008-12-07T18:47:24.110337-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">
+				<p>
+					<i>A test of utf-8</i>
+				</p>
+			</div>
+		</content>
+	</entry>
+	<entry>
+		<title>testentry</title>
+		<link href="http://bitworking.org/news/435/testentry" />
+		<link href="435/" rel="edit" />
+		<link href="435/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/435/testentry</id>
+		<updated>2008-12-04T06:15:39.049598-04:00</updated>
+		<app:edited>2008-12-04T06:15:39.049598-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">testentry content</div>
+		</content>
+	</entry>
+	<entry>
+		<title>testentry</title>
+		<link href="http://bitworking.org/news/434/testentry" />
+		<link href="434/" rel="edit" />
+		<link href="434/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/434/testentry</id>
+		<updated>2008-12-04T06:13:48.999134-04:00</updated>
+		<app:edited>2008-12-04T06:13:48.999134-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">testentry content</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Iñtërnâtiônàlizætiøn - 3</title>
+		<link href="http://bitworking.org/news/433/gdbeblfldc" />
+		<link href="433/" rel="edit" />
+		<link href="433/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/433/gdbeblfldc</id>
+		<updated>2008-11-24T08:04:17.488375-04:00</updated>
+		<app:edited>2008-11-24T08:04:17.488375-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">
+				<p>
+					<i>A test of utf-8</i>
+				</p>
+			</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Iñtërnâtiônàlizætiøn - 2</title>
+		<link href="http://bitworking.org/news/432/iilabdijfj" />
+		<link href="432/" rel="edit" />
+		<link href="432/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/432/iilabdijfj</id>
+		<updated>2008-11-24T08:04:14.907706-04:00</updated>
+		<app:edited>2008-11-24T08:04:14.907706-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">
+				<p>
+					<i>A test of utf-8</i>
+				</p>
+			</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Iñtërnâtiônàlizætiøn - 1</title>
+		<link href="http://bitworking.org/news/431/jcieiealik" />
+		<link href="431/" rel="edit" />
+		<link href="431/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/431/jcieiealik</id>
+		<updated>2008-11-24T08:04:12.342970-04:00</updated>
+		<app:edited>2008-11-24T08:04:12.342970-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">
+				<p>
+					<i>A test of utf-8</i>
+				</p>
+			</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Entry1</title>
+		<link href="http://bitworking.org/news/427/Entry1" />
+		<link href="427/" rel="edit" />
+		<link href="427/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/427/Entry1</id>
+		<updated>2008-11-21T10:03:59.301997-04:00</updated>
+		<app:edited>2008-11-21T10:03:59.301997-04:00</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">contenu a moi</div>
+		</content>
+	</entry>
+	<entry>
+		<title>newtestcicle1</title>
+		<link href="http://bitworking.org/news/423/newtestcicle1" />
+		<link href="423/" rel="edit" />
+		<link href="423/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/423/newtestcicle1</id>
+		<updated>2008-10-31T21:18:02.873813-04:00</updated>
+		<app:edited>2008-10-31T21:18:02.873813-04:00
+		</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">well, the client responds correctly</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Loggando</title>
+		<link href="http://bitworking.org/news/417/Loggando" />
+		<link href="417/" rel="edit" />
+		<link href="417/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/417/Loggando
+		</id>
+		<updated>2008-10-20T11:50:45.878609-04:00
+		</updated>
+		<app:edited>2008-10-20T11:50:45.878609-04:00
+		</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">Testo</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Prova http</title>
+		<link href="http://bitworking.org/news/416/Prova-http" />
+		<link href="416/" rel="edit" />
+		<link href="416/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/416/Prova-http
+		</id>
+		<updated>2008-10-20T11:23:27.302374-04:00
+		</updated>
+		<app:edited>2008-10-20T11:23:27.302374-04:00
+		</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">Ciao</div>
+		</content>
+	</entry>
+	<entry>
+		<title>Ciao sandro</title>
+		<link href="http://bitworking.org/news/415/Ciao-sandro" />
+		<link href="415/" rel="edit" />
+		<link href="415/;media" rel="edit-media" />
+		<id>http://bitworking.org/news/415/Ciao-sandro
+		</id>
+		<updated>2008-10-15T12:15:50.962301-04:00
+		</updated>
+		<app:edited>2008-10-15T12:15:50.962301-04:00
+		</app:edited>
+		<summary type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml" />
+		</summary>
+		<content type="xhtml">
+			<div xmlns="http://www.w3.org/1999/xhtml">Cia</div>
+		</content>
+	</entry>
+
+</feed>

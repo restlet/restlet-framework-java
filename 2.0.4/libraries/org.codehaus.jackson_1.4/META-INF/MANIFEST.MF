@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: High-performance JSON processor
+Bundle-SymbolicName: org.codehaus.jackson
+Bundle-Version: 1.4
+Bundle-ClassPath: org.codehaus.jackson.core.jar,
+ org.codehaus.jackson.mapper.jar
+Bundle-Vendor: Codehaus
+Export-Package: org.codehaus.jackson,
+ org.codehaus.jackson.annotate,
+ org.codehaus.jackson.impl,
+ org.codehaus.jackson.io,
+ org.codehaus.jackson.map,
+ org.codehaus.jackson.map.annotate,
+ org.codehaus.jackson.map.deser,
+ org.codehaus.jackson.map.ext,
+ org.codehaus.jackson.map.introspect,
+ org.codehaus.jackson.map.ser,
+ org.codehaus.jackson.map.type,
+ org.codehaus.jackson.map.util,
+ org.codehaus.jackson.node,
+ org.codehaus.jackson.schema,
+ org.codehaus.jackson.sym,
+ org.codehaus.jackson.type,
+ org.codehaus.jackson.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
