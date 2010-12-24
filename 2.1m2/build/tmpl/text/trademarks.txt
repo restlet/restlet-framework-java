@@ -1,0 +1,23 @@
+
+================
+Trademark notice
+================
+
+
+Version 3.2, September 2010
+
+The trademarks and service marks "Restlet" and "Noelios" are the sole property 
+of Noelios Technologies and can't be used to endorse or promote products derived 
+from this software without prior written permission from their owner.
+
+Products or services derived from this software may not be called "Restlet" or 
+"Noelios" nor may "Restlet" or "Noelios" or similar confusing terms appear in 
+their names without prior written permission. For licensing, please contact the
+owner:
+
+    Noelios Technologies
+	22-23 quai du President Carnot
+	92212 Saint-Cloud Cedex
+    FRANCE
+	http://www.restlet.org/about/legal
+	mailto:legal@noelios.com
