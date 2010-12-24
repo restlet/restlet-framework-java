@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.1 Milestone 2 (12/24/2010)
     - API changes
       - Added Request#loggable property, LogService#isLoggable(Request)
         method and LogService#loggableTemplate to enable selective request 
