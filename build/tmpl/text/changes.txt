@@ -24,11 +24,16 @@ Changes log
         methods to allow interception and customization of the default
         behavior (such as throwing a ResourceException on the client-side).
         Suggested by Florian Bucklers.
-      - Facilitating the creationg of ClientResource subclasses by changing
+      - Facilitating the creation of ClientResource subclasses by changing
         the visibility of handle(...) methods from private to protected.
         Leveraged by the SipClientResource in the SIP extension.
         Reported by Phil Dunks.
     - Enhancements
+      - Added a new SIP extension providing support for the Session 
+        Initiation Protocol, largely used for voice over IP. This new
+        extension ships both client and server SIP connectors over TCP,
+        reusing the 90% of the logic used by the new NIO/HTTP internal
+        connector, providing excellent scalability and performance.
       - Simplified the default console logging by replacing Java's default
         verbose log formatter by a single line formatter. This formatter
         can be modified via the static Engine#logFormatter property.
