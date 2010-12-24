@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- 2.0.3 (2010-11-07)
+- 2.0.4 (2010-12-24)
     - Bugs fixed
        - Extension headers on responses were now supported by the
          JAX-RS extension. Reported by Jim Stabile and fix suggested
