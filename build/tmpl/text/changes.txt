@@ -5,17 +5,30 @@ Changes log
 
 - @version-full@ (@release-date@)
     - API changes
-      - Added Request#loggable property, LogService#isLoggable(Request)
-        method and LogService#loggableTemplate to enable selective request 
-        logging. Suggested by John Logdson.
-      - Added setters with String parameters in addition to Text ones to
-        the Feed and Entry classes.
+    - Enhancements
+      - Added support for non-blocking HTTPS to the internal NIO connectors, 
+        client-side and server-side. Sponsored by NetDev.
+    - Bugs fixed
+    - Misc
+
+- 2.1 Milestone 2 (12/24/2010)
+    - API changes
       - The org.restlet.service.TaskService is now a ScheduledExecutorService
         capable of running delayed commands at fixed intervals for example.
         Suggested by Kristoffer Gronowski.
       - JsonRepresentation(Map<Object,Object>) signature changed to the more
         precise JsonRepresentation(Map<String, Object) one.
         Suggested by Tim Peierls.
+      - Facilitating the creation of ClientResource subclasses by changing
+        the visibility of handle(...) methods from private to protected.
+        Leveraged by the SipClientResource in the SIP extension.
+        Reported by Phil Dunks.
+    - Enhancements
+      - Added Request#loggable property, LogService#isLoggable(Request)
+        method and LogService#loggableTemplate to enable selective request 
+        logging. Suggested by John Logdson.
+      - Added setters with String parameters in addition to Text ones to
+        the Feed and Entry classes.
       - Added an EncoderService to automatically compress sent entities
         on both client and server side. Disabled by default on Application.
       - Added UniformResource#requestCacheDirectives and 
@@ -24,11 +37,6 @@ Changes log
         methods to allow interception and customization of the default
         behavior (such as throwing a ResourceException on the client-side).
         Suggested by Florian Bucklers.
-      - Facilitating the creation of ClientResource subclasses by changing
-        the visibility of handle(...) methods from private to protected.
-        Leveraged by the SipClientResource in the SIP extension.
-        Reported by Phil Dunks.
-    - Enhancements
       - Added a new SIP extension providing support for the Session 
         Initiation Protocol, largely used for voice over IP. This new
         extension ships both client and server SIP connectors over TCP,

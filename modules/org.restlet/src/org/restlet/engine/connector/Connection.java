@@ -33,6 +33,7 @@ package org.restlet.engine.connector;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.security.cert.Certificate;
 import java.util.Arrays;
@@ -68,12 +69,6 @@ import org.restlet.util.SelectionRegistration;
  */
 public class Connection<T extends Connector> implements SelectionListener {
 
-    /** The readable selection channel. */
-    private volatile ReadableSelectionChannel readableSelectionChannel;
-
-    /** The writable selection channel. */
-    private volatile WritableSelectionChannel writableSelectionChannel;
-
     /** The parent connector helper. */
     private final ConnectionHelper<T> helper;
 
@@ -92,11 +87,8 @@ public class Connection<T extends Connector> implements SelectionListener {
     /** Indicates if idempotent sequences of requests can be pipelined. */
     private volatile boolean pipelining;
 
-    /** The underlying socket channel. */
-    private volatile SocketChannel socketChannel;
-
-    /** The socket address. */
-    private volatile SocketAddress socketAddress;
+    /** The readable selection channel. */
+    private volatile ReadableSelectionChannel readableSelectionChannel;
 
     /**
      * The socket's NIO selection registration holding the link between the
@@ -104,8 +96,17 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     private volatile SelectionRegistration registration;
 
+    /** The socket address. */
+    private volatile SocketAddress socketAddress;
+
+    /** The underlying socket channel. */
+    private volatile SocketChannel socketChannel;
+
     /** The state of the connection. */
     private volatile ConnectionState state;
+
+    /** The writable selection channel. */
+    private volatile WritableSelectionChannel writableSelectionChannel;
 
     /**
      * Constructor.
@@ -217,6 +218,36 @@ public class Connection<T extends Connector> implements SelectionListener {
 
         // Wake up the controller if it is sleeping
         getHelper().getController().wakeup();
+    }
+
+    /**
+     * Creates a new byte buffer.
+     * 
+     * @param bufferSize
+     *            The byte buffer size.
+     * @return
+     */
+    protected ByteBuffer createByteBuffer(int bufferSize) {
+        return getHelper().isDirectBuffers() ? ByteBuffer
+                .allocateDirect(bufferSize) : ByteBuffer.allocate(bufferSize);
+    }
+
+    /**
+     * Creates a new readable channel.
+     * 
+     * @return A new readable channel.
+     */
+    protected ReadableSelectionChannel createReadableSelectionChannel() {
+        return new ReadableSocketChannel(getSocketChannel(), getRegistration());
+    }
+
+    /**
+     * Creates a new writable channel.
+     * 
+     * @return A new writable channel.
+     */
+    protected WritableSelectionChannel createWritableSelectionChannel() {
+        return new WritableSocketChannel(getSocketChannel(), getRegistration());
     }
 
     /**
@@ -583,18 +614,16 @@ public class Connection<T extends Connector> implements SelectionListener {
                 && (socketAddress != null)) {
             this.registration = (controller == null) ? null : controller
                     .register(socketChannel, 0, this);
+            this.readableSelectionChannel = createReadableSelectionChannel();
+            this.writableSelectionChannel = createWritableSelectionChannel();
 
-            if (helper.isTracing()) {
+            if (getHelper().isTracing()) {
                 this.readableSelectionChannel = new ReadableTraceChannel(
-                        new ReadableSocketChannel(socketChannel, registration));
+                        this.readableSelectionChannel);
                 this.writableSelectionChannel = new WritableTraceChannel(
-                        new WritableSocketChannel(socketChannel, registration));
-            } else {
-                this.readableSelectionChannel = new ReadableSocketChannel(
-                        socketChannel, registration);
-                this.writableSelectionChannel = new WritableSocketChannel(
-                        socketChannel, registration);
+                        this.writableSelectionChannel);
             }
+
         }
 
         this.lastActivity = System.currentTimeMillis();
