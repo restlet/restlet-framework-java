@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
 import java.security.GeneralSecurityException;
@@ -211,7 +210,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
     @Override
     protected Connection<Client> createConnection(SocketChannel socketChannel,
-            ConnectionController controller, SocketAddress socketAddress)
+            ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
         return new Connection<Client>(this, socketChannel, controller,
                 socketAddress);
@@ -890,7 +889,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     @Override
     public void start() throws Exception {
         getLogger().info("Starting the internal " + getProtocols() + " client");
-
         super.start();
     }
 

@@ -95,7 +95,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
 
     @Override
     protected Connection<Server> createConnection(SocketChannel socketChannel,
-            ConnectionController controller, SocketAddress socketAddress)
+            ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
         return new Connection<Server>(this, socketChannel, controller,
                 socketAddress);

@@ -31,7 +31,7 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
-import java.net.SocketAddress;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
@@ -71,10 +71,11 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      */
     public SslConnection(ConnectionHelper<T> helper,
             SocketChannel socketChannel, ConnectionController controller,
-            SocketAddress socketAddress, SSLContext sslContext)
+            InetSocketAddress socketAddress, SSLContext sslContext)
             throws IOException {
         super(helper, socketChannel, controller, socketAddress);
-        this.engine = sslContext.createSSLEngine();
+        this.engine = sslContext.createSSLEngine(socketAddress.getHostName(),
+                socketAddress.getPort());
     }
 
     @Override

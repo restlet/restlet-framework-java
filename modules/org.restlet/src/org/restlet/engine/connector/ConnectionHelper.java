@@ -31,7 +31,7 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
-import java.net.SocketAddress;
+import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -155,7 +155,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * @throws IOException
      */
     protected Connection<T> checkout(SocketChannel socketChannel,
-            ConnectionController controller, SocketAddress socketAddress)
+            ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
         Connection<T> result = null;
 
@@ -183,7 +183,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
      */
     protected abstract Connection<T> createConnection(
             SocketChannel socketChannel, ConnectionController controller,
-            SocketAddress socketAddress) throws IOException;
+            InetSocketAddress socketAddress) throws IOException;
 
     /**
      * Creates the connection pool.

@@ -96,6 +96,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      *            The byte buffer size.
      */
     public Way(Connection<?> connection, int bufferSize) {
+        this.connection = connection;
         this.byteBuffer = getConnection().createByteBuffer(bufferSize);
         this.byteBufferState = BufferState.FILLING;
         this.lineBuilder = new StringBuilder();
@@ -103,7 +104,6 @@ public abstract class Way implements SelectionListener, CompletionListener {
         this.messages = new ConcurrentLinkedQueue<Response>();
         this.message = null;
         this.headers = null;
-        this.connection = connection;
         this.messageState = MessageState.IDLE;
         this.ioState = IoState.IDLE;
         this.registration = new SelectionRegistration(0, this);

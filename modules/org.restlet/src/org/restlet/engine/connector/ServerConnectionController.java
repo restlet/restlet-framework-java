@@ -31,6 +31,7 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedByInterruptException;
@@ -118,12 +119,11 @@ public class ServerConnectionController extends ConnectionController {
                     if ((getHelper().getMaxTotalConnections() == -1)
                             || (connectionsCount <= getHelper()
                                     .getMaxTotalConnections())) {
-                        Connection<Server> connection = getHelper()
-                                .checkout(
-                                        socketChannel,
-                                        this,
-                                        socketChannel.socket()
-                                                .getRemoteSocketAddress());
+                        Connection<Server> connection = getHelper().checkout(
+                                socketChannel,
+                                this,
+                                (InetSocketAddress) socketChannel.socket()
+                                        .getRemoteSocketAddress());
                         connection.open();
                         getHelper().getConnections().add(connection);
 

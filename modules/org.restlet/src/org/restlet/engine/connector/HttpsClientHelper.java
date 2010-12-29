@@ -31,7 +31,7 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
-import java.net.SocketAddress;
+import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 
 import javax.net.ssl.SSLContext;
@@ -64,7 +64,7 @@ public class HttpsClientHelper extends ClientConnectionHelper {
 
     @Override
     protected Connection<Client> createConnection(SocketChannel socketChannel,
-            ConnectionController controller, SocketAddress socketAddress)
+            ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
         return new SslConnection<Client>(this, socketChannel, controller,
                 socketAddress, getSslContext());

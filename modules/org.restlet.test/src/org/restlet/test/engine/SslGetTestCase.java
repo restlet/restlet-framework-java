@@ -54,6 +54,7 @@ import org.restlet.routing.Router;
  * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
  */
 public class SslGetTestCase extends SslBaseConnectorsTestCase {
+
     public static class GetTestResource extends ServerResource {
 
         public GetTestResource() {
@@ -75,8 +76,8 @@ public class SslGetTestCase extends SslBaseConnectorsTestCase {
         configureSslClientParameters(client.getContext());
         final Response r = client.handle(request);
 
-        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
-                .getStatus());
+        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK,
+                r.getStatus());
         assertEquals("Hello world", r.getEntity().getText());
 
         Thread.sleep(200);

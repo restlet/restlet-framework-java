@@ -31,6 +31,7 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -122,7 +123,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * @throws IOException
      */
     public Connection(ConnectionHelper<T> helper, SocketChannel socketChannel,
-            ConnectionController controller, SocketAddress socketAddress)
+            ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
         this.helper = helper;
         this.inboundWay = helper.createInboundWay(this);

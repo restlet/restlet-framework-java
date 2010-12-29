@@ -30,6 +30,8 @@
 
 package org.restlet.test.engine;
 
+import org.restlet.test.engine.io.BioUtilsTestCase;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

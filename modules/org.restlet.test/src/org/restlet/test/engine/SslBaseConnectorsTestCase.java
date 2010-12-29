@@ -44,9 +44,8 @@ import org.restlet.Server;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.engine.ClientHelper;
+import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
-import org.restlet.engine.ServerHelper;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.local.ClapClientHelper;
 import org.restlet.test.RestletTestCase;
@@ -63,9 +62,13 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private Component component;
 
-    private final boolean enableApacheClient = true;
+    private final boolean enableApacheClient = false;
 
-    private final boolean enableJdkNetClient = true;
+    private final boolean enableInternalClient = true;
+
+    private final boolean enableInternalServer = false;
+
+    private final boolean enableJdkNetClient = false;
 
     private final boolean enableJettyServer = true;
 
@@ -78,6 +81,12 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     protected abstract void call(String uri) throws Exception;
 
+    protected void configureSslClientParameters(Context context) {
+        Series<Parameter> parameters = context.getParameters();
+        parameters.add("truststorePath", testKeystoreFile.getPath());
+        parameters.add("truststorePassword", "testtest");
+    }
+
     protected void configureSslServerParameters(Context context) {
         Series<Parameter> parameters = context.getParameters();
         parameters.add("keystorePath", testKeystoreFile.getPath());
@@ -87,24 +96,18 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         parameters.add("truststorePassword", "testtest");
     }
 
-    protected void configureSslClientParameters(Context context) {
-        Series<Parameter> parameters = context.getParameters();
-        parameters.add("truststorePath", testKeystoreFile.getPath());
-        parameters.add("truststorePassword", "testtest");
-    }
-
     protected abstract Application createApplication(Component component);
 
     // Helper methods
-    private void runTest(ServerHelper server, ClientHelper client)
-            throws Exception {
-        final Engine nre = new Engine(false);
-        nre.getRegisteredClients().add(new ClapClientHelper(null));
-        nre.getRegisteredServers().add(server);
-        nre.getRegisteredClients().add(client);
-        org.restlet.engine.Engine.setInstance(nre);
+    private void runTest(ConnectorHelper<Server> server,
+            ConnectorHelper<Client> client) throws Exception {
+        Engine engine = new Engine(false);
+        engine.getRegisteredClients().add(new ClapClientHelper(null));
+        engine.getRegisteredServers().add(server);
+        engine.getRegisteredClients().add(client);
+        org.restlet.engine.Engine.setInstance(engine);
+        String uri = start();
 
-        final String uri = start();
         try {
             call(uri);
         } finally {
@@ -173,10 +176,38 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         org.restlet.engine.Engine.setInstance(new Engine());
     }
 
+    public void testSslInternalAndApache() throws Exception {
+        if (this.enableInternalServer && this.enableApacheClient) {
+            runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
+                    new org.restlet.ext.httpclient.HttpClientHelper(null));
+        }
+    }
+
+    public void testSslInternalAndInternal() throws Exception {
+        if (this.enableInternalServer && this.enableInternalClient) {
+            runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
+                    new org.restlet.engine.connector.HttpsClientHelper(null));
+        }
+    }
+
+    public void testSslInternalAndJdkNet() throws Exception {
+        if (this.enableInternalServer && this.enableJdkNetClient) {
+            runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
+                    new org.restlet.ext.net.HttpClientHelper(null));
+        }
+    }
+
     public void testSslJettyAndApache() throws Exception {
         if (this.enableJettyServer && this.enableApacheClient) {
             runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
+        }
+    }
+
+    public void testSslJettyAndInternal() throws Exception {
+        if (this.enableJettyServer && this.enableInternalClient) {
+            runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
+                    new org.restlet.engine.connector.HttpsClientHelper(null));
         }
     }
 
@@ -191,6 +222,13 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         if (this.enableSimpleServer && this.enableApacheClient) {
             runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
+        }
+    }
+
+    public void testSslSimpleAndInternal() throws Exception {
+        if (this.enableSimpleServer && this.enableInternalClient) {
+            runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
+                    new org.restlet.engine.connector.HttpsClientHelper(null));
         }
     }
 
