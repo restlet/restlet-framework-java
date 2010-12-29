@@ -84,6 +84,12 @@ import org.restlet.engine.io.IoState;
  * <td>The port of the HTTP proxy.</td>
  * </tr>
  * <tr>
+ * <td>socketConnectTimeoutMs</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>The socket connection timeout or 0 for unlimited wait.</td>
+ * </tr>
+ * <tr>
  * <td>socketKeepAlive</td>
  * <td>boolean</td>
  * <td>true</td>
@@ -503,12 +509,20 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     }
 
     /**
-     * Returns the connection timeout.
+     * Returns the socket connection timeout.
      * 
-     * @return The connection timeout.
+     * @return The socket connection timeout.
      */
-    public int getConnectTimeout() {
-        return getHelped().getConnectTimeout();
+    @SuppressWarnings("deprecation")
+    public int getSocketConnectTimeoutMs() {
+        int result = getHelped().getConnectTimeout();
+
+        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
+            result = Integer.parseInt(getHelpedParameters().getFirstValue(
+                    "socketConnectTimeoutMs", "0"));
+        }
+
+        return result;
     }
 
     /**

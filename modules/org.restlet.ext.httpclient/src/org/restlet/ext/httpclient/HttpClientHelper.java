@@ -223,7 +223,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         HttpClientParams.setCookiePolicy(params,
                 CookiePolicy.BROWSER_COMPATIBILITY);
         HttpConnectionParams.setTcpNoDelay(params, getTcpNoDelay());
-        HttpConnectionParams.setConnectionTimeout(params, getConnectTimeout());
+        HttpConnectionParams.setConnectionTimeout(params, getSocketConnectTimeoutMs());
         HttpConnectionParams.setSoTimeout(params, getSocketTimeout());
 
         String httpProxyHost = getProxyHost();

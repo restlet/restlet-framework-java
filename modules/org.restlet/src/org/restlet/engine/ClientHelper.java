@@ -33,7 +33,23 @@ package org.restlet.engine;
 import org.restlet.Client;
 
 /**
- * Client connector helper.
+ * Client connector helper. Base client helper based on NIO non blocking
+ * sockets. Here is the list of parameters that are supported. They should be
+ * set in the Client's context before it is started:
+ * <table>
+ * <tr>
+ * <th>Parameter name</th>
+ * <th>Value type</th>
+ * <th>Default value</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>socketConnectTimeoutMs</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>The socket connection timeout or 0 for unlimited wait.</td>
+ * </tr>
+ * </table>
  * 
  * @author Jerome Louvel
  */
@@ -54,8 +70,16 @@ public class ClientHelper extends ConnectorHelper<Client> {
      * 
      * @return The connection timeout.
      */
-    public int getConnectTimeout() {
-        return getHelped().getConnectTimeout();
+    @SuppressWarnings("deprecation")
+    public int getSocketConnectTimeoutMs() {
+        int result = getHelped().getConnectTimeout();
+
+        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
+            result = Integer.parseInt(getHelpedParameters().getFirstValue(
+                    "socketConnectTimeoutMs", "0"));
+        }
+
+        return result;
     }
 
 }

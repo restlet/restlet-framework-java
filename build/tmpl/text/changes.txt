@@ -5,6 +5,11 @@ Changes log
 
 - @version-full@ (@release-date@)
     - API changes
+      - Deprecated the Client#connectTimeout property as it is hard to find
+        compared to other connector parameters. Also, it isn't available for
+        all connectors so it can be confusing to expose it.
+        Use the "socketConnectTimeoutMs" connector parameter instead or
+        the "maxIoIdleTimeMs" parameter for internal NIO connectors.
     - Enhancements
       - Added support for non-blocking HTTPS to the internal NIO connectors, 
         client-side and server-side. Sponsored by NetDev.

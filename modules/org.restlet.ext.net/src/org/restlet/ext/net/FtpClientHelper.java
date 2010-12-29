@@ -166,7 +166,7 @@ public class FtpClientHelper extends ClientHelper {
                     int minorVersionNumber = SystemUtils.getJavaMinorVersion();
                     if ((majorVersionNumber > 1)
                             || ((majorVersionNumber == 1) && (minorVersionNumber >= 5))) {
-                        connection.setConnectTimeout(getConnectTimeout());
+                        connection.setConnectTimeout(getSocketConnectTimeoutMs());
                         connection.setReadTimeout(getReadTimeout());
                     }
 

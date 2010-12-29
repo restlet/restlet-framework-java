@@ -102,7 +102,7 @@ public class HttpUrlConnectionCall extends ClientCall {
             if ((majorVersionNumber > 1)
                     || ((majorVersionNumber == 1) && (minorVersionNumber >= 5))) {
                 this.connection.setConnectTimeout(getHelper()
-                        .getConnectTimeout());
+                        .getSocketConnectTimeoutMs());
                 this.connection.setReadTimeout(getHelper().getReadTimeout());
             }
 

@@ -142,7 +142,9 @@ public class Client extends Connector {
      * meaning an infinite timeout.
      * 
      * @return The connection timeout.
+     * @deprecated Use the equivalent "socketConnectTimeoutMs" connector parameter.
      */
+    @Deprecated
     public int getConnectTimeout() {
         return this.connectTimeout;
     }
@@ -178,11 +180,9 @@ public class Client extends Connector {
             getHelper().handle(request, response);
         } else {
             StringBuilder sb = new StringBuilder();
-            sb
-                    .append("No available client connector supports the required protocol: ");
+            sb.append("No available client connector supports the required protocol: ");
             sb.append("'").append(request.getProtocol().getName()).append("'.");
-            sb
-                    .append(" Please add the JAR of a matching connector to your classpath.");
+            sb.append(" Please add the JAR of a matching connector to your classpath.");
             response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, sb.toString());
         }
     }
@@ -232,7 +232,9 @@ public class Client extends Connector {
      * 
      * @param connectTimeout
      *            The connection timeout.
+     * @deprecated Use the equivalent connector parameters.
      */
+    @Deprecated
     public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
     }
