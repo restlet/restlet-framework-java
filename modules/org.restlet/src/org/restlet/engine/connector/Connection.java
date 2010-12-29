@@ -228,7 +228,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      *            The byte buffer size.
      * @return
      */
-    protected ByteBuffer createByteBuffer(int bufferSize) {
+    public ByteBuffer createByteBuffer(int bufferSize) {
         return getHelper().isDirectBuffers() ? ByteBuffer
                 .allocateDirect(bufferSize) : ByteBuffer.allocate(bufferSize);
     }
@@ -272,6 +272,16 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
+     * Returns the size of the content buffer for receiving messages. By
+     * default, it calls {@link #getInboundBufferSize()}.
+     * 
+     * @return The size of the content buffer for receiving messages.
+     */
+    public int getInboundBufferSize() {
+        return getHelper().getInboundBufferSize();
+    }
+
+    /**
      * Returns the inbound way.
      * 
      * @return The inbound way.
@@ -287,6 +297,16 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public Logger getLogger() {
         return getHelper().getLogger();
+    }
+
+    /**
+     * Returns the size of the content buffer for sending responses. By default,
+     * it calls {@link #getOutboundBufferSize()}.
+     * 
+     * @return The size of the content buffer for sending responses.
+     */
+    public int getOutboundBufferSize() {
+        return getHelper().getOutboundBufferSize();
     }
 
     /**

@@ -32,11 +32,11 @@ package org.restlet.engine.connector;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLException;
 
 import org.restlet.Connector;
 import org.restlet.engine.io.ReadableSelectionChannel;
@@ -78,22 +78,31 @@ public class SslConnection<T extends Connector> extends Connection<T> {
             throws IOException {
         super(helper, socketChannel, controller, socketAddress);
         this.sslContext = sslContext;
+        initSslEngine(socketAddress);
     }
 
     @Override
     protected ReadableSelectionChannel createReadableSelectionChannel() {
-        ByteBuffer packetBuffer = createByteBuffer(getHelper()
-                .getInboundBufferSize());
         return new ReadableSslChannel(super.createReadableSelectionChannel(),
-                getSslEngine(), packetBuffer);
+                getSslEngine(), this);
     }
 
     @Override
     protected WritableSelectionChannel createWritableSelectionChannel() {
-        ByteBuffer packetBuffer = createByteBuffer(getHelper()
-                .getOutboundBufferSize());
         return new WritableSslChannel(super.createWritableSelectionChannel(),
-                getSslEngine(), packetBuffer);
+                getSslEngine(), this);
+    }
+
+    @Override
+    public int getInboundBufferSize() {
+        return Math.max(super.getInboundBufferSize(), getSslEngine()
+                .getSession().getApplicationBufferSize());
+    }
+
+    @Override
+    public int getOutboundBufferSize() {
+        return Math.max(super.getOutboundBufferSize(), getSslEngine()
+                .getSession().getApplicationBufferSize());
     }
 
     /**
@@ -114,16 +123,30 @@ public class SslConnection<T extends Connector> extends Connection<T> {
         return this.sslEngine;
     }
 
+    /**
+     * Initializes the SSL engine with the current SSL context and the given
+     * socket address.
+     * 
+     * @param socketAddress
+     *            The remote socket address.
+     * @throws SSLException
+     */
+    protected void initSslEngine(InetSocketAddress socketAddress)
+            throws SSLException {
+        if ((socketAddress != null) && (getSslContext() != null)) {
+            this.sslEngine = getSslContext().createSSLEngine(
+                    socketAddress.getHostName(), socketAddress.getPort());
+            this.sslEngine.setUseClientMode(isClientSide());
+            this.sslEngine.beginHandshake();
+        }
+    }
+
     @Override
     public void reuse(SocketChannel socketChannel,
             ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
+        initSslEngine(socketAddress);
         super.reuse(socketChannel, controller, socketAddress);
-
-        if (getSslContext() != null) {
-            this.sslEngine = getSslContext().createSSLEngine(
-                    socketAddress.getHostName(), socketAddress.getPort());
-        }
     }
 
     /**

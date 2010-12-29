@@ -35,6 +35,8 @@ import java.nio.ByteBuffer;
 
 import javax.net.ssl.SSLEngine;
 
+import org.restlet.engine.connector.SslConnection;
+
 /**
  * SSL byte channel that unwraps all read data using the SSL/TLS protocols. It
  * is important to implement {@link SelectionChannel} as some framework classes
@@ -52,12 +54,12 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
      *            The wrapped channel.
      * @param engine
      *            The SSL engine.
-     * @param byteBuffer
-     *            The byte buffer for SSL/TLS data.
+     * @param connection
+     *            The parent SSL connection.
      */
     public ReadableSslChannel(ReadableSelectionChannel wrappedChannel,
-            SSLEngine sslEngine, ByteBuffer byteBuffer) {
-        super(wrappedChannel, sslEngine, byteBuffer);
+            SSLEngine sslEngine, SslConnection<?> connection) {
+        super(wrappedChannel, sslEngine, connection);
     }
 
     /**

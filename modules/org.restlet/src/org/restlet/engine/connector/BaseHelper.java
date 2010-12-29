@@ -385,17 +385,6 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Returns the time to wait between socket write operations in milliseconds.
-     * Can prevent TCP buffer overflows.
-     * 
-     * @return The time to wait between socket write operations in milliseconds.
-     */
-    public int getThrottleTimeMs() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "throttleTimeMs", "0"));
-    }
-
-    /**
      * Returns the maximum number of calls that can be queued if there aren't
      * any worker thread available to service them. If the value is '0', then no
      * queue is used and calls are rejected. If the value is '-1', then an
@@ -457,6 +446,17 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     protected Queue<Response> getOutboundMessages() {
         return outboundMessages;
+    }
+
+    /**
+     * Returns the time to wait between socket write operations in milliseconds.
+     * Can prevent TCP buffer overflows.
+     * 
+     * @return The time to wait between socket write operations in milliseconds.
+     */
+    public int getThrottleTimeMs() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "throttleTimeMs", "0"));
     }
 
     /**

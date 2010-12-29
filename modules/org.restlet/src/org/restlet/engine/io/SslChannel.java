@@ -34,6 +34,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectableChannel;
 
 import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLSession;
+
+import org.restlet.engine.connector.SslConnection;
 
 /**
  * Filter byte channel that enables secure communication using SSL/TLS
@@ -45,11 +48,17 @@ import javax.net.ssl.SSLEngine;
 public class SslChannel<T extends SelectionChannel> extends
         WrapperSelectionChannel<T> {
 
-    /** The SSL engine to use of wrapping and unwrapping. */
-    private SSLEngine engine;
+    /** The parent SSL connection. */
+    private final SslConnection<?> connection;
 
-    /** The secured byte buffer. */
-    private final ByteBuffer packetBuffer;
+    /** The SSL engine to use of wrapping and unwrapping. */
+    private volatile SSLEngine engine;
+
+    /** The packet byte buffer. */
+    private volatile ByteBuffer packetBuffer;
+
+    /** The packet buffer state. */
+    private volatile BufferState packetBufferState;
 
     /**
      * Constructor.
@@ -58,13 +67,33 @@ public class SslChannel<T extends SelectionChannel> extends
      *            The wrapped channel.
      * @param engine
      *            The SSL engine.
-     * @param byteBuffer
-     *            The byte buffer for SSL/TLS data.
+     * @param connection
+     *            The parent SSL connection.
      */
-    public SslChannel(T wrappedChannel, SSLEngine engine, ByteBuffer byteBuffer) {
+    public SslChannel(T wrappedChannel, SSLEngine engine,
+            SslConnection<?> connection) {
         super(wrappedChannel);
         this.engine = engine;
-        this.packetBuffer = byteBuffer;
+        this.connection = connection;
+
+        if (engine != null) {
+            SSLSession session = getEngine().getSession();
+            int packetSize = session.getPacketBufferSize();
+            this.packetBuffer = getConnection().createByteBuffer(packetSize);
+        } else {
+            this.packetBuffer = null;
+        }
+
+        this.packetBufferState = BufferState.IDLE;
+    }
+
+    /**
+     * Returns the parent SSL connection.
+     * 
+     * @return The parent SSL connection.
+     */
+    protected SslConnection<?> getConnection() {
+        return connection;
     }
 
     /**
@@ -83,6 +112,35 @@ public class SslChannel<T extends SelectionChannel> extends
      */
     protected ByteBuffer getPacketBuffer() {
         return packetBuffer;
+    }
+
+    /**
+     * Returns the byte buffer state.
+     * 
+     * @return The byte buffer state.
+     */
+    protected BufferState getPacketBufferState() {
+        return packetBufferState;
+    }
+
+    /**
+     * Sets the packet byte buffer.
+     * 
+     * @param packetBuffer
+     *            The packet byte buffer.
+     */
+    protected void setPacketBuffer(ByteBuffer packetBuffer) {
+        this.packetBuffer = packetBuffer;
+    }
+
+    /**
+     * Sets the buffer state.
+     * 
+     * @param bufferState
+     *            The buffer state.
+     */
+    protected void setPacketBufferState(BufferState bufferState) {
+        this.packetBufferState = bufferState;
     }
 
 }
