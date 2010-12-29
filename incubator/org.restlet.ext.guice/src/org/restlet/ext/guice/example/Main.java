@@ -8,7 +8,7 @@ import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
-import org.restlet.ext.guice.DependencyInjection;
+import org.restlet.ext.guice.FinderFactory;
 import org.restlet.ext.guice.RestletGuice;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
@@ -23,7 +23,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         Component component = new Component();
-        component.getServers().add(Protocol.HTTP, 8111);
+        component.getServers().add(Protocol.HTTP, 8182);
         component.getDefaultHost().attach(new MainApp());
         component.start();
     }
@@ -41,13 +41,13 @@ public class Main {
         @Override
         public Restlet createInboundRoot() {
 
-            DependencyInjection di = null;
+            FinderFactory di = null;
             switch (mode) {
 
             case EXPLICIT_INJECTOR: // (1) Use explicit Injector creation.
 
                 Injector injector = RestletGuice.createInjector(mainModule);
-                di = injector.getInstance(DependencyInjection.class);
+                di = injector.getInstance(FinderFactory.class);
                 break;
 
             case AUTO_INJECTOR: // (2) Use a special module that is also a
@@ -66,11 +66,11 @@ public class Main {
 
             // Route HELLO_PATH to whatever is bound to ServerResource annotated
             // with @HelloWorld.
-            router.attach(HELLO_PATH, di.inject(ServerResource.class,
+            router.attach(HELLO_PATH, di.finder(ServerResource.class,
                     HelloWorld.class));
 
             // Everything else goes to DefaultResource.
-            router.attachDefault(di.inject(DefaultResource.class));
+            router.attachDefault(di.finder(DefaultResource.class));
 
             return router;
         }
