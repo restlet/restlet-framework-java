@@ -315,12 +315,6 @@ public abstract class Way implements SelectionListener, CompletionListener {
     }
 
     /**
-     * Reuses the way based on an updated connection.
-     */
-    public void reuse() {
-    }
-
-    /**
      * Sets the byte buffer IO state.
      * 
      * @param byteBufferState

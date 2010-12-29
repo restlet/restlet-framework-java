@@ -71,9 +71,11 @@ public abstract class InboundWay extends Way {
      * 
      * @param connection
      *            The parent connection.
+     * @param bufferSize
+     *            The byte buffer size.
      */
-    public InboundWay(Connection<?> connection) {
-        super(connection, connection.getHelper().getInboundBufferSize());
+    public InboundWay(Connection<?> connection, int bufferSize) {
+        super(connection, bufferSize);
         this.builderIndex = 0;
     }
 

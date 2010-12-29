@@ -128,7 +128,7 @@ public class Connection<T extends Connector> implements SelectionListener {
         this.helper = helper;
         this.inboundWay = helper.createInboundWay(this, inboundBufferSize);
         this.outboundWay = helper.createOutboundWay(this, outboundBufferSize);
-        reuse(socketChannel, controller, socketAddress);
+        init(socketChannel, controller, socketAddress);
     }
 
     /**
@@ -612,7 +612,7 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
-     * Reuses the connection and associates it to the given socket.
+     * Initializes the connection and associates it to the given socket.
      * 
      * @param socketChannel
      *            The underlying NIO socket channel.
@@ -622,7 +622,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      *            The associated socket address.
      * @throws IOException
      */
-    public void reuse(SocketChannel socketChannel,
+    public void init(SocketChannel socketChannel,
             ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
         this.persistent = helper.isPersistingConnections();
@@ -648,8 +648,23 @@ public class Connection<T extends Connector> implements SelectionListener {
         }
 
         this.lastActivity = System.currentTimeMillis();
-        this.inboundWay.reuse();
-        this.outboundWay.reuse();
+    }
+
+    /**
+     * Reuses the connection and associates it to the given socket.
+     * 
+     * @param socketChannel
+     *            The underlying NIO socket channel.
+     * @param controller
+     *            The underlying IO controller.
+     * @param socketAddress
+     *            The associated socket address.
+     * @throws IOException
+     */
+    public void reuse(SocketChannel socketChannel,
+            ConnectionController controller, InetSocketAddress socketAddress)
+            throws IOException {
+        init(socketChannel, controller, socketAddress);
     }
 
     /**

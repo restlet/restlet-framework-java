@@ -77,6 +77,14 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     }
 
     @Override
+    public void reuse(SocketChannel socketChannel,
+            ConnectionController controller, InetSocketAddress socketAddress)
+            throws IOException {
+        getSslManager().initEngine();
+        super.reuse(socketChannel, controller, socketAddress);
+    }
+
+    @Override
     protected ReadableSelectionChannel createReadableSelectionChannel() {
         return new ReadableSslChannel(super.createReadableSelectionChannel(),
                 getSslManager(), this);
@@ -107,14 +115,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      */
     protected SslManager getSslManager() {
         return sslManager;
-    }
-
-    @Override
-    public void reuse(SocketChannel socketChannel,
-            ConnectionController controller, InetSocketAddress socketAddress)
-            throws IOException {
-        getSslManager().initEngine();
-        super.reuse(socketChannel, controller, socketAddress);
     }
 
 }
