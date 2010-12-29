@@ -66,7 +66,7 @@ public abstract class Controller {
     }
 
     /**
-     * Control the helper for inbound or outbound messages to handle.
+     * Controls the helper for inbound or outbound messages to handle.
      * 
      * @return Indicates if some concrete activity occurred.
      */
