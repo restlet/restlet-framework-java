@@ -80,6 +80,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     public void reuse(SocketChannel socketChannel,
             ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
+        getSslManager().setPeerAddress(socketAddress);
         getSslManager().initEngine();
         super.reuse(socketChannel, controller, socketAddress);
     }

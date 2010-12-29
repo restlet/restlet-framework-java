@@ -54,7 +54,7 @@ public class SslManager {
     private volatile SSLEngine engine;
 
     /** The peer address. */
-    private final InetSocketAddress peerAddress;
+    private volatile InetSocketAddress peerAddress;
 
     /**
      * Constructor.
@@ -170,6 +170,16 @@ public class SslManager {
      */
     protected void setEngine(SSLEngine engine) {
         this.engine = engine;
+    }
+
+    /**
+     * Sets the peer address.
+     * 
+     * @param peerAddress
+     *            The peer address.
+     */
+    public void setPeerAddress(InetSocketAddress peerAddress) {
+        this.peerAddress = peerAddress;
     }
 
 }

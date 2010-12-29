@@ -84,7 +84,7 @@ public class SslChannel<T extends SelectionChannel> extends
             this.packetBuffer = null;
         }
 
-        this.packetBufferState = BufferState.IDLE;
+        this.packetBufferState = BufferState.FILLING;
     }
 
     /**
