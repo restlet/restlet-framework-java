@@ -603,7 +603,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * @throws IOException
      */
     public void reuse(SocketChannel socketChannel,
-            ConnectionController controller, SocketAddress socketAddress)
+            ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
         this.persistent = helper.isPersistingConnections();
         this.pipelining = helper.isPipeliningConnections();

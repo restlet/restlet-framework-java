@@ -53,8 +53,11 @@ import org.restlet.engine.io.WritableSslChannel;
  */
 public class SslConnection<T extends Connector> extends Connection<T> {
 
+    /** The SSL context to use for SSL engine creation. */
+    private final SSLContext sslContext;
+
     /** The SSL engine to use of wrapping and unwrapping. */
-    private SSLEngine engine;
+    private SSLEngine sslEngine;
 
     /**
      * Constructor.
@@ -74,8 +77,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
             InetSocketAddress socketAddress, SSLContext sslContext)
             throws IOException {
         super(helper, socketChannel, controller, socketAddress);
-        this.engine = sslContext.createSSLEngine(socketAddress.getHostName(),
-                socketAddress.getPort());
+        this.sslContext = sslContext;
     }
 
     @Override
@@ -83,7 +85,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
         ByteBuffer packetBuffer = createByteBuffer(getHelper()
                 .getInboundBufferSize());
         return new ReadableSslChannel(super.createReadableSelectionChannel(),
-                getEngine(), packetBuffer);
+                getSslEngine(), packetBuffer);
     }
 
     @Override
@@ -91,16 +93,47 @@ public class SslConnection<T extends Connector> extends Connection<T> {
         ByteBuffer packetBuffer = createByteBuffer(getHelper()
                 .getOutboundBufferSize());
         return new WritableSslChannel(super.createWritableSelectionChannel(),
-                getEngine(), packetBuffer);
+                getSslEngine(), packetBuffer);
     }
 
     /**
-     * Returns the SSL engine to use of wrapping and unwrapping.
+     * Returns the SSL context to use for SSL engine creation.
      * 
-     * @return The SSL engine to use of wrapping and unwrapping.
+     * @return The SSL context to use for SSL engine creation.
      */
-    public SSLEngine getEngine() {
-        return this.engine;
+    protected SSLContext getSslContext() {
+        return sslContext;
+    }
+
+    /**
+     * Returns the SSL engine to use for wrapping and unwrapping.
+     * 
+     * @return The SSL engine to use for wrapping and unwrapping.
+     */
+    protected SSLEngine getSslEngine() {
+        return this.sslEngine;
+    }
+
+    @Override
+    public void reuse(SocketChannel socketChannel,
+            ConnectionController controller, InetSocketAddress socketAddress)
+            throws IOException {
+        super.reuse(socketChannel, controller, socketAddress);
+
+        if (getSslContext() != null) {
+            this.sslEngine = getSslContext().createSSLEngine(
+                    socketAddress.getHostName(), socketAddress.getPort());
+        }
+    }
+
+    /**
+     * Sets the SSL engine to use for wrapping and unwrapping.
+     * 
+     * @param engine
+     *            The SSL engine to use for wrapping and unwrapping.
+     */
+    protected void setSslEngine(SSLEngine engine) {
+        this.sslEngine = engine;
     }
 
 }
