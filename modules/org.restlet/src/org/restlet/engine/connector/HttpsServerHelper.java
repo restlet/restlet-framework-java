@@ -39,6 +39,7 @@ import javax.net.ssl.SSLContext;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.security.SslContextFactory;
+import org.restlet.engine.security.SslManager;
 import org.restlet.engine.security.SslUtils;
 
 /**
@@ -67,17 +68,20 @@ public class HttpsServerHelper extends ServerConnectionHelper {
             ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
         return new SslConnection<Server>(this, socketChannel, controller,
-                socketAddress, getSslContext());
+                socketAddress, new SslManager(getSslContext(), socketAddress,
+                        isClientSide()));
     }
 
     @Override
-    public ServerInboundWay createInboundWay(Connection<Server> connection) {
-        return new ServerInboundWay(connection);
+    public ServerInboundWay createInboundWay(Connection<Server> connection,
+            int bufferSize) {
+        return new ServerInboundWay(connection, bufferSize);
     }
 
     @Override
-    public OutboundWay createOutboundWay(Connection<Server> connection) {
-        return new ServerOutboundWay(connection);
+    public OutboundWay createOutboundWay(Connection<Server> connection,
+            int bufferSize) {
+        return new ServerOutboundWay(connection, bufferSize);
     }
 
     /**

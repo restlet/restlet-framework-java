@@ -123,11 +123,11 @@ public class Connection<T extends Connector> implements SelectionListener {
      * @throws IOException
      */
     public Connection(ConnectionHelper<T> helper, SocketChannel socketChannel,
-            ConnectionController controller, InetSocketAddress socketAddress)
-            throws IOException {
+            ConnectionController controller, InetSocketAddress socketAddress,
+            int inboundBufferSize, int outboundBufferSize) throws IOException {
         this.helper = helper;
-        this.inboundWay = helper.createInboundWay(this);
-        this.outboundWay = helper.createOutboundWay(this);
+        this.inboundWay = helper.createInboundWay(this, inboundBufferSize);
+        this.outboundWay = helper.createOutboundWay(this, outboundBufferSize);
         reuse(socketChannel, controller, socketAddress);
     }
 

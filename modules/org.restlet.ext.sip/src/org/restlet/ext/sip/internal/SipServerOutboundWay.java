@@ -53,9 +53,11 @@ public class SipServerOutboundWay extends ServerOutboundWay {
      * 
      * @param connection
      *            The parent connection.
+     * @param bufferSize
+     *            The byte buffer size.
      */
-    public SipServerOutboundWay(Connection<Server> connection) {
-        super(connection);
+    public SipServerOutboundWay(Connection<Server> connection, int bufferSize) {
+        super(connection, bufferSize);
     }
 
     @Override

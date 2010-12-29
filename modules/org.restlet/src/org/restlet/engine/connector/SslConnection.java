@@ -34,15 +34,12 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLException;
-
 import org.restlet.Connector;
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.engine.io.ReadableSslChannel;
 import org.restlet.engine.io.WritableSelectionChannel;
 import org.restlet.engine.io.WritableSslChannel;
+import org.restlet.engine.security.SslManager;
 
 /**
  * Connection secured with SSL/TLS protocols.
@@ -53,11 +50,8 @@ import org.restlet.engine.io.WritableSslChannel;
  */
 public class SslConnection<T extends Connector> extends Connection<T> {
 
-    /** The SSL context to use for SSL engine creation. */
-    private final SSLContext sslContext;
-
-    /** The SSL engine to use of wrapping and unwrapping. */
-    private SSLEngine sslEngine;
+    /** The SSL manager wrapping the SSL context and engine. */
+    private final SslManager sslManager;
 
     /**
      * Constructor.
@@ -74,89 +68,53 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      */
     public SslConnection(ConnectionHelper<T> helper,
             SocketChannel socketChannel, ConnectionController controller,
-            InetSocketAddress socketAddress, SSLContext sslContext)
+            InetSocketAddress socketAddress, SslManager sslManager)
             throws IOException {
-        super(helper, socketChannel, controller, socketAddress);
-        this.sslContext = sslContext;
-        initSslEngine(socketAddress);
+        super(helper, socketChannel, controller, socketAddress, sslManager
+                .getApplicationBufferSize(), sslManager
+                .getApplicationBufferSize());
+        this.sslManager = sslManager;
     }
 
     @Override
     protected ReadableSelectionChannel createReadableSelectionChannel() {
         return new ReadableSslChannel(super.createReadableSelectionChannel(),
-                getSslEngine(), this);
+                getSslManager(), this);
     }
 
     @Override
     protected WritableSelectionChannel createWritableSelectionChannel() {
         return new WritableSslChannel(super.createWritableSelectionChannel(),
-                getSslEngine(), this);
+                getSslManager(), this);
     }
 
     @Override
     public int getInboundBufferSize() {
-        return Math.max(super.getInboundBufferSize(), getSslEngine()
+        return Math.max(super.getInboundBufferSize(), getSslManager()
                 .getSession().getApplicationBufferSize());
     }
 
     @Override
     public int getOutboundBufferSize() {
-        return Math.max(super.getOutboundBufferSize(), getSslEngine()
+        return Math.max(super.getOutboundBufferSize(), getSslManager()
                 .getSession().getApplicationBufferSize());
     }
 
     /**
-     * Returns the SSL context to use for SSL engine creation.
+     * Returns the SSL manager wrapping the SSL context and engine.
      * 
-     * @return The SSL context to use for SSL engine creation.
+     * @return The SSL manager wrapping the SSL context and engine.
      */
-    protected SSLContext getSslContext() {
-        return sslContext;
-    }
-
-    /**
-     * Returns the SSL engine to use for wrapping and unwrapping.
-     * 
-     * @return The SSL engine to use for wrapping and unwrapping.
-     */
-    protected SSLEngine getSslEngine() {
-        return this.sslEngine;
-    }
-
-    /**
-     * Initializes the SSL engine with the current SSL context and the given
-     * socket address.
-     * 
-     * @param socketAddress
-     *            The remote socket address.
-     * @throws SSLException
-     */
-    protected void initSslEngine(InetSocketAddress socketAddress)
-            throws SSLException {
-        if ((socketAddress != null) && (getSslContext() != null)) {
-            this.sslEngine = getSslContext().createSSLEngine(
-                    socketAddress.getHostName(), socketAddress.getPort());
-            this.sslEngine.setUseClientMode(isClientSide());
-            this.sslEngine.beginHandshake();
-        }
+    protected SslManager getSslManager() {
+        return sslManager;
     }
 
     @Override
     public void reuse(SocketChannel socketChannel,
             ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
-        initSslEngine(socketAddress);
+        getSslManager().initEngine();
         super.reuse(socketChannel, controller, socketAddress);
-    }
-
-    /**
-     * Sets the SSL engine to use for wrapping and unwrapping.
-     * 
-     * @param engine
-     *            The SSL engine to use for wrapping and unwrapping.
-     */
-    protected void setSslEngine(SSLEngine engine) {
-        this.sslEngine = engine;
     }
 
 }

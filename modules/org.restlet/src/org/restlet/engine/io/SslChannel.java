@@ -33,10 +33,10 @@ package org.restlet.engine.io;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectableChannel;
 
-import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSession;
 
 import org.restlet.engine.connector.SslConnection;
+import org.restlet.engine.security.SslManager;
 
 /**
  * Filter byte channel that enables secure communication using SSL/TLS
@@ -52,7 +52,7 @@ public class SslChannel<T extends SelectionChannel> extends
     private final SslConnection<?> connection;
 
     /** The SSL engine to use of wrapping and unwrapping. */
-    private volatile SSLEngine engine;
+    private volatile SslManager manager;
 
     /** The packet byte buffer. */
     private volatile ByteBuffer packetBuffer;
@@ -65,19 +65,19 @@ public class SslChannel<T extends SelectionChannel> extends
      * 
      * @param wrappedChannel
      *            The wrapped channel.
-     * @param engine
-     *            The SSL engine.
+     * @param manager
+     *            The SSL manager.
      * @param connection
      *            The parent SSL connection.
      */
-    public SslChannel(T wrappedChannel, SSLEngine engine,
+    public SslChannel(T wrappedChannel, SslManager manager,
             SslConnection<?> connection) {
         super(wrappedChannel);
-        this.engine = engine;
+        this.manager = manager;
         this.connection = connection;
 
-        if (engine != null) {
-            SSLSession session = getEngine().getSession();
+        if (manager != null) {
+            SSLSession session = getManager().getSession();
             int packetSize = session.getPacketBufferSize();
             this.packetBuffer = getConnection().createByteBuffer(packetSize);
         } else {
@@ -97,12 +97,12 @@ public class SslChannel<T extends SelectionChannel> extends
     }
 
     /**
-     * Returns the SSL engine to use of wrapping and unwrapping.
+     * Returns the SSL manager wrapping the SSL context and engine.
      * 
-     * @return The SSL engine to use of wrapping and unwrapping.
+     * @return The SSL manager wrapping the SSL context and engine.
      */
-    public SSLEngine getEngine() {
-        return this.engine;
+    public SslManager getManager() {
+        return this.manager;
     }
 
     /**

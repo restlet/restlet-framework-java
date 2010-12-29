@@ -54,9 +54,11 @@ public class ServerOutboundWay extends OutboundWay {
      * 
      * @param connection
      *            The parent connection.
+     * @param bufferSize
+     *            The byte buffer size.
      */
-    public ServerOutboundWay(Connection<Server> connection) {
-        super(connection);
+    public ServerOutboundWay(Connection<Server> connection, int bufferSize) {
+        super(connection, bufferSize);
     }
 
     @Override

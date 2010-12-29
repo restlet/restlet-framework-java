@@ -213,7 +213,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
             ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
         return new Connection<Client>(this, socketChannel, controller,
-                socketAddress);
+                socketAddress, getInboundBufferSize(), getOutboundBufferSize());
     }
 
     @Override

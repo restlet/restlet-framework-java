@@ -57,9 +57,11 @@ public class ClientInboundWay extends InboundWay {
      * 
      * @param connection
      *            The parent connection.
+     * @param bufferSize
+     *            The byte buffer size.
      */
-    public ClientInboundWay(Connection<?> connection) {
-        super(connection);
+    public ClientInboundWay(Connection<?> connection, int bufferSize) {
+        super(connection, bufferSize);
     }
 
     /**

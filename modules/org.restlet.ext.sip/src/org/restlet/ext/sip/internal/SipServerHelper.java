@@ -75,13 +75,15 @@ public class SipServerHelper extends ServerConnectionHelper {
     }
 
     @Override
-    public ServerInboundWay createInboundWay(Connection<Server> connection) {
-        return new SipServerInboundWay(connection);
+    public ServerInboundWay createInboundWay(Connection<Server> connection,
+            int bufferSize) {
+        return new SipServerInboundWay(connection, bufferSize);
     }
 
     @Override
-    public OutboundWay createOutboundWay(Connection<Server> connection) {
-        return new SipServerOutboundWay(connection);
+    public OutboundWay createOutboundWay(Connection<Server> connection,
+            int bufferSize) {
+        return new SipServerOutboundWay(connection, bufferSize);
     }
 
     @Override

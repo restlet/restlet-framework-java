@@ -52,9 +52,11 @@ public class ServerInboundWay extends InboundWay {
      * 
      * @param connection
      *            The parent connection.
+     * @param bufferSize
+     *            The byte buffer size.
      */
-    public ServerInboundWay(Connection<?> connection) {
-        super(connection);
+    public ServerInboundWay(Connection<?> connection, int bufferSize) {
+        super(connection, bufferSize);
     }
 
     @Override

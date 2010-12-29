@@ -98,7 +98,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
             ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
         return new Connection<Server>(this, socketChannel, controller,
-                socketAddress);
+                socketAddress, getInboundBufferSize(), getOutboundBufferSize());
     }
 
     @Override

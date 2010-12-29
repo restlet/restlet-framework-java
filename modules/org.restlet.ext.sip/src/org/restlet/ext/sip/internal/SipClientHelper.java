@@ -60,13 +60,15 @@ public class SipClientHelper extends ClientConnectionHelper {
     }
 
     @Override
-    public InboundWay createInboundWay(Connection<Client> connection) {
-        return new SipClientInboundWay(connection);
+    public InboundWay createInboundWay(Connection<Client> connection,
+            int bufferSize) {
+        return new SipClientInboundWay(connection, bufferSize);
     }
 
     @Override
-    public OutboundWay createOutboundWay(Connection<Client> connection) {
-        return new SipClientOutboundWay(connection);
+    public OutboundWay createOutboundWay(Connection<Client> connection,
+            int bufferSize) {
+        return new SipClientOutboundWay(connection, bufferSize);
     }
 
     @Override

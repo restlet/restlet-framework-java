@@ -52,13 +52,15 @@ public class HttpClientHelper extends ClientConnectionHelper {
     }
 
     @Override
-    public InboundWay createInboundWay(Connection<Client> connection) {
-        return new ClientInboundWay(connection);
+    public InboundWay createInboundWay(Connection<Client> connection,
+            int bufferSize) {
+        return new ClientInboundWay(connection, bufferSize);
     }
 
     @Override
-    public OutboundWay createOutboundWay(Connection<Client> connection) {
-        return new ClientOutboundWay(connection);
+    public OutboundWay createOutboundWay(Connection<Client> connection,
+            int bufferSize) {
+        return new ClientOutboundWay(connection, bufferSize);
     }
 
 }

@@ -46,9 +46,11 @@ public class SipServerInboundWay extends ServerInboundWay {
      * 
      * @param connection
      *            The parent connection.
+     * @param bufferSize
+     *            The byte buffer size.
      */
-    public SipServerInboundWay(Connection<Server> connection) {
-        super(connection);
+    public SipServerInboundWay(Connection<Server> connection, int bufferSize) {
+        super(connection, bufferSize);
     }
 
 }

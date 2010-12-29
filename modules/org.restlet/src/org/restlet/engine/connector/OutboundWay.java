@@ -96,9 +96,12 @@ public abstract class OutboundWay extends Way {
      * Constructor.
      * 
      * @param connection
+     *            The parent connection.
+     * @param bufferSize
+     *            The byte buffer size.
      */
-    public OutboundWay(Connection<?> connection) {
-        super(connection, connection.getOutboundBufferSize());
+    public OutboundWay(Connection<?> connection, int bufferSize) {
+        super(connection, bufferSize);
         this.entityChannel = null;
         this.entitySelectionKey = null;
         this.headerIndex = 0;

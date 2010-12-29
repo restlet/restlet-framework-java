@@ -34,11 +34,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
-import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 
 import org.restlet.Context;
 import org.restlet.engine.connector.SslConnection;
+import org.restlet.engine.security.SslManager;
 
 /**
  * SSL byte channel that wraps all application data using the SSL/TLS protocols.
@@ -55,14 +55,14 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
      * 
      * @param wrappedChannel
      *            The wrapped channel.
-     * @param engine
-     *            The SSL engine.
+     * @param manager
+     *            The SSL manager.
      * @param connection
      *            The parent SSL connection.
      */
     public WritableSslChannel(WritableSelectionChannel wrappedChannel,
-            SSLEngine sslEngine, SslConnection<?> connection) {
-        super(wrappedChannel, sslEngine, connection);
+            SslManager manager, SslConnection<?> connection) {
+        super(wrappedChannel, manager, connection);
     }
 
     /**
@@ -100,7 +100,7 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
             int srcSize = src.remaining();
 
             if (srcSize > 0) {
-                SSLEngineResult sslResult = getEngine().wrap(src,
+                SSLEngineResult sslResult = getManager().getEngine().wrap(src,
                         getPacketBuffer());
 
                 if (Context.getCurrentLogger().isLoggable(Level.INFO)) {

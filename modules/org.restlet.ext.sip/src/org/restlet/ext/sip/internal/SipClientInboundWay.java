@@ -55,10 +55,12 @@ public class SipClientInboundWay extends ClientInboundWay {
      * 
      * @param connection
      *            The parent connection.
+     * @param bufferSize
+     *            The byte buffer size.
      * @throws IOException
      */
-    public SipClientInboundWay(Connection<Client> connection) {
-        super(connection);
+    public SipClientInboundWay(Connection<Client> connection, int bufferSize) {
+        super(connection, bufferSize);
     }
 
     @Override
@@ -68,8 +70,8 @@ public class SipClientInboundWay extends ClientInboundWay {
 
         for (Parameter header : headers) {
             if (header.getName().equalsIgnoreCase(HeaderConstants.HEADER_VIA)) {
-                SipRecipientInfoReader.addValues(header, sr
-                        .getSipRecipientsInfo());
+                SipRecipientInfoReader.addValues(header,
+                        sr.getSipRecipientsInfo());
             }
         }
 

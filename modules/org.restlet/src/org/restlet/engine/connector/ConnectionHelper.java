@@ -200,18 +200,24 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * 
      * @param connection
      *            The parent connection.
+     * @param bufferSize
+     *            The byte buffer size.
      * @return The inbound way created.
      */
-    public abstract InboundWay createInboundWay(Connection<T> connection);
+    public abstract InboundWay createInboundWay(Connection<T> connection,
+            int bufferSize);
 
     /**
      * Creates an outbound way for the given connection.
      * 
      * @param connection
      *            The parent connection.
+     * @param bufferSize
+     *            The byte buffer size.
      * @return The outbound way created.
      */
-    public abstract OutboundWay createOutboundWay(Connection<T> connection);
+    public abstract OutboundWay createOutboundWay(Connection<T> connection,
+            int bufferSize);
 
     @Override
     protected void doFinishStop() {

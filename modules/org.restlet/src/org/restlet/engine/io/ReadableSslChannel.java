@@ -33,9 +33,8 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import javax.net.ssl.SSLEngine;
-
 import org.restlet.engine.connector.SslConnection;
+import org.restlet.engine.security.SslManager;
 
 /**
  * SSL byte channel that unwraps all read data using the SSL/TLS protocols. It
@@ -52,14 +51,14 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
      * 
      * @param wrappedChannel
      *            The wrapped channel.
-     * @param engine
-     *            The SSL engine.
+     * @param manager
+     *            The SSL manager.
      * @param connection
      *            The parent SSL connection.
      */
     public ReadableSslChannel(ReadableSelectionChannel wrappedChannel,
-            SSLEngine sslEngine, SslConnection<?> connection) {
-        super(wrappedChannel, sslEngine, connection);
+            SslManager manager, SslConnection<?> connection) {
+        super(wrappedChannel, manager, connection);
     }
 
     /**
@@ -82,7 +81,7 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
 
         if (remaining > 0) {
             // Unwrap the network data into application data
-            getEngine().unwrap(getPacketBuffer(), dst);
+            getManager().getEngine().unwrap(getPacketBuffer(), dst);
             result = remaining - getPacketBuffer().remaining();
         }
 
