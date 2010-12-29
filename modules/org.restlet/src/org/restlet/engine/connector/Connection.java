@@ -74,13 +74,13 @@ public class Connection<T extends Connector> implements SelectionListener {
     private final ConnectionHelper<T> helper;
 
     /** The inbound way. */
-    private final Way inboundWay;
+    private final InboundWay inboundWay;
 
     /** The timestamp of the last IO activity. */
     private volatile long lastActivity;
 
     /** The outbound way. */
-    private final Way outboundWay;
+    private final OutboundWay outboundWay;
 
     /** Indicates if the connection should be persisted across calls. */
     private volatile boolean persistent;
@@ -286,7 +286,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * 
      * @return The inbound way.
      */
-    public Way getInboundWay() {
+    public InboundWay getInboundWay() {
         return inboundWay;
     }
 
@@ -314,7 +314,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * 
      * @return The outbound way.
      */
-    public Way getOutboundWay() {
+    public OutboundWay getOutboundWay() {
         return outboundWay;
     }
 

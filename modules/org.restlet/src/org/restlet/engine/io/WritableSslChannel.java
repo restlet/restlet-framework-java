@@ -123,6 +123,47 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
                 } else {
                     getPacketBuffer().clear();
                 }
+
+                switch (sslResult.getStatus()) {
+                case BUFFER_OVERFLOW:
+                    // TODO: handle
+                    break;
+
+                case BUFFER_UNDERFLOW:
+                    // TODO: handle
+                    break;
+
+                case CLOSED:
+                    // TODO: handle
+                    break;
+
+                case OK:
+                    switch (sslResult.getHandshakeStatus()) {
+                    case FINISHED:
+                        // TODO: handle
+                        break;
+
+                    case NEED_TASK:
+                        // TODO: handle
+                        break;
+
+                    case NEED_UNWRAP:
+                        getConnection().getOutboundWay().setIoState(
+                                IoState.IDLE);
+                        getConnection().getInboundWay().setIoState(
+                                IoState.INTEREST);
+                        break;
+
+                    case NEED_WRAP:
+                        // TODO: handle
+                        break;
+
+                    case NOT_HANDSHAKING:
+                        // TODO: handle
+                        break;
+                    }
+                    break;
+                }
             }
         }
 

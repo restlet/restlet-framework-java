@@ -337,8 +337,7 @@ public class HttpMethodCall extends ClientCall {
         } catch (IOException ioe) {
             this.clientHelper
                     .getLogger()
-                    .log(
-                            Level.WARNING,
+                    .log(Level.WARNING,
                             "An error occurred during the communication with the remote HTTP server.",
                             ioe);
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
@@ -353,9 +352,9 @@ public class HttpMethodCall extends ClientCall {
     @Override
     public void sendRequest(Request request, Response response, Uniform callback)
             throws Exception {
-        // Send the request
         sendRequest(request);
-        if(request.getOnSent() != null){
+
+        if (request.getOnSent() != null) {
             request.getOnSent().handle(request, response);
         }
 

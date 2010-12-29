@@ -32,7 +32,11 @@ package org.restlet.engine.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
 
+import javax.net.ssl.SSLEngineResult;
+
+import org.restlet.Context;
 import org.restlet.engine.connector.SslConnection;
 import org.restlet.engine.security.SslManager;
 
@@ -59,6 +63,29 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
     public ReadableSslChannel(ReadableSelectionChannel wrappedChannel,
             SslManager manager, SslConnection<?> connection) {
         super(wrappedChannel, manager, connection);
+
+    }
+
+    /**
+     * Refills the byte buffer.
+     * 
+     * @return The number of bytes read and added to the buffer or -1 if end of
+     *         channel reached.
+     * @throws IOException
+     */
+    protected int refill() throws IOException {
+        int result = 0;
+
+        if (getPacketBufferState() == BufferState.FILLING) {
+            result = getWrappedChannel().read(getPacketBuffer());
+
+            if (result > 0) {
+                setPacketBufferState(BufferState.DRAINING);
+                getPacketBuffer().flip();
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -71,21 +98,90 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
      */
     public int read(ByteBuffer dst) throws IOException {
         int result = 0;
-        int remaining = getPacketBuffer().remaining();
+        boolean continueReading = true;
 
-        if (remaining == 0) {
-            // Refill the packet buffer
-            getPacketBuffer().clear();
-            remaining = getWrappedChannel().read(getPacketBuffer());
-        }
+        while (continueReading) {
+            if (getPacketBufferState() == BufferState.FILLING) {
+                continueReading = (refill() > 0);
+            }
 
-        if (remaining > 0) {
-            // Unwrap the network data into application data
-            getManager().getEngine().unwrap(getPacketBuffer(), dst);
-            result = remaining - getPacketBuffer().remaining();
+            if (getPacketBufferState() == BufferState.DRAINING) {
+                // Unwrap the network data into application data
+                int remaining = dst.remaining();
+                SSLEngineResult sslResult = getManager().getEngine().unwrap(
+                        getPacketBuffer(), dst);
+                result = remaining - dst.remaining();
+
+                if (Context.getCurrentLogger().isLoggable(Level.INFO)) {
+                    Context.getCurrentLogger().log(Level.INFO,
+                            "SSL I/O result" + sslResult);
+                }
+
+                if (getPacketBuffer().remaining() == 0) {
+                    setPacketBufferState(BufferState.FILLING);
+                }
+
+                switch (sslResult.getStatus()) {
+                case BUFFER_OVERFLOW:
+                    // TODO: handle
+                    continueReading = false;
+                    break;
+
+                case BUFFER_UNDERFLOW:
+                    // TODO: handle
+                    continueReading = false;
+                    break;
+
+                case CLOSED:
+                    getConnection().close(true);
+                    continueReading = false;
+                    break;
+
+                case OK:
+                    boolean continueHandshake = true;
+
+                    while (continueHandshake) {
+                        switch (sslResult.getHandshakeStatus()) {
+                        case FINISHED:
+                            continueHandshake = false;
+                            break;
+
+                        case NEED_TASK:
+                            // Delegate lengthy tasks to the connector's worker
+                            // service
+                            Runnable task = null;
+
+                            while ((task = getManager().getEngine()
+                                    .getDelegatedTask()) != null) {
+                                getConnection().getHelper().getWorkerService()
+                                        .execute(task);
+                            }
+                            break;
+
+                        case NEED_UNWRAP:
+                            continueHandshake = false;
+                            break;
+
+                        case NEED_WRAP:
+                            // Need to write now
+                            getConnection().getOutboundWay().setIoState(
+                                    IoState.INTEREST);
+                            getConnection().getInboundWay().setIoState(
+                                    IoState.IDLE);
+                            continueHandshake = false;
+                            continueReading = false;
+                            break;
+
+                        case NOT_HANDSHAKING:
+                            continueHandshake = false;
+                            break;
+                        }
+                        break;
+                    }
+                }
+            }
         }
 
         return result;
     }
-
 }

@@ -189,7 +189,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * 
      * @return The IO state.
      */
-    protected IoState getIoState() {
+    public IoState getIoState() {
         return ioState;
     }
 
@@ -340,7 +340,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * @param ioState
      *            The IO state.
      */
-    protected void setIoState(IoState ioState) {
+    public void setIoState(IoState ioState) {
         this.ioState = ioState;
     }
 

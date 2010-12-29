@@ -268,14 +268,14 @@ public class ReadableBufferedChannel extends
      * @throws IOException
      */
     protected int refill() throws IOException {
-        int readCount = getWrappedChannel().read(getByteBuffer());
+        int result = getWrappedChannel().read(getByteBuffer());
 
-        if (readCount > 0) {
+        if (result > 0) {
             setByteBufferState(BufferState.DRAINING);
             getByteBuffer().flip();
         }
 
-        return readCount;
+        return result;
     }
 
     /**
