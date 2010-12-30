@@ -99,6 +99,7 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
     public int read(ByteBuffer dst) throws IOException {
         int result = 0;
         boolean continueReading = true;
+        boolean continueHandshake = true;
 
         while (continueReading) {
             if (getPacketBufferState() == BufferState.FILLING) {
@@ -138,8 +139,6 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
                     break;
 
                 case OK:
-                    boolean continueHandshake = true;
-
                     while (continueHandshake) {
                         switch (sslResult.getHandshakeStatus()) {
                         case FINISHED:
@@ -156,6 +155,7 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
                                 getConnection().getHelper().getWorkerService()
                                         .execute(task);
                             }
+                            continueHandshake = false;
                             break;
 
                         case NEED_UNWRAP:
