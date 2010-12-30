@@ -13,6 +13,10 @@ Changes log
       - Deprecated the Engine#setInstance() method to favor the 
         Engine#register() ones which wrap logging initialization logic
         and added an Engine#clear() method to discard it altogether.
+      - Added an getLogMessage(request, response, duration) method to the
+        LogService class so it can be easily overridden/customized. Also
+        added a protected getDefaultLogMessage(..) method returning the
+        default IIS log message.
     - Enhancements
       - Added support for non-blocking HTTPS to the internal NIO connectors, 
         client-side and server-side. Sponsored by NetDev.
