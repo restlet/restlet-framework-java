@@ -483,12 +483,28 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
             // No connection has been found, try to create a new one that will
             // handle the message soon.
-            if (!foundConn
-                    && ((getMaxTotalConnections() == -1) || (getConnections()
-                            .size() < getMaxTotalConnections()))
-                    && ((getMaxConnectionsPerHost() == -1) || (hostConnectionCount < getMaxConnectionsPerHost()))) {
-
+            if (foundConn) {
+                getLogger().log(
+                        Level.FINE,
+                        "Reusing an existing client connection to: "
+                                + socketAddress);
+            } else if ((getMaxTotalConnections() != -1)
+                    && (getConnections().size() >= getMaxTotalConnections())) {
+                getLogger()
+                        .log(Level.WARNING,
+                                "Unable to create a new connection. Maximum total number of connections reached!");
+            } else if ((getMaxConnectionsPerHost() != -1)
+                    && (hostConnectionCount >= getMaxConnectionsPerHost())) {
+                getLogger()
+                        .log(Level.WARNING,
+                                "Unable to create a new connection. Maximum number of connections reached for host: "
+                                        + socketAddress);
+            } else {
                 // Create a new connection
+                getLogger()
+                        .log(Level.FINE,
+                                "Creating a new client connection to: "
+                                        + socketAddress);
                 result = checkout(
                         createSocketChannel(request.isConfidential(),
                                 socketAddress), getController(), socketAddress);
@@ -506,23 +522,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      */
     public String getCertAlgorithm() {
         return getHelpedParameters().getFirstValue("certAlgorithm", "SunX509");
-    }
-
-    /**
-     * Returns the socket connection timeout.
-     * 
-     * @return The socket connection timeout.
-     */
-    @SuppressWarnings("deprecation")
-    public int getSocketConnectTimeoutMs() {
-        int result = getHelped().getConnectTimeout();
-
-        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
-            result = Integer.parseInt(getHelpedParameters().getFirstValue(
-                    "socketConnectTimeoutMs", "0"));
-        }
-
-        return result;
     }
 
     /**
@@ -662,6 +661,23 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
             if (result != null && result.getAddress() == null) {
                 throw new UnknownHostException(hostDomain);
             }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the socket connection timeout.
+     * 
+     * @return The socket connection timeout.
+     */
+    @SuppressWarnings("deprecation")
+    public int getSocketConnectTimeoutMs() {
+        int result = getHelped().getConnectTimeout();
+
+        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
+            result = Integer.parseInt(getHelpedParameters().getFirstValue(
+                    "socketConnectTimeoutMs", "0"));
         }
 
         return result;

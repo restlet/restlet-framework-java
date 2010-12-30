@@ -35,6 +35,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
@@ -202,12 +203,12 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    public void onCompleted(boolean endReached) {
+    public void onCompleted(boolean endDetected) {
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Inbound message fully received");
         }
 
-        super.onCompleted(endReached);
+        super.onCompleted(endDetected);
     }
 
     /**
@@ -236,8 +237,10 @@ public abstract class InboundWay extends Way {
                     int result = readSocketBytes();
 
                     if (result == 0) {
-                        // Socket channel exhausted
-                        setIoState(IoState.INTEREST);
+                        if (getIoState() == IoState.PROCESSING) {
+                            // Socket channel exhausted
+                            setIoState(IoState.INTEREST);
+                        }
                     } else if (result == -1) {
                         // End of connection detected
                         getConnection().close(true);
@@ -341,6 +344,16 @@ public abstract class InboundWay extends Way {
     protected void setEntityRegistration(
             SelectionRegistration entityRegistration) {
         this.entityRegistration = entityRegistration;
+    }
+
+    @Override
+    public void setIoState(IoState ioState) {
+        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+            Context.getCurrentLogger().log(Level.FINER,
+                    "Inbound way: " + ioState);
+        }
+
+        super.setIoState(ioState);
     }
 
 }
