@@ -394,7 +394,8 @@ public abstract class Way implements SelectionListener, CompletionListener {
 
     @Override
     public String toString() {
-        return getIoState() + ", " + getMessageState();
+        return getIoState() + ", " + getMessageState() + ", "
+                + getByteBuffer().remaining();
     }
 
     /**

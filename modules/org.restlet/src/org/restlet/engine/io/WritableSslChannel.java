@@ -32,9 +32,11 @@ package org.restlet.engine.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
 
 import javax.net.ssl.SSLEngineResult;
 
+import org.restlet.Context;
 import org.restlet.engine.connector.SslConnection;
 import org.restlet.engine.security.SslManager;
 
@@ -84,6 +86,24 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
         return result;
     }
 
+    @Override
+    protected SSLEngineResult runEngine(ByteBuffer applicationBuffer)
+            throws IOException {
+        SSLEngineResult result = getManager().getEngine().wrap(
+                applicationBuffer, getPacketBuffer());
+        getPacketBuffer().flip();
+        int remaining = getPacketBuffer().remaining();
+
+        if (remaining > 0) {
+            setPacketBufferState(BufferState.DRAINING);
+            flush();
+        } else {
+            getPacketBuffer().clear();
+        }
+
+        return result;
+    }
+
     /**
      * Writes the available bytes to the wrapped channel by wrapping them with
      * the SSL/TLS protocols.
@@ -95,6 +115,10 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
     public int write(ByteBuffer src) throws IOException {
         int result = 0;
 
+        if (Context.getCurrentLogger().isLoggable(Level.INFO)) {
+            Context.getCurrentLogger().log(Level.INFO, getManager().toString());
+        }
+
         // If the packet buffer isn't empty, first try to flush it
         flush();
 
@@ -103,20 +127,10 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
             int srcSize = src.remaining();
 
             if (srcSize > 0) {
-                SSLEngineResult sslResult = getManager().getEngine().wrap(src,
-                        getPacketBuffer());
+                SSLEngineResult sslResult = runEngine(src);
+                handleResult(sslResult, src);
+                flush();
                 result = srcSize - src.remaining();
-                getPacketBuffer().flip();
-                int remaining = getPacketBuffer().remaining();
-
-                if (remaining > 0) {
-                    setPacketBufferState(BufferState.DRAINING);
-                    flush();
-                } else {
-                    getPacketBuffer().clear();
-                }
-
-                handleResult(sslResult);
             }
         }
 

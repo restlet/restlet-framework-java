@@ -65,6 +65,34 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
     }
 
     /**
+     * Reads the available bytes from the wrapped channel to the destination
+     * buffer while unwrapping them with the SSL/TLS protocols.
+     * 
+     * @param dst
+     *            The destination buffer.
+     * @return The number of bytes read.
+     */
+    public int read(ByteBuffer dst) throws IOException {
+        int result = 0;
+
+        // If the packet buffer is empty, first try to refill it
+        refill();
+
+        if (getPacketBufferState() == BufferState.DRAINING) {
+            int dstSize = dst.remaining();
+
+            if (dstSize > 0) {
+                SSLEngineResult sslResult = runEngine(dst);
+                handleResult(sslResult, dst);
+                refill();
+                result = dstSize - dst.remaining();
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Refills the byte buffer.
      * 
      * @return The number of bytes read and added to the buffer or -1 if end of
@@ -86,36 +114,16 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
         return result;
     }
 
-    /**
-     * Reads the available bytes from the wrapped channel to the destination
-     * buffer while unwrapping them with the SSL/TLS protocols.
-     * 
-     * @param dst
-     *            The destination buffer.
-     * @return The number of bytes read.
-     */
-    public int read(ByteBuffer dst) throws IOException {
-        int result = 0;
+    @Override
+    protected SSLEngineResult runEngine(ByteBuffer applicationBuffer)
+            throws IOException {
+        SSLEngineResult result = getManager().getEngine().unwrap(
+                getPacketBuffer(), applicationBuffer);
+        int remaining = getPacketBuffer().remaining();
 
-        // If the packet buffer is empty, first try to refill it
-        refill();
-
-        if (getPacketBufferState() == BufferState.DRAINING) {
-            int dstSize = dst.remaining();
-
-            if (dstSize > 0) {
-                SSLEngineResult sslResult = getManager().getEngine().unwrap(
-                        getPacketBuffer(), dst);
-                result = dstSize - dst.remaining();
-                int remaining = getPacketBuffer().remaining();
-
-                if (remaining == 0) {
-                    setPacketBufferState(BufferState.FILLING);
-                    refill();
-                }
-
-                handleResult(sslResult);
-            }
+        if (remaining == 0) {
+            setPacketBufferState(BufferState.FILLING);
+            refill();
         }
 
         return result;
