@@ -30,6 +30,8 @@
 
 package org.restlet.test.engine;
 
+import java.util.logging.Level;
+
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -41,6 +43,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -54,6 +57,14 @@ import org.restlet.routing.Router;
  * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
  */
 public class SslGetTestCase extends SslBaseConnectorsTestCase {
+
+    public static void main(String[] args) throws Exception {
+        Engine.setLogLevel(Level.FINE);
+        SslGetTestCase sgt = new SslGetTestCase();
+        sgt.setUp();
+        sgt.start();
+        sgt.testSslJettyAndInternal();
+    }
 
     public static class GetTestResource extends ServerResource {
 

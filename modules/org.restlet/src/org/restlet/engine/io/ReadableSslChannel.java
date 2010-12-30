@@ -85,8 +85,13 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
             int dstSize = dst.remaining();
 
             if (dstSize > 0) {
-                while (getPacketBuffer().hasRemaining()
-                        && (getConnection().getInboundWay().getIoState() != IoState.IDLE)) {
+                int lastRead = 0;
+
+                while (dst.hasRemaining()
+                        && (getManager().getState() != SslState.CLOSED)
+                        && getPacketBuffer().hasRemaining()
+                        && (getConnection().getInboundWay().getIoState() != IoState.IDLE)
+                        && (lastRead != -1)) {
                     SSLEngineResult sslResult = runEngine(dst);
                     handleResult(sslResult, dst);
                     refill();
