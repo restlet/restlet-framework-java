@@ -72,13 +72,15 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
      */
     public int read(ByteBuffer dst) throws IOException {
         int result = -1;
+        int wrappedRead = 0;
 
         if (this.availableSize > 0) {
             if (this.availableSize < dst.remaining()) {
                 dst.limit((int) (this.availableSize + dst.position()));
             }
 
-            result = getWrappedChannel().read(dst);
+            wrappedRead = getWrappedChannel().read(dst);
+            result = wrappedRead;
         }
 
         if (result > 0) {
@@ -97,8 +99,10 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
             }
         }
 
-        if (getWrappedChannel() instanceof ReadableBufferedChannel) {
-            ((ReadableBufferedChannel) getWrappedChannel()).postRead(result);
+        if ((result == -1)
+                && (getWrappedChannel() instanceof ReadableBufferedChannel)) {
+            ((ReadableBufferedChannel) getWrappedChannel())
+                    .onCompleted((wrappedRead == -1));
         }
 
         return result;

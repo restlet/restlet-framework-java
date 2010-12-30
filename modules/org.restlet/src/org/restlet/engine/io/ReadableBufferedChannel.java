@@ -184,16 +184,16 @@ public class ReadableBufferedChannel extends
     }
 
     /**
-     * Post-read callback that calls {@link CompletionListener#onCompleted(boolean)} if
-     * the end has been reached.
+     * Callback invoked upon IO completion. Calls
+     * {@link CompletionListener#onCompleted(boolean)} if the end has been
+     * reached.
      * 
-     * @param bytesRead
-     *            The number of bytes read, or -1 if the end of the channel has
-     *            been reached.
+     * @param endDetected
+     *            Indicates if the end of network connection was detected.
      */
-    public void postRead(int bytesRead) {
-        if ((bytesRead == -1) && (getCompletionListener() != null)) {
-            getCompletionListener().onCompleted((bytesRead == -1));
+    public void onCompleted(boolean endDetected) {
+        if (getCompletionListener() != null) {
+            getCompletionListener().onCompleted(endDetected);
         }
     }
 

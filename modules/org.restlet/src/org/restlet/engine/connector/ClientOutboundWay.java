@@ -115,7 +115,7 @@ public class ClientOutboundWay extends OutboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endReached) {
+    public void onCompleted(boolean endDetected) {
         Response message = getMessage();
 
         if (message != null) {
@@ -133,7 +133,7 @@ public class ClientOutboundWay extends OutboundWay {
             }
         }
 
-        super.onCompleted(endReached);
+        super.onCompleted(endDetected);
     }
 
     @Override

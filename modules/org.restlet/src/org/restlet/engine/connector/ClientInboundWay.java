@@ -118,14 +118,14 @@ public class ClientInboundWay extends InboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endReached) {
+    public void onCompleted(boolean endDetected) {
         // Check if we need to close the connection
-        if (endReached || !getConnection().isPersistent()
+        if (endDetected || !getConnection().isPersistent()
                 || HeaderUtils.isConnectionClose(getHeaders())) {
             getConnection().close(true);
         }
 
-        super.onCompleted(endReached);
+        super.onCompleted(endDetected);
     }
 
     @Override

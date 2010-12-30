@@ -17,6 +17,8 @@ Changes log
       - Added support for non-blocking HTTPS to the internal NIO connectors, 
         client-side and server-side. Sponsored by NetDev.
     - Bugs fixed
+      - Fixed bug preventing persistent connections reuse when an entity is
+        present. Reported by John Logsdon.
     - Misc
 
 - 2.1 Milestone 2 (12/24/2010)

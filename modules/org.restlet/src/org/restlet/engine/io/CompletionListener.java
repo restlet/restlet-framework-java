@@ -40,9 +40,9 @@ public interface CompletionListener {
     /**
      * Callback invoked upon IO completion.
      * 
-     * @param endReached
-     *            Indicates if the end of connection was reached.
+     * @param endDetected
+     *            Indicates if the end of network connection was detected.
      */
-    public void onCompleted(boolean endReached);
+    public void onCompleted(boolean endDetected);
 
 }

@@ -280,10 +280,10 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * Callback method invoked when the current message has been completely
      * received or sent.
      * 
-     * @param endReached
-     *            Indicates if the end of the socket channel was reached.
+     * @param endDetected
+     *            Indicates if the end of the socket channel was detected.
      */
-    public void onCompleted(boolean endReached) {
+    public void onCompleted(boolean endDetected) {
         setIoState(IoState.IDLE);
         setMessageState(MessageState.IDLE);
         setMessage(null);

@@ -134,7 +134,8 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
 
             if (srcSize > 0) {
                 while (getPacketBuffer().hasRemaining()
-                        && (getConnection().getOutboundWay().getIoState() != IoState.IDLE)) {
+                        && (getConnection().getOutboundWay().getIoState() != IoState.IDLE)
+                        && src.hasRemaining()) {
                     SSLEngineResult sslResult = runEngine(src);
                     handleResult(sslResult, src);
                     flush();
