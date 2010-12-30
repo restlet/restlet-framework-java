@@ -726,8 +726,7 @@ public class Connection<T extends Connector> implements SelectionListener {
     public boolean updateState() {
         boolean result = false;
 
-        if ((getState() != ConnectionState.CLOSING)
-                && (getState() != ConnectionState.CLOSED)) {
+        if (getState() != ConnectionState.CLOSED) {
             getInboundWay().updateState();
             getOutboundWay().updateState();
 

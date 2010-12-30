@@ -271,7 +271,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * @return True if the processing of the next message is possible.
      */
     protected boolean isProcessing() {
-        return (getConnection().getState() == ConnectionState.OPEN)
+        return (getConnection().getState() != ConnectionState.CLOSED)
                 && (getIoState() == IoState.PROCESSING)
                 && (getMessageState() != MessageState.IDLE);
     }
