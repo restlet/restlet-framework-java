@@ -468,6 +468,12 @@ public abstract class OutboundWay extends Way {
     protected void writeLine() throws IOException {
         switch (getMessageState()) {
         case START:
+            if (getHelper().getLogger().isLoggable(Level.FINE)) {
+                getHelper().getLogger().fine(
+                        "Writing message from "
+                                + getConnection().getSocketAddress());
+            }
+
             writeStartLine();
             setMessageState(MessageState.HEADERS);
             break;

@@ -281,6 +281,12 @@ public abstract class InboundWay extends Way {
         while (isProcessing() && fillLine()) {
             // Parse next ready lines
             if (getMessageState() == MessageState.START) {
+                if (getHelper().getLogger().isLoggable(Level.FINE)) {
+                    getHelper().getLogger().fine(
+                            "Reading message from "
+                                    + getConnection().getSocketAddress());
+                }
+
                 readStartLine();
             } else if (getMessageState() == MessageState.HEADERS) {
                 Parameter header = readHeader();

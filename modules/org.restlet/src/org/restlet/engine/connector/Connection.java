@@ -161,10 +161,6 @@ public class Connection<T extends Connector> implements SelectionListener {
                                 + " gracefully");
             }
 
-            if (getRegistration() != null) {
-                getRegistration().setCanceling(true);
-            }
-
             setState(ConnectionState.CLOSING);
         } else {
             if (getLogger().isLoggable(Level.FINER)) {
