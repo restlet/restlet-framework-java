@@ -145,7 +145,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         }
     }
 
-    private String start() throws Exception {
+    protected String start() throws Exception {
         this.component = new Component();
 
         final Server server = this.component.getServers()
@@ -159,7 +159,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         return "https://localhost:" + server.getEphemeralPort() + "/test";
     }
 
-    private void stop() throws Exception {
+    protected void stop() throws Exception {
         if ((this.component != null) && this.component.isStarted()) {
             this.component.stop();
         }

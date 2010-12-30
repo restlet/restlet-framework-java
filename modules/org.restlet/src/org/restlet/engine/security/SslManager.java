@@ -56,6 +56,9 @@ public class SslManager {
     /** The peer address. */
     private volatile InetSocketAddress peerAddress;
 
+    /** The global state. */
+    private volatile SslState state;
+
     /**
      * Constructor.
      * 
@@ -73,6 +76,7 @@ public class SslManager {
         this.context = context;
         this.peerAddress = peerAddress;
         this.clientSide = clientSide;
+        this.state = SslState.IDLE;
         initEngine();
     }
 
@@ -132,6 +136,20 @@ public class SslManager {
     }
 
     /**
+     * Returns the global state.
+     * 
+     * @return The global state.
+     */
+    public SslState getState() {
+        return state;
+    }
+
+    @Override
+    public String toString() {
+        return "SSL Manager: " + getState() + " | " + getEngine();
+    }
+
+    /**
      * Initializes the SSL engine with the current SSL context and socket
      * address.
      * 
@@ -147,8 +165,10 @@ public class SslManager {
                 setEngine(getContext().createSSLEngine());
             }
 
+            setState(SslState.CREATED);
             getEngine().setUseClientMode(isClientSide());
             getEngine().beginHandshake();
+            setState(SslState.HANDSHAKING);
         }
     }
 
@@ -158,7 +178,7 @@ public class SslManager {
      * @return True if the manager is used on the client-side of the SSL
      *         protocol.
      */
-    protected boolean isClientSide() {
+    public boolean isClientSide() {
         return clientSide;
     }
 
@@ -168,7 +188,7 @@ public class SslManager {
      * @param engine
      *            The engine to use for wrapping and unwrapping.
      */
-    protected void setEngine(SSLEngine engine) {
+    public void setEngine(SSLEngine engine) {
         this.engine = engine;
     }
 
@@ -180,6 +200,16 @@ public class SslManager {
      */
     public void setPeerAddress(InetSocketAddress peerAddress) {
         this.peerAddress = peerAddress;
+    }
+
+    /**
+     * Sets the global state.
+     * 
+     * @param state
+     *            The global state.
+     */
+    public void setState(SslState state) {
+        this.state = state;
     }
 
 }

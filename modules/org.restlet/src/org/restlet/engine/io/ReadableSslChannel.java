@@ -32,11 +32,9 @@ package org.restlet.engine.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.logging.Level;
 
 import javax.net.ssl.SSLEngineResult;
 
-import org.restlet.Context;
 import org.restlet.engine.connector.SslConnection;
 import org.restlet.engine.security.SslManager;
 
@@ -98,90 +96,26 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
      */
     public int read(ByteBuffer dst) throws IOException {
         int result = 0;
-        boolean continueReading = true;
-        boolean continueHandshake = true;
 
-        while (continueReading) {
-            if (getPacketBufferState() == BufferState.FILLING) {
-                continueReading = (refill() > 0);
+        if (getPacketBufferState() == BufferState.FILLING) {
+            refill();
+        }
+
+        if (getPacketBufferState() == BufferState.DRAINING) {
+            // Unwrap the network data into application data
+            int remaining = dst.remaining();
+            SSLEngineResult sslResult = getManager().getEngine().unwrap(
+                    getPacketBuffer(), dst);
+            result = remaining - dst.remaining();
+
+            if (getPacketBuffer().remaining() == 0) {
+                setPacketBufferState(BufferState.FILLING);
             }
 
-            if (getPacketBufferState() == BufferState.DRAINING) {
-                // Unwrap the network data into application data
-                int remaining = dst.remaining();
-                SSLEngineResult sslResult = getManager().getEngine().unwrap(
-                        getPacketBuffer(), dst);
-                result = remaining - dst.remaining();
-
-                if (Context.getCurrentLogger().isLoggable(Level.INFO)) {
-                    Context.getCurrentLogger().log(Level.INFO,
-                            "SSL I/O result" + sslResult);
-                }
-
-                if (getPacketBuffer().remaining() == 0) {
-                    setPacketBufferState(BufferState.FILLING);
-                }
-
-                switch (sslResult.getStatus()) {
-                case BUFFER_OVERFLOW:
-                    // TODO: handle
-                    continueReading = false;
-                    break;
-
-                case BUFFER_UNDERFLOW:
-                    // TODO: handle
-                    continueReading = false;
-                    break;
-
-                case CLOSED:
-                    getConnection().close(true);
-                    continueReading = false;
-                    break;
-
-                case OK:
-                    while (continueHandshake) {
-                        switch (sslResult.getHandshakeStatus()) {
-                        case FINISHED:
-                            continueHandshake = false;
-                            break;
-
-                        case NEED_TASK:
-                            // Delegate lengthy tasks to the connector's worker
-                            // service
-                            Runnable task = null;
-
-                            while ((task = getManager().getEngine()
-                                    .getDelegatedTask()) != null) {
-                                getConnection().getHelper().getWorkerService()
-                                        .execute(task);
-                            }
-                            continueHandshake = false;
-                            break;
-
-                        case NEED_UNWRAP:
-                            continueHandshake = false;
-                            break;
-
-                        case NEED_WRAP:
-                            // Need to write now
-                            getConnection().getOutboundWay().setIoState(
-                                    IoState.INTEREST);
-                            getConnection().getInboundWay().setIoState(
-                                    IoState.IDLE);
-                            continueHandshake = false;
-                            continueReading = false;
-                            break;
-
-                        case NOT_HANDSHAKING:
-                            continueHandshake = false;
-                            break;
-                        }
-                        break;
-                    }
-                }
-            }
+            handleResult(sslResult);
         }
 
         return result;
     }
+
 }

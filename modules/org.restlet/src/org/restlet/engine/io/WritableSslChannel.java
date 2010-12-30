@@ -32,11 +32,9 @@ package org.restlet.engine.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.logging.Level;
 
 import javax.net.ssl.SSLEngineResult;
 
-import org.restlet.Context;
 import org.restlet.engine.connector.SslConnection;
 import org.restlet.engine.security.SslManager;
 
@@ -108,11 +106,6 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
                 SSLEngineResult sslResult = getManager().getEngine().wrap(src,
                         getPacketBuffer());
 
-                if (Context.getCurrentLogger().isLoggable(Level.INFO)) {
-                    Context.getCurrentLogger().log(Level.INFO,
-                            "SSL I/O result" + sslResult);
-                }
-
                 result = srcSize - src.remaining();
                 getPacketBuffer().flip();
                 int remaining = getPacketBuffer().remaining();
@@ -124,46 +117,7 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
                     getPacketBuffer().clear();
                 }
 
-                switch (sslResult.getStatus()) {
-                case BUFFER_OVERFLOW:
-                    // TODO: handle
-                    break;
-
-                case BUFFER_UNDERFLOW:
-                    // TODO: handle
-                    break;
-
-                case CLOSED:
-                    // TODO: handle
-                    break;
-
-                case OK:
-                    switch (sslResult.getHandshakeStatus()) {
-                    case FINISHED:
-                        // TODO: handle
-                        break;
-
-                    case NEED_TASK:
-                        // TODO: handle
-                        break;
-
-                    case NEED_UNWRAP:
-                        getConnection().getOutboundWay().setIoState(
-                                IoState.IDLE);
-                        getConnection().getInboundWay().setIoState(
-                                IoState.INTEREST);
-                        break;
-
-                    case NEED_WRAP:
-                        // TODO: handle
-                        break;
-
-                    case NOT_HANDSHAKING:
-                        // TODO: handle
-                        break;
-                    }
-                    break;
-                }
+                handleResult(sslResult);
             }
         }
 
