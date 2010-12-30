@@ -41,9 +41,8 @@ import org.restlet.util.Series;
 /**
  * Form which is a specialized modifiable list of parameters.
  * 
- * @see <a
- *      href="http://wiki.restlet.org/docs_2.0/13-restlet/27-restlet/330-restlet/58-restlet.html">User
- *      Guide - Getting parameter values</a>
+ * @see <a href="http://wiki.restlet.org/docs_2.1/58-restlet.html">User Guide -
+ *      Getting parameter values</a>
  * @author Jerome Louvel
  */
 public class Form extends Series<Parameter> {

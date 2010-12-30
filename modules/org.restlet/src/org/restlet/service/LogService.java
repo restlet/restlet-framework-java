@@ -79,20 +79,19 @@ import org.restlet.routing.Template;
  * For custom access log format, see the syntax to use and the list of available
  * variable names in {@link org.restlet.routing.Template}. <br>
  * 
- * @see <a
- *      href="http://wiki.restlet.org/docs_2.0/13-restlet/27-restlet/331-restlet/201-restlet.html">User
- *      Guide - Access logging</a>
+ * @see <a href="http://wiki.restlet.org/docs_2.1/201-restlet.html">User Guide -
+ *      Access logging</a>
  * @see <a
  *      href="http://download.oracle.com/javase/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
  * @author Jerome Louvel
  */
 public class LogService extends Service {
 
+    /** Indicates if the debugging mode is enabled. */
+    private volatile boolean debugging;
+
     /** Indicates if the identity check (as specified by RFC1413) is enabled. */
     private volatile boolean identityCheck;
-
-    /** The log entry format. */
-    private volatile String logFormat;
 
     /** The URI template of loggable resource references. */
     private volatile Template loggableTemplate;
@@ -103,8 +102,11 @@ public class LogService extends Service {
     /** The URI reference of the log properties. */
     private volatile Reference logPropertiesRef;
 
-    /** The log template to use. */
-    protected volatile Template logTemplate;
+    /** The response log entry format. */
+    private volatile String responseLogFormat;
+
+    /** The response log template to use. */
+    protected volatile Template responseLogTemplate;
 
     /**
      * Constructor.
@@ -123,7 +125,7 @@ public class LogService extends Service {
         super(enabled);
         this.loggableTemplate = null;
         this.loggerName = null;
-        this.logFormat = null;
+        this.responseLogFormat = null;
         this.logPropertiesRef = null;
         this.identityCheck = false;
     }
@@ -136,123 +138,128 @@ public class LogService extends Service {
     /**
      * Format a log entry using the default IIS log format.
      * 
-     * @param request
-     *            The request to log.
      * @param response
      *            The response to log.
      * @param duration
      *            The call duration (in milliseconds).
      * @return The formatted log entry.
      */
-    protected String getDefaultLogMessage(Request request, Response response,
+    protected String getDefaultResponseLogMessage(Response response,
             int duration) {
         StringBuilder sb = new StringBuilder();
-        long currentTime = System.currentTimeMillis();
+        Request request = response.getRequest();
 
-        // Append the date of the request
-        sb.append(String.format("%tF", currentTime));
-        sb.append('\t');
+        if (isDebugging()) {
 
-        // Append the time of the request
-        sb.append(String.format("%tT", currentTime));
-        sb.append('\t');
-
-        // Append the client IP address
-        String clientAddress = request.getClientInfo().getUpstreamAddress();
-        sb.append((clientAddress == null) ? "-" : clientAddress);
-        sb.append('\t');
-
-        // Append the user name (via IDENT protocol)
-        if (isIdentityCheck()) {
-            // [ifndef gae]
-            IdentClient ic = new IdentClient(request.getClientInfo()
-                    .getUpstreamAddress(), request.getClientInfo().getPort(),
-                    response.getServerInfo().getPort());
-            sb.append((ic.getUserIdentifier() == null) ? "-" : ic
-                    .getUserIdentifier());
-        } else if ((request.getChallengeResponse() != null)
-                && (request.getChallengeResponse().getIdentifier() != null)) {
-            sb.append(request.getChallengeResponse().getIdentifier());
         } else {
-            // [enddef]
-            sb.append('-');
+            long currentTime = System.currentTimeMillis();
+
+            // Append the date of the request
+            sb.append(String.format("%tF", currentTime));
+            sb.append('\t');
+
+            // Append the time of the request
+            sb.append(String.format("%tT", currentTime));
+            sb.append('\t');
+
+            // Append the client IP address
+            String clientAddress = request.getClientInfo().getUpstreamAddress();
+            sb.append((clientAddress == null) ? "-" : clientAddress);
+            sb.append('\t');
+
+            // Append the user name (via IDENT protocol)
+            if (isIdentityCheck()) {
+                // [ifndef gae]
+                IdentClient ic = new IdentClient(request.getClientInfo()
+                        .getUpstreamAddress(), request.getClientInfo()
+                        .getPort(), response.getServerInfo().getPort());
+                sb.append((ic.getUserIdentifier() == null) ? "-" : ic
+                        .getUserIdentifier());
+            } else if ((request.getChallengeResponse() != null)
+                    && (request.getChallengeResponse().getIdentifier() != null)) {
+                sb.append(request.getChallengeResponse().getIdentifier());
+            } else {
+                // [enddef]
+                sb.append('-');
+            }
+
+            sb.append('\t');
+
+            // Append the server IP address
+            String serverAddress = response.getServerInfo().getAddress();
+            sb.append((serverAddress == null) ? "-" : serverAddress);
+            sb.append('\t');
+
+            // Append the server port
+            Integer serverport = response.getServerInfo().getPort();
+            sb.append((serverport == null) ? "-" : serverport.toString());
+            sb.append('\t');
+
+            // Append the method name
+            String methodName = (request.getMethod() == null) ? "-" : request
+                    .getMethod().getName();
+            sb.append((methodName == null) ? "-" : methodName);
+
+            // Append the resource path
+            sb.append('\t');
+            String resourcePath = (request.getResourceRef() == null) ? "-"
+                    : request.getResourceRef().getPath();
+            sb.append((resourcePath == null) ? "-" : resourcePath);
+
+            // Append the resource query
+            sb.append('\t');
+            String resourceQuery = (request.getResourceRef() == null) ? "-"
+                    : request.getResourceRef().getQuery();
+            sb.append((resourceQuery == null) ? "-" : resourceQuery);
+
+            // Append the status code
+            sb.append('\t');
+            sb.append((response.getStatus() == null) ? "-" : Integer
+                    .toString(response.getStatus().getCode()));
+
+            // Append the returned size
+            sb.append('\t');
+
+            if (!response.isEntityAvailable()
+                    || Status.REDIRECTION_NOT_MODIFIED.equals(response
+                            .getStatus())
+                    || Status.SUCCESS_NO_CONTENT.equals(response.getStatus())
+                    || Method.HEAD.equals(request.getMethod())) {
+                sb.append('0');
+            } else {
+                sb.append((response.getEntity().getSize() == -1) ? "-" : Long
+                        .toString(response.getEntity().getSize()));
+            }
+
+            // Append the received size
+            sb.append('\t');
+
+            if (request.getEntity() == null) {
+                sb.append('0');
+            } else {
+                sb.append((request.getEntity().getSize() == -1) ? "-" : Long
+                        .toString(request.getEntity().getSize()));
+            }
+
+            // Append the duration
+            sb.append('\t');
+            sb.append(duration);
+
+            // Append the host reference
+            sb.append('\t');
+            sb.append((request.getHostRef() == null) ? "-" : request
+                    .getHostRef().toString());
+
+            // Append the agent name
+            sb.append('\t');
+            String agentName = request.getClientInfo().getAgent();
+            sb.append((agentName == null) ? "-" : agentName);
+
+            // Append the referrer
+            sb.append('\t');
+            sb.append((request.getReferrerRef() == null) ? "-" : request
+                    .getReferrerRef().getIdentifier());
         }
-
-        sb.append('\t');
-
-        // Append the server IP address
-        String serverAddress = response.getServerInfo().getAddress();
-        sb.append((serverAddress == null) ? "-" : serverAddress);
-        sb.append('\t');
-
-        // Append the server port
-        Integer serverport = response.getServerInfo().getPort();
-        sb.append((serverport == null) ? "-" : serverport.toString());
-        sb.append('\t');
-
-        // Append the method name
-        String methodName = (request.getMethod() == null) ? "-" : request
-                .getMethod().getName();
-        sb.append((methodName == null) ? "-" : methodName);
-
-        // Append the resource path
-        sb.append('\t');
-        String resourcePath = (request.getResourceRef() == null) ? "-"
-                : request.getResourceRef().getPath();
-        sb.append((resourcePath == null) ? "-" : resourcePath);
-
-        // Append the resource query
-        sb.append('\t');
-        String resourceQuery = (request.getResourceRef() == null) ? "-"
-                : request.getResourceRef().getQuery();
-        sb.append((resourceQuery == null) ? "-" : resourceQuery);
-
-        // Append the status code
-        sb.append('\t');
-        sb.append((response.getStatus() == null) ? "-" : Integer
-                .toString(response.getStatus().getCode()));
-
-        // Append the returned size
-        sb.append('\t');
-
-        if (!response.isEntityAvailable()
-                || Status.REDIRECTION_NOT_MODIFIED.equals(response.getStatus())
-                || Status.SUCCESS_NO_CONTENT.equals(response.getStatus())
-                || Method.HEAD.equals(request.getMethod())) {
-            sb.append('0');
-        } else {
-            sb.append((response.getEntity().getSize() == -1) ? "-" : Long
-                    .toString(response.getEntity().getSize()));
-        }
-
-        // Append the received size
-        sb.append('\t');
-
-        if (request.getEntity() == null) {
-            sb.append('0');
-        } else {
-            sb.append((request.getEntity().getSize() == -1) ? "-" : Long
-                    .toString(request.getEntity().getSize()));
-        }
-
-        // Append the duration
-        sb.append('\t');
-        sb.append(duration);
-
-        // Append the host reference
-        sb.append('\t');
-        sb.append((request.getHostRef() == null) ? "-" : request.getHostRef()
-                .toString());
-
-        // Append the agent name
-        sb.append('\t');
-        String agentName = request.getClientInfo().getAgent();
-        sb.append((agentName == null) ? "-" : agentName);
-
-        // Append the referrer
-        sb.append('\t');
-        sb.append((request.getReferrerRef() == null) ? "-" : request
-                .getReferrerRef().getIdentifier());
 
         return sb.toString();
     }
@@ -262,9 +269,11 @@ public class LogService extends Service {
      * 
      * @return The format used, or null if the default one is used.
      * @see org.restlet.routing.Template for format syntax and variables.
+     * @deprecated Use the {@link #getResponseLogFormat()} method instead.
      */
+    @Deprecated
     public String getLogFormat() {
-        return this.logFormat;
+        return getResponseLogFormat();
     }
 
     /**
@@ -293,37 +302,55 @@ public class LogService extends Service {
     }
 
     /**
-     * Format an access log entry. If the log template property isn't provided,
-     * then a default IIS like format is used.
-     * 
-     * @param request
-     *            The request to log.
-     * @param response
-     *            The response to log.
-     * @param duration
-     *            The call duration.
-     * @return The formatted log entry.
-     */
-    public String getLogMessage(Request request, Response response, int duration) {
-        String result = null;
-
-        // Format the call into a log entry
-        if (this.logTemplate != null) {
-            result = this.logTemplate.format(request, response);
-        } else {
-            result = getDefaultLogMessage(request, response, duration);
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the URI reference of the log properties.
      * 
      * @return The URI reference of the log properties.
      */
     public Reference getLogPropertiesRef() {
         return logPropertiesRef;
+    }
+
+    /**
+     * Returns the format used when logging responses.
+     * 
+     * @return The format used, or null if the default one is used.
+     * @see org.restlet.routing.Template for format syntax and variables.
+     */
+    public String getResponseLogFormat() {
+        return this.responseLogFormat;
+    }
+
+    /**
+     * Format an access log entry. If the log template property isn't provided,
+     * then a default IIS like format is used.
+     * 
+     * @param response
+     *            The response to log.
+     * @param duration
+     *            The call duration.
+     * @return The formatted log entry.
+     */
+    public String getResponseLogMessage(Response response, int duration) {
+        String result = null;
+
+        // Format the call into a log entry
+        if (this.responseLogTemplate != null) {
+            result = this.responseLogTemplate.format(response.getRequest(),
+                    response);
+        } else {
+            result = getDefaultResponseLogMessage(response, duration);
+        }
+
+        return result;
+    }
+
+    /**
+     * Indicates if the debugging mode is enabled. False by default.
+     * 
+     * @return True if the debugging mode is enabled.
+     */
+    protected boolean isDebugging() {
+        return debugging;
     }
 
     /**
@@ -351,6 +378,16 @@ public class LogService extends Service {
     }
 
     /**
+     * Indicates if the debugging mode is enabled.
+     * 
+     * @param debugging
+     *            True if the debugging mode is enabled.
+     */
+    protected void setDebugging(boolean debugging) {
+        this.debugging = debugging;
+    }
+
+    /**
      * Indicates if the identity check (as specified by RFC1413) is enabled.
      * 
      * @param identityCheck
@@ -361,15 +398,17 @@ public class LogService extends Service {
     }
 
     /**
-     * Sets the format to use when logging calls. The default format matches the
-     * one of IIS 6.
+     * Sets the format to use when logging responses. The default format matches
+     * the one of IIS 6.
      * 
-     * @param format
-     *            The format to use when logging calls.
+     * @param responseLogFormat
+     *            The format to use when logging responses.
      * @see org.restlet.routing.Template for format syntax and variables.
+     * @deprecated Use {@link #setResponseLogFormat(String)} instead.
      */
-    public void setLogFormat(String format) {
-        this.logFormat = format;
+    @Deprecated
+    public void setLogFormat(String responseLogFormat) {
+        setResponseLogFormat(responseLogFormat);
     }
 
     /**
@@ -428,6 +467,18 @@ public class LogService extends Service {
     }
 
     /**
+     * Sets the format to use when logging responses. The default format matches
+     * the one of IIS 6.
+     * 
+     * @param responseLogFormat
+     *            The format to use when logging responses.
+     * @see org.restlet.routing.Template for format syntax and variables.
+     */
+    public void setResponseLogFormat(String responseLogFormat) {
+        this.responseLogFormat = responseLogFormat;
+    }
+
+    /**
      * Starts the log service by attempting to read the log properties if the
      * {@link #getLogPropertiesRef()} returns a non null URI reference.
      */
@@ -435,8 +486,8 @@ public class LogService extends Service {
     public synchronized void start() throws Exception {
         super.start();
 
-        this.logTemplate = (getLogFormat() == null) ? null : new Template(
-                getLogFormat());
+        this.responseLogTemplate = (getLogFormat() == null) ? null
+                : new Template(getLogFormat());
 
         if (getLogPropertiesRef() != null) {
             Representation logProperties = new ClientResource(getContext(),

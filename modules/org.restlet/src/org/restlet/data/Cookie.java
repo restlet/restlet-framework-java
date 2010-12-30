@@ -44,9 +44,8 @@ import org.restlet.engine.util.SystemUtils;
  * header.
  * 
  * @see Request#getCookies()
- * @see <a
- *      href="http://wiki.restlet.org/docs_2.0/13-restlet/27-restlet/330-restlet/58-restlet.html">User
- *      Guide - Getting parameter values</a>
+ * @see <a href="http://wiki.restlet.org/docs_2.1/58-restlet.html">User Guide -
+ *      Getting parameter values</a>
  * @author Jerome Louvel
  */
 public class Cookie extends Parameter {

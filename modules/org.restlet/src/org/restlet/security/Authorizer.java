@@ -39,9 +39,8 @@ import org.restlet.routing.Filter;
 /**
  * Filter authorizing requests.
  * 
- * @see <a
- *      href="http://wiki.restlet.org/docs_2.0/13-restlet/27-restlet/46-restlet/113-restlet.html">User
- *      Guide - Authorization</a>
+ * @see <a href="http://wiki.restlet.org/docs_2.1/113-restlet.html">User Guide -
+ *      Authorization</a>
  * @author Jerome Louvel
  */
 public abstract class Authorizer extends Filter {

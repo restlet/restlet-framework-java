@@ -102,7 +102,7 @@ public class LogFilter extends Filter {
                     "org.restlet.startTime");
             int duration = (int) (System.currentTimeMillis() - startTime);
             this.logLogger.log(Level.INFO,
-                    this.logService.getLogMessage(request, response, duration));
+                    this.logService.getResponseLogMessage(response, duration));
         }
     }
 

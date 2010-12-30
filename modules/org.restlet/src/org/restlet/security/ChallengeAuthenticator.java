@@ -48,9 +48,8 @@ import org.restlet.data.Status;
  * @see ChallengeScheme
  * @see ChallengeRequest
  * @see ChallengeResponse
- * @see <a
- *      href="http://wiki.restlet.org/docs_2.0/13-restlet/27-restlet/46-restlet/112-restlet.html">User
- *      Guide - Authentication</a>
+ * @see <a href="http://wiki.restlet.org/docs_2.1/112-restlet.html">User Guide -
+ *      Authentication</a>
  * @author Jerome Louvel
  */
 public class ChallengeAuthenticator extends Authenticator {
