@@ -237,6 +237,14 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      */
     protected void onHandshakeFinished(SSLEngineResult sslResult) {
         getManager().setState(SslState.APPLICATION_DATA);
+
+        if (getConnection().isClientSide()) {
+            getConnection().getInboundWay().setIoState(IoState.IDLE);
+            getConnection().getOutboundWay().setIoState(IoState.INTEREST);
+        } else {
+            getConnection().getInboundWay().setIoState(IoState.INTEREST);
+            getConnection().getOutboundWay().setIoState(IoState.IDLE);
+        }
     }
 
     /**

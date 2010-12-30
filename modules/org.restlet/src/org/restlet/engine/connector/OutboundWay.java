@@ -37,6 +37,7 @@ import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -177,11 +178,13 @@ public abstract class OutboundWay extends Way {
             }
 
             if (bytesWritten == 0) {
-                // The byte buffer hasn't been written, the socket
-                // channel can't write more. We needs to put the
-                // byte buffer in the filling state again and
-                // wait for a new NIO selection.
-                setIoState(IoState.INTEREST);
+                if (getIoState() == IoState.PROCESSING) {
+                    // The byte buffer hasn't been written, the socket
+                    // channel can't write more. We needs to put the
+                    // byte buffer in the filling state again and
+                    // wait for a new NIO selection.
+                    setIoState(IoState.INTEREST);
+                }
             } else if (getByteBuffer().hasRemaining()) {
                 // All the buffer couldn't be written. Compact the
                 // remaining bytes so that filling can happen again.
@@ -419,6 +422,16 @@ public abstract class OutboundWay extends Way {
      */
     protected void setHeaderIndex(int headerIndex) {
         this.headerIndex = headerIndex;
+    }
+
+    @Override
+    public void setIoState(IoState ioState) {
+        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+            Context.getCurrentLogger().log(Level.FINER,
+                    "Outbound way: " + ioState);
+        }
+
+        super.setIoState(ioState);
     }
 
     /**
