@@ -20,6 +20,8 @@ Changes log
     - Enhancements
       - Added support for non-blocking HTTPS to the internal NIO connectors, 
         client-side and server-side. Sponsored by NetDev.
+      - Keep alive empty lines between messages in a persistent connections are
+        now eat silently. Reported by John Logsdon.
     - Bugs fixed
       - Fixed bug preventing persistent connections reuse when an entity is
         present. Reported by John Logsdon.

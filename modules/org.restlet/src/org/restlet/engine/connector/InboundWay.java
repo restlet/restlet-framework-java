@@ -278,16 +278,24 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected void readMessage() throws IOException {
-        while (isProcessing() && fillLine()) {
+        boolean continueReading = true;
+
+        while (continueReading && isProcessing() && fillLine()) {
             // Parse next ready lines
             if (getMessageState() == MessageState.START) {
-                if (getHelper().getLogger().isLoggable(Level.FINE)) {
-                    getHelper().getLogger().fine(
-                            "Reading message from "
-                                    + getConnection().getSocketAddress());
-                }
+                if (getLineBuilder().length() == 0) {
+                    // Silently eat empty lines used for keep alive purpose
+                    // sometimes (SIP)
+                    continueReading = false;
+                } else {
+                    if (getHelper().getLogger().isLoggable(Level.FINE)) {
+                        getHelper().getLogger().fine(
+                                "Reading message from "
+                                        + getConnection().getSocketAddress());
+                    }
 
-                readStartLine();
+                    readStartLine();
+                }
             } else if (getMessageState() == MessageState.HEADERS) {
                 Parameter header = readHeader();
 
