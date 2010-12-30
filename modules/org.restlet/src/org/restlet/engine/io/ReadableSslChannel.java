@@ -97,22 +97,25 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
     public int read(ByteBuffer dst) throws IOException {
         int result = 0;
 
-        if (getPacketBufferState() == BufferState.FILLING) {
-            refill();
-        }
+        // If the packet buffer is empty, first try to refill it
+        refill();
 
         if (getPacketBufferState() == BufferState.DRAINING) {
-            // Unwrap the network data into application data
-            int remaining = dst.remaining();
-            SSLEngineResult sslResult = getManager().getEngine().unwrap(
-                    getPacketBuffer(), dst);
-            result = remaining - dst.remaining();
+            int dstSize = dst.remaining();
 
-            if (getPacketBuffer().remaining() == 0) {
-                setPacketBufferState(BufferState.FILLING);
+            if (dstSize > 0) {
+                SSLEngineResult sslResult = getManager().getEngine().unwrap(
+                        getPacketBuffer(), dst);
+                result = dstSize - dst.remaining();
+                int remaining = getPacketBuffer().remaining();
+
+                if (remaining == 0) {
+                    setPacketBufferState(BufferState.FILLING);
+                    refill();
+                }
+
+                handleResult(sslResult);
             }
-
-            handleResult(sslResult);
         }
 
         return result;

@@ -105,7 +105,6 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
             if (srcSize > 0) {
                 SSLEngineResult sslResult = getManager().getEngine().wrap(src,
                         getPacketBuffer());
-
                 result = srcSize - src.remaining();
                 getPacketBuffer().flip();
                 int remaining = getPacketBuffer().remaining();
