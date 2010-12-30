@@ -146,7 +146,7 @@ public class SslManager {
 
     @Override
     public String toString() {
-        return "SSL Manager: " + getState() + " | " + getEngine();
+        return getState() + " | " + getEngine();
     }
 
     /**

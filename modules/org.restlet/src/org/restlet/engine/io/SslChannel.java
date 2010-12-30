@@ -188,7 +188,9 @@ public abstract class SslChannel<T extends SelectionChannel> extends
     protected void log(SSLEngineResult sslResult) {
         if (Context.getCurrentLogger().isLoggable(Level.INFO)) {
             Context.getCurrentLogger().log(Level.INFO,
-                    "SSL I/O result" + sslResult);
+                    "SSL I/O result: " + sslResult);
+            Context.getCurrentLogger().log(Level.INFO,
+                    "SSL Manager: " + getManager());
         }
     }
 

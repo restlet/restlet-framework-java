@@ -32,11 +32,13 @@ package org.restlet.engine.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
 
 import javax.net.ssl.SSLEngineResult;
 
 import org.restlet.engine.connector.SslConnection;
 import org.restlet.engine.security.SslManager;
+import org.restlet.engine.security.SslState;
 
 /**
  * SSL byte channel that unwraps all read data using the SSL/TLS protocols. It
@@ -78,13 +80,18 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
         // If the packet buffer is empty, first try to refill it
         refill();
 
-        if (getPacketBufferState() == BufferState.DRAINING) {
+        if ((getPacketBufferState() == BufferState.DRAINING)
+                || (getManager().getState() == SslState.HANDSHAKING)) {
             int dstSize = dst.remaining();
 
             if (dstSize > 0) {
-                SSLEngineResult sslResult = runEngine(dst);
-                handleResult(sslResult, dst);
-                refill();
+                while (getPacketBuffer().hasRemaining()
+                        && (getConnection().getInboundWay().getIoState() != IoState.IDLE)) {
+                    SSLEngineResult sslResult = runEngine(dst);
+                    handleResult(sslResult, dst);
+                    refill();
+                }
+
                 result = dstSize - dst.remaining();
             }
         }
@@ -105,6 +112,11 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
         if (getPacketBufferState() == BufferState.FILLING) {
             result = getWrappedChannel().read(getPacketBuffer());
 
+            if (getConnection().getLogger().isLoggable(Level.INFO)) {
+                getConnection().getLogger().log(Level.INFO,
+                        "Packet bytes read: " + result);
+            }
+
             if (result > 0) {
                 setPacketBufferState(BufferState.DRAINING);
                 getPacketBuffer().flip();
@@ -117,16 +129,20 @@ public class ReadableSslChannel extends SslChannel<ReadableSelectionChannel>
     @Override
     protected SSLEngineResult runEngine(ByteBuffer applicationBuffer)
             throws IOException {
+        if (getConnection().getLogger().isLoggable(Level.INFO)) {
+            getConnection().getLogger().log(Level.INFO,
+                    "Unwrapping bytes with: " + getPacketBuffer());
+        }
+
         SSLEngineResult result = getManager().getEngine().unwrap(
                 getPacketBuffer(), applicationBuffer);
         int remaining = getPacketBuffer().remaining();
 
         if (remaining == 0) {
             setPacketBufferState(BufferState.FILLING);
-            refill();
+            getPacketBuffer().clear();
         }
 
         return result;
     }
-
 }

@@ -36,9 +36,9 @@ import java.util.logging.Level;
 
 import javax.net.ssl.SSLEngineResult;
 
-import org.restlet.Context;
 import org.restlet.engine.connector.SslConnection;
 import org.restlet.engine.security.SslManager;
+import org.restlet.engine.security.SslState;
 
 /**
  * SSL byte channel that wraps all application data using the SSL/TLS protocols.
@@ -77,6 +77,11 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
         if (getPacketBufferState() == BufferState.DRAINING) {
             result = getWrappedChannel().write(getPacketBuffer());
 
+            if (getConnection().getLogger().isLoggable(Level.INFO)) {
+                getConnection().getLogger().log(Level.INFO,
+                        "Packet bytes written: " + result);
+            }
+
             if (getPacketBuffer().remaining() == 0) {
                 setPacketBufferState(BufferState.FILLING);
                 getPacketBuffer().clear();
@@ -89,6 +94,11 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
     @Override
     protected SSLEngineResult runEngine(ByteBuffer applicationBuffer)
             throws IOException {
+        if (getConnection().getLogger().isLoggable(Level.INFO)) {
+            getConnection().getLogger().log(Level.INFO,
+                    "Wrapping bytes with: " + getPacketBuffer());
+        }
+
         SSLEngineResult result = getManager().getEngine().wrap(
                 applicationBuffer, getPacketBuffer());
         getPacketBuffer().flip();
@@ -96,7 +106,6 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
 
         if (remaining > 0) {
             setPacketBufferState(BufferState.DRAINING);
-            flush();
         } else {
             getPacketBuffer().clear();
         }
@@ -115,21 +124,22 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
     public int write(ByteBuffer src) throws IOException {
         int result = 0;
 
-        if (Context.getCurrentLogger().isLoggable(Level.INFO)) {
-            Context.getCurrentLogger().log(Level.INFO, getManager().toString());
-        }
-
         // If the packet buffer isn't empty, first try to flush it
         flush();
 
         // Refill the packet buffer
-        if (getPacketBufferState() == BufferState.FILLING) {
+        if ((getPacketBufferState() == BufferState.FILLING)
+                || (getManager().getState() == SslState.HANDSHAKING)) {
             int srcSize = src.remaining();
 
             if (srcSize > 0) {
-                SSLEngineResult sslResult = runEngine(src);
-                handleResult(sslResult, src);
-                flush();
+                while (getPacketBuffer().hasRemaining()
+                        && (getConnection().getOutboundWay().getIoState() != IoState.IDLE)) {
+                    SSLEngineResult sslResult = runEngine(src);
+                    handleResult(sslResult, src);
+                    flush();
+                }
+
                 result = srcSize - src.remaining();
             }
         }
