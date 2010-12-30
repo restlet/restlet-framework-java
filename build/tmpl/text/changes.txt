@@ -10,6 +10,9 @@ Changes log
         all connectors so it can be confusing to expose it.
         Use the "socketConnectTimeoutMs" connector parameter instead or
         the "maxIoIdleTimeMs" parameter for internal NIO connectors.
+      - Deprecated the Engine#setInstance() method to favor the 
+        Engine#register() ones which wrap logging initialization logic
+        and added an Engine#clear() method to discard it altogether.
     - Enhancements
       - Added support for non-blocking HTTPS to the internal NIO connectors, 
         client-side and server-side. Sponsored by NetDev.

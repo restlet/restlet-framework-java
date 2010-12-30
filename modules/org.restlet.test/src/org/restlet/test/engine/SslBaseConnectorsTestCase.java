@@ -101,11 +101,10 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     // Helper methods
     private void runTest(ConnectorHelper<Server> server,
             ConnectorHelper<Client> client) throws Exception {
-        Engine engine = new Engine(false);
+        Engine engine = Engine.register(false);
         engine.getRegisteredClients().add(new ClapClientHelper(null));
         engine.getRegisteredServers().add(server);
         engine.getRegisteredClients().add(client);
-        org.restlet.engine.Engine.setInstance(engine);
         String uri = start();
 
         try {
@@ -173,7 +172,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         BioUtils.delete(this.testDir, true);
 
         // Restore a clean engine
-        org.restlet.engine.Engine.setInstance(new Engine());
+        org.restlet.engine.Engine.register();
     }
 
     public void testSslInternalAndApache() throws Exception {

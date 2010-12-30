@@ -132,7 +132,7 @@ public class Activator implements BundleActivator {
      *            The bundle context.
      */
     public void start(BundleContext context) throws Exception {
-        org.restlet.engine.Engine.setInstance(new Engine(false));
+        org.restlet.engine.Engine.register(false);
 
         // Discover helpers in installed bundles and start
         // the bundle if necessary
@@ -167,7 +167,7 @@ public class Activator implements BundleActivator {
      *            The bundle context.
      */
     public void stop(BundleContext context) throws Exception {
-        org.restlet.engine.Engine.setInstance(null);
+        org.restlet.engine.Engine.clear();
     }
 
 }

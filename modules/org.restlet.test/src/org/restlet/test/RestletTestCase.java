@@ -61,7 +61,7 @@ public abstract class RestletTestCase extends TestCase {
         Engine.clearThreadLocalVariables();
 
         // Restore a clean engine
-        org.restlet.engine.Engine.setInstance(new Engine());
+        org.restlet.engine.Engine.register();
 
         // Prefer the internal connectors
         Engine.getInstance()

@@ -70,12 +70,11 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     // Helper methods
     protected void runTest(ConnectorHelper<Server> server,
             ConnectorHelper<Client> client) throws Exception {
-        Engine nre = new Engine(false);
+        Engine nre = Engine.register(false);
         nre.getRegisteredServers().add(server);
         nre.getRegisteredClients().add(client);
         nre.registerDefaultAuthentications();
         nre.registerDefaultConverters();
-        org.restlet.engine.Engine.setInstance(nre);
 
         String uri = start();
         try {
@@ -109,7 +108,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         super.tearDown();
 
         // Restore a clean engine
-        org.restlet.engine.Engine.setInstance(new Engine());
+        org.restlet.engine.Engine.register();
     }
 
     public void testInternalAndApache() throws Exception {
