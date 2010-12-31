@@ -25,7 +25,9 @@ Changes log
     - Bugs fixed
       - Fixed bug preventing persistent connections reuse when an entity is
         present. Reported by John Logsdon.
-    - Misc
+      - Fixed potential issue with double consumption of SIP ACK messages. 
+        Reported by John Logsdon.
+     - Misc
 
 - 2.1 Milestone 2 (12/24/2010)
     - API changes

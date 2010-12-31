@@ -308,12 +308,6 @@ public abstract class InboundWay extends Way {
                 } else {
                     // All headers received
                     onReceived();
-
-                    if (getMessageState() == MessageState.IDLE) {
-                        // Message fully received, check if another is ready
-                        updateState();
-                        super.onSelected(getRegistration());
-                    }
                 }
             }
         }
