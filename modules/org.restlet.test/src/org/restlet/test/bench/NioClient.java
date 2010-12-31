@@ -1,5 +1,7 @@
 package org.restlet.test.bench;
 
+import java.util.logging.Level;
+
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
@@ -18,8 +20,10 @@ public class NioClient {
         // helper = new org.restlet.ext.httpclient.HttpClientHelper(null);
         // helper = new org.restlet.ext.net.HttpClientHelper(null);
         Engine.getInstance().getRegisteredClients().add(0, helper);
+        Engine.setLogLevel(Level.FINE);
 
         Client client = new Client(new Context(), Protocol.HTTP);
+        // client.getContext().getParameters().add("persistingConnections", "false");
         client.getContext().getParameters().add("tracing", "false");
         client.getContext().getParameters().add("minThreads", "1");
         client.getContext().getParameters().add("lowThreads", "30");
@@ -47,8 +51,8 @@ public class NioClient {
             // r = cr.post("Sample content posted");
 
             r = cr.get();
-            r.exhaust();
-            // System.out.println(cr.get().getText());
+            // r.exhaust();
+            System.out.println(r.getText());
 
             // System.out.println("Copying to the local file");
             // fr.put(r);

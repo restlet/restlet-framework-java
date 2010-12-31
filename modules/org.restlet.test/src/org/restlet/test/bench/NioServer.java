@@ -21,6 +21,7 @@ public class NioServer {
 
         // Register the selected connector
         Engine.getInstance().getRegisteredServers().add(0, helper);
+        // Engine.setLogLevel(Level.FINEST);
 
         // Create and start a connector instance
         Server server = new Server(new Context(), Protocol.HTTP, 9999);
