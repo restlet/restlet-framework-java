@@ -27,6 +27,9 @@ Changes log
         present. Reported by John Logsdon.
       - Fixed potential issue with double consumption of SIP ACK messages. 
         Reported by John Logsdon.
+      - Fixed issue with asynchronous responses and provisional responses
+        preventing the resue of persistent connections. 
+        Reported by Phil Dunks. 
      - Misc
 
 - 2.1 Milestone 2 (12/24/2010)

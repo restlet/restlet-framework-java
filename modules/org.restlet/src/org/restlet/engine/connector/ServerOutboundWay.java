@@ -150,7 +150,17 @@ public class ServerOutboundWay extends OutboundWay {
 
         if (!getMessage().getStatus().isInformational()) {
             // Attempt to read additional inbound messages
-            getConnection().getInboundWay().getMessages().remove(getMessage());
+            Response inboundMessage = getConnection().getInboundWay()
+                    .getMessages().peek();
+
+            if (inboundMessage.getRequest() == getMessage().getRequest()) {
+                // As we are supporting provisional responses and
+                // asynchronous responses, it is possible that the final
+                // response object is not the original one blocked in the
+                // inbound queue
+                getConnection().getInboundWay().getMessages()
+                        .remove(inboundMessage);
+            }
         }
 
         // Check if we need to close the connection

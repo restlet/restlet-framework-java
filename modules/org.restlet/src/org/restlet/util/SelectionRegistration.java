@@ -59,21 +59,33 @@ public class SelectionRegistration {
      * @return The name of the given IO operation.
      */
     public static String getName(int operation) {
-        switch (operation) {
-        case SelectionKey.OP_ACCEPT:
-            return "ACCEPT";
-        case SelectionKey.OP_CONNECT:
-            return "CONNECT";
-        case SelectionKey.OP_READ:
-            return "READ";
-        case SelectionKey.OP_WRITE:
-            return "WRITE";
-        case 0:
-            return "NONE";
-        default:
-            return Integer.toString(operation);
+        StringBuilder result = new StringBuilder();
+
+        if ((operation & SelectionKey.OP_ACCEPT) != 0) {
+            result.append("ACCEPT ");
         }
 
+        if ((operation & SelectionKey.OP_CONNECT) != 0) {
+            result.append("CONNECT ");
+        }
+
+        if ((operation & SelectionKey.OP_READ) != 0) {
+            result.append("READ ");
+        }
+
+        if ((operation & SelectionKey.OP_WRITE) != 0) {
+            result.append("WRITE ");
+        }
+
+        if (operation == 0) {
+            result.append("NONE ");
+        }
+
+        if (result.length() == 0) {
+            result.append(operation);
+        }
+
+        return result.toString();
     }
 
     /** The barrier used for blocking/unblocking support. */
