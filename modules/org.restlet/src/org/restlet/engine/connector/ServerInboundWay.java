@@ -190,8 +190,6 @@ public class ServerInboundWay extends InboundWay {
 
     @Override
     public void updateState() {
-        super.updateState();
-
         if (getIoState() == IoState.IDLE) {
             if (getConnection().isPipelining()) {
                 // Read the next request
@@ -203,5 +201,8 @@ public class ServerInboundWay extends InboundWay {
                 setIoState(IoState.INTEREST);
             }
         }
+
+        // Update the registration
+        super.updateState();
     }
 }
