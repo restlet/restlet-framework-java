@@ -454,7 +454,12 @@ public abstract class Representation extends RepresentationInfo {
      * sockets, channels or files. If the representation is transient and hasn't
      * been read yet, all the remaining content will be discarded, any open
      * socket, channel, file or similar source of content will be immediately
-     * closed. The representation is also no more available.
+     * closed. The representation is also no more available.<br>
+     * <br>
+     * Note that calling this method will likely prevent the reuse of the
+     * underlying persistent connection and therefore should only be called when
+     * exhausting the content with {@link #exhaust()} is too costly or when
+     * further calls from the client are not welcome.
      */
     public void release() {
         this.available = false;

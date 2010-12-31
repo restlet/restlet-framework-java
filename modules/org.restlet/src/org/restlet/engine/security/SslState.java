@@ -53,6 +53,9 @@ public enum SslState {
     /** Send or receive application data. */
     APPLICATION_DATA,
 
+    /** Engine is closing. */
+    CLOSING,
+
     /** Engine closed. */
     CLOSED;
 }

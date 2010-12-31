@@ -129,6 +129,39 @@ public abstract class SslChannel<T extends SelectionChannel> extends
     }
 
     /**
+     * Handles the handshake states.
+     * 
+     * @param sslResult
+     *            The SSL result to handle.
+     * @param applicationBuffer
+     *            The related application data buffer.
+     */
+    protected void handleHandshake(SSLEngineResult sslResult,
+            ByteBuffer applicationBuffer) {
+        switch (sslResult.getHandshakeStatus()) {
+        case FINISHED:
+            onHandshakeFinished(sslResult);
+            break;
+
+        case NEED_TASK:
+            runTask(sslResult, applicationBuffer);
+            break;
+
+        case NEED_UNWRAP:
+            onUnwrap(sslResult);
+            break;
+
+        case NEED_WRAP:
+            onWrap(sslResult);
+            break;
+
+        case NOT_HANDSHAKING:
+            // Don't do anything
+            break;
+        }
+    }
+
+    /**
      * Handles the result of a previous SSL engine processing.
      * 
      * @param sslResult
@@ -138,44 +171,26 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      */
     protected void handleResult(SSLEngineResult sslResult,
             ByteBuffer applicationBuffer) {
-        log(sslResult);
+        if (sslResult != null) {
+            log(sslResult);
 
-        switch (sslResult.getStatus()) {
-        case BUFFER_OVERFLOW:
-            onBufferOverflow(sslResult);
-            break;
-
-        case BUFFER_UNDERFLOW:
-            onBufferUnderflow(sslResult);
-            break;
-
-        case CLOSED:
-            onClosed(sslResult);
-            break;
-
-        case OK:
-            switch (sslResult.getHandshakeStatus()) {
-            case FINISHED:
-                onHandshakeFinished(sslResult);
+            switch (sslResult.getStatus()) {
+            case BUFFER_OVERFLOW:
+                onBufferOverflow(sslResult);
                 break;
 
-            case NEED_TASK:
-                runTask(sslResult, applicationBuffer);
+            case BUFFER_UNDERFLOW:
+                onBufferUnderflow(sslResult);
                 break;
 
-            case NEED_UNWRAP:
-                onUnwrap(sslResult);
+            case CLOSED:
+                onClosed(sslResult, applicationBuffer);
                 break;
 
-            case NEED_WRAP:
-                onWrap(sslResult);
-                break;
-
-            case NOT_HANDSHAKING:
-                // Don't do anything
+            case OK:
+                onOk(sslResult, applicationBuffer);
                 break;
             }
-            break;
         }
     }
 
@@ -222,9 +237,13 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      * 
      * @param sslResult
      *            The SSL engine result.
+     * @param applicationBuffer
+     *            The related application data buffer.
      */
-    protected void onClosed(SSLEngineResult sslResult) {
-        getManager().setState(SslState.CLOSED);
+    protected void onClosed(SSLEngineResult sslResult,
+            ByteBuffer applicationBuffer) {
+        getManager().setState(SslState.CLOSING);
+        handleHandshake(sslResult, applicationBuffer);
         getConnection().close(true);
     }
 
@@ -236,7 +255,11 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The SSL engine result.
      */
     protected void onHandshakeFinished(SSLEngineResult sslResult) {
-        getManager().setState(SslState.APPLICATION_DATA);
+        if (getManager().getState() == SslState.HANDSHAKING) {
+            getManager().setState(SslState.APPLICATION_DATA);
+        } else if (getManager().getState() == SslState.CLOSING) {
+            getManager().setState(SslState.CLOSED);
+        }
 
         if (getConnection().isClientSide()) {
             getConnection().getInboundWay().setIoState(IoState.IDLE);
@@ -245,6 +268,18 @@ public abstract class SslChannel<T extends SelectionChannel> extends
             getConnection().getInboundWay().setIoState(IoState.INTEREST);
             getConnection().getOutboundWay().setIoState(IoState.IDLE);
         }
+    }
+
+    /**
+     * Notifies that the SSL handling was successful.
+     * 
+     * @param sslResult
+     *            The SSL engine result.
+     * @param applicationBuffer
+     *            The related application data buffer.
+     */
+    protected void onOk(SSLEngineResult sslResult, ByteBuffer applicationBuffer) {
+        handleHandshake(sslResult, applicationBuffer);
     }
 
     /**

@@ -94,20 +94,26 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
     @Override
     protected SSLEngineResult runEngine(ByteBuffer applicationBuffer)
             throws IOException {
+        SSLEngineResult result = null;
+
         if (getConnection().getLogger().isLoggable(Level.INFO)) {
             getConnection().getLogger().log(Level.INFO,
                     "Wrapping bytes with: " + getPacketBuffer());
         }
 
-        SSLEngineResult result = getManager().getEngine().wrap(
-                applicationBuffer, getPacketBuffer());
-        getPacketBuffer().flip();
         int remaining = getPacketBuffer().remaining();
 
         if (remaining > 0) {
-            setPacketBufferState(BufferState.DRAINING);
-        } else {
-            getPacketBuffer().clear();
+            result = getManager().getEngine().wrap(applicationBuffer,
+                    getPacketBuffer());
+            getPacketBuffer().flip();
+            remaining = getPacketBuffer().remaining();
+
+            if (remaining > 0) {
+                setPacketBufferState(BufferState.DRAINING);
+            } else {
+                getPacketBuffer().clear();
+            }
         }
 
         return result;
