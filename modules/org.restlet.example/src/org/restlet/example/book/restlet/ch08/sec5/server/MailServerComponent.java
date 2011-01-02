@@ -2,9 +2,11 @@ package org.restlet.example.book.restlet.ch08.sec5.server;
 
 import org.restlet.Component;
 import org.restlet.data.Protocol;
+import org.restlet.example.book.restlet.ch08.sec5.server.webapi.MailApiApplication;
+import org.restlet.example.book.restlet.ch08.sec5.server.website.MailSiteApplication;
 
 /**
- * RESTful component containing the mail server application.
+ * RESTful component containing the mail API and mail site applications.
  */
 public class MailServerComponent extends Component {
 
@@ -31,13 +33,14 @@ public class MailServerComponent extends Component {
         setOwner("Noelios Technologies");
         setAuthor("The Restlet Team");
 
-        // Add a CLAP client connector
+        // Add client connectors
         getClients().add(Protocol.CLAP);
 
-        // Adds a HTTP server connector
+        // Adds server connectors
         getServers().add(Protocol.HTTP, 8111);
 
-        // Attach the application to the default virtual host
-        getDefaultHost().attachDefault(new MailServerApplication());
+        // Attach the applications to the default virtual host
+        getDefaultHost().attach("/site", new MailSiteApplication());
+        getDefaultHost().attach("/api", new MailApiApplication());
     }
 }
