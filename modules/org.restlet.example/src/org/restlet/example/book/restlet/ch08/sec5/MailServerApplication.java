@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec4;
+package org.restlet.example.book.restlet.ch08.sec5;
 
 import org.restlet.Restlet;
 import org.restlet.example.book.restlet.ch07.sec2.server.AccountServerResource;
