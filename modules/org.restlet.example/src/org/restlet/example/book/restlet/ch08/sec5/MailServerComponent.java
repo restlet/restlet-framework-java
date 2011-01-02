@@ -35,6 +35,7 @@ public class MailServerComponent extends Component {
 
         // Add client connectors
         getClients().add(Protocol.CLAP);
+        getClients().add(Protocol.HTTP);
 
         // Adds server connectors
         getServers().add(Protocol.HTTP, 8111);

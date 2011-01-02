@@ -6,7 +6,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.example.book.restlet.ch08.sec5.webapi.common.MailRepresentation;
 import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.ext.freemarker.TemplateRepresentation;
@@ -25,13 +24,15 @@ public class MailServerResource extends ServerResource {
 
     @Override
     protected Representation get() throws ResourceException {
-        // Create the mail bean
-        MailRepresentation mail = new MailRepresentation();
-        mail.setStatus("received");
-        mail.setSubject("Message to self");
-        mail.setContent("Doh!");
-        mail.setAccountRef(new Reference(getReference(), "..").getTargetRef()
-                .toString());
+        // Create the mail URI inside the API application
+        String accountId = (String) getRequestAttributes().get("accountId");
+        String mailId = (String) getRequestAttributes().get("mailId");
+        String mailApiUri = getReference().getHostIdentifier()
+                + "/api/accounts/" + accountId + "/mails/" + mailId;
+
+        ClientResource cr = new ClientResource(mailApiUri);
+        cr.setNext(getContext().getServerDispatcher());
+        MailRepresentation mail = cr.get(MailRepresentation.class);
 
         // Load the FreeMarker template
         Representation mailFtl = new ClientResource(
