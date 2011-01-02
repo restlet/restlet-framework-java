@@ -31,7 +31,6 @@
 package org.restlet.ext.spring;
 
 import org.restlet.Context;
-import org.restlet.resource.Resource;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.springframework.beans.factory.BeanFactory;
@@ -106,7 +105,7 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
     @SuppressWarnings("deprecation")
     @Override
     public org.restlet.resource.Resource createResource() {
-        return findBean(Resource.class);
+        return findBean(org.restlet.resource.Resource.class);
     }
 
     @SuppressWarnings({ "unchecked" })

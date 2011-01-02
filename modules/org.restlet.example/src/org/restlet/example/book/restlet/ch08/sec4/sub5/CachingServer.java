@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec3.sub5;
+package org.restlet.example.book.restlet.ch08.sec4.sub5;
 
 import org.restlet.Component;
 import org.restlet.data.Protocol;
