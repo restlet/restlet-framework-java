@@ -5,7 +5,9 @@ Changes log
 
 - 2.0.4 (2010-12-24)
     - Bugs fixed
-
+       - Fixed bug in virtual host router that was failing if no host 
+         URI was set. Now falls back to the host part of the resource URI.
+ 
 - @version-full@ (@release-date@)
     - Bugs fixed
 	   - Extension headers on responses were now supported by the
