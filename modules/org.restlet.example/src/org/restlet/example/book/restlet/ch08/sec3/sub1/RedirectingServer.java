@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec2.sub1;
+package org.restlet.example.book.restlet.ch08.sec3.sub1;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;

@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch08.sec2.sub2;
+package org.restlet.example.book.restlet.ch08.sec3.sub2;
 
 import org.restlet.Application;
 import org.restlet.Component;
