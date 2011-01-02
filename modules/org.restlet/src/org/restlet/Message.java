@@ -296,9 +296,7 @@ public abstract class Message {
     }
 
     /**
-     * Releases the message's entity. If the entity is transient and hasn't been
-     * read yet, all the remaining content will be discarded, any open socket,
-     * channel, file or similar source of content will be immediately closed.
+     * Releases the message's entity if present.
      * 
      * @see org.restlet.representation.Representation#release()
      */

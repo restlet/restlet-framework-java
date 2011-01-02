@@ -477,6 +477,10 @@ public class ClientResource extends UniformResource {
         throw new ResourceException(errorStatus);
     }
 
+    /**
+     * Releases the resource by stopping any connector automatically created and
+     * associated to the "next" property (see {@link #getNext()} method.
+     */
     @Override
     protected void doRelease() throws ResourceException {
         if ((getNext() != null) && this.nextCreated) {
