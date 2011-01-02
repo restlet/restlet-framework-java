@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec1.sub6;
+package org.restlet.example.book.restlet.ch08.sec2.sub2;
 
 import java.util.ArrayList;
 import java.util.List;
