@@ -3,7 +3,7 @@
 <title>Example mail</title>
 </head>
 <body>
-<form action="?method=PUT" method="POST">
+<form action="?method=PUT" method="POST" enctype="multipart/form-data">
 <table>
     <tbody>
         <tr>
@@ -18,6 +18,9 @@
             <td>Content</td>
             <td><textarea name="content" rows="10" cols="80">${content}</textarea></td>
         </tr>
+        <tr>
+            <td>Attachment</td>
+            <td><input name="attachment" type="file"/></a>
         <tr>
             <td/>
             <td><input type="submit" value="Save"></td>

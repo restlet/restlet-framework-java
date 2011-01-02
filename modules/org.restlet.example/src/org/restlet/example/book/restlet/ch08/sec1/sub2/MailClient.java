@@ -12,7 +12,6 @@ public class MailClient {
     public static void main(String[] args) throws Exception {
         ClientResource mailClient = new ClientResource(
                 "http://localhost:8111/accounts/123/mails/abc");
-
         mailClient.getRequest().getCookies()
                 .add(new Cookie("Credentials", "scott=tiger"));
 
