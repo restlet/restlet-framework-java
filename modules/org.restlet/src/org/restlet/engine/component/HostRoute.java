@@ -74,7 +74,12 @@ public class HostRoute extends Route {
      */
     @Override
     protected int beforeHandle(Request request, Response response) {
-        request.getResourceRef().setBaseRef(request.getHostRef());
+        if (request.getHostRef() == null) {
+            request.getResourceRef().setBaseRef(
+                    request.getResourceRef().getHostIdentifier());
+        } else {
+            request.getResourceRef().setBaseRef(request.getHostRef());
+        }
 
         if (getLogger().isLoggable(Level.FINE)) {
             getLogger().fine(
@@ -107,8 +112,8 @@ public class HostRoute extends Route {
      * @return True if the formatted string matched the pattern.
      */
     private boolean matches(String regex, String formattedString) {
-        return Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(
-                formattedString).matches();
+        return Pattern.compile(regex, Pattern.CASE_INSENSITIVE)
+                .matcher(formattedString).matches();
     }
 
     /**

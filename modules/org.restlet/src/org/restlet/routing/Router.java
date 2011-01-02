@@ -731,8 +731,8 @@ public class Router extends Restlet {
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
-
         Restlet next = getNext(request, response);
+
         if (next != null) {
             doHandle(next, request, response);
         } else {
