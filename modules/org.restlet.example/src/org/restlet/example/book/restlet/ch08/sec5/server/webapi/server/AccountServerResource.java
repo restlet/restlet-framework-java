@@ -1,6 +1,7 @@
-package org.restlet.example.book.restlet.ch08.sec5.server.webapi;
+package org.restlet.example.book.restlet.ch08.sec5.server.webapi.server;
 
-import org.restlet.example.book.restlet.ch03.sect5.sub5.common.AccountResource;
+import org.restlet.example.book.restlet.ch08.sec5.server.webapi.common.AccountRepresentation;
+import org.restlet.example.book.restlet.ch08.sec5.server.webapi.common.AccountResource;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.RepresentationInfo;
 import org.restlet.ext.wadl.WadlServerResource;
@@ -49,11 +50,11 @@ public class AccountServerResource extends WadlServerResource implements
         AccountsServerResource.getAccounts().remove(this.accountId - 1);
     }
 
-    public String represent() {
+    public AccountRepresentation represent() {
         return AccountsServerResource.getAccounts().get(this.accountId - 1);
     }
 
-    public void store(String account) {
+    public void store(AccountRepresentation account) {
         AccountsServerResource.getAccounts().set(this.accountId - 1, account);
     }
 }

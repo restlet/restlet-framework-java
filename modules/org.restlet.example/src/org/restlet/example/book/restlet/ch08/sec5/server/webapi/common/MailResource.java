@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec5.common;
+package org.restlet.example.book.restlet.ch08.sec5.server.webapi.common;
 
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;

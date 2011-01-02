@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec5.client;
+package org.restlet.example.book.restlet.ch08.sec5.server.webapi.client;
 
 import java.util.List;
 

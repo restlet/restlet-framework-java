@@ -1,14 +1,14 @@
-package org.restlet.example.book.restlet.ch08.sec5.server.webapi;
+package org.restlet.example.book.restlet.ch08.sec5.server.webapi.server;
 
 import org.restlet.data.Reference;
-import org.restlet.example.book.restlet.ch08.sec5.common.MailRepresentation;
-import org.restlet.example.book.restlet.ch08.sec5.common.MailResource;
-import org.restlet.resource.ServerResource;
+import org.restlet.example.book.restlet.ch08.sec5.server.webapi.common.MailRepresentation;
+import org.restlet.example.book.restlet.ch08.sec5.server.webapi.common.MailResource;
+import org.restlet.ext.wadl.WadlServerResource;
 
 /**
  * Mail server resource implementing the {@link MailResource} interface.
  */
-public class MailServerResource extends ServerResource implements MailResource {
+public class MailServerResource extends WadlServerResource implements MailResource {
 
     public MailRepresentation retrieve() {
         MailRepresentation mail = new MailRepresentation();

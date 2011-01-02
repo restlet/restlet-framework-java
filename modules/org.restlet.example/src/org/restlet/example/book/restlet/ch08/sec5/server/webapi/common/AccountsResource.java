@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec5.common;
+package org.restlet.example.book.restlet.ch08.sec5.server.webapi.common;
 
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -25,6 +25,6 @@ public interface AccountsResource {
      * @return The account identifier.
      */
     @Post
-    public String add(String account);
+    public String add(AccountRepresentation account);
 
 }

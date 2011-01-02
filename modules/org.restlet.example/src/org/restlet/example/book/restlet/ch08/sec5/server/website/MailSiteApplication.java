@@ -39,8 +39,6 @@ public class MailSiteApplication extends Application {
                 FeedServerResource.class);
         router.attach("/accounts/{accountId}/mails/{mailId}",
                 MailServerResource.class);
-        router.attach("/accounts/{accountId}/contacts/{contactId}",
-                ContactServerResource.class);
 
         // Serve static files (images, etc.)
         String rootUri = "file:///" + System.getProperty("java.io.tmpdir");

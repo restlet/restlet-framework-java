@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec5.server.webapi;
+package org.restlet.example.book.restlet.ch08.sec5.server.webapi.server;
 
 import org.restlet.data.MediaType;
 import org.restlet.example.book.restlet.ch03.sect5.sub5.common.RootResource;

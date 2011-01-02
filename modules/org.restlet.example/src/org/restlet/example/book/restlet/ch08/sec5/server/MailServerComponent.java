@@ -2,7 +2,7 @@ package org.restlet.example.book.restlet.ch08.sec5.server;
 
 import org.restlet.Component;
 import org.restlet.data.Protocol;
-import org.restlet.example.book.restlet.ch08.sec5.server.webapi.MailApiApplication;
+import org.restlet.example.book.restlet.ch08.sec5.server.webapi.server.MailApiApplication;
 import org.restlet.example.book.restlet.ch08.sec5.server.website.MailSiteApplication;
 
 /**
