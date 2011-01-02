@@ -1,10 +1,9 @@
-package org.restlet.example.book.restlet.ch08.sec5.server.website;
+package org.restlet.example.book.restlet.ch08.sec5.website;
 
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.example.book.restlet.ch03.sect5.sub5.common.RootResource;
-import org.restlet.example.book.restlet.ch08.sec5.server.webapi.common.MailRepresentation;
+import org.restlet.example.book.restlet.ch08.sec5.webapi.common.MailRepresentation;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -14,7 +13,7 @@ import org.restlet.resource.ServerResource;
 /**
  * Root resource implementation.
  */
-public class RootServerResource extends ServerResource implements RootResource {
+public class RootServerResource extends ServerResource {
 
     @Override
     protected Representation get() throws ResourceException {

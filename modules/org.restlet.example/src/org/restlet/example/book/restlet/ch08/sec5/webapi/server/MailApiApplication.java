@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec5.server.webapi.server;
+package org.restlet.example.book.restlet.ch08.sec5.webapi.server;
 
 import org.restlet.Restlet;
 import org.restlet.ext.wadl.WadlApplication;

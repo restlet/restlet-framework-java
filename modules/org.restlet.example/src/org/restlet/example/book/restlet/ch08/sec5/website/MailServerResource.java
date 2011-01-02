@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec5.server.website;
+package org.restlet.example.book.restlet.ch08.sec5.website;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.example.book.restlet.ch08.sec5.server.webapi.common.MailRepresentation;
+import org.restlet.example.book.restlet.ch08.sec5.webapi.common.MailRepresentation;
 import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.InputRepresentation;

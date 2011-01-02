@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec5.server.website;
+package org.restlet.example.book.restlet.ch08.sec5.website;
 
 import java.util.Map;
 import java.util.TreeMap;

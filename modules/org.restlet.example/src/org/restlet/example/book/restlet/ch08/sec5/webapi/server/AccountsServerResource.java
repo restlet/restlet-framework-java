@@ -1,10 +1,11 @@
-package org.restlet.example.book.restlet.ch08.sec5.server.website;
+package org.restlet.example.book.restlet.ch08.sec5.webapi.server;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.MediaType;
-import org.restlet.example.book.restlet.ch03.sect5.sub5.common.AccountsResource;
+import org.restlet.example.book.restlet.ch08.sec5.webapi.common.AccountRepresentation;
+import org.restlet.example.book.restlet.ch08.sec5.webapi.common.AccountsResource;
 import org.restlet.ext.wadl.ApplicationInfo;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
@@ -20,7 +21,7 @@ public class AccountsServerResource extends WadlServerResource implements
         AccountsResource {
 
     /** Static list of accounts stored in memory. */
-    private static final List<String> accounts = new CopyOnWriteArrayList<String>();
+    private static final List<AccountRepresentation> accounts = new CopyOnWriteArrayList<AccountRepresentation>();
 
     @Override
     protected void describe(ApplicationInfo applicationInfo) {
@@ -53,21 +54,21 @@ public class AccountsServerResource extends WadlServerResource implements
      * 
      * @return The static list of accounts.
      */
-    public static List<String> getAccounts() {
+    public static List<AccountRepresentation> getAccounts() {
         return accounts;
     }
 
     public String represent() {
         StringBuilder result = new StringBuilder();
 
-        for (String account : getAccounts()) {
+        for (AccountRepresentation account : getAccounts()) {
             result.append((account == null) ? "" : account).append('\n');
         }
 
         return result.toString();
     }
 
-    public String add(String account) {
+    public String add(AccountRepresentation account) {
         getAccounts().add(account);
         return Integer.toString(getAccounts().indexOf(account) + 1);
     }

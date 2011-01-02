@@ -1,8 +1,8 @@
-package org.restlet.example.book.restlet.ch08.sec5.server.webapi.server;
+package org.restlet.example.book.restlet.ch08.sec5.webapi.server;
 
 import org.restlet.data.Reference;
-import org.restlet.example.book.restlet.ch08.sec5.server.webapi.common.MailRepresentation;
-import org.restlet.example.book.restlet.ch08.sec5.server.webapi.common.MailResource;
+import org.restlet.example.book.restlet.ch08.sec5.webapi.common.MailRepresentation;
+import org.restlet.example.book.restlet.ch08.sec5.webapi.common.MailResource;
 import org.restlet.ext.wadl.WadlServerResource;
 
 /**
