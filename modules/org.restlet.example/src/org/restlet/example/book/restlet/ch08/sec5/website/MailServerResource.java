@@ -27,11 +27,11 @@ public class MailServerResource extends ServerResource {
         // Create the mail URI inside the API application
         String accountId = (String) getRequestAttributes().get("accountId");
         String mailId = (String) getRequestAttributes().get("mailId");
-        String mailApiUri = getReference().getHostIdentifier()
-                + "/api/accounts/" + accountId + "/mails/" + mailId;
+        String mailApiUri = "riap://host/api/accounts/" + accountId + "/mails/"
+                + mailId;
 
+        // Optimal internal call using the server dispatcher
         ClientResource cr = new ClientResource(mailApiUri);
-        cr.setNext(getContext().getServerDispatcher());
         MailRepresentation mail = cr.get(MailRepresentation.class);
 
         // Load the FreeMarker template
