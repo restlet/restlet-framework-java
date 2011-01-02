@@ -15,7 +15,7 @@ import org.restlet.resource.ServerResource;
 public class DynamicContentServerResource extends ServerResource {
 
     @Get
-    public Representation represent() {
+    public Representation getDynamicContent() {
         // Inline sub class of WriterRepresentation that writes
         // its dynamic content.
         Representation result = new WriterRepresentation(MediaType.TEXT_PLAIN) {

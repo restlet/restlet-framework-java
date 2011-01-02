@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch08.sec2.sub2;
+package org.restlet.example.book.restlet.ch08.sec2.sub1;
 
 import org.restlet.Application;
 import org.restlet.Restlet;
