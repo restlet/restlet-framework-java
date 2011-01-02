@@ -2,8 +2,8 @@ package org.restlet.example.book.restlet.ch08.sec5;
 
 import org.restlet.Component;
 import org.restlet.data.Protocol;
-import org.restlet.example.book.restlet.ch08.sec5.server.webapi.server.MailApiApplication;
-import org.restlet.example.book.restlet.ch08.sec5.server.website.MailSiteApplication;
+import org.restlet.example.book.restlet.ch08.sec5.webapi.server.MailApiApplication;
+import org.restlet.example.book.restlet.ch08.sec5.website.MailSiteApplication;
 
 /**
  * RESTful component containing the mail API and mail site applications.
