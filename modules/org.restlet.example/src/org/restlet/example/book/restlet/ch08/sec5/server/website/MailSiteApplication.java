@@ -1,13 +1,7 @@
 package org.restlet.example.book.restlet.ch08.sec5.server.website;
 
+import org.restlet.Application;
 import org.restlet.Restlet;
-import org.restlet.example.book.restlet.ch07.sec2.server.AccountServerResource;
-import org.restlet.example.book.restlet.ch07.sec2.server.AccountsServerResource;
-import org.restlet.example.book.restlet.ch08.sec1.sub1.MailServerResource;
-import org.restlet.example.book.restlet.ch08.sec1.sub2.CookieAuthenticator;
-import org.restlet.example.book.restlet.ch08.sec1.sub4.MailStatusService;
-import org.restlet.example.book.restlet.ch08.sec2.sub1.FeedServerResource;
-import org.restlet.ext.wadl.WadlApplication;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Extractor;
 import org.restlet.routing.Redirector;
@@ -17,14 +11,14 @@ import org.restlet.security.MapVerifier;
 /**
  * The reusable mail server application.
  */
-public class MailSiteApplication extends WadlApplication {
+public class MailSiteApplication extends Application {
 
     /**
      * Constructor.
      */
     public MailSiteApplication() {
-        setName("RESTful Mail API application");
-        setDescription("Example API for 'Restlet in Action' book");
+        setName("RESTful Mail Site application");
+        setDescription("Example Site for 'Restlet in Action' book");
         setOwner("Noelios Technologies");
         setAuthor("The Restlet Team");
 
