@@ -73,7 +73,12 @@ public class HostRoute extends Route {
      */
     @Override
     protected int beforeHandle(Request request, Response response) {
-        request.getResourceRef().setBaseRef(request.getHostRef());
+        if (request.getHostRef() == null) {
+            request.getResourceRef().setBaseRef(
+                    request.getResourceRef().getHostIdentifier());
+        } else {
+            request.getResourceRef().setBaseRef(request.getHostRef());
+        }
 
         if (request.isLoggable() && getLogger().isLoggable(Level.FINE)) {
             getLogger().fine(
@@ -130,18 +135,22 @@ public class HostRoute extends Route {
 
         if (request.getHostRef() != null) {
             hostDomain = request.getHostRef().getHostDomain();
+
             if (hostDomain == null) {
                 hostDomain = "";
             }
 
             int basePortValue = request.getHostRef().getHostPort();
+
             if (basePortValue == -1) {
                 basePortValue = request.getHostRef().getSchemeProtocol()
                         .getDefaultPort();
             }
+
             hostPort = Integer.toString(basePortValue);
 
             hostScheme = request.getHostRef().getScheme();
+
             if (hostScheme == null) {
                 hostScheme = "";
             }
@@ -149,31 +158,37 @@ public class HostRoute extends Route {
 
         if (request.getResourceRef() != null) {
             String resourceDomain = request.getResourceRef().getHostDomain();
+
             if (resourceDomain == null) {
                 resourceDomain = "";
             }
 
             int resourcePortValue = request.getResourceRef().getHostPort();
+
             if (resourcePortValue == -1) {
                 resourcePortValue = request.getResourceRef()
                         .getSchemeProtocol().getDefaultPort();
             }
-            String resourcePort = Integer.toString(resourcePortValue);
 
+            String resourcePort = Integer.toString(resourcePortValue);
             String resourceScheme = request.getResourceRef().getScheme();
+
             if (resourceScheme == null) {
                 resourceScheme = "";
             }
 
             String serverAddress = response.getServerInfo().getAddress();
+
             if (serverAddress == null) {
                 serverAddress = "";
             }
 
             int serverPortValue = response.getServerInfo().getPort();
+
             if (serverPortValue == -1) {
                 serverPortValue = request.getProtocol().getDefaultPort();
             }
+
             String serverPort = Integer.toString(response.getServerInfo()
                     .getPort());
 
