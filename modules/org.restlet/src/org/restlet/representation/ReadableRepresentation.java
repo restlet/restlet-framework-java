@@ -103,6 +103,7 @@ public class ReadableRepresentation extends ChannelRepresentation {
 
             this.channel = null;
         }
+
         super.release();
     }
 

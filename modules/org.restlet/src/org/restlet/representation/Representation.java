@@ -545,19 +545,31 @@ public abstract class Representation extends RepresentationInfo {
     }
 
     /**
-     * Releases the representation's content and all associated objects like
-     * sockets, channels or files. If the representation is transient and hasn't
-     * been read yet, all the remaining content will be discarded, any open
-     * socket, channel, file or similar source of content will be immediately
-     * closed. The representation is also no more available.<br>
+     * Releases the representation and all associated objects like streams,
+     * channels or files which are used to produce its content, transient or
+     * not. This method must be systematically called when the representation is
+     * no longer intended to be used. The framework automatically calls back
+     * this method via its connectors on the server-side when sending responses
+     * with an entity and on the client-side when sending a request with an
+     * entity. By default, it calls the {@link #setAvailable(boolean)} method
+     * with "false" as a value.<br>
      * <br>
-     * Note that calling this method will likely prevent the reuse of the
-     * underlying persistent connection and therefore should only be called when
-     * exhausting the content with {@link #exhaust()} is too costly or when
-     * further calls from the client are not welcome.
+     * Note that for transient socket-bound representations, calling this method
+     * after consuming the whole content shouldn't prevent the reuse of
+     * underlying socket via persistent connections for example. However, if the
+     * content hasn't been read, or has been partially read, the impact should
+     * be to discard the remaining content and to close the underlying
+     * connections.<br>
+     * <br>
+     * Therefore, if you are not interested in the content, or in the remaining
+     * content, you should first call the {@link #exhaust()} method or if this
+     * could be too costly, you should instead explicitly abort the parent
+     * request and the underlying connections using the {@link Request#abort()}
+     * method or a shortcut one like {@link ServerResource#abort()} or
+     * {@link Response#abort()}.
      */
     public void release() {
-        this.available = false;
+        setAvailable(false);
     }
 
     /**
