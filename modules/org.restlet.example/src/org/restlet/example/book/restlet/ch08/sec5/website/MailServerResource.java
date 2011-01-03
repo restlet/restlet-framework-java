@@ -27,7 +27,7 @@ public class MailServerResource extends ServerResource {
         // Create the mail URI inside the API application
         String accountId = (String) getRequestAttributes().get("accountId");
         String mailId = (String) getRequestAttributes().get("mailId");
-        String mailApiUri = "riap://host/api/accounts/" + accountId + "/mails/"
+        String mailApiUri = "riap://component/api/accounts/" + accountId + "/mails/"
                 + mailId;
 
         // Optimal internal call using the server dispatcher

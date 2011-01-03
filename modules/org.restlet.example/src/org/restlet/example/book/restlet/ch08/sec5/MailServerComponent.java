@@ -39,8 +39,8 @@ public class MailServerComponent extends Component {
         // Adds server connectors
         getServers().add(Protocol.HTTP, 8111);
 
-        // Attach the applications to the default virtual host
+        // Attach the applications
         getDefaultHost().attach("/site", new MailSiteApplication());
-        getDefaultHost().attach("/api", new MailApiApplication());
+        getInternalRouter().attach("/api", new MailApiApplication());
     }
 }
