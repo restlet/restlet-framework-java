@@ -45,7 +45,7 @@ import org.restlet.ext.oauth.provider.data.ClientStore;
  * 
  * @author Kristoffer Gronowski
  */
-public class MemClientStore extends ClientStore {
+public class MemClientStore extends ClientStore<MemTokenGenerator> {
 
     private Map<String, Client> clients = new ConcurrentHashMap<String, Client>();
 

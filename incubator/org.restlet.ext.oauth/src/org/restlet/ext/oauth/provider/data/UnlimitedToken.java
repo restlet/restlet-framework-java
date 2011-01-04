@@ -31,42 +31,67 @@
 package org.restlet.ext.oauth.provider.data;
 
 /**
- * A POJO representing a OAuth client_id. Each client can have collected a
- * number of authnticated users to allow working on their behalf.
- * 
- * Implementors should implement the storage and retrieval.
+ * Token that never expires but that can be revoked/deleted.
  * 
  * @author Kristoffer Gronowski
  */
-public abstract class Client implements UserStore{
 
-    /**
-     * Client id that the client has registered at the auth provider.
-     * 
-     * @return the stored client id
+public class UnlimitedToken extends Token {
+	private String token;
+	private AuthenticatedUser user;
+	
+	/**
+	 * 
+	 * @param token string representing the oauth token
+	 * @param user the end user being represented
+	 */
+	public UnlimitedToken(String token, AuthenticatedUser user) {
+		this.token = token;
+		this.user = user;
+	}
+
+	/**
+	 * 
+     * @return the actual token to be used for OAuth invocations.
      */
-    public abstract String getClientId();
+	@Override
+	public String getToken() {
+		return token;
+	}
 
-    /**
-     * Client secret that the client has registered at the auth provider.
+	/**
      * 
-     * @return the stored client secret
+     * @return the user that is the owner of this token
      */
-
-    public abstract String getClientSecret();
-
-    /**
-     * Redirect URL that the client has registered at the auth provider.
+	@Override
+	public AuthenticatedUser getUser() {
+		return user;
+	}
+	
+	 /**
+     * Generic package method since the Token can be revoked
+     * and re-issued or just persisted and re-instantiated.
      * 
-     * @return redirect callback url for code and token flows.
-     */
-    public abstract String getRedirectUri();
-
-    /**
-     * Human readable name of the application that this client represents It can
-     * be useful for UI components to be presented.
      * 
-     * @return name of the application.
+     * @param token
      */
-    public abstract String getApplicationName();
+	@Override
+	void setToken(String token) {
+		this.token = token;
+	}
+	
+	 // TODO improve on equals.
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Token) {
+            Token t = (Token) obj;
+            return token.equals(t.getToken());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return token.hashCode();
+    }
 }

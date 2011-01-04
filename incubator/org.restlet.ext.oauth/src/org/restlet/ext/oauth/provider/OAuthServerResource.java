@@ -111,7 +111,7 @@ public abstract class OAuthServerResource extends ServerResource {
 
     public static final String AUTONOMOUS_USER = "__autonomous";
 
-    protected ClientStore clients;
+    protected ClientStore<?> clients;
 
     protected TokenGenerator generator;
 
@@ -155,7 +155,7 @@ public abstract class OAuthServerResource extends ServerResource {
         ConcurrentMap<String, Object> attribs = ctx.getAttributes();
 
         log = ctx.getLogger();
-        clients = (ClientStore) attribs.get(ClientStore.class
+        clients = (ClientStore<?>) attribs.get(ClientStore.class
                 .getCanonicalName());
         log.info("Found client store = " + clients);
 

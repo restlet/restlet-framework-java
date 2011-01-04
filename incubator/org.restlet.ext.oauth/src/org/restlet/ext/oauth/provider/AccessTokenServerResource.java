@@ -138,9 +138,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
                         doAuthCodeFlow(clientId, clientSecret, params);
                         break;
                     case password:
-                        sendError(ErrorCode.unsupported_grant_type,
-                                "Password flow not supported", null);
-                        setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+                    	doPasswordFlow(clientId, clientSecret, params);
                         break;
                     case assertion:
                         sendError(ErrorCode.unsupported_grant_type,
@@ -200,8 +198,11 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         Client client = validate(clientId, clientSecret);
         // null check on failed
-        if (client == null)
-            return;
+        if (client == null) {
+        	sendError(ErrorCode.invalid_client,"Client id verification failed.",null);
+        	setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+        	return;
+        }
 
         // check the client secret
         if (!clientSecret.equals(client.getClientSecret())) {
@@ -232,8 +233,11 @@ public class AccessTokenServerResource extends OAuthServerResource {
     private void doNoneFlow(String clientId, String clientSecret, Form params) {
         Client client = validate(clientId, clientSecret);
         // null check on failed
-        if (client == null)
-            return;
+        if (client == null) {
+        	sendError(ErrorCode.invalid_client,"Client id verification failed.",null);
+        	setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+        	return;
+        }
 
         if (!client.containsUser(AUTONOMOUS_USER))
             client.createUser(AUTONOMOUS_USER);
@@ -256,6 +260,47 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         getResponse().setEntity(new JsonRepresentation(body));
     }
+    
+    private void doPasswordFlow(String clientId, String clientSecret, Form params) {
+    	Client client = validate(clientId, clientSecret);
+        // null check on failed
+        if (client == null) {
+        	sendError(ErrorCode.invalid_client,"Client id verification failed.",null);
+        	setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+        	return;
+        }
+            
+        
+        String username = params.getFirstValue(USERNAME);
+        AuthenticatedUser user = null;
+        if( username == null || (user = client.findUser(username)) == null ) {
+        	sendError(ErrorCode.invalid_request,"Mandatory parameter username missing.",null);
+        	setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+            return;
+        }
+        String password = params.getFirstValue(PASSWORD);
+        if( password == null ) {
+        	sendError(ErrorCode.invalid_request,"Mandatory parameter password missing.",null);
+        	setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+            return;
+        }
+        
+        if( !password.equals(user.getPassword()) ) {
+        	sendError(ErrorCode.invalid_grant,"Password not correct.",null);
+        	setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+            return;
+        }
+        
+        Token token = generator.generateToken(user, tokenTimeSec);
+
+        JSONObject body = createJsonToken(token, null); // Scopes N/A
+
+        // Sets the no-store Cache-Control header
+        getResponse().setCacheDirectives(noStore);
+
+        getResponse().setEntity(new JsonRepresentation(body));
+    	
+    }
 
     private void doRefreshFlow(String clientId, String clientSecret, Form params) {
         String rToken = params.getFirstValue(REFRESH_TOKEN);
@@ -269,9 +314,12 @@ public class AccessTokenServerResource extends OAuthServerResource {
         Client client = validate(clientId, clientSecret);
 
         // null check on failed
-        if (client == null)
-            return;
-
+        if (client == null) {
+        	sendError(ErrorCode.invalid_client,"Client id verification failed.",null);
+        	setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+        	return;
+        }
+        
         Token token = generator.findToken(rToken);
         if (token != null && (token instanceof ExpireToken)) {
             AuthenticatedUser user = token.getUser();

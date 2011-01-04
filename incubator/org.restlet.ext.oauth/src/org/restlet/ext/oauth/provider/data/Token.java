@@ -31,51 +31,38 @@
 package org.restlet.ext.oauth.provider.data;
 
 /**
- * Token that never expires but that can be revoked/deleted.
+ * Abstract Token that must be extended by all token implementations
  * 
  * @author Kristoffer Gronowski
+ * 
+ * @see UnlimitedToken
+ * @see ExpireToken
  */
-public class Token {
+public abstract class Token {
 
+	/**
+	 * Value indicating that the Token should not expire 
+	 */
     public static final long UNLIMITED = 0;
-
-    protected String token; // Since ExpireToken can generate new
-
-    private final AuthenticatedUser user;
-
-    protected Token(String token, AuthenticatedUser user) {
-        this.token = token;
-        this.user = user;
-    }
 
     /**
      * 
      * @return the actual token to be used for OAuth invocations.
      */
-    public String getToken() {
-        return token;
-    }
+    public abstract String getToken();
 
     /**
      * 
      * @return the user that is the owner of this token
      */
-    public AuthenticatedUser getUser() {
-        return user;
-    }
-
-    // TODO improve on equals.
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Token) {
-            Token t = (Token) obj;
-            return token.equals(t.token);
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return token.hashCode();
-    }
+    public abstract AuthenticatedUser getUser();
+    
+    /**
+     * Generic package method since the Token can be revoked
+     * and re-issued or just persisted and re-instantiated.
+     * 
+     * 
+     * @param token
+     */
+    abstract void setToken( String token );
 }

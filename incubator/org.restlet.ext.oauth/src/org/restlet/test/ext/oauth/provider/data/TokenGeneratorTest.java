@@ -22,7 +22,7 @@ public class TokenGeneratorTest {
     @Test
     public void testCodeGeneratorSequence() throws Exception {
         TokenGenerator generator = new MemTokenGenerator(pool);
-        AuthenticatedUser user = new AuthenticatedUserImpl("1234567890");
+        AuthenticatedUser user = new AuthenticatedUserImpl("1234567890", null);
         for (int i = 0; i < 10; i++) {
             String token = generator.generateCode(user);
             System.out.println(i + ":" + token);
@@ -32,7 +32,7 @@ public class TokenGeneratorTest {
     @Test
     public void testTokenGeneratorSequence() throws Exception {
         TokenGenerator generator = new MemTokenGenerator(pool);
-        AuthenticatedUser user = new AuthenticatedUserImpl("1234567890");
+        AuthenticatedUser user = new AuthenticatedUserImpl("1234567890", null);
         for (int i = 0; i < 10; i++) {
             String token = generator.generateToken(user, Token.UNLIMITED)
                     .getToken();
@@ -44,7 +44,7 @@ public class TokenGeneratorTest {
     public void testTimeTokenGeneratorSequence() throws Exception {
         TokenGenerator generator = new MemTokenGenerator(pool);
         generator.setMaxTokenTime(1); // allow for timed tokens of max 1
-        AuthenticatedUser user = new AuthenticatedUserImpl("1234567890");
+        AuthenticatedUser user = new AuthenticatedUserImpl("1234567890", null);
         for (int i = 0; i < 10; i++) {
             ExpireToken et = (ExpireToken) generator.generateToken(user, 1);
             System.out.println(i + " token   :" + et.getToken());

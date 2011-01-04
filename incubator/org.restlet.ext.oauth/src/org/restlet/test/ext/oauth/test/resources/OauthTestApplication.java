@@ -11,6 +11,8 @@ import org.restlet.ext.oauth.provider.AuthPageServerResource;
 import org.restlet.ext.oauth.provider.AuthorizationServerResource;
 import org.restlet.ext.oauth.provider.OAuthServerResource;
 import org.restlet.ext.oauth.provider.ValidationServerResource;
+import org.restlet.ext.oauth.provider.data.AuthenticatedUser;
+import org.restlet.ext.oauth.provider.data.Client;
 import org.restlet.ext.oauth.provider.data.ClientStore;
 import org.restlet.ext.oauth.provider.data.ClientStoreFactory;
 import org.restlet.ext.oauth.provider.data.impl.MemClientStore;
@@ -28,6 +30,9 @@ import org.openid4java.consumer.ConsumerManager;
 import org.openid4java.server.ServerManager;
 
 public class OauthTestApplication extends Application {
+	public static final String TEST_USER = "dummyUser";
+	public static final String TEST_PASS = "dummyPassword";
+	
     private long timeout = 0; // unlimited
 
     public OauthTestApplication(long timeout) {
@@ -50,11 +55,14 @@ public class OauthTestApplication extends Application {
         Object[] params = { new ScheduledThreadPoolExecutor(5) };
         ClientStoreFactory.setClientStoreImpl(MemClientStore.class, params);
 
-        ClientStore clientStore = ClientStoreFactory.getInstance();
-        // Testcode TODO remove
-        clientStore.createClient("1234567890", "1234567890",
+        ClientStore<?> clientStore = ClientStoreFactory.getInstance();
+        Client client = clientStore.createClient("1234567890", "1234567890",
                 AuthorizationServerTest.prot + "://localhost:"
                         + AuthorizationServerTest.serverPort + "/");
+        
+        //Bootstrap for password flow test...
+        AuthenticatedUser user = client.createUser(TEST_USER);
+        user.setPassword(TEST_PASS);
 
         attribs.put(ClientStore.class.getCanonicalName(), clientStore);
 

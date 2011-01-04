@@ -30,13 +30,11 @@
 
 package org.restlet.ext.oauth.provider.data.impl;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.restlet.ext.oauth.provider.data.AuthenticatedUser;
+import org.restlet.ext.oauth.provider.data.Client;
 import org.restlet.ext.oauth.provider.data.Token;
 
 /**
@@ -46,70 +44,110 @@ import org.restlet.ext.oauth.provider.data.Token;
  * 
  * @author Kristoffer Gronowski
  */
-public class AuthenticatedUserImpl implements AuthenticatedUser {
+public class AuthenticatedUserImpl extends AuthenticatedUser {
+	
+	private Client client;
 
     private final String id;
 
     private Map<String, String> grantedScope = new ConcurrentHashMap<String, String>();
+    
+    private String code;
+    
+    private Token token;
+    
+    private String password; // optional for oauth password flow
 
-    public AuthenticatedUserImpl(String userId) {
+    public AuthenticatedUserImpl(String userId, Client client) {
         id = userId;
+        this.client = client;
     }
 
     // Timestamp can be encoded in the code value
-    Set<String> codes = Collections.synchronizedSet(new HashSet<String>());
-
-    // TODO could add a mix life time of geenrated code for more security.
-    // private static final int maxNoCodes = 10;
-    // private static final long maxCodeLifeSec = 3600; //1h
-
-    // Type and Timestamp can be encoded in the token value
-    // Map<String,String> tokens = new ConcurrentHashMap<String,String>();
-    // //optional value secret
     // TODO could also add number of token refresh or one time token support
     // private static final int maxNoTokens = 100;
     private long maxTokenLifeSec = Token.UNLIMITED;
 
+    @Override
     public String getId() {
         return id;
     }
-
-    public void addCode(String code) {
-        codes.add(code);
+    
+    @Override
+    public String getCode() {
+    	return code;
     }
 
-    public void removeCode(String code) {
-        codes.remove(code);
+    @Override
+    public void setCode(String code) {
+        this.code = code;
     }
 
+    @Override
+    public void clearCode() {
+        code = null;
+    }
+
+    @Override
     public void addScope(String scope, String owner) {
         grantedScope.put(scope, owner);
     }
 
+    @Override
     public boolean isGrantedScope(String scope, String owner) {
         // TODO implement owner
         return grantedScope.containsKey(scope);
     }
 
+    @Override
     public void revokeScope(String scope, String owner) {
         // TODO implement owner
         grantedScope.remove(scope);
     }
 
+    @Override
     public String[] getGrantedScopes() {
         return grantedScope.keySet().toArray(new String[grantedScope.size()]);
     }
 
+    @Override
     public long getTokenExpire() {
         return maxTokenLifeSec;
     }
 
+    @Override
     public void setTokenExpire(long deltaTimeSec) {
         maxTokenLifeSec = deltaTimeSec;
     }
 
+    @Override
     public void revokeScopes() {
         grantedScope.clear();
+    }
+    
+    @Override
+    public Token getToken() {
+    	return token;
+    }
+    
+    @Override
+    public void setToken(Token token) {
+    	this.token = token;
+    }
+    
+    @Override
+    public String getPassword() {
+    	return password;
+    }
+    
+    @Override
+    public void setPassword(String password) {
+    	this.password = password;
+    }
+    
+    @Override
+    public Client getClient() {
+    	return client;
     }
 
     @Override

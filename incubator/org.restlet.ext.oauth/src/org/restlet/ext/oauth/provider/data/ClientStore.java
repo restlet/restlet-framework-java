@@ -32,7 +32,7 @@ package org.restlet.ext.oauth.provider.data;
 
 import java.util.Collection;
 
-import org.restlet.Context;
+//import org.restlet.Context;
 
 /**
  * Abstract class that defines a client store for the Authentication Server. The
@@ -51,20 +51,21 @@ import org.restlet.Context;
  * 
  * @author Kristoffer Gronowski
  */
-public abstract class ClientStore {
+public abstract class ClientStore <G extends TokenGenerator> {
 
-    private final Context context;
+    //private final Context context;
 
-    private final TokenGenerator generator;
+    private final G generator;
 
-    protected ClientStore(TokenGenerator generator) {
-        this(generator, Context.getCurrent());
+    protected ClientStore(G generator) {
+    	this.generator = generator;
+        //this(generator, Context.getCurrent());
     }
-
-    protected ClientStore(TokenGenerator generator, Context context) {
-        this.context = context;
-        this.generator = generator;
-    }
+//
+//    protected ClientStore(G generator, Context context) {
+//        //this.context = context;
+//        this.generator = generator;
+//    }
 
     /**
      * Useful only for clients using the user agent oauth flow where secret is
@@ -120,17 +121,17 @@ public abstract class ClientStore {
      *            id of the user to retrieve. (openid)
      * @return active clients or empty collection.
      */
-    public abstract Collection<Client> findClientsForUser(String userid);
+    public abstract Collection<? extends Client> findClientsForUser(String userid);
 
-    public Context getContext() {
-        return context;
-    }
+//    public Context getContext() {
+//        return context;
+//    }
 
     /**
      * @return an instance of the TokenGenerator
      */
 
-    public TokenGenerator getTokenGenerator() {
+    public G getTokenGenerator() {
         return generator;
     }
 

@@ -337,6 +337,34 @@ public class OAuthUtils {
 
         return result;
     }
+    
+    public static OAuthUser passwordFlow(OAuthParameters params, String username, String password) {
+        OAuthUser result = null;
+        Form form = new Form();
+        form.add(OAuthServerResource.GRANT_TYPE,
+                OAuthServerResource.GrantType.password.name());
+        form.add(OAuthServerResource.CLIENT_ID, params.clientId);
+        form.add(OAuthServerResource.CLIENT_SECRET, params.clientSecret);
+        form.add(OAuthServerResource.USERNAME, username);
+        form.add(OAuthServerResource.PASSWORD, password);
+        
+        ClientResource tokenResource = new ClientResource(params.baseRef
+                + params.accessTokenPath);
+
+        Context.getCurrentLogger().info(
+                "Sending PasswordFlow form : " + form.getQueryString());
+
+        Representation body = tokenResource.post(form.getWebRepresentation());
+
+        if (tokenResource.getResponse().getStatus().isSuccess()) {
+            result = handleSuccessResponse(body);
+        }
+
+        body.release();
+        tokenResource.release();
+        
+        return result;
+    }
 
     /**
      * Convert successful JSON token body responses to OAuthUser.

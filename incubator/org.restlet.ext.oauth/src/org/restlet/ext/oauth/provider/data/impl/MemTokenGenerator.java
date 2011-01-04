@@ -69,7 +69,7 @@ public class MemTokenGenerator extends TokenGenerator {
         // Something is wrong in the code generation!
         // log("WARNIG - bad generation ALG!");
         if (oldValue != null)
-            oldValue.removeCode(code);
+            oldValue.setCode(code);
 
         return code;
     }
@@ -100,7 +100,7 @@ public class MemTokenGenerator extends TokenGenerator {
         if (user == null)
             throw new IllegalArgumentException("Code not valid");
         Token t = generateToken(user, expire);
-        user.removeCode(code);
+        user.clearCode(); //TODO could also match if the user code matches codestore
         return t;
     }
 

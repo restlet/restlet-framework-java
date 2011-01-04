@@ -59,11 +59,11 @@ import org.restlet.ext.oauth.provider.data.impl.MemClientStore;
  * @author Kristoffer Gronowski
  */
 public abstract class ClientStoreFactory {
-    private static Class<? extends ClientStore> defaultImpl = MemClientStore.class;
+    private static Class<? extends ClientStore<?> > defaultImpl = MemClientStore.class;
 
     private static Object[] params = {};
 
-    private static ClientStore store;
+    private static ClientStore<?> store;
 
     private static Logger log;
 
@@ -77,15 +77,14 @@ public abstract class ClientStoreFactory {
      * @return an implementation of a ClientStore
      */
 
-    public synchronized static ClientStore getInstance() {
+    public synchronized static ClientStore<?> getInstance() {
         if (log == null) {
             log = Context.getCurrentLogger();
         }
 
         if (store == null) {
 
-            @SuppressWarnings("rawtypes")
-            Class[] classTypes = new Class[params.length];
+            Class<?>[] classTypes = new Class[params.length];
 
             int i = 0;
 
@@ -94,7 +93,7 @@ public abstract class ClientStoreFactory {
             }
 
             try {
-                Constructor<? extends ClientStore> c = defaultImpl
+                Constructor<? extends ClientStore<?>> c = defaultImpl
                         .getConstructor(classTypes);
                 store = c.newInstance(params);
 
@@ -129,9 +128,10 @@ public abstract class ClientStoreFactory {
      *            class reference of a class implementing ClientStore
      */
 
-    public static void setClientStoreImpl(Class<? extends ClientStore> impl) {
+    public static void setClientStoreImpl(Class<? extends ClientStore<?>> impl) {
         defaultImpl = impl;
-        setClientStoreImpl(impl, null);
+        Object[] dummy = null;
+        setClientStoreImpl(impl, dummy);
     }
 
     /**
@@ -141,8 +141,8 @@ public abstract class ClientStoreFactory {
      *            array of constructor arguments.
      */
 
-    public static void setClientStoreImpl(Class<? extends ClientStore> impl,
-            Object[] constructorParams) {
+    public static void setClientStoreImpl(Class<? extends ClientStore<?>> impl,
+            Object... constructorParams) {
         if (store != null && !store.getClass().equals(impl)) {
             throw new IllegalStateException(
                     "Can't change the type of store once it already initialized.");

@@ -302,7 +302,46 @@ public class AuthorizationServerTest {
         }
         cr.release();
     }
+    
+    @Test
+    public void testPasswordFlow() throws IOException {
+    	OAuthUser user = OAuthUtils.passwordFlow(client.getOauthParameters(),
+    			OauthTestApplication.TEST_USER,
+    			OauthTestApplication.TEST_PASS);
+        assertNotNull(user);
 
+        // Try to use the token...
+        Reference ref = new Reference(prot + "://localhost:" + serverPort
+                + "/server/protected");
+        ref.addQueryParameter("oauth_token", user.getAccessToken());
+        ClientResource cr = new ClientResource(ref);
+        Representation r = cr.get();
+        assertNotNull(r);
+        String text = r.getText();
+        assertEquals("Response text test", text, "TestSuccessful");
+        assertEquals("Response content type test", r.getMediaType(),
+                MediaType.TEXT_HTML);
+        cr.release();
+        
+      //Wrong username test
+        try {
+        	user = OAuthUtils.passwordFlow(client.getOauthParameters(),
+    			"sowrong",
+    			OauthTestApplication.TEST_PASS);
+        } catch (ResourceException re) { // Should be invalidated
+            assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, re.getStatus());
+        }
+        
+        //Wrong pasword test
+        try {
+        	user = OAuthUtils.passwordFlow(client.getOauthParameters(),
+    			OauthTestApplication.TEST_USER,
+    			"sowrong");
+        } catch (ResourceException re) { // Should be invalidated
+            assertEquals(Status.CLIENT_ERROR_FORBIDDEN, re.getStatus());
+        }
+    }
+    
     @Ignore
     @Test
     public void testValidationSingleConnection() throws Exception {

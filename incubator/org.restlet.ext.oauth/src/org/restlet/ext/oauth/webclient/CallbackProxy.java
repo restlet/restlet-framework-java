@@ -75,7 +75,7 @@ import org.restlet.ext.oauth.util.OAuthParameters;
  */
 public class CallbackProxy extends OAuthProxy {
 
-    protected ClientStore clients;
+    protected ClientStore<?> clients;
 
     /**
      * Gets the ClientStore from the application context. If the web server flow
@@ -92,7 +92,7 @@ public class CallbackProxy extends OAuthProxy {
 
         ConcurrentMap<String, Object> attribs = ctx.getAttributes();
 
-        clients = (ClientStore) attribs.get(ClientStore.class
+        clients = (ClientStore<?>) attribs.get(ClientStore.class
                 .getCanonicalName());
         log.info("Found client store = " + clients);
     }

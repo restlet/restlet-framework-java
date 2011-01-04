@@ -31,42 +31,34 @@
 package org.restlet.ext.oauth.provider.data;
 
 /**
- * A POJO representing a OAuth client_id. Each client can have collected a
- * number of authnticated users to allow working on their behalf.
- * 
- * Implementors should implement the storage and retrieval.
+ * The user store interface represents the entry point where user
+ * requests are created, searched and removed.
+ * It is an excellent indicator where to modify when implementing another
+ * persistancy model.
  * 
  * @author Kristoffer Gronowski
+ *
  */
-public abstract class Client implements UserStore{
+
+public interface UserStore {
+	/**
+     * Create a user
+     */
+    public abstract AuthenticatedUser createUser(String id);
 
     /**
-     * Client id that the client has registered at the auth provider.
-     * 
-     * @return the stored client id
+     * Retrieve a given user
      */
-    public abstract String getClientId();
+    public abstract AuthenticatedUser findUser(String id);
 
     /**
-     * Client secret that the client has registered at the auth provider.
-     * 
-     * @return the stored client secret
+     * @return true if this OAuth server contains a given user
      */
-
-    public abstract String getClientSecret();
+    public abstract boolean containsUser(String id);
 
     /**
-     * Redirect URL that the client has registered at the auth provider.
-     * 
-     * @return redirect callback url for code and token flows.
+     * @param id of the user to revoke/delete
      */
-    public abstract String getRedirectUri();
+    public abstract void revokeUser(String id); // Same as delete a user.
 
-    /**
-     * Human readable name of the application that this client represents It can
-     * be useful for UI components to be presented.
-     * 
-     * @return name of the application.
-     */
-    public abstract String getApplicationName();
 }

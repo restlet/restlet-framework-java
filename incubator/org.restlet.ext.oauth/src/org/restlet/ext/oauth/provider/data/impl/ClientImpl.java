@@ -45,7 +45,7 @@ import org.restlet.ext.oauth.provider.data.Client;
  * 
  * @author Kristoffer Gronowski
  */
-public class ClientImpl implements Client {
+public class ClientImpl extends Client {
     private final String clientId;
 
     private String clientSecret;
@@ -77,11 +77,11 @@ public class ClientImpl implements Client {
     }
 
     public boolean containsUser(String userId) {
-        return users.contains(new AuthenticatedUserImpl(userId));
+        return users.contains(new AuthenticatedUserImpl(userId, this));
     }
 
     public AuthenticatedUser createUser(String id) {
-        AuthenticatedUser user = new AuthenticatedUserImpl(id);
+        AuthenticatedUser user = new AuthenticatedUserImpl(id, this);
         users.add(user);
         return user;
     }
@@ -98,7 +98,7 @@ public class ClientImpl implements Client {
     }
 
     public void revokeUser(String id) {
-        users.remove(new AuthenticatedUserImpl(id));
+        users.remove(new AuthenticatedUserImpl(id, this));
     }
 
     public String getClientSecret() {

@@ -15,7 +15,7 @@ public abstract class TokenGenerator {
 	 
 	private SecureRandom random;
 
-	private long maxTokenTimeSec;
+	protected long maxTokenTimeSec;
 	
 	private static int tokens = 1000;
 	private int count = 0;
@@ -41,7 +41,7 @@ public abstract class TokenGenerator {
 		raw.append('|').append(System.currentTimeMillis());
 		String code = raw.toString();
 
-		user.addCode(code);
+		user.setCode(code);
 
 		return code;
 	}
@@ -66,7 +66,7 @@ public abstract class TokenGenerator {
 		if( expire != Token.UNLIMITED ) {
 			t = new ExpireToken(token, expire, generate(20), user);
 		} else { //Unlimited token
-			t = new Token(token, user);
+			t = new UnlimitedToken(token, user);
 		}
 		
 		return t;
@@ -150,7 +150,7 @@ public abstract class TokenGenerator {
 
 	public abstract Token findToken(String token) ;
 
-	private String generate(int len) {
+	protected String generate(int len) {
 		if( count++ > tokens ) {
 			count = 0;
 			random.setSeed(random.generateSeed(20));
@@ -160,7 +160,7 @@ public abstract class TokenGenerator {
 		return toHex(token);
 	}
 
-	private String toHex(byte[] input) {
+	protected String toHex(byte[] input) {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < input.length; i++) {
 			String d = Integer

@@ -226,6 +226,10 @@ public class AuthPageServerResource extends OAuthServerResource {
 
         // Following scopes were approved
         AuthenticatedUser user = client.findUser(session.getScopeOwner());
+        if( user == null ) {
+        	setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Can't find User id : "+session.getScopeOwner());
+        }
+        
         // clear scopes.... if user wants to downgrade
         user.revokeScopes();
 
@@ -246,7 +250,9 @@ public class AuthPageServerResource extends OAuthServerResource {
         }
         // Reset the state
         session.setState(null);
-
+        // Save the user if using DB
+        user.persist();
+        
         redirectTemporary(location);
     }
 

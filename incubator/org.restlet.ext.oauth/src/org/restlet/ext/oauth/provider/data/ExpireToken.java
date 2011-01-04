@@ -44,13 +44,17 @@ public class ExpireToken extends Token {
     private final long expireTime;
 
     private final String refreshToken;
+    private String token;
+    
+    private AuthenticatedUser user;
 
     private ScheduledFuture<?> future; // can be used to clean up
 
     public ExpireToken(String refreshToken, long expTimeSec, String token,
             AuthenticatedUser user) {
-        super(token, user);
         this.refreshToken = refreshToken;
+        this.token = token;
+        this.user = user;
         expireTime = expTimeSec;
     }
 
@@ -75,11 +79,19 @@ public class ExpireToken extends Token {
             future.cancel(false);
         token = null;
     }
+    
+    public AuthenticatedUser getUser() {
+		return user;
+	}
 
+	public String getToken() {
+		return token;
+	}
+    
     void setToken(String token) {
         this.token = token;
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ExpireToken) {
@@ -94,5 +106,4 @@ public class ExpireToken extends Token {
     public int hashCode() {
         return refreshToken.hashCode();
     }
-
 }
