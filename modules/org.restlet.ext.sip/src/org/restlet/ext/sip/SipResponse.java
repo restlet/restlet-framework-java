@@ -62,8 +62,8 @@ public class SipResponse extends Response {
     /** The identifier of the transaction. */
     private volatile String callSequence;
 
-    /** The data about the contact. */
-    private volatile List<ContactInfo> contact;
+    /** The data about the contacts. */
+    private volatile List<ContactInfo> contacts;
 
     /** Pointer to additional information about the error response. */
     private volatile Address errorInfo;
@@ -195,18 +195,18 @@ public class SipResponse extends Response {
     }
 
     /**
-     * Returns the data about the contact.
+     * Returns the data about the contacts.
      * 
-     * @return The data about the contact.
+     * @return The data about the contacts.
      */
-    public List<ContactInfo> getContact() {
+    public List<ContactInfo> getContacts() {
         // Lazy initialization with double-check.
-        List<ContactInfo> c = this.contact;
+        List<ContactInfo> c = this.contacts;
         if (c == null) {
             synchronized (this) {
-                c = this.contact;
+                c = this.contacts;
                 if (c == null) {
-                    this.contact = c = new CopyOnWriteArrayList<ContactInfo>();
+                    this.contacts = c = new CopyOnWriteArrayList<ContactInfo>();
                 }
             }
         }
@@ -435,8 +435,8 @@ public class SipResponse extends Response {
      * @param contact
      *            The data about the contact.
      */
-    public void setContact(List<ContactInfo> contact) {
-        this.contact = contact;
+    public void setContacts(List<ContactInfo> contact) {
+        this.contacts = contact;
     }
 
     /**
@@ -536,6 +536,12 @@ public class SipResponse extends Response {
         this.recipientsInfo = recipientsInfo;
     }
 
+    /**
+     * Sets the delay after which a request should be retried.
+     * 
+     * @param retryAfter
+     *            The delay after which a request should be retried.
+     */
     public void setSipRetryAfter(Availability retryAfter) {
         this.retryAfter = retryAfter;
     }

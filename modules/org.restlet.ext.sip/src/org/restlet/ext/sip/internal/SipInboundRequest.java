@@ -508,12 +508,12 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
                 for (Parameter header : getHeaders()) {
                     if (header.getName().equalsIgnoreCase(
                             HeaderConstants.HEADER_IF_MODIFIED_SINCE)) {
-                        ifModifiedSince = HeaderReader.readDate(header
-                                .getValue(), false);
+                        ifModifiedSince = HeaderReader.readDate(
+                                header.getValue(), false);
                     } else if (header.getName().equalsIgnoreCase(
                             HeaderConstants.HEADER_IF_UNMODIFIED_SINCE)) {
-                        ifUnmodifiedSince = HeaderReader.readDate(header
-                                .getValue(), false);
+                        ifUnmodifiedSince = HeaderReader.readDate(
+                                header.getValue(), false);
                     }
                 }
 
@@ -618,8 +618,8 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
     }
 
     @Override
-    public List<ContactInfo> getContact() {
-        List<ContactInfo> c = super.getContact();
+    public List<ContactInfo> getContacts() {
+        List<ContactInfo> c = super.getContacts();
 
         if (!contactAdded) {
             String header = (getHeaders() == null) ? null : getHeaders()
@@ -1082,8 +1082,8 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
     }
 
     @Override
-    public void setContact(List<ContactInfo> contact) {
-        super.setContact(contact);
+    public void setContacts(List<ContactInfo> contact) {
+        super.setContacts(contact);
         this.contactAdded = true;
     }
 
@@ -1115,9 +1115,10 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
         // Set the protocol used for this request
         Protocol serverProtocol = getConnection().getHelper().getHelped()
                 .getProtocols().get(0);
-        setProtocol(new Protocol(serverProtocol.getSchemeName(), serverProtocol
-                .getName(), serverProtocol.getDescription(), serverProtocol
-                .getDefaultPort(), serverProtocol.isConfidential(), version));
+        setProtocol(new Protocol(serverProtocol.getSchemeName(),
+                serverProtocol.getName(), serverProtocol.getDescription(),
+                serverProtocol.getDefaultPort(),
+                serverProtocol.isConfidential(), version));
 
         // Parse the host header
         String host = (getHeaders() == null) ? null : getHeaders()

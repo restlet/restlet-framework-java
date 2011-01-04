@@ -108,9 +108,9 @@ public class SipServerOutboundWay extends ServerOutboundWay {
                     AddressWriter.write(sipResponse.getCalleeInfo()));
         }
 
-        if (!sipResponse.getContact().isEmpty()) {
+        if (!sipResponse.getContacts().isEmpty()) {
             headers.add(SipConstants.HEADER_CONTACT,
-                    ContactInfoWriter.write(sipResponse.getContact()));
+                    ContactInfoWriter.write(sipResponse.getContacts()));
         }
 
         if (sipResponse.getErrorInfo() != null) {

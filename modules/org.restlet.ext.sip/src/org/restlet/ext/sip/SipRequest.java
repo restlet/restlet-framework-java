@@ -64,8 +64,8 @@ public class SipRequest extends Request {
     /** The identifier of the transaction. */
     private volatile String callSequence;
 
-    /** The data about the contact. */
-    private volatile List<ContactInfo> contact;
+    /** The data about the contacts. */
+    private volatile List<ContactInfo> contacts;
 
     /** The description of an event notification. */
     private volatile Event event;
@@ -206,7 +206,7 @@ public class SipRequest extends Request {
         this.callerInfo = request.getCallerInfo();
         this.callId = request.getCallId();
         this.callSequence = request.getCallSequence();
-        this.contact = request.getContact();
+        this.contacts = request.getContacts();
         this.event = request.getEvent();
         this.from = request.getFrom();
         this.inReplyTo = request.getInReplyTo();
@@ -295,18 +295,18 @@ public class SipRequest extends Request {
     }
 
     /**
-     * Returns the data about the contact.
+     * Returns the data about the contacts.
      * 
-     * @return The data about the contact.
+     * @return The data about the contacts.
      */
-    public List<ContactInfo> getContact() {
+    public List<ContactInfo> getContacts() {
         // Lazy initialization with double-check.
-        List<ContactInfo> c = this.contact;
+        List<ContactInfo> c = this.contacts;
         if (c == null) {
             synchronized (this) {
-                c = this.contact;
+                c = this.contacts;
                 if (c == null) {
-                    this.contact = c = new CopyOnWriteArrayList<ContactInfo>();
+                    this.contacts = c = new CopyOnWriteArrayList<ContactInfo>();
                 }
             }
         }
@@ -612,13 +612,13 @@ public class SipRequest extends Request {
     }
 
     /**
-     * Sets the data about the contact.
+     * Sets the data about the contacts.
      * 
      * @param contact
-     *            The data about the contact.
+     *            The data about the contacts.
      */
-    public void setContact(List<ContactInfo> contact) {
-        this.contact = contact;
+    public void setContacts(List<ContactInfo> contact) {
+        this.contacts = contact;
     }
 
     /**

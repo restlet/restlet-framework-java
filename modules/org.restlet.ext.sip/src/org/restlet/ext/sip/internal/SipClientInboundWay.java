@@ -36,6 +36,7 @@ import org.restlet.Client;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
+import org.restlet.data.Tag;
 import org.restlet.engine.connector.ClientInboundWay;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.header.HeaderConstants;
@@ -68,9 +69,223 @@ public class SipClientInboundWay extends ClientInboundWay {
             Response response) {
         SipResponse sr = (SipResponse) response;
 
-        for (Parameter header : headers) {
-            if (header.getName().equalsIgnoreCase(HeaderConstants.HEADER_VIA)) {
-                SipRecipientInfoReader.addValues(header,
+        // Set the "alertInfo" header
+        String header = (getHeaders() == null) ? null : getHeaders().getValues(
+                SipConstants.HEADER_ALERT_INFO);
+
+        if (header != null) {
+            try {
+                sr.setAlertInfo(new AddressReader(header).readValue());
+            } catch (Exception e) {
+                getLogger().info(e.getMessage());
+            }
+        }
+
+        // Set "allowedEventTypes" property
+        header = (getHeaders() == null) ? null : getHeaders().getValues(
+                SipConstants.HEADER_ALLOW_EVENTS);
+
+        if (header != null) {
+            try {
+                sr.getAllowedEventTypes().addAll(
+                        new EventTypeReader(header).readValues());
+            } catch (Exception e) {
+                getLogger().info(e.getMessage());
+            }
+        }
+
+        // Set the "callerInfo" property
+        header = (getHeaders() == null) ? null : getHeaders().getValues(
+                SipConstants.HEADER_CALL_INFO);
+
+        if (header != null) {
+            try {
+                sr.getCalleeInfo().addAll(
+                        new AddressReader(header).readValues());
+            } catch (Exception e) {
+                getLogger().info(e.getMessage());
+            }
+        }
+
+        // Set the "callId" property
+        String callIdHeader = (getHeaders() == null) ? null : getHeaders()
+                .getFirstValue(SipConstants.HEADER_CALL_ID);
+        if (callIdHeader != null) {
+            sr.setCallId(callIdHeader);
+        }
+
+        // Set the "callSeq" property
+        String callSeqHeader = (getHeaders() == null) ? null : getHeaders()
+                .getFirstValue(SipConstants.HEADER_CALL_SEQ);
+        if (callSeqHeader != null) {
+            sr.setCallSequence(callSeqHeader);
+        }
+
+        // Set the "contacts" property
+        header = (getHeaders() == null) ? null : getHeaders().getValues(
+                SipConstants.HEADER_CONTACT);
+
+        if (header != null) {
+            try {
+                sr.getContacts().addAll(
+                        new ContactInfoReader(header).readValues());
+            } catch (Exception e) {
+                getLogger().info(e.getMessage());
+            }
+        }
+
+        // Set the "errorInfo" header
+        header = (getHeaders() == null) ? null : getHeaders().getValues(
+                SipConstants.HEADER_ERROR_INFO);
+
+        if (header != null) {
+            try {
+                sr.setErrorInfo(new AddressReader(header).readValue());
+            } catch (Exception e) {
+                getLogger().info(e.getMessage());
+            }
+        }
+
+        // Set the "event" property
+        header = (getHeaders() == null) ? null : getHeaders().getValues(
+                SipConstants.HEADER_EVENT);
+
+        if (header != null) {
+            try {
+                sr.setEvent(new EventReader(header).readValue());
+            } catch (Exception e) {
+                getLogger().info(e.getMessage());
+            }
+        }
+
+        // Set the "from" property
+        String fromHeader = (getHeaders() == null) ? null : getHeaders()
+                .getFirstValue(HeaderConstants.HEADER_FROM);
+        if (fromHeader != null) {
+            try {
+                sr.setFrom(new AddressReader(fromHeader).readValue());
+            } catch (IOException e) {
+                getLogger().info(e.getMessage());
+            }
+        }
+
+        // Set the "minExpires" property
+        header = (getHeaders() == null) ? null : getHeaders().getFirstValue(
+                SipConstants.HEADER_MIN_EXPIRES);
+        sr.setMinExpires(header);
+
+        // Set the "mime-version" property
+        header = (getHeaders() == null) ? null : getHeaders().getFirstValue(
+                SipConstants.HEADER_MIME_VERSION);
+        sr.setMimeVersion(header);
+
+        // Set the "mime-version" property
+        header = (getHeaders() == null) ? null : getHeaders().getFirstValue(
+                SipConstants.HEADER_MIME_VERSION);
+        sr.setMimeVersion(header);
+
+        // Set the "organization" property
+        header = (getHeaders() == null) ? null : getHeaders().getFirstValue(
+                SipConstants.HEADER_MIME_VERSION);
+        sr.setOrganization(header);
+
+        // Set the "recordedRoute" property
+        header = (getHeaders() == null) ? null : getHeaders().getValues(
+                SipConstants.HEADER_RECORD_ROUTE);
+
+        if (header != null) {
+            try {
+                sr.getRecordedRoutes().addAll(
+                        new AddressReader(header).readValues());
+            } catch (Exception e) {
+                getLogger().info(e.getMessage());
+            }
+        }
+
+        // Set the "replyTo" property
+        header = (getHeaders() == null) ? null : getHeaders().getValues(
+                SipConstants.HEADER_REPLY_TO);
+
+        if (header != null) {
+            try {
+                sr.setReplyTo(new AddressReader(header).readValue());
+            } catch (Exception e) {
+                getLogger().info(e.getMessage());
+            }
+        }
+
+        // Set the "sipRecipientsInfo" property
+        header = (getHeaders() == null) ? null : getHeaders().getValues(
+                HeaderConstants.HEADER_VIA);
+
+        if (header != null) {
+            try {
+                sr.getSipRecipientsInfo().addAll(
+                        new SipRecipientInfoReader(header).readValues());
+            } catch (Exception e) {
+                getLogger().info(e.getMessage());
+            }
+        }
+
+        // Set the "sipRetryAfter" property
+        header = (getHeaders() == null) ? null : getHeaders().getFirstValue(
+                SipConstants.HEADER_RETRY_AFTER);
+        if (header != null) {
+            try {
+                sr.setSipRetryAfter(new AvailabilityReader(header).readValue());
+            } catch (IOException e) {
+                getLogger().info(e.getMessage());
+            }
+        }
+
+        // Set the "sipTag" property
+        header = (getHeaders() == null) ? null : getHeaders().getFirstValue(
+                SipConstants.HEADER_SIP_ETAG);
+        if (header != null) {
+            sr.setSipTag(Tag.parse(header));
+        }
+
+        // Set the "supported" property
+        header = (getHeaders() == null) ? null : getHeaders().getValues(
+                SipConstants.HEADER_SUPPORTED);
+
+        if (header != null) {
+            try {
+                sr.getSupported().addAll(
+                        new OptionTagReader(header).readValues());
+            } catch (Exception e) {
+                getLogger().info(e.getMessage());
+            }
+        }
+
+        // Set the "to" property
+        header = (getHeaders() == null) ? null : getHeaders().getFirstValue(
+                SipConstants.HEADER_TO);
+        if (header != null) {
+            try {
+                sr.setTo(new AddressReader(header).readValue());
+            } catch (IOException e) {
+                getLogger().info(e.getMessage());
+            }
+        }
+
+        // Set the "unsupported" property
+        header = (getHeaders() == null) ? null : getHeaders().getValues(
+                SipConstants.HEADER_UNSUPPORTED);
+
+        if (header != null) {
+            try {
+                sr.getUnsupported().addAll(
+                        new OptionTagReader(header).readValues());
+            } catch (Exception e) {
+                getLogger().info(e.getMessage());
+            }
+        }
+
+        for (Parameter headerParam : headers) {
+            if (headerParam.getName().equalsIgnoreCase(
+                    HeaderConstants.HEADER_VIA)) {
+                SipRecipientInfoReader.addValues(headerParam,
                         sr.getSipRecipientsInfo());
             }
         }
