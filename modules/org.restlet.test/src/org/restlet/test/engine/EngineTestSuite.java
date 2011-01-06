@@ -31,6 +31,8 @@
 package org.restlet.test.engine;
 
 import org.restlet.test.engine.io.BioUtilsTestCase;
+import org.restlet.test.ext.ssl.SslClientContextGetTestCase;
+import org.restlet.test.ext.ssl.SslGetTestCase;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

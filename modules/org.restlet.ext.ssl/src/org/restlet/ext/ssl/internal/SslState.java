@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.security;
+package org.restlet.ext.ssl.internal;
 
 /**
  * Enumeration of the {@link SslManager} states. It can describe either

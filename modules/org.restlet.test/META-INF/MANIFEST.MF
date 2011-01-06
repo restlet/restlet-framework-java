@@ -37,8 +37,9 @@ Require-Bundle: org.restlet,
  org.junit4,
  org.springframework,
  org.apache.tika,
- org.restlet.ext.odata;bundle-version="2.0.0",
- org.restlet.ext.sip;bundle-version="2.1.0"
+ org.restlet.ext.odata,
+ org.restlet.ext.sip,
+ org.restlet.ext.ssl
 Export-Package: org.restlet.test,
  org.restlet.test.bench,
  org.restlet.test.component,

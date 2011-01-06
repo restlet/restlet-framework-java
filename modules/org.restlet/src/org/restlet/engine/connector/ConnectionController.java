@@ -218,6 +218,13 @@ public abstract class ConnectionController extends Controller implements
         SelectionRegistration newRegistration = getNewRegistrations().poll();
 
         while (newRegistration != null) {
+            if (getHelper().getLogger().isLoggable(Level.FINEST)) {
+                getHelper().getLogger().log(
+                        Level.FINEST,
+                        "Registering new NIO interest with selector: "
+                                + newRegistration);
+            }
+
             newRegistration.register(getSelector());
             newRegistration = getNewRegistrations().poll();
         }
@@ -234,7 +241,14 @@ public abstract class ConnectionController extends Controller implements
     protected void selectKeys(long sleepTime) throws IOException,
             ClosedByInterruptException {
         // Select the connections ready for NIO operations
-        if (getSelector().select(sleepTime) > 0) {
+        int selectCount = getSelector().select(sleepTime);
+
+        if (selectCount > 0) {
+            if (getHelper().getLogger().isLoggable(Level.FINEST)) {
+                getHelper().getLogger().log(Level.FINEST,
+                        "NIO selected " + selectCount + " key(s) !");
+            }
+
             for (Iterator<SelectionKey> keys = getSelector().selectedKeys()
                     .iterator(); keys.hasNext();) {
                 // Retrieve the next selected key
@@ -260,6 +274,13 @@ public abstract class ConnectionController extends Controller implements
                 .poll();
 
         while (updatedRegistration != null) {
+            if (getHelper().getLogger().isLoggable(Level.FINEST)) {
+                getHelper().getLogger().log(
+                        Level.FINEST,
+                        "Updating NIO interest with selector: "
+                                + updatedRegistration);
+            }
+
             updatedRegistration.update();
             updatedRegistration = getUpdatedRegistrations().poll();
         }

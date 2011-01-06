@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.io;
+package org.restlet.ext.ssl.internal;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -39,9 +39,10 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLSession;
 
 import org.restlet.Context;
-import org.restlet.engine.connector.SslConnection;
-import org.restlet.engine.security.SslManager;
-import org.restlet.engine.security.SslState;
+import org.restlet.engine.io.BufferState;
+import org.restlet.engine.io.IoState;
+import org.restlet.engine.io.SelectionChannel;
+import org.restlet.engine.io.WrapperSelectionChannel;
 
 /**
  * Filter byte channel that enables secure communication using SSL/TLS

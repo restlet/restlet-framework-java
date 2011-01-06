@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.connector;
+package org.restlet.ext.ssl;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -36,18 +36,25 @@ import java.nio.channels.SocketChannel;
 
 import javax.net.ssl.SSLContext;
 
-import org.restlet.Client;
+import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.engine.connector.Connection;
+import org.restlet.engine.connector.ConnectionController;
+import org.restlet.engine.connector.OutboundWay;
+import org.restlet.engine.connector.ServerConnectionHelper;
+import org.restlet.engine.connector.ServerInboundWay;
+import org.restlet.engine.connector.ServerOutboundWay;
 import org.restlet.engine.security.SslContextFactory;
-import org.restlet.engine.security.SslManager;
 import org.restlet.engine.security.SslUtils;
+import org.restlet.ext.ssl.internal.SslConnection;
+import org.restlet.ext.ssl.internal.SslManager;
 
 /**
- * HTTPS client helper based on NIO blocking sockets.
+ * HTTPS server helper based on NIO blocking sockets.
  * 
  * @author Jerome Louvel
  */
-public class HttpsClientHelper extends ClientConnectionHelper {
+public class HttpsServerHelper extends ServerConnectionHelper {
 
     /** The SSL context. */
     private volatile SSLContext sslContext;
@@ -55,34 +62,33 @@ public class HttpsClientHelper extends ClientConnectionHelper {
     /**
      * Constructor.
      * 
-     * @param client
-     *            The client to help.
+     * @param server
+     *            The server to help.
      */
-    public HttpsClientHelper(Client client) {
-        super(client);
+    public HttpsServerHelper(Server server) {
+        super(server);
         getProtocols().add(Protocol.HTTPS);
     }
 
     @Override
-    protected Connection<Client> createConnection(SocketChannel socketChannel,
+    protected Connection<Server> createConnection(SocketChannel socketChannel,
             ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
-        SslManager sslManager = new SslManager(getSslContext(), socketAddress,
-                isClientSide());
-        return new SslConnection<Client>(this, socketChannel, controller,
-                socketAddress, sslManager);
+        return new SslConnection<Server>(this, socketChannel, controller,
+                socketAddress, new SslManager(getSslContext(), socketAddress,
+                        isClientSide()));
     }
 
     @Override
-    public InboundWay createInboundWay(Connection<Client> connection,
+    public ServerInboundWay createInboundWay(Connection<Server> connection,
             int bufferSize) {
-        return new ClientInboundWay(connection, bufferSize);
+        return new ServerInboundWay(connection, bufferSize);
     }
 
     @Override
-    public OutboundWay createOutboundWay(Connection<Client> connection,
+    public OutboundWay createOutboundWay(Connection<Server> connection,
             int bufferSize) {
-        return new ClientOutboundWay(connection, bufferSize);
+        return new ServerOutboundWay(connection, bufferSize);
     }
 
     /**

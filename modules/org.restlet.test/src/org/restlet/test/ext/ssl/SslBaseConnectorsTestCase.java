@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test.engine;
+package org.restlet.test.ext.ssl;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -177,21 +177,21 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     public void testSslInternalAndApache() throws Exception {
         if (this.enableInternalServer && this.enableApacheClient) {
-            runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
+            runTest(new org.restlet.ext.ssl.HttpsServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testSslInternalAndInternal() throws Exception {
         if (this.enableInternalServer && this.enableInternalClient) {
-            runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
-                    new org.restlet.engine.connector.HttpsClientHelper(null));
+            runTest(new org.restlet.ext.ssl.HttpsServerHelper(null),
+                    new org.restlet.ext.ssl.HttpsClientHelper(null));
         }
     }
 
     public void testSslInternalAndJdkNet() throws Exception {
         if (this.enableInternalServer && this.enableJdkNetClient) {
-            runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
+            runTest(new org.restlet.ext.ssl.HttpsServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
     }
@@ -206,7 +206,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     public void testSslJettyAndInternal() throws Exception {
         if (this.enableJettyServer && this.enableInternalClient) {
             runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
-                    new org.restlet.engine.connector.HttpsClientHelper(null));
+                    new org.restlet.ext.ssl.HttpsClientHelper(null));
         }
     }
 
@@ -227,7 +227,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     public void testSslSimpleAndInternal() throws Exception {
         if (this.enableSimpleServer && this.enableInternalClient) {
             runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
-                    new org.restlet.engine.connector.HttpsClientHelper(null));
+                    new org.restlet.ext.ssl.HttpsClientHelper(null));
         }
     }
 

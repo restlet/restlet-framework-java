@@ -117,7 +117,7 @@ public final class RouteList extends WrapperList<Route> {
      */
     public Route getFirst(Request request, Response response,
             float requiredScore) {
-        for (final Route current : this) {
+        for (Route current : this) {
             if (current.score(request, response) >= requiredScore) {
                 return current;
             }
@@ -194,21 +194,26 @@ public final class RouteList extends WrapperList<Route> {
      */
     public synchronized Route getRandom(Request request, Response response,
             float requiredScore) {
-        final int length = size();
+        int length = size();
+
         if (length > 0) {
             int j = new Random().nextInt(length);
             Route route = get(j);
+
             if (route.score(request, response) >= requiredScore) {
                 return route;
             }
 
             boolean loopedAround = false;
+
             do {
                 if ((j == length) && (loopedAround == false)) {
                     j = 0;
                     loopedAround = true;
                 }
+
                 route = get(j++);
+
                 if (route.score(request, response) >= requiredScore) {
                     return route;
                 }
