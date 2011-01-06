@@ -7,6 +7,8 @@ Changes log
     - Bugs fixed
        - Fixed bug in virtual host router that was failing if no host 
          URI was set. Now falls back to the host part of the resource URI.
+       - Fixed handling of "EDM Single" properties.
+         Reported by Andreas Taube.  
  
 - @version-full@ (@release-date@)
     - Bugs fixed

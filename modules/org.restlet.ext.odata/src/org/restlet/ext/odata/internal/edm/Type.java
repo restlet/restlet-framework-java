@@ -30,7 +30,6 @@
 
 package org.restlet.ext.odata.internal.edm;
 
-import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -59,38 +58,7 @@ public class Type extends NamedObject {
      * @return The name of the corresponding Java class or scalar type.
      */
     public String getClassName() {
-        String result = "Object";
-        if (getName().endsWith("Binary")) {
-            result = "byte[]";
-        } else if (getName().endsWith("Boolean")) {
-            result = "boolean";
-        } else if (getName().endsWith("DateTime")) {
-            result = "Date";
-        } else if (getName().endsWith("DateTimeOffset")) {
-            result = "Date";
-        } else if (getName().endsWith("Time")) {
-            result = "long";
-        } else if (getName().endsWith("Decimal")) {
-            result = "double";
-        } else if (getName().endsWith("Single")) {
-            result = "float";
-        } else if (getName().endsWith("Double")) {
-            result = "double";
-        } else if (getName().endsWith("Guid")) {
-            result = "String";
-        } else if (getName().endsWith("Int16")) {
-            result = "short";
-        } else if (getName().endsWith("Int32")) {
-            result = "int";
-        } else if (getName().endsWith("Int64")) {
-            result = "long";
-        } else if (getName().endsWith("Byte")) {
-            result = "byte";
-        } else if (getName().endsWith("String")) {
-            result = "String";
-        }
-
-        return result;
+        return TypeUtils.toJavaTypeName(getName());
     }
 
     /**
@@ -116,38 +84,7 @@ public class Type extends NamedObject {
      * @return The corresponding Java class.
      */
     public Class<?> getJavaClass() {
-        Class<?> result = Object.class;
-        if (getName().endsWith("Binary")) {
-            result = byte[].class;
-        } else if (getName().endsWith("Boolean")) {
-            result = Boolean.class;
-        } else if (getName().endsWith("DateTime")) {
-            result = Date.class;
-        } else if (getName().endsWith("DateTimeOffset")) {
-            result = Date.class;
-        } else if (getName().endsWith("Time")) {
-            result = Long.class;
-        } else if (getName().endsWith("Decimal")) {
-            result = Double.class;
-        } else if (getName().endsWith("Single")) {
-            result = Float.class;
-        } else if (getName().endsWith("Double")) {
-            result = Double.class;
-        } else if (getName().endsWith("Guid")) {
-            result = String.class;
-        } else if (getName().endsWith("Int16")) {
-            result = Short.class;
-        } else if (getName().endsWith("Int32")) {
-            result = Integer.class;
-        } else if (getName().endsWith("Int64")) {
-            result = Long.class;
-        } else if (getName().endsWith("Byte")) {
-            result = Byte.class;
-        } else if (getName().endsWith("String")) {
-            result = String.class;
-        }
-
-        return result;
+        return TypeUtils.toJavaClass(getName());
     }
 
     /**
