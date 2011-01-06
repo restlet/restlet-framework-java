@@ -31,6 +31,8 @@ Changes log
         preventing the resue of persistent connections. 
         Reported by Phil Dunks. 
      - Misc
+      - If the Engine#logFormatter is set to null, the log formatter of the
+        console is not changed anymore. 
 
 - 2.1 Milestone 2 (12/24/2010)
     - API changes

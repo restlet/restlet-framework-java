@@ -171,13 +171,16 @@ public class Engine {
                         .append('\n');
             }
 
-            String handler = java.util.logging.ConsoleHandler.class
-                    .getCanonicalName();
-            sb.append(handler + ".formatter="
-                    + getLogFormatter().getCanonicalName() + "\n");
+            if (getLogFormatter() != null) {
+                String handler = java.util.logging.ConsoleHandler.class
+                        .getCanonicalName();
+                sb.append(handler + ".formatter="
+                        + getLogFormatter().getCanonicalName() + "\n");
 
-            if (getLogLevel() != null) {
-                sb.append(handler + ".level=" + getLogLevel().getName() + "\n");
+                if (getLogLevel() != null) {
+                    sb.append(handler + ".level=" + getLogLevel().getName()
+                            + "\n");
+                }
             }
 
             try {
