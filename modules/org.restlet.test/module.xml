@@ -32,6 +32,7 @@
 		<dependency type="module" id="rdf" />
 		<dependency type="module" id="wadl" />
 		<dependency type="module" id="example" />
+                <dependency type="module" id="ssl" />
 		<dependency type="module" id="xdb" includes="jee" />
 	</dependencies>
 	<source edition="android">
