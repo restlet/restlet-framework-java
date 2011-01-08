@@ -44,7 +44,6 @@ import org.restlet.data.Range;
 import org.restlet.data.Tag;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.util.DateUtils;
-import org.restlet.resource.ServerResource;
 
 /**
  * Current or intended state of a resource. The content of a representation can
@@ -473,7 +472,8 @@ public abstract class Representation extends RepresentationInfo {
      * content, you should first call the {@link #exhaust()} method or if this
      * could be too costly, you should instead explicitly abort the parent
      * request and the underlying connections using the {@link Request#abort()}
-     * method or a shortcut one like {@link ServerResource#abort()} or
+     * method or a shortcut one like
+     * {@link org.restlet.resource.ServerResource#abort()} or
      * {@link Response#abort()}.
      */
     public void release() {

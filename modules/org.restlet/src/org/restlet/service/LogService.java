@@ -38,7 +38,6 @@ import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.log.IdentClient;
 import org.restlet.engine.log.LogFilter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -170,9 +169,10 @@ public class LogService extends Service {
             // Append the user name (via IDENT protocol)
             if (isIdentityCheck()) {
                 // [ifndef gae]
-                IdentClient ic = new IdentClient(request.getClientInfo()
-                        .getUpstreamAddress(), request.getClientInfo()
-                        .getPort(), response.getServerInfo().getPort());
+                org.restlet.engine.log.IdentClient ic = new org.restlet.engine.log.IdentClient(
+                        request.getClientInfo().getUpstreamAddress(), request
+                                .getClientInfo().getPort(), response
+                                .getServerInfo().getPort());
                 sb.append((ic.getUserIdentifier() == null) ? "-" : ic
                         .getUserIdentifier());
             } else if ((request.getChallengeResponse() != null)
