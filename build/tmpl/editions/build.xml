@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 
 <!-- ===============================================================
      Restlet build script - Copyright 2005-2009 Noelios Technologies
@@ -435,7 +435,7 @@
 		<attribute name="name" />
 		<sequential>
 			<propertyregex property="lib-dir-@{name}-maven-groupId" input="${lib-@{name}-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" />
-			<property name="lib-dir-@{name}-maven" value="${dist-maven2}/${lib-dir-@{name}-maven-groupId}/org.restlet.lib.${lib-@{name}-maven-artifactId}/${lib-@{name}-maven-version}" />
+			<property name="lib-dir-@{name}-maven" value="${dist-maven2}/${lib-dir-@{name}-maven-groupId}/${lib-@{name}-maven-artifactId}/${lib-@{name}-maven-version}" />
 			<mkdir dir="${lib-dir-@{name}-maven}" />
 
 			<copy file="${libs}/${lib-@{name}-root}/${lib-@{name}-package}.jar" tofile="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.jar" overwrite="true" />
