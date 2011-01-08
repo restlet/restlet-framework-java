@@ -32,7 +32,7 @@
 		<dependency type="module" id="rdf" />
 		<dependency type="module" id="wadl" />
 		<dependency type="module" id="example" />
-                <dependency type="module" id="ssl" />
+                <dependency type="module" id="ssl" includes="jse" />
 		<dependency type="module" id="xdb" includes="jee" />
 	</dependencies>
 	<source edition="android">
@@ -86,6 +86,7 @@
          <exclude name="src/org/restlet/test/engine/SslBaseConnectorsTestCase.java" />
          <exclude name="src/org/restlet/test/engine/SslClientContextGetTestCase.java" />
          <exclude name="src/org/restlet/test/engine/SslGetTestCase.java" />
+         <exclude name="src/org/restlet/test/ext/ssl/**" />
 ]]>
 		</files-sets>
 	</source>

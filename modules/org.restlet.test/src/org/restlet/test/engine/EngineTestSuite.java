@@ -31,8 +31,6 @@
 package org.restlet.test.engine;
 
 import org.restlet.test.engine.io.BioUtilsTestCase;
-import org.restlet.test.ext.ssl.SslClientContextGetTestCase;
-import org.restlet.test.ext.ssl.SslGetTestCase;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -81,8 +79,8 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(GetChunkedTestCase.class);
         addTestSuite(PostPutTestCase.class);
         addTestSuite(RemoteClientAddressTestCase.class);
-        addTestSuite(SslGetTestCase.class);
-        addTestSuite(SslClientContextGetTestCase.class);
+        addTestSuite(org.restlet.test.ext.ssl.SslGetTestCase.class);
+        addTestSuite(org.restlet.test.ext.ssl.SslClientContextGetTestCase.class);
         // [enddef]
     }
 }
