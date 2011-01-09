@@ -34,11 +34,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectableChannel;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.net.ssl.SSLEngineResult;
-import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 
-import org.restlet.Context;
 import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.SelectionChannel;
@@ -60,12 +60,6 @@ public abstract class SslChannel<T extends SelectionChannel> extends
     /** The SSL engine to use of wrapping and unwrapping. */
     private volatile SslManager manager;
 
-    /** The packet byte buffer. */
-    private volatile ByteBuffer packetBuffer;
-
-    /** The packet buffer state. */
-    private volatile BufferState packetBufferState;
-
     /**
      * Constructor.
      * 
@@ -81,16 +75,6 @@ public abstract class SslChannel<T extends SelectionChannel> extends
         super(wrappedChannel);
         this.manager = manager;
         this.connection = connection;
-
-        if (manager != null) {
-            SSLSession session = getManager().getSession();
-            int packetSize = session.getPacketBufferSize();
-            this.packetBuffer = getConnection().createByteBuffer(packetSize);
-        } else {
-            this.packetBuffer = null;
-        }
-
-        this.packetBufferState = BufferState.FILLING;
     }
 
     /**
@@ -100,6 +84,15 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      */
     protected SslConnection<?> getConnection() {
         return connection;
+    }
+
+    /**
+     * Returns the connection logger.
+     * 
+     * @return The connection logger.
+     */
+    public Logger getLogger() {
+        return getConnection().getLogger();
     }
 
     /**
@@ -116,18 +109,14 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      * 
      * @return The SSL/TLS packet byte buffer.
      */
-    protected ByteBuffer getPacketBuffer() {
-        return packetBuffer;
-    }
+    protected abstract ByteBuffer getPacketBuffer();
 
     /**
      * Returns the byte buffer state.
      * 
      * @return The byte buffer state.
      */
-    protected BufferState getPacketBufferState() {
-        return packetBufferState;
-    }
+    protected abstract BufferState getPacketBufferState();
 
     /**
      * Handles the handshake states.
@@ -139,6 +128,10 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      */
     protected void handleHandshake(SSLEngineResult sslResult,
             ByteBuffer applicationBuffer) {
+        // Store the handshake status
+        getManager().setHandshakeStatus(sslResult.getHandshakeStatus());
+
+        // Handle the status
         switch (sslResult.getHandshakeStatus()) {
         case FINISHED:
             onHandshakeFinished(sslResult);
@@ -202,11 +195,9 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The SSL engine result to log.
      */
     protected void log(SSLEngineResult sslResult) {
-        if (Context.getCurrentLogger().isLoggable(Level.INFO)) {
-            Context.getCurrentLogger().log(Level.INFO,
-                    "SSL I/O result: " + sslResult);
-            Context.getCurrentLogger().log(Level.INFO,
-                    "SSL Manager: " + getManager());
+        if (getLogger().isLoggable(Level.INFO)) {
+            getLogger().log(Level.INFO, "SSL I/O result: " + sslResult);
+            getLogger().log(Level.INFO, "SSL Manager: " + getManager());
         }
     }
 
@@ -217,8 +208,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The SSL engine result.
      */
     protected void onBufferOverflow(SSLEngineResult sslResult) {
-        getConnection().getLogger().log(Level.WARNING,
-                "SSL buffer overflow: " + sslResult);
+        getLogger().log(Level.WARNING, "SSL buffer overflow: " + sslResult);
     }
 
     /**
@@ -228,8 +218,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The SSL engine result.
      */
     protected void onBufferUnderflow(SSLEngineResult sslResult) {
-        getConnection().getLogger().log(Level.WARNING,
-                "SSL buffer underflow: " + sslResult);
+        getLogger().log(Level.WARNING, "SSL buffer underflow: " + sslResult);
     }
 
     /**
@@ -243,9 +232,9 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      */
     protected void onClosed(SSLEngineResult sslResult,
             ByteBuffer applicationBuffer) {
-        getManager().setState(SslState.CLOSING);
+        getLogger().log(Level.INFO, "SSL manager closing: " + sslResult);
+        getManager().setState(SslState.CLOSED);
         handleHandshake(sslResult, applicationBuffer);
-        getConnection().close(true);
     }
 
     /**
@@ -256,10 +245,16 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The SSL engine result.
      */
     protected void onHandshakeFinished(SSLEngineResult sslResult) {
+        getLogger().log(Level.INFO, "SSL handshake finished: " + sslResult);
+
         if (getManager().getState() == SslState.HANDSHAKING) {
-            getManager().setState(SslState.APPLICATION_DATA);
-        } else if (getManager().getState() == SslState.CLOSING) {
-            getManager().setState(SslState.CLOSED);
+            if (getManager().isClientSide()) {
+                getManager().setState(SslState.WRITING_APPLICATION_DATA);
+            } else {
+                getManager().setState(SslState.READING_APPLICATION_DATA);
+            }
+
+            getManager().setHandshakeStatus(HandshakeStatus.NOT_HANDSHAKING);
         }
 
         if (getConnection().isClientSide()) {
@@ -280,6 +275,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The related application data buffer.
      */
     protected void onOk(SSLEngineResult sslResult, ByteBuffer applicationBuffer) {
+        getLogger().log(Level.INFO, "SSL OK: " + sslResult);
         handleHandshake(sslResult, applicationBuffer);
     }
 
@@ -291,8 +287,12 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The SSL engine result.
      */
     protected void onUnwrap(SSLEngineResult sslResult) {
-        getConnection().getInboundWay().setIoState(IoState.INTEREST);
-        getConnection().getOutboundWay().setIoState(IoState.IDLE);
+        getLogger().log(Level.INFO, "SSL unwrap: " + sslResult);
+
+        if (getConnection().getInboundWay().getIoState() != IoState.PROCESSING) {
+            getConnection().getInboundWay().setIoState(IoState.INTEREST);
+            getConnection().getOutboundWay().setIoState(IoState.IDLE);
+        }
     }
 
     /**
@@ -303,8 +303,12 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The SSL engine result.
      */
     protected void onWrap(SSLEngineResult sslResult) {
-        getConnection().getInboundWay().setIoState(IoState.IDLE);
-        getConnection().getOutboundWay().setIoState(IoState.INTEREST);
+        getLogger().log(Level.INFO, "SSL wrap: " + sslResult);
+
+        if (getConnection().getOutboundWay().getIoState() != IoState.PROCESSING) {
+            getConnection().getInboundWay().setIoState(IoState.IDLE);
+            getConnection().getOutboundWay().setIoState(IoState.INTEREST);
+        }
     }
 
     /**
@@ -340,7 +344,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
             getConnection().getHelper().getWorkerService()
                     .execute(new Runnable() {
                         public void run() {
-                            getConnection().getLogger().log(Level.INFO,
+                            getLogger().log(Level.INFO,
                                     "Running delegated task...");
                             task.run();
 
@@ -360,11 +364,11 @@ public abstract class SslChannel<T extends SelectionChannel> extends
                                 handleResult(runEngine(applicationBuffer),
                                         applicationBuffer);
                             } catch (IOException e) {
-                                getConnection().getLogger().log(Level.FINE,
+                                getLogger().log(Level.FINE,
                                         "Unable to run SSL engine", e);
                             }
 
-                            getConnection().getLogger().log(
+                            getLogger().log(
                                     Level.INFO,
                                     "Done running delegated tasks for this connection: "
                                             + getConnection());
@@ -374,23 +378,11 @@ public abstract class SslChannel<T extends SelectionChannel> extends
     }
 
     /**
-     * Sets the packet byte buffer.
-     * 
-     * @param packetBuffer
-     *            The packet byte buffer.
-     */
-    protected void setPacketBuffer(ByteBuffer packetBuffer) {
-        this.packetBuffer = packetBuffer;
-    }
-
-    /**
      * Sets the buffer state.
      * 
      * @param bufferState
      *            The buffer state.
      */
-    protected void setPacketBufferState(BufferState bufferState) {
-        this.packetBufferState = bufferState;
-    }
+    protected abstract void setPacketBufferState(BufferState bufferState);
 
 }

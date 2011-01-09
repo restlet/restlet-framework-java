@@ -43,7 +43,7 @@ import org.restlet.util.SelectionRegistration;
  */
 public class ReadableBufferedChannel extends
         WrapperSelectionChannel<ReadableSelectionChannel> implements
-        ReadableSelectionChannel {
+        ReadableSelectionChannel, Drainer {
 
     /** The buffer state. */
     private volatile BufferState byteBufferState;
@@ -53,12 +53,6 @@ public class ReadableBufferedChannel extends
 
     /** The byte buffer remaining from previous read processing. */
     private final ByteBuffer byteBuffer;
-
-    /** The line builder to parse chunk size or trailer. */
-    private final StringBuilder lineBuilder;
-
-    /** The line builder state. */
-    private volatile BufferState lineBuilderState;
 
     /**
      * Constructor.
@@ -77,16 +71,6 @@ public class ReadableBufferedChannel extends
         this.completionListener = completionListener;
         this.byteBuffer = remainingBuffer;
         this.byteBufferState = BufferState.DRAINING;
-        this.lineBuilder = new StringBuilder();
-        this.lineBuilderState = BufferState.IDLE;
-    }
-
-    /**
-     * Clears the line builder and adjust its state.
-     */
-    public void clearLineBuilder() {
-        getLineBuilder().delete(0, getLineBuilder().length());
-        setLineBuilderState(BufferState.IDLE);
     }
 
     @Override
@@ -95,55 +79,11 @@ public class ReadableBufferedChannel extends
     }
 
     /**
-     * Read the current line builder (start line or header line).
-     * 
-     * @return True if the message line was fully read.
-     * @throws IOException
-     */
-    public boolean fillLineBuilder() throws IOException {
-        boolean result = false;
-
-        if (getLineBuilderState() != BufferState.DRAINING) {
-            int byteBufferSize = 0;
-
-            if (getByteBufferState() == BufferState.DRAINING) {
-                byteBufferSize = getByteBuffer().remaining();
-            }
-
-            if (byteBufferSize == 0) {
-                setByteBufferState(BufferState.FILLING);
-                getByteBuffer().clear();
-
-                if (refill() > 0) {
-                    byteBufferSize = getByteBuffer().remaining();
-                }
-            }
-
-            if (byteBufferSize > 0) {
-                // Some bytes are available, fill the line builder
-                setLineBuilderState(NioUtils.fillLine(getLineBuilder(),
-                        getLineBuilderState(), getByteBuffer()));
-
-                if (getByteBuffer().remaining() == 0) {
-                    setByteBufferState(BufferState.FILLING);
-                    getByteBuffer().clear();
-                }
-
-                return getLineBuilderState() == BufferState.DRAINING;
-            }
-        } else {
-            result = true;
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the byte buffer remaining from previous read processing.
      * 
      * @return The byte buffer remaining from previous read processing.
      */
-    protected ByteBuffer getByteBuffer() {
+    public ByteBuffer getByteBuffer() {
         return byteBuffer;
     }
 
@@ -152,7 +92,7 @@ public class ReadableBufferedChannel extends
      * 
      * @return The byte buffer state.
      */
-    protected BufferState getByteBufferState() {
+    public BufferState getByteBufferState() {
         return byteBufferState;
     }
 
@@ -163,24 +103,6 @@ public class ReadableBufferedChannel extends
      */
     private CompletionListener getCompletionListener() {
         return completionListener;
-    }
-
-    /**
-     * Returns the line builder to parse chunk size or trailer.
-     * 
-     * @return The line builder to parse chunk size or trailer.
-     */
-    public StringBuilder getLineBuilder() {
-        return lineBuilder;
-    }
-
-    /**
-     * Returns the line builder state.
-     * 
-     * @return The line builder state.
-     */
-    protected BufferState getLineBuilderState() {
-        return lineBuilderState;
     }
 
     /**
@@ -198,17 +120,51 @@ public class ReadableBufferedChannel extends
     }
 
     /**
+     * Drains the byte buffer. By default, it directly copies as many byte as
+     * possible to the target buffer, with no modification.
+     * 
+     * @param targetBuffer
+     *            The target buffer.
+     * @return The number of bytes added to the target buffer.
+     */
+    public int drain(ByteBuffer targetBuffer) {
+        int result = 0;
+
+        if (getByteBuffer().remaining() >= targetBuffer.remaining()) {
+            // Target buffer will be full
+            result = targetBuffer.remaining();
+        } else {
+            // Target buffer will not be full
+            result = getByteBuffer().remaining();
+        }
+
+        // Copy the byte to the target buffer
+        for (int i = 0; i < result; i++) {
+            targetBuffer.put(getByteBuffer().get());
+        }
+
+        return result;
+    }
+
+    public boolean canRetry(int lastRead, ByteBuffer targetBuffer) {
+        return (lastRead > 0) && targetBuffer.hasRemaining();
+    }
+
+    /**
      * Reads some bytes and put them into the destination buffer. The bytes come
      * from the underlying channel.
      * 
      * @param targetBuffer
      *            The target buffer.
+     * @param drainer
+     *            The drain to callback to drain available bytes.
      * @return The number of bytes read, or -1 if the end of the channel has
      *         been reached.
      */
-    public int read(ByteBuffer targetBuffer) throws IOException {
+    public int read(ByteBuffer targetBuffer, Drainer drainer)
+            throws IOException {
         int result = 0;
-        int currentRead = 0;
+        int lastRead = 0;
         boolean tryAgain = true;
 
         synchronized (getByteBuffer()) {
@@ -218,22 +174,9 @@ public class ReadableBufferedChannel extends
                     setByteBufferState(BufferState.DRAINING);
                 case DRAINING:
                     if (getByteBuffer().remaining() > 0) {
-                        if (getByteBuffer().remaining() >= targetBuffer
-                                .remaining()) {
-                            // Target buffer will be full
-                            currentRead = targetBuffer.remaining();
-                            tryAgain = false;
-                        } else {
-                            // Target buffer will not be full
-                            currentRead = getByteBuffer().remaining();
-                        }
-
-                        // Copy the byte to the target buffer
-                        for (int i = 0; i < currentRead; i++) {
-                            targetBuffer.put(getByteBuffer().get());
-                        }
-
-                        result += currentRead;
+                        lastRead = drainer.drain(targetBuffer);
+                        result += lastRead;
+                        tryAgain = drainer.canRetry(lastRead, targetBuffer);
                     }
 
                     if (getByteBuffer().remaining() == 0) {
@@ -261,18 +204,37 @@ public class ReadableBufferedChannel extends
     }
 
     /**
+     * Reads some bytes and put them into the destination buffer. The bytes come
+     * from the underlying channel.
+     * 
+     * @param targetBuffer
+     *            The target buffer.
+     * @return The number of bytes read, or -1 if the end of the channel has
+     *         been reached.
+     */
+    public int read(ByteBuffer targetBuffer) throws IOException {
+        return read(targetBuffer, this);
+    }
+
+    /**
      * Refills the byte buffer.
      * 
      * @return The number of bytes read and added to the buffer or -1 if end of
      *         channel reached.
      * @throws IOException
      */
-    protected int refill() throws IOException {
-        int result = getWrappedChannel().read(getByteBuffer());
+    public int refill() throws IOException {
+        int result = 0;
 
-        if (result > 0) {
-            setByteBufferState(BufferState.DRAINING);
-            getByteBuffer().flip();
+        if (getByteBufferState() == BufferState.FILLING) {
+            if (getWrappedChannel().isOpen()) {
+                result = getWrappedChannel().read(getByteBuffer());
+
+                if (result > 0) {
+                    setByteBufferState(BufferState.DRAINING);
+                    getByteBuffer().flip();
+                }
+            }
         }
 
         return result;
@@ -284,17 +246,7 @@ public class ReadableBufferedChannel extends
      * @param bufferState
      *            The buffer state.
      */
-    protected void setByteBufferState(BufferState bufferState) {
+    public void setByteBufferState(BufferState bufferState) {
         this.byteBufferState = bufferState;
-    }
-
-    /**
-     * Sets the line builder state.
-     * 
-     * @param lineBuilderState
-     *            The line builder state.
-     */
-    protected void setLineBuilderState(BufferState lineBuilderState) {
-        this.lineBuilderState = lineBuilderState;
     }
 }

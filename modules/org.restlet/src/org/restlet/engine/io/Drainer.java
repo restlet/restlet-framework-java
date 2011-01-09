@@ -28,34 +28,36 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.ssl.internal;
+package org.restlet.engine.io;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
- * Enumeration of the {@link SslManager} states. It can describe either
- * client-side or server-side states.
+ * Callback interface invoked when draining can be effectively done for a
+ * {@link ReadableBufferedChannel}.
  * 
  * @author Jerome Louvel
  */
-public enum SslState {
+public interface Drainer {
 
-    /** Ready for creation. */
-    IDLE,
+    /**
+     * Indicates if a new read can be attempted.
+     * 
+     * @param lastRead
+     *            The number of bytes just read.
+     * @param targetBuffer
+     *            The target buffer.
+     * @return True if a new read can be attempted.
+     */
+    public boolean canRetry(int lastRead, ByteBuffer targetBuffer);
 
-    /** Ready for handshake. */
-    CREATED,
-
-    /** Authentication (optional) and negotiation of cipher suite. */
-    HANDSHAKING,
-
-    /** Re-negotiation of session keys or cipher suite. */
-    REHANDSHAKING,
-
-    /** Send or receive application data. */
-    WRITING_APPLICATION_DATA,
-
-    /** Send or receive application data. */
-    READING_APPLICATION_DATA,
-
-    /** Engine closed. */
-    CLOSED;
+    /**
+     * Drains the byte buffer.
+     * 
+     * @param targetBuffer
+     *            The target buffer.
+     * @return The number of bytes added to the target buffer.
+     */
+    public int drain(ByteBuffer targetBuffer) throws IOException;
 }

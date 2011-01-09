@@ -34,6 +34,8 @@ import java.net.InetSocketAddress;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLEngineResult;
+import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 
@@ -52,6 +54,9 @@ public class SslManager {
 
     /** The engine to use for wrapping and unwrapping. */
     private volatile SSLEngine engine;
+
+    /** The handshake status. */
+    private volatile SSLEngineResult.HandshakeStatus handshakeStatus;
 
     /** The peer address. */
     private volatile InetSocketAddress peerAddress;
@@ -77,6 +82,7 @@ public class SslManager {
         this.peerAddress = peerAddress;
         this.clientSide = clientSide;
         this.state = SslState.IDLE;
+        this.handshakeStatus = HandshakeStatus.NOT_HANDSHAKING;
         initEngine();
     }
 
@@ -106,6 +112,15 @@ public class SslManager {
      */
     public SSLEngine getEngine() {
         return engine;
+    }
+
+    /**
+     * Returns the handshake status.
+     * 
+     * @return The handshake status.
+     */
+    protected SSLEngineResult.HandshakeStatus getHandshakeStatus() {
+        return handshakeStatus;
     }
 
     /**
@@ -142,11 +157,6 @@ public class SslManager {
      */
     public SslState getState() {
         return state;
-    }
-
-    @Override
-    public String toString() {
-        return getState() + " | " + getEngine();
     }
 
     /**
@@ -193,6 +203,17 @@ public class SslManager {
     }
 
     /**
+     * Sets the handshake status.
+     * 
+     * @param handshakeStatus
+     *            The handshake status.
+     */
+    protected void setHandshakeStatus(
+            SSLEngineResult.HandshakeStatus handshakeStatus) {
+        this.handshakeStatus = handshakeStatus;
+    }
+
+    /**
      * Sets the peer address.
      * 
      * @param peerAddress
@@ -210,6 +231,11 @@ public class SslManager {
      */
     public void setState(SslState state) {
         this.state = state;
+    }
+
+    @Override
+    public String toString() {
+        return getState() + " | " + getEngine();
     }
 
 }

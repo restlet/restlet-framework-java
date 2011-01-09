@@ -32,12 +32,16 @@ package org.restlet.ext.ssl.internal;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+
+import javax.net.ssl.SSLSession;
 
 import org.restlet.Connector;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.ConnectionController;
 import org.restlet.engine.connector.ConnectionHelper;
+import org.restlet.engine.io.ReadableBufferedChannel;
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.engine.io.WritableSelectionChannel;
 
@@ -87,8 +91,18 @@ public class SslConnection<T extends Connector> extends Connection<T> {
 
     @Override
     protected ReadableSelectionChannel createReadableSelectionChannel() {
-        return new ReadableSslChannel(super.createReadableSelectionChannel(),
-                getSslManager(), this);
+        if (getSslManager() != null) {
+            SSLSession session = getSslManager().getSession();
+            int packetSize = session.getPacketBufferSize();
+            ByteBuffer packetBuffer = createByteBuffer(packetSize);
+            packetBuffer.flip();
+            ReadableBufferedChannel rbc = new ReadableBufferedChannel(
+                    getInboundWay(), packetBuffer,
+                    super.createReadableSelectionChannel());
+            return new ReadableSslChannel(rbc, getSslManager(), this);
+        } else {
+            return null;
+        }
     }
 
     @Override

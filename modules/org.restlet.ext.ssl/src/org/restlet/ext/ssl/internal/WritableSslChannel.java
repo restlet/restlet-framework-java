@@ -35,6 +35,7 @@ import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
 import javax.net.ssl.SSLEngineResult;
+import javax.net.ssl.SSLSession;
 
 import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.IoState;
@@ -51,6 +52,12 @@ import org.restlet.engine.io.WritableSelectionChannel;
 public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
         implements WritableSelectionChannel {
 
+    /** The packet byte buffer. */
+    private volatile ByteBuffer packetBuffer;
+
+    /** The packet buffer state. */
+    private volatile BufferState packetBufferState;
+
     /**
      * Constructor.
      * 
@@ -64,6 +71,16 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
     public WritableSslChannel(WritableSelectionChannel wrappedChannel,
             SslManager manager, SslConnection<?> connection) {
         super(wrappedChannel, manager, connection);
+
+        if (manager != null) {
+            SSLSession session = manager.getSession();
+            int packetSize = session.getPacketBufferSize();
+            this.packetBuffer = getConnection().createByteBuffer(packetSize);
+        } else {
+            this.packetBuffer = null;
+        }
+
+        this.packetBufferState = BufferState.FILLING;
     }
 
     /**
@@ -76,20 +93,40 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
         int result = 0;
 
         if (getPacketBufferState() == BufferState.DRAINING) {
-            result = getWrappedChannel().write(getPacketBuffer());
+            if (getWrappedChannel().isOpen()) {
+                result = getWrappedChannel().write(getPacketBuffer());
 
-            if (getConnection().getLogger().isLoggable(Level.INFO)) {
-                getConnection().getLogger().log(Level.INFO,
-                        "Packet bytes written: " + result);
-            }
+                if (getConnection().getLogger().isLoggable(Level.INFO)) {
+                    getConnection().getLogger().log(Level.INFO,
+                            "Packet bytes written: " + result);
+                }
 
-            if (getPacketBuffer().remaining() == 0) {
-                setPacketBufferState(BufferState.FILLING);
-                getPacketBuffer().clear();
+                if (getPacketBuffer().remaining() == 0) {
+                    setPacketBufferState(BufferState.FILLING);
+                    getPacketBuffer().clear();
+                }
             }
         }
 
         return result;
+    }
+
+    /**
+     * Returns the SSL/TLS packet byte buffer.
+     * 
+     * @return The SSL/TLS packet byte buffer.
+     */
+    protected ByteBuffer getPacketBuffer() {
+        return packetBuffer;
+    }
+
+    /**
+     * Returns the byte buffer state.
+     * 
+     * @return The byte buffer state.
+     */
+    protected BufferState getPacketBufferState() {
+        return packetBufferState;
     }
 
     @Override
@@ -121,6 +158,16 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
     }
 
     /**
+     * Sets the buffer state.
+     * 
+     * @param bufferState
+     *            The buffer state.
+     */
+    protected void setPacketBufferState(BufferState bufferState) {
+        this.packetBufferState = bufferState;
+    }
+
+    /**
      * Writes the available bytes to the wrapped channel by wrapping them with
      * the SSL/TLS protocols.
      * 
@@ -130,6 +177,10 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
      */
     public int write(ByteBuffer src) throws IOException {
         int result = 0;
+
+        if (getManager().getState() == SslState.READING_APPLICATION_DATA) {
+            getManager().setState(SslState.WRITING_APPLICATION_DATA);
+        }
 
         // If the packet buffer isn't empty, first try to flush it
         flush();
