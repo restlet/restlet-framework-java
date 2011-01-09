@@ -55,6 +55,9 @@ public class SslManager {
     /** The engine to use for wrapping and unwrapping. */
     private volatile SSLEngine engine;
 
+    /** The engine status. */
+    private volatile SSLEngineResult.Status engineStatus;
+
     /** The handshake status. */
     private volatile SSLEngineResult.HandshakeStatus handshakeStatus;
 
@@ -82,6 +85,7 @@ public class SslManager {
         this.peerAddress = peerAddress;
         this.clientSide = clientSide;
         this.state = SslState.IDLE;
+        this.engineStatus = SSLEngineResult.Status.OK;
         this.handshakeStatus = HandshakeStatus.NOT_HANDSHAKING;
         initEngine();
     }
@@ -112,6 +116,15 @@ public class SslManager {
      */
     public SSLEngine getEngine() {
         return engine;
+    }
+
+    /**
+     * Returns the engine status.
+     * 
+     * @return The engine status.
+     */
+    protected SSLEngineResult.Status getEngineStatus() {
+        return engineStatus;
     }
 
     /**
@@ -200,6 +213,16 @@ public class SslManager {
      */
     public void setEngine(SSLEngine engine) {
         this.engine = engine;
+    }
+
+    /**
+     * Sets the engine status.
+     * 
+     * @param engineStatus
+     *            The engine status.
+     */
+    protected void setEngineStatus(SSLEngineResult.Status engineStatus) {
+        this.engineStatus = engineStatus;
     }
 
     /**

@@ -36,6 +36,7 @@ import java.util.logging.Level;
 
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
+import javax.net.ssl.SSLEngineResult.Status;
 
 import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.Drainer;
@@ -84,8 +85,14 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
                 && (getConnection().getInboundWay().getIoState() != IoState.IDLE);
     }
 
+    /**
+     * Indicates if draining can be retried.
+     * 
+     * @return True if draining can be retried.
+     */
     public boolean canRetry(int lastRead, ByteBuffer targetBuffer) {
-        return ((lastRead > 0) || ((getManager().getState() == SslState.HANDSHAKING) && (getManager()
+        return ((lastRead > 0) || ((getManager().getState() == SslState.HANDSHAKING)
+                && (getManager().getEngineStatus() == Status.OK) && (getManager()
                 .getHandshakeStatus() == HandshakeStatus.NEED_UNWRAP)))
                 && targetBuffer.hasRemaining();
     }

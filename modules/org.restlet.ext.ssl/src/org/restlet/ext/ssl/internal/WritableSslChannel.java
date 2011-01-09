@@ -130,6 +130,13 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
     }
 
     @Override
+    protected void onDelegatedTasksCompleted() {
+        if (getConnection().getOutboundWay().getIoState() == IoState.IDLE) {
+            getConnection().getOutboundWay().setIoState(IoState.INTEREST);
+        }
+    }
+
+    @Override
     protected SSLEngineResult runEngine(ByteBuffer applicationBuffer)
             throws IOException {
         SSLEngineResult result = null;
