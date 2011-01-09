@@ -133,6 +133,13 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
         return getWrappedChannel().getByteBufferState();
     }
 
+    @Override
+    protected void onDelegatedTasksCompleted() {
+        if (getConnection().getInboundWay().getIoState() == IoState.IDLE) {
+            getConnection().getInboundWay().setIoState(IoState.INTEREST);
+        }
+    }
+
     /**
      * Reads the available bytes from the wrapped channel to the destination
      * buffer while unwrapping them with the SSL/TLS protocols.

@@ -128,8 +128,6 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      */
     protected void handleHandshake(SSLEngineResult sslResult,
             ByteBuffer applicationBuffer) {
-        // Store the handshake status
-        getManager().setHandshakeStatus(sslResult.getHandshakeStatus());
 
         // Handle the status
         switch (sslResult.getHandshakeStatus()) {
@@ -167,6 +165,12 @@ public abstract class SslChannel<T extends SelectionChannel> extends
             ByteBuffer applicationBuffer) {
         if (sslResult != null) {
             log(sslResult);
+
+            // Store the engine status
+            getManager().setEngineStatus(sslResult.getStatus());
+
+            // Store the handshake status
+            getManager().setHandshakeStatus(sslResult.getHandshakeStatus());
 
             switch (sslResult.getStatus()) {
             case BUFFER_OVERFLOW:
@@ -208,7 +212,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The SSL engine result.
      */
     protected void onBufferOverflow(SSLEngineResult sslResult) {
-        getLogger().log(Level.WARNING, "SSL buffer overflow: " + sslResult);
+        getLogger().log(Level.WARNING, "SSL buffer overflow");
     }
 
     /**
@@ -218,7 +222,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The SSL engine result.
      */
     protected void onBufferUnderflow(SSLEngineResult sslResult) {
-        getLogger().log(Level.WARNING, "SSL buffer underflow: " + sslResult);
+        getLogger().log(Level.WARNING, "SSL buffer underflow");
     }
 
     /**
@@ -232,7 +236,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      */
     protected void onClosed(SSLEngineResult sslResult,
             ByteBuffer applicationBuffer) {
-        getLogger().log(Level.INFO, "SSL manager closing: " + sslResult);
+        getLogger().log(Level.INFO, "SSL engine closed");
         getManager().setState(SslState.CLOSED);
         getConnection().close(true);
         handleHandshake(sslResult, applicationBuffer);
@@ -246,7 +250,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The SSL engine result.
      */
     protected void onHandshakeFinished(SSLEngineResult sslResult) {
-        getLogger().log(Level.INFO, "SSL handshake finished: " + sslResult);
+        getLogger().log(Level.INFO, "SSL handshake finished");
 
         if (getManager().getState() == SslState.HANDSHAKING) {
             if (getManager().isClientSide()) {
@@ -276,9 +280,14 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The related application data buffer.
      */
     protected void onOk(SSLEngineResult sslResult, ByteBuffer applicationBuffer) {
-        getLogger().log(Level.INFO, "SSL OK: " + sslResult);
+        getLogger().log(Level.INFO, "SSL OK. Handle ");
         handleHandshake(sslResult, applicationBuffer);
     }
+
+    /**
+     * Called back when the delegated tasks have been run.
+     */
+    protected abstract void onDelegatedTasksCompleted();
 
     /**
      * Unwraps packet data into handshake or application data. Need to read
@@ -346,7 +355,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
                     .execute(new Runnable() {
                         public void run() {
                             getLogger().log(Level.INFO,
-                                    "Running delegated task...");
+                                    "Running delegated tasks...");
                             task.run();
 
                             // Check if a next task is pending
@@ -360,19 +369,9 @@ public abstract class SslChannel<T extends SelectionChannel> extends
                                         .getDelegatedTask();
                             }
 
-                            // Run the engine again to change its state
-                            try {
-                                handleResult(runEngine(applicationBuffer),
-                                        applicationBuffer);
-                            } catch (IOException e) {
-                                getLogger().log(Level.FINE,
-                                        "Unable to run SSL engine", e);
-                            }
-
-                            getLogger().log(
-                                    Level.INFO,
-                                    "Done running delegated tasks for this connection: "
-                                            + getConnection());
+                            onDelegatedTasksCompleted();
+                            getLogger().log(Level.INFO,
+                                    "Done running delegated tasks");
                         }
                     });
         }
