@@ -155,6 +155,27 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
         if (getLogger().isLoggable(Level.INFO)) {
             getLogger().log(Level.INFO,
                     "Unwrapping bytes with: " + getPacketBuffer());
+
+            getLogger().log(
+                    Level.INFO,
+                    "Application buffer suggested size: "
+                            + getManager().getEngine().getSession()
+                                    .getApplicationBufferSize());
+            getLogger().log(
+                    Level.INFO,
+                    "Packet buffer suggested size: "
+                            + getManager().getEngine().getSession()
+                                    .getPacketBufferSize());
+            getLogger().log(
+                    Level.INFO,
+                    "Application buffer remaining size: "
+                            + applicationBuffer.remaining() + "/"
+                            + applicationBuffer.capacity());
+            getLogger().log(
+                    Level.INFO,
+                    "Packet buffer remaining size: "
+                            + getPacketBuffer().remaining() + "/"
+                            + getPacketBuffer().capacity());
         }
 
         SSLEngineResult result = getManager().getEngine().unwrap(

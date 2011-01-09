@@ -234,6 +234,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
             ByteBuffer applicationBuffer) {
         getLogger().log(Level.INFO, "SSL manager closing: " + sslResult);
         getManager().setState(SslState.CLOSED);
+        getConnection().close(true);
         handleHandshake(sslResult, applicationBuffer);
     }
 

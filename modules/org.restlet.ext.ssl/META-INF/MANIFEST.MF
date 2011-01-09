@@ -4,7 +4,8 @@ Bundle-Name: Restlet Extension - SSL support
 Bundle-SymbolicName: org.restlet.ext.ssl
 Bundle-Version: 2.1
 Bundle-Vendor: Noelios Technologies
-Export-Package: org.restlet.ext.ssl
+Export-Package: org.restlet.ext.ssl,
+ org.restlet.ext.ssl.internal
 Import-Package: org.jsslutils.keystores,
  org.jsslutils.sslcontext,
  org.jsslutils.sslcontext.keymanagers,

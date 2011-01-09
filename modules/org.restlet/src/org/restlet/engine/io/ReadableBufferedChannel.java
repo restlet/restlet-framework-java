@@ -189,11 +189,13 @@ public class ReadableBufferedChannel extends
                 case FILLING:
                     int refillCount = refill();
 
-                    if (refillCount == -1) {
+                    if (refillCount > 0) {
+                        tryAgain = true;
+                    } else if (refillCount == -1) {
                         result = -1;
                         tryAgain = false;
-                    } else if (refillCount > 0) {
-                        tryAgain = true;
+                    } else if (refillCount == 0) {
+                        tryAgain = false;
                     }
                     break;
                 }
