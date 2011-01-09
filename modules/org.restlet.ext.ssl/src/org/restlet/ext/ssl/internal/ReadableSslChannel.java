@@ -160,6 +160,12 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
             getManager().setState(SslState.READING_APPLICATION_DATA);
         }
 
+        if ((getManager().getEngineStatus() == Status.BUFFER_UNDERFLOW)
+                && (getPacketBufferState() == BufferState.DRAINING)) {
+            setPacketBufferState(BufferState.FILLING);
+            getPacketBuffer().flip();
+        }
+
         return getWrappedChannel().read(targetBuffer, this);
     }
 

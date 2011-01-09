@@ -245,6 +245,7 @@ public abstract class InboundWay extends Way {
                         // End of connection detected
                         getConnection().close(true);
                         setIoState(IoState.IDLE);
+                        setMessageState(MessageState.IDLE);
                     } else {
                         while (isProcessing() && getByteBuffer().hasRemaining()) {
                             // Bytes are available in the buffer
