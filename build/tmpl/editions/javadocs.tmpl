@@ -1,4 +1,4 @@
-﻿JAVADOC target -->
+JAVADOC target -->
 <#noparse>
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
 			<fileset dir="${docs-api}" excludes="**/.svn" />
@@ -58,7 +58,7 @@
 			${link}
 </#list>
 <#noparse>
-		    <link href="http://www.restlet.org/documentation/${version-minor}/${edition.id}/api/" packagelistLoc="${docs-api}" offline="true" />
+		    <link href="http://www.restlet.org/documentation/${version-minor}/${edition}/api/" packagelistLoc="${docs-api}" offline="true" />
 		</javadoc>
 </#noparse>
 
@@ -101,8 +101,8 @@
    </#list>
 </#list>
 <#noparse>
-		    <link href="http://www.restlet.org/documentation/${version-minor}/${edition.id}/api/" packagelistLoc="${docs-api}" offline="true" />
-		    <link href="http://www.restlet.org/documentation/${version-minor}/${edition.id}/engine/" packagelistLoc="${docs-engine}" offline="true" />
+		    <link href="http://www.restlet.org/documentation/${version-minor}/${edition}/api/" packagelistLoc="${docs-api}" offline="true" />
+		    <link href="http://www.restlet.org/documentation/${version-minor}/${edition}/engine/" packagelistLoc="${docs-engine}" offline="true" />
 		</javadoc>
 </#noparse>
 </#if>
