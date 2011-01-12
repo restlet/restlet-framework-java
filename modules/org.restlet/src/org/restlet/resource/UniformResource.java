@@ -726,6 +726,11 @@ public abstract class UniformResource {
             org.restlet.service.ConverterService cs = getConverterService();
             result = cs.toRepresentation(source, target, this);
             // [enddef]
+            // [ifdef gwt] uncomment
+            // if (source instanceof Representation) {
+            // result = (Representation) source;
+            // }
+            // [enddef]
         }
 
         return result;
