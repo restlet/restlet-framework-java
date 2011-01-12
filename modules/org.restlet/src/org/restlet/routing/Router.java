@@ -77,26 +77,33 @@ public class Router extends Restlet {
 
     /**
      * Each call will be routed to the route with the best score, if the
-     * required score is reached.
+     * required score is reached. See
+     * {@link RouteList#getBest(Request, Response, float)} method for
+     * implementation details.
      */
     public static final int MODE_BEST_MATCH = 1;
 
     /**
-     * Each call will be routed according to a custom mode.
+     * Each call will be routed according to a custom mode. Override the
+     * {@link #getCustom(Request, Response)} method to provide your own logic.
      */
     public static final int MODE_CUSTOM = 6;
 
     /**
      * Each call is routed to the first route if the required score is reached.
      * If the required score is not reached, then the route is skipped and the
-     * next one is considered.
+     * next one is considered. See
+     * {@link RouteList#getFirst(Request, Response, float)} method for
+     * implementation details.
      */
     public static final int MODE_FIRST_MATCH = 2;
 
     /**
      * Each call will be routed to the last route if the required score is
      * reached. If the required score is not reached, then the route is skipped
-     * and the previous one is considered.
+     * and the previous one is considered. See
+     * {@link RouteList#getLast(Request, Response, float)} method for
+     * implementation details.
      */
     public static final int MODE_LAST_MATCH = 3;
 
@@ -105,7 +112,9 @@ public class Router extends Restlet {
      * reached. The next route is relative to the previous call routed (round
      * robin mode). If the required score is not reached, then the route is
      * skipped and the next one is considered. If the last route is reached, the
-     * first route will be considered.
+     * first route will be considered. See
+     * {@link RouteList#getNext(Request, Response, float)} method for
+     * implementation details.
      */
     public static final int MODE_NEXT_MATCH = 4;
 
@@ -114,7 +123,10 @@ public class Router extends Restlet {
      * required score. If the random route selected is not a match then the
      * immediate next route is evaluated until one matching route is found. If
      * we get back to the initial random route selected with no match, then we
-     * return null.
+     * return null. Unless all the routes score above the required score, this
+     * mode will result in non uniform distribution of calls. See
+     * {@link RouteList#getRandom(Request, Response, float)} method for
+     * implementation details.
      */
     public static final int MODE_RANDOM_MATCH = 5;
 

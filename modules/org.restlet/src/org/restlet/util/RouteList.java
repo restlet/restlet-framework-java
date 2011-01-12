@@ -182,7 +182,9 @@ public final class RouteList extends WrapperList<Route> {
     }
 
     /**
-     * Returns a random route match for a given call.
+     * Returns a random route match for a given call. Note that the current
+     * implementation doesn't uniformly return routes unless they all score
+     * above the required score.
      * 
      * @param request
      *            The request to score.
