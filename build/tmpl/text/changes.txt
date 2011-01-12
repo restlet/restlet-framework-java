@@ -3,14 +3,17 @@
 Changes log  
 ===========
 
-- 2.0.4 (2010-12-24)
+- @version-full@ (@release-date@)
     - Bugs fixed
        - Fixed bug in virtual host router that was failing if no host 
          URI was set. Now falls back to the host part of the resource URI.
        - Fixed handling of "EDM Single" properties.
          Reported by Andreas Taube.  
+       - Fixed ClientResource#put(Object,MediaType) and 
+         #post(Object,MediaType) methods of the GWT edition.
+         Reported by Charlie Mason.
  
-- @version-full@ (@release-date@)
+- 2.0.4 (2010-12-24)
     - Bugs fixed
 	   - Extension headers on responses were now supported by the
 	     JAX-RS extension. Reported by Jim Stabile and fix suggested
