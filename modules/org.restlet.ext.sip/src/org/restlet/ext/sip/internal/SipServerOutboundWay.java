@@ -30,6 +30,7 @@
 
 package org.restlet.ext.sip.internal;
 
+import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.engine.connector.Connection;
@@ -169,6 +170,12 @@ public class SipServerOutboundWay extends ServerOutboundWay {
         }
 
         super.addResponseHeaders(headers);
+    }
+
+    @Override
+    protected void handle(Response response) {
+        // TODO Auto-generated method stub
+
     }
 
 }

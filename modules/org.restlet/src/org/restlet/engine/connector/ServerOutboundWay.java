@@ -47,7 +47,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class ServerOutboundWay extends OutboundWay {
+public abstract class ServerOutboundWay extends OutboundWay {
 
     /**
      * Constructor.
@@ -146,23 +146,6 @@ public class ServerOutboundWay extends OutboundWay {
 
     @Override
     public void onCompleted(boolean endDetected) {
-        getMessages().remove(getMessage());
-
-        if (!getMessage().getStatus().isInformational()) {
-            // Attempt to read additional inbound messages
-            Response inboundMessage = getConnection().getInboundWay()
-                    .getMessages().peek();
-
-            if (inboundMessage.getRequest() == getMessage().getRequest()) {
-                // As we are supporting provisional responses and
-                // asynchronous responses, it is possible that the final
-                // response object is not the original one blocked in the
-                // inbound queue
-                getConnection().getInboundWay().getMessages()
-                        .remove(inboundMessage);
-            }
-        }
-
         // Check if we need to close the connection
         if (!getConnection().isPersistent()
                 || HeaderUtils.isConnectionClose(getHeaders())) {

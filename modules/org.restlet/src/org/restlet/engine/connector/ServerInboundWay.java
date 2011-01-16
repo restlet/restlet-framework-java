@@ -45,7 +45,7 @@ import org.restlet.representation.Representation;
  * 
  * @author Jerome Louvel
  */
-public class ServerInboundWay extends InboundWay {
+public abstract class ServerInboundWay extends InboundWay {
 
     /**
      * Constructor.
@@ -75,6 +75,24 @@ public class ServerInboundWay extends InboundWay {
         return (ServerConnectionHelper) super.getHelper();
     }
 
+    /**
+     * Call back invoked when the message is received.
+     * 
+     * @param message
+     *            The new message received.
+     */
+    protected void onReceived(Response message) {
+        if (message.getRequest() != null) {
+            // Add it to the helper queue
+            getHelper().getInboundMessages().add(message);
+
+            if (!message.getRequest().isEntityAvailable()) {
+                // The request has been completely read
+                onCompleted(false);
+            }
+        }
+    }
+
     @Override
     protected void onReceived() {
         InboundRequest request = (InboundRequest) getMessage().getRequest();
@@ -99,20 +117,8 @@ public class ServerInboundWay extends InboundWay {
         getMessage().getServerInfo().setPort(
                 getConnection().getHelper().getHelped().getPort());
 
-        if (request != null) {
-            if (getMessage().getRequest().isExpectingResponse()) {
-                // Add it to the inbound queue
-                getMessages().add(getMessage());
-            }
-
-            // Add it to the helper queue
-            getHelper().getInboundMessages().add(getMessage());
-        }
-
-        if (!getMessage().getRequest().isEntityAvailable()) {
-            // The request has been completely read
-            onCompleted(false);
-        }
+        // Continue the processing of the new response received
+        onReceived(getMessage());
     }
 
     @Override
@@ -190,16 +196,9 @@ public class ServerInboundWay extends InboundWay {
 
     @Override
     public void updateState() {
-        if (getIoState() == IoState.IDLE) {
-            if (getConnection().isPipelining()) {
-                // Read the next request
-                setIoState(IoState.INTEREST);
-            } else if (getMessages().isEmpty()
-                    && (getConnection().getOutboundWay().getMessages()
-                            .isEmpty())) {
-                // Read the next request
-                setIoState(IoState.INTEREST);
-            }
+        if ((getIoState() == IoState.IDLE) && getConnection().isPipelining()) {
+            // Read the next request
+            setIoState(IoState.INTEREST);
         }
 
         // Update the registration

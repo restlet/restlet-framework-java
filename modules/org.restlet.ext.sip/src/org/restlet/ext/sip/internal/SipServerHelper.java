@@ -50,19 +50,6 @@ import org.restlet.ext.sip.SipResponse;
  */
 public class SipServerHelper extends ServerConnectionHelper {
 
-    @Override
-    protected Request createRequest(Connection<Server> connection,
-            String methodName, String resourceUri, String version) {
-
-        SipInboundRequest request = new SipInboundRequest(getContext(),
-                connection, methodName, resourceUri, version);
-
-        // The via header is linked with the sipRecipientsInfo attribute, due to
-        // distinct formats.
-        request.setRecipientsInfo(new ArrayList<RecipientInfo>());
-        return request;
-    }
-
     /**
      * Constructor.
      * 
@@ -75,6 +62,11 @@ public class SipServerHelper extends ServerConnectionHelper {
     }
 
     @Override
+    protected boolean canHandle(Connection<Server> connection, Response response) {
+        return true;
+    }
+
+    @Override
     public ServerInboundWay createInboundWay(Connection<Server> connection,
             int bufferSize) {
         return new SipServerInboundWay(connection, bufferSize);
@@ -84,6 +76,19 @@ public class SipServerHelper extends ServerConnectionHelper {
     public OutboundWay createOutboundWay(Connection<Server> connection,
             int bufferSize) {
         return new SipServerOutboundWay(connection, bufferSize);
+    }
+
+    @Override
+    protected Request createRequest(Connection<Server> connection,
+            String methodName, String resourceUri, String version) {
+
+        SipInboundRequest request = new SipInboundRequest(getContext(),
+                connection, methodName, resourceUri, version);
+
+        // The via header is linked with the sipRecipientsInfo attribute, due to
+        // distinct formats.
+        request.setRecipientsInfo(new ArrayList<RecipientInfo>());
+        return request;
     }
 
     @Override

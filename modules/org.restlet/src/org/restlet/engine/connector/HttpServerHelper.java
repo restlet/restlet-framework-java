@@ -30,6 +30,7 @@
 
 package org.restlet.engine.connector;
 
+import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
@@ -47,20 +48,43 @@ public class HttpServerHelper extends ServerConnectionHelper {
      *            The server to help.
      */
     public HttpServerHelper(Server server) {
+        this(server, Protocol.HTTP);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param server
+     *            The server to help.
+     * @param protocol
+     *            The protocol supported.
+     */
+    public HttpServerHelper(Server server, Protocol protocol) {
         super(server);
-        getProtocols().add(Protocol.HTTP);
+        getProtocols().add(protocol);
+    }
+
+    @Override
+    protected boolean canHandle(Connection<Server> connection, Response response) {
+        // Check if the response is indeed the next one to be written
+        // for this connection
+        HttpServerInboundWay inboundWay = (HttpServerInboundWay) connection
+                .getInboundWay();
+        Response nextResponse = inboundWay.getMessages().peek();
+        return (nextResponse != null)
+                && (nextResponse.getRequest() == response.getRequest());
     }
 
     @Override
     public ServerInboundWay createInboundWay(Connection<Server> connection,
             int bufferSize) {
-        return new ServerInboundWay(connection, bufferSize);
+        return new HttpServerInboundWay(connection, bufferSize);
     }
 
     @Override
     public OutboundWay createOutboundWay(Connection<Server> connection,
             int bufferSize) {
-        return new ServerOutboundWay(connection, bufferSize);
+        return new HttpServerOutboundWay(connection, bufferSize);
     }
 
 }

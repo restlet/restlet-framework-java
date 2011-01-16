@@ -126,7 +126,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
         this.connections = new CopyOnWriteArraySet<Connection<T>>();
         this.connectionPool = null;
     }
-
+    
     /**
      * Checks in the connection back into the pool.
      * 

@@ -40,10 +40,11 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.ConnectionController;
+import org.restlet.engine.connector.HttpServerHelper;
+import org.restlet.engine.connector.HttpServerInboundWay;
+import org.restlet.engine.connector.HttpServerOutboundWay;
 import org.restlet.engine.connector.OutboundWay;
-import org.restlet.engine.connector.ServerConnectionHelper;
 import org.restlet.engine.connector.ServerInboundWay;
-import org.restlet.engine.connector.ServerOutboundWay;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.ext.ssl.internal.SslConnection;
@@ -54,7 +55,7 @@ import org.restlet.ext.ssl.internal.SslManager;
  * 
  * @author Jerome Louvel
  */
-public class HttpsServerHelper extends ServerConnectionHelper {
+public class HttpsServerHelper extends HttpServerHelper {
 
     /** The SSL context. */
     private volatile SSLContext sslContext;
@@ -66,8 +67,7 @@ public class HttpsServerHelper extends ServerConnectionHelper {
      *            The server to help.
      */
     public HttpsServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.HTTPS);
+        super(server, Protocol.HTTPS);
     }
 
     @Override
@@ -82,13 +82,13 @@ public class HttpsServerHelper extends ServerConnectionHelper {
     @Override
     public ServerInboundWay createInboundWay(Connection<Server> connection,
             int bufferSize) {
-        return new ServerInboundWay(connection, bufferSize);
+        return new HttpServerInboundWay(connection, bufferSize);
     }
 
     @Override
     public OutboundWay createOutboundWay(Connection<Server> connection,
             int bufferSize) {
-        return new ServerOutboundWay(connection, bufferSize);
+        return new HttpServerOutboundWay(connection, bufferSize);
     }
 
     /**

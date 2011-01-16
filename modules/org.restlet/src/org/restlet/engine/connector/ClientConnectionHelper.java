@@ -58,7 +58,6 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.io.IoState;
 
 /**
  * Base client helper based on NIO non blocking sockets. Here is the list of
@@ -429,7 +428,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
         // Try to reuse an existing connection for the same host and
         // port
         int hostConnectionCount = 0;
-        int bestCount = 0;
+        int bestScore = 0;
         boolean foundConn = false;
 
         // Determine the target host domain and port of the request.
@@ -447,19 +446,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                 Connection<Client> currConn = iterator.next();
 
                 if (socketAddress.equals(currConn.getSocketAddress())) {
-                    if (currConn.isPersistent()
-                            && currConn.getState().equals(ConnectionState.OPEN)
-                            && currConn.getInboundWay().getMessageState()
-                                    .equals(MessageState.IDLE)
-                            && currConn.getInboundWay().getIoState()
-                                    .equals(IoState.IDLE)
-                            && currConn.getInboundWay().getMessages().isEmpty()
-                            && currConn.getOutboundWay().getMessageState()
-                                    .equals(MessageState.IDLE)
-                            && currConn.getOutboundWay().getIoState()
-                                    .equals(IoState.IDLE)
-                            && currConn.getOutboundWay().getMessages()
-                                    .isEmpty()) {
+                    if (currConn.isReady()) {
                         result = currConn;
                         foundConn = true;
                     } else {
@@ -468,11 +455,10 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                         // in case the maximum number of connections has been
                         // reached. As a drawback, the message will only be
                         // handled as soon as possible.
-                        int currCount = currConn.getOutboundWay().getMessages()
-                                .size();
+                        int currScore = currConn.getLoadScore();
 
-                        if (bestCount > currCount) {
-                            bestCount = currCount;
+                        if (bestScore > currScore) {
+                            bestScore = currScore;
                             result = currConn;
                         }
 
@@ -827,7 +813,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                         .getRequest());
 
                 if (bestConn != null) {
-                    bestConn.getOutboundWay().getMessages().add(response);
+                    bestConn.getOutboundWay().handle(response);
                     getConnections().add(bestConn);
                 } else {
                     getLogger().log(Level.WARNING,

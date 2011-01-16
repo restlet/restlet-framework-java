@@ -30,6 +30,13 @@
 
 package org.restlet.engine.connector;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.Status;
+import org.restlet.engine.io.IoState;
 
 /**
  * HTTP client outbound way.
@@ -37,6 +44,9 @@ package org.restlet.engine.connector;
  * @author Jerome Louvel
  */
 public class HttpClientOutboundWay extends ClientOutboundWay {
+
+    /** The queue of messages. */
+    private final Queue<Response> messages;
 
     /**
      * Constructor.
@@ -48,6 +58,82 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
      */
     public HttpClientOutboundWay(Connection<?> connection, int bufferSize) {
         super(connection, bufferSize);
+        this.messages = new ConcurrentLinkedQueue<Response>();
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        this.messages.clear();
+    }
+
+    @Override
+    public int getLoadScore() {
+        return getMessages().size();
+    }
+
+    /**
+     * Returns the queue of messages.
+     * 
+     * @return The queue of messages.
+     */
+    public Queue<Response> getMessages() {
+        return messages;
+    }
+
+    @Override
+    protected void handle(Response response) {
+        getMessages().add(response);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return super.isEmpty() && getMessages().isEmpty();
+    }
+
+    @Override
+    public void onCompleted(boolean endDetected) {
+        Response message = getMessage();
+
+        if (message != null) {
+            Request request = message.getRequest();
+            Queue<Response> inboundMessages = ((HttpClientInboundWay) getConnection()
+                    .getInboundWay()).getMessages();
+
+            // The request has been written
+            getMessages().remove(message);
+
+            if (request.isExpectingResponse()) {
+                inboundMessages.add(message);
+            }
+        }
+
+        super.onCompleted(endDetected);
+    }
+
+    @Override
+    public void onError(Status status) {
+        for (Response rsp : getMessages()) {
+            if (rsp != getMessage()) {
+                getMessages().remove(rsp);
+                getHelper().onError(status, rsp);
+            }
+        }
+
+        getHelper().onError(status, getMessage());
+    }
+
+    @Override
+    public void updateState() {
+        // Update the IO state if necessary
+        if ((getIoState() == IoState.IDLE) && !getMessages().isEmpty()) {
+            if (getMessage() == null) {
+                setIoState(IoState.INTEREST);
+                setMessage(getMessages().peek());
+            }
+        }
+
+        super.updateState();
     }
 
 }

@@ -93,6 +93,20 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
         getAttributes().put("ephemeralPort", -1);
     }
 
+    /**
+     * Indicates if the connection can handle the given response at this point
+     * in time.
+     * 
+     * @param connection
+     *            The parent connection.
+     * @param response
+     *            The response to handle.
+     * @return True if the connection can handle the given response at this
+     *         point in time.
+     */
+    protected abstract boolean canHandle(Connection<Server> connection,
+            Response response);
+
     @Override
     protected Connection<Server> createConnection(SocketChannel socketChannel,
             ConnectionController controller, InetSocketAddress socketAddress)
@@ -216,15 +230,9 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
             Connection<Server> connection = request.getConnection();
 
             if (response.getRequest().isExpectingResponse()) {
-                // Check if the response is indeed the next one to be written
-                // for this connection
-                Response nextResponse = connection.getInboundWay()
-                        .getMessages().peek();
-
-                if ((nextResponse != null)
-                        && (nextResponse.getRequest() == request)) {
+                if (canHandle(connection, response)) {
                     // Add the response to the outbound queue
-                    connection.getOutboundWay().getMessages().add(response);
+                    connection.getOutboundWay().handle(response);
                 } else {
                     // Put the response at the end of the queue
                     getOutboundMessages().add(response);
@@ -235,6 +243,8 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
             } else {
                 // The request expects no response, the connection is free to
                 // read a new request.
+                getLogger()
+                        .fine("A response for a request expecting no one was ignored");
             }
         }
     }

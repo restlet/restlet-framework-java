@@ -30,7 +30,13 @@
 
 package org.restlet.engine.connector;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.data.Status;
+import org.restlet.engine.io.IoState;
 
 /**
  * HTTP server outbound way.
@@ -38,6 +44,9 @@ import org.restlet.Server;
  * @author Jerome Louvel
  */
 public class HttpServerOutboundWay extends ServerOutboundWay {
+
+    /** The queue of messages. */
+    private final Queue<Response> messages;
 
     /**
      * Constructor.
@@ -49,6 +58,85 @@ public class HttpServerOutboundWay extends ServerOutboundWay {
      */
     public HttpServerOutboundWay(Connection<Server> connection, int bufferSize) {
         super(connection, bufferSize);
+        this.messages = new ConcurrentLinkedQueue<Response>();
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        this.messages.clear();
+    }
+
+    @Override
+    public int getLoadScore() {
+        return getMessages().size();
+    }
+
+    /**
+     * Returns the queue of messages.
+     * 
+     * @return The queue of messages.
+     */
+    public Queue<Response> getMessages() {
+        return messages;
+    }
+
+    @Override
+    protected void handle(Response response) {
+        getMessages().add(response);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return super.isEmpty() && getMessages().isEmpty();
+    }
+
+    @Override
+    public void onCompleted(boolean endDetected) {
+        getMessages().remove(getMessage());
+
+        if (!getMessage().getStatus().isInformational()) {
+            Queue<Response> inboundMessages = ((HttpServerInboundWay) getConnection()
+                    .getInboundWay()).getMessages();
+
+            // Attempt to read additional inbound messages
+            Response inboundMessage = inboundMessages.peek();
+
+            if (inboundMessage.getRequest() == getMessage().getRequest()) {
+                // As we are supporting provisional responses and
+                // asynchronous responses, it is possible that the final
+                // response object is not the original one blocked in the
+                // inbound queue
+                inboundMessages.remove(inboundMessage);
+            }
+        }
+
+        super.onCompleted(endDetected);
+    }
+
+    @Override
+    public void onError(Status status) {
+        for (Response rsp : getMessages()) {
+            if (rsp != getMessage()) {
+                getMessages().remove(rsp);
+                getHelper().onError(status, rsp);
+            }
+        }
+
+        getHelper().onError(status, getMessage());
+    }
+
+    @Override
+    public void updateState() {
+        // Update the IO state if necessary
+        if ((getIoState() == IoState.IDLE) && !getMessages().isEmpty()) {
+            if (getMessage() == null) {
+                setIoState(IoState.INTEREST);
+                setMessage(getMessages().peek());
+            }
+        }
+
+        super.updateState();
     }
 
 }

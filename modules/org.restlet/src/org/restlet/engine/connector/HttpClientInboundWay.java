@@ -31,8 +31,13 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.restlet.Client;
+import org.restlet.Response;
+import org.restlet.data.Status;
+import org.restlet.engine.io.IoState;
 
 /**
  * HTTP client inbound way.
@@ -40,6 +45,9 @@ import org.restlet.Client;
  * @author Jerome Louvel
  */
 public class HttpClientInboundWay extends ClientInboundWay {
+
+    /** The queue of messages. */
+    private final Queue<Response> messages;
 
     /**
      * Constructor.
@@ -52,6 +60,80 @@ public class HttpClientInboundWay extends ClientInboundWay {
      */
     public HttpClientInboundWay(Connection<Client> connection, int bufferSize) {
         super(connection, bufferSize);
+        this.messages = new ConcurrentLinkedQueue<Response>();
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        this.messages.clear();
+    }
+
+    @Override
+    protected Response createResponse(Status status) {
+        Response result = null;
+        Response finalResponse = getMessages().peek();
+
+        if (status.isInformational()) {
+            result = getHelper().createResponse(finalResponse.getRequest());
+        } else {
+            result = finalResponse;
+        }
+
+        return result;
+    }
+
+    @Override
+    public int getLoadScore() {
+        return getMessages().size();
+    }
+
+    /**
+     * Returns the queue of messages.
+     * 
+     * @return The queue of messages.
+     */
+    public Queue<Response> getMessages() {
+        return messages;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return getMessages().isEmpty();
+    }
+
+    @Override
+    public void onError(Status status) {
+        for (Response rsp : getMessages()) {
+            if (rsp != getMessage()) {
+                getMessages().remove(rsp);
+                getHelper().onError(status, rsp);
+            }
+        }
+
+        super.onError(status);
+    }
+
+    @Override
+    protected void onReceived(Response message) {
+        if (!message.getStatus().isInformational()) {
+            getMessages().poll();
+        }
+
+        super.onReceived(message);
+    }
+
+    @Override
+    public void updateState() {
+        if (getIoState() == IoState.IDLE) {
+            if (!getMessages().isEmpty()) {
+                // Read the next response
+                setIoState(IoState.INTEREST);
+            }
+        }
+
+        // Update the registration
+        super.updateState();
     }
 
 }

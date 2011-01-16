@@ -36,6 +36,7 @@ import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
@@ -222,6 +223,14 @@ public abstract class InboundWay extends Way {
                     .finer("Inbound message start line and headers received");
         }
     }
+
+    /**
+     * Call back invoked when the message is received.
+     * 
+     * @param message
+     *            The new message received.
+     */
+    protected abstract void onReceived(Response message);
 
     @Override
     public void onSelected(SelectionRegistration registration) {

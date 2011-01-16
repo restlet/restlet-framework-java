@@ -31,14 +31,13 @@
 package org.restlet.engine.connector;
 
 import java.nio.ByteBuffer;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Message;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
+import org.restlet.data.Status;
 import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.CompletionListener;
 import org.restlet.engine.io.IoState;
@@ -78,9 +77,6 @@ public abstract class Way implements SelectionListener, CompletionListener {
     /** The current message exchanged. */
     private volatile Response message;
 
-    /** The queue of messages. */
-    private final Queue<Response> messages;
-
     /** The message state. */
     private volatile MessageState messageState;
 
@@ -101,7 +97,6 @@ public abstract class Way implements SelectionListener, CompletionListener {
         this.byteBufferState = BufferState.FILLING;
         this.lineBuilder = new StringBuilder();
         this.lineBuilderState = BufferState.IDLE;
-        this.messages = new ConcurrentLinkedQueue<Response>();
         this.message = null;
         this.headers = null;
         this.messageState = MessageState.IDLE;
@@ -120,7 +115,6 @@ public abstract class Way implements SelectionListener, CompletionListener {
         this.ioState = IoState.IDLE;
         clearLineBuilder();
         this.message = null;
-        this.messages.clear();
         this.messageState = MessageState.IDLE;
     }
 
@@ -212,6 +206,16 @@ public abstract class Way implements SelectionListener, CompletionListener {
     }
 
     /**
+     * Returns a score representing the way load and that could be compared with
+     * other ways of the same parent connection.
+     * 
+     * @return A score representing the way load.
+     */
+    public int getLoadScore() {
+        return (getMessage() == null) ? 0 : 1;
+    }
+
+    /**
      * Returns the logger.
      * 
      * @return The logger.
@@ -227,15 +231,6 @@ public abstract class Way implements SelectionListener, CompletionListener {
      */
     protected Response getMessage() {
         return message;
-    }
-
-    /**
-     * Returns the queue of messages.
-     * 
-     * @return The queue of messages.
-     */
-    public Queue<Response> getMessages() {
-        return messages;
     }
 
     /**
@@ -266,6 +261,15 @@ public abstract class Way implements SelectionListener, CompletionListener {
     protected abstract int getSocketInterestOps();
 
     /**
+     * Indicates if the way is empty.
+     * 
+     * @return True if the way is empty.
+     */
+    public boolean isEmpty() {
+        return true;
+    }
+
+    /**
      * Indicates if the processing of the next message is possible.
      * 
      * @return True if the processing of the next message is possible.
@@ -274,6 +278,16 @@ public abstract class Way implements SelectionListener, CompletionListener {
         return (getConnection().getState() != ConnectionState.CLOSED)
                 && (getIoState() == IoState.PROCESSING)
                 && (getMessageState() != MessageState.IDLE);
+    }
+
+    /**
+     * Indicates if the way is ready to handle new messages.
+     * 
+     * @return True if the way is ready to handle new messages.
+     */
+    public boolean isReady() {
+        return getMessageState().equals(MessageState.IDLE)
+                && getIoState().equals(IoState.IDLE);
     }
 
     /**
@@ -288,6 +302,17 @@ public abstract class Way implements SelectionListener, CompletionListener {
         setMessageState(MessageState.IDLE);
         setMessage(null);
         setHeaders(null);
+    }
+
+    /**
+     * Called on error. By default, it calls {@link #close(boolean)} with a
+     * 'false' parameter.
+     * 
+     * @param status
+     *            The error status.
+     */
+    public void onError(Status status) {
+        getHelper().onError(status, getMessage());
     }
 
     /**

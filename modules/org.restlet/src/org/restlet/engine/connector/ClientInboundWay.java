@@ -50,7 +50,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class ClientInboundWay extends InboundWay {
+public abstract class ClientInboundWay extends InboundWay {
 
     /**
      * Constructor.
@@ -76,6 +76,15 @@ public class ClientInboundWay extends InboundWay {
             Response response) {
         HeaderUtils.copyResponseTransportHeaders(headers, response);
     }
+
+    /**
+     * Creates a response object for the given status.
+     * 
+     * @param status
+     *            The response status.
+     * @return The new response object.
+     */
+    protected abstract Response createResponse(Status status);
 
     /**
      * Returns the status corresponding to a given status code.
@@ -129,6 +138,20 @@ public class ClientInboundWay extends InboundWay {
     }
 
     @Override
+    protected void onReceived(Response message) {
+        // Add it to the helper queue
+        getHelper().getInboundMessages().add(getMessage());
+
+        if (getMessage().isEntityAvailable()) {
+            // Let's wait for the entity to be consumed by the caller
+            setIoState(IoState.IDLE);
+        } else {
+            // The response has been completely read
+            onCompleted(false);
+        }
+    }
+
+    @Override
     protected void onReceived() {
         // Update the response
         getMessage().setEntity(createEntity(getHeaders()));
@@ -146,20 +169,7 @@ public class ClientInboundWay extends InboundWay {
                     getHeaders());
         }
 
-        if (!getMessage().getStatus().isInformational()) {
-            getMessages().poll();
-        }
-
-        // Add it to the helper queue
-        getHelper().getInboundMessages().add(getMessage());
-
-        if (getMessage().isEntityAvailable()) {
-            // Let's wait for the entity to be consumed by the caller
-            setIoState(IoState.IDLE);
-        } else {
-            // The response has been completely read
-            onCompleted(false);
-        }
+        onReceived(getMessage());
     }
 
     @Override
@@ -226,16 +236,8 @@ public class ClientInboundWay extends InboundWay {
             }
 
             // Prepare the response
-            Response finalResponse = getMessages().peek();
-            Response response = null;
             Status status = createStatus(statusCode);
-
-            if (status.isInformational()) {
-                response = getHelper().createResponse(
-                        finalResponse.getRequest());
-            } else {
-                response = finalResponse;
-            }
+            Response response = createResponse(status);
 
             // Update the response
             response.setStatus(status, reasonPhrase);
@@ -250,19 +252,6 @@ public class ClientInboundWay extends InboundWay {
             setMessageState(MessageState.HEADERS);
             clearLineBuilder();
         }
-    }
-
-    @Override
-    public void updateState() {
-        if (getIoState() == IoState.IDLE) {
-            if (!getMessages().isEmpty()) {
-                // Read the next response
-                setIoState(IoState.INTEREST);
-            }
-        }
-
-        // Update the registration
-        super.updateState();
     }
 
 }

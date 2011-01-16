@@ -287,6 +287,16 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
+     * Returns a score representing the connection load and that could be
+     * compared with other connections of the same parent connector.
+     * 
+     * @return A score representing the connection load.
+     */
+    public int getLoadScore() {
+        return getInboundWay().getLoadScore() + getOutboundWay().getLoadScore();
+    }
+
+    /**
      * Returns the logger.
      * 
      * @return The logger.
@@ -459,6 +469,45 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
+     * Initializes the connection and associates it to the given socket.
+     * 
+     * @param socketChannel
+     *            The underlying NIO socket channel.
+     * @param controller
+     *            The underlying IO controller.
+     * @param socketAddress
+     *            The associated socket address.
+     * @throws IOException
+     */
+    public void init(SocketChannel socketChannel,
+            ConnectionController controller, InetSocketAddress socketAddress)
+            throws IOException {
+        this.persistent = helper.isPersistingConnections();
+        this.pipelining = helper.isPipeliningConnections();
+        this.state = ConnectionState.OPENING;
+        this.socketChannel = socketChannel;
+        this.socketAddress = socketAddress;
+
+        if ((controller != null) && (socketChannel != null)
+                && (socketAddress != null)) {
+            this.registration = (controller == null) ? null : controller
+                    .register(socketChannel, 0, this);
+            this.readableSelectionChannel = createReadableSelectionChannel();
+            this.writableSelectionChannel = createWritableSelectionChannel();
+
+            if (getHelper().isTracing()) {
+                this.readableSelectionChannel = new ReadableTraceChannel(
+                        this.readableSelectionChannel);
+                this.writableSelectionChannel = new WritableTraceChannel(
+                        this.writableSelectionChannel);
+            }
+
+        }
+
+        this.lastActivity = System.currentTimeMillis();
+    }
+
+    /**
      * Indicates if it is a client-side connection.
      * 
      * @return True if it is a client-side connection.
@@ -473,8 +522,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * @return True if the connection is empty.
      */
     public boolean isEmpty() {
-        return getInboundWay().getMessages().isEmpty()
-                && getOutboundWay().getMessages().isEmpty();
+        return getInboundWay().isEmpty() && getOutboundWay().isEmpty();
     }
 
     /**
@@ -493,6 +541,17 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public boolean isPipelining() {
         return pipelining;
+    }
+
+    /**
+     * Indicates if the connection is ready to handle new messages.
+     * 
+     * @return True if the connection is ready to handle new messages.
+     */
+    public boolean isReady() {
+        return isPersistent() && getState().equals(ConnectionState.OPEN)
+                && isEmpty() && getInboundWay().isReady()
+                && getOutboundWay().isReady();
     }
 
     /**
@@ -518,19 +577,8 @@ public class Connection<T extends Connector> implements SelectionListener {
     public void onError(String message, Throwable throwable, Status status) {
         getLogger().log(Level.FINE, message, throwable);
         status = new Status(status, throwable, message);
-
-        for (Response rsp : getInboundWay().getMessages()) {
-            getInboundWay().getMessages().remove(rsp);
-            getHelper().onError(status, rsp);
-        }
-
-        for (Response rsp : getOutboundWay().getMessages()) {
-            getOutboundWay().getMessages().remove(rsp);
-            getHelper().onError(status, rsp);
-        }
-
-        getHelper().onError(status, getInboundWay().getMessage());
-        getHelper().onError(status, getOutboundWay().getMessage());
+        getInboundWay().onError(status);
+        getOutboundWay().onError(status);
         close(false);
     }
 
@@ -605,45 +653,6 @@ public class Connection<T extends Connector> implements SelectionListener {
     public void open() {
         setState(ConnectionState.OPEN);
         updateState();
-    }
-
-    /**
-     * Initializes the connection and associates it to the given socket.
-     * 
-     * @param socketChannel
-     *            The underlying NIO socket channel.
-     * @param controller
-     *            The underlying IO controller.
-     * @param socketAddress
-     *            The associated socket address.
-     * @throws IOException
-     */
-    public void init(SocketChannel socketChannel,
-            ConnectionController controller, InetSocketAddress socketAddress)
-            throws IOException {
-        this.persistent = helper.isPersistingConnections();
-        this.pipelining = helper.isPipeliningConnections();
-        this.state = ConnectionState.OPENING;
-        this.socketChannel = socketChannel;
-        this.socketAddress = socketAddress;
-
-        if ((controller != null) && (socketChannel != null)
-                && (socketAddress != null)) {
-            this.registration = (controller == null) ? null : controller
-                    .register(socketChannel, 0, this);
-            this.readableSelectionChannel = createReadableSelectionChannel();
-            this.writableSelectionChannel = createWritableSelectionChannel();
-
-            if (getHelper().isTracing()) {
-                this.readableSelectionChannel = new ReadableTraceChannel(
-                        this.readableSelectionChannel);
-                this.writableSelectionChannel = new WritableTraceChannel(
-                        this.writableSelectionChannel);
-            }
-
-        }
-
-        this.lastActivity = System.currentTimeMillis();
     }
 
     /**

@@ -30,9 +30,15 @@
 
 package org.restlet.engine.connector;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.data.Status;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.ServerInboundWay;
+import org.restlet.engine.io.IoState;
 
 /**
  * HTTP server inbound way.
@@ -40,6 +46,9 @@ import org.restlet.engine.connector.ServerInboundWay;
  * @author Jerome Louvel
  */
 public class HttpServerInboundWay extends ServerInboundWay {
+
+    /** The queue of messages. */
+    private final Queue<Response> messages;
 
     /**
      * Constructor.
@@ -51,6 +60,69 @@ public class HttpServerInboundWay extends ServerInboundWay {
      */
     public HttpServerInboundWay(Connection<Server> connection, int bufferSize) {
         super(connection, bufferSize);
+        this.messages = new ConcurrentLinkedQueue<Response>();
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        this.messages.clear();
+    }
+
+    @Override
+    public int getLoadScore() {
+        return getMessages().size();
+    }
+
+    /**
+     * Returns the queue of messages.
+     * 
+     * @return The queue of messages.
+     */
+    public Queue<Response> getMessages() {
+        return messages;
+    }
+
+    @Override
+    public boolean isReady() {
+        return super.isReady() && getMessages().isEmpty();
+    }
+
+    @Override
+    public void onError(Status status) {
+        for (Response rsp : getMessages()) {
+            if (rsp != getMessage()) {
+                getMessages().remove(rsp);
+                getHelper().onError(status, rsp);
+            }
+        }
+
+        getHelper().onError(status, getMessage());
+    }
+
+    @Override
+    protected void onReceived(Response message) {
+        if ((message.getRequest() != null)
+                && message.getRequest().isExpectingResponse()) {
+            // Add it to the inbound queue
+            getMessages().add(message);
+        }
+
+        super.onReceived(message);
+    }
+
+    @Override
+    public void updateState() {
+        Queue<Response> outboundMessages = ((HttpServerOutboundWay) getConnection()
+                .getOutboundWay()).getMessages();
+
+        if ((getIoState() == IoState.IDLE) && getMessages().isEmpty()
+                && outboundMessages.isEmpty()) {
+            // Read the next request
+            setIoState(IoState.INTEREST);
+        }
+
+        super.updateState();
     }
 
 }

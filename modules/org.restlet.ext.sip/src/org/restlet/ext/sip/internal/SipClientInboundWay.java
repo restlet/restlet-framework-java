@@ -297,7 +297,22 @@ public class SipClientInboundWay extends ClientInboundWay {
     }
 
     @Override
+    protected Response createResponse(Status status) {
+        Response result = null;
+        // Response finalResponse = getMessages().peek();
+
+        if (status.isInformational()) {
+            // result = getHelper().createResponse(finalResponse.getRequest());
+        } else {
+            // result = finalResponse;
+        }
+
+        return result;
+    }
+
+    @Override
     protected Status createStatus(int code) {
         return SipStatus.valueOf(code);
     }
+
 }

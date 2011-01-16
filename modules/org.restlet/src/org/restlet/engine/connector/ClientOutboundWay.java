@@ -45,7 +45,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class ClientOutboundWay extends OutboundWay {
+public abstract class ClientOutboundWay extends OutboundWay {
 
     /**
      * Returns the request URI.
@@ -123,13 +123,6 @@ public class ClientOutboundWay extends OutboundWay {
 
             if (request.getOnSent() != null) {
                 request.getOnSent().handle(request, message);
-            }
-
-            // The request has been written
-            getMessages().remove(message);
-
-            if (request.isExpectingResponse()) {
-                getConnection().getInboundWay().getMessages().add(message);
             }
         }
 

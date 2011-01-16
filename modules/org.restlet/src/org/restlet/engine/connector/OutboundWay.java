@@ -109,6 +109,13 @@ public abstract class OutboundWay extends Way {
     }
 
     /**
+     * Add a message to the outbound way.
+     * 
+     * @param response
+     */
+    protected abstract void handle(Response response);
+
+    /**
      * Adds the entity headers for the given response.
      * 
      * @param entity
@@ -444,20 +451,6 @@ public abstract class OutboundWay extends Way {
     protected boolean shouldBeChunked(Representation entity) {
         return (entity != null)
                 && (entity.getAvailableSize() == Representation.UNKNOWN_SIZE);
-    }
-
-    @Override
-    public void updateState() {
-        // Update the IO state if necessary
-        if ((getIoState() == IoState.IDLE) && !getMessages().isEmpty()) {
-            if (getMessage() == null) {
-                setIoState(IoState.INTEREST);
-                setMessage(getMessages().peek());
-            }
-        }
-
-        // Update the registration
-        super.updateState();
     }
 
     /**
