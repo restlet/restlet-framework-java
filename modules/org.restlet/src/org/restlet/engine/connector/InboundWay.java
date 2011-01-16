@@ -47,7 +47,7 @@ import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.NioUtils;
 import org.restlet.engine.io.ReadableBufferedChannel;
 import org.restlet.engine.io.ReadableChunkedChannel;
-import org.restlet.engine.io.ReadableSizedChannel;
+import org.restlet.engine.io.ReadableSizedSelectionChannel;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
@@ -118,7 +118,7 @@ public abstract class InboundWay extends Way {
                 inboundEntityChannel = new ReadableChunkedChannel(rbc);
             } else {
                 // Wrap the buffer channel to control its announced size
-                inboundEntityChannel = new ReadableSizedChannel(rbc,
+                inboundEntityChannel = new ReadableSizedSelectionChannel(rbc,
                         contentLength);
             }
 
