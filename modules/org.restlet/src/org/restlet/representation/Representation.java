@@ -35,7 +35,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Date;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Disposition;
@@ -44,6 +46,8 @@ import org.restlet.data.Range;
 import org.restlet.data.Tag;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.util.SelectionListener;
+import org.restlet.util.SelectionRegistration;
 
 /**
  * Current or intended state of a resource. The content of a representation can
@@ -540,6 +544,30 @@ public abstract class Representation extends RepresentationInfo {
      */
     public void setRange(Range range) {
         this.range = range;
+    }
+
+    /**
+     * Sets a listener for NIO read events. If the listener is null, it clear
+     * any existing listener.
+     * 
+     * @param readListener
+     *            The listener for NIO read events.
+     */
+    public void setReadListener(SelectionListener readListener) {
+        try {
+            SelectionRegistration sr = getRegistration();
+
+            if ((readListener == null)) {
+                sr.setNoInterest();
+            } else {
+                sr.setReadInterest();
+            }
+
+            sr.setListener(readListener);
+        } catch (IOException ioe) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to register the listener", ioe);
+        }
     }
 
     /**

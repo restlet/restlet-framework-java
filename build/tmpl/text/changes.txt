@@ -17,6 +17,11 @@ Changes log
         LogService class so it can be easily overridden/customized. Also
         added a protected getDefaultResponseLogMessage(..) method returning the
         default IIS log message.
+      - Added Representation#setReadListener() method to facilitate the setting
+        of listeners interested in new content available for reading for 
+        selectable representations.
+      - Added higher level NIO event listeners in org.restlet.util package:
+        InputListener, ReaderListener and StringListener.
     - Enhancements
       - Added support for non-blocking HTTPS to the internal NIO connectors, 
         client-side and server-side. Sponsored by NetDev.

@@ -91,20 +91,20 @@ public class SelectionRegistration {
     /** The barrier used for blocking/unblocking support. */
     private final CyclicBarrier barrier;
 
-    /** The selection listener that will be notified. */
-    private volatile SelectionListener listener;
+    /** Indicates if that registration has been canceled. */
+    private volatile boolean canceling;
 
     /** The IO operations interest. */
     private volatile int interestOperations;
 
-    /** The IO operations ready. */
-    private volatile int readyOperations;
+    /** The selection listener that will be notified. */
+    private volatile SelectionListener listener;
 
     /** The previous IO operations interest. */
     private volatile int previousInterest;
 
-    /** Indicates if that registration has been canceled. */
-    private volatile boolean canceling;
+    /** The IO operations ready. */
+    private volatile int readyOperations;
 
     /** The parent selectable channel. */
     private final SelectableChannel selectableChannel;
@@ -314,6 +314,13 @@ public class SelectionRegistration {
      */
     public void setListener(SelectionListener listener) {
         this.listener = listener;
+    }
+
+    /**
+     * Sets interest in no IO operations.
+     */
+    public void setNoInterest() {
+        setInterestOperations(0);
     }
 
     /**
