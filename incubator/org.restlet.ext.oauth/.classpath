@@ -10,5 +10,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="lib/openid4java-nodeps-0.9.5.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

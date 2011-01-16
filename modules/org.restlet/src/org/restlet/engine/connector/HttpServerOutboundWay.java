@@ -28,31 +28,27 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.io;
+package org.restlet.engine.connector;
+
+import org.restlet.Server;
 
 /**
- * Enumeration of the connection IO states. It can describe either inbound or
- * outbound IO states.
+ * HTTP server outbound way.
  * 
  * @author Jerome Louvel
  */
-public enum IoState {
+public class HttpServerOutboundWay extends ServerOutboundWay {
 
-    /** No activity going on. */
-    IDLE,
+    /**
+     * Constructor.
+     * 
+     * @param connection
+     *            The parent connection.
+     * @param bufferSize
+     *            The byte buffer size.
+     */
+    public HttpServerOutboundWay(Connection<Server> connection, int bufferSize) {
+        super(connection, bufferSize);
+    }
 
-    /** IO interest reported. */
-    INTEREST,
-
-    /** IO ready to be processed. */
-    READY,
-
-    /** IO activity going on. */
-    PROCESSING,
-
-    /** IO canceling going on. */
-    CANCELING,
-
-    /** No more activity expected. */
-    CANCELLED;
 }

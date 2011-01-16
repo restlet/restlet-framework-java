@@ -41,6 +41,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.engine.io.IoState;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
 
@@ -100,6 +101,14 @@ public abstract class ConnectionController extends Controller implements
                 conn.close(false);
             } else if (conn.updateState()) {
                 getUpdatedRegistrations().add(conn.getRegistration());
+            } else if (conn.getInboundWay().getIoState() == IoState.READY) {
+                conn.getInboundWay().setIoState(IoState.PROCESSING);
+                conn.getInboundWay().onSelected(
+                        conn.getInboundWay().getRegistration());
+            } else if (conn.getOutboundWay().getIoState() == IoState.READY) {
+                conn.getOutboundWay().setIoState(IoState.PROCESSING);
+                conn.getOutboundWay().onSelected(
+                        conn.getOutboundWay().getRegistration());
             }
         }
     }

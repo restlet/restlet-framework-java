@@ -143,7 +143,7 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
     @Override
     protected void onDelegatedTasksCompleted() {
         if (getConnection().getInboundWay().getIoState() == IoState.IDLE) {
-            getConnection().getInboundWay().setIoState(IoState.INTEREST);
+            getConnection().getInboundWay().setIoState(IoState.READY);
         }
     }
 
