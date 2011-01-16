@@ -42,7 +42,8 @@ import org.restlet.Context;
  * Readable byte channel capable of decoding chunked entities.
  */
 public class ReadableChunkedChannel extends
-        WrapperChannel<ReadableBufferedChannel> implements ReadableByteChannel {
+        WrapperSelectionChannel<ReadableBufferedChannel> implements
+        ReadableByteChannel {
 
     /** The chunk state. */
     private volatile ChunkState chunkState;
