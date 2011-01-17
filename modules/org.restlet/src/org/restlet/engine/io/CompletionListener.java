@@ -42,7 +42,9 @@ public interface CompletionListener {
      * 
      * @param endDetected
      *            Indicates if the end of network connection was detected.
+     * @param bufferState
+     *            The new buffer state.
      */
-    public void onCompleted(boolean endDetected);
+    public void onCompleted(boolean endDetected, BufferState bufferState);
 
 }

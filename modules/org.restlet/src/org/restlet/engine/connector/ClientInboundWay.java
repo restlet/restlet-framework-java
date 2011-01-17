@@ -42,6 +42,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
+import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.IoState;
 import org.restlet.util.Series;
 
@@ -127,14 +128,14 @@ public abstract class ClientInboundWay extends InboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) {
+    public void onCompleted(boolean endDetected, BufferState bufferState) {
         // Check if we need to close the connection
         if (endDetected || !getConnection().isPersistent()
                 || HeaderUtils.isConnectionClose(getHeaders())) {
             getConnection().close(true);
         }
 
-        super.onCompleted(endDetected);
+        super.onCompleted(endDetected, bufferState);
     }
 
     @Override
@@ -147,7 +148,7 @@ public abstract class ClientInboundWay extends InboundWay {
             setIoState(IoState.IDLE);
         } else {
             // The response has been completely read
-            onCompleted(false);
+            onCompleted(false, getByteBufferState());
         }
     }
 

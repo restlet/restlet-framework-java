@@ -61,16 +61,19 @@ public class ReadableBufferedChannel extends
      *            The listener to callback upon reading completion.
      * @param remainingBuffer
      *            The byte buffer remaining from previous read processing.
+     * @param remainingBufferState
+     *            The initial remaining byte buffer state.
      * @param source
      *            The source channel.
      */
     public ReadableBufferedChannel(CompletionListener completionListener,
-            ByteBuffer remainingBuffer, ReadableSelectionChannel source) {
+            ByteBuffer remainingBuffer, BufferState remainingBufferState,
+            ReadableSelectionChannel source) {
         super(source);
         setRegistration(new SelectionRegistration(0, null));
         this.completionListener = completionListener;
         this.byteBuffer = remainingBuffer;
-        this.byteBufferState = BufferState.DRAINING;
+        this.byteBufferState = remainingBufferState;
     }
 
     @Override
@@ -115,7 +118,8 @@ public class ReadableBufferedChannel extends
      */
     public void onCompleted(boolean endDetected) {
         if (getCompletionListener() != null) {
-            getCompletionListener().onCompleted(endDetected);
+            getCompletionListener().onCompleted(endDetected,
+                    getByteBufferState());
         }
     }
 

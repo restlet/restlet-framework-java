@@ -110,7 +110,7 @@ public abstract class InboundWay extends Way {
 
             // Wraps the remaining bytes into a special buffer channel
             ReadableBufferedChannel rbc = new ReadableBufferedChannel(this,
-                    getByteBuffer(), getConnection()
+                    getByteBuffer(), getByteBufferState(), getConnection()
                             .getReadableSelectionChannel());
 
             if (chunkedEncoding) {
@@ -204,12 +204,12 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) {
+    public void onCompleted(boolean endDetected, BufferState bufferState) {
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Inbound message fully received");
         }
 
-        super.onCompleted(endDetected);
+        super.onCompleted(endDetected, bufferState);
     }
 
     /**

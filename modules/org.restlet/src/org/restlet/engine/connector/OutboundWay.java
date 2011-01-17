@@ -198,7 +198,7 @@ public abstract class OutboundWay extends Way {
                 getByteBuffer().compact();
             } else if (getMessageState() == MessageState.END) {
                 // Message fully written, ready for a new one
-                onCompleted(false);
+                onCompleted(false, getByteBufferState());
             } else {
                 // The byte buffer has been fully written, but
                 // the socket channel wants more, reset it.
@@ -344,13 +344,13 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
-    public void onCompleted(boolean endReached) {
+    public void onCompleted(boolean endReached, BufferState bufferState) {
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Outbound message fully sent");
         }
 
         setHeaderIndex(0);
-        super.onCompleted(endReached);
+        super.onCompleted(endReached, bufferState);
     }
 
     @Override
@@ -365,7 +365,7 @@ public abstract class OutboundWay extends Way {
                     if (getByteBufferState() == BufferState.FILLING) {
                         if (getMessageState() == MessageState.END) {
                             // Message fully written, ready for a new one
-                            onCompleted(false);
+                            onCompleted(false, getByteBufferState());
                         } else {
                             // Write the message or part of it in the byte
                             // buffer

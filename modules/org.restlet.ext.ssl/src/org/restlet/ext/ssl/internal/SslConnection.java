@@ -97,7 +97,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
             ByteBuffer packetBuffer = createByteBuffer(packetSize);
             packetBuffer.flip();
             ReadableBufferedChannel rbc = new ReadableBufferedChannel(
-                    getInboundWay(), packetBuffer,
+                    getInboundWay(), packetBuffer, null,
                     super.createReadableSelectionChannel());
             return new ReadableSslChannel(rbc, getSslManager(), this);
         } else {

@@ -36,6 +36,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Status;
+import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.IoState;
 
 /**
@@ -92,7 +93,7 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) {
+    public void onCompleted(boolean endDetected, BufferState bufferState) {
         Response message = getMessage();
 
         if (message != null) {
@@ -108,7 +109,7 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
             }
         }
 
-        super.onCompleted(endDetected);
+        super.onCompleted(endDetected, bufferState);
     }
 
     @Override
