@@ -145,7 +145,11 @@ public class NbChannelInputStream extends InputStream {
         int result = 0;
         this.byteBuffer.clear();
         result = this.channel.read(this.byteBuffer);
-        this.byteBuffer.flip();
+
+        if (result > 0) {
+            this.byteBuffer.flip();
+        }
+
         return result;
     }
 

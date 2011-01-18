@@ -237,8 +237,8 @@ public class ReadableBufferedChannel extends
                 result = getWrappedChannel().read(getByteBuffer());
 
                 if (result > 0) {
-                    setByteBufferState(BufferState.DRAINING);
                     getByteBuffer().flip();
+                    setByteBufferState(BufferState.DRAINING);
                 }
             }
         }

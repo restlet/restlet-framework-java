@@ -333,7 +333,13 @@ public abstract class InboundWay extends Way {
     protected int readSocketBytes() throws IOException {
         int result = getConnection().getReadableSelectionChannel().read(
                 getByteBuffer());
-        getByteBuffer().flip();
+        getLogger().fine("Number of bytes read: " + result);
+
+        if (result > 0) {
+            getByteBuffer().flip();
+            setByteBufferState(BufferState.DRAINING);
+        }
+
         return result;
     }
 
