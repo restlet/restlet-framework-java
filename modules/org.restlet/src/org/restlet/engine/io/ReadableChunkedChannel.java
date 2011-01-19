@@ -91,30 +91,28 @@ public class ReadableChunkedChannel extends
         if (getLineBuilderState() != BufferState.DRAINING) {
             int byteBufferSize = 0;
 
-            if (getWrappedChannel().getByteBufferState() == BufferState.DRAINING) {
-                byteBufferSize = getWrappedChannel().getByteBuffer()
+            if (getWrappedChannel().getIoBuffer().isDraining()) {
+                byteBufferSize = getWrappedChannel().getIoBuffer().getBytes()
                         .remaining();
             }
 
             if (byteBufferSize == 0) {
-                getWrappedChannel().setByteBufferState(BufferState.FILLING);
-                getWrappedChannel().getByteBuffer().clear();
+                getWrappedChannel().getIoBuffer().clear();
 
                 if (getWrappedChannel().refill() > 0) {
-                    byteBufferSize = getWrappedChannel().getByteBuffer()
-                            .remaining();
+                    byteBufferSize = getWrappedChannel().getIoBuffer()
+                            .getBytes().remaining();
                 }
             }
 
             if (byteBufferSize > 0) {
                 // Some bytes are available, fill the line builder
-                setLineBuilderState(NioUtils.fillLine(getLineBuilder(),
-                        getLineBuilderState(), getWrappedChannel()
-                                .getByteBuffer()));
+                setLineBuilderState(getWrappedChannel().getIoBuffer().fillLine(
+                        getLineBuilder(), getLineBuilderState()));
 
-                if (getWrappedChannel().getByteBuffer().remaining() == 0) {
-                    getWrappedChannel().setByteBufferState(BufferState.FILLING);
-                    getWrappedChannel().getByteBuffer().clear();
+                if (!getWrappedChannel().getIoBuffer().getBytes()
+                        .hasRemaining()) {
+                    getWrappedChannel().getIoBuffer().clear();
                 }
 
                 return getLineBuilderState() == BufferState.DRAINING;
@@ -162,18 +160,19 @@ public class ReadableChunkedChannel extends
 
             case SIZE:
                 if (fillLineBuilder()) {
-                    // The chunk size line was fully read into the line builder
-                    int length = getLineBuilder().length();
-
-                    if (length == 0) {
-                        throw new IOException(
-                                "An empty chunk size line was detected");
-                    }
-
-                    int index = getLineBuilder().indexOf(";");
-                    index = (index == -1) ? getLineBuilder().length() : index;
-
                     try {
+                        // The chunk size line was fully read into the line
+                        // builder
+                        int length = getLineBuilder().length();
+
+                        if (length == 0) {
+                            throw new IOException(
+                                    "An empty chunk size line was detected");
+                        }
+
+                        int index = getLineBuilder().indexOf(";");
+                        index = (index == -1) ? getLineBuilder().length()
+                                : index;
                         this.remainingChunkSize = Long
                                 .parseLong(getLineBuilder().substring(0, index)
                                         .trim(), 16);

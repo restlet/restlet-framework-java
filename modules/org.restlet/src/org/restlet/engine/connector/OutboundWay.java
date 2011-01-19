@@ -167,11 +167,9 @@ public abstract class OutboundWay extends Way {
      * @throws IOException
      */
     protected void drainByteBuffer() throws IOException {
-        if ((getByteBuffer().hasRemaining())
-                && (getIoState() == IoState.PROCESSING)) {
-
+        if ((getIoBuffer().canDrain()) && (getIoState() == IoState.PROCESSING)) {
             int bytesWritten = getConnection().getWritableSelectionChannel()
-                    .write(getByteBuffer());
+                    .write(getIoBuffer().getBytes());
 
             if (getLogger().isLoggable(Level.FINER)) {
                 getLogger().finer("Bytes written: " + bytesWritten);
@@ -192,18 +190,17 @@ public abstract class OutboundWay extends Way {
                     // wait for a new NIO selection.
                     setIoState(IoState.INTEREST);
                 }
-            } else if (getByteBuffer().hasRemaining()) {
+            } else if (getIoBuffer().getBytes().hasRemaining()) {
                 // All the buffer couldn't be written. Compact the
                 // remaining bytes so that filling can happen again.
-                getByteBuffer().compact();
+                getIoBuffer().getBytes().compact();
             } else if (getMessageState() == MessageState.END) {
                 // Message fully written, ready for a new one
-                onCompleted(false, getByteBufferState());
+                onCompleted(false);
             } else {
                 // The byte buffer has been fully written, but
                 // the socket channel wants more, reset it.
-                getByteBuffer().clear();
-                setByteBufferState(BufferState.FILLING);
+                getIoBuffer().clear();
             }
         }
     }
@@ -214,10 +211,10 @@ public abstract class OutboundWay extends Way {
      * @throws IOException
      */
     protected void fillByteBuffer() throws IOException {
-        while (isProcessing() && getByteBuffer().hasRemaining()
+        while (isProcessing() && getIoBuffer().canFill()
                 && (getMessageState() != MessageState.END)) {
             if (getMessageState() == MessageState.BODY) {
-                int result = getEntityChannel().read(getByteBuffer());
+                int result = getEntityChannel().read(getIoBuffer().getBytes());
 
                 // Detect end of entity reached
                 if (result == -1) {
@@ -234,18 +231,18 @@ public abstract class OutboundWay extends Way {
                 if (getLineBuilder().length() > 0) {
                     // We can fill the byte buffer with the
                     // remaining line builder
-                    int remaining = getByteBuffer().remaining();
+                    int remaining = getIoBuffer().getBytes().remaining();
 
                     if (remaining >= getLineBuilder().length()) {
                         // Put the whole builder line in the buffer
-                        getByteBuffer().put(
+                        getIoBuffer().getBytes().put(
                                 StringUtils.getLatin1Bytes(getLineBuilder()
                                         .toString()));
                         clearLineBuilder();
                     } else {
                         // Put the maximum number of characters
                         // into the byte buffer
-                        getByteBuffer().put(
+                        getIoBuffer().getBytes().put(
                                 StringUtils.getLatin1Bytes(getLineBuilder()
                                         .substring(0, remaining)));
                         getLineBuilder().delete(0, remaining);
@@ -254,11 +251,11 @@ public abstract class OutboundWay extends Way {
             }
         }
 
-        if (getByteBuffer().position() > 0) {
+        if (getIoBuffer().getBytes().position() > 0) {
             // After filling the byte buffer, we can now flip it
             // and start draining it.
-            getByteBuffer().flip();
-            setByteBufferState(BufferState.DRAINING);
+            getIoBuffer().getBytes().flip();
+            getIoBuffer().setState(BufferState.DRAINING);
         }
     }
 
@@ -344,13 +341,13 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
-    public void onCompleted(boolean endReached, BufferState bufferState) {
+    public void onCompleted(boolean endReached) {
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Outbound message fully sent");
         }
 
         setHeaderIndex(0);
-        super.onCompleted(endReached, bufferState);
+        super.onCompleted(endReached);
     }
 
     @Override
@@ -362,16 +359,16 @@ public abstract class OutboundWay extends Way {
                 super.onSelected(registration);
 
                 while (isProcessing()) {
-                    if (getByteBufferState() == BufferState.FILLING) {
+                    if (getIoBuffer().isFilling()) {
                         if (getMessageState() == MessageState.END) {
                             // Message fully written, ready for a new one
-                            onCompleted(false, getByteBufferState());
+                            onCompleted(false);
                         } else {
                             // Write the message or part of it in the byte
                             // buffer
                             fillByteBuffer();
                         }
-                    } else if (getByteBufferState() == BufferState.DRAINING) {
+                    } else if (getIoBuffer().isDraining()) {
                         // Write the byte buffer or part of it to the socket
                         drainByteBuffer();
 
@@ -524,7 +521,7 @@ public abstract class OutboundWay extends Way {
 
                     if (getActualMessage().getEntity().getAvailableSize() == Representation.UNKNOWN_SIZE) {
                         setEntityChannel(new ReadableChunkingChannel(rbc,
-                                getByteBuffer().capacity()));
+                                getIoBuffer().getBytes().capacity()));
                     } else {
                         setEntityChannel(new ReadableSizedChannel(rbc,
                                 getActualMessage().getEntity()

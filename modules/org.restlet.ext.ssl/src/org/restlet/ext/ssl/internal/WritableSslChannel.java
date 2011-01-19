@@ -38,6 +38,7 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLSession;
 
 import org.restlet.engine.io.BufferState;
+import org.restlet.engine.io.IoBuffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.SelectionChannel;
 import org.restlet.engine.io.WritableSelectionChannel;
@@ -52,11 +53,8 @@ import org.restlet.engine.io.WritableSelectionChannel;
 public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
         implements WritableSelectionChannel {
 
-    /** The packet byte buffer. */
-    private volatile ByteBuffer packetBuffer;
-
-    /** The packet buffer state. */
-    private volatile BufferState packetBufferState;
+    /** The packet IO buffer. */
+    private volatile IoBuffer packetBuffer;
 
     /**
      * Constructor.
@@ -75,12 +73,11 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
         if (manager != null) {
             SSLSession session = manager.getSession();
             int packetSize = session.getPacketBufferSize();
-            this.packetBuffer = getConnection().createByteBuffer(packetSize);
+            this.packetBuffer = new IoBuffer(getConnection().createByteBuffer(
+                    packetSize));
         } else {
             this.packetBuffer = null;
         }
-
-        this.packetBufferState = BufferState.FILLING;
     }
 
     /**
@@ -92,17 +89,17 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
     protected int flush() throws IOException {
         int result = 0;
 
-        if (getPacketBufferState() == BufferState.DRAINING) {
+        if (getPacketBuffer().isDraining()) {
             if (getWrappedChannel().isOpen()) {
-                result = getWrappedChannel().write(getPacketBuffer());
+                result = getWrappedChannel()
+                        .write(getPacketBuffer().getBytes());
 
                 if (getConnection().getLogger().isLoggable(Level.INFO)) {
                     getConnection().getLogger().log(Level.INFO,
                             "Packet bytes written: " + result);
                 }
 
-                if (getPacketBuffer().remaining() == 0) {
-                    setPacketBufferState(BufferState.FILLING);
+                if (!getPacketBuffer().getBytes().hasRemaining()) {
                     getPacketBuffer().clear();
                 }
             }
@@ -112,21 +109,12 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
     }
 
     /**
-     * Returns the SSL/TLS packet byte buffer.
+     * Returns the SSL/TLS packet IO buffer.
      * 
-     * @return The SSL/TLS packet byte buffer.
+     * @return The SSL/TLS packet IO buffer.
      */
-    protected ByteBuffer getPacketBuffer() {
+    protected IoBuffer getPacketBuffer() {
         return packetBuffer;
-    }
-
-    /**
-     * Returns the byte buffer state.
-     * 
-     * @return The byte buffer state.
-     */
-    protected BufferState getPacketBufferState() {
-        return packetBufferState;
     }
 
     @Override
@@ -146,32 +134,22 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
                     "Wrapping bytes with: " + getPacketBuffer());
         }
 
-        int remaining = getPacketBuffer().remaining();
+        int remaining = getPacketBuffer().getBytes().remaining();
 
         if (remaining > 0) {
             result = getManager().getEngine().wrap(applicationBuffer,
-                    getPacketBuffer());
-            getPacketBuffer().flip();
-            remaining = getPacketBuffer().remaining();
+                    getPacketBuffer().getBytes());
+            getPacketBuffer().getBytes().flip();
+            remaining = getPacketBuffer().getBytes().remaining();
 
             if (remaining > 0) {
-                setPacketBufferState(BufferState.DRAINING);
+                getPacketBuffer().setState(BufferState.DRAINING);
             } else {
                 getPacketBuffer().clear();
             }
         }
 
         return result;
-    }
-
-    /**
-     * Sets the buffer state.
-     * 
-     * @param bufferState
-     *            The buffer state.
-     */
-    protected void setPacketBufferState(BufferState bufferState) {
-        this.packetBufferState = bufferState;
     }
 
     /**
@@ -193,12 +171,12 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
         flush();
 
         // Refill the packet buffer
-        if ((getPacketBufferState() == BufferState.FILLING)
+        if ((getPacketBuffer().isFilling())
                 || (getManager().getState() == SslState.HANDSHAKING)) {
             int srcSize = src.remaining();
 
             if (srcSize > 0) {
-                while (getPacketBuffer().hasRemaining()
+                while (getPacketBuffer().getBytes().hasRemaining()
                         && (getConnection().getOutboundWay().getIoState() != IoState.IDLE)
                         && src.hasRemaining()) {
                     SSLEngineResult sslResult = runEngine(src);

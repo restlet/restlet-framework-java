@@ -39,7 +39,7 @@ import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLEngineResult.Status;
 
 import org.restlet.engine.io.BufferState;
-import org.restlet.engine.io.Drainer;
+import org.restlet.engine.io.IoBuffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.ReadableBufferedChannel;
 import org.restlet.engine.io.ReadableSelectionChannel;
@@ -53,7 +53,7 @@ import org.restlet.engine.io.SelectionChannel;
  * @author Jerome Louvel
  */
 public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
-        implements ReadableSelectionChannel, Drainer {
+        implements ReadableSelectionChannel {
 
     /**
      * Constructor.
@@ -80,7 +80,7 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
     protected boolean canRead(ByteBuffer dst) {
         return dst.hasRemaining()
                 && (getManager().getState() != SslState.CLOSED)
-                && getPacketBuffer().hasRemaining()
+                && getPacketBuffer().getBytes().hasRemaining()
                 // && (getPacketBufferState() == BufferState.FILLING)
                 && (getConnection().getInboundWay().getIoState() != IoState.IDLE);
     }
@@ -131,13 +131,8 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
     }
 
     @Override
-    protected ByteBuffer getPacketBuffer() {
-        return getWrappedChannel().getByteBuffer();
-    }
-
-    @Override
-    protected BufferState getPacketBufferState() {
-        return getWrappedChannel().getByteBufferState();
+    protected IoBuffer getPacketBuffer() {
+        return getWrappedChannel().getIoBuffer();
     }
 
     @Override
@@ -161,12 +156,12 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
         }
 
         if ((getManager().getEngineStatus() == Status.BUFFER_UNDERFLOW)
-                && (getPacketBufferState() == BufferState.DRAINING)) {
-            getPacketBuffer().flip();
-            setPacketBufferState(BufferState.FILLING);
+                && (getPacketBuffer().isDraining())) {
+            getPacketBuffer().getBytes().flip();
+            getPacketBuffer().setState(BufferState.FILLING);
         }
 
-        return getWrappedChannel().read(targetBuffer, this);
+        return getWrappedChannel().read(targetBuffer, getPacketBuffer());
     }
 
     @Override
@@ -194,24 +189,20 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
             getLogger().log(
                     Level.INFO,
                     "Packet buffer remaining size: "
-                            + getPacketBuffer().remaining() + "/"
-                            + getPacketBuffer().capacity());
+                            + getPacketBuffer().getBytes().remaining() + "/"
+                            + getPacketBuffer().getBytes().capacity());
         }
 
         SSLEngineResult result = getManager().getEngine().unwrap(
-                getPacketBuffer(), applicationBuffer);
-        int remaining = getPacketBuffer().remaining();
+                getPacketBuffer().getBytes(), applicationBuffer);
+        int remaining = getPacketBuffer().getBytes().remaining();
 
         if (remaining == 0) {
-            setPacketBufferState(BufferState.FILLING);
+            getPacketBuffer().setState(BufferState.FILLING);
             getPacketBuffer().clear();
         }
 
         return result;
     }
 
-    @Override
-    protected void setPacketBufferState(BufferState bufferState) {
-        getWrappedChannel().setByteBufferState(bufferState);
-    }
 }

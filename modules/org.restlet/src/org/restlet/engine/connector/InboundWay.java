@@ -44,7 +44,6 @@ import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.IoState;
-import org.restlet.engine.io.NioUtils;
 import org.restlet.engine.io.ReadableBufferedChannel;
 import org.restlet.engine.io.ReadableChunkedChannel;
 import org.restlet.engine.io.ReadableSizedSelectionChannel;
@@ -110,7 +109,7 @@ public abstract class InboundWay extends Way {
 
             // Wraps the remaining bytes into a special buffer channel
             ReadableBufferedChannel rbc = new ReadableBufferedChannel(this,
-                    getByteBuffer(), getByteBufferState(), getConnection()
+                    getIoBuffer(), getConnection()
                             .getReadableSelectionChannel());
 
             if (chunkedEncoding) {
@@ -159,8 +158,8 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected boolean fillLine() throws IOException {
-        setLineBuilderState(NioUtils.fillLine(getLineBuilder(),
-                getLineBuilderState(), getByteBuffer()));
+        setLineBuilderState(getIoBuffer().fillLine(getLineBuilder(),
+                getLineBuilderState()));
         return getLineBuilderState() == BufferState.DRAINING;
     }
 
@@ -204,12 +203,12 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    public void onCompleted(boolean endDetected, BufferState bufferState) {
+    public void onCompleted(boolean endDetected) {
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Inbound message fully received");
         }
 
-        super.onCompleted(endDetected, bufferState);
+        super.onCompleted(endDetected);
     }
 
     /**
@@ -243,7 +242,8 @@ public abstract class InboundWay extends Way {
                         registration.getReadyOperations());
             } else {
                 while (isProcessing()) {
-                    int result = readSocketBytes();
+                    int result = getIoBuffer().refill(
+                            getConnection().getReadableSelectionChannel());
 
                     if (result == 0) {
                         if (getIoState() == IoState.PROCESSING) {
@@ -256,7 +256,7 @@ public abstract class InboundWay extends Way {
                         setIoState(IoState.IDLE);
                         setMessageState(MessageState.IDLE);
                     } else {
-                        while (isProcessing() && getByteBuffer().hasRemaining()) {
+                        while (isProcessing() && getIoBuffer().canDrain()) {
                             // Bytes are available in the buffer
                             // attempt to parse the next message
                             readMessage();
@@ -322,25 +322,6 @@ public abstract class InboundWay extends Way {
                 }
             }
         }
-    }
-
-    /**
-     * Reads available bytes from the socket channel and fill the way's buffer.
-     * 
-     * @return The number of bytes read.
-     * @throws IOException
-     */
-    protected int readSocketBytes() throws IOException {
-        int result = getConnection().getReadableSelectionChannel().read(
-                getByteBuffer());
-        getLogger().fine("Number of bytes read: " + result);
-
-        if (result > 0) {
-            getByteBuffer().flip();
-            setByteBufferState(BufferState.DRAINING);
-        }
-
-        return result;
     }
 
     /**

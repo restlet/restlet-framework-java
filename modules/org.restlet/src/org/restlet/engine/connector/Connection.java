@@ -614,12 +614,12 @@ public class Connection<T extends Connector> implements SelectionListener {
 
         try {
             if ((registration == null) || registration.isReadable()) {
-                synchronized (getInboundWay().getByteBuffer()) {
+                synchronized (getInboundWay().getIoBuffer().getBytes()) {
                     getInboundWay().getRegistration().onSelected(
                             registration.getReadyOperations());
                 }
             } else if (registration.isWritable()) {
-                synchronized (getOutboundWay().getByteBuffer()) {
+                synchronized (getOutboundWay().getIoBuffer().getBytes()) {
                     getOutboundWay().getRegistration().onSelected(
                             registration.getReadyOperations());
                 }

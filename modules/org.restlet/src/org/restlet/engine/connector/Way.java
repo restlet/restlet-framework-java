@@ -30,7 +30,6 @@
 
 package org.restlet.engine.connector;
 
-import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,6 +39,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.CompletionListener;
+import org.restlet.engine.io.IoBuffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
@@ -53,17 +53,14 @@ import org.restlet.util.Series;
  */
 public abstract class Way implements SelectionListener, CompletionListener {
 
-    /** The byte buffer. */
-    private final ByteBuffer byteBuffer;
-
-    /** The byte buffer IO state. */
-    private volatile BufferState byteBufferState;
-
     /** The parent connection. */
     private final Connection<?> connection;
 
     /** The message headers. */
     private volatile Series<Parameter> headers;
+
+    /** The IO buffer. */
+    private final IoBuffer ioBuffer;
 
     /** The IO state. */
     private volatile IoState ioState;
@@ -93,8 +90,8 @@ public abstract class Way implements SelectionListener, CompletionListener {
      */
     public Way(Connection<?> connection, int bufferSize) {
         this.connection = connection;
-        this.byteBuffer = getConnection().createByteBuffer(bufferSize);
-        this.byteBufferState = BufferState.FILLING;
+        this.ioBuffer = new IoBuffer(getConnection().createByteBuffer(
+                bufferSize));
         this.lineBuilder = new StringBuilder();
         this.lineBuilderState = BufferState.IDLE;
         this.message = null;
@@ -109,8 +106,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * pool.
      */
     public void clear() {
-        this.byteBuffer.clear();
-        this.byteBufferState = BufferState.FILLING;
+        this.ioBuffer.clear();
         this.headers = null;
         this.ioState = IoState.IDLE;
         clearLineBuilder();
@@ -132,24 +128,6 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * @return The actual message, request or response.
      */
     protected abstract Message getActualMessage();
-
-    /**
-     * Returns the byte buffer.
-     * 
-     * @return The byte buffer.
-     */
-    protected ByteBuffer getByteBuffer() {
-        return byteBuffer;
-    }
-
-    /**
-     * Returns the byte buffer IO state.
-     * 
-     * @return The byte buffer IO state.
-     */
-    protected BufferState getByteBufferState() {
-        return byteBufferState;
-    }
 
     /**
      * Returns the parent connection.
@@ -176,6 +154,15 @@ public abstract class Way implements SelectionListener, CompletionListener {
      */
     protected ConnectionHelper<?> getHelper() {
         return getConnection().getHelper();
+    }
+
+    /**
+     * Returns the IO buffer.
+     * 
+     * @return The IO buffer.
+     */
+    protected IoBuffer getIoBuffer() {
+        return ioBuffer;
     }
 
     /**
@@ -299,8 +286,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * @param bufferState
      *            The new buffer state.
      */
-    public void onCompleted(boolean endDetected, BufferState bufferState) {
-        setByteBufferState(bufferState);
+    public void onCompleted(boolean endDetected) {
         setIoState(IoState.IDLE);
         setMessageState(MessageState.IDLE);
         setMessage(null);
@@ -336,20 +322,9 @@ public abstract class Way implements SelectionListener, CompletionListener {
             setIoState(IoState.CANCELLED);
         }
 
-        if (!getByteBuffer().hasRemaining()) {
-            getByteBuffer().clear();
-            setByteBufferState(BufferState.FILLING);
+        if (!getIoBuffer().getBytes().hasRemaining()) {
+            getIoBuffer().clear();
         }
-    }
-
-    /**
-     * Sets the byte buffer IO state.
-     * 
-     * @param byteBufferState
-     *            The byte buffer IO state.
-     */
-    protected void setByteBufferState(BufferState byteBufferState) {
-        this.byteBufferState = byteBufferState;
     }
 
     /**
@@ -423,7 +398,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
     @Override
     public String toString() {
         return getIoState() + ", " + getMessageState() + ", "
-                + getByteBuffer().remaining();
+                + getIoBuffer().getBytes().remaining();
     }
 
     /**

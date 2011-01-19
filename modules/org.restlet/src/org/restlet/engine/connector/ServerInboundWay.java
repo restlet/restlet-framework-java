@@ -88,7 +88,7 @@ public abstract class ServerInboundWay extends InboundWay {
 
             if (!message.getRequest().isEntityAvailable()) {
                 // The request has been completely read
-                onCompleted(false, getByteBufferState());
+                onCompleted(false);
             }
         }
     }

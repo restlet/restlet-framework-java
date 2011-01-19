@@ -38,7 +38,6 @@ import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.header.HeaderUtils;
-import org.restlet.engine.io.BufferState;
 import org.restlet.util.Series;
 
 /**
@@ -116,7 +115,7 @@ public abstract class ClientOutboundWay extends OutboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected, BufferState bufferState) {
+    public void onCompleted(boolean endDetected) {
         Response message = getMessage();
 
         if (message != null) {
@@ -127,7 +126,7 @@ public abstract class ClientOutboundWay extends OutboundWay {
             }
         }
 
-        super.onCompleted(endDetected, bufferState);
+        super.onCompleted(endDetected);
     }
 
     @Override

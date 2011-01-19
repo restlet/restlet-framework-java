@@ -43,16 +43,13 @@ import org.restlet.util.SelectionRegistration;
  */
 public class ReadableBufferedChannel extends
         WrapperSelectionChannel<ReadableSelectionChannel> implements
-        ReadableSelectionChannel, Drainer {
-
-    /** The buffer state. */
-    private volatile BufferState byteBufferState;
+        ReadableSelectionChannel {
 
     /** The completion callback. */
     private final CompletionListener completionListener;
 
-    /** The byte buffer remaining from previous read processing. */
-    private final ByteBuffer byteBuffer;
+    /** The IO buffer. */
+    private final IoBuffer ioBuffer;
 
     /**
      * Constructor.
@@ -61,42 +58,20 @@ public class ReadableBufferedChannel extends
      *            The listener to callback upon reading completion.
      * @param remainingBuffer
      *            The byte buffer remaining from previous read processing.
-     * @param remainingBufferState
-     *            The initial remaining byte buffer state.
      * @param source
      *            The source channel.
      */
     public ReadableBufferedChannel(CompletionListener completionListener,
-            ByteBuffer remainingBuffer, BufferState remainingBufferState,
-            ReadableSelectionChannel source) {
+            IoBuffer remainingBuffer, ReadableSelectionChannel source) {
         super(source);
         setRegistration(new SelectionRegistration(0, null));
         this.completionListener = completionListener;
-        this.byteBuffer = remainingBuffer;
-        this.byteBufferState = remainingBufferState;
+        this.ioBuffer = remainingBuffer;
     }
 
     @Override
     public void close() throws IOException {
         // Don't actually close to protect the persistent connection
-    }
-
-    /**
-     * Returns the byte buffer remaining from previous read processing.
-     * 
-     * @return The byte buffer remaining from previous read processing.
-     */
-    public ByteBuffer getByteBuffer() {
-        return byteBuffer;
-    }
-
-    /**
-     * Returns the byte buffer state.
-     * 
-     * @return The byte buffer state.
-     */
-    public BufferState getByteBufferState() {
-        return byteBufferState;
     }
 
     /**
@@ -109,6 +84,15 @@ public class ReadableBufferedChannel extends
     }
 
     /**
+     * Returns the IO buffer.
+     * 
+     * @return The IO buffer.
+     */
+    public IoBuffer getIoBuffer() {
+        return ioBuffer;
+    }
+
+    /**
      * Callback invoked upon IO completion. Calls
      * {@link CompletionListener#onCompleted(boolean)} if the end has been
      * reached.
@@ -118,40 +102,8 @@ public class ReadableBufferedChannel extends
      */
     public void onCompleted(boolean endDetected) {
         if (getCompletionListener() != null) {
-            getCompletionListener().onCompleted(endDetected,
-                    getByteBufferState());
+            getCompletionListener().onCompleted(endDetected);
         }
-    }
-
-    /**
-     * Drains the byte buffer. By default, it directly copies as many byte as
-     * possible to the target buffer, with no modification.
-     * 
-     * @param targetBuffer
-     *            The target buffer.
-     * @return The number of bytes added to the target buffer.
-     */
-    public int drain(ByteBuffer targetBuffer) {
-        int result = 0;
-
-        if (getByteBuffer().remaining() >= targetBuffer.remaining()) {
-            // Target buffer will be full
-            result = targetBuffer.remaining();
-        } else {
-            // Target buffer will not be full
-            result = getByteBuffer().remaining();
-        }
-
-        // Copy the byte to the target buffer
-        for (int i = 0; i < result; i++) {
-            targetBuffer.put(getByteBuffer().get());
-        }
-
-        return result;
-    }
-
-    public boolean canRetry(int lastRead, ByteBuffer targetBuffer) {
-        return (lastRead > 0) && targetBuffer.hasRemaining();
     }
 
     /**
@@ -160,36 +112,48 @@ public class ReadableBufferedChannel extends
      * 
      * @param targetBuffer
      *            The target buffer.
-     * @param drainer
-     *            The drain to callback to drain available bytes.
      * @return The number of bytes read, or -1 if the end of the channel has
      *         been reached.
      */
-    public int read(ByteBuffer targetBuffer, Drainer drainer)
+    public int read(ByteBuffer targetBuffer) throws IOException {
+        return read(targetBuffer, getIoBuffer());
+    }
+
+    /**
+     * Reads some bytes and put them into the destination buffer. The bytes come
+     * from the underlying channel.
+     * 
+     * @param targetBuffer
+     *            The target buffer.
+     * @param ioBuffer
+     *            The buffer to drain for available bytes.
+     * @return The number of bytes read, or -1 if the end of the channel has
+     *         been reached.
+     */
+    public int read(ByteBuffer targetBuffer, IoBuffer ioBuffer)
             throws IOException {
         int result = 0;
         int lastRead = 0;
         boolean tryAgain = true;
 
-        synchronized (getByteBuffer()) {
+        synchronized (getIoBuffer().getBytes()) {
             while (tryAgain) {
-                switch (getByteBufferState()) {
+                switch (getIoBuffer().getState()) {
                 case FILLED:
-                    setByteBufferState(BufferState.DRAINING);
+                    getIoBuffer().setState(BufferState.DRAINING);
                 case DRAINING:
-                    if (getByteBuffer().remaining() > 0) {
-                        lastRead = drainer.drain(targetBuffer);
+                    if (getIoBuffer().getBytes().remaining() > 0) {
+                        lastRead = ioBuffer.drain(targetBuffer);
                         result += lastRead;
-                        tryAgain = drainer.canRetry(lastRead, targetBuffer);
+                        tryAgain = ioBuffer.canRetry(lastRead, targetBuffer);
                     }
 
-                    if (getByteBuffer().remaining() == 0) {
-                        setByteBufferState(BufferState.FILLING);
-                        getByteBuffer().clear();
+                    if (!getIoBuffer().canDrain()) {
+                        getIoBuffer().clear();
                     }
                     break;
                 case IDLE:
-                    setByteBufferState(BufferState.FILLING);
+                    getIoBuffer().setState(BufferState.FILLING);
                 case FILLING:
                     int refillCount = refill();
 
@@ -210,49 +174,13 @@ public class ReadableBufferedChannel extends
     }
 
     /**
-     * Reads some bytes and put them into the destination buffer. The bytes come
-     * from the underlying channel.
+     * Refills the IO buffer with the wrapped channel.
      * 
-     * @param targetBuffer
-     *            The target buffer.
-     * @return The number of bytes read, or -1 if the end of the channel has
-     *         been reached.
-     */
-    public int read(ByteBuffer targetBuffer) throws IOException {
-        return read(targetBuffer, this);
-    }
-
-    /**
-     * Refills the byte buffer.
-     * 
-     * @return The number of bytes read and added to the buffer or -1 if end of
-     *         channel reached.
+     * @return The number of bytes refilled.
      * @throws IOException
      */
     public int refill() throws IOException {
-        int result = 0;
-
-        if (getByteBufferState() == BufferState.FILLING) {
-            if (getWrappedChannel().isOpen()) {
-                result = getWrappedChannel().read(getByteBuffer());
-
-                if (result > 0) {
-                    getByteBuffer().flip();
-                    setByteBufferState(BufferState.DRAINING);
-                }
-            }
-        }
-
-        return result;
+        return getIoBuffer().refill(getWrappedChannel());
     }
 
-    /**
-     * Sets the buffer state.
-     * 
-     * @param bufferState
-     *            The buffer state.
-     */
-    public void setByteBufferState(BufferState bufferState) {
-        this.byteBufferState = bufferState;
-    }
 }

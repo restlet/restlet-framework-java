@@ -40,7 +40,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderUtils;
-import org.restlet.engine.io.BufferState;
 import org.restlet.util.Series;
 
 /**
@@ -146,14 +145,14 @@ public abstract class ServerOutboundWay extends OutboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected, BufferState bufferState) {
+    public void onCompleted(boolean endDetected) {
         // Check if we need to close the connection
         if (!getConnection().isPersistent()
                 || HeaderUtils.isConnectionClose(getHeaders())) {
             getConnection().close(true);
         }
 
-        super.onCompleted(endDetected, bufferState);
+        super.onCompleted(endDetected);
     }
 
     @Override

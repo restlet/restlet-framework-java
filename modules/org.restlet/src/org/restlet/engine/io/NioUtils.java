@@ -34,7 +34,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.nio.channels.Channel;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -47,7 +46,6 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.engine.Edition;
-import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.Representation;
 
 // [excludes gwt]
@@ -118,56 +116,6 @@ public class NioUtils {
             BioUtils.copy(new NbChannelInputStream(readableChannel),
                     new NbChannelOutputStream(writableChannel));
         }
-    }
-
-    /**
-     * Read the current message line (start line or header line).
-     * 
-     * @param lineBuilder
-     *            The line builder to fill.
-     * @param builderState
-     *            The builder state.
-     * @param byteBuffer
-     *            The byte buffer to read from.
-     * @return The new builder state.
-     * @throws IOException
-     */
-    public static BufferState fillLine(StringBuilder lineBuilder,
-            BufferState builderState, ByteBuffer byteBuffer) throws IOException {
-        int next;
-
-        if (builderState == BufferState.IDLE) {
-            builderState = BufferState.FILLING;
-        }
-
-        while ((builderState != BufferState.DRAINING)
-                && byteBuffer.hasRemaining()) {
-            next = (int) byteBuffer.get();
-
-            switch (builderState) {
-            case FILLING:
-                if (HeaderUtils.isCarriageReturn(next)) {
-                    builderState = BufferState.FILLED;
-                } else {
-                    lineBuilder.append((char) next);
-                }
-
-                break;
-
-            case FILLED:
-                if (HeaderUtils.isLineFeed(next)) {
-                    builderState = BufferState.DRAINING;
-                } else {
-                    throw new IOException(
-                            "Missing line feed character at the end of the line. Found character \""
-                                    + (char) next + "\" (" + next + ") instead");
-                }
-
-                break;
-            }
-        }
-
-        return builderState;
     }
 
     /**
