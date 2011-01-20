@@ -22,6 +22,9 @@ Changes log
         selectable representations.
       - Added higher level NIO event listeners in org.restlet.util package:
         InputListener, ReaderListener and StringListener.
+      - Created a com.google.gwt.server library dedicated to the 
+        org.restlet.gwt extension. This library will be shipped with the 
+        JSE, JEE, GAE editions.
     - Enhancements
       - Added support for non-blocking HTTPS to the internal NIO connectors, 
         client-side and server-side. Sponsored by NetDev.
