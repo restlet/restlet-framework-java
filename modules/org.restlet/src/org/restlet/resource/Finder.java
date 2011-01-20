@@ -77,30 +77,22 @@ public class Finder extends Restlet {
             Class<? extends Finder> finderClass, Context context, Logger logger) {
         Finder result = null;
 
-        if (ServerResource.class.isAssignableFrom(targetClass)) {
-            if (finderClass != null) {
-                try {
-                    Constructor<? extends Finder> constructor = finderClass
-                            .getConstructor(Context.class, Class.class);
+        if (finderClass != null) {
+            try {
+                Constructor<? extends Finder> constructor = finderClass
+                        .getConstructor(Context.class, Class.class);
 
-                    if (constructor != null) {
-                        result = constructor.newInstance(context, targetClass);
-                    }
-                } catch (Exception e) {
-                    if (logger != null) {
-                        logger.log(Level.WARNING,
-                                "Exception while instantiating the finder.", e);
-                    }
+                if (constructor != null) {
+                    result = constructor.newInstance(context, targetClass);
                 }
-            } else {
-                result = new Finder(context, targetClass);
+            } catch (Exception e) {
+                if (logger != null) {
+                    logger.log(Level.WARNING,
+                            "Exception while instantiating the finder.", e);
+                }
             }
         } else {
-            if (logger != null) {
-                logger.log(
-                        Level.WARNING,
-                        "Cannot create a Finder for the given target class, since it is neither a subclass of Resource nor a subclass of ServerResource.");
-            }
+            result = new Finder(context, targetClass);
         }
 
         return result;
@@ -162,7 +154,8 @@ public class Finder extends Restlet {
                 result = targetClass.newInstance();
             } catch (Exception e) {
                 getLogger()
-                        .log(Level.WARNING,
+                        .log(
+                                Level.WARNING,
                                 "Exception while instantiating the target server resource.",
                                 e);
             }
