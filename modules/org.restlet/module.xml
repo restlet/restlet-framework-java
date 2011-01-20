@@ -140,10 +140,13 @@
          <exclude name="src/org/restlet/service/RealmService.java" />
          <exclude name="src/org/restlet/service/TaskService.java" />
          <exclude name="src/org/restlet/service/TunnelService.java" />
+         <exclude name="src/org/restlet/util/InputListener.java" />
+         <exclude name="src/org/restlet/util/ReaderListener.java" />
          <exclude name="src/org/restlet/util/Resolver.java" />
          <exclude name="src/org/restlet/util/RouteList.java" />
          <exclude name="src/org/restlet/util/SelectionListener.java" />
          <exclude name="src/org/restlet/util/SelectionRegistration.java" />
+         <exclude name="src/org/restlet/util/StringListener.java" />
          <exclude name="src/org/restlet/util/ServerHelper.java" />
          <exclude name="src/org/restlet/util/ServerList.java" />
          <exclude name="src/org/restlet/util/ServiceList.java" />

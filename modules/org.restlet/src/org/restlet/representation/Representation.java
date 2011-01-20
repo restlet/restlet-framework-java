@@ -46,8 +46,6 @@ import org.restlet.data.Range;
 import org.restlet.data.Tag;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.util.DateUtils;
-import org.restlet.util.SelectionListener;
-import org.restlet.util.SelectionRegistration;
 
 /**
  * Current or intended state of a resource. The content of a representation can
@@ -546,6 +544,7 @@ public abstract class Representation extends RepresentationInfo {
         this.range = range;
     }
 
+    // [ifndef gwt] method
     /**
      * Sets a listener for NIO read events. If the listener is null, it clear
      * any existing listener.
@@ -553,9 +552,9 @@ public abstract class Representation extends RepresentationInfo {
      * @param readListener
      *            The listener for NIO read events.
      */
-    public void setReadListener(SelectionListener readListener) {
+    public void setReadListener(org.restlet.util.SelectionListener readListener) {
         try {
-            SelectionRegistration sr = getRegistration();
+            org.restlet.util.SelectionRegistration sr = getRegistration();
 
             if ((readListener == null)) {
                 sr.setNoInterest();

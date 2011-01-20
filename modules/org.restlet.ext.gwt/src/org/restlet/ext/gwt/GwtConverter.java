@@ -42,6 +42,8 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * Converter between Object instances and Representations based on GWT
  * serialization format.
@@ -71,6 +73,7 @@ public class GwtConverter extends ConverterHelper {
         List<VariantInfo> result = null;
 
         if (Serializable.class.isAssignableFrom(source)
+                || IsSerializable.class.isAssignableFrom(source)
                 || ObjectRepresentation.class.isAssignableFrom(source)) {
             result = addVariant(result, VARIANT_GWT);
         }
@@ -82,7 +85,7 @@ public class GwtConverter extends ConverterHelper {
     public float score(Object source, Variant target, UniformResource resource) {
         float result = -1.0F;
 
-        if (source instanceof Serializable) {
+        if (source instanceof Serializable || source instanceof IsSerializable) {
             if (target == null) {
                 result = 0.5F;
             } else if (MediaType.APPLICATION_JAVA_OBJECT_GWT.equals(target
@@ -110,7 +113,8 @@ public class GwtConverter extends ConverterHelper {
                 && ObjectRepresentation.class.isAssignableFrom(target)) {
             result = 1.0F;
         } else if ((target != null)
-                && Serializable.class.isAssignableFrom(target)) {
+                && (Serializable.class.isAssignableFrom(target) || IsSerializable.class
+                        .isAssignableFrom(target))) {
             if (MediaType.APPLICATION_JAVA_OBJECT_GWT.equals(source
                     .getMediaType())) {
                 result = 1.0F;
@@ -137,7 +141,8 @@ public class GwtConverter extends ConverterHelper {
                     result = (T) new ObjectRepresentation<T>(source.getText(),
                             target);
                 }
-            } else if (Serializable.class.isAssignableFrom(target)) {
+            } else if (Serializable.class.isAssignableFrom(target)
+                    || IsSerializable.class.isAssignableFrom(target)) {
                 result = new ObjectRepresentation<T>(source.getText(), target)
                         .getObject();
             }
@@ -156,6 +161,9 @@ public class GwtConverter extends ConverterHelper {
         if (source instanceof Serializable) {
             result = new ObjectRepresentation<Serializable>(
                     (Serializable) source);
+        } else if (source instanceof IsSerializable) {
+            result = new ObjectRepresentation<IsSerializable>(
+                    (IsSerializable) source);
         } else if (source instanceof Representation) {
             result = (Representation) source;
         }
@@ -167,6 +175,7 @@ public class GwtConverter extends ConverterHelper {
     public <T> void updatePreferences(List<Preference<MediaType>> preferences,
             Class<T> entity) {
         if (Serializable.class.isAssignableFrom(entity)
+                || IsSerializable.class.isAssignableFrom(entity)
                 || ObjectRepresentation.class.isAssignableFrom(entity)) {
             updatePreferences(preferences,
                     MediaType.APPLICATION_JAVA_OBJECT_GWT, 1.0F);
