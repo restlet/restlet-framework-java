@@ -197,9 +197,30 @@ public abstract class InboundWay extends Way {
         return result;
     }
 
+    /**
+     * Indicates if the next message line is readable.
+     * 
+     * @return True if the next message line is readable.
+     * @throws IOException
+     */
+    protected boolean isLineReadable() throws IOException {
+        return isMessageReadable() && fillLine();
+    }
+
+    /**
+     * Indicates if the inbound way can attempt to read the current message or
+     * part of it.
+     * 
+     * @return True if the inbound way can attempt to read the current message
+     *         or part of it.
+     */
+    protected boolean isMessageReadable() {
+        return isSelected() && getIoBuffer().canDrain();
+    }
+
     @Override
-    protected boolean isProcessing() {
-        return super.isProcessing() && (getMessageState() != MessageState.BODY);
+    protected boolean isSelected() {
+        return super.isSelected() && (getMessageState() != MessageState.BODY);
     }
 
     @Override
@@ -241,7 +262,7 @@ public abstract class InboundWay extends Way {
                 getEntityRegistration().onSelected(
                         registration.getReadyOperations());
             } else {
-                while (isProcessing()) {
+                while (isSelected()) {
                     int result = getIoBuffer().refill(
                             getConnection().getReadableSelectionChannel());
 
@@ -255,12 +276,12 @@ public abstract class InboundWay extends Way {
                         getConnection().close(true);
                         setIoState(IoState.IDLE);
                         setMessageState(MessageState.IDLE);
-                    } else {
-                        while (isProcessing() && getIoBuffer().canDrain()) {
-                            // Bytes are available in the buffer
-                            // attempt to parse the next message
-                            readMessage();
-                        }
+                    }
+
+                    while (isMessageReadable()) {
+                        // Bytes are available in the buffer
+                        // attempt to parse the next message
+                        readMessage();
                     }
                 }
             }
@@ -291,7 +312,7 @@ public abstract class InboundWay extends Way {
     protected void readMessage() throws IOException {
         boolean continueReading = true;
 
-        while (continueReading && isProcessing() && fillLine()) {
+        while (continueReading && isLineReadable()) {
             // Parse next ready lines
             if (getMessageState() == MessageState.START) {
                 if (getLineBuilder().length() == 0) {

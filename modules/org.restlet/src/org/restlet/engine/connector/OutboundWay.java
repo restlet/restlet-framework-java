@@ -109,13 +109,6 @@ public abstract class OutboundWay extends Way {
     }
 
     /**
-     * Add a message to the outbound way.
-     * 
-     * @param response
-     */
-    protected abstract void handle(Response response);
-
-    /**
      * Adds the entity headers for the given response.
      * 
      * @param entity
@@ -153,6 +146,16 @@ public abstract class OutboundWay extends Way {
      */
     protected abstract void addHeaders(Series<Parameter> headers);
 
+    /**
+     * Indicates if the way can drain its IO buffer.
+     * 
+     * @return True if the way can drain its IO buffer.
+     */
+    protected boolean canDrain() {
+        return getIoBuffer().canDrain()
+                && ((getIoState() == IoState.PROCESSING) || (getIoState() == IoState.READY));
+    }
+
     @Override
     public void clear() {
         super.clear();
@@ -167,7 +170,7 @@ public abstract class OutboundWay extends Way {
      * @throws IOException
      */
     protected void drainByteBuffer() throws IOException {
-        if ((getIoBuffer().canDrain()) && (getIoState() == IoState.PROCESSING)) {
+        if (canDrain()) {
             int bytesWritten = getConnection().getWritableSelectionChannel()
                     .write(getIoBuffer().getBytes());
 
@@ -211,7 +214,7 @@ public abstract class OutboundWay extends Way {
      * @throws IOException
      */
     protected void fillByteBuffer() throws IOException {
-        while (isProcessing() && getIoBuffer().canFill()
+        while (isSelected() && getIoBuffer().canFill()
                 && (getMessageState() != MessageState.END)) {
             if (getMessageState() == MessageState.BODY) {
                 int result = getEntityChannel().read(getIoBuffer().getBytes());
@@ -340,6 +343,13 @@ public abstract class OutboundWay extends Way {
         return result;
     }
 
+    /**
+     * Add a message to the outbound way.
+     * 
+     * @param response
+     */
+    protected abstract void handle(Response response);
+
     @Override
     public void onCompleted(boolean endReached) {
         if (getLogger().isLoggable(Level.FINER)) {
@@ -358,7 +368,7 @@ public abstract class OutboundWay extends Way {
             if (message != null) {
                 super.onSelected(registration);
 
-                while (isProcessing()) {
+                while (isSelected()) {
                     if (getIoBuffer().isFilling()) {
                         if (getMessageState() == MessageState.END) {
                             // Message fully written, ready for a new one

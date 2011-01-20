@@ -91,28 +91,28 @@ public class ReadableChunkedChannel extends
         if (getLineBuilderState() != BufferState.DRAINING) {
             int byteBufferSize = 0;
 
-            if (getWrappedChannel().getIoBuffer().isDraining()) {
-                byteBufferSize = getWrappedChannel().getIoBuffer().getBytes()
+            if (getWrappedChannel().getSourceBuffer().isDraining()) {
+                byteBufferSize = getWrappedChannel().getSourceBuffer().getBytes()
                         .remaining();
             }
 
             if (byteBufferSize == 0) {
-                getWrappedChannel().getIoBuffer().clear();
+                getWrappedChannel().getSourceBuffer().clear();
 
                 if (getWrappedChannel().refill() > 0) {
-                    byteBufferSize = getWrappedChannel().getIoBuffer()
+                    byteBufferSize = getWrappedChannel().getSourceBuffer()
                             .getBytes().remaining();
                 }
             }
 
             if (byteBufferSize > 0) {
                 // Some bytes are available, fill the line builder
-                setLineBuilderState(getWrappedChannel().getIoBuffer().fillLine(
+                setLineBuilderState(getWrappedChannel().getSourceBuffer().fillLine(
                         getLineBuilder(), getLineBuilderState()));
 
-                if (!getWrappedChannel().getIoBuffer().getBytes()
+                if (!getWrappedChannel().getSourceBuffer().getBytes()
                         .hasRemaining()) {
-                    getWrappedChannel().getIoBuffer().clear();
+                    getWrappedChannel().getSourceBuffer().clear();
                 }
 
                 return getLineBuilderState() == BufferState.DRAINING;

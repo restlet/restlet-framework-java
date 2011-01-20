@@ -37,7 +37,6 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLEngineResult.Status;
 
-import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.IoBuffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.ReadableBufferedChannel;
@@ -97,8 +96,8 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
     }
 
     /**
-     * Drains the byte buffer. By default, it directly copies as many byte as
-     * possible to the target buffer, with no modification.
+     * Drains the byte buffer. By default, it decrypts the SSL data and copies
+     * as many byte as possible to the target buffer, with no modification.
      * 
      * @param targetBuffer
      *            The target buffer.
@@ -131,7 +130,7 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
 
     @Override
     protected IoBuffer getPacketBuffer() {
-        return getWrappedChannel().getIoBuffer();
+        return getWrappedChannel().getSourceBuffer();
     }
 
     @Override
@@ -150,17 +149,20 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
      * @return The number of bytes read.
      */
     public int read(ByteBuffer targetBuffer) throws IOException {
+        int result = 0;
+        boolean continueReading = true;
+        getWrappedChannel().refill();
+
         if (getManager().getState() == SslState.WRITING_APPLICATION_DATA) {
             getManager().setState(SslState.READING_APPLICATION_DATA);
         }
 
-        if ((getManager().getEngineStatus() == Status.BUFFER_UNDERFLOW)
-                && (getPacketBuffer().isDraining())) {
-            getPacketBuffer().getBytes().flip();
-            getPacketBuffer().setState(BufferState.FILLING);
+        while (continueReading) {
+            result += drain(targetBuffer);
+            continueReading = (getWrappedChannel().refill() > 0);
         }
 
-        return getWrappedChannel().read(targetBuffer, getPacketBuffer());
+        return result;
     }
 
 }

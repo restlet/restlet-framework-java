@@ -102,11 +102,9 @@ public abstract class ConnectionController extends Controller implements
             } else if (conn.updateState()) {
                 getUpdatedRegistrations().add(conn.getRegistration());
             } else if (conn.getInboundWay().getIoState() == IoState.READY) {
-                conn.getInboundWay().setIoState(IoState.PROCESSING);
                 conn.getInboundWay().onSelected(
                         conn.getInboundWay().getRegistration());
             } else if (conn.getOutboundWay().getIoState() == IoState.READY) {
-                conn.getOutboundWay().setIoState(IoState.PROCESSING);
                 conn.getOutboundWay().onSelected(
                         conn.getOutboundWay().getRegistration());
             }

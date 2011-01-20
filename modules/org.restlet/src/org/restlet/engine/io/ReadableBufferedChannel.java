@@ -48,25 +48,26 @@ public class ReadableBufferedChannel extends
     /** The completion callback. */
     private final CompletionListener completionListener;
 
-    /** The IO buffer. */
-    private final IoBuffer ioBuffer;
+    /** The source IO buffer. */
+    private final IoBuffer sourceBuffer;
 
     /**
      * Constructor.
      * 
      * @param completionListener
      *            The listener to callback upon reading completion.
-     * @param remainingBuffer
-     *            The byte buffer remaining from previous read processing.
+     * @param sourceBuffer
+     *            The source byte buffer, typically remaining from previous read
+     *            processing.
      * @param source
      *            The source channel.
      */
     public ReadableBufferedChannel(CompletionListener completionListener,
-            IoBuffer remainingBuffer, ReadableSelectionChannel source) {
+            IoBuffer sourceBuffer, ReadableSelectionChannel source) {
         super(source);
         setRegistration(new SelectionRegistration(0, null));
         this.completionListener = completionListener;
-        this.ioBuffer = remainingBuffer;
+        this.sourceBuffer = sourceBuffer;
     }
 
     @Override
@@ -84,12 +85,12 @@ public class ReadableBufferedChannel extends
     }
 
     /**
-     * Returns the IO buffer.
+     * Returns the source buffer.
      * 
-     * @return The IO buffer.
+     * @return The source buffer.
      */
-    public IoBuffer getIoBuffer() {
-        return ioBuffer;
+    public IoBuffer getSourceBuffer() {
+        return sourceBuffer;
     }
 
     /**
@@ -116,7 +117,7 @@ public class ReadableBufferedChannel extends
      *         been reached.
      */
     public int read(ByteBuffer targetBuffer) throws IOException {
-        return read(targetBuffer, getIoBuffer());
+        return read(targetBuffer, getSourceBuffer());
     }
 
     /**
@@ -125,35 +126,36 @@ public class ReadableBufferedChannel extends
      * 
      * @param targetBuffer
      *            The target buffer.
-     * @param ioBuffer
+     * @param sourceBuffer
      *            The buffer to drain for available bytes.
      * @return The number of bytes read, or -1 if the end of the channel has
      *         been reached.
      */
-    public int read(ByteBuffer targetBuffer, IoBuffer ioBuffer)
+    public int read(ByteBuffer targetBuffer, IoBuffer sourceBuffer)
             throws IOException {
         int result = 0;
         int lastRead = 0;
         boolean tryAgain = true;
 
-        synchronized (getIoBuffer().getBytes()) {
+        synchronized (getSourceBuffer().getBytes()) {
             while (tryAgain) {
-                switch (getIoBuffer().getState()) {
+                switch (getSourceBuffer().getState()) {
                 case FILLED:
-                    getIoBuffer().setState(BufferState.DRAINING);
+                    getSourceBuffer().setState(BufferState.DRAINING);
                 case DRAINING:
-                    if (getIoBuffer().getBytes().remaining() > 0) {
-                        lastRead = ioBuffer.drain(targetBuffer);
+                    if (getSourceBuffer().getBytes().remaining() > 0) {
+                        lastRead = sourceBuffer.drain(targetBuffer);
                         result += lastRead;
-                        tryAgain = ioBuffer.canRetry(lastRead, targetBuffer);
+                        tryAgain = sourceBuffer
+                                .canRetry(lastRead, targetBuffer);
                     }
 
-                    if (!getIoBuffer().canDrain()) {
-                        getIoBuffer().clear();
+                    if (!getSourceBuffer().canDrain()) {
+                        getSourceBuffer().clear();
                     }
                     break;
                 case IDLE:
-                    getIoBuffer().setState(BufferState.FILLING);
+                    getSourceBuffer().setState(BufferState.FILLING);
                 case FILLING:
                     int refillCount = refill();
 
@@ -180,7 +182,7 @@ public class ReadableBufferedChannel extends
      * @throws IOException
      */
     public int refill() throws IOException {
-        return getIoBuffer().refill(getWrappedChannel());
+        return getSourceBuffer().refill(getWrappedChannel());
     }
 
 }
