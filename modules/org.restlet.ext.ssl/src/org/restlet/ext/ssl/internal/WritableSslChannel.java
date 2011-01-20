@@ -37,7 +37,6 @@ import java.util.logging.Level;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLSession;
 
-import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.IoBuffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.SelectionChannel;
@@ -124,34 +123,6 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
         }
     }
 
-    @Override
-    protected SSLEngineResult runEngine(ByteBuffer applicationBuffer)
-            throws IOException {
-        SSLEngineResult result = null;
-
-        if (getConnection().getLogger().isLoggable(Level.INFO)) {
-            getConnection().getLogger().log(Level.INFO,
-                    "Wrapping bytes with: " + getPacketBuffer());
-        }
-
-        int remaining = getPacketBuffer().getBytes().remaining();
-
-        if (remaining > 0) {
-            result = getManager().getEngine().wrap(applicationBuffer,
-                    getPacketBuffer().getBytes());
-            getPacketBuffer().getBytes().flip();
-            remaining = getPacketBuffer().getBytes().remaining();
-
-            if (remaining > 0) {
-                getPacketBuffer().setState(BufferState.DRAINING);
-            } else {
-                getPacketBuffer().clear();
-            }
-        }
-
-        return result;
-    }
-
     /**
      * Writes the available bytes to the wrapped channel by wrapping them with
      * the SSL/TLS protocols.
@@ -179,7 +150,7 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
                 while (getPacketBuffer().getBytes().hasRemaining()
                         && (getConnection().getOutboundWay().getIoState() != IoState.IDLE)
                         && src.hasRemaining()) {
-                    SSLEngineResult sslResult = runEngine(src);
+                    SSLEngineResult sslResult = wrap(src);
                     handleResult(sslResult, src);
                     flush();
                 }

@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 
+import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.IoBuffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.SelectionChannel;
@@ -118,14 +119,15 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The SSL result to handle.
      * @param applicationBuffer
      *            The related application data buffer.
+     * @throws IOException
      */
     protected void handleHandshake(SSLEngineResult sslResult,
-            ByteBuffer applicationBuffer) {
+            ByteBuffer applicationBuffer) throws IOException {
 
         // Handle the status
         switch (sslResult.getHandshakeStatus()) {
         case FINISHED:
-            onHandshakeFinished(sslResult);
+            onHandshakeFinished(sslResult, applicationBuffer);
             break;
 
         case NEED_TASK:
@@ -133,11 +135,11 @@ public abstract class SslChannel<T extends SelectionChannel> extends
             break;
 
         case NEED_UNWRAP:
-            onUnwrap(sslResult);
+            onUnwrap(sslResult, applicationBuffer);
             break;
 
         case NEED_WRAP:
-            onWrap(sslResult);
+            onWrap(sslResult, applicationBuffer);
             break;
 
         case NOT_HANDSHAKING:
@@ -153,9 +155,10 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The SSL result to handle.
      * @param applicationBuffer
      *            The related application data buffer.
+     * @throws IOException
      */
     protected void handleResult(SSLEngineResult sslResult,
-            ByteBuffer applicationBuffer) {
+            ByteBuffer applicationBuffer) throws IOException {
         if (sslResult != null) {
             log(sslResult);
 
@@ -167,11 +170,11 @@ public abstract class SslChannel<T extends SelectionChannel> extends
 
             switch (sslResult.getStatus()) {
             case BUFFER_OVERFLOW:
-                onBufferOverflow(sslResult);
+                onBufferOverflow(sslResult, applicationBuffer);
                 break;
 
             case BUFFER_UNDERFLOW:
-                onBufferUnderflow(sslResult);
+                onBufferUnderflow(sslResult, applicationBuffer);
                 break;
 
             case CLOSED:
@@ -203,9 +206,17 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      * 
      * @param sslResult
      *            The SSL engine result.
+     * @param applicationBuffer
+     *            The related application data buffer.
      */
-    protected void onBufferOverflow(SSLEngineResult sslResult) {
+    protected void onBufferOverflow(SSLEngineResult sslResult,
+            ByteBuffer applicationBuffer) {
         getLogger().log(Level.WARNING, "SSL buffer overflow");
+
+        if (getConnection().getOutboundWay().getIoState() != IoState.PROCESSING) {
+            getConnection().getInboundWay().setIoState(IoState.IDLE);
+            getConnection().getOutboundWay().setIoState(IoState.INTEREST);
+        }
     }
 
     /**
@@ -213,9 +224,22 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      * 
      * @param sslResult
      *            The SSL engine result.
+     * @param applicationBuffer
+     *            The related application buffer.
      */
-    protected void onBufferUnderflow(SSLEngineResult sslResult) {
+    protected void onBufferUnderflow(SSLEngineResult sslResult,
+            ByteBuffer applicationBuffer) {
         getLogger().log(Level.WARNING, "SSL buffer underflow");
+
+        if (getConnection().getInboundWay().getIoState() != IoState.PROCESSING) {
+            if (getConnection().getInboundWay().getIoBuffer().canDrain()) {
+                getConnection().getInboundWay().setIoState(IoState.READY);
+            } else {
+                getConnection().getInboundWay().setIoState(IoState.INTEREST);
+            }
+
+            getConnection().getOutboundWay().setIoState(IoState.IDLE);
+        }
     }
 
     /**
@@ -225,10 +249,11 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      * @param sslResult
      *            The SSL engine result.
      * @param applicationBuffer
-     *            The related application data buffer.
+     *            The related application buffer.
+     * @throws IOException
      */
     protected void onClosed(SSLEngineResult sslResult,
-            ByteBuffer applicationBuffer) {
+            ByteBuffer applicationBuffer) throws IOException {
         getLogger().log(Level.INFO, "SSL engine closed");
         getManager().setState(SslState.CLOSED);
         getConnection().close(true);
@@ -236,13 +261,21 @@ public abstract class SslChannel<T extends SelectionChannel> extends
     }
 
     /**
+     * Called back when the delegated tasks have been run.
+     */
+    protected abstract void onDelegatedTasksCompleted();
+
+    /**
      * Notifies that the SSL handshake is finished. Application data can now be
      * exchanged.
      * 
      * @param sslResult
      *            The SSL engine result.
+     * @param applicationBuffer
+     *            The related application buffer.
      */
-    protected void onHandshakeFinished(SSLEngineResult sslResult) {
+    protected void onHandshakeFinished(SSLEngineResult sslResult,
+            ByteBuffer applicationBuffer) {
         getLogger().log(Level.INFO, "SSL handshake finished");
 
         if (getManager().getState() == SslState.HANDSHAKING) {
@@ -271,16 +304,13 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The SSL engine result.
      * @param applicationBuffer
      *            The related application data buffer.
+     * @throws IOException
      */
-    protected void onOk(SSLEngineResult sslResult, ByteBuffer applicationBuffer) {
+    protected void onOk(SSLEngineResult sslResult, ByteBuffer applicationBuffer)
+            throws IOException {
         getLogger().log(Level.INFO, "SSL OK. Handle ");
         handleHandshake(sslResult, applicationBuffer);
     }
-
-    /**
-     * Called back when the delegated tasks have been run.
-     */
-    protected abstract void onDelegatedTasksCompleted();
 
     /**
      * Unwraps packet data into handshake or application data. Need to read
@@ -288,14 +318,14 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      * 
      * @param sslResult
      *            The SSL engine result.
+     * @param applicationBuffer
+     *            The related application buffer.
+     * @throws IOException
      */
-    protected void onUnwrap(SSLEngineResult sslResult) {
+    protected void onUnwrap(SSLEngineResult sslResult,
+            ByteBuffer applicationBuffer) throws IOException {
         getLogger().log(Level.INFO, "SSL unwrap: " + sslResult);
-
-        if (getConnection().getInboundWay().getIoState() != IoState.PROCESSING) {
-            getConnection().getInboundWay().setIoState(IoState.INTEREST);
-            getConnection().getOutboundWay().setIoState(IoState.IDLE);
-        }
+        unwrap(applicationBuffer);
     }
 
     /**
@@ -304,25 +334,15 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      * 
      * @param sslResult
      *            The SSL engine result.
-     */
-    protected void onWrap(SSLEngineResult sslResult) {
-        getLogger().log(Level.INFO, "SSL wrap: " + sslResult);
-
-        if (getConnection().getOutboundWay().getIoState() != IoState.PROCESSING) {
-            getConnection().getInboundWay().setIoState(IoState.IDLE);
-            getConnection().getOutboundWay().setIoState(IoState.INTEREST);
-        }
-    }
-
-    /**
-     * Runs the SSL engine to do either wrapping or unwrapping.
-     * 
      * @param applicationBuffer
-     *            The related application data buffer.
-     * @return The SSL engine result.
+     *            The related application buffer.
+     * @throws IOException
      */
-    protected abstract SSLEngineResult runEngine(ByteBuffer applicationBuffer)
-            throws IOException;
+    protected void onWrap(SSLEngineResult sslResult,
+            ByteBuffer applicationBuffer) throws IOException {
+        getLogger().log(Level.INFO, "SSL wrap: " + sslResult);
+        wrap(applicationBuffer);
+    }
 
     /**
      * Runs the pending lengthy task.
@@ -330,7 +350,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      * @param sslResult
      *            The SSL engine result.
      * @param applicationBuffer
-     *            The related application data buffer.
+     *            The related application buffer.
      */
     protected void runTask(SSLEngineResult sslResult,
             final ByteBuffer applicationBuffer) {
@@ -368,6 +388,89 @@ public abstract class SslChannel<T extends SelectionChannel> extends
                         }
                     });
         }
+    }
+
+    /**
+     * Run the SSL engine to unwrap the packet bytes into application bytes.
+     * 
+     * @param applicationBuffer
+     *            The target application buffer.
+     * @return The SSL engine result.
+     * @throws IOException
+     */
+    protected SSLEngineResult unwrap(ByteBuffer applicationBuffer)
+            throws IOException {
+        if (getLogger().isLoggable(Level.INFO)) {
+            getLogger().log(Level.INFO,
+                    "Unwrapping bytes with: " + getPacketBuffer());
+
+            getLogger().log(
+                    Level.INFO,
+                    "Application buffer suggested size: "
+                            + getManager().getEngine().getSession()
+                                    .getApplicationBufferSize());
+            getLogger().log(
+                    Level.INFO,
+                    "Packet buffer suggested size: "
+                            + getManager().getEngine().getSession()
+                                    .getPacketBufferSize());
+            getLogger().log(
+                    Level.INFO,
+                    "Application buffer remaining size: "
+                            + applicationBuffer.remaining() + "/"
+                            + applicationBuffer.capacity());
+            getLogger().log(
+                    Level.INFO,
+                    "Packet buffer remaining size: "
+                            + getPacketBuffer().getBytes().remaining() + "/"
+                            + getPacketBuffer().getBytes().capacity());
+        }
+
+        SSLEngineResult result = getManager().getEngine().unwrap(
+                getPacketBuffer().getBytes(), applicationBuffer);
+        int remaining = getPacketBuffer().getBytes().remaining();
+
+        if (remaining == 0) {
+            getPacketBuffer().setState(BufferState.FILLING);
+            getPacketBuffer().clear();
+        }
+
+        return result;
+    }
+
+    /**
+     * Run the SSL engine to wrap the application bytes into packet bytes.
+     * 
+     * @param applicationBuffer
+     *            The target application buffer.
+     * @return The SSL engine result.
+     * @throws IOException
+     */
+    protected SSLEngineResult wrap(ByteBuffer applicationBuffer)
+            throws IOException {
+        SSLEngineResult result = null;
+
+        if (getConnection().getLogger().isLoggable(Level.INFO)) {
+            getConnection().getLogger().log(Level.INFO,
+                    "Wrapping bytes with: " + getPacketBuffer());
+        }
+
+        int remaining = getPacketBuffer().getBytes().remaining();
+
+        if (remaining > 0) {
+            result = getManager().getEngine().wrap(applicationBuffer,
+                    getPacketBuffer().getBytes());
+            getPacketBuffer().getBytes().flip();
+            remaining = getPacketBuffer().getBytes().remaining();
+
+            if (remaining > 0) {
+                getPacketBuffer().setState(BufferState.DRAINING);
+            } else {
+                getPacketBuffer().clear();
+            }
+        }
+
+        return result;
     }
 
 }

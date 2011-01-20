@@ -274,4 +274,9 @@ public class IoBuffer {
         this.state = byteBufferState;
     }
 
+    @Override
+    public String toString() {
+        return getBytes().toString() + " | " + getState();
+    }
+
 }

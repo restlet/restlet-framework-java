@@ -161,7 +161,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * 
      * @return The IO buffer.
      */
-    protected IoBuffer getIoBuffer() {
+    public IoBuffer getIoBuffer() {
         return ioBuffer;
     }
 

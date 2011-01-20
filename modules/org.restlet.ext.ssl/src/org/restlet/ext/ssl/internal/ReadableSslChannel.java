@@ -32,7 +32,6 @@ package org.restlet.ext.ssl.internal;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.logging.Level;
 
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
@@ -114,7 +113,7 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
         switch (getManager().getState()) {
         case READING_APPLICATION_DATA:
         case HANDSHAKING:
-            sslResult = runEngine(targetBuffer);
+            sslResult = unwrap(targetBuffer);
             handleResult(sslResult, targetBuffer);
             break;
         case CLOSED:
@@ -162,47 +161,6 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
         }
 
         return getWrappedChannel().read(targetBuffer, getPacketBuffer());
-    }
-
-    @Override
-    protected SSLEngineResult runEngine(ByteBuffer applicationBuffer)
-            throws IOException {
-        if (getLogger().isLoggable(Level.INFO)) {
-            getLogger().log(Level.INFO,
-                    "Unwrapping bytes with: " + getPacketBuffer());
-
-            getLogger().log(
-                    Level.INFO,
-                    "Application buffer suggested size: "
-                            + getManager().getEngine().getSession()
-                                    .getApplicationBufferSize());
-            getLogger().log(
-                    Level.INFO,
-                    "Packet buffer suggested size: "
-                            + getManager().getEngine().getSession()
-                                    .getPacketBufferSize());
-            getLogger().log(
-                    Level.INFO,
-                    "Application buffer remaining size: "
-                            + applicationBuffer.remaining() + "/"
-                            + applicationBuffer.capacity());
-            getLogger().log(
-                    Level.INFO,
-                    "Packet buffer remaining size: "
-                            + getPacketBuffer().getBytes().remaining() + "/"
-                            + getPacketBuffer().getBytes().capacity());
-        }
-
-        SSLEngineResult result = getManager().getEngine().unwrap(
-                getPacketBuffer().getBytes(), applicationBuffer);
-        int remaining = getPacketBuffer().getBytes().remaining();
-
-        if (remaining == 0) {
-            getPacketBuffer().setState(BufferState.FILLING);
-            getPacketBuffer().clear();
-        }
-
-        return result;
     }
 
 }
