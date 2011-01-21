@@ -395,8 +395,7 @@ public class Application extends Restlet {
     @Deprecated
     public synchronized void setClientRoot(
             Class<? extends ServerResource> clientRootClass) {
-        setOutboundRoot(Finder.createFinder(clientRootClass, getFinderClass(),
-                getContext(), getLogger()));
+        setOutboundRoot(clientRootClass);
     }
 
     /**
@@ -502,7 +501,8 @@ public class Application extends Restlet {
      */
     public synchronized void setOutboundRoot(
             Class<? extends ServerResource> outboundRootClass) {
-        setClientRoot(outboundRootClass);
+        setOutboundRoot(Finder.createFinder(outboundRootClass,
+                getFinderClass(), getContext(), getLogger()));
     }
 
     /**
