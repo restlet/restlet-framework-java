@@ -47,6 +47,13 @@ public class AddressWriter extends HeaderWriter<Address> {
     private final boolean includingTag;
 
     /**
+     * Default constructor.
+     */
+    public AddressWriter() {
+        this(true);
+    }
+
+    /**
      * Constructor.
      * 
      * @param includingTag

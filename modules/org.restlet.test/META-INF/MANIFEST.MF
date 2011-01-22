@@ -39,7 +39,8 @@ Require-Bundle: org.restlet,
  org.apache.tika,
  org.restlet.ext.odata,
  org.restlet.ext.sip,
- org.restlet.ext.ssl
+ org.restlet.ext.ssl,
+ com.google.gwt.server
 Export-Package: org.restlet.test,
  org.restlet.test.bench,
  org.restlet.test.component,
