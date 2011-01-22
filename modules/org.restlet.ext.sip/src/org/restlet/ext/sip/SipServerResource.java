@@ -47,7 +47,7 @@ public class SipServerResource extends ServerResource {
      * @return The request's call sequence.
      */
     public String getCallSequence() {
-        return getRequest().getCallSequence();
+        return getRequest().getCommandSequence();
     }
 
     /**

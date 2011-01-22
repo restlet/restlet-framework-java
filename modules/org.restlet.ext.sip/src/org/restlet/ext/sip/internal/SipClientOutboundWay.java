@@ -89,9 +89,9 @@ public class SipClientOutboundWay extends ClientOutboundWay {
                 headers.add(SipConstants.HEADER_CALL_ID, sipRequest.getCallId());
             }
 
-            if (sipRequest.getCallSequence() != null) {
+            if (sipRequest.getCommandSequence() != null) {
                 headers.add(SipConstants.HEADER_CALL_SEQ,
-                        sipRequest.getCallSequence());
+                        sipRequest.getCommandSequence());
             }
 
             if (sipRequest.getFrom() != null) {

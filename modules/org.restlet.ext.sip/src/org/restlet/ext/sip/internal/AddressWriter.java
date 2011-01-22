@@ -43,6 +43,19 @@ import org.restlet.ext.sip.Address;
  */
 public class AddressWriter extends HeaderWriter<Address> {
 
+    /** Indicates if the tag parameter should be included. */
+    private final boolean includingTag;
+
+    /**
+     * Constructor.
+     * 
+     * @param includingTag
+     *            Indicates if the tag parameter should be included.
+     */
+    public AddressWriter(boolean includingTag) {
+        this.includingTag = includingTag;
+    }
+
     /**
      * Writes an address.
      * 
@@ -51,7 +64,18 @@ public class AddressWriter extends HeaderWriter<Address> {
      * @return The formatted address.
      */
     public static String write(Address address) {
-        return new AddressWriter().append(address).toString();
+        return write(address, true);
+    }
+
+    /**
+     * Writes an address.
+     * 
+     * @param address
+     *            The address.
+     * @return The formatted address.
+     */
+    public static String write(Address address, boolean includeTag) {
+        return new AddressWriter(includeTag).append(address).toString();
     }
 
     /**
@@ -62,7 +86,7 @@ public class AddressWriter extends HeaderWriter<Address> {
      * @return The formatted list of addresses.
      */
     public static String write(List<Address> addresses) {
-        return new AddressWriter().append(addresses).toString();
+        return new AddressWriter(true).append(addresses).toString();
     }
 
     @Override
@@ -72,13 +96,17 @@ public class AddressWriter extends HeaderWriter<Address> {
                 appendQuotedString(address.getDisplayName());
                 append(" ");
             }
+
             append("<");
             append(address.getReference().toString());
             append("> ");
+
             if (!address.getParameters().isEmpty()) {
                 for (Parameter param : address.getParameters()) {
-                    appendParameterSeparator();
-                    appendExtension(param);
+                    if (includingTag || !"tag".equals(param.getName())) {
+                        appendParameterSeparator();
+                        appendExtension(param);
+                    }
                 }
             }
         }

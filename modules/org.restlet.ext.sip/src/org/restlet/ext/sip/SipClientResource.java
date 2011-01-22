@@ -353,12 +353,12 @@ public class SipClientResource extends ClientResource {
     }
 
     /**
-     * Returns the request's call sequence.
+     * Returns the request's command sequence.
      * 
-     * @return The request's call sequence.
+     * @return The request's command sequence.
      */
-    public String getCallSequence() {
-        return getRequest().getCallSequence();
+    public String getCommandSequence() {
+        return getRequest().getCommandSequence();
     }
 
     /**

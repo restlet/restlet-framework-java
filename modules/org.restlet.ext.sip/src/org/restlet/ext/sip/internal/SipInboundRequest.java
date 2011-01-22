@@ -1215,7 +1215,7 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
         String callSeqHeader = (getHeaders() == null) ? null : getHeaders()
                 .getFirstValue(SipConstants.HEADER_CALL_SEQ);
         if (callSeqHeader != null) {
-            setCallSequence(callSeqHeader);
+            setCommandSequence(callSeqHeader);
         }
 
         // Set the "to" property

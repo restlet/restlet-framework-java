@@ -36,6 +36,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Tag;
+import org.restlet.ext.sip.internal.AddressWriter;
 
 /**
  * Response part of a SIP transaction.
@@ -59,8 +60,8 @@ public class SipResponse extends Response {
      */
     private volatile String callId;
 
-    /** The identifier of the transaction. */
-    private volatile String callSequence;
+    /** The identifier of the command. */
+    private volatile String commandSequence;
 
     /** The data about the contacts. */
     private volatile List<ContactInfo> contacts;
@@ -186,12 +187,12 @@ public class SipResponse extends Response {
     }
 
     /**
-     * Returns the identifier of a transaction.
+     * Returns the identifier of the command.
      * 
-     * @return The identifier of the transaction.
+     * @return The identifier of the command.
      */
-    public String getCallSequence() {
-        return callSequence;
+    public String getCommandSequence() {
+        return commandSequence;
     }
 
     /**
@@ -361,6 +362,27 @@ public class SipResponse extends Response {
     }
 
     /**
+     * Returns the transaction identifier. It uses the "branch" parameter of the
+     * Via header if possible or a hash of several other fields.
+     * 
+     * @return The transaction identifier.
+     */
+    public String getTransactionId() {
+        String result = null;
+
+        if (getSipRecipientsInfo().size() > 0) {
+            SipRecipientInfo recipient = getSipRecipientsInfo().get(0);
+            result = recipient.getParameters().getFirstValue("branch");
+        } else {
+            result = getCallId() + '|' + getCommandSequence() + '|'
+                    + AddressWriter.write(getTo(), false) + '|'
+                    + AddressWriter.write(getFrom()) + '|';
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the extensions not supported by the UAS.
      * 
      * @return The extensions not supported by the UAS.
@@ -420,13 +442,13 @@ public class SipResponse extends Response {
     }
 
     /**
-     * Sets the identifier of the transaction.
+     * Sets the identifier of the command.
      * 
-     * @param callSequence
-     *            The identifier of the transaction.
+     * @param commandSequence
+     *            The identifier of the command.
      */
-    public void setCallSequence(String callSequence) {
-        this.callSequence = callSequence;
+    public void setCommandSequence(String callCommand) {
+        this.commandSequence = callCommand;
     }
 
     /**

@@ -30,15 +30,19 @@
 
 package org.restlet.ext.sip.internal;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Protocol;
-import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.ClientConnectionHelper;
+import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.InboundWay;
 import org.restlet.engine.connector.OutboundWay;
 import org.restlet.ext.sip.SipResponse;
+import org.restlet.ext.sip.Transaction;
 
 /**
  * Standalone SIP client helper.
@@ -46,6 +50,9 @@ import org.restlet.ext.sip.SipResponse;
  * @author Jerome Louvel
  */
 public class SipClientHelper extends ClientConnectionHelper {
+
+    /** The map of managed transactions. */
+    private final Map<String, Transaction> transactions;
 
     /**
      * Constructor.
@@ -55,6 +62,7 @@ public class SipClientHelper extends ClientConnectionHelper {
      */
     public SipClientHelper(Client client) {
         super(client);
+        this.transactions = new ConcurrentHashMap<String, Transaction>();
         getProtocols().add(Protocol.SIP);
         getProtocols().add(Protocol.SIPS);
     }
@@ -74,6 +82,15 @@ public class SipClientHelper extends ClientConnectionHelper {
     @Override
     protected Response createResponse(Request request) {
         return new SipResponse(request);
+    }
+
+    /**
+     * Returns the map of managed transactions.
+     * 
+     * @return The map of managed transactions.
+     */
+    protected Map<String, Transaction> getTransactions() {
+        return transactions;
     }
 
 }

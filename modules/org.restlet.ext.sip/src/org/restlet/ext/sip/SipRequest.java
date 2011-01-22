@@ -37,6 +37,7 @@ import org.restlet.Request;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
+import org.restlet.ext.sip.internal.AddressWriter;
 import org.restlet.representation.Representation;
 
 /**
@@ -61,8 +62,8 @@ public class SipRequest extends Request {
      */
     private volatile String callId;
 
-    /** The identifier of the transaction. */
-    private volatile String callSequence;
+    /** The identifier of the command.. */
+    private volatile String commandSequence;
 
     /** The data about the contacts. */
     private volatile List<ContactInfo> contacts;
@@ -205,7 +206,7 @@ public class SipRequest extends Request {
         this.allowedEventTypes = request.getAllowedEventTypes();
         this.callerInfo = request.getCallerInfo();
         this.callId = request.getCallId();
-        this.callSequence = request.getCallSequence();
+        this.commandSequence = request.getCommandSequence();
         this.contacts = request.getContacts();
         this.event = request.getEvent();
         this.from = request.getFrom();
@@ -286,12 +287,12 @@ public class SipRequest extends Request {
     }
 
     /**
-     * Returns the identifier of a transaction.
+     * Returns the identifier of the command.
      * 
-     * @return The identifier of the transaction.
+     * @return The identifier of the command.
      */
-    public String getCallSequence() {
-        return callSequence;
+    public String getCommandSequence() {
+        return commandSequence;
     }
 
     /**
@@ -562,6 +563,27 @@ public class SipRequest extends Request {
     }
 
     /**
+     * Returns the transaction identifier. It uses the "branch" parameter of the
+     * Via header if possible or a hash of several other fields.
+     * 
+     * @return The transaction identifier.
+     */
+    public String getTransactionId() {
+        String result = null;
+
+        if (getSipRecipientsInfo().size() > 0) {
+            SipRecipientInfo recipient = getSipRecipientsInfo().get(0);
+            result = recipient.getParameters().getFirstValue("branch");
+        } else {
+            result = getCallId() + '|' + getCommandSequence() + '|'
+                    + AddressWriter.write(getTo(), false) + '|'
+                    + AddressWriter.write(getFrom()) + '|';
+        }
+
+        return result;
+    }
+
+    /**
      * Sets the alternative ring tone for the UAS.
      * 
      * @param alertInfo
@@ -602,13 +624,13 @@ public class SipRequest extends Request {
     }
 
     /**
-     * Sets the identifier of the transaction.
+     * Sets the identifier of the command.
      * 
-     * @param callSequence
-     *            The identifier of the transaction.
+     * @param commandSequence
+     *            The identifier of the command.
      */
-    public void setCallSequence(String callSequence) {
-        this.callSequence = callSequence;
+    public void setCommandSequence(String commandSequence) {
+        this.commandSequence = commandSequence;
     }
 
     /**

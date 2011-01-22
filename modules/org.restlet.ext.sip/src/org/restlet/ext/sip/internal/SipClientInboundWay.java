@@ -114,11 +114,11 @@ public class SipClientInboundWay extends ClientInboundWay {
             sr.setCallId(callIdHeader);
         }
 
-        // Set the "callSeq" property
-        String callSeqHeader = (getHeaders() == null) ? null : getHeaders()
+        // Set the "commandSeq" property
+        String commandSeqHeader = (getHeaders() == null) ? null : getHeaders()
                 .getFirstValue(SipConstants.HEADER_CALL_SEQ);
-        if (callSeqHeader != null) {
-            sr.setCallSequence(callSeqHeader);
+        if (commandSeqHeader != null) {
+            sr.setCommandSequence(commandSeqHeader);
         }
 
         // Set the "contacts" property

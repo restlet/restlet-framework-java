@@ -999,15 +999,16 @@ public class Reference {
                 return this.internalRef.substring(this.schemeIndex + 1,
                         this.queryIndex);
             }
+
             // No query found
             if (hasFragment()) {
                 // Fragment found
                 return this.internalRef.substring(this.schemeIndex + 1,
                         this.fragmentIndex);
             }
+
             // No fragment found
             return this.internalRef.substring(this.schemeIndex + 1);
-
         }
 
         // No scheme found
