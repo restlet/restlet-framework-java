@@ -34,12 +34,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.restlet.Client;
+import org.restlet.Response;
 import org.restlet.data.Protocol;
 import org.restlet.engine.connector.ClientConnectionHelper;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.InboundWay;
 import org.restlet.engine.connector.OutboundWay;
 import org.restlet.ext.sip.SipRequest;
+import org.restlet.ext.sip.SipResponse;
 
 /**
  * Standalone SIP client helper.
@@ -84,6 +86,20 @@ public class SipClientHelper extends ClientConnectionHelper {
      */
     protected Map<String, SipRequest> getRequests() {
         return requests;
+    }
+
+    @Override
+    public void handleInbound(Response response) {
+        SipResponse sipResponse = (SipResponse) response;
+
+        if (sipResponse != null) {
+            // Lookup the parent request that initiated the SIP transaction
+            String tid = sipResponse.getTransactionId();
+            SipRequest sipRequest = getRequests().get(tid);
+            sipResponse.setRequest(sipRequest);
+        }
+
+        super.handleInbound(response);
     }
 
 }
