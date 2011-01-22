@@ -41,8 +41,8 @@ import org.restlet.engine.connector.ClientConnectionHelper;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.InboundWay;
 import org.restlet.engine.connector.OutboundWay;
+import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
-import org.restlet.ext.sip.Transaction;
 
 /**
  * Standalone SIP client helper.
@@ -51,8 +51,8 @@ import org.restlet.ext.sip.Transaction;
  */
 public class SipClientHelper extends ClientConnectionHelper {
 
-    /** The map of managed transactions. */
-    private final Map<String, Transaction> transactions;
+    /** The map of managed transactions represented by their initial request. */
+    private final Map<String, SipRequest> requests;
 
     /**
      * Constructor.
@@ -62,7 +62,7 @@ public class SipClientHelper extends ClientConnectionHelper {
      */
     public SipClientHelper(Client client) {
         super(client);
-        this.transactions = new ConcurrentHashMap<String, Transaction>();
+        this.requests = new ConcurrentHashMap<String, SipRequest>();
         getProtocols().add(Protocol.SIP);
         getProtocols().add(Protocol.SIPS);
     }
@@ -85,12 +85,13 @@ public class SipClientHelper extends ClientConnectionHelper {
     }
 
     /**
-     * Returns the map of managed transactions.
+     * Returns the map of managed transactions represented by their initial
+     * request.
      * 
      * @return The map of managed transactions.
      */
-    protected Map<String, Transaction> getTransactions() {
-        return transactions;
+    protected Map<String, SipRequest> getRequests() {
+        return requests;
     }
 
 }

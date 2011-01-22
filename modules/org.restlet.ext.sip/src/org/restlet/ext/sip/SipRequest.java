@@ -47,6 +47,9 @@ import org.restlet.representation.Representation;
  */
 public class SipRequest extends Request {
 
+    /** The default time out (32s). */
+    private final static int DEFAULT_TIMEOUT = 32000;
+
     /** Alternative ring tone for the UAS. */
     private volatile Address alertInfo;
 
@@ -68,6 +71,9 @@ public class SipRequest extends Request {
     /** The data about the contacts. */
     private volatile List<ContactInfo> contacts;
 
+    /** The creation time of this transaction object. */
+    private final long creation;
+
     /** The description of an event notification. */
     private volatile Event event;
 
@@ -76,6 +82,12 @@ public class SipRequest extends Request {
 
     /** The list of references to call-ids. */
     private volatile List<String> inReplyTo;
+
+    /** The time of last activity on the transaction initiated by this request. */
+    private volatile long lastTransactionActivity;
+
+    /** The transaction timeout in milliseconds. */
+    private final int maxTransactionIdleTimeMs;
 
     /** The version of the MIME protocol used to construct the message. */
     private volatile String mimeVersion;
@@ -138,7 +150,7 @@ public class SipRequest extends Request {
      * Constructor.
      */
     public SipRequest() {
-        super();
+        this((Method) null, (Reference) null, (Representation) null);
     }
 
     /**
@@ -150,7 +162,7 @@ public class SipRequest extends Request {
      *            The resource reference.
      */
     public SipRequest(Method method, Reference resourceRef) {
-        super(method, resourceRef);
+        this(method, resourceRef, null);
     }
 
     /**
@@ -166,6 +178,9 @@ public class SipRequest extends Request {
     public SipRequest(Method method, Reference resourceRef,
             Representation entity) {
         super(method, resourceRef, entity);
+        this.creation = System.currentTimeMillis();
+        this.lastTransactionActivity = this.creation;
+        this.maxTransactionIdleTimeMs = DEFAULT_TIMEOUT;
     }
 
     /**
@@ -177,7 +192,7 @@ public class SipRequest extends Request {
      *            The resource URI.
      */
     public SipRequest(Method method, String resourceUri) {
-        super(method, resourceUri);
+        this(method, new Reference(resourceUri));
     }
 
     /**
@@ -191,7 +206,7 @@ public class SipRequest extends Request {
      *            The entity.
      */
     public SipRequest(Method method, String resourceUri, Representation entity) {
-        super(method, resourceUri, entity);
+        this(method, new Reference(resourceUri), entity);
     }
 
     /**
@@ -226,6 +241,9 @@ public class SipRequest extends Request {
         this.subscription = request.getSubscriptionState();
         this.supported = request.getSupported();
         this.to = request.getTo();
+        this.creation = System.currentTimeMillis();
+        this.lastTransactionActivity = this.creation;
+        this.maxTransactionIdleTimeMs = request.getMaxTransactionIdleTimeMs();
     }
 
     /**
@@ -316,6 +334,15 @@ public class SipRequest extends Request {
     }
 
     /**
+     * Returns the creation time.
+     * 
+     * @return The creation time.
+     */
+    public long getCreation() {
+        return creation;
+    }
+
+    /**
      * Returns the description of an event notification.
      * 
      * @return The description of an event notification.
@@ -351,6 +378,24 @@ public class SipRequest extends Request {
         }
 
         return irt;
+    }
+
+    /**
+     * Returns the date of last activity on this transaction object.
+     * 
+     * @return The date of last activity on this transaction object.
+     */
+    public long getLastTransactionActivity() {
+        return lastTransactionActivity;
+    }
+
+    /**
+     * Returns the timeout in milliseconds.
+     * 
+     * @return The timeout in milliseconds.
+     */
+    public int getMaxTransactionIdleTimeMs() {
+        return maxTransactionIdleTimeMs;
     }
 
     /**
@@ -584,6 +629,22 @@ public class SipRequest extends Request {
     }
 
     /**
+     * Indicates if the transaction has timed out due to lack of activity.
+     * 
+     * @return True if the transaction has timed out due to lack of activity.
+     */
+    public boolean hasTimedOut() {
+        return (System.currentTimeMillis() - this.lastTransactionActivity) >= getMaxTransactionIdleTimeMs();
+    }
+
+    /**
+     * Indicates that a new activity on this transaction has been detected.
+     */
+    public void notifyTransactionActivity() {
+        setLastTransactionActivity(System.currentTimeMillis());
+    }
+
+    /**
      * Sets the alternative ring tone for the UAS.
      * 
      * @param alertInfo
@@ -671,6 +732,16 @@ public class SipRequest extends Request {
      */
     public void setInReplyTo(List<String> inReplyTo) {
         this.inReplyTo = inReplyTo;
+    }
+
+    /**
+     * Sets the date of last activity on this transaction object.
+     * 
+     * @param lastActivityTime
+     *            The date of last activity on this transaction object.
+     */
+    private void setLastTransactionActivity(long lastActivityTime) {
+        this.lastTransactionActivity = lastActivityTime;
     }
 
     /**
