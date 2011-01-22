@@ -34,15 +34,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.restlet.Client;
-import org.restlet.Request;
-import org.restlet.Response;
 import org.restlet.data.Protocol;
 import org.restlet.engine.connector.ClientConnectionHelper;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.InboundWay;
 import org.restlet.engine.connector.OutboundWay;
 import org.restlet.ext.sip.SipRequest;
-import org.restlet.ext.sip.SipResponse;
 
 /**
  * Standalone SIP client helper.
@@ -77,11 +74,6 @@ public class SipClientHelper extends ClientConnectionHelper {
     public OutboundWay createOutboundWay(Connection<Client> connection,
             int bufferSize) {
         return new SipClientOutboundWay(connection, bufferSize);
-    }
-
-    @Override
-    protected Response createResponse(Request request) {
-        return new SipResponse(request);
     }
 
     /**

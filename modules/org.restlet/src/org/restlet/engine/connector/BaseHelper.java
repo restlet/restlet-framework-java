@@ -236,17 +236,6 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Creates the response object.
-     * 
-     * @param request
-     *            The associated request.
-     * @return The response object.
-     */
-    protected Response createResponse(Request request) {
-        return new Response(request);
-    }
-
-    /**
      * Creates the handler service.
      * 
      * @return The handler service.

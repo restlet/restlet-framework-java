@@ -75,7 +75,7 @@ public class HttpClientInboundWay extends ClientInboundWay {
         Response finalResponse = getMessages().peek();
 
         if (status.isInformational()) {
-            result = getHelper().createResponse(finalResponse.getRequest());
+            result = new Response(finalResponse.getRequest());
         } else {
             result = finalResponse;
         }

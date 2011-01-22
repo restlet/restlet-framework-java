@@ -33,6 +33,7 @@ package org.restlet.engine.connector;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Status;
@@ -67,6 +68,11 @@ public class HttpServerInboundWay extends ServerInboundWay {
     public void clear() {
         super.clear();
         this.messages.clear();
+    }
+
+    @Override
+    protected Response createResponse(Request request) {
+        return new Response(request);
     }
 
     @Override

@@ -30,9 +30,13 @@
 
 package org.restlet.ext.sip.internal;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.ServerInboundWay;
+import org.restlet.ext.sip.SipRequest;
+import org.restlet.ext.sip.SipResponse;
 
 /**
  * SIP server inbound way.
@@ -51,6 +55,11 @@ public class SipServerInboundWay extends ServerInboundWay {
      */
     public SipServerInboundWay(Connection<Server> connection, int bufferSize) {
         super(connection, bufferSize);
+    }
+
+    @Override
+    protected Response createResponse(Request request) {
+        return new SipResponse(request);
     }
 
 }

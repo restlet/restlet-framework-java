@@ -38,10 +38,9 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.RecipientInfo;
 import org.restlet.engine.connector.Connection;
-import org.restlet.engine.connector.ServerConnectionHelper;
 import org.restlet.engine.connector.OutboundWay;
+import org.restlet.engine.connector.ServerConnectionHelper;
 import org.restlet.engine.connector.ServerInboundWay;
-import org.restlet.ext.sip.SipResponse;
 
 /**
  * Standalone SIP server helper.
@@ -89,11 +88,6 @@ public class SipServerHelper extends ServerConnectionHelper {
         // distinct formats.
         request.setRecipientsInfo(new ArrayList<RecipientInfo>());
         return request;
-    }
-
-    @Override
-    protected Response createResponse(Request request) {
-        return new SipResponse(request);
     }
 
 }

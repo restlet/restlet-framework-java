@@ -59,6 +59,15 @@ public abstract class ServerInboundWay extends InboundWay {
         super(connection, bufferSize);
     }
 
+    /**
+     * Creates a response object for the given request.
+     * 
+     * @param request
+     *            The parent request.
+     * @return The new response object.
+     */
+    protected abstract Response createResponse(Request request);
+
     @Override
     protected Message getActualMessage() {
         return getMessage().getRequest();
@@ -73,24 +82,6 @@ public abstract class ServerInboundWay extends InboundWay {
     @Override
     public ServerConnectionHelper getHelper() {
         return (ServerConnectionHelper) super.getHelper();
-    }
-
-    /**
-     * Call back invoked when the message is received.
-     * 
-     * @param message
-     *            The new message received.
-     */
-    protected void onReceived(Response message) {
-        if (message.getRequest() != null) {
-            // Add it to the helper queue
-            getHelper().getInboundMessages().add(message);
-
-            if (!message.getRequest().isEntityAvailable()) {
-                // The request has been completely read
-                onCompleted(false);
-            }
-        }
     }
 
     @Override
@@ -119,6 +110,24 @@ public abstract class ServerInboundWay extends InboundWay {
 
         // Continue the processing of the new response received
         onReceived(getMessage());
+    }
+
+    /**
+     * Call back invoked when the message is received.
+     * 
+     * @param message
+     *            The new message received.
+     */
+    protected void onReceived(Response message) {
+        if (message.getRequest() != null) {
+            // Add it to the helper queue
+            getHelper().getInboundMessages().add(message);
+
+            if (!message.getRequest().isEntityAvailable()) {
+                // The request has been completely read
+                onCompleted(false);
+            }
+        }
     }
 
     @Override
@@ -187,7 +196,7 @@ public abstract class ServerInboundWay extends InboundWay {
             // Create a new request object
             Request request = getHelper().createRequest(getConnection(),
                     requestMethod, requestUri, version);
-            Response response = getHelper().createResponse(request);
+            Response response = createResponse(request);
             setMessage(response);
             setMessageState(MessageState.HEADERS);
             clearLineBuilder();
