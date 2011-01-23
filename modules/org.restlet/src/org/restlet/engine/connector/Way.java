@@ -216,7 +216,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * 
      * @return The current message processed.
      */
-    protected Response getMessage() {
+    public Response getMessage() {
         return message;
     }
 

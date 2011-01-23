@@ -107,11 +107,11 @@ import org.restlet.Connector;
  */
 public abstract class ConnectionHelper<T extends Connector> extends
         BaseHelper<T> {
-    /** The set of active connections. */
-    private final Set<Connection<T>> connections;
-
     /** The connection pool. */
     private volatile ConnectionPool<T> connectionPool;
+
+    /** The set of active connections. */
+    private final Set<Connection<T>> connections;
 
     /**
      * Constructor.

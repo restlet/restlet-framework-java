@@ -62,7 +62,7 @@ public class SipServerHelper extends ServerConnectionHelper {
 
     @Override
     protected boolean canHandle(Connection<Server> connection, Response response) {
-        return true;
+        return (connection.getOutboundWay().getMessage() == null);
     }
 
     @Override
