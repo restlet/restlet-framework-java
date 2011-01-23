@@ -88,6 +88,7 @@
          <exclude name="src/org/restlet/engine/http/security/**" />
          <exclude name="src/org/restlet/engine/internal/**" />
          <exclude name="src/org/restlet/engine/io/Drainer.java" />
+         <exclude name="src/org/restlet/engine/io/IoBuffer.java" />
          <exclude name="src/org/restlet/engine/io/ReaderInputStream.java" />
          <exclude name="src/org/restlet/engine/io/Trace*" />
          <exclude name="src/org/restlet/engine/io/*Channel*" />
