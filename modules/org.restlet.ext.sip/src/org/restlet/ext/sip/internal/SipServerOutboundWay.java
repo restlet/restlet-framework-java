@@ -37,6 +37,7 @@ import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.ServerOutboundWay;
 import org.restlet.engine.header.DateWriter;
 import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.io.IoState;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
@@ -174,8 +175,8 @@ public class SipServerOutboundWay extends ServerOutboundWay {
 
     @Override
     protected void handle(Response response) {
-        // TODO Auto-generated method stub
-
+        setMessage(response);
+        setIoState(IoState.INTEREST);
     }
 
 }

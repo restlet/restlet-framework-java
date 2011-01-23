@@ -214,15 +214,7 @@ public class SipClientOutboundWay extends ClientOutboundWay {
     @Override
     protected void handle(Response response) {
         setMessage(response);
-    }
-
-    @Override
-    public void updateState() {
-        if (getMessage() != null) {
-            setIoState(IoState.INTEREST);
-        }
-
-        super.updateState();
+        setIoState(IoState.INTEREST);
     }
 
 }
