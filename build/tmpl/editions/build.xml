@@ -310,6 +310,22 @@
 		</sequential>
 	</macrodef>
 
+	<macrodef name="gwtCompileModule">
+		<attribute name="name" />
+		<attribute name="module" />
+		<sequential>
+			<java classname="com.google.gwt.dev.Compiler" fork="true" failonerror="true">
+				<classpath>
+					<path refid="mod-@{name}-path"></path>
+					<pathelement path="${mod}/${mod-@{name}-id}/src" />
+				</classpath>
+				<arg value="-validateOnly" />
+				<arg value="-strict" />
+				<arg value="@{module}" />
+			</java>
+		</sequential>
+	</macrodef>
+	
 	<!-- Compile a module -->
 	<macrodef name="compileModule">
 		<attribute name="name" />
@@ -534,6 +550,7 @@
 		<for param="module" delimiter=" " list="${modules-sorted-by-dep}">
 			<sequential>
 				<compileModule name="@{module}" />
+				<!-- @generate-classes-extras@ -->
 			</sequential>
 		</for>
 	</target>
@@ -647,10 +664,10 @@
 		<!-- Increment the build number -->
 		<buildnumber />
 
-		
+
 		<!-- Copy the binaries -->
 		<if>
-			<equals arg1="${edition}" arg2="jse"/>
+			<equals arg1="${edition}" arg2="jse" />
 			<then>
 				<mkdir dir="${dist-classic}/bin" />
 				<copy todir="${dist-classic}/bin">
@@ -741,7 +758,7 @@
 		<!-- copy final artifacts to the final distribution directory -->
 		<move file="${dist-base}/restlet-${edition}-${version-compact}.zip" todir="${final-dist-base}" />
 		<!-- do not fail on error if the exe does not exist in builds that didn't run the nsis task -->
-    <move file="${dist-base}/restlet-${edition}-${version-compact}.exe" todir="${final-dist-base}" failonerror="false"/>
+		<move file="${dist-base}/restlet-${edition}-${version-compact}.exe" todir="${final-dist-base}" failonerror="false" />
 		<move todir="${final-dist-maven2}">
 			<fileset dir="${dist-maven2}" />
 		</move>

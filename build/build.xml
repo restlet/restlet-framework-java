@@ -113,6 +113,7 @@
 			<loadfile property="generate-javadocs" srcFile="${tmpl}/editions/javadocs.tmpl" />
 			<loadfile property="stage-modules" srcFile="${tmpl}/editions/stage-modules.tmpl" />
 			<loadfile property="stage-extras" srcFile="${tmpl}/editions/stage-extras.tmpl" />
+			<loadfile property="generate-classes-extras" srcFile="${tmpl}/editions/generate-classes-extras.tmpl" />
 			<!-- Pre-process the build file since ant and freemarker shares the same syntax. -->
 			<copy file="${tmpl}/editions/build.xml" tofile="${temp}/@{edition}/build.tmpl" overwrite="true">
 				<filterchain>
@@ -123,6 +124,7 @@
 					<replacestring from="@generate-javadocs@" to="${generate-javadocs}" />
 					<replacestring from="@stage-modules@" to="${stage-modules}" />
 					<replacestring from="@stage-extras@" to="${stage-extras}" />
+					<replacestring from="@generate-classes-extras@" to="${generate-classes-extras}" />
 				</filterchain>
 			</copy>
 			<!-- Process it as a Freemarker template. -->
