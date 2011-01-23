@@ -90,4 +90,9 @@ public class SipServerHelper extends ServerConnectionHelper {
         return request;
     }
 
+    @Override
+    public boolean isPipeliningConnections() {
+        return true;
+    }
+
 }
