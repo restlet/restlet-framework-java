@@ -90,6 +90,11 @@ public class HttpServerInboundWay extends ServerInboundWay {
     }
 
     @Override
+    public boolean isEmpty() {
+        return getMessages().isEmpty();
+    }
+
+    @Override
     public boolean isReady() {
         return super.isReady() && getMessages().isEmpty();
     }

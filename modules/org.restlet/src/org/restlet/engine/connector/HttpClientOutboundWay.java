@@ -88,7 +88,7 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
 
     @Override
     public boolean isEmpty() {
-        return super.isEmpty() && getMessages().isEmpty();
+        return getMessages().isEmpty();
     }
 
     @Override

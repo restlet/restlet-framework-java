@@ -61,4 +61,9 @@ public class SipServerInboundWay extends ServerInboundWay {
         return new SipResponse(request);
     }
 
+    @Override
+    public boolean isEmpty() {
+        return (getMessage() == null);
+    }
+
 }

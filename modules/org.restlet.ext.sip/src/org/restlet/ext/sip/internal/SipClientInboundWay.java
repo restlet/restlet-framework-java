@@ -306,4 +306,21 @@ public class SipClientInboundWay extends ClientInboundWay {
         return SipStatus.valueOf(code);
     }
 
+    @Override
+    public boolean isEmpty() {
+        return (getMessage() == null);
+    }
+
+    @Override
+    public void onError(Status status) {
+        Response rsp = getMessage();
+
+        if (rsp != null) {
+            setMessage(null);
+            getHelper().onError(status, rsp);
+        }
+
+        super.onError(status);
+    }
+
 }

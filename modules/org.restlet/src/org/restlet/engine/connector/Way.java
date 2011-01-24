@@ -252,9 +252,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * 
      * @return True if the way is empty.
      */
-    public boolean isEmpty() {
-        return true;
-    }
+    public abstract boolean isEmpty();
 
     /**
      * Indicates if the processing of the next message is possible.

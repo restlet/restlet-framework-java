@@ -217,4 +217,9 @@ public class SipClientOutboundWay extends ClientOutboundWay {
         setIoState(IoState.INTEREST);
     }
 
+    @Override
+    public boolean isEmpty() {
+        return (getMessage() == null);
+    }
+
 }
