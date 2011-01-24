@@ -223,7 +223,7 @@ public class SipClientOutboundWay extends ClientOutboundWay {
             // Update the map of SIP transactions
             SipResponse sipResponse = (SipResponse) response;
             SipRequest sipRequest = (SipRequest) sipResponse.getRequest();
-            String tid = sipRequest.getTransactionId();
+            String tid = sipRequest.getTransaction();
             getHelper().getRequests().put(tid, sipRequest);
 
             // Prepare the writing of the request

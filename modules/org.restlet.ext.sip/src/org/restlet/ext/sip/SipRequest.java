@@ -84,10 +84,10 @@ public class SipRequest extends Request {
     private volatile List<String> inReplyTo;
 
     /** The time of last activity on the transaction initiated by this request. */
-    private volatile long lastTransactionActivity;
+    private volatile long lastActivity;
 
     /** The transaction timeout in milliseconds. */
-    private final int maxTransactionIdleTimeMs;
+    private final int maxIdleTimeMs;
 
     /** The version of the MIME protocol used to construct the message. */
     private volatile String mimeVersion;
@@ -179,8 +179,8 @@ public class SipRequest extends Request {
             Representation entity) {
         super(method, resourceRef, entity);
         this.creation = System.currentTimeMillis();
-        this.lastTransactionActivity = this.creation;
-        this.maxTransactionIdleTimeMs = DEFAULT_TIMEOUT;
+        this.lastActivity = this.creation;
+        this.maxIdleTimeMs = DEFAULT_TIMEOUT;
     }
 
     /**
@@ -242,8 +242,8 @@ public class SipRequest extends Request {
         this.supported = request.getSupported();
         this.to = request.getTo();
         this.creation = System.currentTimeMillis();
-        this.lastTransactionActivity = this.creation;
-        this.maxTransactionIdleTimeMs = request.getMaxTransactionIdleTimeMs();
+        this.lastActivity = this.creation;
+        this.maxIdleTimeMs = request.getMaxIdleTimeMs();
     }
 
     /**
@@ -385,8 +385,8 @@ public class SipRequest extends Request {
      * 
      * @return The date of last activity on this transaction object.
      */
-    public long getLastTransactionActivity() {
-        return lastTransactionActivity;
+    public long getLastActivity() {
+        return lastActivity;
     }
 
     /**
@@ -394,8 +394,8 @@ public class SipRequest extends Request {
      * 
      * @return The timeout in milliseconds.
      */
-    public int getMaxTransactionIdleTimeMs() {
-        return maxTransactionIdleTimeMs;
+    public int getMaxIdleTimeMs() {
+        return maxIdleTimeMs;
     }
 
     /**
@@ -613,7 +613,7 @@ public class SipRequest extends Request {
      * 
      * @return The transaction identifier.
      */
-    public String getTransactionId() {
+    public String getTransaction() {
         String result = null;
 
         if (getSipRecipientsInfo().size() > 0) {
@@ -634,14 +634,14 @@ public class SipRequest extends Request {
      * @return True if the transaction has timed out due to lack of activity.
      */
     public boolean hasTimedOut() {
-        return (System.currentTimeMillis() - this.lastTransactionActivity) >= getMaxTransactionIdleTimeMs();
+        return (System.currentTimeMillis() - this.lastActivity) >= getMaxIdleTimeMs();
     }
 
     /**
      * Indicates that a new activity on this transaction has been detected.
      */
-    public void notifyTransactionActivity() {
-        setLastTransactionActivity(System.currentTimeMillis());
+    public void notifyActivity() {
+        setLastActivity(System.currentTimeMillis());
     }
 
     /**
@@ -740,8 +740,8 @@ public class SipRequest extends Request {
      * @param lastActivityTime
      *            The date of last activity on this transaction object.
      */
-    private void setLastTransactionActivity(long lastActivityTime) {
-        this.lastTransactionActivity = lastActivityTime;
+    private void setLastActivity(long lastActivityTime) {
+        this.lastActivity = lastActivityTime;
     }
 
     /**

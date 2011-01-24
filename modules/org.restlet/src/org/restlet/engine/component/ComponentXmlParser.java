@@ -620,8 +620,8 @@ public class ComponentXmlParser {
                                 "logFormat");
 
                         if (item != null) {
-                            getComponent().getLogService().setLogFormat(
-                                    item.getNodeValue());
+                            getComponent().getLogService()
+                                    .setResponseLogFormat(item.getNodeValue());
                         }
 
                         item = childNode.getAttributes().getNamedItem(
