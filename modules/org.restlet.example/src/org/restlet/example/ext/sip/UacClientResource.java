@@ -99,7 +99,9 @@ public class UacClientResource implements UacResource {
         this.proxy.start();
         System.out.println("start\n");
         try {
-            this.clientResource.getResponseEntity().exhaust();
+            if (this.clientResource.getResponseEntity() != null) {
+                this.clientResource.getResponseEntity().exhaust();
+            }
         } catch (Exception e) {
             System.out.println("start " + e.getMessage());
             e.printStackTrace();
@@ -110,7 +112,9 @@ public class UacClientResource implements UacResource {
         this.proxy.stop();
         System.out.println("stop\n");
         try {
-            this.clientResource.getResponseEntity().exhaust();
+            if (this.clientResource.getResponseEntity() != null) {
+                this.clientResource.getResponseEntity().exhaust();
+            }
         } catch (Exception e) {
             System.out.println("stop " + e.getMessage());
             e.printStackTrace();

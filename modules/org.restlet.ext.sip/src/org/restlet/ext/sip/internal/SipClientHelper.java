@@ -82,7 +82,7 @@ public class SipClientHelper extends ClientConnectionHelper {
      * 
      * @return The map of managed transactions.
      */
-    protected Map<String, SipRequest> getRequests() {
+    public Map<String, SipRequest> getRequests() {
         return requests;
     }
 

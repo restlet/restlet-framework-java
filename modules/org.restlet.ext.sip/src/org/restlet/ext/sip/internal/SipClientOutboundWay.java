@@ -39,6 +39,7 @@ import org.restlet.engine.header.TagWriter;
 import org.restlet.engine.io.IoState;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
+import org.restlet.ext.sip.SipResponse;
 import org.restlet.util.Series;
 
 /**
@@ -212,9 +213,23 @@ public class SipClientOutboundWay extends ClientOutboundWay {
     }
 
     @Override
+    public SipClientHelper getHelper() {
+        return (SipClientHelper) super.getHelper();
+    }
+
+    @Override
     protected void handle(Response response) {
-        setMessage(response);
-        setIoState(IoState.INTEREST);
+        if ((getMessage() == null) && (response != null)) {
+            // Update the map of SIP transactions
+            SipResponse sipResponse = (SipResponse) response;
+            SipRequest sipRequest = (SipRequest) sipResponse.getRequest();
+            String tid = sipRequest.getTransactionId();
+            getHelper().getRequests().put(tid, sipRequest);
+
+            // Prepare the writing of the request
+            setMessage(sipResponse);
+            setIoState(IoState.INTEREST);
+        }
     }
 
     @Override
