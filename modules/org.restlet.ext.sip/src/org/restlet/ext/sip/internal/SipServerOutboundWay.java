@@ -33,7 +33,6 @@ package org.restlet.ext.sip.internal;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
-import org.restlet.data.Status;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.ServerOutboundWay;
 import org.restlet.engine.header.DateWriter;
@@ -183,17 +182,6 @@ public class SipServerOutboundWay extends ServerOutboundWay {
     @Override
     public boolean isEmpty() {
         return (getMessage() == null);
-    }
-
-    @Override
-    public void onError(Status status) {
-        Response rsp = getMessage();
-
-        if (rsp != getMessage()) {
-            getHelper().onError(status, rsp);
-        }
-
-        getHelper().onError(status, getMessage());
     }
 
     @Override

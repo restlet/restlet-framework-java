@@ -44,6 +44,7 @@ import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.io.BlockableChannel;
@@ -390,10 +391,9 @@ public abstract class OutboundWay extends Way {
                 }
             }
         } catch (Exception e) {
-            getLogger().log(Level.WARNING,
-                    "Error while writing an HTTP message", e);
-            getLogger().log(Level.INFO, "Error while writing an HTTP message",
-                    e);
+            getConnection().onError(
+                    "Error while writing a message. Closing the connection.",
+                    e, Status.CONNECTOR_ERROR_COMMUNICATION);
         }
     }
 

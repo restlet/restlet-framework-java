@@ -318,18 +318,6 @@ public class SipClientInboundWay extends ClientInboundWay {
     }
 
     @Override
-    public void onError(Status status) {
-        Response rsp = getMessage();
-
-        if (rsp != null) {
-            setMessage(null);
-            getHelper().onError(status, rsp);
-        }
-
-        super.onError(status);
-    }
-
-    @Override
     protected void onReceived(Response message) {
         SipResponse response = (SipResponse) message;
 

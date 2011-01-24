@@ -108,7 +108,7 @@ public class HttpServerInboundWay extends ServerInboundWay {
             }
         }
 
-        getHelper().onError(status, getMessage());
+        super.onError(status);
     }
 
     @Override

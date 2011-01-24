@@ -299,6 +299,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      */
     public void onError(Status status) {
         getHelper().onError(status, getMessage());
+        setMessage(null);
     }
 
     /**

@@ -123,7 +123,7 @@ public class HttpServerOutboundWay extends ServerOutboundWay {
             }
         }
 
-        getHelper().onError(status, getMessage());
+        super.onError(status);
     }
 
     @Override

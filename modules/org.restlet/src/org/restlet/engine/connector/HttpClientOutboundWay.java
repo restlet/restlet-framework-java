@@ -120,7 +120,7 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
             }
         }
 
-        getHelper().onError(status, getMessage());
+        super.onError(status);
     }
 
     @Override
