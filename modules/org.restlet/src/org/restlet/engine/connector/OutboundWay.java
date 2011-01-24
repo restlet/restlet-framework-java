@@ -470,7 +470,7 @@ public abstract class OutboundWay extends Way {
         case START:
             if (getHelper().getLogger().isLoggable(Level.FINE)) {
                 getHelper().getLogger().fine(
-                        "Writing message from "
+                        "Writing message to "
                                 + getConnection().getSocketAddress());
             }
 

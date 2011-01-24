@@ -255,7 +255,7 @@ public class IoBuffer {
                 if (result > 0) {
                     getBytes().flip();
                     setState(BufferState.DRAINING);
-                    Context.getCurrentLogger().fine(
+                    Context.getCurrentLogger().finer(
                             "Refilled buffer with " + result + " byte(s)");
                 }
             }

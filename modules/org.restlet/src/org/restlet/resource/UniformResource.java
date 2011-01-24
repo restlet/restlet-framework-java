@@ -605,7 +605,7 @@ public abstract class UniformResource {
      * @param response
      *            The handled response.
      */
-    public final void init(Context context, Request request, Response response) {
+    public void init(Context context, Request request, Response response) {
         this.context = context;
         this.request = request;
         this.response = response;

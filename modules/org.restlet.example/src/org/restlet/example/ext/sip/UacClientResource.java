@@ -30,11 +30,14 @@
 
 package org.restlet.example.ext.sip;
 
+import java.util.logging.Level;
+
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
+import org.restlet.engine.Engine;
+import org.restlet.ext.sip.Address;
 import org.restlet.ext.sip.SipClientResource;
-import org.restlet.resource.ClientResource;
 
 /**
  * Example SIP client resource for the UAC test scenario.
@@ -44,6 +47,7 @@ import org.restlet.resource.ClientResource;
 public class UacClientResource implements UacResource {
 
     public static void main(String[] args) {
+        Engine.setLogLevel(Level.FINE);
         UacClientResource cr = new UacClientResource("sip:bob@locahost");
         cr.start();
         cr.acknowledge();
@@ -54,7 +58,7 @@ public class UacClientResource implements UacResource {
     private UacResource proxy;
 
     /** The internal client resource. */
-    private ClientResource clientResource;
+    private SipClientResource clientResource;
 
     /**
      * Constructor.
@@ -64,6 +68,12 @@ public class UacClientResource implements UacResource {
      */
     public UacClientResource(String uri) {
         this.clientResource = new SipClientResource(uri);
+        this.clientResource.setCallId("a84b4c76e66710@pc33.atlanta.com");
+        this.clientResource.setCommandSequence("314159");
+        this.clientResource.setFrom(new Address("sip:alice@atlanta.com",
+                "Alice"));
+        this.clientResource.setTo(new Address("sip:bob@biloxi.com", "Bob"));
+
         Client client = new Client(new Context(), Protocol.SIP);
         client.getContext().getParameters().add("minThreads", "1");
         client.getContext().getParameters().add("tracing", "true");

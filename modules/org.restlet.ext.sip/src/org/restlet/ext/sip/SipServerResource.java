@@ -30,8 +30,9 @@
 
 package org.restlet.ext.sip;
 
-import java.util.List;
-
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.resource.ServerResource;
 
 /**
@@ -42,11 +43,20 @@ import org.restlet.resource.ServerResource;
 public class SipServerResource extends ServerResource {
 
     /**
-     * Returns the request's call sequence.
+     * Returns the request's call ID.
      * 
-     * @return The request's call sequence.
+     * @return The request's call ID.
      */
-    public String getCallSequence() {
+    public String getCallId() {
+        return getRequest().getCallId();
+    }
+
+    /**
+     * Returns the request's command sequence.
+     * 
+     * @return The request's command sequence.
+     */
+    public String getCommandSequence() {
         return getRequest().getCommandSequence();
     }
 
@@ -64,45 +74,9 @@ public class SipServerResource extends ServerResource {
         return (SipRequest) super.getRequest();
     }
 
-    /**
-     * Returns the request's call ID.
-     * 
-     * @return The request's call ID.
-     */
-    public String getRequestCallId() {
-        return getRequest().getCallId();
-    }
-
     @Override
     public SipResponse getResponse() {
         return (SipResponse) super.getResponse();
-    }
-
-    /**
-     * Returns the response's call ID.
-     * 
-     * @return The response's call ID.
-     */
-    public String getResponseCallId() {
-        return getResponse().getCallId();
-    }
-
-    /**
-     * Returns the request's list of Via entries.
-     * 
-     * @return The request's list of Via entries.
-     */
-    public List<SipRecipientInfo> getSipRequestRecipientsInfo() {
-        return getRequest().getSipRecipientsInfo();
-    }
-
-    /**
-     * Returns the response's list of Via entries.
-     * 
-     * @return The response's list of Via entries.
-     */
-    public List<SipRecipientInfo> getSipResponseRecipientsInfo() {
-        return getResponse().getSipRecipientsInfo();
     }
 
     /**
@@ -114,13 +88,27 @@ public class SipServerResource extends ServerResource {
         return getRequest().getTo();
     }
 
-    /**
-     * Sets the response's call ID.
-     * 
-     * @param callId
-     *            The call ID.
-     */
-    public void setResponseCallId(String callId) {
-        getResponse().setCallId(callId);
+    @Override
+    public void init(Context context, Request request, Response response) {
+        try {
+            SipResponse sipResponse = (SipResponse) response;
+            SipRequest sipRequest = (SipRequest) request;
+
+            sipResponse.setCallId(sipRequest.getCallId());
+            sipResponse.setCommandSequence(sipRequest.getCommandSequence());
+
+            if (sipRequest.getFrom() != null) {
+                sipResponse.setFrom((Address) sipRequest.getFrom().clone());
+            }
+
+            if (sipRequest.getTo() != null) {
+                sipResponse.setTo((Address) sipRequest.getTo().clone());
+            }
+        } catch (CloneNotSupportedException e) {
+            doCatch(e);
+        }
+
+        super.init(context, request, response);
     }
+
 }

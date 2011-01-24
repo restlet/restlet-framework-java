@@ -33,6 +33,7 @@ package org.restlet.ext.sip;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.ext.sip.internal.AddressWriter;
 import org.restlet.util.Series;
 
 /**
@@ -41,7 +42,7 @@ import org.restlet.util.Series;
  * 
  * @author Thierry Boileau
  */
-public class Address {
+public class Address implements Cloneable {
 
     /** The optional name displayed. */
     private String displayName;
@@ -81,6 +82,34 @@ public class Address {
     public Address(Reference reference, String displayName) {
         this.reference = reference;
         this.displayName = displayName;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param reference
+     *            The address reference.
+     * @param displayName
+     *            The name displayed.
+     */
+    public Address(String reference, String displayName) {
+        this(new Reference(reference), displayName);
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Address result = (Address) super.clone();
+        result.reference = reference.clone();
+
+        if (parameters != null) {
+            result.parameters = new Form();
+
+            for (Parameter param : parameters) {
+                result.parameters.add(param.getName(), param.getValue());
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -141,6 +170,11 @@ public class Address {
      */
     public void setReference(Reference reference) {
         this.reference = reference;
+    }
+
+    @Override
+    public String toString() {
+        return AddressWriter.write(this);
     }
 
 }

@@ -129,7 +129,7 @@ public class ServerConnectionController extends ConnectionController {
 
                         if (getHelper().getLogger().isLoggable(Level.FINE)) {
                             getHelper().getLogger().fine(
-                                    "Connection with \""
+                                    "Connection from \""
                                             + connection.getSocketAddress()
                                             + "\" accepted. New count: "
                                             + getHelper().getConnections()

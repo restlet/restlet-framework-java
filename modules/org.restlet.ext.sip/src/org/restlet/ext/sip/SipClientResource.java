@@ -565,6 +565,36 @@ public class SipClientResource extends ClientResource {
         handle(SipMethod.REGISTER);
     }
 
+    /**
+     * Sets the identifier of the call.
+     * 
+     * @param callId
+     *            The identifier of the call.
+     */
+    public void setCallId(String callId) {
+        getRequest().setCallId(callId);
+    }
+
+    /**
+     * Sets the identifier of the command.
+     * 
+     * @param commandSequence
+     *            The identifier of the command.
+     */
+    public void setCommandSequence(String commandSequence) {
+        getRequest().setCommandSequence(commandSequence);
+    }
+
+    /**
+     * Sets the description of the request's initiator.
+     * 
+     * @param from
+     *            The description of the request's initiator.
+     */
+    public void setFrom(Address from) {
+        getRequest().setFrom(from);
+    }
+
     @Override
     public void setRequest(Request request) {
         if (request instanceof SipRequest) {
@@ -593,6 +623,16 @@ public class SipClientResource extends ClientResource {
             throw new IllegalArgumentException(
                     "Only SipResponse instances are allowed as parameter");
         }
+    }
+
+    /**
+     * Sets the logical recipient of the request.
+     * 
+     * @param to
+     *            The logical recipient of the request.
+     */
+    public void setTo(Address to) {
+        getRequest().setTo(to);
     }
 
     /**
