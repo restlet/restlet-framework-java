@@ -204,7 +204,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
     }
 
     @Override
-    public void handleInbound(Response response) {
+    public void doHandleInbound(Response response) {
         if ((response != null) && (response.getRequest() != null)) {
             getLogger().finer("Handling request...");
 
@@ -222,7 +222,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
     }
 
     @Override
-    public void handleOutbound(Response response) {
+    public void doHandleOutbound(Response response) {
         if (response != null) {
             getLogger().finer("Handling response...");
             InboundRequest request = (InboundRequest) response.getRequest();

@@ -109,28 +109,6 @@ public abstract class Controller {
     }
 
     /**
-     * Executes the next task in a separate thread provided by the worker
-     * service, only if the worker service isn't busy.
-     * 
-     * @param task
-     *            The next task to execute.
-     */
-    protected void execute(Runnable task) {
-        try {
-            if (!isOverloaded() && (getWorkerService() != null)
-                    && !getWorkerService().isShutdown() && isRunning()) {
-                getWorkerService().execute(task);
-            }
-        } catch (Exception e) {
-            getHelper().getLogger().log(
-                    Level.WARNING,
-                    "Unable to execute a "
-                            + (getHelper().isClientSide() ? "client-side"
-                                    : "server-side") + " controller task", e);
-        }
-    }
-
-    /**
      * Returns the parent connector helper.
      * 
      * @return The parent connector helper.
@@ -167,12 +145,12 @@ public abstract class Controller {
     protected void handleInbound(final Response response, boolean synchronous) {
         if (response != null) {
             if (synchronous || !getHelper().isWorkerThreads()) {
-                getHelper().handleInbound(response);
+                getHelper().doHandleInbound(response);
             } else {
-                execute(new Runnable() {
+                getHelper().execute(new Runnable() {
                     public void run() {
                         try {
-                            getHelper().handleInbound(response);
+                            getHelper().doHandleInbound(response);
                         } finally {
                             Engine.clearThreadLocalVariables();
                         }
@@ -206,12 +184,12 @@ public abstract class Controller {
     protected void handleOutbound(final Response response, boolean synchronous) {
         if (response != null) {
             if (synchronous || !getHelper().isWorkerThreads()) {
-                getHelper().handleOutbound(response);
+                getHelper().doHandleOutbound(response);
             } else {
-                execute(new Runnable() {
+                getHelper().execute(new Runnable() {
                     public void run() {
                         try {
-                            getHelper().handleOutbound(response);
+                            getHelper().doHandleOutbound(response);
                         } finally {
                             Engine.clearThreadLocalVariables();
                         }

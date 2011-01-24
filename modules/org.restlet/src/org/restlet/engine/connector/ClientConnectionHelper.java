@@ -788,7 +788,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     }
 
     @Override
-    public void handleInbound(Response response) {
+    public void doHandleInbound(Response response) {
         if (response != null) {
             getLogger().finer("Handling response...");
             boolean handled = false;
@@ -813,7 +813,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     }
 
     @Override
-    public void handleOutbound(Response response) {
+    public void doHandleOutbound(Response response) {
         if ((response != null) && (response.getRequest() != null)) {
             try {
                 Connection<Client> bestConn = getBestConnection(response

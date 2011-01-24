@@ -314,6 +314,45 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Effectively handles an inbound message.
+     * 
+     * @param response
+     *            The response to handle.
+     */
+    public abstract void doHandleInbound(Response response);
+
+    /**
+     * Effectively handles an outbound message.
+     * 
+     * @param response
+     *            The response to handle.
+     */
+    public abstract void doHandleOutbound(Response response);
+
+    /**
+     * Executes the next task in a separate thread provided by the worker
+     * service, only if the worker service isn't busy.
+     * 
+     * @param task
+     *            The next task to execute.
+     */
+    protected void execute(Runnable task) {
+        try {
+            if (!getController().isOverloaded() && (getWorkerService() != null)
+                    && !getWorkerService().isShutdown()
+                    && getController().isRunning()) {
+                getWorkerService().execute(task);
+            }
+        } catch (Exception e) {
+            getLogger().log(
+                    Level.WARNING,
+                    "Unable to execute a "
+                            + (isClientSide() ? "client-side" : "server-side")
+                            + " controller task", e);
+        }
+    }
+
+    /**
      * Returns the controller task.
      * 
      * @return The controller task.
@@ -485,22 +524,6 @@ public abstract class BaseHelper<T extends Connector> extends
     public ThreadPoolExecutor getWorkerService() {
         return workerService;
     }
-
-    /**
-     * Handles an inbound message.
-     * 
-     * @param response
-     *            The response to handle.
-     */
-    public abstract void handleInbound(Response response);
-
-    /**
-     * Handles an outbound message.
-     * 
-     * @param response
-     *            The response to handle.
-     */
-    public abstract void handleOutbound(Response response);
 
     /**
      * Indicates if it is helping a client connector.
