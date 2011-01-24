@@ -138,20 +138,6 @@ public abstract class ClientInboundWay extends InboundWay {
     }
 
     @Override
-    protected void onReceived(Response message) {
-        // Add it to the helper queue
-        getHelper().getInboundMessages().add(getMessage());
-
-        if (getMessage().isEntityAvailable()) {
-            // Let's wait for the entity to be consumed by the caller
-            setIoState(IoState.IDLE);
-        } else {
-            // The response has been completely read
-            onCompleted(false);
-        }
-    }
-
-    @Override
     protected void onReceived() {
         // Update the response
         getMessage().setEntity(createEntity(getHeaders()));
@@ -170,6 +156,20 @@ public abstract class ClientInboundWay extends InboundWay {
         }
 
         onReceived(getMessage());
+    }
+
+    @Override
+    protected void onReceived(Response message) {
+        // Add it to the helper queue
+        getHelper().getInboundMessages().add(getMessage());
+
+        if (getMessage().isEntityAvailable()) {
+            // Let's wait for the entity to be consumed by the caller
+            setIoState(IoState.IDLE);
+        } else {
+            // The response has been completely read
+            onCompleted(false);
+        }
     }
 
     @Override

@@ -791,16 +791,23 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     public void handleInbound(Response response) {
         if (response != null) {
             getLogger().finer("Handling response...");
+            boolean handled = false;
 
-            if (response.getRequest().getOnResponse() != null) {
+            if ((response.getRequest() != null)
+                    && (response.getRequest().getOnResponse() != null)) {
                 response.getRequest().getOnResponse()
                         .handle(response.getRequest(), response);
+                handled = true;
             }
 
             if (!response.getStatus().isInformational()) {
                 // Informational response shouldn't unblock a synchronous
                 // call waiting for a final response.
                 unblock(response);
+            } else if (!handled) {
+                getLogger().warning(
+                        "The following response couldn't be handled : "
+                                + response);
             }
         }
     }
@@ -888,7 +895,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      * @return True if the given request is handled in a synchronous way.
      */
     public boolean isSynchronous(Request request) {
-        return (request.getOnResponse() == null);
+        return (request == null) || (request.getOnResponse() == null);
     }
 
     @Override
@@ -921,10 +928,17 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      *            The response.
      */
     private void unblock(Response response) {
-        CountDownLatch latch = (CountDownLatch) response.getRequest()
-                .getAttributes().get(CONNECTOR_LATCH);
-        if (latch != null) {
-            latch.countDown();
+        if (response.getRequest() != null) {
+            CountDownLatch latch = (CountDownLatch) response.getRequest()
+                    .getAttributes().get(CONNECTOR_LATCH);
+
+            if (latch != null) {
+                latch.countDown();
+            }
+        } else {
+            getLogger().warning(
+                    "The client of the following response couldn't be unblocked: "
+                            + response);
         }
     }
 

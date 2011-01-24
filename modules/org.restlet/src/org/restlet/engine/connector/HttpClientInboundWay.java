@@ -115,18 +115,9 @@ public class HttpClientInboundWay extends ClientInboundWay {
     }
 
     @Override
-    protected void onReceived(Response message) {
-        if (!message.getStatus().isInformational()) {
-            getMessages().poll();
-        }
-
-        super.onReceived(message);
-    }
-
-    @Override
     public void updateState() {
         if (getIoState() == IoState.IDLE) {
-            if (!getMessages().isEmpty()) {
+            if (!isEmpty()) {
                 // Read the next response
                 setIoState(IoState.INTEREST);
             }

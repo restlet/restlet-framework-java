@@ -789,6 +789,7 @@ public class Response extends Message {
      * @return A synthesis of the response like an HTTP status line.
      */
     public String toString() {
-        return getRequest().getProtocol() + " - " + getStatus();
+        return ((getRequest() == null) ? "?" : getRequest().getProtocol())
+                + " - " + getStatus();
     }
 }

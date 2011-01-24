@@ -40,6 +40,8 @@ import org.restlet.data.Tag;
 import org.restlet.engine.connector.ClientInboundWay;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.io.IoState;
+import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
 import org.restlet.ext.sip.SipStatus;
 import org.restlet.util.Series;
@@ -50,7 +52,6 @@ import org.restlet.util.Series;
  * @author Thierry Boileau
  */
 public class SipClientInboundWay extends ClientInboundWay {
-
     /**
      * Constructor.
      * 
@@ -307,6 +308,11 @@ public class SipClientInboundWay extends ClientInboundWay {
     }
 
     @Override
+    public SipClientHelper getHelper() {
+        return (SipClientHelper) super.getHelper();
+    }
+
+    @Override
     public boolean isEmpty() {
         return (getMessage() == null);
     }
@@ -321,6 +327,37 @@ public class SipClientInboundWay extends ClientInboundWay {
         }
 
         super.onError(status);
+    }
+
+    @Override
+    protected void onReceived(Response message) {
+        SipResponse response = (SipResponse) message;
+
+        if (response != null) {
+            // Lookup the parent request that initiated the SIP transaction
+            String tid = response.getTransactionId();
+            SipRequest sipRequest = getHelper().getRequests().get(tid);
+
+            if (sipRequest != null) {
+                response.setRequest(sipRequest);
+            } else {
+                getLogger()
+                        .fine("Unable to find the transaction associated to a given response");
+            }
+        }
+
+        super.onReceived(message);
+    }
+
+    @Override
+    public void updateState() {
+        if (getIoState() == IoState.IDLE) {
+            // Read the next response
+            setIoState(IoState.INTEREST);
+        }
+
+        // Update the registration
+        super.updateState();
     }
 
 }

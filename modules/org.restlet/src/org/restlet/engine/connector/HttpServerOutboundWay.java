@@ -129,7 +129,7 @@ public class HttpServerOutboundWay extends ServerOutboundWay {
     @Override
     public void updateState() {
         // Update the IO state if necessary
-        if ((getIoState() == IoState.IDLE) && !getMessages().isEmpty()) {
+        if ((getIoState() == IoState.IDLE) && !isEmpty()) {
             if (getMessage() == null) {
                 setIoState(IoState.INTEREST);
                 setMessage(getMessages().peek());
