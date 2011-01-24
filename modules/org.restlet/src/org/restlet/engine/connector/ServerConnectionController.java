@@ -41,7 +41,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.engine.io.IoUtils;
 
@@ -89,16 +88,6 @@ public class ServerConnectionController extends ConnectionController {
      */
     protected ServerConnectionHelper getHelper() {
         return (ServerConnectionHelper) super.getHelper();
-    }
-
-    @Override
-    protected void handleInbound(Response response) {
-        handleInbound(response, false);
-    }
-
-    @Override
-    protected void handleOutbound(Response response) {
-        handleOutbound(response, true);
     }
 
     @Override

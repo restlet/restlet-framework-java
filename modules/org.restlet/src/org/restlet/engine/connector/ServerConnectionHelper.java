@@ -175,35 +175,6 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
     }
 
     @Override
-    public ServerConnectionController getController() {
-        return (ServerConnectionController) super.getController();
-    }
-
-    /**
-     * Returns the server socket channel.
-     * 
-     * @return The server socket channel.
-     */
-    public ServerSocketChannel getServerSocketChannel() {
-        return serverSocketChannel;
-    }
-
-    /**
-     * Handles a call by invoking the helped Server's
-     * {@link Server#handle(Request, Response)} method.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    @Override
-    public void handle(Request request, Response response) {
-        super.handle(request, response);
-        getHelped().handle(request, response);
-    }
-
-    @Override
     public void doHandleInbound(Response response) {
         if ((response != null) && (response.getRequest() != null)) {
             getLogger().finer("Handling request...");
@@ -246,6 +217,45 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
                         .fine("A response for a request expecting no one was ignored");
             }
         }
+    }
+
+    @Override
+    public ServerConnectionController getController() {
+        return (ServerConnectionController) super.getController();
+    }
+
+    /**
+     * Returns the server socket channel.
+     * 
+     * @return The server socket channel.
+     */
+    public ServerSocketChannel getServerSocketChannel() {
+        return serverSocketChannel;
+    }
+
+    /**
+     * Handles a call by invoking the helped Server's
+     * {@link Server#handle(Request, Response)} method.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    @Override
+    public void handle(Request request, Response response) {
+        super.handle(request, response);
+        getHelped().handle(request, response);
+    }
+
+    @Override
+    protected void handleInbound(Response response) {
+        handleInbound(response, false);
+    }
+
+    @Override
+    protected void handleOutbound(Response response) {
+        handleOutbound(response, true);
     }
 
     @Override

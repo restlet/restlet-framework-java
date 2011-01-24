@@ -30,7 +30,6 @@
 
 package org.restlet.engine.connector;
 
-import org.restlet.Response;
 
 /**
  * Controls the IO work of parent client helper and manages its connections.
@@ -56,17 +55,6 @@ public class ClientConnectionController extends ConnectionController {
      */
     protected ClientConnectionHelper getHelper() {
         return (ClientConnectionHelper) super.getHelper();
-    }
-
-    @Override
-    protected void handleInbound(Response response) {
-        handleInbound(response, getHelper()
-                .isSynchronous(response.getRequest()));
-    }
-
-    @Override
-    protected void handleOutbound(Response response) {
-        handleOutbound(response, true);
     }
 
 }

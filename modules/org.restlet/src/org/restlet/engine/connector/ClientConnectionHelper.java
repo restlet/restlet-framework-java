@@ -202,7 +202,7 @@ import org.restlet.data.Status;
 public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
     private static final String CONNECTOR_LATCH = "org.restlet.engine.connector.latch";
-    
+
     /**
      * Constructor.
      * 
@@ -408,6 +408,59 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
         }
 
         return result;
+    }
+
+    @Override
+    public void doHandleInbound(Response response) {
+        if (response != null) {
+            getLogger().finer("Handling response...");
+            boolean handled = false;
+
+            if ((response.getRequest() != null)
+                    && (response.getRequest().getOnResponse() != null)) {
+                response.getRequest().getOnResponse()
+                        .handle(response.getRequest(), response);
+                handled = true;
+            }
+
+            if (!response.getStatus().isInformational()) {
+                // Informational response shouldn't unblock a synchronous
+                // call waiting for a final response.
+                unblock(response);
+            } else if (!handled) {
+                getLogger().warning(
+                        "The following response couldn't be handled : "
+                                + response);
+            }
+        }
+    }
+
+    @Override
+    public void doHandleOutbound(Response response) {
+        if ((response != null) && (response.getRequest() != null)) {
+            try {
+                Connection<Client> bestConn = getBestConnection(response
+                        .getRequest());
+
+                if (bestConn != null) {
+                    bestConn.getOutboundWay().handle(response);
+                    getConnections().add(bestConn);
+                } else {
+                    getLogger().log(Level.WARNING,
+                            "Unable to find a connection to send the request");
+                    response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION,
+                            "Unable to find a connection to send the request");
+                    unblock(response);
+                }
+            } catch (Throwable t) {
+                getLogger()
+                        .log(Level.FINE,
+                                "An error occured during the communication with the remote server.",
+                                t);
+                response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, t);
+                unblock(response);
+            }
+        }
     }
 
     /**
@@ -788,56 +841,13 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     }
 
     @Override
-    public void doHandleInbound(Response response) {
-        if (response != null) {
-            getLogger().finer("Handling response...");
-            boolean handled = false;
-
-            if ((response.getRequest() != null)
-                    && (response.getRequest().getOnResponse() != null)) {
-                response.getRequest().getOnResponse()
-                        .handle(response.getRequest(), response);
-                handled = true;
-            }
-
-            if (!response.getStatus().isInformational()) {
-                // Informational response shouldn't unblock a synchronous
-                // call waiting for a final response.
-                unblock(response);
-            } else if (!handled) {
-                getLogger().warning(
-                        "The following response couldn't be handled : "
-                                + response);
-            }
-        }
+    protected void handleInbound(Response response) {
+        handleInbound(response, isSynchronous(response.getRequest()));
     }
 
     @Override
-    public void doHandleOutbound(Response response) {
-        if ((response != null) && (response.getRequest() != null)) {
-            try {
-                Connection<Client> bestConn = getBestConnection(response
-                        .getRequest());
-
-                if (bestConn != null) {
-                    bestConn.getOutboundWay().handle(response);
-                    getConnections().add(bestConn);
-                } else {
-                    getLogger().log(Level.WARNING,
-                            "Unable to find a connection to send the request");
-                    response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION,
-                            "Unable to find a connection to send the request");
-                    unblock(response);
-                }
-            } catch (Throwable t) {
-                getLogger()
-                        .log(Level.FINE,
-                                "An error occured during the communication with the remote server.",
-                                t);
-                response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, t);
-                unblock(response);
-            }
-        }
+    protected void handleOutbound(Response response) {
+        handleOutbound(response, true);
     }
 
     @Override

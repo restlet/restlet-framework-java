@@ -34,9 +34,6 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 
-import org.restlet.Response;
-import org.restlet.engine.Engine;
-
 /**
  * Controls the IO work of parent connector helper.
  * 
@@ -66,27 +63,6 @@ public abstract class Controller {
     }
 
     /**
-     * Controls the helper for inbound or outbound messages to handle.
-     * 
-     * @return Indicates if some concrete activity occurred.
-     */
-    protected boolean controlHelper() {
-        boolean result = false;
-
-        // Control pending inbound messages
-        for (int i = 0; i < getHelper().getInboundMessages().size(); i++) {
-            handleInbound(getHelper().getInboundMessages().poll());
-        }
-
-        // Control pending outbound messages
-        for (int i = 0; i < getHelper().getOutboundMessages().size(); i++) {
-            handleOutbound(getHelper().getOutboundMessages().poll());
-        }
-
-        return result;
-    }
-
-    /**
      * Initializes the controller before entering the control loop.
      */
     protected void doInit() {
@@ -105,7 +81,7 @@ public abstract class Controller {
      * @param sleepTime
      */
     protected void doRun(long sleepTime) throws IOException {
-        controlHelper();
+        getHelper().control();
     }
 
     /**
@@ -124,84 +100,6 @@ public abstract class Controller {
      */
     protected ExecutorService getWorkerService() {
         return getHelper().getWorkerService();
-    }
-
-    /**
-     * Handle the given inbound message.
-     * 
-     * @param response
-     *            The message to handle.
-     */
-    protected abstract void handleInbound(final Response response);
-
-    /**
-     * Handle the given inbound message.
-     * 
-     * @param response
-     *            The message to handle.
-     * @param synchronous
-     *            True if the current thread should be used.
-     */
-    protected void handleInbound(final Response response, boolean synchronous) {
-        if (response != null) {
-            if (synchronous || !getHelper().isWorkerThreads()) {
-                getHelper().doHandleInbound(response);
-            } else {
-                getHelper().execute(new Runnable() {
-                    public void run() {
-                        try {
-                            getHelper().doHandleInbound(response);
-                        } finally {
-                            Engine.clearThreadLocalVariables();
-                        }
-                    }
-
-                    @Override
-                    public String toString() {
-                        return "Handle inbound messages";
-                    }
-                });
-            }
-        }
-    }
-
-    /**
-     * Handle the given outbound message.
-     * 
-     * @param response
-     *            The message to handle.
-     */
-    protected abstract void handleOutbound(final Response response);
-
-    /**
-     * Handle the given outbound message.
-     * 
-     * @param response
-     *            The message to handle.
-     * @param synchronous
-     *            True if the current thread should be used.
-     */
-    protected void handleOutbound(final Response response, boolean synchronous) {
-        if (response != null) {
-            if (synchronous || !getHelper().isWorkerThreads()) {
-                getHelper().doHandleOutbound(response);
-            } else {
-                getHelper().execute(new Runnable() {
-                    public void run() {
-                        try {
-                            getHelper().doHandleOutbound(response);
-                        } finally {
-                            Engine.clearThreadLocalVariables();
-                        }
-                    }
-
-                    @Override
-                    public String toString() {
-                        return "Handle outbound messages";
-                    }
-                });
-            }
-        }
     }
 
     /**

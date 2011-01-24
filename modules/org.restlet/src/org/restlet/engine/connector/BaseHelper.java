@@ -49,6 +49,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.ConnectorHelper;
+import org.restlet.engine.Engine;
 import org.restlet.engine.log.LoggingThreadFactory;
 
 /**
@@ -207,6 +208,27 @@ public abstract class BaseHelper<T extends Connector> extends
         this.inboundMessages = new ConcurrentLinkedQueue<Response>();
         this.outboundMessages = new ConcurrentLinkedQueue<Response>();
         this.controller = createController();
+    }
+
+    /**
+     * Controls the helper for inbound or outbound messages to handle.
+     * 
+     * @return Indicates if some concrete activity occurred.
+     */
+    protected boolean control() {
+        boolean result = false;
+
+        // Control pending inbound messages
+        for (int i = 0; i < getInboundMessages().size(); i++) {
+            handleInbound(getInboundMessages().poll());
+        }
+
+        // Control pending outbound messages
+        for (int i = 0; i < getOutboundMessages().size(); i++) {
+            handleOutbound(getOutboundMessages().poll());
+        }
+
+        return result;
     }
 
     /**
@@ -523,6 +545,84 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public ThreadPoolExecutor getWorkerService() {
         return workerService;
+    }
+
+    /**
+     * Handle the given inbound message.
+     * 
+     * @param response
+     *            The message to handle.
+     */
+    protected abstract void handleInbound(final Response response);
+
+    /**
+     * Handle the given inbound message.
+     * 
+     * @param response
+     *            The message to handle.
+     * @param synchronous
+     *            True if the current thread should be used.
+     */
+    protected void handleInbound(final Response response, boolean synchronous) {
+        if (response != null) {
+            if (synchronous || !isWorkerThreads()) {
+                doHandleInbound(response);
+            } else {
+                execute(new Runnable() {
+                    public void run() {
+                        try {
+                            doHandleInbound(response);
+                        } finally {
+                            Engine.clearThreadLocalVariables();
+                        }
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "Handle inbound messages";
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Handle the given outbound message.
+     * 
+     * @param response
+     *            The message to handle.
+     */
+    protected abstract void handleOutbound(final Response response);
+
+    /**
+     * Handle the given outbound message.
+     * 
+     * @param response
+     *            The message to handle.
+     * @param synchronous
+     *            True if the current thread should be used.
+     */
+    protected void handleOutbound(final Response response, boolean synchronous) {
+        if (response != null) {
+            if (synchronous || !isWorkerThreads()) {
+                doHandleOutbound(response);
+            } else {
+                execute(new Runnable() {
+                    public void run() {
+                        try {
+                            doHandleOutbound(response);
+                        } finally {
+                            Engine.clearThreadLocalVariables();
+                        }
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "Handle outbound messages";
+                    }
+                });
+            }
+        }
     }
 
     /**
