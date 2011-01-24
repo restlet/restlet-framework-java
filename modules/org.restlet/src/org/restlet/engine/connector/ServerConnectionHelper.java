@@ -41,7 +41,6 @@ import java.util.logging.Level;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
-import org.restlet.data.Status;
 
 /**
  * Base server helper based on NIO non blocking sockets. Here is the list of
@@ -270,13 +269,6 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
     public boolean isReuseAddress() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "reuseAddress", "true"));
-    }
-
-    @Override
-    public void onError(Status status, Response message) {
-        if (message != null) {
-            message.setStatus(status);
-        }
     }
 
     /**

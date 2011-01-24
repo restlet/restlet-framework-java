@@ -31,6 +31,7 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
+import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
@@ -191,9 +192,16 @@ public abstract class ConnectionController extends Controller implements
     protected void onSelected(SelectionKey selectedKey)
             throws ClosedByInterruptException {
         // Notify the selected way
-        if (selectedKey.attachment() != null) {
-            ((SelectionRegistration) selectedKey.attachment())
-                    .onSelected(selectedKey.readyOps());
+        try {
+            if (selectedKey.attachment() != null) {
+                ((SelectionRegistration) selectedKey.attachment())
+                        .onSelected(selectedKey.readyOps());
+            }
+        } catch (CancelledKeyException cke) {
+            getHelper().getLogger().log(Level.FINER,
+                    "Problem during NIO selection", cke);
+            getNewRegistrations().add(
+                    ((SelectionRegistration) selectedKey.attachment()));
         }
     }
 

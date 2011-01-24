@@ -202,7 +202,7 @@ import org.restlet.data.Status;
 public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
     private static final String CONNECTOR_LATCH = "org.restlet.engine.connector.latch";
-
+    
     /**
      * Constructor.
      * 
@@ -896,17 +896,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      */
     public boolean isSynchronous(Request request) {
         return (request == null) || (request.getOnResponse() == null);
-    }
-
-    @Override
-    public void onError(Status status, Response message) {
-        if (message != null) {
-            message.setStatus(status);
-            getInboundMessages().add(message);
-
-            // Wake up the controller if it is sleeping
-            getController().wakeup();
-        }
     }
 
     @Override

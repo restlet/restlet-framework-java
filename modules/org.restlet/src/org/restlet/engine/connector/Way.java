@@ -297,10 +297,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * @param status
      *            The error status.
      */
-    public void onError(Status status) {
-        getHelper().onError(status, getMessage());
-        setMessage(null);
-    }
+    public abstract void onError(Status status);
 
     /**
      * Callback method invoked when the way has been selected for IO operations

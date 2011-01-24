@@ -65,7 +65,10 @@ public abstract class Message {
     /** The optional cached text. */
     private volatile String entityText;
 
-    /** Callback invoked after sending the response. */
+    /** Callback invoked when an error occurs when sending the message. */
+    private volatile Uniform onError;
+
+    /** Callback invoked after sending the message. */
     private volatile Uniform onSent;
 
     /** The intermediary recipients info. */
@@ -218,6 +221,17 @@ public abstract class Message {
         }
 
         return this.entityText;
+    }
+
+    /**
+     * Returns the callback invoked when an error occurs when sending the
+     * message.
+     * 
+     * @return The callback invoked when an error occurs when sending the
+     *         message.
+     */
+    public Uniform getOnError() {
+        return onError;
     }
 
     /**
@@ -375,6 +389,17 @@ public abstract class Message {
      */
     public void setEntity(String value, MediaType mediaType) {
         setEntity(new StringRepresentation(value, mediaType));
+    }
+
+    /**
+     * Sets the callback invoked when an error occurs when sending the message.
+     * 
+     * @param onError
+     *            The callback invoked when an error occurs when sending the
+     *            message.
+     */
+    public void setOnError(Uniform onError) {
+        this.onError = onError;
     }
 
     /**

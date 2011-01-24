@@ -362,6 +362,12 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
+    public void onError(Status status) {
+        getHelper().onOutboundError(status, getMessage());
+        setMessage(null);
+    }
+
+    @Override
     public void onSelected(SelectionRegistration registration) {
         try {
             Response message = getMessage();

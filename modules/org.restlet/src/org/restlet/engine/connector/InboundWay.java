@@ -232,6 +232,12 @@ public abstract class InboundWay extends Way {
         super.onCompleted(endDetected);
     }
 
+    @Override
+    public void onError(Status status) {
+        getHelper().onInboundError(status, getMessage());
+        setMessage(null);
+    }
+
     /**
      * Callback invoked when a message has been received. Note that one the
      * start line and the headers must have been received, not the optional

@@ -438,6 +438,17 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
+     * Returns the parent request of this response.
+     * 
+     * @param response
+     *            The response to analyze.
+     * @return The parent request if available.
+     */
+    public Request getRequest(Response response) {
+        return response.getRequest();
+    }
+
+    /**
      * Returns the time to wait between socket write operations in milliseconds.
      * Can prevent TCP buffer overflows.
      * 
@@ -570,7 +581,33 @@ public abstract class BaseHelper<T extends Connector> extends
      * @param message
      *            The message to unblock.
      */
-    public abstract void onError(Status status, Response message);
+    public void onInboundError(Status status, Response message) {
+        if (message != null) {
+            message.setStatus(status);
+            getInboundMessages().add(message);
+        }
+    }
+
+    /**
+     * Called on error. Unblocks the message.
+     * 
+     * @param status
+     *            The error status to set on the responses.
+     * @param message
+     *            The message to unblock.
+     */
+    public void onOutboundError(Status status, Response message) {
+        if (message != null) {
+            message.setStatus(status);
+            Request request = getRequest(message);
+
+            if (request.getOnError() != null) {
+                request.getOnError().handle(request, message);
+            }
+
+            getInboundMessages().add(message);
+        }
+    }
 
     @Override
     public void start() throws Exception {

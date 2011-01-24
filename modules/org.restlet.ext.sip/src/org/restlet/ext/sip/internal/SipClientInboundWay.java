@@ -33,6 +33,7 @@ package org.restlet.ext.sip.internal;
 import java.io.IOException;
 
 import org.restlet.Client;
+import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
@@ -41,7 +42,6 @@ import org.restlet.engine.connector.ClientInboundWay;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.IoState;
-import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
 import org.restlet.ext.sip.SipStatus;
 import org.restlet.util.Series;
@@ -319,15 +319,11 @@ public class SipClientInboundWay extends ClientInboundWay {
 
     @Override
     protected void onReceived(Response message) {
-        SipResponse response = (SipResponse) message;
+        if (message != null) {
+            Request request = getHelper().getRequest(message);
 
-        if (response != null) {
-            // Lookup the parent request that initiated the SIP transaction
-            String tid = response.getTransactionId();
-            SipRequest sipRequest = getHelper().getRequests().get(tid);
-
-            if (sipRequest != null) {
-                response.setRequest(sipRequest);
+            if (request != null) {
+                message.setRequest(request);
             } else {
                 getLogger()
                         .fine("Unable to find the transaction associated to a given response");

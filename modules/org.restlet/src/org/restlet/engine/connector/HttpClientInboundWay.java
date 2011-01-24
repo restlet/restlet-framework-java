@@ -107,7 +107,7 @@ public class HttpClientInboundWay extends ClientInboundWay {
         for (Response rsp : getMessages()) {
             if (rsp != getMessage()) {
                 getMessages().remove(rsp);
-                getHelper().onError(status, rsp);
+                getHelper().onInboundError(status, rsp);
             }
         }
 
