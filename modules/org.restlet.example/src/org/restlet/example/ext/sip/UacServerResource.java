@@ -148,6 +148,13 @@ public class UacServerResource extends SipServerResource implements UacResource 
                     "restlet" + TAG.incrementAndGet());
         }
 
+        // Send a first final response
+        provisionalResponse = new SipResponse(getRequest());
+        provisionalResponse.setStatus(SipStatus.SUCCESS_OK);
+        provisionalResponse.commit();
+
+        sleep();
+
         // Set the final response
         setStatus(SipStatus.SUCCESS_OK);
     }

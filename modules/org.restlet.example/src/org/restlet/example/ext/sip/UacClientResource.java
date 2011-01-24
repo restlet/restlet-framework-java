@@ -50,15 +50,17 @@ public class UacClientResource implements UacResource {
         Engine.setLogLevel(Level.FINE);
         UacClientResource cr = new UacClientResource("sip:bob@locahost");
         cr.start();
+        sleep();
         cr.acknowledge();
+        sleep();
         cr.stop();
     }
 
-    /** The internal client resource proxy. */
-    private UacResource proxy;
-
     /** The internal client resource. */
     private SipClientResource clientResource;
+
+    /** The internal client resource proxy. */
+    private UacResource proxy;
 
     /**
      * Constructor.
@@ -92,6 +94,17 @@ public class UacClientResource implements UacResource {
             }
         } catch (Exception e) {
             System.out.println("acknowledge " + e.getMessage());
+        }
+    }
+
+    /**
+     * Makes the current thread sleep.
+     */
+    private static void sleep() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
