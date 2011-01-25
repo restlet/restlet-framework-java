@@ -42,7 +42,9 @@ Changes log
         Reported by John Logsdon.
       - Fixed issue with asynchronous responses and provisional responses
         preventing the resue of persistent connections. 
-        Reported by Phil Dunks. 
+        Reported by Phil Dunks.
+      - Fixed NIO connector (HTTP and SIP) bug potentially causing infinite
+        loops. Reported by John Logdson and Phil Dunks.
      - Misc
       - If the Engine#logFormatter is set to null, the log formatter of the
         console is not changed anymore.

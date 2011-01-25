@@ -269,19 +269,21 @@ public abstract class InboundWay extends Way {
                         registration.getReadyOperations());
             } else {
                 while (isSelected()) {
-                    int result = getIoBuffer().refill(
-                            getConnection().getReadableSelectionChannel());
+                    if (getIoBuffer().isFilling()) {
+                        int result = getIoBuffer().refill(
+                                getConnection().getReadableSelectionChannel());
 
-                    if (result == 0) {
-                        if (getIoState() == IoState.PROCESSING) {
-                            // Socket channel exhausted
-                            setIoState(IoState.INTEREST);
+                        if (result == 0) {
+                            if (getIoState() == IoState.PROCESSING) {
+                                // Socket channel exhausted
+                                setIoState(IoState.INTEREST);
+                            }
+                        } else if (result == -1) {
+                            // End of connection detected
+                            getConnection().close(true);
+                            setIoState(IoState.IDLE);
+                            setMessageState(MessageState.IDLE);
                         }
-                    } else if (result == -1) {
-                        // End of connection detected
-                        getConnection().close(true);
-                        setIoState(IoState.IDLE);
-                        setMessageState(MessageState.IDLE);
                     }
 
                     while (isMessageReadable()) {
