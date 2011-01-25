@@ -30,6 +30,7 @@
 
 package org.restlet.ext.sip.internal;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -65,6 +66,27 @@ public class SipClientHelper extends ClientConnectionHelper {
         this.requests = new ConcurrentHashMap<String, SipRequest>();
         getProtocols().add(Protocol.SIP);
         getProtocols().add(Protocol.SIPS);
+    }
+
+    @Override
+    protected boolean control() {
+        boolean result = super.control();
+        SipRequest request;
+
+        // Control the transactions for timeouts
+        for (Iterator<SipRequest> iter = getRequests().values().iterator(); iter
+                .hasNext();) {
+            request = iter.next();
+
+            if (request.hasTimedOut()) {
+                getLogger().fine(
+                        "The transaction represented by this request has timed out: "
+                                + request);
+                iter.remove();
+            }
+        }
+
+        return result;
     }
 
     @Override

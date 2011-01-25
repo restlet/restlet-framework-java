@@ -223,7 +223,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
     @Override
     protected ConnectionController createController() {
-        return new ClientConnectionController(this);
+        return new ConnectionController(this);
     }
 
     /**

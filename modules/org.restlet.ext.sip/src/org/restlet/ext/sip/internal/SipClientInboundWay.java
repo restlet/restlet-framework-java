@@ -33,7 +33,6 @@ package org.restlet.ext.sip.internal;
 import java.io.IOException;
 
 import org.restlet.Client;
-import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
@@ -42,6 +41,7 @@ import org.restlet.engine.connector.ClientInboundWay;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.IoState;
+import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
 import org.restlet.ext.sip.SipStatus;
 import org.restlet.util.Series;
@@ -320,9 +320,10 @@ public class SipClientInboundWay extends ClientInboundWay {
     @Override
     protected void onReceived(Response message) {
         if (message != null) {
-            Request request = getHelper().getRequest(message);
+            SipRequest request = (SipRequest) getHelper().getRequest(message);
 
             if (request != null) {
+                request.updateLastActivity();
                 message.setRequest(request);
             } else {
                 getLogger()

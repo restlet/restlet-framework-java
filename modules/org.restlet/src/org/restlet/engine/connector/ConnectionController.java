@@ -51,8 +51,7 @@ import org.restlet.util.SelectionRegistration;
  * 
  * @author Jerome Louvel
  */
-public abstract class ConnectionController extends Controller implements
-        Runnable {
+public class ConnectionController extends Controller implements Runnable {
 
     /** The NIO selector. */
     private final Selector selector;

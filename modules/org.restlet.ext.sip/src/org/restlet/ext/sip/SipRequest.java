@@ -638,13 +638,6 @@ public class SipRequest extends Request {
     }
 
     /**
-     * Indicates that a new activity on this transaction has been detected.
-     */
-    public void notifyActivity() {
-        setLastActivity(System.currentTimeMillis());
-    }
-
-    /**
      * Sets the alternative ring tone for the UAS.
      * 
      * @param alertInfo
@@ -901,6 +894,13 @@ public class SipRequest extends Request {
      */
     public void setTo(Address to) {
         this.to = to;
+    }
+
+    /**
+     * Indicates that a new activity on this transaction has been detected.
+     */
+    public void updateLastActivity() {
+        setLastActivity(System.currentTimeMillis());
     }
 
 }
