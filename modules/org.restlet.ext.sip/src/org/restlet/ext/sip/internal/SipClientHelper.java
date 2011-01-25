@@ -84,7 +84,7 @@ public class SipClientHelper extends ClientConnectionHelper {
             if (request.hasTimedOut()) {
                 Level level;
 
-                if (request.isHandled()) {
+                if (request.isHandled() || !request.isExpectingResponse()) {
                     level = Level.FINE;
                 } else {
                     level = Level.INFO;
