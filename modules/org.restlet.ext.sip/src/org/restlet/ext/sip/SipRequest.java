@@ -80,6 +80,12 @@ public class SipRequest extends Request {
     /** The description of the request's initiator. */
     private volatile Address from;
 
+    /**
+     * Indicates that the request has been handled, typically after receiving a
+     * final response.
+     */
+    private volatile boolean handled;
+
     /** The list of references to call-ids. */
     private volatile List<String> inReplyTo;
 
@@ -181,6 +187,7 @@ public class SipRequest extends Request {
         this.creation = System.currentTimeMillis();
         this.lastActivity = this.creation;
         this.maxIdleTimeMs = DEFAULT_TIMEOUT;
+        this.handled = false;
     }
 
     /**
@@ -638,6 +645,16 @@ public class SipRequest extends Request {
     }
 
     /**
+     * Indicates that the request has been handled, typically after receiving a
+     * final response.
+     * 
+     * @return True if the request has been handled.
+     */
+    public boolean isHandled() {
+        return handled;
+    }
+
+    /**
      * Sets the alternative ring tone for the UAS.
      * 
      * @param alertInfo
@@ -715,6 +732,17 @@ public class SipRequest extends Request {
      */
     public void setFrom(Address from) {
         this.from = from;
+    }
+
+    /**
+     * Indicates that the request has been handled, typically after receiving a
+     * final response.
+     * 
+     * @param handled
+     *            True if the request has been handled.
+     */
+    public void setHandled(boolean handled) {
+        this.handled = handled;
     }
 
     /**

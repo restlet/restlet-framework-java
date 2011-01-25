@@ -201,7 +201,7 @@ import org.restlet.data.Status;
  */
 public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
-    private static final String CONNECTOR_LATCH = "org.restlet.engine.connector.latch";
+    protected static final String CONNECTOR_LATCH = "org.restlet.engine.connector.latch";
 
     /**
      * Constructor.
@@ -428,9 +428,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                 // call waiting for a final response.
                 unblock(response);
             } else if (!handled) {
-                getLogger().warning(
-                        "The following response couldn't be handled : "
-                                + response);
+                getLogger().info("Provisional response ignored: " + response);
             }
         }
     }
