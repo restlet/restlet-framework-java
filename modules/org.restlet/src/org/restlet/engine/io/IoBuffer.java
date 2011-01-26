@@ -80,6 +80,26 @@ public class IoBuffer {
     }
 
     /**
+     * Ensure that the buffer is ready to be drained, flipping it if necessary
+     * only.
+     */
+    public void beforeDrain() {
+        if (isFilling()) {
+            flip();
+        }
+    }
+
+    /**
+     * Ensure that the buffer is ready to be filled, flipping it if necessary
+     * only.
+     */
+    public void beforeFill() {
+        if (isDraining()) {
+            flip();
+        }
+    }
+
+    /**
      * Indicates if a compacting operation can be beneficial.
      * 
      * @return True if a compacting operation can be beneficial.
@@ -135,12 +155,23 @@ public class IoBuffer {
     }
 
     /**
+     * Compacts the bytes to be drained at the beginning of the buffer.
+     */
+    public void compact() {
+        if (isDraining()) {
+            getBytes().compact();
+            getBytes().flip();
+        }
+    }
+
+    /**
      * Indicates if bytes could be drained by flipping the buffer.
      * 
      * @return True if bytes could be drained.
      */
     public boolean couldDrain() {
-        return isFilling() && (getBytes().position() > this.begin);
+        return canDrain()
+                || (isFilling() && (getBytes().position() > this.begin));
     }
 
     /**
@@ -149,7 +180,8 @@ public class IoBuffer {
      * @return True if more bytes could be filled in.
      */
     public boolean couldFill() {
-        return isDraining() && (getBytes().limit() < getBytes().capacity());
+        return canFill()
+                || (isDraining() && (getBytes().limit() < getBytes().capacity()));
     }
 
     /**
@@ -388,16 +420,6 @@ public class IoBuffer {
     @Override
     public String toString() {
         return getBytes().toString() + " | " + getState();
-    }
-
-    /**
-     * Compacts the bytes to be drained at the beginning of the buffer.
-     */
-    public void compact() {
-        if (isDraining()) {
-            getBytes().compact();
-            getBytes().flip();
-        }
     }
 
 }

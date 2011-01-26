@@ -210,10 +210,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      */
     protected void onBufferOverflow(SSLEngineResult sslResult,
             ByteBuffer applicationBuffer) {
-        if (getConnection().getOutboundWay().getIoState() != IoState.PROCESSING) {
-            getConnection().getInboundWay().setIoState(IoState.IDLE);
-            getConnection().getOutboundWay().setIoState(IoState.INTEREST);
-        }
+        // Exit so that the application buffer can be drained
     }
 
     /**
