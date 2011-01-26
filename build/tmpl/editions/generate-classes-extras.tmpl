@@ -2,6 +2,12 @@
  <#if edition.id = "gwt">
             <!-- check that the core source code is GWT compliant. -->
 			<gwtCompileModule name="core" module="org.restlet.Restlet" />
+ <#elseif edition.id = "gae">
+<#noparse>
+            <gaeCodeChecker whiteListPath="${tmpl}/editions/gaeWhiteList.txt">
+            	<fileset dir="${classes}" />
+            </gaeCodeChecker>
+</#noparse>
 </#if>
 <!--
 
