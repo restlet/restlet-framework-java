@@ -390,9 +390,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      */
     protected SSLEngineResult unwrap(ByteBuffer applicationBuffer)
             throws IOException {
-        if (getPacketBuffer().isFilling()) {
-            getPacketBuffer().flip();
-        }
+        getPacketBuffer().beforeDrain();
 
         if (getLogger().isLoggable(Level.INFO)) {
             getLogger()
@@ -420,7 +418,8 @@ public abstract class SslChannel<T extends SelectionChannel> extends
         SSLEngineResult result = getManager().getEngine().unwrap(
                 getPacketBuffer().getBytes(), applicationBuffer);
 
-        if (!getPacketBuffer().canDrain()) {
+        if (getPacketBuffer().couldFill()) {
+            // Let's fill the packet buffer
             getPacketBuffer().flip();
         }
 
@@ -438,10 +437,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
     protected SSLEngineResult wrap(ByteBuffer applicationBuffer)
             throws IOException {
         SSLEngineResult result = null;
-
-        if (getPacketBuffer().isDraining()) {
-            getPacketBuffer().flip();
-        }
+        getPacketBuffer().beforeFill();
 
         getLogger()
                 .log(Level.INFO,
