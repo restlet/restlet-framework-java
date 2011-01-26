@@ -4,7 +4,7 @@
 			<gwtCompileModule name="core" module="org.restlet.Restlet" />
  <#elseif edition.id = "gae">
 <#noparse>
-            <gaeCodeChecker whiteListPath="${tmpl}/editions/gaeWhiteList.txt">
+            <gaeCodeChecker jdkClassesWLPath="${tmpl}/editions/gaeJdkClassesWhiteList.txt" jdkMethodsListPath="${tmpl}/editions/gaeJdkMethodsList.txt">
             	<fileset dir="${classes}" />
             </gaeCodeChecker>
 </#noparse>
