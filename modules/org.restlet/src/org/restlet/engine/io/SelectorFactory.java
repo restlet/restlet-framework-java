@@ -35,7 +35,7 @@ import java.nio.channels.Selector;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
-// [excludes gwt]
+// [excludes gae,gwt,android]
 /**
  * Factory used to dispatch/share <code>Selector</code>.
  * 
