@@ -317,7 +317,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
             setIoState(IoState.CANCELLED);
         }
 
-        if (!getIoBuffer().getBytes().hasRemaining()) {
+        if (!getIoBuffer().hasRemaining()) {
             getIoBuffer().clear();
         }
     }
@@ -393,7 +393,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
     @Override
     public String toString() {
         return getIoState() + ", " + getMessageState() + ", "
-                + getIoBuffer().getBytes().remaining();
+                + getIoBuffer().remaining();
     }
 
     /**

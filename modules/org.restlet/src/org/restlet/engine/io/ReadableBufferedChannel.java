@@ -137,20 +137,20 @@ public class ReadableBufferedChannel extends
         int lastRead = 0;
         boolean tryAgain = true;
 
-        synchronized (getSourceBuffer().getBytes()) {
+        synchronized (getSourceBuffer().getLock()) {
             while (tryAgain) {
                 switch (getSourceBuffer().getState()) {
                 case FILLED:
                     getSourceBuffer().setState(BufferState.DRAINING);
                 case DRAINING:
-                    if (getSourceBuffer().getBytes().remaining() > 0) {
+                    if (getSourceBuffer().remaining() > 0) {
                         lastRead = sourceBuffer.drain(targetBuffer);
                         result += lastRead;
                         tryAgain = sourceBuffer
                                 .canRetry(lastRead, targetBuffer);
                     }
 
-                    if (!getSourceBuffer().canDrain()) {
+                    if (!getSourceBuffer().hasRemaining()) {
                         getSourceBuffer().clear();
                     }
                     break;

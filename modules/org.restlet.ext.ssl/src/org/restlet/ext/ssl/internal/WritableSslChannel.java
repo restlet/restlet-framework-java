@@ -90,15 +90,14 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
 
         if (getPacketBuffer().isDraining()) {
             if (getWrappedChannel().isOpen()) {
-                result = getWrappedChannel()
-                        .write(getPacketBuffer().getBytes());
+                result = getPacketBuffer().drain(getWrappedChannel());
 
                 if (getConnection().getLogger().isLoggable(Level.INFO)) {
                     getConnection().getLogger().log(Level.INFO,
                             "Packet bytes written: " + result);
                 }
 
-                if (!getPacketBuffer().getBytes().hasRemaining()) {
+                if (!getPacketBuffer().hasRemaining()) {
                     getPacketBuffer().clear();
                 }
             }
@@ -147,7 +146,7 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
             int srcSize = src.remaining();
 
             if (srcSize > 0) {
-                while (getPacketBuffer().getBytes().hasRemaining()
+                while (getPacketBuffer().hasRemaining()
                         && (getConnection().getOutboundWay().getIoState() != IoState.IDLE)
                         && src.hasRemaining()) {
                     SSLEngineResult sslResult = wrap(src);

@@ -33,6 +33,7 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.restlet.Context;
 import org.restlet.engine.header.HeaderUtils;
@@ -43,6 +44,9 @@ import org.restlet.engine.header.HeaderUtils;
  * @author Jerome Louvel
  */
 public class IoBuffer {
+
+    /** The index of the buffer's beginning while filling. */
+    private volatile int begin;
 
     /** The byte buffer. */
     private final ByteBuffer bytes;
@@ -70,8 +74,18 @@ public class IoBuffer {
      */
     public IoBuffer(ByteBuffer byteBuffer, BufferState byteBufferState) {
         super();
+        this.begin = 0;
         this.bytes = byteBuffer;
         this.state = byteBufferState;
+    }
+
+    /**
+     * Indicates if a compacting operation can be beneficial.
+     * 
+     * @return True if a compacting operation can be beneficial.
+     */
+    public boolean canCompact() {
+        return this.begin > 0;
     }
 
     /**
@@ -80,8 +94,7 @@ public class IoBuffer {
      * @return True if more bytes can be drained.
      */
     public boolean canDrain() {
-        return (getState() == BufferState.DRAINING)
-                && (getBytes().remaining() > 0);
+        return isDraining() && hasRemaining();
     }
 
     /**
@@ -90,8 +103,7 @@ public class IoBuffer {
      * @return True if more bytes can be filled in.
      */
     public boolean canFill() {
-        return (getState() == BufferState.FILLING)
-                && (getBytes().hasRemaining());
+        return isFilling() && hasRemaining();
     }
 
     /**
@@ -105,16 +117,44 @@ public class IoBuffer {
     }
 
     /**
+     * Returns the maximum capacity of this buffer.
+     * 
+     * @return The maximum capacity of this buffer.
+     */
+    public final int capacity() {
+        return getBytes().capacity();
+    }
+
+    /**
      * Recycles the buffer so it can be reused.
      */
     public void clear() {
+        this.begin = 0;
         this.bytes.clear();
         this.state = BufferState.FILLING;
     }
 
     /**
-     * Drains the byte buffer byte copying as many bytes as possible to the
-     * target buffer, with no modification.
+     * Indicates if bytes could be drained by flipping the buffer.
+     * 
+     * @return True if bytes could be drained.
+     */
+    public boolean couldDrain() {
+        return isFilling() && (getBytes().position() > this.begin);
+    }
+
+    /**
+     * Indicates if more bytes could be filled in.
+     * 
+     * @return True if more bytes could be filled in.
+     */
+    public boolean couldFill() {
+        return isDraining() && (getBytes().limit() < getBytes().capacity());
+    }
+
+    /**
+     * Drains the byte buffer by copying as many bytes as possible to the target
+     * buffer, with no modification.
      * 
      * @param targetBuffer
      *            The target buffer.
@@ -137,6 +177,31 @@ public class IoBuffer {
         }
 
         return result;
+    }
+
+    /**
+     * Drains the byte buffer by attempting to write as much as possible on the
+     * given channel.
+     * 
+     * @param wbc
+     *            The byte channel to write to.
+     * @return The number of bytes written.
+     * @throws IOException
+     */
+    public int drain(WritableByteChannel wbc) throws IOException {
+        return wbc.write(getBytes());
+    }
+
+    /**
+     * Fills the byte buffer by copying as many bytes as possible to the target
+     * buffer, with no modification.
+     * 
+     * @param targetBuffer
+     *            The target buffer.
+     * @return The number of bytes added to the target buffer.
+     */
+    public void fill(byte[] targetBuffer) {
+        getBytes().put(targetBuffer);
     }
 
     /**
@@ -199,6 +264,27 @@ public class IoBuffer {
     }
 
     /**
+     * Flip from draining to filling or the other way around.
+     */
+    public void flip() {
+        if (getState() == BufferState.FILLING) {
+            setState(BufferState.DRAINING);
+            getBytes().limit(getBytes().position());
+            getBytes().position(this.begin);
+            this.begin = 0;
+        } else if (getState() == BufferState.DRAINING) {
+            if (hasRemaining()) {
+                setState(BufferState.FILLING);
+                this.begin = getBytes().position();
+                getBytes().position(getBytes().limit());
+                getBytes().limit(getBytes().capacity());
+            } else {
+                clear();
+            }
+        }
+    }
+
+    /**
      * Returns the byte buffer.
      * 
      * @return The byte buffer.
@@ -208,12 +294,31 @@ public class IoBuffer {
     }
 
     /**
+     * Returns the lock on which multiple thread can synchronize to ensure safe
+     * access to the underlying byte buffer which isn't thread safe.
+     * 
+     * @return The lock on which multiple thread can synchronize.
+     */
+    public Object getLock() {
+        return this.bytes;
+    }
+
+    /**
      * Returns the byte buffer IO state.
      * 
      * @return The byte buffer IO state.
      */
     public BufferState getState() {
         return state;
+    }
+
+    /**
+     * Indicates if the buffer has remaining bytes to be read or written.
+     * 
+     * @return True if the buffer has remaining bytes to be read or written.
+     */
+    public final boolean hasRemaining() {
+        return getBytes().hasRemaining();
     }
 
     /**
@@ -262,6 +367,16 @@ public class IoBuffer {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the number of bytes that can be read or written in the byte
+     * buffer.
+     * 
+     * @return The number of bytes that can be read or written.
+     */
+    public final int remaining() {
+        return getBytes().remaining();
     }
 
     /**

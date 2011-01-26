@@ -92,7 +92,7 @@ public class ReadableChunkedChannel extends
             int byteBufferSize = 0;
 
             if (getWrappedChannel().getSourceBuffer().isDraining()) {
-                byteBufferSize = getWrappedChannel().getSourceBuffer().getBytes()
+                byteBufferSize = getWrappedChannel().getSourceBuffer()
                         .remaining();
             }
 
@@ -101,17 +101,16 @@ public class ReadableChunkedChannel extends
 
                 if (getWrappedChannel().refill() > 0) {
                     byteBufferSize = getWrappedChannel().getSourceBuffer()
-                            .getBytes().remaining();
+                            .remaining();
                 }
             }
 
             if (byteBufferSize > 0) {
                 // Some bytes are available, fill the line builder
-                setLineBuilderState(getWrappedChannel().getSourceBuffer().fillLine(
-                        getLineBuilder(), getLineBuilderState()));
+                setLineBuilderState(getWrappedChannel().getSourceBuffer()
+                        .fillLine(getLineBuilder(), getLineBuilderState()));
 
-                if (!getWrappedChannel().getSourceBuffer().getBytes()
-                        .hasRemaining()) {
+                if (!getWrappedChannel().getSourceBuffer().hasRemaining()) {
                     getWrappedChannel().getSourceBuffer().clear();
                 }
 
