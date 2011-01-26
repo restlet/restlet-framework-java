@@ -388,14 +388,20 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      */
     protected SSLEngineResult unwrap(ByteBuffer applicationBuffer)
             throws IOException {
+        if (getPacketBuffer().isFilling()) {
+            getPacketBuffer().clear();
+            getPacketBuffer().getBytes().flip();
+            getPacketBuffer().setState(BufferState.DRAINING);
+        }
+
         if (getLogger().isLoggable(Level.INFO)) {
             getLogger()
                     .log(Level.INFO,
                             "---------------------------------------------------------------------------------");
             getLogger().log(Level.INFO,
-                    "Unwrapping bytes with: " + getPacketBuffer());
+                    "Unwrapping packet buffer: " + getPacketBuffer());
             getLogger().log(Level.INFO,
-                    "Application buffer: " + applicationBuffer);
+                    "into application buffer: " + applicationBuffer);
         }
 
         if (getLogger().isLoggable(Level.FINE)) {
@@ -440,9 +446,9 @@ public abstract class SslChannel<T extends SelectionChannel> extends
 
         if (getConnection().getLogger().isLoggable(Level.INFO)) {
             getConnection().getLogger().log(Level.INFO,
-                    "Wrapping bytes with: " + getPacketBuffer());
+                    "Wrapping application buffer: " + applicationBuffer);
             getLogger().log(Level.INFO,
-                    "Application buffer: " + applicationBuffer);
+                    "into packet buffer: " + getPacketBuffer());
         }
 
         int remaining = getPacketBuffer().getBytes().remaining();
