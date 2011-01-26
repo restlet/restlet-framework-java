@@ -182,7 +182,7 @@ public class ReadableBufferedChannel extends
      * @throws IOException
      */
     public int refill() throws IOException {
-        return getSourceBuffer().refill(getWrappedChannel());
+        return getSourceBuffer().fill(getWrappedChannel());
     }
 
 }

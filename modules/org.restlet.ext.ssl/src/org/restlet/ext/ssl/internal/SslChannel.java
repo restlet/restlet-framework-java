@@ -39,7 +39,6 @@ import java.util.logging.Logger;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 
-import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.IoBuffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.SelectionChannel;
@@ -227,7 +226,10 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      */
     protected void onBufferUnderflow(SSLEngineResult sslResult,
             ByteBuffer applicationBuffer) {
-        // Continue
+        if (getPacketBuffer().canDrain() && !getPacketBuffer().couldFill()) {
+            // We need to compact the buffer to make room for more bytes
+            getPacketBuffer().compact();
+        }
     }
 
     /**
@@ -389,9 +391,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
     protected SSLEngineResult unwrap(ByteBuffer applicationBuffer)
             throws IOException {
         if (getPacketBuffer().isFilling()) {
-            getPacketBuffer().clear();
-            getPacketBuffer().getBytes().flip();
-            getPacketBuffer().setState(BufferState.DRAINING);
+            getPacketBuffer().flip();
         }
 
         if (getLogger().isLoggable(Level.INFO)) {
@@ -419,11 +419,9 @@ public abstract class SslChannel<T extends SelectionChannel> extends
 
         SSLEngineResult result = getManager().getEngine().unwrap(
                 getPacketBuffer().getBytes(), applicationBuffer);
-        int remaining = getPacketBuffer().getBytes().remaining();
 
-        if (remaining == 0) {
-            getPacketBuffer().setState(BufferState.FILLING);
-            getPacketBuffer().clear();
+        if (!getPacketBuffer().canDrain()) {
+            getPacketBuffer().flip();
         }
 
         return result;
@@ -440,6 +438,11 @@ public abstract class SslChannel<T extends SelectionChannel> extends
     protected SSLEngineResult wrap(ByteBuffer applicationBuffer)
             throws IOException {
         SSLEngineResult result = null;
+
+        if (getPacketBuffer().isDraining()) {
+            getPacketBuffer().flip();
+        }
+
         getLogger()
                 .log(Level.INFO,
                         "---------------------------------------------------------------------------------");
@@ -451,19 +454,11 @@ public abstract class SslChannel<T extends SelectionChannel> extends
                     "into packet buffer: " + getPacketBuffer());
         }
 
-        int remaining = getPacketBuffer().getBytes().remaining();
+        result = getManager().getEngine().wrap(applicationBuffer,
+                getPacketBuffer().getBytes());
 
-        if (remaining > 0) {
-            result = getManager().getEngine().wrap(applicationBuffer,
-                    getPacketBuffer().getBytes());
-            getPacketBuffer().getBytes().flip();
-            remaining = getPacketBuffer().getBytes().remaining();
-
-            if (remaining > 0) {
-                getPacketBuffer().setState(BufferState.DRAINING);
-            } else {
-                getPacketBuffer().clear();
-            }
+        if (getPacketBuffer().couldDrain()) {
+            getPacketBuffer().flip();
         }
 
         return result;

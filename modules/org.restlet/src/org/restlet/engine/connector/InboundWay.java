@@ -158,7 +158,7 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected boolean fillLine() throws IOException {
-        setLineBuilderState(getIoBuffer().fillLine(getLineBuilder(),
+        setLineBuilderState(getIoBuffer().drain(getLineBuilder(),
                 getLineBuilderState()));
         return getLineBuilderState() == BufferState.DRAINING;
     }
@@ -270,7 +270,7 @@ public abstract class InboundWay extends Way {
             } else {
                 while (isSelected()) {
                     if (getIoBuffer().isFilling()) {
-                        int result = getIoBuffer().refill(
+                        int result = getIoBuffer().fill(
                                 getConnection().getReadableSelectionChannel());
 
                         if (result == 0) {
@@ -294,6 +294,10 @@ public abstract class InboundWay extends Way {
                 }
             }
         } catch (Exception e) {
+            getLogger()
+                    .log(Level.FINE,
+                            "Error while reading a message. Closing the connection.",
+                            e);
             getConnection().onError(
                     "Error while reading a message. Closing the connection.",
                     e, Status.CONNECTOR_ERROR_COMMUNICATION);

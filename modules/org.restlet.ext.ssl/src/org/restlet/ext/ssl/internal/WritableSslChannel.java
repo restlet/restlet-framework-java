@@ -80,12 +80,12 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
     }
 
     /**
-     * Flushes the packet buffer if it is in draining state.
+     * Drains the packet buffer if it is in draining state.
      * 
      * @return The number of bytes flushed.
      * @throws IOException
      */
-    protected int flush() throws IOException {
+    protected int drain() throws IOException {
         int result = 0;
 
         if (getPacketBuffer().isDraining()) {
@@ -138,7 +138,7 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
         }
 
         // If the packet buffer isn't empty, first try to flush it
-        flush();
+        drain();
 
         // Refill the packet buffer
         if ((getPacketBuffer().isFilling())
@@ -151,7 +151,7 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
                         && src.hasRemaining()) {
                     SSLEngineResult sslResult = wrap(src);
                     handleResult(sslResult, src);
-                    flush();
+                    drain();
                 }
 
                 result = srcSize - src.remaining();

@@ -48,7 +48,6 @@ import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.io.BlockableChannel;
-import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.ReadableChunkingChannel;
 import org.restlet.engine.io.ReadableSizedChannel;
@@ -172,8 +171,8 @@ public abstract class OutboundWay extends Way {
      */
     protected void drainByteBuffer() throws IOException {
         if (canDrain()) {
-            int bytesWritten = getConnection().getWritableSelectionChannel()
-                    .write(getIoBuffer().getBytes());
+            int bytesWritten = getIoBuffer().drain(
+                    getConnection().getWritableSelectionChannel());
 
             if (getLogger().isLoggable(Level.FINER)) {
                 getLogger().finer("Bytes written: " + bytesWritten);
@@ -194,17 +193,13 @@ public abstract class OutboundWay extends Way {
                     // wait for a new NIO selection.
                     setIoState(IoState.INTEREST);
                 }
-            } else if (getIoBuffer().getBytes().hasRemaining()) {
-                // All the buffer couldn't be written. Compact the
-                // remaining bytes so that filling can happen again.
-                getIoBuffer().getBytes().compact();
             } else if (getMessageState() == MessageState.END) {
                 // Message fully written, ready for a new one
                 onCompleted(false);
             } else {
                 // The byte buffer has been fully written, but
                 // the socket channel wants more, reset it.
-                getIoBuffer().clear();
+                getIoBuffer().flip();
             }
         }
     }
@@ -218,7 +213,7 @@ public abstract class OutboundWay extends Way {
         while (isSelected() && getIoBuffer().canFill()
                 && (getMessageState() != MessageState.END)) {
             if (getMessageState() == MessageState.BODY) {
-                int result = getEntityChannel().read(getIoBuffer().getBytes());
+                int result = getIoBuffer().fill(getEntityChannel());
 
                 // Detect end of entity reached
                 if (result == -1) {
@@ -235,18 +230,18 @@ public abstract class OutboundWay extends Way {
                 if (getLineBuilder().length() > 0) {
                     // We can fill the byte buffer with the
                     // remaining line builder
-                    int remaining = getIoBuffer().getBytes().remaining();
+                    int remaining = getIoBuffer().remaining();
 
                     if (remaining >= getLineBuilder().length()) {
                         // Put the whole builder line in the buffer
-                        getIoBuffer().getBytes().put(
+                        getIoBuffer().fill(
                                 StringUtils.getLatin1Bytes(getLineBuilder()
                                         .toString()));
                         clearLineBuilder();
                     } else {
                         // Put the maximum number of characters
                         // into the byte buffer
-                        getIoBuffer().getBytes().put(
+                        getIoBuffer().fill(
                                 StringUtils.getLatin1Bytes(getLineBuilder()
                                         .substring(0, remaining)));
                         getLineBuilder().delete(0, remaining);
@@ -255,12 +250,9 @@ public abstract class OutboundWay extends Way {
             }
         }
 
-        if (getIoBuffer().getBytes().position() > 0) {
-            // After filling the byte buffer, we can now flip it
-            // and start draining it.
-            getIoBuffer().getBytes().flip();
-            getIoBuffer().setState(BufferState.DRAINING);
-        }
+        // After filling the byte buffer, we can now flip it
+        // and start draining it.
+        getIoBuffer().flip();
     }
 
     /**
@@ -397,6 +389,10 @@ public abstract class OutboundWay extends Way {
                 }
             }
         } catch (Exception e) {
+            getLogger()
+                    .log(Level.FINE,
+                            "Error while writing a message. Closing the connection.",
+                            e);
             getConnection().onError(
                     "Error while writing a message. Closing the connection.",
                     e, Status.CONNECTOR_ERROR_COMMUNICATION);
@@ -537,7 +533,7 @@ public abstract class OutboundWay extends Way {
 
                     if (getActualMessage().getEntity().getAvailableSize() == Representation.UNKNOWN_SIZE) {
                         setEntityChannel(new ReadableChunkingChannel(rbc,
-                                getIoBuffer().getBytes().capacity()));
+                                getIoBuffer().capacity()));
                     } else {
                         setEntityChannel(new ReadableSizedChannel(rbc,
                                 getActualMessage().getEntity()

@@ -78,7 +78,7 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
     protected boolean canRead(ByteBuffer dst) {
         return dst.hasRemaining()
                 && (getManager().getState() != SslState.CLOSED)
-                && getPacketBuffer().getBytes().hasRemaining()
+                && getPacketBuffer().hasRemaining()
                 // && (getPacketBufferState() == BufferState.FILLING)
                 && (getConnection().getInboundWay().getIoState() != IoState.IDLE);
     }
@@ -151,6 +151,14 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
     public int read(ByteBuffer targetBuffer) throws IOException {
         int result = 0;
         boolean continueReading = true;
+
+        if (getPacketBuffer().canDrain()
+                && getManager().getEngineStatus() == Status.BUFFER_UNDERFLOW) {
+            // Ensure we try to read more than what is available
+            // as we might get stuck in a buffer underflow loop.
+            getPacketBuffer().flip();
+        }
+
         getWrappedChannel().refill();
 
         if (getManager().getState() == SslState.WRITING_APPLICATION_DATA) {
@@ -164,5 +172,4 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
 
         return result;
     }
-
 }

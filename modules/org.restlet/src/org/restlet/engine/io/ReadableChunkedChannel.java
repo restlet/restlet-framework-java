@@ -108,7 +108,7 @@ public class ReadableChunkedChannel extends
             if (byteBufferSize > 0) {
                 // Some bytes are available, fill the line builder
                 setLineBuilderState(getWrappedChannel().getSourceBuffer()
-                        .fillLine(getLineBuilder(), getLineBuilderState()));
+                        .drain(getLineBuilder(), getLineBuilderState()));
 
                 if (!getWrappedChannel().getSourceBuffer().hasRemaining()) {
                     getWrappedChannel().getSourceBuffer().clear();

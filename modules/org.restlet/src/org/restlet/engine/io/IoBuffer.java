@@ -180,48 +180,20 @@ public class IoBuffer {
     }
 
     /**
-     * Drains the byte buffer by attempting to write as much as possible on the
-     * given channel.
-     * 
-     * @param wbc
-     *            The byte channel to write to.
-     * @return The number of bytes written.
-     * @throws IOException
-     */
-    public int drain(WritableByteChannel wbc) throws IOException {
-        return wbc.write(getBytes());
-    }
-
-    /**
-     * Fills the byte buffer by copying as many bytes as possible to the target
-     * buffer, with no modification.
-     * 
-     * @param targetBuffer
-     *            The target buffer.
-     * @return The number of bytes added to the target buffer.
-     */
-    public void fill(byte[] targetBuffer) {
-        getBytes().put(targetBuffer);
-    }
-
-    /**
-     * Read the current message line (start line or header line).
+     * Drain the buffer into a line builder (start line or header line).
      * 
      * @param lineBuilder
      *            The line builder to fill.
      * @param builderState
      *            The builder state.
-     * @param byteBuffer
-     *            The byte buffer to read from.
-     * @param completionListener
      * @return The new builder state.
      * @throws IOException
      */
-    public BufferState fillLine(StringBuilder lineBuilder,
-            BufferState builderState) throws IOException {
+    public BufferState drain(StringBuilder lineBuilder, BufferState builderState)
+            throws IOException {
         int next;
 
-        if (getState() == BufferState.DRAINING) {
+        if (isDraining()) {
             if (builderState == BufferState.IDLE) {
                 builderState = BufferState.FILLING;
             }
@@ -261,6 +233,58 @@ public class IoBuffer {
         }
 
         return builderState;
+    }
+
+    /**
+     * Drains the byte buffer by attempting to write as much as possible on the
+     * given channel.
+     * 
+     * @param wbc
+     *            The byte channel to write to.
+     * @return The number of bytes written.
+     * @throws IOException
+     */
+    public int drain(WritableByteChannel wbc) throws IOException {
+        return wbc.write(getBytes());
+    }
+
+    /**
+     * Fills the byte buffer by copying as many bytes as possible to the target
+     * buffer, with no modification.
+     * 
+     * @param targetBuffer
+     *            The target buffer.
+     * @return The number of bytes added to the target buffer.
+     */
+    public void fill(byte[] targetBuffer) {
+        getBytes().put(targetBuffer);
+    }
+
+    /**
+     * Refills the byte buffer.
+     * 
+     * @param sourceChannel
+     *            The byte channel to read from.
+     * @return The number of bytes read and added to the buffer or -1 if end of
+     *         channel reached.
+     * @throws IOException
+     */
+    public int fill(ReadableByteChannel sourceChannel) throws IOException {
+        int result = 0;
+
+        if (isFilling()) {
+            if (sourceChannel.isOpen()) {
+                result = sourceChannel.read(getBytes());
+
+                if (result > 0) {
+                    flip();
+                    Context.getCurrentLogger().finer(
+                            "Refilled buffer with " + result + " byte(s)");
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -342,34 +366,6 @@ public class IoBuffer {
     }
 
     /**
-     * Refills the byte buffer.
-     * 
-     * @param sourceChannel
-     *            The byte channel to read from.
-     * @return The number of bytes read and added to the buffer or -1 if end of
-     *         channel reached.
-     * @throws IOException
-     */
-    public int refill(ReadableByteChannel sourceChannel) throws IOException {
-        int result = 0;
-
-        if (getState() == BufferState.FILLING) {
-            if (sourceChannel.isOpen()) {
-                result = sourceChannel.read(getBytes());
-
-                if (result > 0) {
-                    getBytes().flip();
-                    setState(BufferState.DRAINING);
-                    Context.getCurrentLogger().finer(
-                            "Refilled buffer with " + result + " byte(s)");
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the number of bytes that can be read or written in the byte
      * buffer.
      * 
@@ -392,6 +388,16 @@ public class IoBuffer {
     @Override
     public String toString() {
         return getBytes().toString() + " | " + getState();
+    }
+
+    /**
+     * Compacts the bytes to be drained at the beginning of the buffer.
+     */
+    public void compact() {
+        if (isDraining()) {
+            getBytes().compact();
+            getBytes().flip();
+        }
     }
 
 }
