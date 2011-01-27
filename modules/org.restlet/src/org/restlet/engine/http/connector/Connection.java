@@ -144,11 +144,11 @@ public abstract class Connection<T extends Connector> implements Notifiable {
 
         if (getHelper().isTracing()) {
             this.inboundStream = new TraceInputStream(
-                    new InboundStream(getSocket().getInputStream(), helper
-                            .getInboundBufferSize()));
+                    new InboundStream(getSocket().getInputStream(),
+                            helper.getInboundBufferSize()));
             this.outboundStream = new TraceOutputStream(new OutboundStream(
-                    getSocket().getOutputStream(), helper
-                            .getOutboundBufferSize()));
+                    getSocket().getOutputStream(),
+                    helper.getOutboundBufferSize()));
         } else {
             this.inboundStream = new InboundStream(
                     getSocket().getInputStream(), helper.getInboundBufferSize());
@@ -668,19 +668,13 @@ public abstract class Connection<T extends Connector> implements Notifiable {
      */
     public void readMessages() {
         try {
-            boolean doRead = false;
-
             // We want to make sure that messages are read by one thread at a
             // time without blocking other concurrent threads during the reading
             synchronized (this) {
                 if (canRead()) {
-                    doRead = true;
                     setInboundBusy(true);
+                    readMessage();
                 }
-            }
-
-            if (doRead) {
-                readMessage();
             }
         } catch (Throwable e) {
             if (ConnectionState.CLOSING != getState()
@@ -688,13 +682,11 @@ public abstract class Connection<T extends Connector> implements Notifiable {
                 // Abnormal exception, close the connection and trace the event.
                 // NB : may be due to a client that closes the connection.
                 getLogger()
-                        .log(
-                                Level.FINE,
+                        .log(Level.FINE,
                                 "Error while reading a message. Closing the connection.",
                                 e.getMessage());
                 getLogger()
-                        .log(
-                                Level.FINE,
+                        .log(Level.FINE,
                                 "Error while reading a message. Closing the connection.",
                                 e);
                 close();
@@ -807,8 +799,7 @@ public abstract class Connection<T extends Connector> implements Notifiable {
                     writeMessageHead(message, headers);
                 } catch (IOException ioe) {
                     getLogger()
-                            .log(
-                                    Level.WARNING,
+                            .log(Level.WARNING,
                                     "Exception while writing the message headers.",
                                     ioe);
                     throw ioe;
@@ -844,8 +835,7 @@ public abstract class Connection<T extends Connector> implements Notifiable {
                         // The stream was probably already closed by the
                         // connector. Probably OK, low message priority.
                         getLogger()
-                                .log(
-                                        Level.FINE,
+                                .log(Level.FINE,
                                         "Exception while flushing and closing the entity stream.",
                                         ioe);
                     }

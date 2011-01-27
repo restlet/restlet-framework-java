@@ -16,6 +16,8 @@ Changes log
          wasn't persisting. Reported by Sebastien Gaide and Olivier Miel. 
        - Fixed potential NPE with conditional requests.
          Reported by Carolyn Duby.
+       - Fixed potential race issues in internal HTTP connector under high
+         load. Reported by Leandro Oliveira.
  
 - 2.0.4 (2010-12-24)
     - Bugs fixed
