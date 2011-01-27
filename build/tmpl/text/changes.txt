@@ -18,6 +18,8 @@ Changes log
          Reported by Carolyn Duby.
        - Fixed potential race issues in internal HTTP connector under high
          load. Reported by Leandro Oliveira.
+       - Fixed bug with AWS S3 authentication due to wrong insertion of
+         HTTP headers. Reported by Sebastien Gaide.
  
 - 2.0.4 (2010-12-24)
     - Bugs fixed
