@@ -668,8 +668,6 @@ public abstract class Connection<T extends Connector> implements Notifiable {
      */
     public void readMessages() {
         try {
-            // We want to make sure that messages are read by one thread at a
-            // time without blocking other concurrent threads during the reading
             synchronized (this) {
                 if (canRead()) {
                     setInboundBusy(true);
