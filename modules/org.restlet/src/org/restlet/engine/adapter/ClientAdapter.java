@@ -87,9 +87,10 @@ public class ClientAdapter extends Adapter {
                 httpCall.sendRequest(request, response, new Uniform() {
                     public void handle(Request request, Response response) {
                         try {
-                            updateResponse(response, new Status(httpCall
-                                    .getStatusCode(), null, httpCall
-                                    .getReasonPhrase(), null), httpCall);
+                            updateResponse(response,
+                                    new Status(httpCall.getStatusCode(), null,
+                                            httpCall.getReasonPhrase(), null),
+                                    httpCall);
                             userCallback.handle(request, response);
                         } catch (Exception e) {
                             // Unexpected exception occurred
@@ -137,8 +138,7 @@ public class ClientAdapter extends Adapter {
         } catch (Exception e) {
             e.printStackTrace();
             getLogger()
-                    .log(
-                            Level.FINE,
+                    .log(Level.FINE,
                             "An error occured during the processing of the HTTP response.",
                             e);
             response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
@@ -161,12 +161,15 @@ public class ClientAdapter extends Adapter {
         // Add the headers
         if (result != null) {
             HeaderUtils.addGeneralHeaders(request, result.getRequestHeaders());
-            HeaderUtils.addRequestHeaders(request, result.getRequestHeaders());
 
             if (request.getEntity() != null) {
-                HeaderUtils.addEntityHeaders(request.getEntity(), result
-                        .getRequestHeaders());
+                HeaderUtils.addEntityHeaders(request.getEntity(),
+                        result.getRequestHeaders());
             }
+
+            // NOTE: This must stay at the end because the AWS challenge
+            // scheme requires access to all HTTP headers
+            HeaderUtils.addRequestHeaders(request, result.getRequestHeaders());
         }
 
         return result;

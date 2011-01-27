@@ -95,8 +95,11 @@ public abstract class ClientOutboundWay extends OutboundWay {
     protected void addHeaders(Series<Parameter> headers) {
         Request request = getMessage().getRequest();
         addGeneralHeaders(headers);
-        addRequestHeaders(headers);
         addEntityHeaders(request.getEntity(), headers);
+
+        // NOTE: This must stay at the end because the AWS challenge
+        // scheme requires access to all HTTP headers
+        addRequestHeaders(headers);
     }
 
     /**
