@@ -14,6 +14,8 @@ Changes log
          Reported by Charlie Mason.
        - Fixed bug causing first entity byte to be eaten if the connection
          wasn't persisting. Reported by Sebastien Gaide and Olivier Miel. 
+       - Fixed potential NPE with conditional requests.
+         Reported by Carolyn Duby.
  
 - 2.0.4 (2010-12-24)
     - Bugs fixed
