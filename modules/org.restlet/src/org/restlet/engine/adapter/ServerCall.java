@@ -174,6 +174,7 @@ public abstract class ServerCall extends Call {
 
                     if (next != -1) {
                         pbi.unread(next);
+                        requestStream = pbi;
                     } else {
                         requestStream = null;
                     }

@@ -165,8 +165,9 @@ public final class Conditions {
      * @return the status of the response.
      */
     public Status getRangeStatus(RepresentationInfo representationInfo) {
-        return getRangeStatus((representationInfo == null) ? null
-                : representationInfo.getTag(),
+        return getRangeStatus(
+                (representationInfo == null) ? null
+                        : representationInfo.getTag(),
                 (representationInfo == null) ? null : representationInfo
                         .getModificationDate());
     }
@@ -236,7 +237,8 @@ public final class Conditions {
         if ((this.match != null) && !this.match.isEmpty()) {
             boolean matched = false;
             boolean failed = false;
-            boolean all = getMatch().get(0).equals(Tag.ALL);
+            boolean all = (getMatch().size() > 0)
+                    && getMatch().get(0).equals(Tag.ALL);
             String statusMessage = null;
 
             if (entityExists) {
@@ -307,7 +309,8 @@ public final class Conditions {
                         matched = !isModifiedSince;
                     }
                 } else {
-                    matched = getNoneMatch().get(0).equals(Tag.ALL);
+                    matched = (getNoneMatch().size() > 0)
+                            && getNoneMatch().get(0).equals(Tag.ALL);
                 }
             }
 
@@ -324,9 +327,8 @@ public final class Conditions {
         if ((result == null) && (getModifiedSince() != null)) {
             Date modifiedSince = getModifiedSince();
             boolean isModifiedSince = (DateUtils.after(new Date(),
-                    modifiedSince)
-                    || (modificationDate == null) || DateUtils.after(
-                    modifiedSince, modificationDate));
+                    modifiedSince) || (modificationDate == null) || DateUtils
+                    .after(modifiedSince, modificationDate));
 
             if (!isModifiedSince) {
                 if (Method.GET.equals(method) || Method.HEAD.equals(method)) {
@@ -363,7 +365,9 @@ public final class Conditions {
      *         response otherwise.
      */
     public Status getStatus(Method method, RepresentationInfo representationInfo) {
-        return getStatus(method, representationInfo != null,
+        return getStatus(
+                method,
+                representationInfo != null,
                 (representationInfo == null) ? null : representationInfo
                         .getTag(), (representationInfo == null) ? null
                         : representationInfo.getModificationDate());
