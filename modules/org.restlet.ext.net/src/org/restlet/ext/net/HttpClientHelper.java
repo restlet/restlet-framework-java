@@ -108,7 +108,9 @@ import org.restlet.ext.net.internal.HttpUrlConnectionCall;
  *      Features</a>
  * @author Jerome Louvel
  */
-public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelper {
+public class HttpClientHelper extends
+        org.restlet.engine.adapter.HttpClientHelper {
+
     /**
      * Constructor.
      * 
@@ -134,12 +136,11 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 
         try {
             Reference targetRef = request.getResourceRef().getBaseRef() == null ? request
-                    .getResourceRef()
-                    : request.getResourceRef().getTargetRef();
+                    .getResourceRef() : request.getResourceRef().getTargetRef();
 
             result = new HttpUrlConnectionCall(this, request.getMethod()
-                    .toString(), targetRef.toString(), request
-                    .isEntityAvailable());
+                    .toString(), targetRef.toString(),
+                    request.isEntityAvailable());
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING,
                     "Unable to create the HTTP client call", ioe);
