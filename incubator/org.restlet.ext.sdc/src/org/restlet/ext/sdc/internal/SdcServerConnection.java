@@ -43,10 +43,9 @@ import com.google.dataconnector.protocol.FrameReceiver;
 import com.google.dataconnector.protocol.FrameSender;
 import com.google.dataconnector.protocol.FramingException;
 import com.google.dataconnector.protocol.proto.SdcFrame;
+import com.google.dataconnector.protocol.proto.SdcFrame.AuthorizationInfo;
+import com.google.dataconnector.protocol.proto.SdcFrame.AuthorizationInfo.ResultCode;
 import com.google.dataconnector.protocol.proto.SdcFrame.FrameInfo;
-import com.google.dataconnector.protocol.proto.SdcFrame.RegistrationRequestV4;
-import com.google.dataconnector.protocol.proto.SdcFrame.RegistrationResponseV4;
-import com.google.dataconnector.protocol.proto.SdcFrame.RegistrationResponseV4.ResultCode;
 import com.google.dataconnector.util.ShutdownManager;
 
 /**
@@ -56,6 +55,8 @@ import com.google.dataconnector.util.ShutdownManager;
  * @author Jerome Louvel
  */
 public class SdcServerConnection {
+
+    private volatile String key;
 
     private final SSLSocket socket;
 
@@ -92,17 +93,18 @@ public class SdcServerConnection {
         try {
             FrameInfo frameInfo = getFrameReceiver().readOneFrame();
 
-            if (frameInfo.getType() == FrameInfo.Type.REGISTRATION) {
-                RegistrationRequestV4 registrationRequest = RegistrationRequestV4
+            if (frameInfo.getType() == FrameInfo.Type.AUTHORIZATION) {
+                AuthorizationInfo authorizationRequest = AuthorizationInfo
                         .parseFrom(frameInfo.getPayload());
-                System.out.println(registrationRequest);
+                setKey(authorizationRequest.getEmail() + ":"
+                        + authorizationRequest.getPassword());
+                System.out.println(authorizationRequest);
 
-                // Send a response to the registration request
-                RegistrationResponseV4 registrationResponse = RegistrationResponseV4
+                AuthorizationInfo authorizationResponse = AuthorizationInfo
                         .newBuilder().setResult(ResultCode.OK).build();
 
-                getFrameSender().sendFrame(FrameInfo.Type.REGISTRATION,
-                        registrationResponse.toByteString());
+                getFrameSender().sendFrame(FrameInfo.Type.AUTHORIZATION,
+                        authorizationResponse.toByteString());
             } else {
                 System.out.println(frameInfo);
             }
@@ -117,6 +119,10 @@ public class SdcServerConnection {
 
     public FrameSender getFrameSender() {
         return frameSender;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public InputStream getInputStream() {
@@ -134,12 +140,18 @@ public class SdcServerConnection {
     protected boolean readHandshake() throws IOException {
         boolean result = true;
         byte[] hsm = SdcConnection.INITIAL_HANDSHAKE_MSG.getBytes();
+        int c;
 
         for (int i = 0; result && (i < hsm.length); i++) {
-            result = (getInputStream().read() == hsm[i]);
+            c = getInputStream().read();
+            result = (c == hsm[i]);
         }
 
         return result;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
 }

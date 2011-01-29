@@ -1,0 +1,59 @@
+<resourceRules>
+  <!-- $Id: resourceRules.xml-dist 444 2009-08-07 18:10:03Z matt.proud $ -->
+
+  <rule repeatable="true">
+    <ruleNum>1</ruleNum>
+    <agentId>all</agentId>
+    <viewerEmail repeatable="true">johndoe@example.com</viewerEmail>
+    <viewerEmail repeatable="true">admin@example.com</viewerEmail>
+    <apps repeatable="true">
+      <service>Gadgets</service>
+      <allowAnyAppId>true</allowAnyAppId>
+    </apps>
+    <apps repeatable="true">
+      <service>Spreadsheets</service>
+      <allowAnyAppId>true</allowAnyAppId>
+    </apps>
+    <url>http://internal.corp.example.com</url>
+    <urlMatch>HOSTPORT</urlMatch>
+  </rule>
+  <rule repeatable="true">
+    <ruleNum>2</ruleNum>
+    <agentId>all</agentId>
+    <viewerEmail repeatable="true">johndoe@example.com</viewerEmail>
+    <viewerEmail repeatable="true">admin@example.com</viewerEmail>
+    <apps repeatable="true">
+      <service>Spreadsheets</service>
+      <allowAnyAppId>true</allowAnyAppId>
+    </apps>
+    <apps repeatable="true">
+      <service>Gadgets</service>
+      <appId>http://feedserver-enterprise.googleusercontent.com/a/example.com/g/PrivateGadgetSpec/gadget.xml</appId>
+    </apps>
+    <apps repeatable="true">
+      <service>AppEngine</service>
+      <appId>hellosdc</appId>
+    </apps>
+    <url>http://feed.example.com/userlookup?user=johndoe</url>
+    <urlMatch>URLEXACT</urlMatch>
+  </rule>
+  <rule repeatable="true">
+    <ruleNum>3</ruleNum>
+    <agentId>all</agentId>
+    <allowDomainViewers>true</allowDomainViewers>
+    <apps repeatable="true">
+      <service>Gadgets</service>
+      <allowAnyAppId>true</allowAnyAppId>
+    </apps>
+    <apps repeatable="true">
+      <service>Spreadsheets</service>
+      <allowAnyAppId>true</allowAnyAppId>
+    </apps>
+    <apps repeatable="true">
+      <service>AppEngine</service>
+      <allowAnyAppId>true</allowAnyAppId>
+    </apps>
+    <url>socket://0.0.0.0:22</url>
+    <urlMatch>HOSTPORT</urlMatch>
+  </rule>
+</resourceRules>

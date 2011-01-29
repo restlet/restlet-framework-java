@@ -43,6 +43,7 @@ import javax.net.ssl.SSLSocket;
 
 import org.restlet.Client;
 import org.restlet.Request;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
@@ -97,15 +98,37 @@ public class SdcClientHelper extends HttpClientHelper {
                 throw new IOException("Only GET methods are allowed.");
             }
 
-            result = new SdcClientCall(this, null, request.getMethod()
-                    .toString(), targetRef.toString(),
-                    request.isEntityAvailable());
+            if (request.getChallengeResponse() != null) {
+                if (request.getChallengeResponse().getScheme()
+                        .equals(ChallengeScheme.valueOf("SDC"))) {
+                    String key = request.getChallengeResponse().getIdentifier()
+                            + ":"
+                            + String.valueOf(request.getChallengeResponse()
+                                    .getSecret());
+                    SdcServerConnection ssc = getConnections().get(key);
+
+                    if (ssc == null) {
+                        getLogger()
+                                .log(Level.WARNING,
+                                        "Unable to find an established SDC tunnel for this request: ",
+                                        request.getResourceRef());
+                    } else {
+                        result = new SdcClientCall(this, ssc, request
+                                .getMethod().toString(), targetRef.toString(),
+                                request.isEntityAvailable());
+                    }
+                }
+            }
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING,
                     "Unable to create the HTTP client call", ioe);
         }
 
         return result;
+    }
+
+    public Map<String, SdcServerConnection> getConnections() {
+        return connections;
     }
 
     public String[] getEnabledCipherSuites() {
@@ -143,6 +166,7 @@ public class SdcClientHelper extends HttpClientHelper {
                             SdcServerConnection ssc;
                             ssc = new SdcServerConnection(socket);
                             ssc.connect();
+                            getConnections().put(ssc.getKey(), ssc);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

@@ -4,6 +4,8 @@ import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
@@ -26,9 +28,11 @@ public class Main {
 
         Request request = new Request(Method.GET, "http://www.restlet.org");
         request.setProtocol(Protocol.valueOf("SDC"));
+        request.setChallengeResponse(new ChallengeResponse(ChallengeScheme
+                .valueOf("SDC"), "secure-data-connector-user@example.com",
+                "ValidDomainUserPassword"));
         Response response = sdcClient.handle(request);
 
         System.out.println(response);
     }
-
 }

@@ -1,0 +1,59 @@
+<entity>
+  <!-- $Id$ -->
+
+  <!-- The element <sdcServerHost> is required. This value defines the
+       Google server host IPv4 IP address or fully-qualified domain name
+       for use by Secure Data Connector. This value should not be changed
+       unless instructed by Google. -->
+
+  <sdcServerHost>localhost</sdcServerHost>
+
+  <!-- The element <sdcServerPort> is required. This value defines the
+       TCP port for the Google host that listens for Secure Data Connector
+       service requests. This value should not be changed unless instructed
+       by Google. -->
+
+  <sdcServerPort>4433</sdcServerPort>
+
+
+  <allowUnverifiedCertificates>true</allowUnverifiedCertificates>
+
+  <!-- The element <domain> is required. This value defines the
+       Google Apps domain name that your are connecting the Secure Data
+       Connector to. -->
+
+  <domain>example.com</domain>
+
+  <!-- The element <user> is required. This value defines the Google
+       Apps user account the Secure Data Connector uses to authenticate
+       to the Google Apps domain. -->
+
+  <user>secure-data-connector-user</user>
+
+  <!-- The element <password> is required. This value defines the
+       password for the account defined by the <user>
+       element. -->
+
+  <password>ValidDomainUserPassword</password>
+
+  <!-- The element <agentId> is required. This value defines the agent ID
+       which is a unique name that repsents this Secure Data Connector
+       Agent. Valid characters are a-z,A-Z,0-9,-_
+       -->
+
+  <agentId>agent1_example-com</agentId>
+
+  <!-- The element <socksServerPort> is required. This value defines the Socket
+       server listner port. If this port conflicts with another service on the
+       machine, you can change the port to another value. If you customize
+       <socksServerPort>
+       -->
+
+  <socksServerPort>1080</socksServerPort>
+
+  <!-- The following element is optional. It defines comma-separated list of
+       users based on e-mail address who, in addition to the <user> defined
+       above, can access the healthcheck gadget and the associated feeds. -->
+
+  <healthCheckGadgetUsers></healthCheckGadgetUsers>
+</entity>
