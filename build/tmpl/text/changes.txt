@@ -45,6 +45,8 @@ Changes log
         Reported by Phil Dunks.
       - Fixed NIO connector (HTTP and SIP) bug potentially causing infinite
         loops. Reported by John Logdson and Phil Dunks.
+      - Fixed SIP methods INFO, SUBSCRIBE and SUBSCRIBE to allow responses.
+        Reported by Phil Dunks.
      - Misc
       - If the Engine#logFormatter is set to null, the log formatter of the
         console is not changed anymore.

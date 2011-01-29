@@ -86,7 +86,7 @@ public final class SipMethod {
      *      Method</a>
      */
     public static final Method INFO = new Method("INFO", "Information message",
-            BASE_SIP_INFO, false, false, false);
+            BASE_SIP_INFO);
 
     /**
      * Indicates a client is being invited to participate in a call session.
@@ -105,8 +105,7 @@ public final class SipMethod {
      *      3.2. Description of NOTIFY Behavior</a>
      */
     public static final Method NOTIFY = new Method("NOTIFY",
-            "Notification message", BASE_SIP_NOTIFICATION + "#section-3.2",
-            false, false, false);
+            "Notification message", BASE_SIP_NOTIFICATION + "#section-3.2");
 
     /**
      * Queries the capabilities of servers.
@@ -152,8 +151,7 @@ public final class SipMethod {
      *      3.1. Description of SUBSCRIBE Behavior</a>
      */
     public static final Method SUBSCRIBE = new Method("SUBSCRIBE",
-            "Subscription message", BASE_SIP_NOTIFICATION + "#section-3.1",
-            false, false, false);
+            "Subscription message", BASE_SIP_NOTIFICATION + "#section-3.1");
 
     /**
      * Returns the method associated to a given method name. If an existing
