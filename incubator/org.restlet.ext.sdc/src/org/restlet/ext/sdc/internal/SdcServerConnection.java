@@ -33,6 +33,8 @@ package org.restlet.ext.sdc.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -41,16 +43,22 @@ import javax.net.ssl.SSLSocket;
 import org.restlet.ext.sdc.SdcClientHelper;
 
 import com.google.dataconnector.client.SdcConnection;
+import com.google.dataconnector.protocol.Dispatchable;
 import com.google.dataconnector.protocol.FrameReceiver;
 import com.google.dataconnector.protocol.FrameSender;
 import com.google.dataconnector.protocol.FramingException;
 import com.google.dataconnector.protocol.proto.SdcFrame;
 import com.google.dataconnector.protocol.proto.SdcFrame.AuthorizationInfo;
 import com.google.dataconnector.protocol.proto.SdcFrame.AuthorizationInfo.ResultCode;
+import com.google.dataconnector.protocol.proto.SdcFrame.FetchReply;
 import com.google.dataconnector.protocol.proto.SdcFrame.FrameInfo;
+import com.google.dataconnector.protocol.proto.SdcFrame.FrameInfo.Type;
+import com.google.dataconnector.protocol.proto.SdcFrame.HealthCheckInfo;
+import com.google.dataconnector.protocol.proto.SdcFrame.HealthCheckInfo.Source;
 import com.google.dataconnector.protocol.proto.SdcFrame.RegistrationRequestV4;
 import com.google.dataconnector.protocol.proto.SdcFrame.RegistrationResponseV4;
 import com.google.dataconnector.util.ShutdownManager;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * The SDC server connection established between this SDC client connector,
@@ -58,7 +66,7 @@ import com.google.dataconnector.util.ShutdownManager;
  * 
  * @author Jerome Louvel
  */
-public class SdcServerConnection {
+public class SdcServerConnection implements Dispatchable {
 
     private volatile String key;
 
@@ -71,6 +79,9 @@ public class SdcServerConnection {
     private final FrameReceiver frameReceiver;
 
     private final FrameSender frameSender;
+
+    /** Map of pending HTTP/SDC client calls, keyed by the unique call ID. */
+    private final Map<String, SdcClientCall> calls;
 
     private final SdcClientHelper helper;
 
@@ -88,26 +99,20 @@ public class SdcServerConnection {
         this.outputStream = socket.getOutputStream();
         this.frameReceiver = new FrameReceiver();
         this.frameReceiver.setInputStream(getInputStream());
+        this.calls = new TreeMap<String, SdcClientCall>();
 
         BlockingQueue<FrameInfo> sendQueue = new LinkedBlockingQueue<SdcFrame.FrameInfo>();
         ShutdownManager shutdownManager = new ShutdownManager();
         this.frameSender = new FrameSender(sendQueue, shutdownManager);
         this.frameSender.setOutputStream(getOutputStream());
-
-        getHelper().getWorkerService().execute(new Runnable() {
-
-            @Override
-            public void run() {
-                getFrameSender().run();
-            }
-        });
     }
 
     public void connect() throws IOException {
-        readHandshake();
-
         try {
-            // 1) Authorization step
+            // Initial handshake
+            readHandshake();
+
+            // Authorization step
             FrameInfo frameInfo = getFrameReceiver().readOneFrame();
 
             if (frameInfo.getType() == FrameInfo.Type.AUTHORIZATION) {
@@ -126,26 +131,102 @@ public class SdcServerConnection {
                 System.out.println(frameInfo);
             }
 
+            // Register frame dispatchers
+            getFrameReceiver().registerDispatcher(Type.FETCH_REQUEST, this);
+            getFrameReceiver().registerDispatcher(Type.AUTHORIZATION, this);
+            getFrameReceiver().registerDispatcher(Type.HEALTH_CHECK, this);
+
+            // Launch a thread to asynchronously receive incoming frames
+            getHelper().getWorkerService().execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        getFrameReceiver().startDispatching();
+                    } catch (FramingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+            // Launch a thread to asynchronously send outgoing frames
+            getHelper().getWorkerService().execute(new Runnable() {
+                @Override
+                public void run() {
+                    getFrameSender().run();
+                }
+            });
+        } catch (FramingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void dispatch(FrameInfo frameInfo) throws FramingException {
+
+        if (frameInfo.getType() == Type.FETCH_REQUEST) {
+            System.out.println(frameInfo);
+
+            try {
+                FetchReply fetchReply = FetchReply.parseFrom(frameInfo
+                        .getPayload());
+
+                SdcClientCall call = getCalls().get(fetchReply.getId());
+
+                if (call != null) {
+                    call.setFetchReply(fetchReply);
+                    call.getLatch().countDown();
+                } else {
+                    System.out
+                            .println("Unable to find the client call associated to the received response");
+                }
+
+            } catch (InvalidProtocolBufferException e) {
+                e.printStackTrace();
+            }
+        } else if (frameInfo.getType() == Type.AUTHORIZATION) {
             // 2) Registration step
             frameInfo = getFrameReceiver().readOneFrame();
 
             if (frameInfo.getType() == FrameInfo.Type.REGISTRATION) {
-                RegistrationRequestV4 registrationRequest = RegistrationRequestV4
-                        .parseFrom(frameInfo.getPayload());
-                System.out.println(registrationRequest);
+                RegistrationRequestV4 registrationRequest;
 
-                RegistrationResponseV4 registrationResponse = RegistrationResponseV4
-                        .newBuilder()
-                        .setResult(
-                                com.google.dataconnector.protocol.proto.SdcFrame.RegistrationResponseV4.ResultCode.OK)
-                        .build();
+                try {
+                    registrationRequest = RegistrationRequestV4
+                            .parseFrom(frameInfo.getPayload());
+                    System.out.println(registrationRequest);
 
-                getFrameSender().sendFrame(FrameInfo.Type.REGISTRATION,
-                        registrationResponse.toByteString());
+                    RegistrationResponseV4 registrationResponse = RegistrationResponseV4
+                            .newBuilder()
+                            .setResult(
+                                    com.google.dataconnector.protocol.proto.SdcFrame.RegistrationResponseV4.ResultCode.OK)
+                            .build();
+
+                    getFrameSender().sendFrame(FrameInfo.Type.REGISTRATION,
+                            registrationResponse.toByteString());
+                } catch (InvalidProtocolBufferException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (FramingException e) {
-            e.printStackTrace();
+        } else if (frameInfo.getType() == Type.HEALTH_CHECK) {
+            System.out.println(frameInfo);
+
+            HealthCheckInfo checkResponse = HealthCheckInfo
+                    .newBuilder()
+                    .setSource(Source.SERVER)
+                    .setTimeStamp(System.currentTimeMillis())
+                    .setType(
+                            com.google.dataconnector.protocol.proto.SdcFrame.HealthCheckInfo.Type.RESPONSE)
+                    .build();
+            getFrameSender().sendFrame(Type.HEALTH_CHECK,
+                    checkResponse.toByteString());
+        } else {
+            System.out.println("Unexpected frame:" + frameInfo);
         }
+
+    }
+
+    public Map<String, SdcClientCall> getCalls() {
+        return calls;
     }
 
     public FrameReceiver getFrameReceiver() {

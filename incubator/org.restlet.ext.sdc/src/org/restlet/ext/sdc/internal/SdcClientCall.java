@@ -36,19 +36,22 @@ import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.http.ClientCall;
+import org.restlet.engine.io.NioUtils;
 import org.restlet.ext.sdc.SdcClientHelper;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
-import com.google.dataconnector.protocol.FramingException;
 import com.google.dataconnector.protocol.proto.SdcFrame.FetchReply;
 import com.google.dataconnector.protocol.proto.SdcFrame.FetchRequest;
 import com.google.dataconnector.protocol.proto.SdcFrame.FrameInfo;
@@ -56,11 +59,14 @@ import com.google.dataconnector.protocol.proto.SdcFrame.MessageHeader;
 
 /**
  * SDC client call wrapping a HTTP call. This call will be tunneled through the
- * SDC server connection previously established with a remote SDC agent.
+ * matched SDC server connection previously established with a remote SDC agent.
  * 
  * @author Jerome Louvel
  */
 public class SdcClientCall extends ClientCall {
+
+    /** */
+    private final CountDownLatch latch;
 
     /** The matching SDC server connection to use for tunnelling. */
     private final SdcServerConnection connection;
@@ -89,33 +95,11 @@ public class SdcClientCall extends ClientCall {
      * @throws IOException
      */
     public SdcClientCall(SdcClientHelper sdcClientHelper,
-            SdcServerConnection connection, String method, String requestUri,
-            boolean entityAvailable) throws IOException {
+            SdcServerConnection connection, String method, String requestUri)
+            throws IOException {
         super(sdcClientHelper, method, requestUri);
         this.connection = connection;
-
-        if (requestUri.startsWith("http")) {
-            try {
-                // Set the request URI
-                setFetchRequest(FetchRequest.newBuilder()
-                        .setId(UUID.randomUUID().toString())
-                        .setResource(requestUri).setStrategy("URLConnection")
-                        .build());
-                getConnection().getFrameSender().sendFrame(
-                        FrameInfo.Type.FETCH_REQUEST,
-                        getFetchRequest().toByteString());
-
-                FrameInfo frame = getConnection().getFrameReceiver()
-                        .readOneFrame();
-                System.out.println(frame);
-
-            } catch (FramingException e) {
-                e.printStackTrace();
-            }
-        } else {
-            throw new IllegalArgumentException(
-                    "Only HTTP or HTTPS resource URIs are allowed here");
-        }
+        this.latch = new CountDownLatch(1);
     }
 
     /**
@@ -143,6 +127,10 @@ public class SdcClientCall extends ClientCall {
     @Override
     public SdcClientHelper getHelper() {
         return (SdcClientHelper) super.getHelper();
+    }
+
+    public CountDownLatch getLatch() {
+        return latch;
     }
 
     /**
@@ -208,10 +196,9 @@ public class SdcClientCall extends ClientCall {
         Series<Parameter> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
-            // for (MessageHeader mh : getConnection().getFetchReply()
-            // .getHeadersList()) {
-            // result.add(mh.getKey(), mh.getValue());
-            // }
+            for (MessageHeader mh : getFetchReply().getHeadersList()) {
+                result.add(mh.getKey(), mh.getValue());
+            }
 
             this.responseHeadersAdded = true;
         }
@@ -254,28 +241,36 @@ public class SdcClientCall extends ClientCall {
     public Status sendRequest(Request request) {
         Status result = null;
 
-        try {
-            if (request.isEntityAvailable()) {
-                Representation entity = request.getEntity();
-                //
-            }
+        if (Protocol.HTTP.equals(request.getResourceRef().getSchemeProtocol())) {
+            // Set the request URI
+            setFetchRequest(FetchRequest.newBuilder()
+                    .setId(UUID.randomUUID().toString())
+                    .setResource(request.getResourceRef().toString())
+                    .setStrategy("URLConnection").build());
 
             // Set the request headers
             for (Parameter header : getRequestHeaders()) {
-                getFetchReply().getHeadersList().add(
+                getFetchRequest().getHeadersList().add(
                         MessageHeader.newBuilder().setKey(header.getName())
                                 .setValue(header.getValue()).build());
             }
+        } else {
+            throw new IllegalArgumentException(
+                    "Only HTTP or HTTPS resource URIs are allowed here");
+        }
 
-            // Send the optional entity
-            result = super.sendRequest(request);
-            // } catch (IOException ioe) {
-            // getHelper()
-            // .getLogger()
-            // .log(Level.FINE,
-            // "An error occurred during the communication with the remote HTTP server.",
-            // ioe);
-            // result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
+        try {
+            getConnection().getFrameSender().sendFrame(
+                    FrameInfo.Type.FETCH_REQUEST,
+                    getFetchRequest().toByteString());
+
+            // Block the thread until we receive the response or a timeout
+            // occurs
+            if (!getLatch().await(NioUtils.NIO_TIMEOUT, TimeUnit.MILLISECONDS)) {
+                // Timeout detected
+                result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
+                        "The calling thread timed out while waiting for a response to unblock it.");
+            }
         } catch (Exception e) {
             getHelper()
                     .getLogger()

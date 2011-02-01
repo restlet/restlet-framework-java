@@ -120,8 +120,7 @@ public class SdcClientHelper extends HttpClientHelper {
                                         request.getResourceRef());
                     } else {
                         result = new SdcClientCall(this, ssc, request
-                                .getMethod().toString(), targetRef.toString(),
-                                request.isEntityAvailable());
+                                .getMethod().toString(), targetRef.toString());
                     }
                 }
             }
