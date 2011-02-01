@@ -118,7 +118,21 @@ public class SdcClientHelper extends HttpClientHelper {
                             + ":"
                             + String.valueOf(request.getChallengeResponse()
                                     .getSecret());
-                    SdcServerConnection ssc = getConnections().get(key);
+                    int retryAttempts = 3;
+                    int retryDelay = 3000;
+                    SdcServerConnection ssc = null;
+
+                    for (int i = 0; (ssc == null) && (i < retryAttempts); i++) {
+                        ssc = getConnections().get(key);
+
+                        if (ssc == null) {
+                            try {
+                                Thread.sleep(retryDelay);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
 
                     if (ssc == null) {
                         getLogger()
