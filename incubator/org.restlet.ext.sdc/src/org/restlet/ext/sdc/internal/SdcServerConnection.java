@@ -38,6 +38,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.net.ssl.SSLSocket;
 
+import org.restlet.ext.sdc.SdcClientHelper;
+
 import com.google.dataconnector.client.SdcConnection;
 import com.google.dataconnector.protocol.FrameReceiver;
 import com.google.dataconnector.protocol.FrameSender;
@@ -46,6 +48,8 @@ import com.google.dataconnector.protocol.proto.SdcFrame;
 import com.google.dataconnector.protocol.proto.SdcFrame.AuthorizationInfo;
 import com.google.dataconnector.protocol.proto.SdcFrame.AuthorizationInfo.ResultCode;
 import com.google.dataconnector.protocol.proto.SdcFrame.FrameInfo;
+import com.google.dataconnector.protocol.proto.SdcFrame.RegistrationRequestV4;
+import com.google.dataconnector.protocol.proto.SdcFrame.RegistrationResponseV4;
 import com.google.dataconnector.util.ShutdownManager;
 
 /**
@@ -68,13 +72,17 @@ public class SdcServerConnection {
 
     private final FrameSender frameSender;
 
+    private final SdcClientHelper helper;
+
     /**
      * Constructor.
      * 
      * @param socket
      * @throws IOException
      */
-    public SdcServerConnection(SSLSocket socket) throws IOException {
+    public SdcServerConnection(SdcClientHelper helper, SSLSocket socket)
+            throws IOException {
+        this.helper = helper;
         this.socket = socket;
         this.inputStream = socket.getInputStream();
         this.outputStream = socket.getOutputStream();
@@ -85,12 +93,21 @@ public class SdcServerConnection {
         ShutdownManager shutdownManager = new ShutdownManager();
         this.frameSender = new FrameSender(sendQueue, shutdownManager);
         this.frameSender.setOutputStream(getOutputStream());
+
+        getHelper().getWorkerService().execute(new Runnable() {
+
+            @Override
+            public void run() {
+                getFrameSender().run();
+            }
+        });
     }
 
     public void connect() throws IOException {
         readHandshake();
 
         try {
+            // 1) Authorization step
             FrameInfo frameInfo = getFrameReceiver().readOneFrame();
 
             if (frameInfo.getType() == FrameInfo.Type.AUTHORIZATION) {
@@ -108,6 +125,24 @@ public class SdcServerConnection {
             } else {
                 System.out.println(frameInfo);
             }
+
+            // 2) Registration step
+            frameInfo = getFrameReceiver().readOneFrame();
+
+            if (frameInfo.getType() == FrameInfo.Type.REGISTRATION) {
+                RegistrationRequestV4 registrationRequest = RegistrationRequestV4
+                        .parseFrom(frameInfo.getPayload());
+                System.out.println(registrationRequest);
+
+                RegistrationResponseV4 registrationResponse = RegistrationResponseV4
+                        .newBuilder()
+                        .setResult(
+                                com.google.dataconnector.protocol.proto.SdcFrame.RegistrationResponseV4.ResultCode.OK)
+                        .build();
+
+                getFrameSender().sendFrame(FrameInfo.Type.REGISTRATION,
+                        registrationResponse.toByteString());
+            }
         } catch (FramingException e) {
             e.printStackTrace();
         }
@@ -121,12 +156,16 @@ public class SdcServerConnection {
         return frameSender;
     }
 
-    public String getKey() {
-        return key;
+    public SdcClientHelper getHelper() {
+        return helper;
     }
 
     public InputStream getInputStream() {
         return inputStream;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public OutputStream getOutputStream() {

@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -80,10 +82,14 @@ public class SdcClientHelper extends HttpClientHelper {
 
     private final Map<String, SdcServerConnection> connections;
 
+    /** The connection worker service. */
+    private final ExecutorService workerService;
+
     public SdcClientHelper(Client client) {
         super(client);
         getProtocols().add(Protocol.valueOf("SDC"));
         this.connections = new TreeMap<String, SdcServerConnection>();
+        this.workerService = Executors.newCachedThreadPool();
     }
 
     @Override
@@ -135,6 +141,10 @@ public class SdcClientHelper extends HttpClientHelper {
         return new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA" };
     }
 
+    public ExecutorService getWorkerService() {
+        return workerService;
+    }
+
     @Override
     public synchronized void start() throws Exception {
         super.start();
@@ -164,7 +174,8 @@ public class SdcClientHelper extends HttpClientHelper {
                             socket = (SSLSocket) serverSocket.accept();
                             socket.setEnabledCipherSuites(getEnabledCipherSuites());
                             SdcServerConnection ssc;
-                            ssc = new SdcServerConnection(socket);
+                            ssc = new SdcServerConnection(SdcClientHelper.this,
+                                    socket);
                             ssc.connect();
                             getConnections().put(ssc.getKey(), ssc);
                         } catch (IOException e) {
