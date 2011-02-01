@@ -33,5 +33,6 @@ public class Main {
         Response response = sdcClient.handle(request);
 
         System.out.println(response);
+        response.getEntity().write(System.out);
     }
 }

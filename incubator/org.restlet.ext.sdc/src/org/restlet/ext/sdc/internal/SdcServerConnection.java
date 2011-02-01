@@ -180,7 +180,6 @@ public class SdcServerConnection implements Dispatchable {
             try {
                 FetchReply fetchReply = FetchReply.parseFrom(frameInfo
                         .getPayload());
-
                 SdcClientCall call = getCalls().get(fetchReply.getId());
 
                 if (call != null) {

@@ -85,11 +85,18 @@ public class SdcClientHelper extends HttpClientHelper {
     /** The connection worker service. */
     private final ExecutorService workerService;
 
+    /**
+     * The latch that can be used to block until the connector is ready to
+     * process requests.
+     */
+    private final CountDownLatch latch;
+
     public SdcClientHelper(Client client) {
         super(client);
         getProtocols().add(Protocol.valueOf("SDC"));
         this.connections = new TreeMap<String, SdcServerConnection>();
         this.workerService = Executors.newCachedThreadPool();
+        this.latch = new CountDownLatch(1);
     }
 
     @Override
@@ -140,6 +147,10 @@ public class SdcClientHelper extends HttpClientHelper {
         return new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA" };
     }
 
+    public CountDownLatch getLatch() {
+        return latch;
+    }
+
     public ExecutorService getWorkerService() {
         return workerService;
     }
@@ -147,9 +158,8 @@ public class SdcClientHelper extends HttpClientHelper {
     @Override
     public synchronized void start() throws Exception {
         super.start();
-
         getLogger().info("Starting the SDC tunnel on port 4433.");
-        final CountDownLatch latch = new CountDownLatch(1);
+
         new Thread() {
             @Override
             public void run() {
@@ -166,7 +176,7 @@ public class SdcClientHelper extends HttpClientHelper {
                     SSLSocket socket = null;
 
                     // Let the SDC tunnel creator continue
-                    latch.countDown();
+                    getLatch().countDown();
 
                     while (loop) {
                         try {

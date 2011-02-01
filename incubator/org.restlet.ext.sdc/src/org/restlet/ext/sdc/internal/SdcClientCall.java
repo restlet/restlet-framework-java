@@ -51,7 +51,6 @@ import org.restlet.data.Status;
 import org.restlet.engine.http.ClientCall;
 import org.restlet.engine.io.NioUtils;
 import org.restlet.ext.sdc.SdcClientHelper;
-import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 import com.google.dataconnector.protocol.proto.SdcFrame;
@@ -150,11 +149,6 @@ public class SdcClientCall extends ClientCall {
     }
 
     @Override
-    protected Representation getRepresentation(InputStream stream) {
-        return null;
-    }
-
-    @Override
     public WritableByteChannel getRequestEntityChannel() {
         return null;
     }
@@ -185,7 +179,7 @@ public class SdcClientCall extends ClientCall {
 
     @Override
     public InputStream getResponseEntityStream(long size) {
-        return null;
+        return getFetchReply().getContents().newInput();
     }
 
     /**
@@ -198,10 +192,8 @@ public class SdcClientCall extends ClientCall {
         Series<Parameter> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
-            if (getFetchReply() != null) {
-                for (MessageHeader mh : getFetchReply().getHeadersList()) {
-                    result.add(mh.getKey(), mh.getValue());
-                }
+            for (MessageHeader mh : getFetchReply().getHeadersList()) {
+                result.add(mh.getKey(), mh.getValue());
             }
 
             this.responseHeadersAdded = true;
@@ -258,7 +250,7 @@ public class SdcClientCall extends ClientCall {
             setFetchRequest(FetchRequest.newBuilder()
                     .setId(UUID.randomUUID().toString())
                     .setResource(request.getResourceRef().toString())
-                    .setStrategy("URLConnection").addAllHeaders(headers)
+                    .setStrategy("HTTPClient").addAllHeaders(headers)
                     .build());
         } else {
             throw new IllegalArgumentException(
