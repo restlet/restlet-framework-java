@@ -108,6 +108,11 @@ public class SdcServerConnection implements Dispatchable {
         this.frameSender.setOutputStream(getOutputStream());
     }
 
+    /**
+     * Connects this SDC tunnel with one remote SDC agent.
+     * 
+     * @throws IOException
+     */
     public void connect() throws IOException {
         try {
             // Initial handshake
@@ -128,39 +133,45 @@ public class SdcServerConnection implements Dispatchable {
 
                 getFrameSender().sendFrame(FrameInfo.Type.AUTHORIZATION,
                         authorizationResponse.toByteString());
-            } else {
-                System.out.println(frameInfo);
-            }
 
-            // Register frame dispatchers
-            getFrameReceiver().registerDispatcher(Type.FETCH_REQUEST, this);
-            getFrameReceiver().registerDispatcher(Type.AUTHORIZATION, this);
-            getFrameReceiver().registerDispatcher(Type.HEALTH_CHECK, this);
+                // Register frame dispatchers
+                getFrameReceiver().registerDispatcher(Type.FETCH_REQUEST, this);
+                getFrameReceiver().registerDispatcher(Type.AUTHORIZATION, this);
+                getFrameReceiver().registerDispatcher(Type.REGISTRATION, this);
+                getFrameReceiver().registerDispatcher(Type.HEALTH_CHECK, this);
 
-            // Launch a thread to asynchronously receive incoming frames
-            getHelper().getWorkerService().execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        getFrameReceiver().startDispatching();
-                    } catch (FramingException e) {
-                        e.printStackTrace();
+                // Launch a thread to asynchronously receive incoming frames
+                getHelper().getWorkerService().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            getFrameReceiver().startDispatching();
+                        } catch (FramingException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            });
+                });
 
-            // Launch a thread to asynchronously send outgoing frames
-            getHelper().getWorkerService().execute(new Runnable() {
-                @Override
-                public void run() {
-                    getFrameSender().run();
-                }
-            });
+                // Launch a thread to asynchronously send outgoing frames
+                getHelper().getWorkerService().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        getFrameSender().run();
+                    }
+                });
+            } else {
+                System.out
+                        .println("Unable to authorize the connection. Wrong frame type received: "
+                                + frameInfo);
+            }
         } catch (FramingException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Asynchronously process the response frames received from the SDC agent.
+     */
     @Override
     public void dispatch(FrameInfo frameInfo) throws FramingException {
         if (frameInfo.getType() == Type.FETCH_REQUEST) {
@@ -221,7 +232,6 @@ public class SdcServerConnection implements Dispatchable {
         } else {
             System.out.println("Unexpected frame:" + frameInfo);
         }
-
     }
 
     public Map<String, SdcClientCall> getCalls() {

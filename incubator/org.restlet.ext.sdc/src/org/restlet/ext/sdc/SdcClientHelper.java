@@ -161,12 +161,12 @@ public class SdcClientHelper extends HttpClientHelper {
                     SSLServerSocket serverSocket = (SSLServerSocket) ssf
                             .createServerSocket(4433);
 
-                    // Let the SDC tunnel creator continue
-                    latch.countDown();
-
                     // Accept the next socket
                     boolean loop = true;
                     SSLSocket socket = null;
+
+                    // Let the SDC tunnel creator continue
+                    latch.countDown();
 
                     while (loop) {
                         try {
