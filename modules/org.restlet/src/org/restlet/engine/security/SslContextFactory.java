@@ -53,9 +53,9 @@ import org.restlet.util.Series;
 public abstract class SslContextFactory {
 
     /**
-     * Creates a configured and initialised SSLContext.
+     * Creates a configured and initialized SSLContext.
      * 
-     * @return A configured and initialised SSLContext.
+     * @return A configured and initialized SSLContext.
      * @throws Exception
      */
     public abstract SSLContext createSslContext() throws Exception;
