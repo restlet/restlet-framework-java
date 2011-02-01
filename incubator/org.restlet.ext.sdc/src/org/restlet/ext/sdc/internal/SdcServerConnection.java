@@ -57,6 +57,7 @@ import com.google.dataconnector.protocol.proto.SdcFrame.HealthCheckInfo;
 import com.google.dataconnector.protocol.proto.SdcFrame.HealthCheckInfo.Source;
 import com.google.dataconnector.protocol.proto.SdcFrame.RegistrationRequestV4;
 import com.google.dataconnector.protocol.proto.SdcFrame.RegistrationResponseV4;
+import com.google.dataconnector.protocol.proto.SdcFrame.ServerSuppliedConf;
 import com.google.dataconnector.util.ShutdownManager;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -162,7 +163,6 @@ public class SdcServerConnection implements Dispatchable {
 
     @Override
     public void dispatch(FrameInfo frameInfo) throws FramingException {
-
         if (frameInfo.getType() == Type.FETCH_REQUEST) {
             System.out.println(frameInfo);
 
@@ -183,29 +183,28 @@ public class SdcServerConnection implements Dispatchable {
             } catch (InvalidProtocolBufferException e) {
                 e.printStackTrace();
             }
-        } else if (frameInfo.getType() == Type.AUTHORIZATION) {
-            // 2) Registration step
-            frameInfo = getFrameReceiver().readOneFrame();
+        } else if (frameInfo.getType() == FrameInfo.Type.REGISTRATION) {
+            RegistrationRequestV4 registrationRequest;
 
-            if (frameInfo.getType() == FrameInfo.Type.REGISTRATION) {
-                RegistrationRequestV4 registrationRequest;
+            try {
+                registrationRequest = RegistrationRequestV4.parseFrom(frameInfo
+                        .getPayload());
+                System.out.println(registrationRequest);
 
-                try {
-                    registrationRequest = RegistrationRequestV4
-                            .parseFrom(frameInfo.getPayload());
-                    System.out.println(registrationRequest);
+                RegistrationResponseV4 registrationResponse = RegistrationResponseV4
+                        .newBuilder()
+                        .setResult(
+                                com.google.dataconnector.protocol.proto.SdcFrame.RegistrationResponseV4.ResultCode.OK)
+                        .setServerSuppliedConf(
+                                ServerSuppliedConf.newBuilder()
+                                        .setHealthCheckTimeout(5000)
+                                        .setHealthCheckWakeUpInterval(5000)
+                                        .build()).build();
 
-                    RegistrationResponseV4 registrationResponse = RegistrationResponseV4
-                            .newBuilder()
-                            .setResult(
-                                    com.google.dataconnector.protocol.proto.SdcFrame.RegistrationResponseV4.ResultCode.OK)
-                            .build();
-
-                    getFrameSender().sendFrame(FrameInfo.Type.REGISTRATION,
-                            registrationResponse.toByteString());
-                } catch (InvalidProtocolBufferException e) {
-                    e.printStackTrace();
-                }
+                getFrameSender().sendFrame(FrameInfo.Type.REGISTRATION,
+                        registrationResponse.toByteString());
+            } catch (InvalidProtocolBufferException e) {
+                e.printStackTrace();
             }
         } else if (frameInfo.getType() == Type.HEALTH_CHECK) {
             System.out.println(frameInfo);
@@ -268,6 +267,13 @@ public class SdcServerConnection implements Dispatchable {
         }
 
         return result;
+    }
+
+    public void sendRequest(SdcClientCall call) {
+        getCalls().put(call.getFetchRequest().getId(), call);
+        getFrameSender().sendFrame(FrameInfo.Type.FETCH_REQUEST,
+                call.getFetchRequest().toByteString());
+
     }
 
     public void setKey(String key) {

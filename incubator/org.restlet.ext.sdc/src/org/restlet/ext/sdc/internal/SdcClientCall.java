@@ -35,7 +35,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -52,9 +54,9 @@ import org.restlet.ext.sdc.SdcClientHelper;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
+import com.google.dataconnector.protocol.proto.SdcFrame;
 import com.google.dataconnector.protocol.proto.SdcFrame.FetchReply;
 import com.google.dataconnector.protocol.proto.SdcFrame.FetchRequest;
-import com.google.dataconnector.protocol.proto.SdcFrame.FrameInfo;
 import com.google.dataconnector.protocol.proto.SdcFrame.MessageHeader;
 
 /**
@@ -196,8 +198,10 @@ public class SdcClientCall extends ClientCall {
         Series<Parameter> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
-            for (MessageHeader mh : getFetchReply().getHeadersList()) {
-                result.add(mh.getKey(), mh.getValue());
+            if (getFetchReply() != null) {
+                for (MessageHeader mh : getFetchReply().getHeadersList()) {
+                    result.add(mh.getKey(), mh.getValue());
+                }
             }
 
             this.responseHeadersAdded = true;
@@ -242,27 +246,27 @@ public class SdcClientCall extends ClientCall {
         Status result = null;
 
         if (Protocol.HTTP.equals(request.getResourceRef().getSchemeProtocol())) {
-            // Set the request URI
+            // Set the request headers
+            List<MessageHeader> headers = new CopyOnWriteArrayList<SdcFrame.MessageHeader>();
+
+            for (Parameter header : getRequestHeaders()) {
+                headers.add(MessageHeader.newBuilder().setKey(header.getName())
+                        .setValue(header.getValue()).build());
+            }
+
+            // Build the fetch request
             setFetchRequest(FetchRequest.newBuilder()
                     .setId(UUID.randomUUID().toString())
                     .setResource(request.getResourceRef().toString())
-                    .setStrategy("URLConnection").build());
-
-            // Set the request headers
-            for (Parameter header : getRequestHeaders()) {
-                getFetchRequest().getHeadersList().add(
-                        MessageHeader.newBuilder().setKey(header.getName())
-                                .setValue(header.getValue()).build());
-            }
+                    .setStrategy("URLConnection").addAllHeaders(headers)
+                    .build());
         } else {
             throw new IllegalArgumentException(
                     "Only HTTP or HTTPS resource URIs are allowed here");
         }
 
         try {
-            getConnection().getFrameSender().sendFrame(
-                    FrameInfo.Type.FETCH_REQUEST,
-                    getFetchRequest().toByteString());
+            getConnection().sendRequest(this);
 
             // Block the thread until we receive the response or a timeout
             // occurs
@@ -270,6 +274,8 @@ public class SdcClientCall extends ClientCall {
                 // Timeout detected
                 result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
                         "The calling thread timed out while waiting for a response to unblock it.");
+            } else {
+                result = Status.valueOf(getFetchReply().getStatus());
             }
         } catch (Exception e) {
             getHelper()
