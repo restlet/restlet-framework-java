@@ -117,6 +117,7 @@ public class MetadataService extends Service {
      * <li>form: Web forms (URL encoded)</li>
      * <li>ftl: FreeMarker encoding</li>
      * <li>gif: GIF image</li>
+     * <li>gwt: Java serialized object (using GWT-RPC encoder)</li>
      * <li>hqx: BinHex 4 Compressed Archive (Macintosh)</li>
      * <li>htm, html: HTML document</li>
      * <li>ico: Windows icon (Favicon)</li>
@@ -243,6 +244,7 @@ public class MetadataService extends Service {
         ext(dm, "form", MediaType.APPLICATION_WWW_FORM);
         ext(dm, "ftl", Encoding.FREEMARKER, true);
         ext(dm, "gif", MediaType.IMAGE_GIF);
+        ext(dm, "gwt", MediaType.APPLICATION_JAVA_OBJECT_GWT);
         ext(dm, "hqx", MediaType.APPLICATION_MAC_BINHEX40);
         ext(dm, "ico", MediaType.IMAGE_ICON);
         ext(dm, "jad", MediaType.TEXT_J2ME_APP_DESCRIPTOR);
