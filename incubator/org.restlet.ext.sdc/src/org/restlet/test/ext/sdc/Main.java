@@ -6,6 +6,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
@@ -26,7 +27,8 @@ public class Main {
         parameters.add("sslProtocol", "TLSv1");
         sdcClient.start();
 
-        Request request = new Request(Method.GET, "http://www.restlet.org");
+        Request request = new Request(Method.POST, "http://www.restlet.org");
+        request.setEntity("hello world", MediaType.TEXT_HTML);
         request.setProtocol(Protocol.valueOf("SDC"));
         request.setChallengeResponse(new ChallengeResponse(ChallengeScheme
                 .valueOf("SDC"), "myUser@example.com", "myPassword"));

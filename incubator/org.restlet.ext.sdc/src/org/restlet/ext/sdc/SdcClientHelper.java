@@ -46,7 +46,6 @@ import javax.net.ssl.SSLSocket;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.http.ClientCall;
@@ -106,10 +105,6 @@ public class SdcClientHelper extends HttpClientHelper {
         try {
             Reference targetRef = request.getResourceRef().getBaseRef() == null ? request
                     .getResourceRef() : request.getResourceRef().getTargetRef();
-
-            if (!request.getMethod().equals(Method.GET)) {
-                throw new IOException("Only GET methods are allowed.");
-            }
 
             if (request.getChallengeResponse() != null) {
                 if (request.getChallengeResponse().getScheme()

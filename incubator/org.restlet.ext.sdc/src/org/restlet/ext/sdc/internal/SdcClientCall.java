@@ -30,6 +30,7 @@
 
 package org.restlet.ext.sdc.internal;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -45,18 +46,22 @@ import java.util.logging.Level;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
+import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.http.ClientCall;
+import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.io.NioUtils;
 import org.restlet.ext.sdc.SdcClientHelper;
+import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 import com.google.dataconnector.protocol.proto.SdcFrame;
 import com.google.dataconnector.protocol.proto.SdcFrame.FetchReply;
 import com.google.dataconnector.protocol.proto.SdcFrame.FetchRequest;
 import com.google.dataconnector.protocol.proto.SdcFrame.MessageHeader;
+import com.google.protobuf.ByteString;
 
 /**
  * SDC client call wrapping a HTTP call. This call will be tunneled through the
@@ -81,6 +86,8 @@ public class SdcClientCall extends ClientCall {
     /** */
     private volatile FetchReply fetchReply;
 
+    private final ByteArrayOutputStream requestEntityStream;
+
     /**
      * Constructor.
      * 
@@ -101,6 +108,7 @@ public class SdcClientCall extends ClientCall {
         super(sdcClientHelper, method, requestUri);
         this.connection = connection;
         this.latch = new CountDownLatch(1);
+        this.requestEntityStream = new ByteArrayOutputStream();
     }
 
     /**
@@ -155,20 +163,11 @@ public class SdcClientCall extends ClientCall {
 
     @Override
     public OutputStream getRequestEntityStream() {
-        return getRequestStream();
+        return requestEntityStream;
     }
 
     @Override
     public OutputStream getRequestHeadStream() {
-        return getRequestStream();
-    }
-
-    /**
-     * Returns the request entity stream if it exists.
-     * 
-     * @return The request entity stream if it exists.
-     */
-    public OutputStream getRequestStream() {
         return null;
     }
 
@@ -236,46 +235,107 @@ public class SdcClientCall extends ClientCall {
     @Override
     public Status sendRequest(Request request) {
         Status result = null;
+        Representation entity = request.isEntityAvailable() ? request
+                .getEntity() : null;
 
-        if (Protocol.HTTP.equals(request.getResourceRef().getSchemeProtocol())) {
-            // Set the request headers
-            List<MessageHeader> headers = new CopyOnWriteArrayList<SdcFrame.MessageHeader>();
-
-            for (Parameter header : getRequestHeaders()) {
-                headers.add(MessageHeader.newBuilder().setKey(header.getName())
-                        .setValue(header.getValue()).build());
-            }
-
-            // Build the fetch request
-            setFetchRequest(FetchRequest.newBuilder()
-                    .setId(UUID.randomUUID().toString())
-                    .setResource(request.getResourceRef().toString())
-                    .setStrategy("HTTPClient").addAllHeaders(headers)
-                    .build());
-        } else {
-            throw new IllegalArgumentException(
-                    "Only HTTP or HTTPS resource URIs are allowed here");
+        // Get the connector service to callback
+        org.restlet.service.ConnectorService connectorService = ConnectorHelper
+                .getConnectorService();
+        if (connectorService != null) {
+            connectorService.beforeSend(entity);
         }
 
         try {
-            getConnection().sendRequest(this);
+            try {
+                // Set the request headers
+                List<MessageHeader> headers = new CopyOnWriteArrayList<SdcFrame.MessageHeader>();
 
-            // Block the thread until we receive the response or a timeout
-            // occurs
-            if (!getLatch().await(NioUtils.NIO_TIMEOUT, TimeUnit.MILLISECONDS)) {
-                // Timeout detected
-                result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
-                        "The calling thread timed out while waiting for a response to unblock it.");
-            } else {
-                result = Status.valueOf(getFetchReply().getStatus());
+                for (Parameter header : getRequestHeaders()) {
+                    if (!header.getName().equals(
+                            HeaderConstants.HEADER_CONTENT_LENGTH)) {
+                        headers.add(MessageHeader.newBuilder()
+                                .setKey(header.getName())
+                                .setValue(header.getValue()).build());
+                    }
+                }
+
+                if (!Method.GET.equals(request.getMethod())) {
+                    headers.add(MessageHeader.newBuilder()
+                            .setKey("x-sdc-http-method")
+                            .setValue(request.getMethod().getName()).build());
+                }
+
+                if (entity != null) {
+                    OutputStream requestStream = getRequestEntityStream();
+
+                    if (requestStream != null) {
+                        entity.write(requestStream);
+                        requestStream.flush();
+                        requestStream.close();
+
+                        // Build the fetch request
+                        setFetchRequest(FetchRequest
+                                .newBuilder()
+                                .setId(UUID.randomUUID().toString())
+                                .setResource(
+                                        request.getResourceRef().toString())
+                                .setStrategy("HTTPClient")
+                                .addAllHeaders(headers)
+                                .setContents(
+                                        ByteString
+                                                .copyFrom(this.requestEntityStream
+                                                        .toByteArray()))
+                                .build());
+                    }
+                } else {
+                    // Build the fetch request
+                    setFetchRequest(FetchRequest.newBuilder()
+                            .setId(UUID.randomUUID().toString())
+                            .setResource(request.getResourceRef().toString())
+                            .setStrategy("HTTPClient").addAllHeaders(headers)
+                            .build());
+                }
+
+                getConnection().sendRequest(this);
+
+                // Block the thread until we receive the response or a
+                // timeout occurs
+                if (!getLatch().await(NioUtils.NIO_TIMEOUT,
+                        TimeUnit.MILLISECONDS)) {
+                    // Timeout detected
+                    result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
+                            "The calling thread timed out while waiting for a response to unblock it.");
+                } else {
+                    result = Status.valueOf(getFetchReply().getStatus());
+                }
+            } catch (Exception e) {
+                getHelper()
+                        .getLogger()
+                        .log(Level.FINE,
+                                "An unexpected error occurred during the sending of the HTTP request.",
+                                e);
+                result = new Status(Status.CONNECTOR_ERROR_INTERNAL, e);
             }
-        } catch (Exception e) {
+
+            // Now we can access the status code, this MUST happen after closing
+            // any open request stream.
+            result = new Status(getStatusCode(), null, getReasonPhrase(), null);
+        } catch (IOException ioe) {
             getHelper()
                     .getLogger()
                     .log(Level.FINE,
-                            "An unexpected error occurred during the sending of the HTTP request.",
-                            e);
-            result = new Status(Status.CONNECTOR_ERROR_INTERNAL, e);
+                            "An error occured during the communication with the remote HTTP server.",
+                            ioe);
+            result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
+        } finally {
+            if (entity != null) {
+                entity.release();
+            }
+
+            // Call-back after writing
+            if (connectorService != null) {
+                connectorService.afterSend(entity);
+            }
         }
 
         return result;
