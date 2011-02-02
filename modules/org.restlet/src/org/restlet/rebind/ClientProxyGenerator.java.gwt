@@ -46,6 +46,7 @@ import org.restlet.Uniform;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.engine.resource.GwtClientProxy;
 import org.restlet.representation.ObjectRepresentation;
@@ -384,7 +385,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             } else {
                 println("getClientResource().getRequest().setEntity(null);");
             }
-
+            println("getClientResource().getClientInfo().getAcceptedMediaTypes().add(new Preference<MediaType>(MediaType.APPLICATION_JAVA_OBJECT_GWT));");
             println("getClientResource().setMethod(Method."
                     + info.getRestletMethod().toString() + ");");
             println("getClientResource().setOnResponse(new Uniform() {");
@@ -471,6 +472,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             composer.addImport(IOException.class.getCanonicalName());
             composer.addImport(Client.class.getCanonicalName());
             composer.addImport(Protocol.class.getCanonicalName());
+            composer.addImport(Preference.class.getCanonicalName());
             composer.addImport(Request.class.getCanonicalName());
             composer.addImport(Response.class.getCanonicalName());
             composer.addImport(Uniform.class.getCanonicalName());
