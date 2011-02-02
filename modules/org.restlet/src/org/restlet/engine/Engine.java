@@ -98,8 +98,6 @@ public class Engine {
     public static final String DESCRIPTOR_SERVER_PATH = DESCRIPTOR + "/"
             + DESCRIPTOR_SERVER;
 
-    // [enddef]
-
     /** The registered engine. */
     private static volatile Engine instance = null;
 
@@ -847,10 +845,6 @@ public class Engine {
         getRegisteredClients().add(
                 new org.restlet.engine.local.ClapClientHelper(null));
         getRegisteredClients().add(
-                new org.restlet.engine.local.FileClientHelper(null));
-        getRegisteredClients().add(
-                new org.restlet.engine.local.ZipClientHelper(null));
-        getRegisteredClients().add(
                 new org.restlet.engine.local.RiapClientHelper(null));
         getRegisteredServers().add(
                 new org.restlet.engine.local.RiapServerHelper(null));
@@ -858,6 +852,10 @@ public class Engine {
         // [ifndef gae, gwt]
         getRegisteredServers().add(
                 new org.restlet.engine.connector.HttpServerHelper(null));
+        getRegisteredClients().add(
+                new org.restlet.engine.local.FileClientHelper(null));
+        getRegisteredClients().add(
+                new org.restlet.engine.local.ZipClientHelper(null));
         // [enddef]
         // [ifdef gwt] uncomment
         // getRegisteredClients().add(

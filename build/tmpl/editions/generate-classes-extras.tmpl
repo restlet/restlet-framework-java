@@ -1,11 +1,13 @@
  -->
  <#if edition.id = "gwt">
-            <!-- check that the core source code is GWT compliant. -->
-			<gwtCompileModule name="core" module="org.restlet.Restlet" />
+            <!-- check that the core source code is GWT compliant.
+			<gwtCompileModule name="core" module="org.restlet.Restlet" /> -->
  <#elseif edition.id = "gae">
 <#noparse>
-            <gaeCodeChecker jdkClassesWLPath="${tmpl}/editions/gaeJdkClassesWhiteList.txt" jdkMethodsListPath="${tmpl}/editions/gaeJdkMethodsList.txt">
-            	<fileset dir="${classes}" />
+            <gaeCodeChecker>
+                <jdkClassesWhiteLists dir="${tmpl}/editions" includes="gaeJdkClassesWhiteList.txt, extraGaeJdkClassesWhiteList.txt" />
+                <jdkMethodsLists dir="${tmpl}/editions" includes="gaeJdkMethodsList.txt" />
+            	<checkedClasses dir="${classes}" />
             </gaeCodeChecker>
 </#noparse>
 </#if>

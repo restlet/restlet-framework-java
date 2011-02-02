@@ -1,4 +1,4 @@
-<module id="odata" excludes="gwt" type="standard"
+<module id="odata" excludes="gwt,gae" type="standard"
 	package="org.restlet.ext.odata">
 	<name>Restlet Extension - OData service</name>
 	<description>

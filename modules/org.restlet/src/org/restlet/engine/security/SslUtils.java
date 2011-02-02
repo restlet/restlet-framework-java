@@ -161,6 +161,7 @@ public class SslUtils {
                 .toArray(new String[0]) : null;
     }
 
+    // [ifndef gae] method
     /**
      * Returns the SSL context factory. It first look for a "sslContextFactory"
      * attribute (instance), then for a "sslContextFactory" parameter (class

@@ -34,10 +34,6 @@ import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
-
 import org.restlet.data.Parameter;
 import org.restlet.util.Series;
 
@@ -54,8 +50,7 @@ import org.restlet.util.Series;
  * following the behavior described in the JSSE reference guide.
  * </p>
  * <p>
- * There is more information in the <a href=
- * "http://download.oracle.com/javase/1.5.0/docs/guide/security/jsse/JSSERefGuide.html"
+ * There is more information in the <a href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jsse/JSSERefGuide.html"
  * >JSSE Reference Guide</a>.
  * </p>
  * 
@@ -64,11 +59,12 @@ import org.restlet.util.Series;
  * @see KeyStore
  */
 public class DefaultSslContextFactory extends SslContextFactory {
+
     /**
      * Name of the KeyManager algorithm.
      */
     private volatile String keyManagerAlgorithm = System.getProperty(
-            "ssl.KeyManagerFactory.algorithm", KeyManagerFactory
+            "ssl.KeyManagerFactory.algorithm", javax.net.ssl.KeyManagerFactory
                     .getDefaultAlgorithm());
 
     /**
@@ -121,8 +117,8 @@ public class DefaultSslContextFactory extends SslContextFactory {
      * Name of the TrustManager algorithm.
      */
     private volatile String trustManagerAlgorithm = System.getProperty(
-            "ssl.TrustManagerFactory.algorithm", TrustManagerFactory
-                    .getDefaultAlgorithm());
+            "ssl.TrustManagerFactory.algorithm",
+            javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm());
 
     /**
      * Password for the trust store keystore.
@@ -174,9 +170,9 @@ public class DefaultSslContextFactory extends SslContextFactory {
      *      javax.net.ssl.TrustManager[], SecureRandom)
      */
     @Override
-    public SSLContext createSslContext() throws Exception {
+    public javax.net.ssl.SSLContext createSslContext() throws Exception {
 
-        KeyManagerFactory kmf = null;
+        javax.net.ssl.KeyManagerFactory kmf = null;
         if ((this.keyStorePath != null) || (this.keyStoreProvider != null)
                 || (this.keyStoreType != null)) {
             /*
@@ -205,11 +201,12 @@ public class DefaultSslContextFactory extends SslContextFactory {
             /*
              * Creates the key-manager factory.
              */
-            kmf = KeyManagerFactory.getInstance(this.keyManagerAlgorithm);
+            kmf = javax.net.ssl.KeyManagerFactory
+                    .getInstance(this.keyManagerAlgorithm);
             kmf.init(keyStore, this.keyStoreKeyPassword);
         }
 
-        TrustManagerFactory tmf = null;
+        javax.net.ssl.TrustManagerFactory tmf = null;
         if ((this.trustStorePath != null) || (this.trustStoreProvider != null)
                 || (this.trustStoreType != null)) {
             /*
@@ -239,14 +236,15 @@ public class DefaultSslContextFactory extends SslContextFactory {
             /*
              * Creates the trust-manager factory.
              */
-            tmf = TrustManagerFactory.getInstance(this.trustManagerAlgorithm);
+            tmf = javax.net.ssl.TrustManagerFactory
+                    .getInstance(this.trustManagerAlgorithm);
             tmf.init(trustStore);
         }
 
         /*
          * Creates the SSLContext.
          */
-        final SSLContext sslContext = SSLContext
+        final javax.net.ssl.SSLContext sslContext = javax.net.ssl.SSLContext
                 .getInstance(this.secureSocketProtocol);
         SecureRandom sr = null;
         if (this.secureRandomAlgorithm != null) {

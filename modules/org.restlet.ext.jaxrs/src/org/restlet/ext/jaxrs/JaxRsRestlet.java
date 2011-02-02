@@ -75,7 +75,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.internal.provider.BufferedReaderProvider;
 import org.restlet.ext.jaxrs.internal.provider.ByteArrayProvider;
 import org.restlet.ext.jaxrs.internal.provider.ConverterProvider;
-import org.restlet.ext.jaxrs.internal.provider.FileProvider;
 import org.restlet.ext.jaxrs.internal.provider.InputStreamProvider;
 import org.restlet.ext.jaxrs.internal.provider.ReaderProvider;
 import org.restlet.ext.jaxrs.internal.provider.SourceProvider;
@@ -992,7 +991,8 @@ public class JaxRsRestlet extends Restlet {
         // not yet tested
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.FileUploadProvider");
 
-        addDefaultProvider(new FileProvider());
+        // [ifndef gae] instruction
+        addDefaultProvider(new org.restlet.ext.jaxrs.internal.provider.FileProvider());
         addDefaultProvider(new InputStreamProvider());
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider");
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.JaxbProvider");

@@ -20,4 +20,12 @@
       <dependency type="library" id="stax" />
       <dependency type="module" id="core" />
    </dependencies>
+
+   <source edition="gae">
+      <files-sets>
+<![CDATA[
+         <exclude name="src/org/restlet/ext/jaxrs/internal/provider/FileProvider.java" />
+]]>
+      </files-sets>
+   </source>
 </module>

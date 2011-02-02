@@ -30,8 +30,6 @@
 
 package org.restlet.engine;
 
-import java.net.ServerSocket;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
@@ -85,13 +83,14 @@ public class ServerHelper extends ConnectorHelper<Server> {
         }
     }
 
+    // [ifndef gae] method
     /**
      * Sets the ephemeral port in the attributes map if necessary.
      * 
      * @param socket
      *            The bound server socket.
      */
-    public void setEphemeralPort(ServerSocket socket) {
+    public void setEphemeralPort(java.net.ServerSocket socket) {
         setEphemeralPort(socket.getLocalPort());
     }
 
