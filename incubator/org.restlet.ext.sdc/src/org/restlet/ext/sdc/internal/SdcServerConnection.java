@@ -126,7 +126,7 @@ public class SdcServerConnection implements Dispatchable {
                         .parseFrom(frameInfo.getPayload());
                 setKey(authorizationRequest.getEmail() + ":"
                         + authorizationRequest.getPassword());
-                System.out.println(authorizationRequest);
+                // System.out.println(authorizationRequest);
 
                 AuthorizationInfo authorizationResponse = AuthorizationInfo
                         .newBuilder().setResult(ResultCode.OK).build();
@@ -175,7 +175,7 @@ public class SdcServerConnection implements Dispatchable {
     @Override
     public void dispatch(FrameInfo frameInfo) throws FramingException {
         if (frameInfo.getType() == Type.FETCH_REQUEST) {
-            System.out.println(frameInfo);
+            // System.out.println(frameInfo);
 
             try {
                 FetchReply fetchReply = FetchReply.parseFrom(frameInfo
@@ -199,7 +199,7 @@ public class SdcServerConnection implements Dispatchable {
             try {
                 registrationRequest = RegistrationRequestV4.parseFrom(frameInfo
                         .getPayload());
-                System.out.println(registrationRequest);
+                // System.out.println(registrationRequest);
 
                 RegistrationResponseV4 registrationResponse = RegistrationResponseV4
                         .newBuilder()
@@ -217,7 +217,7 @@ public class SdcServerConnection implements Dispatchable {
                 e.printStackTrace();
             }
         } else if (frameInfo.getType() == Type.HEALTH_CHECK) {
-            System.out.println(frameInfo);
+            // System.out.println(frameInfo);
 
             HealthCheckInfo checkResponse = HealthCheckInfo
                     .newBuilder()
