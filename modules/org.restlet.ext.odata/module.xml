@@ -28,6 +28,7 @@
          <exclude name="src/org/restlet/ext/odata/internal/templates/**" />
 ]]>
 		</files-sets>
+	</source>
 	<source edition="gae">
 		<files-mappers>
 <![CDATA[
