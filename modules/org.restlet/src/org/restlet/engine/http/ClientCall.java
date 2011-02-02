@@ -225,8 +225,7 @@ public abstract class ClientCall extends Call {
             // Informs that the size has not been specified in the header.
             if (size == Representation.UNKNOWN_SIZE) {
                 getLogger()
-                        .fine(
-                                "The length of the message body is unknown. The entity must be handled carefully and consumed entirely in order to surely release the connection.");
+                        .fine("The length of the message body is unknown. The entity must be handled carefully and consumed entirely in order to surely release the connection.");
             }
         }
         // }
@@ -325,7 +324,6 @@ public abstract class ClientCall extends Call {
 
         try {
             if (entity != null) {
-
                 // In order to workaround bug #6472250
                 // (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6472250),
                 // it is very important to reuse that exact same "requestStream"
@@ -351,8 +349,7 @@ public abstract class ClientCall extends Call {
         } catch (IOException ioe) {
             getHelper()
                     .getLogger()
-                    .log(
-                            Level.FINE,
+                    .log(Level.FINE,
                             "An error occured during the communication with the remote HTTP server.",
                             ioe);
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
