@@ -123,8 +123,14 @@ public abstract class LocalClientHelper extends ClientHelper {
         String path = request.getResourceRef().getPath();
         String decodedPath = Reference.decode(path);
 
-        // Continue the local handling
-        handleLocal(request, response, decodedPath);
+        if (decodedPath != null) {
+            // Continue the local handling
+            handleLocal(request, response, decodedPath);
+        } else {
+            getLogger().warning(
+                    "Unable to get the path of this local URI: "
+                            + request.getResourceRef());
+        }
     }
 
     /**
