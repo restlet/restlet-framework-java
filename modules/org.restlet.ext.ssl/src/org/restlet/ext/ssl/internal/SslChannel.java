@@ -194,9 +194,9 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      *            The SSL engine result to log.
      */
     protected void log(SSLEngineResult sslResult) {
-        if (getLogger().isLoggable(Level.INFO)) {
-            getLogger().log(Level.INFO, "SSL I/O result: " + sslResult);
-            getLogger().log(Level.INFO, "SSL Manager: " + getManager());
+        if (getLogger().isLoggable(Level.FINE)) {
+            getLogger().log(Level.FINE, "SSL I/O result: " + sslResult);
+            getLogger().log(Level.FINE, "SSL Manager: " + getManager());
         }
     }
 
@@ -354,7 +354,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
             getConnection().getHelper().getWorkerService()
                     .execute(new Runnable() {
                         public void run() {
-                            getLogger().log(Level.INFO,
+                            getLogger().log(Level.FINE,
                                     "Running delegated tasks...");
                             task.run();
 
@@ -370,7 +370,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
                             }
 
                             onDelegatedTasksCompleted();
-                            getLogger().log(Level.INFO,
+                            getLogger().log(Level.FINE,
                                     "Done running delegated tasks");
                         }
                     });
@@ -389,24 +389,24 @@ public abstract class SslChannel<T extends SelectionChannel> extends
             throws IOException {
         getPacketBuffer().beforeDrain();
 
-        if (getLogger().isLoggable(Level.INFO)) {
+        if (getLogger().isLoggable(Level.FINE)) {
             getLogger()
-                    .log(Level.INFO,
+                    .log(Level.FINE,
                             "---------------------------------------------------------------------------------");
-            getLogger().log(Level.INFO,
+            getLogger().log(Level.FINE,
                     "Unwrapping packet buffer: " + getPacketBuffer());
-            getLogger().log(Level.INFO,
+            getLogger().log(Level.FINE,
                     "into application buffer: " + applicationBuffer);
         }
 
-        if (getLogger().isLoggable(Level.FINE)) {
+        if (getLogger().isLoggable(Level.FINER)) {
             getLogger().log(
-                    Level.FINE,
+                    Level.FINER,
                     "Application buffer suggested size: "
                             + getManager().getEngine().getSession()
                                     .getApplicationBufferSize());
             getLogger().log(
-                    Level.FINE,
+                    Level.FINER,
                     "Packet buffer suggested size: "
                             + getManager().getEngine().getSession()
                                     .getPacketBufferSize());
@@ -436,14 +436,13 @@ public abstract class SslChannel<T extends SelectionChannel> extends
         SSLEngineResult result = null;
         getPacketBuffer().beforeFill();
 
-        getLogger()
-                .log(Level.INFO,
-                        "---------------------------------------------------------------------------------");
-
-        if (getConnection().getLogger().isLoggable(Level.INFO)) {
-            getConnection().getLogger().log(Level.INFO,
+        if (getConnection().getLogger().isLoggable(Level.FINE)) {
+            getLogger()
+                    .log(Level.FINE,
+                            "---------------------------------------------------------------------------------");
+            getConnection().getLogger().log(Level.FINE,
                     "Wrapping application buffer: " + applicationBuffer);
-            getLogger().log(Level.INFO,
+            getLogger().log(Level.FINE,
                     "into packet buffer: " + getPacketBuffer());
         }
 

@@ -92,8 +92,8 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
             if (getWrappedChannel().isOpen()) {
                 result = getPacketBuffer().drain(getWrappedChannel());
 
-                if (getConnection().getLogger().isLoggable(Level.INFO)) {
-                    getConnection().getLogger().log(Level.INFO,
+                if (getConnection().getLogger().isLoggable(Level.FINE)) {
+                    getConnection().getLogger().log(Level.FINE,
                             "Packet bytes written: " + result);
                 }
 

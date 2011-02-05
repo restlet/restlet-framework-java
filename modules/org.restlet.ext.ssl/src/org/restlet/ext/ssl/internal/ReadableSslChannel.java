@@ -157,10 +157,10 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
         }
 
         while (continueReading) {
-            getPacketBuffer().beforeFill();
             result += drain(targetBuffer);
+            getPacketBuffer().beforeFill();
             continueReading = (getWrappedChannel().refill() > 0)
-                    || (getPacketBuffer().canDrain() && (getManager()
+                    || (getPacketBuffer().couldDrain() && (getManager()
                             .getEngineStatus() == Status.OK));
         }
 
