@@ -415,9 +415,9 @@ public abstract class SslChannel<T extends SelectionChannel> extends
         SSLEngineResult result = getManager().getEngine().unwrap(
                 getPacketBuffer().getBytes(), applicationBuffer);
 
+        // Let's fill the packet buffer
         if (getPacketBuffer().couldFill()) {
-            // Let's fill the packet buffer
-            getPacketBuffer().flip();
+            getPacketBuffer().beforeFill();
         }
 
         return result;
@@ -450,8 +450,9 @@ public abstract class SslChannel<T extends SelectionChannel> extends
         result = getManager().getEngine().wrap(applicationBuffer,
                 getPacketBuffer().getBytes());
 
+        // Let's drain the packet buffer
         if (getPacketBuffer().couldDrain()) {
-            getPacketBuffer().flip();
+            getPacketBuffer().beforeDrain();
         }
 
         return result;

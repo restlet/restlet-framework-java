@@ -258,7 +258,8 @@ public class SslManager {
 
     @Override
     public String toString() {
-        return getState() + " | " + getEngine();
+        return getState() + " | " + getEngine() + " | " + getEngineStatus()
+                + " | " + getHandshakeStatus();
     }
 
 }
