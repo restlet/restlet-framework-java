@@ -300,8 +300,13 @@ public class SelectionRegistration {
      * @return True if the operations effectively changed.
      */
     public boolean setInterestOperations(int interest) {
-        boolean result = (this.interestOperations != interest);
-        this.interestOperations = interest;
+        boolean result = false;
+
+        if (this.interestOperations != interest) {
+            this.interestOperations = interest;
+            result = true;
+        }
+
         setReadyOperations(0);
         return result;
     }

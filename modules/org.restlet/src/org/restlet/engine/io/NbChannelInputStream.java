@@ -67,7 +67,7 @@ public class NbChannelInputStream extends InputStream {
     private final SelectableChannel selectableChannel;
 
     /** The optional selection channel to read from. */
-    private final ReadableSelectionChannel selectionChannel;
+    private final SelectionChannel selectionChannel;
 
     /**
      * Constructor.
@@ -84,6 +84,9 @@ public class NbChannelInputStream extends InputStream {
         } else if (channel instanceof SelectableChannel) {
             this.selectionChannel = null;
             this.selectableChannel = (SelectableChannel) channel;
+        } else if (channel instanceof SelectionChannel) {
+            this.selectionChannel = (SelectionChannel) channel;
+            this.selectableChannel = null;
         } else {
             this.selectionChannel = null;
             this.selectableChannel = null;
@@ -184,6 +187,8 @@ public class NbChannelInputStream extends InputStream {
 
                                             // Unblock the user thread
                                             selectionRegistration.unblock();
+                                            selectionRegistration
+                                                    .setListener(null);
                                         }
                                     });
                         } else {

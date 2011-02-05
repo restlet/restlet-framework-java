@@ -47,6 +47,8 @@ Changes log
         loops. Reported by John Logdson and Phil Dunks.
       - Fixed SIP methods INFO, SUBSCRIBE and SUBSCRIBE to allow responses.
         Reported by Phil Dunks.
+      - Fixed NIO connector regression potentially blocking a connection if 
+        all the entity couldn't be read from the socket in one shot.
      - Misc
       - If the Engine#logFormatter is set to null, the log formatter of the
         console is not changed anymore.

@@ -186,7 +186,6 @@ public abstract class InboundWay extends Way {
         int result = 0;
 
         if ((getMessageState() == MessageState.BODY)
-                && (getIoState() == IoState.IDLE)
                 && (getEntityRegistration() != null)
                 && (getEntityRegistration().getListener() != null)) {
             result = getEntityRegistration().getInterestOperations();
