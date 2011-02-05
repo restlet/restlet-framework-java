@@ -20,6 +20,9 @@ Changes log
          load. Reported by Leandro Oliveira.
        - Fixed bug with AWS S3 authentication due to wrong insertion of
          HTTP headers. Reported by Sebastien Gaide.
+       - The GWT proxies generated at compilation time weren't setting 
+         their preference for the GWT object serialization format.
+       
  
 - 2.0.4 (2010-12-24)
     - Bugs fixed
