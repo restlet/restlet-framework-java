@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.engine.header.HeaderUtils;
@@ -310,8 +311,16 @@ public class IoBuffer {
 
                 if (result > 0) {
                     flip();
-                    Context.getCurrentLogger().finer(
-                            "Refilled buffer with " + result + " byte(s)");
+
+                    if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                        Context.getCurrentLogger().finer(
+                                "Refilled buffer with " + result + " byte(s)");
+                    }
+                } else {
+                    if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                        Context.getCurrentLogger().finer(
+                                "Coudn't refill buffer : " + toString());
+                    }
                 }
             }
         }
