@@ -53,7 +53,7 @@ import org.restlet.routing.Router;
  */
 public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
-    private static int LOOP_NUMBER = 25;
+    private static int LOOP_NUMBER = 20;
 
     /**
      * Test resource that answers to PUT requests by sending back the received
@@ -95,10 +95,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
             sendPut(uri, 10);
         }
         for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendPut(uri, 1024);
-        }
-        for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendPut(uri, 10240);
+            sendPut(uri, 20000);
         }
 
         sendPut(uri, 10);
