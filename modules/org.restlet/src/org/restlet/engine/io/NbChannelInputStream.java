@@ -179,11 +179,16 @@ public class NbChannelInputStream extends InputStream {
                                     .setInterestOperations(SelectionKey.OP_READ);
                             this.selectionRegistration
                                     .setListener(new SelectionListener() {
-                                        public void onSelected(
-                                                SelectionRegistration registration) {
-                                            // No more read interest at
-                                            // this point
-                                            registration.suspend();
+                                        public void onSelected() {
+                                            if (Context.getCurrentLogger()
+                                                    .isLoggable(Level.FINE)) {
+                                                Context.getCurrentLogger()
+                                                        .log(Level.FINE,
+                                                                "NbChannelInputStream selected");
+                                            }
+
+                                            // Stop listening at this point
+                                            selectionRegistration.suspend();
 
                                             // Unblock the user thread
                                             selectionRegistration.unblock();

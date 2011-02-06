@@ -182,7 +182,7 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    protected int getSocketInterestOps() {
+    protected int getInterestOperations() {
         int result = 0;
 
         if ((getMessageState() == MessageState.BODY)
@@ -258,14 +258,14 @@ public abstract class InboundWay extends Way {
     protected abstract void onReceived(Response message);
 
     @Override
-    public void onSelected(SelectionRegistration registration) {
+    public void onSelected() {
         try {
-            super.onSelected(registration);
+            super.onSelected();
 
             if ((getMessageState() == MessageState.BODY)
                     && (getEntityRegistration() != null)) {
                 getEntityRegistration().onSelected(
-                        registration.getReadyOperations());
+                        getRegistration().getReadyOperations());
             } else {
                 while (isSelected()) {
                     if (getIoBuffer().isFilling()) {
@@ -388,7 +388,7 @@ public abstract class InboundWay extends Way {
     public void setIoState(IoState ioState) {
         if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
             Context.getCurrentLogger().log(Level.FINER,
-                    "Inbound way: " + ioState);
+                    "Inbound way#setIoState : " + ioState);
         }
 
         super.setIoState(ioState);

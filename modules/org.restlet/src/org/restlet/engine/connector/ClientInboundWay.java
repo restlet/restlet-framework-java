@@ -114,13 +114,13 @@ public abstract class ClientInboundWay extends InboundWay {
     }
 
     @Override
-    protected int getSocketInterestOps() {
+    protected int getInterestOperations() {
         int result = 0;
 
         if (getConnection().getState() == ConnectionState.OPENING) {
             result = SelectionKey.OP_CONNECT;
         } else {
-            result = super.getSocketInterestOps();
+            result = super.getInterestOperations();
         }
 
         return result;

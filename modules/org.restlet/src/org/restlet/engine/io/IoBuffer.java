@@ -331,7 +331,7 @@ public class IoBuffer {
     /**
      * Flip from draining to filling or the other way around.
      */
-    private void flip() {
+    public void flip() {
         if (isFilling()) {
             setState(BufferState.DRAINING);
             getBytes().limit(getBytes().position());

@@ -160,6 +160,16 @@ public class SelectionRegistration {
      */
     public void block() {
         try {
+            if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                Context.getCurrentLogger().log(
+                        Level.FINE,
+                        "Calling thread about to block on the NIO selection registration. Timeout: "
+                                + TimeUnit.MILLISECONDS
+                                        .toMillis(IoUtils.TIMEOUT_MS)
+                                + " ms. Waiting: "
+                                + this.barrier.getNumberWaiting());
+            }
+
             this.barrier.await(IoUtils.TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             e.printStackTrace();
@@ -221,6 +231,15 @@ public class SelectionRegistration {
     }
 
     /**
+     * Indicates if the operations of interest are ready.
+     * 
+     * @return
+     */
+    public boolean isInterestReady() {
+        return ((getReadyOperations() & getInterestOperations()) > 0);
+    }
+
+    /**
      * Indicates if the NIO channel is readable.
      * 
      * @return True if the NIO channel is readable.
@@ -248,9 +267,8 @@ public class SelectionRegistration {
     public void onSelected(int readyOperations) {
         this.readyOperations = readyOperations;
 
-        if ((getListener() != null)
-                && ((getReadyOperations() & getInterestOperations()) != 0)) {
-            getListener().onSelected(this);
+        if ((getListener() != null) && isInterestReady()) {
+            getListener().onSelected();
         }
     }
 
@@ -266,7 +284,7 @@ public class SelectionRegistration {
             this.selectionKey = getSelectableChannel().register(selector,
                     getInterestOperations(), this);
         } catch (ClosedChannelException cce) {
-            Context.getCurrentLogger().log(Level.INFO,
+            Context.getCurrentLogger().log(Level.FINE,
                     "Unable to register again", cce);
         }
 
@@ -375,6 +393,14 @@ public class SelectionRegistration {
      * @see #block()
      */
     public void unblock() {
+        if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+            Context.getCurrentLogger().log(
+                    Level.FINE,
+                    "Calling thread about to unblock the NIO selection registration. Timeout: "
+                            + TimeUnit.MILLISECONDS + " ms. Waiting: "
+                            + this.barrier.getNumberWaiting());
+        }
+
         try {
             if (this.barrier.getNumberWaiting() == 1) {
                 this.barrier.await(IoUtils.TIMEOUT_MS, TimeUnit.MILLISECONDS);

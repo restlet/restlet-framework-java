@@ -157,6 +157,13 @@ public abstract class Way implements SelectionListener, CompletionListener {
     }
 
     /**
+     * Returns the operations of interest.
+     * 
+     * @return The operations of interest.
+     */
+    protected abstract int getInterestOperations();
+
+    /**
      * Returns the IO buffer.
      * 
      * @return The IO buffer.
@@ -241,13 +248,6 @@ public abstract class Way implements SelectionListener, CompletionListener {
     }
 
     /**
-     * Returns the operations of interest.
-     * 
-     * @return The operations of interest.
-     */
-    protected abstract int getSocketInterestOps();
-
-    /**
      * Indicates if the way is empty.
      * 
      * @return True if the way is empty.
@@ -302,11 +302,8 @@ public abstract class Way implements SelectionListener, CompletionListener {
     /**
      * Callback method invoked when the way has been selected for IO operations
      * it registered interest in.
-     * 
-     * @param registration
-     *            The selection registration.
      */
-    public void onSelected(SelectionRegistration registration) {
+    public void onSelected() {
         if (getIoState() == IoState.INTEREST) {
             setIoState(IoState.PROCESSING);
 
@@ -399,7 +396,7 @@ public abstract class Way implements SelectionListener, CompletionListener {
      * Updates the way IO and message states.
      */
     public void updateState() {
-        getRegistration().setInterestOperations(getSocketInterestOps());
+        getRegistration().setInterestOperations(getInterestOperations());
     }
 
 }

@@ -40,10 +40,7 @@ public interface SelectionListener {
     /**
      * Callback method invoked when the connection has been selected for IO
      * operations it registered interest in.
-     * 
-     * @param registration
-     *            The selection registration.
      */
-    public void onSelected(SelectionRegistration registration);
+    public void onSelected();
 
 }

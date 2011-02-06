@@ -53,7 +53,6 @@ import org.restlet.engine.io.ReadableChunkingChannel;
 import org.restlet.engine.io.ReadableSizedChannel;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.Representation;
-import org.restlet.util.SelectionRegistration;
 import org.restlet.util.Series;
 
 /**
@@ -169,7 +168,7 @@ public abstract class OutboundWay extends Way {
      * 
      * @throws IOException
      */
-    protected void drainByteBuffer() throws IOException {
+    protected void drainIoBuffer() throws IOException {
         if (canDrain()) {
             int bytesWritten = getIoBuffer().drain(
                     getConnection().getWritableSelectionChannel());
@@ -209,7 +208,7 @@ public abstract class OutboundWay extends Way {
      * 
      * @throws IOException
      */
-    protected void fillByteBuffer() throws IOException {
+    protected void fillIoBuffer() throws IOException {
         while (isSelected() && getIoBuffer().canFill()
                 && (getMessageState() != MessageState.END)) {
             if (getMessageState() == MessageState.BODY) {
@@ -326,7 +325,7 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
-    public int getSocketInterestOps() {
+    public int getInterestOperations() {
         int result = 0;
 
         if (getIoState() == IoState.INTEREST) {
@@ -360,12 +359,12 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
-    public void onSelected(SelectionRegistration registration) {
+    public void onSelected() {
         try {
             Response message = getMessage();
 
             if (message != null) {
-                super.onSelected(registration);
+                super.onSelected();
 
                 while (isSelected()) {
                     if (getIoBuffer().isFilling()) {
@@ -375,11 +374,11 @@ public abstract class OutboundWay extends Way {
                         } else {
                             // Write the message or part of it in the byte
                             // buffer
-                            fillByteBuffer();
+                            fillIoBuffer();
                         }
                     } else if (getIoBuffer().isDraining()) {
                         // Write the byte buffer or part of it to the socket
-                        drainByteBuffer();
+                        drainIoBuffer();
 
                         if (getMessageState() == MessageState.IDLE) {
                             // Message fully sent, check if another is ready

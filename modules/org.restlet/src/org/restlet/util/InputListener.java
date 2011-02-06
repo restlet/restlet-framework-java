@@ -112,7 +112,7 @@ public abstract class InputListener implements SelectionListener {
      * bytes from the source channel into an internal buffer then calls
      * {@link #onContent(InputStream)}.
      */
-    public final void onSelected(SelectionRegistration registration) {
+    public final void onSelected() {
         try {
             synchronized (byteBuffer) {
                 byteBuffer.clear();

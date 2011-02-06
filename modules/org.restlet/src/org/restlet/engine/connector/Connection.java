@@ -588,11 +588,8 @@ public class Connection<T extends Connector> implements SelectionListener {
      * that allows the detection of expired connections and calls
      * {@link Way#onSelected(SelectionRegistration)} on the inbound or outbound
      * way.
-     * 
-     * @param registration
-     *            The registered selection key.
      */
-    public void onSelected(SelectionRegistration registration) {
+    public void onSelected() {
         this.lastActivity = System.currentTimeMillis();
 
         if (getLogger().isLoggable(Level.FINER)) {
