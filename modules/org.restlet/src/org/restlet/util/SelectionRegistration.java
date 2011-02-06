@@ -402,9 +402,8 @@ public class SelectionRegistration {
         }
 
         try {
-            if (this.barrier.getNumberWaiting() == 1) {
-                this.barrier.await(IoUtils.TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            }
+            this.barrier.await(IoUtils.TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            this.barrier.reset();
         } catch (Exception e) {
             e.printStackTrace();
         }

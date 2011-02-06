@@ -192,8 +192,6 @@ public class NbChannelInputStream extends InputStream {
 
                                             // Unblock the user thread
                                             selectionRegistration.unblock();
-                                            selectionRegistration
-                                                    .setListener(null);
                                         }
                                     });
                         } else {
@@ -202,14 +200,15 @@ public class NbChannelInputStream extends InputStream {
 
                         // Block until new content arrives or a timeout occurs
                         this.selectionRegistration.block();
+
+                        // Attempt to read more content
+                        bytesRead = readChannel();
                     } catch (Exception e) {
                         Context.getCurrentLogger()
                                 .log(Level.FINE,
                                         "Exception while registering or waiting for new content",
                                         e);
                     }
-
-                    bytesRead = readChannel();
                 } else if (selectableChannel != null) {
                     Selector selector = null;
                     SelectionKey selectionKey = null;
@@ -236,6 +235,7 @@ public class NbChannelInputStream extends InputStream {
 
             if (this.selectionRegistration != null) {
                 this.selectionRegistration.setCanceling(true);
+                this.selectionRegistration.setListener(null);
             }
         }
     }
