@@ -30,7 +30,6 @@
 
 package org.restlet.ext.odata.internal.edm;
 
-import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 

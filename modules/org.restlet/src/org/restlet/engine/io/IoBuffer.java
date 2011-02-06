@@ -331,13 +331,13 @@ public class IoBuffer {
     /**
      * Flip from draining to filling or the other way around.
      */
-    public void flip() {
-        if (getState() == BufferState.FILLING) {
+    private void flip() {
+        if (isFilling()) {
             setState(BufferState.DRAINING);
             getBytes().limit(getBytes().position());
             getBytes().position(this.begin);
             this.begin = 0;
-        } else if (getState() == BufferState.DRAINING) {
+        } else if (isDraining()) {
             if (hasRemaining()) {
                 setState(BufferState.FILLING);
                 this.begin = getBytes().position();
