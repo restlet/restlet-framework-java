@@ -338,7 +338,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * 
      * @return The underlying socket channel as a readable selection channel.
      */
-    protected ReadableSelectionChannel getReadableSelectionChannel() {
+    public ReadableSelectionChannel getReadableSelectionChannel() {
         return readableSelectionChannel;
     }
 
@@ -349,7 +349,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * @return The socket's NIO registration holding the link between the
      *         channel and the connection.
      */
-    protected SelectionRegistration getRegistration() {
+    public SelectionRegistration getRegistration() {
         return registration;
     }
 
@@ -368,7 +368,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * 
      * @return The socket address.
      */
-    protected SocketAddress getSocketAddress() {
+    public SocketAddress getSocketAddress() {
         return socketAddress;
     }
 
@@ -454,7 +454,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * 
      * @return The underlying socket channel as a writable selection channel.
      */
-    protected WritableSelectionChannel getWritableSelectionChannel() {
+    public WritableSelectionChannel getWritableSelectionChannel() {
         return writableSelectionChannel;
     }
 
@@ -697,7 +697,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      *            The socket's NIO registration holding the link between the
      *            channel and the way.
      */
-    protected void setRegistration(SelectionRegistration registration) {
+    public void setRegistration(SelectionRegistration registration) {
         this.registration = registration;
     }
 

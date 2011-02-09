@@ -243,7 +243,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * 
      * @return The connection pool.
      */
-    protected ConnectionPool<T> getConnectionPool() {
+    public ConnectionPool<T> getConnectionPool() {
         return connectionPool;
     }
 
@@ -252,7 +252,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * 
      * @return The set of active connections.
      */
-    protected Set<Connection<T>> getConnections() {
+    public Set<Connection<T>> getConnections() {
         return connections;
     }
 
