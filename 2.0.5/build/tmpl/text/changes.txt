@@ -1,0 +1,163 @@
+   
+===========
+Changes log  
+===========
+
+- @version-full@ (@release-date@)
+    - API changes
+      - Deprecated the Client#connectTimeout property as it is hard to find
+        compared to other connector parameters. Also, it isn't available for
+        all connectors so it can be confusing to expose it.
+        Use the "socketConnectTimeoutMs" connector parameter instead or
+        the "maxIoIdleTimeMs" parameter for internal NIO connectors.
+      - Deprecated the Engine#setInstance() method to favor the 
+        Engine#register() ones which wrap logging initialization logic
+        and added an Engine#clear() method to discard it altogether.
+      - Added an getResponseLogMessage(request, response, duration) method to 
+        LogService class so it can be easily overridden/customized. Also
+        added a protected getDefaultResponseLogMessage(..) method returning the
+        default IIS log message.
+      - Added Representation#setReadListener() method to facilitate the setting
+        of listeners interested in new content available for reading for 
+        selectable representations.
+      - Added higher level NIO event listeners in org.restlet.util package:
+        InputListener, ReaderListener and StringListener.
+      - Created a com.google.gwt.server library dedicated to the 
+        org.restlet.gwt extension. This library will be shipped with the 
+        JSE, JEE, GAE editions.
+      - Added Message#onError callback invoked by the internal connector.
+        Especially useful to detect if an outbound response failed to be
+        written at the connector level.
+    - Enhancements
+      - Added support for non-blocking HTTPS to the internal NIO connectors, 
+        client-side and server-side. Sponsored by NetDev.
+      - Keep alive empty lines between messages in a persistent connections are
+        now eat silently. Reported by John Logsdon.
+      - Refactored the internal NIO connector to better support the differences
+        between HTTP and SIP protocols regarding transaction management.
+    - Bugs fixed
+      - Fixed bug preventing persistent connections reuse when an entity is
+        present. Reported by John Logsdon.
+      - Fixed potential issue with double consumption of SIP ACK messages. 
+        Reported by John Logsdon.
+      - Fixed issue with asynchronous responses and provisional responses
+        preventing the resue of persistent connections. 
+        Reported by Phil Dunks.
+      - Fixed NIO connector (HTTP and SIP) bug potentially causing infinite
+        loops. Reported by John Logdson and Phil Dunks.
+      - Fixed SIP methods INFO, SUBSCRIBE and SUBSCRIBE to allow responses.
+        Reported by Phil Dunks.
+      - Fixed NIO connector regression potentially blocking a connection if 
+        all the entity couldn't be read from the socket in one shot.
+     - Misc
+      - If the Engine#logFormatter is set to null, the log formatter of the
+        console is not changed anymore.
+      - Updated Jackson library to version 1.7.1.
+
+- 2.1 Milestone 2 (12/24/2010)
+    - API changes
+      - The org.restlet.service.TaskService is now a ScheduledExecutorService
+        capable of running delayed commands at fixed intervals for example.
+        Suggested by Kristoffer Gronowski.
+      - JsonRepresentation(Map<Object,Object>) signature changed to the more
+        precise JsonRepresentation(Map<String, Object) one.
+        Suggested by Tim Peierls.
+      - Facilitating the creation of ClientResource subclasses by changing
+        the visibility of handle(...) methods from private to protected.
+        Leveraged by the SipClientResource in the SIP extension.
+        Reported by Phil Dunks.
+    - Enhancements
+      - Added Request#loggable property, LogService#isLoggable(Request)
+        method and LogService#loggableTemplate to enable selective request 
+        logging. Suggested by John Logdson.
+      - Added setters with String parameters in addition to Text ones to
+        the Feed and Entry classes.
+      - Added an EncoderService to automatically compress sent entities
+        on both client and server side. Disabled by default on Application.
+      - Added UniformResource#requestCacheDirectives and 
+        responseCacheDirectives properties.
+      - Added UniformResource#doError(Status) and doError(Status, msg)
+        methods to allow interception and customization of the default
+        behavior (such as throwing a ResourceException on the client-side).
+        Suggested by Florian Bucklers.
+      - Added a new SIP extension providing support for the Session 
+        Initiation Protocol, largely used for voice over IP. This new
+        extension ships both client and server SIP connectors over TCP,
+        reusing the 90% of the logic used by the new NIO/HTTP internal
+        connector, providing excellent scalability and performance.
+      - Simplified the default console logging by replacing Java's default
+        verbose log formatter by a single line formatter. This formatter
+        can be modified via the static Engine#logFormatter property.
+      - Added easy programmatic control of log configuration via 
+        Engine#logLevel and restletLogLevel static properties.
+        If regular log configuration is used via system properties, it 
+        is taking over for backward compatibility.
+      - In addition to java.util.logging.SimpleFormatter, two new ones are
+        added: org.restlet.engine.log.SimplerFormatter and the new default
+        org.restlet.engine.log.SimplestFormatter.
+      - Removed TraceHandler class, replaced by configurable ConsoleHander
+        formatters.
+      - Improved the precision of log messages, for example giving the list
+        of template variables matched and their value. 
+        Suggested by John Logdson.
+      - Optimized routing when 0 characters are matched on an URI template.
+      - Added IoUtils.TIMEOUT_MS constant to globally configure I/O related
+        timeouts. Its value is 60 seconds by default, but can be configured
+        via the "org.restlet.engine.io.timeoutMs" system property. 
+      - Added server-side support for Amazon Web Services (S3) authentication.
+        Contributed by Jean-Philippe Steinmetz.
+      - Added support for DecoderService on the client-side as well.
+      - Implemented the automatic filtering of outbound services, via the
+        Application#outboundRoot property.
+      - Added ConfidentialAuthorizer to limit access to resource to secure
+        protocols such as HTTPS.
+    - Bugs fixed
+      - Fixed writing of big representations. Reported by Tom Andersson. 
+      - Fixed IoUtils.BUFFER_SIZE constant to be properly configurable via
+        the "org.restlet.engine.io.bufferSize" system property. 
+        Reported by Tom Andersson.
+      - Fixed auto-detection of XStream annotations. 
+        Contributed by Bruno Grieder.
+    - Misc
+      - Moved UniformResource#doCatch() logic down to ServerResource as it
+        was specific to server-side and kept a simpler log trace.
+      - Made TCP socket reuse active by default on internal connector.
+        Reported by John Logdson.
+      - Lowered log traces for Directory. Suggested by Rickard Oberg.       
+      - Moved exception to status conversion logic from UniformResource and
+        ServerResource doCatch() methods to the StatusService.
+        Suggested by Rhett Sutphin.
+
+- 2.1 Milestone 1 (11/07/2010)
+    - API changes
+      - Removed deprecated classes and code.
+      - The Route class has been reintroduced with a lighter
+        behavior not depending on URI templates.
+      - Added an UniformResource#setApplication() setter to be able
+        to explicitly set the parent application used to pick up the
+        ConverterService or MetadataService. This property is also 
+        carried on by the copy constructor. Suggested by John Logdson.
+      - Added UniformResource#toString() for easier debugging.
+      - Added Representation#isSelectable() and getRegistration() method
+        to manipulate the registration of the NIO channel with its 
+        associated selector and received asynchronous notifications
+        of available content.
+      - Deprecated Application#setClientRoot, renamed into a 
+        setOutboundRoot method.
+    - Enhancements
+      - Improved the naming of files created by the FILE local 
+        connector so that media type extension comes at the end.
+      - Added a fully new non-blocking NIO/HTTP connector in the engine, 
+        in replacement of the previous one based on blocking BIO. 
+        It has much better performance (latency, throughput and 
+        scalability) and supports persistent connections and chunked
+        encoding.
+    - Misc
+      - Removed the Grizzly and Netty extensions which were still 
+        considered experimental at this point. The new internal
+        connector based on non-blocking NIO now provides similar
+        advantages and is already more complete from a HTTP coverage
+        point of view. Users of these connectors are encouraged to
+        leverage the NIO internal connector or the two other extensions
+        that are still available in 2.1 (Jetty and Simple connectors).
+      - Added library GWT 2.1.0, removed support of GWT 2.0.
