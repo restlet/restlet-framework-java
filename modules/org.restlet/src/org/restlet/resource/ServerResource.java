@@ -784,7 +784,7 @@ public abstract class ServerResource extends UniformResource {
      *            The method.
      * @return The modifiable list of variants.
      */
-    private List<Variant> getVariants(Method method) {
+    protected List<Variant> getVariants(Method method) {
         List<Variant> result = this.variants;
 
         if (result == null) {
