@@ -1,0 +1,22 @@
+<library id="httpclient">
+	<package name="org.apache.httpclient">
+		<maven>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</maven>
+	</package>
+	<version>4.0</version>
+    <release>1</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://hc.apache.org/httpcomponents-client/
+	</homeUri>
+	<downloadUri>
+		http://hc.apache.org/httpcomponents-client/download.html
+	</downloadUri>
+	<javadocs>
+		<link href="http://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/" />
+	</javadocs>
+</library>

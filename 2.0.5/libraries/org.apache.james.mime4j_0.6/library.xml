@@ -1,0 +1,21 @@
+<library id="mime4j">
+	<package name="org.apache.james.mime4j">
+		<maven>
+			<groupId>org.apache.james</groupId>
+			<artifactId>apache-mime4j</artifactId>
+		</maven>
+	</package>
+	<version>0.6</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://james.apache.org/mime4j/
+	</homeUri>
+	<downloadUri>
+		http://james.apache.org/download.cgi#Apache_Mime4J
+	</downloadUri>
+	<javadocs>
+		<link href="http://james.apache.org/mime4j/apidocs/" />
+	</javadocs>
+</library>

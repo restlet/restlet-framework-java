@@ -1,0 +1,15 @@
+<library id="activation">
+	<package name="javax.activation">
+		<maven>
+			<artifactId>activation</artifactId>
+		</maven>
+	</package>
+	<version>1.1</version>
+	<release>1</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://java.sun.com/javase/technologies/desktop/javabeans/glasgow/#activation
+	</homeUri>
+</library>
