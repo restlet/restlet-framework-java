@@ -575,7 +575,7 @@ public class DirectoryServerResource extends ServerResource {
      *            The related method.
      * @return The list of variants for the given method.
      */
-    public List<Variant> getVariants(Method method) {
+    protected List<Variant> getVariants(Method method) {
         List<Variant> result = null;
 
         if ((Method.GET.equals(method) || Method.HEAD.equals(method))) {
