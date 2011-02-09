@@ -84,6 +84,7 @@ public abstract class Connector extends Restlet {
      */
     public Connector(Context context, List<Protocol> protocols) {
         super(context);
+
         if (protocols == null) {
             this.protocols = new CopyOnWriteArrayList<Protocol>();
         } else {

@@ -45,7 +45,12 @@ import org.restlet.resource.ServerResource;
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
- * should be especially careful when storing state in member variables.
+ * should be especially careful when storing state in member variables.<br>
+ * <br>
+ * For advanced cases, it is possible to obtained the wrapped
+ * {@link RestletHelper} instance that is used by this client to handle the
+ * calls via the "org.restlet.engine.helper" attribute stored in the
+ * {@link Context} object.
  * 
  * @author Jerome Louvel
  */
@@ -129,6 +134,11 @@ public class Server extends Connector {
             this.helper = Engine.getInstance().createHelper(this, helperClass);
         } else {
             this.helper = null;
+        }
+
+        if (context != null) {
+            context.getAttributes().put("org.restlet.engine.helper",
+                    this.helper);
         }
     }
 

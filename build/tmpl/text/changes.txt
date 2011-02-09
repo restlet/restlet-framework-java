@@ -53,6 +53,10 @@ Changes log
       - If the Engine#logFormatter is set to null, the log formatter of the
         console is not changed anymore.
       - Updated Jackson library to version 1.7.1.
+      - Added an "org.restlet.engine.helper" attribute to expose the internal
+        helper instance used by a Client or Server instance. Could be 
+        leveraged in advanced cases for instrumentation purpose for example.
+        Suggested by John Logsdon.
 
 - 2.1 Milestone 2 (12/24/2010)
     - API changes

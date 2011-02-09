@@ -44,7 +44,12 @@ import org.restlet.engine.RestletHelper;
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
- * should be especially careful when storing state in member variables.
+ * should be especially careful when storing state in member variables.<br>
+ * <br>
+ * For advanced cases, it is possible to obtained the wrapped
+ * {@link RestletHelper} instance that is used by this client to handle the
+ * calls via the "org.restlet.engine.helper" attribute stored in the
+ * {@link Context} object.
  * 
  * @author Jerome Louvel
  */
@@ -92,6 +97,11 @@ public class Client extends Connector {
             }
         } else {
             this.helper = null;
+        }
+
+        if (context != null) {
+            context.getAttributes().put("org.restlet.engine.helper",
+                    this.helper);
         }
     }
 
@@ -142,7 +152,8 @@ public class Client extends Connector {
      * meaning an infinite timeout.
      * 
      * @return The connection timeout.
-     * @deprecated Use the equivalent "socketConnectTimeoutMs" connector parameter.
+     * @deprecated Use the equivalent "socketConnectTimeoutMs" connector
+     *             parameter.
      */
     @Deprecated
     public int getConnectTimeout() {
