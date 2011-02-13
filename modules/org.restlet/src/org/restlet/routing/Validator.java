@@ -116,7 +116,7 @@ public class Validator extends Filter {
      * Allows filtering before its handling by the target Restlet. By default it
      * parses the template variable, adjust the base reference, then extracts
      * the attributes from form parameters (query, cookies, entity) and finally
-     * tries to validates the variables as indicated by the
+     * tries to validate the variables as indicated by the
      * {@link #validate(String, boolean, String)} method.
      * 
      * @param request
