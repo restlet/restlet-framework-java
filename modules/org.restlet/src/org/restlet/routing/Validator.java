@@ -123,7 +123,7 @@ public class Validator extends Filter {
      *            The request to filter.
      * @param response
      *            The response to filter.
-     * @return The continuation status.
+     * @return The {@link Filter#CONTINUE} status.
      */
     @Override
     protected int beforeHandle(Request request, Response response) {
