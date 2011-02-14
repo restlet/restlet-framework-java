@@ -79,6 +79,12 @@ public class Connection<T extends Connector> implements SelectionListener {
     /** The timestamp of the last IO activity. */
     private volatile long lastActivity;
 
+    /**
+     * The time for an idle IO connection to wait for an operation before being
+     * closed.
+     */
+    private volatile int maxIoIdleTimeMs;
+
     /** The outbound way. */
     private final OutboundWay outboundWay;
 
@@ -287,6 +293,15 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
+     * Returns the timestamp of the last IO activity.
+     * 
+     * @return The timestamp of the last IO activity.
+     */
+    public long getLastActivity() {
+        return lastActivity;
+    }
+
+    /**
      * Returns a score representing the connection load and that could be
      * compared with other connections of the same parent connector.
      * 
@@ -303,6 +318,17 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public Logger getLogger() {
         return getHelper().getLogger();
+    }
+
+    /**
+     * Returns the time for an idle IO connection to wait for an operation
+     * before being closed.
+     * 
+     * @return The time for an idle IO connection to wait for an operation
+     *         before being closed.
+     */
+    public int getMaxIoIdleTimeMs() {
+        return maxIoIdleTimeMs;
     }
 
     /**
@@ -415,7 +441,7 @@ public class Connection<T extends Connector> implements SelectionListener {
                             .asList(sslSession.getPeerCertificates());
                     return clientCertificates;
                 } catch (SSLPeerUnverifiedException e) {
-                    getHelper().getLogger().log(Level.FINE,
+                    getLogger().log(Level.FINE,
                             "Can't get the client certificates.", e);
                 }
             }
@@ -464,8 +490,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * @return True if the connection has timed out.
      */
     public boolean hasTimedOut() {
-        return (System.currentTimeMillis() - this.lastActivity) >= getHelper()
-                .getMaxIoIdleTimeMs();
+        return (System.currentTimeMillis() - this.lastActivity) >= getMaxIoIdleTimeMs();
     }
 
     /**
@@ -484,6 +509,7 @@ public class Connection<T extends Connector> implements SelectionListener {
             throws IOException {
         this.persistent = helper.isPersistingConnections();
         this.pipelining = helper.isPipeliningConnections();
+        this.maxIoIdleTimeMs = helper.getMaxIoIdleTimeMs();
         this.state = ConnectionState.OPENING;
         this.socketChannel = socketChannel;
         this.socketAddress = socketAddress;
