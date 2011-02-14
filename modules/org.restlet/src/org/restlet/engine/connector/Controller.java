@@ -127,18 +127,22 @@ public abstract class Controller {
         doInit();
         setRunning(true);
         long sleepTime = getHelper().getControllerSleepTimeMs();
+        boolean hasWorkerThreads = getHelper().hasWorkerThreads();
+        boolean isWorkerServiceOverloaded;
 
         while (isRunning()) {
             try {
-                if (getHelper().isWorkerThreads()) {
-                    if (isOverloaded()
-                            && !getHelper().isWorkerServiceOverloaded()) {
+                if (hasWorkerThreads) {
+                    isWorkerServiceOverloaded = getHelper()
+                            .isWorkerServiceOverloaded();
+
+                    if (isOverloaded() && !isWorkerServiceOverloaded) {
                         setOverloaded(false);
                         getHelper()
                                 .getLogger()
                                 .info("Connector overload ended. Accepting new work again");
                         getHelper().traceWorkerService();
-                    } else if (getHelper().isWorkerServiceOverloaded()) {
+                    } else if (isWorkerServiceOverloaded) {
                         setOverloaded(true);
                         getHelper()
                                 .getLogger()

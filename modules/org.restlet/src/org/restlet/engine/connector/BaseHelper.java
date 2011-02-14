@@ -565,7 +565,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     protected void handleInbound(final Response response, boolean synchronous) {
         if (response != null) {
-            if (synchronous || !isWorkerThreads()) {
+            if (synchronous || !hasWorkerThreads()) {
                 doHandleInbound(response);
             } else {
                 execute(new Runnable() {
@@ -604,7 +604,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     protected void handleOutbound(final Response response, boolean synchronous) {
         if (response != null) {
-            if (synchronous || !isWorkerThreads()) {
+            if (synchronous || !hasWorkerThreads()) {
                 doHandleOutbound(response);
             } else {
                 execute(new Runnable() {
@@ -623,6 +623,16 @@ public abstract class BaseHelper<T extends Connector> extends
                 });
             }
         }
+    }
+
+    /**
+     * Indicates if the worker service (pool of worker threads) is enabled.
+     * 
+     * @return True if the worker service (pool of worker threads) is enabled.
+     */
+    public boolean hasWorkerThreads() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "workerThreads", "true"));
     }
 
     /**
@@ -687,16 +697,6 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Indicates if the worker service (pool of worker threads) is enabled.
-     * 
-     * @return True if the worker service (pool of worker threads) is enabled.
-     */
-    public boolean isWorkerThreads() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "workerThreads", "true"));
-    }
-
-    /**
      * Called on error. Unblocks the message.
      * 
      * @param status
@@ -737,7 +737,7 @@ public abstract class BaseHelper<T extends Connector> extends
         super.start();
         this.controllerService = createControllerService();
 
-        if (isWorkerThreads()) {
+        if (hasWorkerThreads()) {
             this.workerService = createWorkerService();
         }
 
