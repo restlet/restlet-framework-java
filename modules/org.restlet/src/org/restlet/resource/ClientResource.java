@@ -791,7 +791,7 @@ public class ClientResource extends UniformResource {
      * @return The optional response entity.
      */
     protected Representation handle(Method method) {
-        return handle(method, (Representation) null, getClientInfo());
+        return handle(method, (Representation) null);
     }
 
     // [ifndef gwt] method
@@ -860,6 +860,20 @@ public class ClientResource extends UniformResource {
                                         getMetadataService())), clientInfo),
                 resultClass);
         return result;
+    }
+
+    /**
+     * Handles the call by cloning the prototype request, setting the method and
+     * entity.
+     * 
+     * @param method
+     *            The request method to use.
+     * @param entity
+     *            The request entity to set.
+     * @return The optional response entity.
+     */
+    protected Representation handle(Method method, Representation entity) {
+        return handle(method, entity, getClientInfo());
     }
 
     /**
@@ -1238,7 +1252,7 @@ public class ClientResource extends UniformResource {
      *      POST method</a>
      */
     public Representation post(Representation entity) throws ResourceException {
-        return handle(Method.POST, entity, getClientInfo());
+        return handle(Method.POST, entity);
     }
 
     /**
@@ -1310,7 +1324,7 @@ public class ClientResource extends UniformResource {
      *      PUT method</a>
      */
     public Representation put(Representation entity) throws ResourceException {
-        return handle(Method.PUT, entity, getClientInfo());
+        return handle(Method.PUT, entity);
     }
 
     /**

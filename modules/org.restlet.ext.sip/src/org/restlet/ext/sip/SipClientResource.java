@@ -321,6 +321,20 @@ public class SipClientResource extends ClientResource {
     }
 
     /**
+     * Confirms that the client has received a final response to an INVITE
+     * request.
+     * 
+     * @param representation
+     *            The entity to send.
+     * @throws ResourceException
+     * @see <a href="http://tools.ietf.org/html/rfc2543#section-4.2.2">ACK
+     *      method</a>
+     */
+    public void ack(Representation representation) throws ResourceException {
+        handle(SipMethod.ACK, representation);
+    }
+
+    /**
      * Indicates to the server that the user agent wishes to release the call.
      * 
      * @throws ResourceException
@@ -447,7 +461,7 @@ public class SipClientResource extends ClientResource {
      */
     public Representation info(Representation representation)
             throws ResourceException {
-        return handle(SipMethod.INFO, representation, getClientInfo());
+        return handle(SipMethod.INFO, representation);
     }
 
     /**
@@ -475,7 +489,7 @@ public class SipClientResource extends ClientResource {
      */
     public Representation invite(Representation representation)
             throws ResourceException {
-        return handle(SipMethod.INVITE, representation, getClientInfo());
+        return handle(SipMethod.INVITE, representation);
     }
 
     /**
@@ -490,7 +504,7 @@ public class SipClientResource extends ClientResource {
      */
     public Representation notify(Representation representation)
             throws ResourceException {
-        return handle(SipMethod.NOTIFY, representation, getClientInfo());
+        return handle(SipMethod.NOTIFY, representation);
     }
 
     /**
@@ -525,7 +539,7 @@ public class SipClientResource extends ClientResource {
      * @see <a http://tools.ietf.org/html/rfc3903#section-4">PUBLISH method</a>
      */
     public void publish(Representation representation) throws ResourceException {
-        handle(SipMethod.PUBLISH, representation, getClientInfo());
+        handle(SipMethod.PUBLISH, representation);
     }
 
     /**
@@ -657,7 +671,7 @@ public class SipClientResource extends ClientResource {
      */
     public void subscribe(Representation representation)
             throws ResourceException {
-        handle(SipMethod.SUBSCRIBE, representation, getClientInfo());
+        handle(SipMethod.SUBSCRIBE, representation);
     }
 
 }
