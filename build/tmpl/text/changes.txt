@@ -5,6 +5,11 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
+       - Fixed Redirector when the targer URI is on a distinct domain.
+         Reported by Guido Schmidt.
+         
+- 2.0.5 (2011-02-09)
+    - Bugs fixed
        - Fixed bug in virtual host router that was failing if no host 
          URI was set. Now falls back to the host part of the resource URI.
        - Fixed handling of "EDM Single" properties.
