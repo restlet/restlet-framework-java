@@ -49,6 +49,7 @@ Changes log
         Reported by Phil Dunks.
       - Fixed NIO connector regression potentially blocking a connection if 
         all the entity couldn't be read from the socket in one shot.
+      - Fixed Directory bug when handling conditional requests.
      - Misc
       - If the Engine#logFormatter is set to null, the log formatter of the
         console is not changed anymore.
