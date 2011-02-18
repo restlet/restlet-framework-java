@@ -172,7 +172,8 @@ public class SelectionRegistration {
 
             this.barrier.await(IoUtils.TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            e.printStackTrace();
+            Context.getCurrentLogger().log(Level.FINE,
+                    "Unable to block the thread at the cyclic barrier", e);
         }
     }
 
@@ -397,15 +398,19 @@ public class SelectionRegistration {
             Context.getCurrentLogger().log(
                     Level.FINE,
                     "Calling thread about to unblock the NIO selection registration. Timeout: "
-                            + TimeUnit.MILLISECONDS + " ms. Waiting: "
+                            + TimeUnit.MILLISECONDS
+                                    .toMillis(IoUtils.TIMEOUT_MS)
+                            + " ms. Waiting: "
                             + this.barrier.getNumberWaiting());
         }
 
         try {
             this.barrier.await(IoUtils.TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            this.barrier.reset();
         } catch (Exception e) {
-            e.printStackTrace();
+            Context.getCurrentLogger()
+                    .log(Level.FINE,
+                            "Unable to unblock the waiting thread at the cyclic barrier",
+                            e);
         }
     }
 

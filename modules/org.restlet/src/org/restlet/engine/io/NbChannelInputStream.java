@@ -150,6 +150,13 @@ public class NbChannelInputStream extends InputStream {
         result = this.channel.read(this.byteBuffer);
 
         if (result > 0) {
+            if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                Context.getCurrentLogger().log(
+                        Level.FINE,
+                        "NbChannelInputStream#readChannel : " + result
+                                + " bytes read");
+            }
+
             this.byteBuffer.flip();
         }
 
