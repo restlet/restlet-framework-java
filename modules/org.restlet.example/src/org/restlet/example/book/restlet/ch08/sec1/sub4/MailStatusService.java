@@ -31,7 +31,7 @@
 package org.restlet.example.book.restlet.ch08.sec1.sub4;
 
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.restlet.Application;
 import org.restlet.Request;
@@ -51,7 +51,7 @@ public class MailStatusService extends StatusService {
             Response response) {
 
         // Create the data model
-        Map<String, String> dataModel = new TreeMap<String, String>();
+        Map<String, String> dataModel = new ConcurrentHashMap<String, String>();
         dataModel.put("applicationName", Application.getCurrent().getName());
         dataModel.put("statusName", response.getStatus().getName());
         dataModel.put("statusDescription", response.getStatus()
