@@ -160,9 +160,9 @@ public class SelectionRegistration {
      */
     public void block() {
         try {
-            if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+            if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
                 Context.getCurrentLogger().log(
-                        Level.FINE,
+                        Level.FINEST,
                         "Calling thread about to block on the NIO selection registration. Timeout: "
                                 + TimeUnit.MILLISECONDS
                                         .toMillis(IoUtils.TIMEOUT_MS)
@@ -172,7 +172,7 @@ public class SelectionRegistration {
 
             this.barrier.await(IoUtils.TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            Context.getCurrentLogger().log(Level.FINE,
+            Context.getCurrentLogger().log(Level.WARNING,
                     "Unable to block the thread at the cyclic barrier", e);
         }
     }
@@ -394,9 +394,9 @@ public class SelectionRegistration {
      * @see #block()
      */
     public void unblock() {
-        if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+        if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
             Context.getCurrentLogger().log(
-                    Level.FINE,
+                    Level.FINEST,
                     "Calling thread about to unblock the NIO selection registration. Timeout: "
                             + TimeUnit.MILLISECONDS
                                     .toMillis(IoUtils.TIMEOUT_MS)
@@ -408,7 +408,7 @@ public class SelectionRegistration {
             this.barrier.await(IoUtils.TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             Context.getCurrentLogger()
-                    .log(Level.FINE,
+                    .log(Level.WARNING,
                             "Unable to unblock the waiting thread at the cyclic barrier",
                             e);
         }
