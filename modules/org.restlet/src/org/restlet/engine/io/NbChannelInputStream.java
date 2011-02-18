@@ -188,9 +188,9 @@ public class NbChannelInputStream extends InputStream {
                                     .setListener(new SelectionListener() {
                                         public void onSelected() {
                                             if (Context.getCurrentLogger()
-                                                    .isLoggable(Level.FINE)) {
+                                                    .isLoggable(Level.FINER)) {
                                                 Context.getCurrentLogger()
-                                                        .log(Level.FINE,
+                                                        .log(Level.FINER,
                                                                 "NbChannelInputStream selected");
                                             }
 

@@ -94,8 +94,9 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
         for (int i = 0; i < LOOP_NUMBER; i++) {
             sendPut(uri, 10);
         }
+
         for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendPut(uri, 20000);
+            sendPut(uri, 50000);
         }
 
         sendPut(uri, 10);
