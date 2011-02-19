@@ -28,6 +28,8 @@ Changes log
       - Added Message#onError callback invoked by the internal connector.
         Especially useful to detect if an outbound response failed to be
         written at the connector level.
+      - Deprecated TunnelService#setHeaderTunnel() in favor of the new
+        setHeadersTunnel() method.
     - Enhancements
       - Added support for non-blocking HTTPS to the internal NIO connectors, 
         client-side and server-side. Sponsored by NetDev.

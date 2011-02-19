@@ -57,8 +57,8 @@ import org.restlet.routing.Filter;
  * <td>method</td>
  * <td>See values in {@link org.restlet.data.Method}</td>
  * <td>For POST requests, let you specify the actual method to use (DELETE, PUT,
- * MOVE, etc.).</td>
- * <td>For GET requests, let you specify OPTIONS as the actual method to use.</td>
+ * MOVE, etc.). For GET requests, let you specify OPTIONS as the actual method
+ * to use.</td>
  * </tr>
  * <tr>
  * <td>characterSetParameter</td>
@@ -124,10 +124,10 @@ import org.restlet.routing.Filter;
  * this block concerns only "firefox" clients. <br>
  * <br>
  * The "acceptOld" property allows to check the value of the current "Accept"
- * header. If the latest equals to the value of the "acceptOld" property then
- * the preferences will be updated. This is useful for Ajax clients which looks
- * like their browser (same agentName, agentVersion, etc.) but can provide their
- * own "Accept" header.
+ * header. If it equals to the value of the "acceptOld" property or if the
+ * "acceptOld" property is empty, then the preferences will be updated. This can
+ * be useful for AJAX clients which looks like their browser (same agentName,
+ * agentVersion, etc.) but can provide their own "Accept" header.
  * 
  * @author Jerome Louvel
  */
@@ -146,7 +146,7 @@ public class TunnelService extends Service {
     private volatile boolean extensionsTunnel;
 
     /** Indicates if the method can be tunneled via the header. */
-    private volatile boolean headerTunnel;
+    private volatile boolean headersTunnel;
 
     /** The name of the parameter containing the accepted language. */
     private volatile String languageParameter;
@@ -274,13 +274,13 @@ public class TunnelService extends Service {
      *            Indicates if tunneling can use file-like extensions.
      * @param userAgentTunnel
      *            Indicates if tunneling can use user agent string.
-     * @param methodHeaderTunnel
+     * @param headersTunnel
      *            Indicates if method can be tunneled via a specific header.
      */
     public TunnelService(boolean enabled, boolean methodTunnel,
             boolean preferencesTunnel, boolean queryTunnel,
             boolean extensionsTunnel, boolean userAgentTunnel,
-            boolean methodHeaderTunnel) {
+            boolean headersTunnel) {
         super(enabled);
 
         this.extensionsTunnel = extensionsTunnel;
@@ -288,7 +288,7 @@ public class TunnelService extends Service {
         this.preferencesTunnel = preferencesTunnel;
         this.queryTunnel = queryTunnel;
         this.userAgentTunnel = userAgentTunnel;
-        this.headerTunnel = methodHeaderTunnel;
+        this.headersTunnel = headersTunnel;
 
         this.characterSetParameter = "charset";
         this.encodingParameter = "encoding";
@@ -372,6 +372,7 @@ public class TunnelService extends Service {
 
     /**
      * Indicates if the client preferences can be tunneled via the extensions.
+     * Returns false by default.
      * 
      * @return True if the client preferences can be tunneled via the extensions
      * @see Request#getOriginalRef()
@@ -381,16 +382,17 @@ public class TunnelService extends Service {
     }
 
     /**
-     * Indicates if the method can be tunneled via the header.
+     * Indicates if the method can be tunneled via the header. Returns true by
+     * default.
      * 
      * @return True if the method can be tunneled via the header.
      */
     public boolean isHeadersTunnel() {
-        return headerTunnel;
+        return headersTunnel;
     }
 
     /**
-     * Indicates if the method name can be tunneled.
+     * Indicates if the method name can be tunneled. Returns true by default.
      * 
      * @return True if the method name can be tunneled.
      */
@@ -400,7 +402,7 @@ public class TunnelService extends Service {
 
     /**
      * Indicates if the client preferences can be tunneled via the query
-     * parameters or file extensions.
+     * parameters or via file extensions. Returns true by default.
      * 
      * @return True if the client preferences can be tunneled.
      */
@@ -410,7 +412,7 @@ public class TunnelService extends Service {
 
     /**
      * Indicates if the method and client preferences can be tunneled via query
-     * parameters or file extensions.
+     * parameters or file extensions. Returns true by default.
      * 
      * @return True if the method and client preferences can be tunneled.
      */
@@ -420,7 +422,7 @@ public class TunnelService extends Service {
 
     /**
      * Indicates if the client preferences can be tunneled according to the user
-     * agent.
+     * agent. Returns false by default.
      * 
      * @return True if the client preferences can be tunneled according to the
      *         user agent.
@@ -464,11 +466,23 @@ public class TunnelService extends Service {
     /**
      * Indicates if the method can be tunneled via the header.
      * 
-     * @param headerTunnel
+     * @param headersTunnel
      *            True if the method can be tunneled via the header.
      */
-    public void setHeaderTunnel(boolean headerTunnel) {
-        this.headerTunnel = headerTunnel;
+    public void setHeadersTunnel(boolean headersTunnel) {
+        this.headersTunnel = headersTunnel;
+    }
+
+    /**
+     * Indicates if the method can be tunneled via the header.
+     * 
+     * @param headersTunnel
+     *            True if the method can be tunneled via the header.
+     * @deprecated Use {@link #setHeadersTunnel(boolean)} method instead.
+     */
+    @Deprecated
+    public void setHeaderTunnel(boolean headersTunnel) {
+        setHeadersTunnel(headersTunnel);
     }
 
     /**
