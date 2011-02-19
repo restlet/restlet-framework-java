@@ -39,7 +39,7 @@ import org.restlet.resource.ServerResource;
 public class HelloServerResource extends ServerResource {
 
     @Get("txt")
-    public String toString() {
+    public String represent() {
         return "hello, world";
     }
 }

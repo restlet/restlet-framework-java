@@ -7,6 +7,8 @@ Changes log
     - Bugs fixed
        - Fixed Redirector when the targer URI is on a distinct domain.
          Reported by Guido Schmidt.
+    - Misc
+       - Clarified default property values of the TunnelService class.
          
 - 2.0.5 (2011-02-09)
     - Bugs fixed

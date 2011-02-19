@@ -30,6 +30,7 @@
 
 package org.restlet.example.book.restlet.ch04.sec3.server;
 
+import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -62,12 +63,11 @@ public class MailServerComponent extends Component {
         setOwner("Noelios Technologies");
         setAuthor("The Restlet Team");
 
-        // Add a CLAP client connector
-        getClients().add(Protocol.CLAP);
-
-        // Adds a HTTP server connector
-        Server server = getServers().add(Protocol.HTTP, 8111);
+        // Add connectors
+        getClients().add(new Client(Protocol.CLAP));
+        Server server = new Server(Protocol.HTTP, 8111);
         server.getContext().getParameters().set("tracing", "true");
+        getServers().add(server);
 
         // Configure the default virtual host
         // getDefaultHost().setHostDomain("www.rmep.com|www.rmep.net|www.rmep.org");
