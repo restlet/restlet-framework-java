@@ -39,7 +39,7 @@ import java.util.logging.Logger;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 
-import org.restlet.engine.io.IoBuffer;
+import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.SelectionChannel;
 import org.restlet.engine.io.WrapperSelectionChannel;
@@ -109,7 +109,7 @@ public abstract class SslChannel<T extends SelectionChannel> extends
      * 
      * @return The SSL/TLS packet IO buffer.
      */
-    protected abstract IoBuffer getPacketBuffer();
+    protected abstract Buffer getPacketBuffer();
 
     /**
      * Handles the handshake states.

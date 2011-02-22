@@ -37,7 +37,7 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLEngineResult.Status;
 
-import org.restlet.engine.io.IoBuffer;
+import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.ReadableBufferedChannel;
 import org.restlet.engine.io.ReadableSelectionChannel;
@@ -129,8 +129,8 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
     }
 
     @Override
-    protected IoBuffer getPacketBuffer() {
-        return getWrappedChannel().getSourceBuffer();
+    protected Buffer getPacketBuffer() {
+        return getWrappedChannel().getBuffer();
     }
 
     @Override

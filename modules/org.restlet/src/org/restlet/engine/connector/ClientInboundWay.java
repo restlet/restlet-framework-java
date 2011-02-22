@@ -131,7 +131,7 @@ public abstract class ClientInboundWay extends InboundWay {
         // Check if we need to close the connection
         if (endDetected || !getConnection().isPersistent()
                 || HeaderUtils.isConnectionClose(getHeaders())) {
-            getConnection().close(true);
+            getConnection().close(false);
         }
 
         super.onCompleted(endDetected);

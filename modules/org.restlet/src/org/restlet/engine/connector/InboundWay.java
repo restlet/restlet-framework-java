@@ -43,6 +43,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.io.BufferState;
+import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.ReadableBufferedChannel;
 import org.restlet.engine.io.ReadableChunkedChannel;
@@ -109,8 +110,7 @@ public abstract class InboundWay extends Way {
 
             // Wraps the remaining bytes into a special buffer channel
             ReadableBufferedChannel rbc = new ReadableBufferedChannel(this,
-                    getIoBuffer(), getConnection()
-                            .getReadableSelectionChannel());
+                    getBuffer(), getConnection().getReadableSelectionChannel());
 
             if (chunkedEncoding) {
                 // Wrap the buffer channel to decode chunks
@@ -151,6 +151,68 @@ public abstract class InboundWay extends Way {
         return result;
     }
 
+    @Override
+    public int onDrain(Buffer buffer, Object... args) throws IOException {
+        // Bytes are available in the buffer
+        // attempt to parse the next message
+        boolean continueReading = true;
+        int beforeDrain = buffer.remaining();
+
+        while (continueReading && isLineReadable()) {
+            // Parse next ready lines
+            if (getMessageState() == MessageState.START) {
+                if (getLineBuilder().length() == 0) {
+                    // Silently eat empty lines used for keep alive purpose
+                    // sometimes (SIP)
+                    continueReading = false;
+                } else {
+                    if (getHelper().getLogger().isLoggable(Level.FINE)) {
+                        getHelper().getLogger().fine(
+                                "Reading message from "
+                                        + getConnection().getSocketAddress());
+                    }
+
+                    readStartLine();
+                }
+            } else if (getMessageState() == MessageState.HEADERS) {
+                Parameter header = readHeader();
+
+                if (header != null) {
+                    if (getHeaders() == null) {
+                        setHeaders(new Form());
+                    }
+
+                    getHeaders().add(header);
+                } else {
+                    // All headers received
+                    onReceived();
+                }
+            }
+        }
+
+        return beforeDrain - buffer.remaining();
+    }
+
+    @Override
+    public int onFill(Buffer buffer, Object... args) throws IOException {
+        int result = getBuffer().fill(
+                getConnection().getReadableSelectionChannel());
+
+        if (result == 0) {
+            if (getIoState() == IoState.PROCESSING) {
+                // Socket channel exhausted
+                setIoState(IoState.INTEREST);
+            }
+        } else if (result == -1) {
+            // End of connection detected
+            getConnection().close(false);
+            setIoState(IoState.IDLE);
+            setMessageState(MessageState.IDLE);
+        }
+
+        return result;
+    }
+
     /**
      * Read the current message line (start line or header line).
      * 
@@ -158,7 +220,7 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected boolean fillLine() throws IOException {
-        setLineBuilderState(getIoBuffer().drain(getLineBuilder(),
+        setLineBuilderState(getBuffer().drain(getLineBuilder(),
                 getLineBuilderState()));
         return getLineBuilderState() == BufferState.DRAINING;
     }
@@ -185,11 +247,7 @@ public abstract class InboundWay extends Way {
     protected int getInterestOperations() {
         int result = 0;
 
-        if ((getMessageState() == MessageState.BODY)
-                && (getEntityRegistration() != null)
-                && (getEntityRegistration().getListener() != null)) {
-            result = getEntityRegistration().getInterestOperations();
-        } else if (getIoState() == IoState.INTEREST) {
+        if (getIoState() == IoState.INTEREST) {
             result = SelectionKey.OP_READ;
         }
 
@@ -203,18 +261,7 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected boolean isLineReadable() throws IOException {
-        return isMessageReadable() && fillLine();
-    }
-
-    /**
-     * Indicates if the inbound way can attempt to read the current message or
-     * part of it.
-     * 
-     * @return True if the inbound way can attempt to read the current message
-     *         or part of it.
-     */
-    protected boolean isMessageReadable() {
-        return isSelected() && getIoBuffer().canDrain();
+        return isSelected() && getBuffer().canDrain() && fillLine();
     }
 
     @Override
@@ -258,48 +305,20 @@ public abstract class InboundWay extends Way {
     protected abstract void onReceived(Response message);
 
     @Override
-    public void onSelected() {
-        try {
-            super.onSelected();
-
-            if ((getMessageState() == MessageState.BODY)
-                    && (getEntityRegistration() != null)) {
-                getEntityRegistration().onSelected(
-                        getRegistration().getReadyOperations());
-            } else {
-                while (isSelected()) {
-                    if (getIoBuffer().isFilling()) {
-                        int result = getIoBuffer().fill(
-                                getConnection().getReadableSelectionChannel());
-
-                        if (result == 0) {
-                            if (getIoState() == IoState.PROCESSING) {
-                                // Socket channel exhausted
-                                setIoState(IoState.INTEREST);
-                            }
-                        } else if (result == -1) {
-                            // End of connection detected
-                            getConnection().close(true);
-                            setIoState(IoState.IDLE);
-                            setMessageState(MessageState.IDLE);
-                        }
-                    }
-
-                    while (isMessageReadable()) {
-                        // Bytes are available in the buffer
-                        // attempt to parse the next message
-                        readMessage();
-                    }
-                }
+    public void processIoBuffer() throws IOException {
+        if ((getMessageState() == MessageState.BODY)
+                && (getEntityRegistration() != null)) {
+            if (getLogger().isLoggable(Level.FINER)) {
+                getLogger().log(
+                        Level.FINER,
+                        "Entity registration selected : "
+                                + getRegistration().getClass());
             }
-        } catch (Exception e) {
-            getLogger()
-                    .log(Level.FINE,
-                            "Error while reading a message. Closing the connection.",
-                            e);
-            getConnection().onError(
-                    "Error while reading a message. Closing the connection.",
-                    e, Status.CONNECTOR_ERROR_COMMUNICATION);
+
+            getEntityRegistration().onSelected(
+                    getRegistration().getReadyOperations());
+        } else {
+            super.processIoBuffer();
         }
     }
 
@@ -313,47 +332,6 @@ public abstract class InboundWay extends Way {
         Parameter header = HeaderReader.readHeader(getLineBuilder());
         clearLineBuilder();
         return header;
-    }
-
-    /**
-     * Reads the next message if possible.
-     * 
-     * @throws IOException
-     */
-    protected void readMessage() throws IOException {
-        boolean continueReading = true;
-
-        while (continueReading && isLineReadable()) {
-            // Parse next ready lines
-            if (getMessageState() == MessageState.START) {
-                if (getLineBuilder().length() == 0) {
-                    // Silently eat empty lines used for keep alive purpose
-                    // sometimes (SIP)
-                    continueReading = false;
-                } else {
-                    if (getHelper().getLogger().isLoggable(Level.FINE)) {
-                        getHelper().getLogger().fine(
-                                "Reading message from "
-                                        + getConnection().getSocketAddress());
-                    }
-
-                    readStartLine();
-                }
-            } else if (getMessageState() == MessageState.HEADERS) {
-                Parameter header = readHeader();
-
-                if (header != null) {
-                    if (getHeaders() == null) {
-                        setHeaders(new Form());
-                    }
-
-                    getHeaders().add(header);
-                } else {
-                    // All headers received
-                    onReceived();
-                }
-            }
-        }
     }
 
     /**
@@ -394,4 +372,18 @@ public abstract class InboundWay extends Way {
         super.setIoState(ioState);
     }
 
+    @Override
+    public void updateState() {
+        if (getMessageState() == MessageState.BODY) {
+            if ((getEntityRegistration() != null)
+                    && (getEntityRegistration().getListener() != null)) {
+                getRegistration().setInterestOperations(
+                        getEntityRegistration().getInterestOperations());
+            } else {
+                getRegistration().setInterestOperations(0);
+            }
+        } else {
+            getRegistration().setInterestOperations(getInterestOperations());
+        }
+    }
 }

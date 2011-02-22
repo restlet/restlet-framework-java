@@ -43,36 +43,67 @@ import org.restlet.util.SelectionRegistration;
  */
 public class ReadableBufferedChannel extends
         WrapperSelectionChannel<ReadableSelectionChannel> implements
-        ReadableSelectionChannel {
+        ReadableSelectionChannel, BufferProcessor {
+
+    /** The source IO buffer. */
+    private final Buffer buffer;
 
     /** The completion callback. */
     private final CompletionListener completionListener;
 
-    /** The source IO buffer. */
-    private final IoBuffer sourceBuffer;
+    /** Indicates if the end of the wrapped channel has been reached. */
+    private volatile boolean endReached;
 
     /**
      * Constructor.
      * 
      * @param completionListener
      *            The listener to callback upon reading completion.
-     * @param sourceBuffer
+     * @param buffer
      *            The source byte buffer, typically remaining from previous read
      *            processing.
      * @param source
      *            The source channel.
      */
     public ReadableBufferedChannel(CompletionListener completionListener,
-            IoBuffer sourceBuffer, ReadableSelectionChannel source) {
+            Buffer buffer, ReadableSelectionChannel source) {
         super(source);
         setRegistration(new SelectionRegistration(0, null));
         this.completionListener = completionListener;
-        this.sourceBuffer = sourceBuffer;
+        this.buffer = buffer;
+        this.endReached = false;
     }
 
     @Override
     public void close() throws IOException {
         // Don't actually close to protect the persistent connection
+    }
+
+    /**
+     * Indicates if the processing loop can continue.
+     * 
+     * @return True if the processing loop can continue.
+     */
+    public boolean canLoop() {
+        return true;
+    }
+
+    /**
+     * Indicates if the buffer could be filled again.
+     * 
+     * @return True if the buffer could be filled again.
+     */
+    public boolean couldFill() {
+        return !this.endReached;
+    }
+
+    /**
+     * Returns the source buffer.
+     * 
+     * @return The source buffer.
+     */
+    public Buffer getBuffer() {
+        return buffer;
     }
 
     /**
@@ -82,15 +113,6 @@ public class ReadableBufferedChannel extends
      */
     private CompletionListener getCompletionListener() {
         return completionListener;
-    }
-
-    /**
-     * Returns the source buffer.
-     * 
-     * @return The source buffer.
-     */
-    public IoBuffer getSourceBuffer() {
-        return sourceBuffer;
     }
 
     /**
@@ -108,6 +130,34 @@ public class ReadableBufferedChannel extends
     }
 
     /**
+     * Drains the byte buffer.
+     * 
+     * @param buffer
+     *            The IO buffer to drain.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
+     * @throws IOException
+     */
+    public int onDrain(Buffer buffer, Object... args) throws IOException {
+        return getBuffer().drain((ByteBuffer) args[0]);
+    }
+
+    /**
+     * Fills the byte buffer by writing the current message.
+     * 
+     * @throws IOException
+     */
+    public int onFill(Buffer buffer, Object... args) throws IOException {
+        int result = refill();
+
+        if (result == -1) {
+            this.endReached = true;
+        }
+
+        return result;
+    }
+
+    /**
      * Reads some bytes and put them into the destination buffer. The bytes come
      * from the underlying channel.
      * 
@@ -117,62 +167,7 @@ public class ReadableBufferedChannel extends
      *         been reached.
      */
     public int read(ByteBuffer targetBuffer) throws IOException {
-        return read(targetBuffer, getSourceBuffer());
-    }
-
-    /**
-     * Reads some bytes and put them into the destination buffer. The bytes come
-     * from the underlying channel.
-     * 
-     * @param targetBuffer
-     *            The target buffer.
-     * @param sourceBuffer
-     *            The buffer to drain for available bytes.
-     * @return The number of bytes read, or -1 if the end of the channel has
-     *         been reached.
-     */
-    public int read(ByteBuffer targetBuffer, IoBuffer sourceBuffer)
-            throws IOException {
-        int result = 0;
-        int lastRead = 0;
-        boolean tryAgain = true;
-
-        synchronized (getSourceBuffer().getLock()) {
-            while (tryAgain) {
-                switch (getSourceBuffer().getState()) {
-                case FILLED:
-                    getSourceBuffer().setState(BufferState.DRAINING);
-                case DRAINING:
-                    if (getSourceBuffer().remaining() > 0) {
-                        lastRead = sourceBuffer.drain(targetBuffer);
-                        result += lastRead;
-                        tryAgain = sourceBuffer
-                                .canRetry(lastRead, targetBuffer);
-                    }
-
-                    if (!getSourceBuffer().hasRemaining()) {
-                        getSourceBuffer().clear();
-                    }
-                    break;
-                case IDLE:
-                    getSourceBuffer().setState(BufferState.FILLING);
-                case FILLING:
-                    int refillCount = refill();
-
-                    if (refillCount > 0) {
-                        tryAgain = true;
-                    } else if (refillCount == -1) {
-                        result = -1;
-                        tryAgain = false;
-                    } else if (refillCount == 0) {
-                        tryAgain = false;
-                    }
-                    break;
-                }
-            }
-        }
-
-        return result;
+        return getBuffer().process(this, targetBuffer);
     }
 
     /**
@@ -182,7 +177,7 @@ public class ReadableBufferedChannel extends
      * @throws IOException
      */
     public int refill() throws IOException {
-        return getSourceBuffer().fill(getWrappedChannel());
+        return getBuffer().fill(getWrappedChannel());
     }
 
 }

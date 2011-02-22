@@ -48,6 +48,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.io.BlockableChannel;
+import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.ReadableChunkingChannel;
 import org.restlet.engine.io.ReadableSizedChannel;
@@ -145,113 +146,12 @@ public abstract class OutboundWay extends Way {
      */
     protected abstract void addHeaders(Series<Parameter> headers);
 
-    /**
-     * Indicates if the way can drain its IO buffer.
-     * 
-     * @return True if the way can drain its IO buffer.
-     */
-    protected boolean canDrain() {
-        return getIoBuffer().canDrain()
-                && ((getIoState() == IoState.PROCESSING) || (getIoState() == IoState.READY));
-    }
-
     @Override
     public void clear() {
         super.clear();
         this.entityChannel = null;
         this.entitySelectionKey = null;
         this.headerIndex = 0;
-    }
-
-    /**
-     * Drains the byte buffer by writing available bytes to the socket channel.
-     * 
-     * @throws IOException
-     */
-    protected void drainIoBuffer() throws IOException {
-        if (canDrain()) {
-            int bytesWritten = getIoBuffer().drain(
-                    getConnection().getWritableSelectionChannel());
-
-            if (getLogger().isLoggable(Level.FINER)) {
-                getLogger().finer("Bytes written: " + bytesWritten);
-            }
-
-            if (getHelper().getThrottleTimeMs() > 0) {
-                try {
-                    Thread.sleep(getHelper().getThrottleTimeMs());
-                } catch (InterruptedException e) {
-                }
-            }
-
-            if (bytesWritten == 0) {
-                if (getIoState() == IoState.PROCESSING) {
-                    // The byte buffer hasn't been written, the socket
-                    // channel can't write more. We needs to put the
-                    // byte buffer in the filling state again and
-                    // wait for a new NIO selection.
-                    setIoState(IoState.INTEREST);
-                }
-            } else if (getMessageState() == MessageState.END) {
-                // Message fully written, ready for a new one
-                onCompleted(false);
-            } else {
-                // The byte buffer has been fully written, but
-                // the socket channel wants more, reset it.
-                getIoBuffer().flip();
-            }
-        }
-    }
-
-    /**
-     * Fills the byte buffer by writing the current message.
-     * 
-     * @throws IOException
-     */
-    protected void fillIoBuffer() throws IOException {
-        while (isSelected() && getIoBuffer().canFill()
-                && (getMessageState() != MessageState.END)) {
-            if (getMessageState() == MessageState.BODY) {
-                int result = getIoBuffer().fill(getEntityChannel());
-
-                // Detect end of entity reached
-                if (result == -1) {
-                    setMessageState(MessageState.END);
-                }
-            } else {
-                // Write the start line or the headers,
-                // relying on the line builder
-                if (getLineBuilder().length() == 0) {
-                    // A new line can be written in the builder
-                    writeLine();
-                }
-
-                if (getLineBuilder().length() > 0) {
-                    // We can fill the byte buffer with the
-                    // remaining line builder
-                    int remaining = getIoBuffer().remaining();
-
-                    if (remaining >= getLineBuilder().length()) {
-                        // Put the whole builder line in the buffer
-                        getIoBuffer().fill(
-                                StringUtils.getLatin1Bytes(getLineBuilder()
-                                        .toString()));
-                        clearLineBuilder();
-                    } else {
-                        // Put the maximum number of characters
-                        // into the byte buffer
-                        getIoBuffer().fill(
-                                StringUtils.getLatin1Bytes(getLineBuilder()
-                                        .substring(0, remaining)));
-                        getLineBuilder().delete(0, remaining);
-                    }
-                }
-            }
-        }
-
-        // After filling the byte buffer, we can now flip it
-        // and start draining it.
-        getIoBuffer().flip();
     }
 
     /**
@@ -353,48 +253,108 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
+    public int onDrain(Buffer buffer, Object... args) throws IOException {
+        int result = getBuffer().drain(
+                getConnection().getWritableSelectionChannel());
+
+        if (getLogger().isLoggable(Level.FINE)) {
+            getLogger().log(Level.FINE, "Bytes written: " + result);
+        }
+
+        if (getHelper().getThrottleTimeMs() > 0) {
+            try {
+                Thread.sleep(getHelper().getThrottleTimeMs());
+            } catch (InterruptedException e) {
+            }
+        }
+
+        if (result == 0) {
+            if (getIoState() == IoState.PROCESSING) {
+                // The byte buffer hasn't been written, the socket
+                // channel can't write more. We needs to put the
+                // byte buffer in the filling state again and
+                // wait for a new NIO selection.
+                setIoState(IoState.INTEREST);
+            }
+            // } else if (getMessageState() == MessageState.END) {
+            // // Message fully written, ready for a new one
+            // onCompleted(false);
+        }
+
+        return result;
+    }
+
+    @Override
     public void onError(Status status) {
         getHelper().onOutboundError(status, getMessage());
         setMessage(null);
     }
 
     @Override
-    public void onSelected() {
-        try {
-            Response message = getMessage();
+    public int onFill(Buffer buffer, Object... args) throws IOException {
+        int beforeFill = buffer.remaining();
 
-            if (message != null) {
-                super.onSelected();
+        if (getMessageState() == MessageState.END) {
+            // Message fully written, ready for a new one
+            // onCompleted(false);
+        } else {
+            // Write the message or part of it in the byte
+            // buffer
+            if (getMessageState() == MessageState.BODY) {
+                int result = getBuffer().fill(getEntityChannel());
 
-                while (isSelected()) {
-                    if (getIoBuffer().isFilling()) {
-                        if (getMessageState() == MessageState.END) {
-                            // Message fully written, ready for a new one
-                            onCompleted(false);
-                        } else {
-                            // Write the message or part of it in the byte
-                            // buffer
-                            fillIoBuffer();
-                        }
-                    } else if (getIoBuffer().isDraining()) {
-                        // Write the byte buffer or part of it to the socket
-                        drainIoBuffer();
+                // Detect end of entity reached
+                if (result == -1) {
+                    setMessageState(MessageState.END);
+                }
+            } else {
+                // Write the start line or the headers,
+                // relying on the line builder
+                if (getLineBuilder().length() == 0) {
+                    // A new line can be written in the builder
+                    writeLine();
+                }
 
-                        if (getMessageState() == MessageState.IDLE) {
-                            // Message fully sent, check if another is ready
-                            updateState();
-                        }
+                if (getLineBuilder().length() > 0) {
+                    // We can fill the byte buffer with the
+                    // remaining line builder
+                    int remaining = getBuffer().remaining();
+
+                    if (remaining >= getLineBuilder().length()) {
+                        // Put the whole builder line in the buffer
+                        getBuffer().fill(
+                                StringUtils.getLatin1Bytes(getLineBuilder()
+                                        .toString()));
+                        clearLineBuilder();
+                    } else {
+                        // Put the maximum number of characters
+                        // into the byte buffer
+                        getBuffer().fill(
+                                StringUtils.getLatin1Bytes(getLineBuilder()
+                                        .substring(0, remaining)));
+                        getLineBuilder().delete(0, remaining);
                     }
                 }
             }
-        } catch (Exception e) {
-            getLogger()
-                    .log(Level.FINE,
-                            "Error while writing a message. Closing the connection.",
-                            e);
-            getConnection().onError(
-                    "Error while writing a message. Closing the connection.",
-                    e, Status.CONNECTOR_ERROR_COMMUNICATION);
+        }
+
+        return beforeFill - buffer.remaining();
+    }
+
+    @Override
+    public void processIoBuffer() throws IOException {
+        Response message = getMessage();
+
+        if (message != null) {
+            super.processIoBuffer();
+
+            if (getMessageState() == MessageState.END) {
+                // Message fully written, ready for a new one
+                onCompleted(false);
+            } else if (getMessageState() == MessageState.IDLE) {
+                // Message fully sent, check if another is ready
+                updateState();
+            }
         }
     }
 
@@ -532,7 +492,7 @@ public abstract class OutboundWay extends Way {
 
                     if (getActualMessage().getEntity().getAvailableSize() == Representation.UNKNOWN_SIZE) {
                         setEntityChannel(new ReadableChunkingChannel(rbc,
-                                getIoBuffer().capacity()));
+                                getBuffer().capacity()));
                     } else {
                         setEntityChannel(new ReadableSizedChannel(rbc,
                                 getActualMessage().getEntity()

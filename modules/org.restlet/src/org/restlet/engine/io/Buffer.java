@@ -44,7 +44,28 @@ import org.restlet.engine.header.HeaderUtils;
  * 
  * @author Jerome Louvel
  */
-public class IoBuffer {
+public class Buffer {
+
+    /**
+     * Creates a new byte buffer.
+     * 
+     * @param bufferSize
+     *            The buffer size.
+     * @param direct
+     *            Indicates if a direct NIO buffer should be created.
+     * @return The created byte buffer.
+     */
+    private static ByteBuffer createByteBuffer(int bufferSize, boolean direct) {
+        ByteBuffer result = null;
+
+        if (direct) {
+            result = ByteBuffer.allocateDirect(bufferSize);
+        } else {
+            result = ByteBuffer.allocate(bufferSize);
+        }
+
+        return result;
+    }
 
     /** The index of the buffer's beginning while filling. */
     private volatile int begin;
@@ -61,7 +82,7 @@ public class IoBuffer {
      * @param byteBuffer
      *            The byte buffer wrapped.
      */
-    public IoBuffer(ByteBuffer byteBuffer) {
+    public Buffer(ByteBuffer byteBuffer) {
         this(byteBuffer, BufferState.FILLING);
     }
 
@@ -73,11 +94,35 @@ public class IoBuffer {
      * @param byteBufferState
      *            The initial byte buffer state.
      */
-    public IoBuffer(ByteBuffer byteBuffer, BufferState byteBufferState) {
+    public Buffer(ByteBuffer byteBuffer, BufferState byteBufferState) {
         super();
         this.begin = 0;
         this.bytes = byteBuffer;
         this.state = byteBufferState;
+    }
+
+    /**
+     * Constructor. Allocates a new non-direct byte buffer.
+     * 
+     * @param bufferSize
+     *            The byte buffer size.
+     */
+    public Buffer(int bufferSize) {
+        this(bufferSize, false);
+    }
+
+    /**
+     * Constructor. Allocates a new byte buffer using
+     * {@link ByteBuffer#allocate(int)} or
+     * {@link ByteBuffer#allocateDirect(int)} methods.
+     * 
+     * @param bufferSize
+     *            The byte buffer size.
+     * @param direct
+     *            Indicates if a direct NIO buffer should be created.
+     */
+    public Buffer(int bufferSize, boolean direct) {
+        this(createByteBuffer(bufferSize, direct));
     }
 
     /**
@@ -128,16 +173,6 @@ public class IoBuffer {
     }
 
     /**
-     * 
-     * @param lastRead
-     * @param targetBuffer
-     * @return
-     */
-    public boolean canRetry(int lastRead, ByteBuffer targetBuffer) {
-        return (lastRead > 0) && targetBuffer.hasRemaining();
-    }
-
-    /**
      * Returns the maximum capacity of this buffer.
      * 
      * @return The maximum capacity of this buffer.
@@ -171,8 +206,7 @@ public class IoBuffer {
      * @return True if bytes could be drained.
      */
     public boolean couldDrain() {
-        return canDrain()
-                || (isFilling() && (getBytes().position() > this.begin));
+        return (isFilling() && (getBytes().position() > this.begin));
     }
 
     /**
@@ -181,8 +215,31 @@ public class IoBuffer {
      * @return True if more bytes could be filled in.
      */
     public boolean couldFill() {
-        return canFill()
-                || (isDraining() && (getBytes().limit() < getBytes().capacity()));
+        return (isDraining() && (!hasRemaining() || (getBytes().limit() < getBytes()
+                .capacity())));
+    }
+
+    /**
+     * Drains the next byte in the buffer and returns it as an integer.
+     * 
+     * @return The next byte in the buffer;
+     */
+    public int drain() {
+        return getBytes().get() & 0xff;
+    }
+
+    /**
+     * Drains the buffer into a byte array.
+     * 
+     * @param targetArray
+     *            The target byte array.
+     * @param offset
+     *            The target offset.
+     * @param length
+     *            The number of bytes to drain.
+     */
+    public void drain(byte[] targetArray, int offset, int length) {
+        getBytes().get(targetArray, offset, length);
     }
 
     /**
@@ -213,7 +270,7 @@ public class IoBuffer {
     }
 
     /**
-     * Drain the buffer into a line builder (start line or header line).
+     * Drains the buffer into a line builder (start line or header line).
      * 
      * @param lineBuilder
      *            The line builder to fill.
@@ -305,20 +362,20 @@ public class IoBuffer {
     public int fill(ReadableByteChannel sourceChannel) throws IOException {
         int result = 0;
 
-        if (isFilling()) {
+        if (canFill()) {
             if (sourceChannel.isOpen()) {
                 result = sourceChannel.read(getBytes());
 
                 if (result > 0) {
                     flip();
 
-                    if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
-                        Context.getCurrentLogger().finer(
+                    if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                        Context.getCurrentLogger().fine(
                                 "Refilled buffer with " + result + " byte(s)");
                     }
                 } else {
-                    if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
-                        Context.getCurrentLogger().finer(
+                    if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                        Context.getCurrentLogger().fine(
                                 "Coudn't refill buffer : " + toString());
                     }
                 }
@@ -404,6 +461,89 @@ public class IoBuffer {
      */
     public boolean isFilling() {
         return getState() == BufferState.FILLING;
+    }
+
+    /**
+     * Processes as a loop the IO event by draining or filling the IO buffer.
+     * Note that synchronization of the {@link #getLock()} object is
+     * automatically made.
+     * 
+     * @param processor
+     *            The IO processor to callback.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
+     * @return The number of bytes drained or -1 if the filling source has
+     *         ended.
+     * @throws IOException
+     */
+    public int process(BufferProcessor processor, Object... args)
+            throws IOException {
+        int totalDrained = 0;
+        int totalFilled = 0;
+
+        synchronized (getLock()) {
+            if (processor.couldFill()) {
+                boolean tryAgain = true;
+                int drained = 0;
+                int filled = 0;
+                boolean lastDrainFailed = false;
+                boolean lastFillFailed = false;
+
+                while (tryAgain && processor.canLoop()) {
+                    if (isDraining()) {
+                        drained = 0;
+
+                        if (hasRemaining()) {
+                            drained = processor.onDrain(this, args);
+                        }
+
+                        if (drained > 0) {
+                            // Can attempt to drain again
+                            totalDrained += drained;
+                            lastDrainFailed = false;
+                            lastFillFailed = false;
+                        } else if (!lastFillFailed && couldFill()) {
+                            // We may still be able to fill
+                            lastDrainFailed = true;
+                            beforeFill();
+                        } else {
+                            tryAgain = false;
+                        }
+                    } else if (isFilling()) {
+                        filled = 0;
+
+                        if (hasRemaining()) {
+                            filled = processor.onFill(this, args);
+                        }
+
+                        if (filled > 0) {
+                            // Can attempt to refill again
+                            totalFilled += filled;
+                            lastDrainFailed = false;
+                            lastFillFailed = false;
+                        } else if (!lastDrainFailed && couldDrain()) {
+                            // We may still be able to drain
+                            lastFillFailed = true;
+                            beforeDrain();
+                        } else {
+                            tryAgain = false;
+                        }
+                    } else {
+                        // Can't drain nor fill
+                        tryAgain = false;
+                    }
+                }
+
+                if ((totalDrained == 0) && !processor.couldFill()) {
+                    // Nothing was drained and no hope to fill again
+                    totalDrained = -1;
+                }
+            } else {
+                totalDrained = -1;
+            }
+        }
+
+        return totalDrained;
     }
 
     /**

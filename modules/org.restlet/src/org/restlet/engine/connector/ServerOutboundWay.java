@@ -149,7 +149,7 @@ public abstract class ServerOutboundWay extends OutboundWay {
         // Check if we need to close the connection
         if (!getConnection().isPersistent()
                 || HeaderUtils.isConnectionClose(getHeaders())) {
-            getConnection().close(true);
+            getConnection().close(!endDetected);
         }
 
         super.onCompleted(endDetected);

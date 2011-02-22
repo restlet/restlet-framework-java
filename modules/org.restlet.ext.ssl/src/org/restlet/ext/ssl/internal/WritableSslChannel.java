@@ -37,7 +37,7 @@ import java.util.logging.Level;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLSession;
 
-import org.restlet.engine.io.IoBuffer;
+import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.SelectionChannel;
 import org.restlet.engine.io.WritableSelectionChannel;
@@ -53,7 +53,7 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
         implements WritableSelectionChannel {
 
     /** The packet IO buffer. */
-    private volatile IoBuffer packetBuffer;
+    private volatile Buffer packetBuffer;
 
     /**
      * Constructor.
@@ -72,8 +72,8 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
         if (manager != null) {
             SSLSession session = manager.getSession();
             int packetSize = session.getPacketBufferSize();
-            this.packetBuffer = new IoBuffer(getConnection().createByteBuffer(
-                    packetSize));
+            this.packetBuffer = new Buffer(packetSize, getConnection()
+                    .getHelper().isDirectBuffers());
         } else {
             this.packetBuffer = null;
         }
@@ -111,7 +111,7 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
      * 
      * @return The SSL/TLS packet IO buffer.
      */
-    protected IoBuffer getPacketBuffer() {
+    protected Buffer getPacketBuffer() {
         return packetBuffer;
     }
 

@@ -175,7 +175,7 @@ public class EngineClassLoader extends ClassLoader {
                     }
                 }
             } catch (NullPointerException e) {
-                // At this time (june 2009) a NPE is thrown with Dalvik JVM.
+                // At this time (June 2009) a NPE is thrown with Dalvik JVM.
                 // Let's throw the NPE for the other editions.
                 if (Edition.CURRENT != Edition.ANDROID) {
                     throw e;

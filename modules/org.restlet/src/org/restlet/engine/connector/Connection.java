@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.security.cert.Certificate;
 import java.util.Arrays;
@@ -160,18 +159,18 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public void close(boolean graceful) {
         if (graceful) {
-            if (getLogger().isLoggable(Level.FINER)) {
+            if (getLogger().isLoggable(Level.FINE)) {
                 getLogger().log(
-                        Level.FINER,
+                        Level.FINE,
                         "Closing connection to " + getSocketAddress()
                                 + " gracefully");
             }
 
             setState(ConnectionState.CLOSING);
         } else {
-            if (getLogger().isLoggable(Level.FINER)) {
+            if (getLogger().isLoggable(Level.FINE)) {
                 getLogger().log(
-                        Level.FINER,
+                        Level.FINE,
                         "Closing connection to " + getSocketAddress()
                                 + " immediately");
             }
@@ -221,18 +220,6 @@ public class Connection<T extends Connector> implements SelectionListener {
 
         // Wake up the controller if it is sleeping
         getHelper().getController().wakeup();
-    }
-
-    /**
-     * Creates a new byte buffer.
-     * 
-     * @param bufferSize
-     *            The byte buffer size.
-     * @return
-     */
-    public ByteBuffer createByteBuffer(int bufferSize) {
-        return getHelper().isDirectBuffers() ? ByteBuffer
-                .allocateDirect(bufferSize) : ByteBuffer.allocate(bufferSize);
     }
 
     /**
@@ -637,12 +624,12 @@ public class Connection<T extends Connector> implements SelectionListener {
 
         try {
             if ((registration == null) || registration.isReadable()) {
-                synchronized (getInboundWay().getIoBuffer().getLock()) {
+                synchronized (getInboundWay().getBuffer().getLock()) {
                     getInboundWay().getRegistration().onSelected(
                             registration.getReadyOperations());
                 }
             } else if (registration.isWritable()) {
-                synchronized (getOutboundWay().getIoBuffer().getLock()) {
+                synchronized (getOutboundWay().getBuffer().getLock()) {
                     getOutboundWay().getRegistration().onSelected(
                             registration.getReadyOperations());
                 }
@@ -738,6 +725,10 @@ public class Connection<T extends Connector> implements SelectionListener {
             getLogger().finest(
                     "Connection state (old | new) : " + this.state + " | "
                             + state);
+        }
+
+        if (state == ConnectionState.CLOSED) {
+            System.out.println("CLOSED");
         }
 
         this.state = state;
