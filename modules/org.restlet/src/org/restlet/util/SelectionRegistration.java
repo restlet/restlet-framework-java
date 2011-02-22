@@ -297,8 +297,8 @@ public class SelectionRegistration {
      * after a {@link #suspend()} call.
      */
     public void resume() {
-        if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
-            Context.getCurrentLogger().log(Level.FINE,
+        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+            Context.getCurrentLogger().log(Level.FINER,
                     "Resuming previous NIO interest");
         }
 

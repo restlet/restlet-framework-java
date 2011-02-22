@@ -369,13 +369,13 @@ public class Buffer {
                 if (result > 0) {
                     flip();
 
-                    if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
-                        Context.getCurrentLogger().fine(
+                    if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                        Context.getCurrentLogger().finer(
                                 "Refilled buffer with " + result + " byte(s)");
                     }
                 } else {
-                    if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
-                        Context.getCurrentLogger().fine(
+                    if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                        Context.getCurrentLogger().finer(
                                 "Coudn't refill buffer : " + toString());
                     }
                 }
