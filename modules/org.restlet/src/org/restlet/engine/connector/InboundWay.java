@@ -153,6 +153,8 @@ public abstract class InboundWay extends Way {
 
     @Override
     public int onDrain(Buffer buffer, Object... args) throws IOException {
+        int result = 0;
+
         // Bytes are available in the buffer
         // attempt to parse the next message
         boolean continueReading = true;
@@ -190,7 +192,13 @@ public abstract class InboundWay extends Way {
             }
         }
 
-        return beforeDrain - buffer.remaining();
+        result = beforeDrain - buffer.remaining();
+
+        if (getLogger().isLoggable(Level.FINE)) {
+            getLogger().log(Level.FINE, "Bytes read: " + result);
+        }
+
+        return result;
     }
 
     @Override
