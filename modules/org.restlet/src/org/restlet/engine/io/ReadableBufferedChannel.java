@@ -176,7 +176,7 @@ public class ReadableBufferedChannel extends
      * @return The number of bytes refilled.
      * @throws IOException
      */
-    public int refill() throws IOException {
+    private int refill() throws IOException {
         return getBuffer().fill(getWrappedChannel());
     }
 

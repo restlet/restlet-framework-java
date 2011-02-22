@@ -43,7 +43,7 @@ import org.restlet.Context;
  */
 public class ReadableChunkedChannel extends
         WrapperSelectionChannel<ReadableBufferedChannel> implements
-        ReadableByteChannel {
+        ReadableByteChannel, BufferProcessor {
 
     /** The chunk state. */
     private volatile ChunkState chunkState;
@@ -72,11 +72,29 @@ public class ReadableChunkedChannel extends
     }
 
     /**
+     * Indicates if the processing loop can continue.
+     * 
+     * @return True if the processing loop can continue.
+     */
+    public boolean canLoop() {
+        return getWrappedChannel().canLoop();
+    }
+
+    /**
      * Clears the line builder and adjust its state.
      */
     public void clearLineBuilder() {
         getLineBuilder().delete(0, getLineBuilder().length());
         setLineBuilderState(BufferState.IDLE);
+    }
+
+    /**
+     * Indicates if the buffer could be filled again.
+     * 
+     * @return True if the buffer could be filled again.
+     */
+    public boolean couldFill() {
+        return getWrappedChannel().couldFill();
     }
 
     /**
@@ -89,33 +107,8 @@ public class ReadableChunkedChannel extends
         boolean result = false;
 
         if (getLineBuilderState() != BufferState.DRAINING) {
-            int byteBufferSize = 0;
-
-            if (getWrappedChannel().getBuffer().isDraining()) {
-                byteBufferSize = getWrappedChannel().getBuffer()
-                        .remaining();
-            }
-
-            if (byteBufferSize == 0) {
-                getWrappedChannel().getBuffer().clear();
-
-                if (getWrappedChannel().refill() > 0) {
-                    byteBufferSize = getWrappedChannel().getBuffer()
-                            .remaining();
-                }
-            }
-
-            if (byteBufferSize > 0) {
-                // Some bytes are available, fill the line builder
-                setLineBuilderState(getWrappedChannel().getBuffer()
-                        .drain(getLineBuilder(), getLineBuilderState()));
-
-                if (!getWrappedChannel().getBuffer().hasRemaining()) {
-                    getWrappedChannel().getBuffer().clear();
-                }
-
-                return getLineBuilderState() == BufferState.DRAINING;
-            }
+            getWrappedChannel().getBuffer().process(this);
+            return getLineBuilderState() == BufferState.DRAINING;
         } else {
             result = true;
         }
@@ -142,6 +135,40 @@ public class ReadableChunkedChannel extends
     }
 
     /**
+     * Drains the byte buffer.
+     * 
+     * @param buffer
+     *            The IO buffer to drain.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
+     * @return The number of bytes drained.
+     * @throws IOException
+     */
+    public int onDrain(Buffer buffer, Object... args) throws IOException {
+        int before = buffer.remaining();
+
+        // Some bytes are available, fill the line builder
+        setLineBuilderState(buffer.drain(getLineBuilder(),
+                getLineBuilderState()));
+
+        return before - buffer.remaining();
+    }
+
+    /**
+     * Fills the byte buffer.
+     * 
+     * @param buffer
+     *            The IO buffer to drain.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
+     * @return The number of bytes filled.
+     * @throws IOException
+     */
+    public int onFill(Buffer buffer, Object... args) throws IOException {
+        return getWrappedChannel().onFill(buffer, args);
+    }
+
+    /**
      * Reads some bytes and put them into the destination buffer. The bytes come
      * from the underlying channel.
      * 
@@ -155,8 +182,12 @@ public class ReadableChunkedChannel extends
         boolean tryAgain = true;
 
         while (tryAgain) {
-            switch (this.chunkState) {
+            if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                Context.getCurrentLogger().log(Level.FINER,
+                        "Chunk state: " + this.chunkState);
+            }
 
+            switch (this.chunkState) {
             case SIZE:
                 if (fillLineBuilder()) {
                     try {
@@ -176,8 +207,9 @@ public class ReadableChunkedChannel extends
                                 .parseLong(getLineBuilder().substring(0, index)
                                         .trim(), 16);
 
-                        if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
-                            Context.getCurrentLogger().fine(
+                        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                            Context.getCurrentLogger().log(
+                                    Level.FINER,
                                     "New chunk detected. Size: "
                                             + this.remainingChunkSize);
                         }

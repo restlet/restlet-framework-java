@@ -283,42 +283,34 @@ public class Buffer {
             throws IOException {
         int next;
 
-        if (isDraining()) {
-            if (builderState == BufferState.IDLE) {
-                builderState = BufferState.FILLING;
-            }
+        if (builderState == BufferState.IDLE) {
+            builderState = BufferState.FILLING;
+        }
 
-            while ((builderState != BufferState.DRAINING)
-                    && getBytes().hasRemaining()) {
-                next = (int) getBytes().get();
+        while ((builderState != BufferState.DRAINING)
+                && getBytes().hasRemaining()) {
+            next = (int) getBytes().get();
 
-                switch (builderState) {
-                case FILLING:
-                    if (HeaderUtils.isCarriageReturn(next)) {
-                        builderState = BufferState.FILLED;
-                    } else {
-                        lineBuilder.append((char) next);
-                    }
-
-                    break;
-
-                case FILLED:
-                    if (HeaderUtils.isLineFeed(next)) {
-                        builderState = BufferState.DRAINING;
-                    } else {
-                        throw new IOException(
-                                "Missing line feed character at the end of the line. Found character \""
-                                        + (char) next + "\" (" + next
-                                        + ") instead");
-                    }
-
-                    break;
+            switch (builderState) {
+            case FILLING:
+                if (HeaderUtils.isCarriageReturn(next)) {
+                    builderState = BufferState.FILLED;
+                } else {
+                    lineBuilder.append((char) next);
                 }
-            }
 
-            // Have we drained all available bytes?
-            if (!canDrain()) {
-                setState(BufferState.FILLING);
+                break;
+
+            case FILLED:
+                if (HeaderUtils.isLineFeed(next)) {
+                    builderState = BufferState.DRAINING;
+                } else {
+                    throw new IOException(
+                            "Missing line feed character at the end of the line. Found character \""
+                                    + (char) next + "\" (" + next + ") instead");
+                }
+
+                break;
             }
         }
 
