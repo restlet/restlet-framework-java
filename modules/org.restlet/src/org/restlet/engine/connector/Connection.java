@@ -722,14 +722,11 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public void setState(ConnectionState state) {
         if (getState() != state) {
-            if (getLogger().isLoggable(Level.FINEST)) {
-                getLogger().finest(
+            if (getLogger().isLoggable(Level.FINER)) {
+                getLogger().log(
+                        Level.FINER,
                         "Connection state (old | new) : " + this.state + " | "
                                 + state);
-            }
-
-            if (state == ConnectionState.CLOSED) {
-                System.out.println("CLOSED");
             }
 
             this.state = state;
