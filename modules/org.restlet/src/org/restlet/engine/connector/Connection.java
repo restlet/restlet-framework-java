@@ -721,17 +721,19 @@ public class Connection<T extends Connector> implements SelectionListener {
      *            The state of the connection.
      */
     public void setState(ConnectionState state) {
-        if (getLogger().isLoggable(Level.FINEST)) {
-            getLogger().finest(
-                    "Connection state (old | new) : " + this.state + " | "
-                            + state);
-        }
+        if (getState() != state) {
+            if (getLogger().isLoggable(Level.FINEST)) {
+                getLogger().finest(
+                        "Connection state (old | new) : " + this.state + " | "
+                                + state);
+            }
 
-        if (state == ConnectionState.CLOSED) {
-            System.out.println("CLOSED");
-        }
+            if (state == ConnectionState.CLOSED) {
+                System.out.println("CLOSED");
+            }
 
-        this.state = state;
+            this.state = state;
+        }
     }
 
     @Override
