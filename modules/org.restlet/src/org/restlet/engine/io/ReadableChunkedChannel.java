@@ -98,25 +98,6 @@ public class ReadableChunkedChannel extends
     }
 
     /**
-     * Read the current line builder (start line or header line).
-     * 
-     * @return True if the message line was fully read.
-     * @throws IOException
-     */
-    public boolean fillLineBuilder() throws IOException {
-        boolean result = false;
-
-        if (getLineBuilderState() != BufferState.DRAINING) {
-            getWrappedChannel().getBuffer().process(this);
-            return getLineBuilderState() == BufferState.DRAINING;
-        } else {
-            result = true;
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the line builder to parse chunk size or trailer.
      * 
      * @return The line builder to parse chunk size or trailer.
@@ -189,7 +170,7 @@ public class ReadableChunkedChannel extends
 
             switch (this.chunkState) {
             case SIZE:
-                if (fillLineBuilder()) {
+                if (refill()) {
                     try {
                         // The chunk size line was fully read into the line
                         // builder
@@ -250,7 +231,7 @@ public class ReadableChunkedChannel extends
                     }
                 } else if (this.remainingChunkSize == 0) {
                     // Try to read the chunk end delimiter
-                    if (fillLineBuilder()) {
+                    if (refill()) {
                         // Done, can read the next chunk
                         clearLineBuilder();
                         this.chunkState = ChunkState.SIZE;
@@ -267,20 +248,43 @@ public class ReadableChunkedChannel extends
                 break;
 
             case END:
-                if (fillLineBuilder()) {
-                    if (getLineBuilder().length() == 0) {
-                        result = -1;
-                        tryAgain = false;
+                if (refill()) {
+                    if (getLineBuilder().length() != 0) {
+                        Context.getCurrentLogger().log(Level.FINE,
+                                "The last chunk line had a non empty line");
                     }
+
+                    tryAgain = false;
+                    result = -1;
+                } else {
+                    tryAgain = false;
                 }
                 break;
             }
-
         }
 
         if ((result == -1)
                 && (getWrappedChannel() instanceof ReadableBufferedChannel)) {
             ((ReadableBufferedChannel) getWrappedChannel()).onCompleted(false);
+        }
+
+        return result;
+    }
+
+    /**
+     * Read the current line builder (start line or header line).
+     * 
+     * @return True if the message line was fully read.
+     * @throws IOException
+     */
+    public boolean refill() throws IOException {
+        boolean result = false;
+
+        if (getLineBuilderState() != BufferState.DRAINING) {
+            getWrappedChannel().getBuffer().process(this);
+            return getLineBuilderState() == BufferState.DRAINING;
+        } else {
+            result = true;
         }
 
         return result;
