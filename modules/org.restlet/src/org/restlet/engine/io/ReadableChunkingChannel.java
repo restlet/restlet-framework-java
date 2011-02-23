@@ -70,26 +70,26 @@ public class ReadableChunkingChannel extends
      * Returns an hexadecimal chunk size string with a constant length, adding
      * the necessary number of leading zeroes.
      * 
-     * @param dst
-     *            The destination buffer.
      * @param chunkDataSize
      *            The chunk data size value.
+     * @param targetBuffer
+     *            The destination buffer.
      * @return The length of the chunk size string.
      */
-    private int putChunkSizeString(ByteBuffer dst, int chunkDataSize) {
+    private int fillChunkSizeString(int chunkDataSize, ByteBuffer targetBuffer) {
         int result = 0;
         String chunkDataSizeString = Integer.toHexString(chunkDataSize);
         result = chunkDataSizeString.length();
 
         // Add necessary leading zeroes
         for (int i = chunkDataSizeString.length(); i < this.chunkSizeLength; i++) {
-            dst.put((byte) 48);
+            targetBuffer.put((byte) 48);
             result++;
         }
 
-        dst.put(StringUtils.getAsciiBytes(chunkDataSizeString));
-        dst.put((byte) 13);
-        dst.put((byte) 10);
+        targetBuffer.put(StringUtils.getAsciiBytes(chunkDataSizeString));
+        targetBuffer.put((byte) 13);
+        targetBuffer.put((byte) 10);
         result += 2;
         return result;
     }
@@ -105,50 +105,57 @@ public class ReadableChunkingChannel extends
      */
     public int read(ByteBuffer dst) throws IOException {
         int result = 0;
+        boolean tryAgain = true;
 
-        if (this.lastChunkWritten) {
-            result = -1;
-        } else {
-            int chunkStart = dst.position();
-            int maxChunkDataSize = dst.remaining() - this.chunkSizeLength - 4;
-            int chunkDataSize = 0;
-
-            if (maxChunkDataSize > 0) {
-                // Read the chunk data in the buffer
-                dst.position(chunkStart + this.chunkSizeLength + 2);
-                dst.limit(dst.position() + maxChunkDataSize);
-                chunkDataSize = getWrappedChannel().read(dst);
-                dst.limit(dst.capacity());
-
-                if (chunkDataSize == -1) {
-                    this.lastChunkWritten = true;
-                    dst.position(chunkStart);
-
-                    // Rewind and put the chunk size in the buffer
-                    result = putChunkSizeString(dst, 0);
-
-                    // End chunked entity
-                    dst.put((byte) 13);
-                    dst.put((byte) 10);
-                    result += 2;
-                } else if (chunkDataSize > 0) {
-                    dst.put((byte) 13);
-                    dst.put((byte) 10);
-                    dst.position(chunkStart);
-
-                    // Put the chunk size line
-                    putChunkSizeString(dst, chunkDataSize);
-
-                    // Restore buffer state
-                    dst.position(dst.position() + chunkDataSize + 2);
-                    result = dst.position() - chunkStart;
-                } else {
-                    // Nothing read on the wrapped channel. Try again later.
-                    dst.position(chunkStart);
-                }
+        while (tryAgain) {
+            if (this.lastChunkWritten) {
+                result = -1;
+                tryAgain = false;
             } else {
-                // Not enough space in the buffer to read a chunk. Try again
-                // later.
+                int chunkStart = dst.position();
+                int maxChunkDataSize = dst.remaining() - this.chunkSizeLength
+                        - 4;
+                int chunkDataSize = 0;
+
+                if (maxChunkDataSize > 0) {
+                    // Read the chunk data in the buffer
+                    dst.position(chunkStart + this.chunkSizeLength + 2);
+                    dst.limit(dst.position() + maxChunkDataSize);
+                    chunkDataSize = getWrappedChannel().read(dst);
+                    dst.limit(dst.capacity());
+
+                    if (chunkDataSize == -1) {
+                        this.lastChunkWritten = true;
+                        tryAgain = false;
+                        dst.position(chunkStart);
+
+                        // Rewind and put the chunk size in the buffer
+                        result += fillChunkSizeString(0, dst);
+
+                        // End chunked entity
+                        dst.put((byte) 13);
+                        dst.put((byte) 10);
+                        result += 2;
+                    } else if (chunkDataSize > 0) {
+                        dst.put((byte) 13);
+                        dst.put((byte) 10);
+                        dst.position(chunkStart);
+
+                        // Put the chunk size line
+                        fillChunkSizeString(chunkDataSize, dst);
+
+                        // Restore buffer state
+                        dst.position(dst.position() + chunkDataSize + 2);
+                        result += dst.position() - chunkStart;
+                    } else {
+                        // Nothing read on the wrapped channel. Try again later.
+                        dst.position(chunkStart);
+                    }
+                } else {
+                    // Not enough space in the buffer to read a chunk. Try again
+                    // later.
+                    tryAgain = false;
+                }
             }
         }
 
