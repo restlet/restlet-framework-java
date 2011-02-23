@@ -163,7 +163,8 @@ import org.restlet.ext.httpclient.internal.HttpMethodCall;
  *      Features</a>
  * @author Jerome Louvel
  */
-public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelper {
+public class HttpClientHelper extends
+        org.restlet.engine.adapter.HttpClientHelper {
     private volatile DefaultHttpClient httpClient;
 
     /** the idle connection reaper. */
@@ -196,8 +197,7 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
                 this.httpClient.setHttpRequestRetryHandler(retryHandler);
             } catch (Exception e) {
                 getLogger()
-                        .log(
-                                Level.WARNING,
+                        .log(Level.WARNING,
                                 "An error occurred during the instantiation of the retry handler.",
                                 e);
             }
@@ -223,7 +223,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         HttpClientParams.setCookiePolicy(params,
                 CookiePolicy.BROWSER_COMPATIBILITY);
         HttpConnectionParams.setTcpNoDelay(params, getTcpNoDelay());
-        HttpConnectionParams.setConnectionTimeout(params, getSocketConnectTimeoutMs());
+        HttpConnectionParams.setConnectionTimeout(params,
+                getSocketConnectTimeoutMs());
         HttpConnectionParams.setSoTimeout(params, getSocketTimeout());
 
         String httpProxyHost = getProxyHost();
@@ -277,8 +278,8 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
 
         try {
             result = new HttpMethodCall(this, request.getMethod().toString(),
-                    request.getResourceRef().toString(), request
-                            .isEntityAvailable());
+                    request.getResourceRef().toString(),
+                    request.isEntityAvailable());
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING,
                     "Unable to create the HTTP client call", ioe);
@@ -482,11 +483,13 @@ public class HttpClientHelper extends org.restlet.engine.adapter.HttpClientHelpe
         if (this.idleConnectionReaper != null) {
             this.idleConnectionReaper.stop();
         }
-        getHttpClient().getConnectionManager().closeExpiredConnections();
-        getHttpClient().getConnectionManager().closeIdleConnections(
-                getStopIdleTimeout(), TimeUnit.MILLISECONDS);
-        getHttpClient().getConnectionManager().shutdown();
-        getLogger().info("Stopping the HTTP client");
+        if (getHttpClient() != null) {
+            getHttpClient().getConnectionManager().closeExpiredConnections();
+            getHttpClient().getConnectionManager().closeIdleConnections(
+                    getStopIdleTimeout(), TimeUnit.MILLISECONDS);
+            getHttpClient().getConnectionManager().shutdown();
+            getLogger().info("Stopping the HTTP client");
+        }
     }
 
 }
