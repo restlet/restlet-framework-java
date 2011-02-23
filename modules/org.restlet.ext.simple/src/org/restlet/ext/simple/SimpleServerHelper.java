@@ -35,8 +35,8 @@ import java.util.logging.Level;
 
 import org.restlet.Server;
 import org.restlet.engine.adapter.HttpServerHelper;
-import org.simpleframework.transport.connect.Connection;
 import org.simpleframework.http.core.ContainerServer;
+import org.simpleframework.transport.connect.Connection;
 
 /**
  * Abstract Simple Web server connector. Here is the list of parameters that are
@@ -201,13 +201,15 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
             getConnection().close();
         } catch (Exception e) {
             getLogger()
-                    .log(
-                            Level.FINE,
+                    .log(Level.FINE,
                             "Exception while closing the server socket. Can probably be safely ignored.",
                             e);
         }
 
-        getContainerServer().stop();
+        if (getContainerServer() != null) {
+            getContainerServer().stop();
+        }
+
     }
 
 }
