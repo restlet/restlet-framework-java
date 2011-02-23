@@ -45,34 +45,6 @@ import org.restlet.data.Parameter;
  */
 public class ChallengeRequestReader extends HeaderReader<ChallengeRequest> {
 
-    public static void main(String[] args) throws Exception {
-        String str = "Basic realm=\"Control Panel\"";
-        ChallengeRequestReader r = new ChallengeRequestReader(str);
-        ChallengeRequest c = r.readValue();
-        System.out.println(c.getScheme());
-        System.out.println(c.getRawValue());
-
-        str = "Digest realm=\"Control Panel\", domain=\"/controlPanel\", nonce=\"15bb54af506016d4414a025d4c84e34c\", algorithm=MD5, qop=\"auth,auth-int\"";
-        r = new ChallengeRequestReader(str);
-        c = r.readValue();
-        System.out.println(c.getScheme());
-        System.out.println(c.getRawValue());
-
-        str = "Negotiate";
-        r = new ChallengeRequestReader(str);
-        c = r.readValue();
-        System.out.println(c.getScheme());
-        System.out.println(c.getRawValue());
-
-        str = "Basic realm=\"Control Panel\",Digest realm=\"Control Panel\", domain=\"/controlPanel\", nonce=\"15bb54af506016d4414a025d4c84e34c\", algorithm=MD5, qop=\"auth,auth-int\"";
-        r = new ChallengeRequestReader(str);
-        System.out.println("list");
-        for (ChallengeRequest challengeRequest : r.readValues()) {
-            System.out.println(challengeRequest.getScheme());
-            System.out.println(challengeRequest.getRawValue());
-        }
-    }
-
     /**
      * Constructor.
      * 
