@@ -354,23 +354,11 @@ public class Buffer {
     public int fill(ReadableByteChannel sourceChannel) throws IOException {
         int result = 0;
 
-        if (canFill()) {
-            if (sourceChannel.isOpen()) {
-                result = sourceChannel.read(getBytes());
+        if (sourceChannel.isOpen()) {
+            result = sourceChannel.read(getBytes());
 
-                if (result > 0) {
-                    flip();
-
-                    if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
-                        Context.getCurrentLogger().finer(
-                                "Refilled buffer with " + result + " byte(s)");
-                    }
-                } else {
-                    if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
-                        Context.getCurrentLogger().finer(
-                                "Coudn't refill buffer : " + toString());
-                    }
-                }
+            if (result > 0) {
+                flip();
             }
         }
 
@@ -494,6 +482,12 @@ public class Buffer {
                             totalDrained += drained;
                             lastDrainFailed = false;
                             lastFillFailed = false;
+
+                            if (Context.getCurrentLogger().isLoggable(
+                                    Level.FINER)) {
+                                Context.getCurrentLogger().finer(
+                                        drained + " bytes drained from buffer");
+                            }
                         } else if (!lastFillFailed && couldFill()) {
                             // We may still be able to fill
                             lastDrainFailed = true;
@@ -513,6 +507,12 @@ public class Buffer {
                             totalFilled += filled;
                             lastDrainFailed = false;
                             lastFillFailed = false;
+
+                            if (Context.getCurrentLogger().isLoggable(
+                                    Level.FINER)) {
+                                Context.getCurrentLogger().finer(
+                                        filled + " bytes filled into buffer");
+                            }
                         } else if (!lastDrainFailed && couldDrain()) {
                             // We may still be able to drain
                             lastFillFailed = true;
