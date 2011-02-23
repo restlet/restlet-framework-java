@@ -164,7 +164,7 @@ public class NbChannelInputStream extends InputStream implements
      * @throws IOException
      */
     public int onFill(Buffer buffer, Object... args) throws IOException {
-        int result = getBuffer().fill(this.channel);
+        int result = buffer.fill(this.channel);
 
         if (result == 0) {
             // No bytes were read, try to register
@@ -201,7 +201,7 @@ public class NbChannelInputStream extends InputStream implements
                     this.selectionRegistration.block();
 
                     // Attempt to read more content
-                    result = getBuffer().fill(this.channel);
+                    result = buffer.fill(this.channel);
                 } catch (Exception e) {
                     Context.getCurrentLogger()
                             .log(Level.FINE,
@@ -224,7 +224,7 @@ public class NbChannelInputStream extends InputStream implements
                     NioUtils.release(selector, selectionKey);
                 }
 
-                result = getBuffer().fill(this.channel);
+                result = buffer.fill(this.channel);
             }
         }
 
