@@ -125,13 +125,7 @@ public abstract class InboundWay extends Way {
 
             if (inboundEntityChannel != null) {
                 result = new ReadableRepresentation(inboundEntityChannel, null,
-                        contentLength) {
-                    @Override
-                    public void release() {
-                        getConnection().close(false);
-                    }
-                };
-
+                        contentLength);
                 result.setSize(contentLength);
                 setMessageState(MessageState.BODY);
             }
@@ -146,76 +140,6 @@ public abstract class InboundWay extends Way {
                 getLogger().log(Level.WARNING,
                         "Error while parsing entity headers", t);
             }
-        }
-
-        return result;
-    }
-
-    @Override
-    public int onDrain(Buffer buffer, Object... args) throws IOException {
-        int result = 0;
-
-        // Bytes are available in the buffer
-        // attempt to parse the next message
-        boolean continueReading = true;
-        int beforeDrain = buffer.remaining();
-
-        while (continueReading && isLineReadable()) {
-            // Parse next ready lines
-            if (getMessageState() == MessageState.START) {
-                if (getLineBuilder().length() == 0) {
-                    // Silently eat empty lines used for keep alive purpose
-                    // sometimes (SIP)
-                    continueReading = false;
-                } else {
-                    if (getHelper().getLogger().isLoggable(Level.FINE)) {
-                        getHelper().getLogger().fine(
-                                "Reading message from "
-                                        + getConnection().getSocketAddress());
-                    }
-
-                    readStartLine();
-                }
-            } else if (getMessageState() == MessageState.HEADERS) {
-                Parameter header = readHeader();
-
-                if (header != null) {
-                    if (getHeaders() == null) {
-                        setHeaders(new Form());
-                    }
-
-                    getHeaders().add(header);
-                } else {
-                    // All headers received
-                    onReceived();
-                }
-            }
-        }
-
-        result = beforeDrain - buffer.remaining();
-
-        if (getLogger().isLoggable(Level.FINE)) {
-            getLogger().log(Level.FINE, result + " bytes read");
-        }
-
-        return result;
-    }
-
-    @Override
-    public int onFill(Buffer buffer, Object... args) throws IOException {
-        int result = getBuffer().fill(
-                getConnection().getReadableSelectionChannel());
-
-        if (result == 0) {
-            if (getIoState() == IoState.PROCESSING) {
-                // Socket channel exhausted
-                setIoState(IoState.INTEREST);
-            }
-        } else if (result == -1) {
-            // End of connection detected
-            getConnection().close(false);
-            setIoState(IoState.IDLE);
-            setMessageState(MessageState.IDLE);
         }
 
         return result;
@@ -287,9 +211,79 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
+    public int onDrain(Buffer buffer, Object... args) throws IOException {
+        int result = 0;
+
+        // Bytes are available in the buffer
+        // attempt to parse the next message
+        boolean continueReading = true;
+        int beforeDrain = buffer.remaining();
+
+        while (continueReading && isLineReadable()) {
+            // Parse next ready lines
+            if (getMessageState() == MessageState.START) {
+                if (getLineBuilder().length() == 0) {
+                    // Silently eat empty lines used for keep alive purpose
+                    // sometimes (SIP)
+                    continueReading = false;
+                } else {
+                    if (getHelper().getLogger().isLoggable(Level.FINE)) {
+                        getHelper().getLogger().fine(
+                                "Reading message from "
+                                        + getConnection().getSocketAddress());
+                    }
+
+                    readStartLine();
+                }
+            } else if (getMessageState() == MessageState.HEADERS) {
+                Parameter header = readHeader();
+
+                if (header != null) {
+                    if (getHeaders() == null) {
+                        setHeaders(new Form());
+                    }
+
+                    getHeaders().add(header);
+                } else {
+                    // All headers received
+                    onReceived();
+                }
+            }
+        }
+
+        result = beforeDrain - buffer.remaining();
+
+        if (getLogger().isLoggable(Level.FINE)) {
+            getLogger().log(Level.FINE, result + " bytes read");
+        }
+
+        return result;
+    }
+
+    @Override
     public void onError(Status status) {
         getHelper().onInboundError(status, getMessage());
         setMessage(null);
+    }
+
+    @Override
+    public int onFill(Buffer buffer, Object... args) throws IOException {
+        int result = getBuffer().fill(
+                getConnection().getReadableSelectionChannel());
+
+        if (result == 0) {
+            if (getIoState() == IoState.PROCESSING) {
+                // Socket channel exhausted
+                setIoState(IoState.INTEREST);
+            }
+        } else if (result == -1) {
+            // End of connection detected
+            getConnection().close(true);
+            setIoState(IoState.IDLE);
+            setMessageState(MessageState.IDLE);
+        }
+
+        return result;
     }
 
     /**
