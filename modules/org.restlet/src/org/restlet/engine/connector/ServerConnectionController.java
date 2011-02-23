@@ -149,10 +149,10 @@ public class ServerConnectionController extends ConnectionController {
         }
     }
 
-    /**
-     * Listens on the given server socket for incoming connections.
-     */
-    public void run() {
+    @Override
+    protected void doInit() {
+        super.doInit();
+        
         // Register interest in NIO accept events
         try {
             getHelper().getServerSocketChannel().register(getSelector(),
@@ -162,8 +162,7 @@ public class ServerConnectionController extends ConnectionController {
                     "Unexpected error while registering an NIO selection key",
                     ioe);
         }
-
+        
         this.latch.countDown();
-        super.run();
     }
 }

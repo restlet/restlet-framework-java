@@ -54,7 +54,7 @@ import org.restlet.util.SelectionRegistration;
 public class ConnectionController extends Controller implements Runnable {
 
     /** The NIO selector. */
-    private final Selector selector;
+    private volatile Selector selector;
 
     /** The list of new selection registrations. */
     private final Queue<SelectionRegistration> newRegistrations;
@@ -72,7 +72,6 @@ public class ConnectionController extends Controller implements Runnable {
         super(helper);
         this.newRegistrations = new ConcurrentLinkedQueue<SelectionRegistration>();
         this.updatedRegistrations = new ConcurrentLinkedQueue<SelectionRegistration>();
-        this.selector = createSelector();
     }
 
     /**
@@ -129,6 +128,7 @@ public class ConnectionController extends Controller implements Runnable {
 
     @Override
     protected void doInit() {
+        this.selector = createSelector();
         // Done in the controller for thread safety reason regarding the byte
         // buffers part of the pooled connections
         getHelper().createConnectionPool();
@@ -296,13 +296,6 @@ public class ConnectionController extends Controller implements Runnable {
             updatedRegistration.update();
             updatedRegistration = getUpdatedRegistrations().poll();
         }
-    }
-
-    /**
-     * Wakes up the controller. By default it wakes up the selector.
-     */
-    public void wakeup() {
-        getSelector().wakeup();
     }
 
 }

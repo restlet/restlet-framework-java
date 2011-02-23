@@ -185,9 +185,6 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
             if (!response.isCommitted() && response.isAutoCommitting()) {
                 response.setCommitted(true);
                 getOutboundMessages().add(response);
-
-                // Wake up the controller if it is sleeping
-                getController().wakeup();
             }
         }
     }
@@ -207,9 +204,6 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
                     // Put the response at the end of the queue
                     getOutboundMessages().add(response);
                 }
-
-                // Wake up the controller if it is sleeping
-                getController().wakeup();
             } else {
                 // The request expects no response, the connection is free to
                 // read a new request.

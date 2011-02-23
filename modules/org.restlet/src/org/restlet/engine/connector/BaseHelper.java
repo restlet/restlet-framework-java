@@ -734,6 +734,7 @@ public abstract class BaseHelper<T extends Connector> extends
 
     @Override
     public void start() throws Exception {
+        
         super.start();
         this.controllerService = createControllerService();
 

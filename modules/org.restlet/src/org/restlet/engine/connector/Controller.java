@@ -124,41 +124,48 @@ public abstract class Controller {
      * Listens on the given server socket for incoming connections.
      */
     public void run() {
-        doInit();
-        setRunning(true);
-        long sleepTime = getHelper().getControllerSleepTimeMs();
-        boolean hasWorkerThreads = getHelper().hasWorkerThreads();
-        boolean isWorkerServiceOverloaded;
+        try {
+            doInit();
+            setRunning(true);
+            long sleepTime = getHelper().getControllerSleepTimeMs();
+            boolean hasWorkerThreads = getHelper().hasWorkerThreads();
+            boolean isWorkerServiceOverloaded;
+            while (isRunning()) {
+                try {
+                    if (hasWorkerThreads) {
+                        isWorkerServiceOverloaded = getHelper()
+                                .isWorkerServiceOverloaded();
 
-        while (isRunning()) {
-            try {
-                if (hasWorkerThreads) {
-                    isWorkerServiceOverloaded = getHelper()
-                            .isWorkerServiceOverloaded();
-
-                    if (isOverloaded() && !isWorkerServiceOverloaded) {
-                        setOverloaded(false);
-                        getHelper()
-                                .getLogger()
-                                .info("Connector overload ended. Accepting new work again");
-                        getHelper().traceWorkerService();
-                    } else if (isWorkerServiceOverloaded) {
-                        setOverloaded(true);
-                        getHelper()
-                                .getLogger()
-                                .info("Connector overload detected. Stop accepting new work");
-                        getHelper().traceWorkerService();
+                        if (isOverloaded() && !isWorkerServiceOverloaded) {
+                            setOverloaded(false);
+                            getHelper()
+                                    .getLogger()
+                                    .info("Connector overload ended. Accepting new work again");
+                            getHelper().traceWorkerService();
+                        } else if (isWorkerServiceOverloaded) {
+                            setOverloaded(true);
+                            getHelper()
+                                    .getLogger()
+                                    .info("Connector overload detected. Stop accepting new work");
+                            getHelper().traceWorkerService();
+                        }
                     }
-                }
 
-                doRun(sleepTime);
-            } catch (Exception ex) {
-                this.helper.getLogger().log(Level.WARNING,
-                        "Unexpected error while controlling connector", ex);
+                    doRun(sleepTime);
+                } catch (Throwable ex) {
+                    this.helper.getLogger().log(Level.WARNING,
+                            "Unexpected error while controlling connector", ex);
+                    setRunning(false);
+                }
             }
+        } catch (Throwable e) {
+            this.helper.getLogger().log(Level.WARNING,
+                    "Unexpected error while controlling connector", e);
+            setRunning(false);
+        } finally {
+            doRelease();            
         }
 
-        doRelease();
     }
 
     /**
