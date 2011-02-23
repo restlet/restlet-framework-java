@@ -292,53 +292,44 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public int onFill(Buffer buffer, Object... args) throws IOException {
-        int beforeFill = buffer.remaining();
+        int remaining = buffer.remaining();
 
-        if (getMessageState() == MessageState.END) {
-            // Message fully written, ready for a new one
-            // onCompleted(false);
-        } else {
-            // Write the message or part of it in the byte
-            // buffer
-            if (getMessageState() == MessageState.BODY) {
-                int result = getBuffer().fill(getEntityChannel());
+        // Write the message or part of it in the byte
+        // buffer
+        if (getMessageState() == MessageState.BODY) {
+            int filled = buffer.fill(getEntityChannel());
 
-                // Detect end of entity reached
-                if (result == -1) {
-                    setMessageState(MessageState.END);
-                }
-            } else {
-                // Write the start line or the headers,
-                // relying on the line builder
-                if (getLineBuilder().length() == 0) {
-                    // A new line can be written in the builder
-                    writeLine();
-                }
+            // Detect end of entity reached
+            if (filled == -1) {
+                setMessageState(MessageState.END);
+            }
+        } else if (getMessageState() != MessageState.END) {
+            // Write the start line or the headers,
+            // relying on the line builder
+            if (getLineBuilder().length() == 0) {
+                // A new line can be written in the builder
+                writeLine();
+            }
 
-                if (getLineBuilder().length() > 0) {
-                    // We can fill the byte buffer with the
-                    // remaining line builder
-                    int remaining = getBuffer().remaining();
-
-                    if (remaining >= getLineBuilder().length()) {
-                        // Put the whole builder line in the buffer
-                        getBuffer().fill(
-                                StringUtils.getLatin1Bytes(getLineBuilder()
-                                        .toString()));
-                        clearLineBuilder();
-                    } else {
-                        // Put the maximum number of characters
-                        // into the byte buffer
-                        getBuffer().fill(
-                                StringUtils.getLatin1Bytes(getLineBuilder()
-                                        .substring(0, remaining)));
-                        getLineBuilder().delete(0, remaining);
-                    }
+            if (getLineBuilder().length() > 0) {
+                // We can fill the byte buffer with the
+                // remaining line builder
+                if (remaining >= getLineBuilder().length()) {
+                    // Put the whole builder line in the buffer
+                    buffer.fill(StringUtils.getLatin1Bytes(getLineBuilder()
+                            .toString()));
+                    clearLineBuilder();
+                } else {
+                    // Put the maximum number of characters
+                    // into the byte buffer
+                    buffer.fill(StringUtils.getLatin1Bytes(getLineBuilder()
+                            .substring(0, remaining)));
+                    getLineBuilder().delete(0, remaining);
                 }
             }
         }
 
-        return beforeFill - buffer.remaining();
+        return remaining - buffer.remaining();
     }
 
     @Override
