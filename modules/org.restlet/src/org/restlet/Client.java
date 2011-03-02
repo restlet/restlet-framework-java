@@ -99,7 +99,7 @@ public class Client extends Connector {
             this.helper = null;
         }
 
-        if (context != null) {
+        if (context != null && this.helper != null) {
             context.getAttributes().put("org.restlet.engine.helper",
                     this.helper);
         }
