@@ -235,7 +235,7 @@ public class SipClientOutboundWay extends ClientOutboundWay {
 
     @Override
     public boolean isEmpty() {
-        return (getMessage() == null);
+        return super.isEmpty() && (getMessage() == null);
     }
 
 }

@@ -181,7 +181,7 @@ public class SipServerOutboundWay extends ServerOutboundWay {
 
     @Override
     public boolean isEmpty() {
-        return (getMessage() == null);
+        return super.isEmpty() && (getMessage() == null);
     }
 
     @Override

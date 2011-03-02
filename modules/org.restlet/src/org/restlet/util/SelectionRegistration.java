@@ -178,6 +178,18 @@ public class SelectionRegistration {
     }
 
     /**
+     * Clears the registration.
+     */
+    public void clear() {
+        this.barrier.reset();
+        this.canceling = false;
+        this.interestOperations = 0;
+        this.previousInterest = 0;
+        this.readyOperations = 0;
+        this.selectionKey = null;
+    }
+
+    /**
      * Returns the IO operations interest.
      * 
      * @return The IO operations interest.
@@ -464,4 +476,5 @@ public class SelectionRegistration {
 
         return this.selectionKey;
     }
+
 }

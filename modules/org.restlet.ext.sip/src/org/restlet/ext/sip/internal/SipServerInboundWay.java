@@ -63,7 +63,7 @@ public class SipServerInboundWay extends ServerInboundWay {
 
     @Override
     public boolean isEmpty() {
-        return (getMessage() == null);
+        return super.isEmpty() && (getMessage() == null);
     }
 
 }

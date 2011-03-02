@@ -91,7 +91,7 @@ public class HttpServerInboundWay extends ServerInboundWay {
 
     @Override
     public boolean isEmpty() {
-        return getMessages().isEmpty();
+        return super.isEmpty() && getMessages().isEmpty();
     }
 
     @Override
