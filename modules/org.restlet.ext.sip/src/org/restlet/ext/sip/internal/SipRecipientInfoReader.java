@@ -35,7 +35,9 @@ import java.util.Collection;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.data.RecipientInfo;
 import org.restlet.engine.header.HeaderReader;
+import org.restlet.engine.header.RecipientInfoReader;
 import org.restlet.ext.sip.SipRecipientInfo;
 
 /**
@@ -44,7 +46,7 @@ import org.restlet.ext.sip.SipRecipientInfo;
  * @author Thierry Boileau
  */
 public class SipRecipientInfoReader extends HeaderReader<SipRecipientInfo> {
-
+    
     /**
      * Adds values to the given collection.
      * 
@@ -135,7 +137,8 @@ public class SipRecipientInfoReader extends HeaderReader<SipRecipientInfo> {
                 } else {
                     sb.append(readToken());
                 }
-                if (read() == ':') {
+                if (peek() == ':') {
+                    read();
                     sb.append(":");
                     sb.append(readToken());
                 }
