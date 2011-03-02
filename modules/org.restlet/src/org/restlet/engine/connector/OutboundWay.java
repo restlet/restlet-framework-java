@@ -245,7 +245,7 @@ public abstract class OutboundWay extends Way {
     @Override
     public void onCompleted(boolean endReached) {
         if (getLogger().isLoggable(Level.FINER)) {
-            getLogger().finer("Outbound message fully sent");
+            getLogger().finer("Outbound message completed");
         }
 
         setHeaderIndex(0);
@@ -333,11 +333,12 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
-    public void processIoBuffer() throws IOException {
+    public int processIoBuffer() throws IOException {
+        int result = 0;
         Response message = getMessage();
 
         if (message != null) {
-            super.processIoBuffer();
+            result = super.processIoBuffer();
 
             if (getMessageState() == MessageState.END) {
                 // Message fully written, ready for a new one
@@ -347,6 +348,8 @@ public abstract class OutboundWay extends Way {
                 updateState();
             }
         }
+
+        return result;
     }
 
     /**

@@ -204,7 +204,7 @@ public abstract class InboundWay extends Way {
     @Override
     public void onCompleted(boolean endDetected) {
         if (getLogger().isLoggable(Level.FINER)) {
-            getLogger().finer("Inbound message fully received");
+            getLogger().finer("Inbound message completed");
         }
 
         super.onCompleted(endDetected);
@@ -277,10 +277,8 @@ public abstract class InboundWay extends Way {
                 setIoState(IoState.INTEREST);
             }
         } else if (result == -1) {
-            // End of connection detected
+            // End of channel detected
             getConnection().close(true);
-            setIoState(IoState.IDLE);
-            setMessageState(MessageState.IDLE);
         }
 
         return result;
@@ -307,7 +305,9 @@ public abstract class InboundWay extends Way {
     protected abstract void onReceived(Response message);
 
     @Override
-    public void processIoBuffer() throws IOException {
+    public int processIoBuffer() throws IOException {
+        int result = 0;
+
         if ((getMessageState() == MessageState.BODY)
                 && (getEntityRegistration() != null)) {
             if (getLogger().isLoggable(Level.FINER)) {
@@ -320,8 +320,10 @@ public abstract class InboundWay extends Way {
             getEntityRegistration().onSelected(
                     getRegistration().getReadyOperations());
         } else {
-            super.processIoBuffer();
+            result = super.processIoBuffer();
         }
+        
+        return result;
     }
 
     /**

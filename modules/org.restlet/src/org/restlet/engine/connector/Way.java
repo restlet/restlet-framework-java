@@ -94,13 +94,22 @@ public abstract class Way implements SelectionListener, CompletionListener,
     public Way(Connection<?> connection, int bufferSize) {
         this.connection = connection;
         this.buffer = new Buffer(bufferSize, getHelper().isDirectBuffers());
+        this.headers = null;
+        this.ioState = IoState.IDLE;
         this.lineBuilder = new StringBuilder();
         this.lineBuilderState = BufferState.IDLE;
         this.message = null;
-        this.headers = null;
         this.messageState = MessageState.IDLE;
-        this.ioState = IoState.IDLE;
         this.registration = new SelectionRegistration(0, this);
+    }
+
+    /**
+     * Indicates if the processing loop can continue.
+     * 
+     * @return True if the processing loop can continue.
+     */
+    public boolean canLoop() {
+        return isSelected();
     }
 
     /**
@@ -114,6 +123,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
         clearLineBuilder();
         this.message = null;
         this.messageState = MessageState.IDLE;
+        this.registration.clear();
     }
 
     /**
@@ -122,15 +132,6 @@ public abstract class Way implements SelectionListener, CompletionListener,
     protected void clearLineBuilder() {
         getLineBuilder().delete(0, getLineBuilder().length());
         setLineBuilderState(BufferState.IDLE);
-    }
-
-    /**
-     * Indicates if the processing loop can continue.
-     * 
-     * @return True if the processing loop can continue.
-     */
-    public boolean canLoop() {
-        return isSelected();
     }
 
     /**
@@ -272,7 +273,9 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * 
      * @return True if the way is empty.
      */
-    public abstract boolean isEmpty();
+    public boolean isEmpty() {
+        return !getBuffer().hasRemaining();
+    }
 
     /**
      * Indicates if the way is ready to handle new messages.
@@ -293,6 +296,17 @@ public abstract class Way implements SelectionListener, CompletionListener,
         return (getConnection().getState() != ConnectionState.CLOSED)
                 && (getIoState() == IoState.PROCESSING)
                 && (getMessageState() != MessageState.IDLE);
+    }
+
+    /**
+     * Callback method invoked when the parent connection is ready to be closed.
+     */
+    public void onClosed() {
+        setIoState(IoState.IDLE);
+        setMessageState(MessageState.IDLE);
+        setMessage(null);
+        setHeaders(null);
+        getBuffer().clear();
     }
 
     /**
@@ -362,8 +376,17 @@ public abstract class Way implements SelectionListener, CompletionListener,
                 setIoState(IoState.CANCELLED);
             }
 
+            getLogger().log(Level.FINE,
+                    "Way selected. Processing IO for : " + this);
+
             // IO processing
-            processIoBuffer();
+            int drained = processIoBuffer();
+
+            if ((drained == -1)
+                    && (getConnection().getState() == ConnectionState.CLOSING)) {
+                // No hope to drain more bytes, complete the closing
+                getBuffer().clear();
+            }
         } catch (Exception e) {
             getLogger()
                     .log(Level.FINE,
@@ -381,8 +404,8 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * 
      * @throws IOException
      */
-    protected void processIoBuffer() throws IOException {
-        getBuffer().process(this);
+    protected int processIoBuffer() throws IOException {
+        return getBuffer().process(this);
     }
 
     /**
