@@ -141,13 +141,13 @@ public class Connection<T extends Connector> implements SelectionListener {
      * connection pool.
      */
     public void clear() {
+        this.inboundWay.clear();
+        this.outboundWay.clear();
         this.readableSelectionChannel = null;
         this.socketChannel = null;
         this.registration = null;
-        this.state = null;
+        this.state = ConnectionState.CLOSED;
         this.writableSelectionChannel = null;
-        this.inboundWay.clear();
-        this.outboundWay.clear();
     }
 
     /**
@@ -177,6 +177,7 @@ public class Connection<T extends Connector> implements SelectionListener {
 
             try {
                 Socket socket = getSocket();
+
                 if ((socket != null) && !socket.isClosed()) {
                     if (!(socket instanceof SSLSocket)) {
                         socket.shutdownInput();
@@ -186,8 +187,6 @@ public class Connection<T extends Connector> implements SelectionListener {
             } catch (IOException ex) {
                 getLogger().log(Level.FINE,
                         "Unable to properly shutdown socket", ex);
-            } finally {
-                setState(ConnectionState.CLOSED);
             }
 
             try {
@@ -199,6 +198,8 @@ public class Connection<T extends Connector> implements SelectionListener {
                 getLogger().log(Level.FINE, "Unable to properly close socket",
                         ex);
             } finally {
+                getInboundWay().onClosed();
+                getInboundWay().onClosed();
                 setState(ConnectionState.CLOSED);
             }
         }
@@ -612,13 +613,20 @@ public class Connection<T extends Connector> implements SelectionListener {
             getLogger().finer(
                     trace + "connection (state | inbound | outbound): "
                             + toString());
-            getLogger().finer(
-                    trace + "NIO selection (interest | ready | cancelled): "
-                            + registration.toString());
+
+            if (this.registration != null) {
+                getLogger()
+                        .finer(trace
+                                + "NIO selection (interest | ready | cancelled): "
+                                + this.registration.toString());
+            }
         }
 
         try {
-            if ((registration == null) || registration.isReadable()) {
+            if (registration == null) {
+                getLogger().warning(
+                        "Connection with no registration selected: " + this);
+            } else if (registration.isReadable()) {
                 synchronized (getInboundWay().getBuffer().getLock()) {
                     getInboundWay().getRegistration().onSelected(
                             registration.getReadyOperations());
@@ -737,7 +745,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * Updates the connection states.
      */
     public boolean updateState() {
-        boolean result = false;
+        boolean result = true;
 
         if (getState() != ConnectionState.CLOSED) {
             getInboundWay().updateState();
