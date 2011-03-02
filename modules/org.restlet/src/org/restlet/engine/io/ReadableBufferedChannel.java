@@ -43,7 +43,7 @@ import org.restlet.util.SelectionRegistration;
  */
 public class ReadableBufferedChannel extends
         WrapperSelectionChannel<ReadableSelectionChannel> implements
-        ReadableSelectionChannel, BufferProcessor {
+        ReadableSelectionChannel, BufferProcessor, CompletionListener {
 
     /** The source IO buffer. */
     private final Buffer buffer;

@@ -745,7 +745,8 @@ public class Connection<T extends Connector> implements SelectionListener {
 
     @Override
     public String toString() {
-        return getState() + " | " + getInboundWay() + " | " + getOutboundWay();
+        return getState() + " | " + getInboundWay() + " | " + getOutboundWay()
+                + " | " + isEmpty();
     }
 
     /**

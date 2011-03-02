@@ -47,6 +47,9 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
     /** The total available size that should be read from the source channel. */
     private volatile long availableSize;
 
+    /** Indicates if the end of the wrapped channel has been reached. */
+    private volatile boolean endReached;
+
     /**
      * Constructor.
      * 
@@ -59,6 +62,7 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
     public ReadableSizedChannel(ReadableByteChannel source, long availableSize) {
         super(source);
         this.availableSize = availableSize;
+        this.endReached = false;
     }
 
     /**
@@ -72,15 +76,13 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
      */
     public int read(ByteBuffer dst) throws IOException {
         int result = -1;
-        int wrappedRead = 0;
 
         if (this.availableSize > 0) {
             if (this.availableSize < dst.remaining()) {
                 dst.limit((int) (this.availableSize + dst.position()));
             }
 
-            wrappedRead = getWrappedChannel().read(dst);
-            result = wrappedRead;
+            result = getWrappedChannel().read(dst);
         }
 
         if (result > 0) {
@@ -97,12 +99,14 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
                     Context.getCurrentLogger().finer("Channel fully read.");
                 }
             }
+        } else if (result == -1) {
+            this.endReached = true;
         }
 
         if ((result == -1)
                 && (getWrappedChannel() instanceof CompletionListener)) {
             ((CompletionListener) getWrappedChannel())
-                    .onCompleted((wrappedRead == -1));
+                    .onCompleted(this.endReached);
         }
 
         return result;

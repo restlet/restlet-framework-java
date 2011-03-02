@@ -420,6 +420,16 @@ public class Buffer {
     }
 
     /**
+     * Indicates if the buffer is empty in either filling or draining state.
+     * 
+     * 
+     * @return True if the buffer is empty.
+     */
+    public boolean isEmpty() {
+        return isFilling() ? (capacity() == remaining()) : !hasRemaining();
+    }
+
+    /**
      * Indicates if the buffer state has the {@link BufferState#DRAINING} value.
      * 
      * @return True if the buffer state has the {@link BufferState#DRAINING}
@@ -564,7 +574,7 @@ public class Buffer {
 
     @Override
     public String toString() {
-        return getBytes().toString() + " | " + getState();
+        return getBytes().toString() + " | " + getState() + " | " + isEmpty();
     }
 
 }
