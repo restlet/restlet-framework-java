@@ -132,6 +132,7 @@ public class NbChannelInputStream extends InputStream implements
      *            The IO buffer to drain.
      * @param args
      *            The optional arguments to pass back to the callbacks.
+     * @return The number of bytes drained.
      * @throws IOException
      */
     public int onDrain(Buffer buffer, Object... args) throws IOException {
@@ -139,8 +140,8 @@ public class NbChannelInputStream extends InputStream implements
 
         if (args.length == 1) {
             // Let's return the next one
-            result = getBuffer().drain();
-            args[0] = result;
+            args[0] = getBuffer().drain();
+            result = 1;
         } else if (args.length == 3) {
             byte[] targetArray = (byte[]) args[0];
             int offset = ((Integer) args[1]).intValue();
