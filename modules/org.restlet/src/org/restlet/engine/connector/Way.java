@@ -376,8 +376,10 @@ public abstract class Way implements SelectionListener, CompletionListener,
                 setIoState(IoState.CANCELLED);
             }
 
-            getLogger().log(Level.FINE,
-                    "Way selected. Processing IO for : " + this);
+            if (getLogger().isLoggable(Level.FINER)) {
+                getLogger().log(Level.FINER,
+                        "Way selected. Processing IO for : " + this);
+            }
 
             // IO processing
             int drained = processIoBuffer();

@@ -464,6 +464,7 @@ public class Buffer {
                 int filled = 0;
                 boolean lastDrainFailed = false;
                 boolean lastFillFailed = false;
+                boolean fillEnded = false;
 
                 while (tryAgain && processor.canLoop()) {
                     if (isDraining()) {
@@ -484,18 +485,15 @@ public class Buffer {
                                 Context.getCurrentLogger().finer(
                                         drained + " bytes drained from buffer");
                             }
-                        } else if (drained == -1) {
-                            if (result == 0) {
-                                result = -1;
+                        } else {
+                            if (!lastFillFailed && couldFill()) {
+                                // We may still be able to fill
+                                beforeFill();
+                            } else {
+                                tryAgain = false;
                             }
 
-                            tryAgain = false;
-                        } else if (!lastFillFailed && couldFill()) {
-                            // We may still be able to fill
                             lastDrainFailed = true;
-                            beforeFill();
-                        } else {
-                            tryAgain = false;
                         }
                     } else if (isFilling()) {
                         filled = 0;
@@ -515,18 +513,16 @@ public class Buffer {
                                 Context.getCurrentLogger().finer(
                                         filled + " bytes filled into buffer");
                             }
-                        } else if (filled == -1) {
-                            if (result == 0) {
-                                result = -1;
+                        } else {
+                            if (!lastDrainFailed && couldDrain()) {
+                                // We may still be able to drain
+                                beforeDrain();
+                            } else {
+                                tryAgain = false;
                             }
 
-                            tryAgain = false;
-                        } else if (!lastDrainFailed && couldDrain()) {
-                            // We may still be able to drain
+                            fillEnded = (filled == -1);
                             lastFillFailed = true;
-                            beforeDrain();
-                        } else {
-                            tryAgain = false;
                         }
                     } else {
                         // Can't drain nor fill
@@ -534,7 +530,7 @@ public class Buffer {
                     }
                 }
 
-                if ((result == 0) && !processor.couldFill()) {
+                if ((result == 0) && (!processor.couldFill() || fillEnded)) {
                     // Nothing was drained and no hope to fill again
                     result = -1;
                 }

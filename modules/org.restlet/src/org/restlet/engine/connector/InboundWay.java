@@ -322,7 +322,7 @@ public abstract class InboundWay extends Way {
         } else {
             result = super.processIoBuffer();
         }
-        
+
         return result;
     }
 

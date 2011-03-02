@@ -264,8 +264,8 @@ public class ReadableChunkedChannel extends
         }
 
         if ((result == -1)
-                && (getWrappedChannel() instanceof ReadableBufferedChannel)) {
-            ((ReadableBufferedChannel) getWrappedChannel()).onCompleted(false);
+                && (getWrappedChannel() instanceof CompletionListener)) {
+            ((CompletionListener) getWrappedChannel()).onCompleted(false);
         }
 
         return result;

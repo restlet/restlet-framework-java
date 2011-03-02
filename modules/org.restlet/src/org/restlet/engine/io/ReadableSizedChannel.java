@@ -100,8 +100,8 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
         }
 
         if ((result == -1)
-                && (getWrappedChannel() instanceof ReadableBufferedChannel)) {
-            ((ReadableBufferedChannel) getWrappedChannel())
+                && (getWrappedChannel() instanceof CompletionListener)) {
+            ((CompletionListener) getWrappedChannel())
                     .onCompleted((wrappedRead == -1));
         }
 

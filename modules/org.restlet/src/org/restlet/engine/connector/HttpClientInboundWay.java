@@ -115,6 +115,15 @@ public class HttpClientInboundWay extends ClientInboundWay {
     }
 
     @Override
+    public void onCompleted(boolean endDetected) {
+        if (getMessage() != null) {
+            getMessages().remove(getMessage());
+        }
+
+        super.onCompleted(endDetected);
+    }
+
+    @Override
     public void updateState() {
         if (getIoState() == IoState.IDLE) {
             if (!isEmpty()) {
