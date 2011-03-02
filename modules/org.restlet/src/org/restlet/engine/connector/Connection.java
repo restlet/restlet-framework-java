@@ -159,18 +159,18 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public void close(boolean graceful) {
         if (graceful) {
-            if (getLogger().isLoggable(Level.FINE)) {
+            if (getLogger().isLoggable(Level.FINER)) {
                 getLogger().log(
-                        Level.FINE,
+                        Level.FINER,
                         "Closing connection to " + getSocketAddress()
                                 + " gracefully");
             }
 
             setState(ConnectionState.CLOSING);
         } else {
-            if (getLogger().isLoggable(Level.FINE)) {
+            if (getLogger().isLoggable(Level.FINER)) {
                 getLogger().log(
-                        Level.FINE,
+                        Level.FINER,
                         "Closing connection to " + getSocketAddress()
                                 + " immediately");
             }
@@ -201,6 +201,13 @@ public class Connection<T extends Connector> implements SelectionListener {
                 getInboundWay().onClosed();
                 getInboundWay().onClosed();
                 setState(ConnectionState.CLOSED);
+
+                if (getLogger().isLoggable(Level.FINE)) {
+                    getLogger().log(
+                            Level.FINE,
+                            "Connection to " + getSocketAddress()
+                                    + " is now closed");
+                }
             }
         }
     }

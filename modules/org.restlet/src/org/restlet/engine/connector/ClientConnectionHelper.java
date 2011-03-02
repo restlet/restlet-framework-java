@@ -538,10 +538,13 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                                         + socketAddress);
             } else {
                 // Create a new connection
-                getLogger()
-                        .log(Level.FINE,
-                                "Creating a new client connection to: "
-                                        + socketAddress);
+                if (getLogger().isLoggable(Level.FINE)) {
+                    getLogger().log(
+                            Level.FINE,
+                            "Creating a new client connection to: "
+                                    + socketAddress);
+                }
+
                 result = checkout(
                         createSocketChannel(request.isConfidential(),
                                 socketAddress), getController(), socketAddress);
