@@ -83,9 +83,6 @@ public class ConnectionController extends Controller implements Runnable {
         // Close connections or register interest in NIO operations
         for (Connection<?> conn : getHelper().getConnections()) {
             if (conn.getState() == ConnectionState.CLOSED) {
-                // Make sure that the registration is removed from the selector
-                getUpdatedRegistrations().add(conn.getRegistration());
-
                 // Detach the connection and collect it
                 getHelper().getConnections().remove(conn);
                 getHelper().checkin(conn);
