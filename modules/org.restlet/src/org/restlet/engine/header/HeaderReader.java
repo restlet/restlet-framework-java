@@ -305,7 +305,7 @@ public class HeaderReader<V> {
     }
 
     /**
-     * Reads the next character.
+     * Reads the next character without moving the reader index.
      * 
      * @return The next character.
      */
