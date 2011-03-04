@@ -43,16 +43,24 @@ public interface BufferProcessor {
     /**
      * Indicates if the processing loop can continue.
      * 
+     * @param buffer
+     *            The IO buffer to drain.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
      * @return True if the processing loop can continue.
      */
-    public boolean canLoop();
+    public boolean canLoop(Buffer buffer, Object... args);
 
     /**
      * Indicates if the buffer could be filled again.
      * 
+     * @param buffer
+     *            The IO buffer to drain.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
      * @return True if the buffer could be filled again.
      */
-    public boolean couldFill();
+    public boolean couldFill(Buffer buffer, Object... args);
 
     /**
      * Drains the byte buffer.

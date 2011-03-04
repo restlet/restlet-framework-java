@@ -74,10 +74,14 @@ public class ReadableChunkedChannel extends
     /**
      * Indicates if the processing loop can continue.
      * 
+     * @param buffer
+     *            The IO buffer to drain.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
      * @return True if the processing loop can continue.
      */
-    public boolean canLoop() {
-        return getWrappedChannel().canLoop();
+    public boolean canLoop(Buffer buffer, Object... args) {
+        return getWrappedChannel().canLoop(buffer, args);
     }
 
     /**
@@ -91,10 +95,14 @@ public class ReadableChunkedChannel extends
     /**
      * Indicates if the buffer could be filled again.
      * 
+     * @param buffer
+     *            The IO buffer to drain.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
      * @return True if the buffer could be filled again.
      */
-    public boolean couldFill() {
-        return getWrappedChannel().couldFill();
+    public boolean couldFill(Buffer buffer, Object... args) {
+        return getWrappedChannel().couldFill(buffer, args);
     }
 
     /**

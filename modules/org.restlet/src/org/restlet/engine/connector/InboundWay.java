@@ -271,12 +271,7 @@ public abstract class InboundWay extends Way {
         int result = getBuffer().fill(
                 getConnection().getReadableSelectionChannel());
 
-        if (result == 0) {
-            if (getIoState() == IoState.PROCESSING) {
-                // Socket channel exhausted
-                setIoState(IoState.INTEREST);
-            }
-        } else if (result == -1) {
+        if (result == -1) {
             // End of channel detected
             getConnection().close(true);
         }

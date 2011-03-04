@@ -106,9 +106,13 @@ public abstract class Way implements SelectionListener, CompletionListener,
     /**
      * Indicates if the processing loop can continue.
      * 
+     * @param buffer
+     *            The IO buffer to drain.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
      * @return True if the processing loop can continue.
      */
-    public boolean canLoop() {
+    public boolean canLoop(Buffer buffer, Object... args) {
         return isSelected();
     }
 
@@ -137,9 +141,13 @@ public abstract class Way implements SelectionListener, CompletionListener,
     /**
      * Indicates if the buffer could be filled again.
      * 
+     * @param buffer
+     *            The IO buffer to drain.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
      * @return True if the buffer could be filled again.
      */
-    public boolean couldFill() {
+    public boolean couldFill(Buffer buffer, Object... args) {
         return getConnection().getState() != ConnectionState.CLOSED;
     }
 
@@ -388,7 +396,11 @@ public abstract class Way implements SelectionListener, CompletionListener,
                     && (getConnection().getState() == ConnectionState.CLOSING)) {
                 // No hope to drain more bytes, complete the closing
                 getBuffer().clear();
+            } else if (getIoState() == IoState.PROCESSING) {
+                // Socket channel exhausted
+                setIoState(IoState.INTEREST);
             }
+
         } catch (Exception e) {
             getLogger()
                     .log(Level.FINE,

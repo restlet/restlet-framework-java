@@ -468,7 +468,7 @@ public class Buffer {
         int totalFilled = 0;
 
         synchronized (getLock()) {
-            if (processor.couldFill()) {
+            if (processor.couldFill(this, args)) {
                 boolean tryAgain = true;
                 int drained = 0;
                 int filled = 0;
@@ -476,7 +476,7 @@ public class Buffer {
                 boolean lastFillFailed = false;
                 boolean fillEnded = false;
 
-                while (tryAgain && processor.canLoop()) {
+                while (tryAgain && processor.canLoop(this, args)) {
                     if (isDraining()) {
                         drained = 0;
 
@@ -540,7 +540,8 @@ public class Buffer {
                     }
                 }
 
-                if ((result == 0) && (!processor.couldFill() || fillEnded)) {
+                if ((result == 0)
+                        && (!processor.couldFill(this, args) || fillEnded)) {
                     // Nothing was drained and no hope to fill again
                     result = -1;
                 }

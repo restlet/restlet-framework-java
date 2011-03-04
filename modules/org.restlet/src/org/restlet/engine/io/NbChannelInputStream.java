@@ -100,10 +100,22 @@ public class NbChannelInputStream extends InputStream implements
     /**
      * Indicates if the processing loop can continue.
      * 
+     * @param buffer
+     *            The IO buffer to drain.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
      * @return True if the processing loop can continue.
      */
-    public boolean canLoop() {
-        return true;
+    public boolean canLoop(Buffer buffer, Object... args) {
+        boolean result = true;
+
+        if (args.length == 1) {
+            result = (args[0] == null);
+        } else if (args.length == 3) {
+            result = true;
+        }
+
+        return result;
     }
 
     /**
@@ -111,7 +123,7 @@ public class NbChannelInputStream extends InputStream implements
      * 
      * @return True if the buffer could be filled again.
      */
-    public boolean couldFill() {
+    public boolean couldFill(Buffer buffer, Object... args) {
         return !this.endReached;
     }
 
@@ -253,7 +265,8 @@ public class NbChannelInputStream extends InputStream implements
             result = ((Integer) args[0]).intValue();
         } else {
             Context.getCurrentLogger().warning(
-                    "Too much bytes drained. Only one byte was needed.");
+                    "Only one byte was needed but " + bytesDrained
+                            + " were drained.");
         }
 
         return result;
