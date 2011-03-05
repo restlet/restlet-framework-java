@@ -254,6 +254,11 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public void updateState() {
+        if ((getMessageState() == MessageState.IDLE) && (getMessage() != null)) {
+            setMessageState(MessageState.START);
+            setIoState(IoState.INTEREST);
+        }
+
         if (getBuffer().canDrain()) {
             setIoState(IoState.INTEREST);
         }

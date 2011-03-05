@@ -36,7 +36,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Status;
-import org.restlet.engine.io.IoState;
 
 /**
  * HTTP client outbound way.
@@ -128,10 +127,8 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
     @Override
     public void updateState() {
         // Update the IO state if necessary
-        if ((getIoState() == IoState.IDLE) && !getMessages().isEmpty()
-                && (getMessage() == null)) {
+        if (!getMessages().isEmpty() && (getMessage() == null)) {
             setMessage(getMessages().peek());
-            setIoState(IoState.INTEREST);
         }
 
         super.updateState();
