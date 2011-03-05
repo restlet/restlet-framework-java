@@ -113,7 +113,8 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * @return True if the processing loop can continue.
      */
     public boolean canLoop(Buffer buffer, Object... args) {
-        return isSelected();
+        return (getConnection().getState() != ConnectionState.CLOSED)
+                && (getIoState() == IoState.PROCESSING);
     }
 
     /**
@@ -293,17 +294,6 @@ public abstract class Way implements SelectionListener, CompletionListener,
      */
     public boolean isEmpty() {
         return getBuffer().isEmpty();
-    }
-
-    /**
-     * Indicates if the processing of the next message is possible.
-     * 
-     * @return True if the processing of the next message is possible.
-     */
-    protected boolean isSelected() {
-        return (getConnection().getState() != ConnectionState.CLOSED)
-                && (getIoState() == IoState.PROCESSING)
-                && (getMessageState() != MessageState.IDLE);
     }
 
     /**

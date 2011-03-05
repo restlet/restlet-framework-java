@@ -193,12 +193,9 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected boolean isLineReadable() throws IOException {
-        return isSelected() && getBuffer().canDrain() && fillLine();
-    }
-
-    @Override
-    protected boolean isSelected() {
-        return super.isSelected() && (getMessageState() != MessageState.BODY);
+        return getBuffer().canDrain()
+                && (getMessageState() != MessageState.IDLE)
+                && (getMessageState() != MessageState.BODY) && fillLine();
     }
 
     @Override
