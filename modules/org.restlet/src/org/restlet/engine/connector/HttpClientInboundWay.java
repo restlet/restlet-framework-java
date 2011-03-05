@@ -102,6 +102,26 @@ public class HttpClientInboundWay extends ClientInboundWay {
         return super.isEmpty() && getMessages().isEmpty();
     }
 
+    /**
+     * Indicates if the {@link IoState#READY} state can be granted.
+     * 
+     * @return True if the {@link IoState#READY} state can be granted.
+     */
+    protected boolean isReady() {
+        return getBuffer().canDrain()
+                && ((getMessageState() == MessageState.BODY) && (getEntityRegistration()
+                        .getListener() != null));
+    }
+
+    @Override
+    public void onCompleted(boolean endDetected) {
+        if (getMessage() != null) {
+            getMessages().remove(getMessage());
+        }
+
+        super.onCompleted(endDetected);
+    }
+
     @Override
     public void onError(Status status) {
         for (Response rsp : getMessages()) {
@@ -115,21 +135,10 @@ public class HttpClientInboundWay extends ClientInboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) {
-        if (getMessage() != null) {
-            getMessages().remove(getMessage());
-        }
-
-        super.onCompleted(endDetected);
-    }
-
-    @Override
     public void updateState() {
-        if (getIoState() == IoState.IDLE) {
-            if (!isEmpty()) {
-                // Read the next response
-                setIoState(IoState.INTEREST);
-            }
+        if ((getIoState() == IoState.IDLE) && !isEmpty()) {
+            // Read the next response
+            setIoState(IoState.INTEREST);
         }
 
         // Update the registration

@@ -244,12 +244,21 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public void onCompleted(boolean endReached) {
+        super.onCompleted(endReached);
+        setHeaderIndex(0);
+
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Outbound message completed");
         }
+    }
 
-        setHeaderIndex(0);
-        super.onCompleted(endReached);
+    @Override
+    public void updateState() {
+        if (getBuffer().canDrain()) {
+            setIoState(IoState.INTEREST);
+        }
+
+        super.updateState();
     }
 
     @Override
@@ -277,9 +286,6 @@ public abstract class OutboundWay extends Way {
                 // wait for a new NIO selection.
                 setIoState(IoState.INTEREST);
             }
-            // } else if (getMessageState() == MessageState.END) {
-            // // Message fully written, ready for a new one
-            // onCompleted(false);
         }
 
         return result;
@@ -336,11 +342,9 @@ public abstract class OutboundWay extends Way {
     @Override
     public int processIoBuffer() throws IOException {
         int result = 0;
-        Response message = getMessage();
+        result = super.processIoBuffer();
 
-        if (message != null) {
-            result = super.processIoBuffer();
-
+        if (getMessage() != null) {
             if (getMessageState() == MessageState.END) {
                 // Message fully written, ready for a new one
                 onCompleted(false);

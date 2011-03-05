@@ -497,7 +497,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                 Connection<Client> currConn = iterator.next();
 
                 if (socketAddress.equals(currConn.getSocketAddress())) {
-                    if (currConn.isReady()) {
+                    if (currConn.isAvailable()) {
                         result = currConn;
                         foundConn = true;
                     } else {

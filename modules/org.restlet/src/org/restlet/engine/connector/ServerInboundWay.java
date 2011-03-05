@@ -205,6 +205,10 @@ public abstract class ServerInboundWay extends InboundWay {
 
     @Override
     public void updateState() {
+        if (getMessageState() == MessageState.IDLE) {
+            setMessageState(MessageState.START);
+        }
+
         if ((getIoState() == IoState.IDLE) && getConnection().isPipelining()) {
             // Read the next request
             setIoState(IoState.INTEREST);

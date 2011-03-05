@@ -533,7 +533,7 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
-     * Indicates if the connection is empty.
+     * Indicates if the connection is empty of messages and bytes.
      * 
      * @return True if the connection is empty.
      */
@@ -560,14 +560,14 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
-     * Indicates if the connection is ready to handle new messages.
+     * Indicates if the connection is available to handle new messages.
      * 
-     * @return True if the connection is ready to handle new messages.
+     * @return True if the connection is available to handle new messages.
      */
-    public boolean isReady() {
+    public boolean isAvailable() {
         return isPersistent() && getState().equals(ConnectionState.OPEN)
-                && isEmpty() && getInboundWay().isReady()
-                && getOutboundWay().isReady();
+                && isEmpty() && getInboundWay().isAvailable()
+                && getOutboundWay().isAvailable();
     }
 
     /**

@@ -105,6 +105,8 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
 
             if (request.isExpectingResponse()) {
                 inboundMessages.add(message);
+                getConnection().getInboundWay().setMessageState(
+                        MessageState.START);
             }
         }
 
@@ -126,11 +128,10 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
     @Override
     public void updateState() {
         // Update the IO state if necessary
-        if ((getIoState() == IoState.IDLE) && !getMessages().isEmpty()) {
-            if (getMessage() == null) {
-                setIoState(IoState.INTEREST);
-                setMessage(getMessages().peek());
-            }
+        if ((getIoState() == IoState.IDLE) && !getMessages().isEmpty()
+                && (getMessage() == null)) {
+            setMessage(getMessages().peek());
+            setIoState(IoState.INTEREST);
         }
 
         super.updateState();

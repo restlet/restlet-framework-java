@@ -277,22 +277,22 @@ public abstract class Way implements SelectionListener, CompletionListener,
     }
 
     /**
+     * Indicates if the way is available to handle new messages.
+     * 
+     * @return True if the way is available to handle new messages.
+     */
+    public boolean isAvailable() {
+        return getMessageState().equals(MessageState.IDLE)
+                && getIoState().equals(IoState.IDLE);
+    }
+
+    /**
      * Indicates if the way is empty.
      * 
      * @return True if the way is empty.
      */
     public boolean isEmpty() {
         return getBuffer().isEmpty();
-    }
-
-    /**
-     * Indicates if the way is ready to handle new messages.
-     * 
-     * @return True if the way is ready to handle new messages.
-     */
-    public boolean isReady() {
-        return getMessageState().equals(MessageState.IDLE)
-                && getIoState().equals(IoState.IDLE);
     }
 
     /**
@@ -378,10 +378,6 @@ public abstract class Way implements SelectionListener, CompletionListener,
             // Adjust states
             if (getIoState() == IoState.INTEREST) {
                 setIoState(IoState.PROCESSING);
-
-                if (getMessageState() == MessageState.IDLE) {
-                    setMessageState(MessageState.START);
-                }
             } else if (getIoState() == IoState.CANCELING) {
                 setIoState(IoState.CANCELLED);
             }

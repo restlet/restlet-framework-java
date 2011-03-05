@@ -203,11 +203,11 @@ public abstract class InboundWay extends Way {
 
     @Override
     public void onCompleted(boolean endDetected) {
+        super.onCompleted(endDetected);
+
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Inbound message completed");
         }
-
-        super.onCompleted(endDetected);
     }
 
     @Override
@@ -313,8 +313,14 @@ public abstract class InboundWay extends Way {
                                 + getRegistration().getClass());
             }
 
-            getEntityRegistration().onSelected(
-                    getRegistration().getReadyOperations());
+            if (getIoState() == IoState.READY) {
+                if (getEntityRegistration().getListener() != null) {
+                    getEntityRegistration().getListener().onSelected();
+                }
+            } else {
+                getEntityRegistration().onSelected(
+                        getRegistration().getReadyOperations());
+            }
         } else {
             result = super.processIoBuffer();
         }
