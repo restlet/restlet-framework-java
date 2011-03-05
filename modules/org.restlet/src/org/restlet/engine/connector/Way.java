@@ -338,12 +338,14 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * 
      * @param buffer
      *            The IO buffer to drain.
+     * @param maxDrained
+     *            The maximum number of bytes drained by this call.
      * @param args
      *            The optional arguments to pass back to the callbacks.
      * @return The number of bytes drained.
      * @throws IOException
      */
-    public abstract int onDrain(Buffer buffer, Object... args)
+    public abstract int onDrain(Buffer buffer, int maxDrained, Object... args)
             throws IOException;
 
     /**

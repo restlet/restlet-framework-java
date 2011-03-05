@@ -211,7 +211,8 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    public int onDrain(Buffer buffer, Object... args) throws IOException {
+    public int onDrain(Buffer buffer, int maxDrained, Object... args)
+            throws IOException {
         int result = 0;
 
         // Bytes are available in the buffer

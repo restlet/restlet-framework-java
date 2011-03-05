@@ -128,12 +128,15 @@ public class ReadableChunkedChannel extends
      * 
      * @param buffer
      *            The IO buffer to drain.
+     * @param maxDrained
+     *            The maximum number of bytes drained by this call.
      * @param args
      *            The optional arguments to pass back to the callbacks.
      * @return The number of bytes drained.
      * @throws IOException
      */
-    public int onDrain(Buffer buffer, Object... args) throws IOException {
+    public int onDrain(Buffer buffer, int maxDrained, Object... args)
+            throws IOException {
         int before = buffer.remaining();
 
         // Some bytes are available, fill the line builder

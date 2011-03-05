@@ -464,6 +464,27 @@ public class Buffer {
      */
     public int process(BufferProcessor processor, Object... args)
             throws IOException {
+        return process(processor, 0, args);
+    }
+
+    /**
+     * Processes as a loop the IO event by draining or filling the IO buffer.
+     * Note that synchronization of the {@link #getLock()} object is
+     * automatically made.
+     * 
+     * @param processor
+     *            The IO processor to callback.
+     * @param maxDrained
+     *            The maximum number of bytes drained by this call or 0 for
+     *            unlimited length.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
+     * @return The number of bytes drained or -1 if the filling source has
+     *         ended.
+     * @throws IOException
+     */
+    public int process(BufferProcessor processor, int maxDrained,
+            Object... args) throws IOException {
         int result = 0;
         int totalFilled = 0;
 
@@ -481,7 +502,12 @@ public class Buffer {
                         drained = 0;
 
                         if (hasRemaining()) {
-                            drained = processor.onDrain(this, args);
+                            if (maxDrained <= 0) {
+                                drained = processor.onDrain(this, 0, args);
+                            } else if (maxDrained - result > 0) {
+                                drained = processor.onDrain(this, maxDrained
+                                        - result, args);
+                            }
                         }
 
                         if (drained > 0) {

@@ -111,7 +111,7 @@ public class NbChannelInputStream extends InputStream implements
 
         if (args.length == 1) {
             result = (args[0] == null);
-        } else if (args.length == 3) {
+        } else if (args.length == 2) {
             result = true;
         }
 
@@ -142,23 +142,25 @@ public class NbChannelInputStream extends InputStream implements
      * 
      * @param buffer
      *            The IO buffer to drain.
+     * @param maxDrained
+     *            The maximum number of bytes drained by this call.
      * @param args
      *            The optional arguments to pass back to the callbacks.
      * @return The number of bytes drained.
      * @throws IOException
      */
-    public int onDrain(Buffer buffer, Object... args) throws IOException {
+    public int onDrain(Buffer buffer, int maxDrained, Object... args)
+            throws IOException {
         int result = 0;
 
         if (args.length == 1) {
             // Let's return the next one
             args[0] = getBuffer().drain();
             result = 1;
-        } else if (args.length == 3) {
+        } else if (args.length == 2) {
             byte[] targetArray = (byte[]) args[0];
             int offset = ((Integer) args[1]).intValue();
-            int length = ((Integer) args[2]).intValue();
-            result = Math.min(length, getBuffer().remaining());
+            result = Math.min(maxDrained, getBuffer().remaining());
 
             // Let's return the next ones
             getBuffer().drain(targetArray, offset, result);
@@ -257,7 +259,7 @@ public class NbChannelInputStream extends InputStream implements
     public int read() throws IOException {
         int result = 0;
         Object[] args = new Object[1];
-        int bytesDrained = getBuffer().process(this, args);
+        int bytesDrained = getBuffer().process(this, 1, args);
 
         if (bytesDrained == -1) {
             result = -1;
@@ -275,7 +277,7 @@ public class NbChannelInputStream extends InputStream implements
     @Override
     public int read(byte[] targetArray, int offset, int length)
             throws IOException {
-        return getBuffer().process(this, targetArray, offset, length);
+        return getBuffer().process(this, length, targetArray, offset);
     }
 
 }

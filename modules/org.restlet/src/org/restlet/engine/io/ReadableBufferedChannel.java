@@ -142,11 +142,14 @@ public class ReadableBufferedChannel extends
      * 
      * @param buffer
      *            The IO buffer to drain.
+     * @param maxDrained
+     *            The maximum number of bytes drained by this call.
      * @param args
      *            The optional arguments to pass back to the callbacks.
      * @throws IOException
      */
-    public int onDrain(Buffer buffer, Object... args) throws IOException {
+    public int onDrain(Buffer buffer, int maxDrained, Object... args)
+            throws IOException {
         return getBuffer().drain((ByteBuffer) args[0]);
     }
 
