@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.Message;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
@@ -427,7 +428,19 @@ public abstract class Way implements SelectionListener, CompletionListener,
      *            The IO state.
      */
     public void setIoState(IoState ioState) {
-        this.ioState = ioState;
+        if (ioState != this.ioState) {
+            if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                if (this instanceof OutboundWay) {
+                    Context.getCurrentLogger().log(Level.FINER,
+                            "OutboundWay#setIoState: " + ioState);
+                } else {
+                    Context.getCurrentLogger().log(Level.FINER,
+                            "InboundWay#setIoState: " + ioState);
+                }
+            }
+
+            this.ioState = ioState;
+        }
     }
 
     /**

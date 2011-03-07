@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jetty HTTP server
 Bundle-SymbolicName: org.eclipse.jetty
-Bundle-Version: 7.1
+Bundle-Version: 7.3
 Bundle-ClassPath: org.eclipse.jetty.ajp.jar,
  org.eclipse.jetty.http.jar,
  org.eclipse.jetty.server.jar,

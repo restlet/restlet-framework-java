@@ -366,16 +366,6 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    public void setIoState(IoState ioState) {
-        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
-            Context.getCurrentLogger().log(Level.FINER,
-                    "Inbound way#setIoState : " + ioState);
-        }
-
-        super.setIoState(ioState);
-    }
-
-    @Override
     public void updateState() {
         if (getMessageState() == MessageState.BODY) {
             if ((getEntityRegistration() != null)

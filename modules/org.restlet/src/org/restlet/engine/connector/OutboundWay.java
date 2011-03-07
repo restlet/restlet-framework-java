@@ -37,7 +37,6 @@ import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -401,16 +400,6 @@ public abstract class OutboundWay extends Way {
      */
     protected void setHeaderIndex(int headerIndex) {
         this.headerIndex = headerIndex;
-    }
-
-    @Override
-    public void setIoState(IoState ioState) {
-        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
-            Context.getCurrentLogger().log(Level.FINER,
-                    "Outbound way: " + ioState);
-        }
-
-        super.setIoState(ioState);
     }
 
     /**
