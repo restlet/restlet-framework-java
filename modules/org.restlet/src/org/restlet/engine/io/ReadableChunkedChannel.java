@@ -203,8 +203,15 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
             }
 
             if (getRemainingChunkSize() == 0) {
-                // Done, can read the next chunk
-                setChunkState(ChunkState.SIZE);
+                // Some bytes are available, fill the line builder
+                setLineBuilderState(buffer.drain(getLineBuilder(),
+                        getLineBuilderState()));
+
+                if (getLineBuilderState() == BufferState.DRAINING) {
+                    // Done, can read the next chunk
+                    setChunkState(ChunkState.SIZE);
+                    clearLineBuilder();
+                }
             }
             break;
 
