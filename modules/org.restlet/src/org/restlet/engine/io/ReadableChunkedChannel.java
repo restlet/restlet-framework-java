@@ -200,9 +200,10 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
                         Context.getCurrentLogger().fine("No chunk data read");
                     }
                 }
-            } else if (getRemainingChunkSize() == 0) {
+            }
+
+            if (getRemainingChunkSize() == 0) {
                 // Done, can read the next chunk
-                clearLineBuilder();
                 setChunkState(ChunkState.SIZE);
             }
             break;
@@ -228,9 +229,8 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
             break;
         }
 
-        if ((result == -1)
-                && (getWrappedChannel() instanceof CompletionListener)) {
-            ((CompletionListener) getWrappedChannel()).onCompleted(false);
+        if (result == -1) {
+            onCompleted(isEndReached());
         } else {
             result = before - buffer.remaining();
         }

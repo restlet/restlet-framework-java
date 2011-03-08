@@ -265,7 +265,7 @@ public class Buffer {
      *            unlimited length.
      * @return The number of bytes added to the target buffer.
      */
-    public int drain(ByteBuffer targetBuffer, int maxDrained) {
+    public int drain(ByteBuffer targetBuffer, long maxDrained) {
         int result = 0;
 
         if ((maxDrained > 0) && (maxDrained < targetBuffer.remaining())) {

@@ -66,6 +66,15 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
     }
 
     /**
+     * Returns the remaining size that should be read from the source channel.
+     * 
+     * @return The remaining size that should be read from the source channel.
+     */
+    protected long getAvailableSize() {
+        return availableSize;
+    }
+
+    /**
      * Reads some bytes and put them into the destination buffer. The bytes come
      * from the underlying channel.
      * 
@@ -77,24 +86,24 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
     public int read(ByteBuffer dst) throws IOException {
         int result = -1;
 
-        if (this.availableSize > 0) {
-            if (this.availableSize < dst.remaining()) {
-                dst.limit((int) (this.availableSize + dst.position()));
+        if (getAvailableSize() > 0) {
+            if (getAvailableSize() < dst.remaining()) {
+                dst.limit((int) (getAvailableSize() + dst.position()));
             }
 
             result = getWrappedChannel().read(dst);
         }
 
         if (result > 0) {
-            this.availableSize -= result;
+            setAvailableSize(getAvailableSize() - result);
 
             if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
                 Context.getCurrentLogger().finer(
                         "Bytes (read | available) : " + result + " | "
-                                + this.availableSize);
+                                + getAvailableSize());
             }
 
-            if (this.availableSize == 0) {
+            if (getAvailableSize() == 0) {
                 if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
                     Context.getCurrentLogger().finer("Channel fully read.");
                 }
@@ -110,5 +119,16 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
         }
 
         return result;
+    }
+
+    /**
+     * Sets the remaining size that should be read from the source channel.
+     * 
+     * @param availableSize
+     *            The remaining size that should be read from the source
+     *            channel.
+     */
+    protected void setAvailableSize(long availableSize) {
+        this.availableSize = availableSize;
     }
 }

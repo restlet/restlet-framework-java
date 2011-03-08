@@ -30,7 +30,10 @@
 
 package org.restlet.engine.io;
 
-import org.restlet.util.SelectionRegistration;
+import java.io.IOException;
+import java.util.logging.Level;
+
+import org.restlet.Context;
 
 /**
  * Readable byte channel enforcing a maximum size and wrapping a selectable
@@ -38,74 +41,83 @@ import org.restlet.util.SelectionRegistration;
  * 
  * @author Jerome Louvel
  */
-public class ReadableSizedSelectionChannel extends ReadableSizedChannel
-        implements ReadableSelectionChannel {
+public class ReadableSizedSelectionChannel extends ReadableBufferedChannel {
 
-    /** The NIO registration. */
-    private volatile SelectionRegistration registration;
-
-    /**
-     * Constructor.
-     * 
-     * @param source
-     *            The source channel to limit.
-     * @param availableSize
-     *            The available size to read.
-     * @param registration
-     *            The selection registration.
-     */
-    public ReadableSizedSelectionChannel(ReadableBufferedChannel source,
-            long availableSize) {
-        this(source, availableSize, source.getRegistration());
-    }
+    /** The remaining size that should be read from the source channel. */
+    private volatile long availableSize;
 
     /**
      * Constructor.
      * 
+     * @param completionListener
+     *            The listener to callback upon reading completion.
+     * @param buffer
+     *            The source byte buffer, typically remaining from previous read
+     *            processing.
      * @param source
-     *            The source channel to limit.
+     *            The source channel.
      * @param availableSize
-     *            The available size to read.
-     * @param registration
-     *            The selection registration.
+     *            The total available size that can be read from the source
+     *            channel.
      */
-    public ReadableSizedSelectionChannel(ReadableBufferedChannel source,
-            long availableSize, SelectionRegistration registration) {
-        super(source, availableSize);
-        this.registration = registration;
+    public ReadableSizedSelectionChannel(CompletionListener completionListener,
+            Buffer buffer, ReadableSelectionChannel source, long availableSize) {
+        super(completionListener, buffer, source);
+        this.availableSize = availableSize;
     }
 
     /**
-     * Returns the NIO registration.
+     * Returns the remaining size that should be read from the source channel.
      * 
-     * @return The NIO registration.
+     * @return The remaining size that should be read from the source channel.
      */
-    public SelectionRegistration getRegistration() {
-        return registration;
+    protected long getAvailableSize() {
+        return availableSize;
     }
 
     @Override
-    protected ReadableBufferedChannel getWrappedChannel() {
-        return (ReadableBufferedChannel) super.getWrappedChannel();
+    public int onDrain(Buffer buffer, int maxDrained, Object... args)
+            throws IOException {
+        int result = 0;
+
+        if (getAvailableSize() > 0) {
+            result = super.onDrain(buffer, (int) getAvailableSize(), args);
+        }
+
+        if (result > 0) {
+            setAvailableSize(getAvailableSize() - result);
+
+            if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                Context.getCurrentLogger().finer(
+                        "Bytes (read | available) : " + result + " | "
+                                + this.availableSize);
+            }
+
+            if (getAvailableSize() == 0) {
+                if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                    Context.getCurrentLogger().finer("Channel fully read.");
+                }
+            }
+        } else if (result == -1) {
+            setEndReached(true);
+        }
+
+        if (result == -1) {
+            onCompleted(isEndReached());
+        }
+
+        return result;
     }
 
     /**
-     * Indicates if the wrapped channel is blocking.
+     * Sets the remaining size that should be read from the source channel.
      * 
-     * @return True if the wrapped channel is blocking.
+     * @param availableSize
+     *            The remaining size that should be read from the source
+     *            channel.
      */
-    public boolean isBlocking() {
-        return getWrappedChannel().isBlocking();
-    }
-
-    /**
-     * Sets the NIO registration.
-     * 
-     * @param registration
-     *            The NIO registration.
-     */
-    public void setRegistration(SelectionRegistration registration) {
-        this.registration = registration;
+    protected void setAvailableSize(long availableSize) {
+        this.availableSize = availableSize;
     }
 
 }

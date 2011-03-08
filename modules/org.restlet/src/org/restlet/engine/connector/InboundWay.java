@@ -43,7 +43,6 @@ import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.IoState;
-import org.restlet.engine.io.ReadableBufferedChannel;
 import org.restlet.engine.io.ReadableChunkedChannel;
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.engine.io.ReadableSizedSelectionChannel;
@@ -113,14 +112,10 @@ public abstract class InboundWay extends Way {
                         getBuffer(), getConnection()
                                 .getReadableSelectionChannel());
             } else {
-                // Wraps the remaining bytes into a special buffer channel
-                ReadableBufferedChannel rbc = new ReadableBufferedChannel(this,
-                        getBuffer(), getConnection()
-                                .getReadableSelectionChannel());
-
                 // Wrap the buffer channel to control its announced size
-                inboundEntityChannel = new ReadableSizedSelectionChannel(rbc,
-                        contentLength);
+                inboundEntityChannel = new ReadableSizedSelectionChannel(this,
+                        getBuffer(), getConnection()
+                                .getReadableSelectionChannel(), contentLength);
             }
 
             setEntityRegistration(inboundEntityChannel.getRegistration());
