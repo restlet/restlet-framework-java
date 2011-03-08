@@ -266,20 +266,9 @@ public class Buffer {
      * @return The number of bytes added to the target buffer.
      */
     public int drain(ByteBuffer targetBuffer, long maxDrained) {
-        int result = 0;
-
-        if ((maxDrained > 0) && (maxDrained < targetBuffer.remaining())) {
-            // Limit to target buffer to read just the number of bytes needed
-            targetBuffer.limit((int) (maxDrained + targetBuffer.position()));
-        }
-
-        if (getBytes().remaining() >= targetBuffer.remaining()) {
-            // Target buffer will be full
-            result = targetBuffer.remaining();
-        } else {
-            // Target buffer will not be full
-            result = getBytes().remaining();
-        }
+        int result = Math.min(
+                Math.min((int) maxDrained, getBytes().remaining()),
+                targetBuffer.remaining());
 
         // Copy the byte to the target buffer
         for (int i = 0; i < result; i++) {
