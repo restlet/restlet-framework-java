@@ -251,7 +251,27 @@ public class Buffer {
      * @return The number of bytes added to the target buffer.
      */
     public int drain(ByteBuffer targetBuffer) {
+        return drain(targetBuffer, 0);
+    }
+
+    /**
+     * Drains the byte buffer by copying as many bytes as possible to the target
+     * buffer, with no modification.
+     * 
+     * @param targetBuffer
+     *            The target buffer.
+     * @param maxDrained
+     *            The maximum number of bytes drained by this call or 0 for
+     *            unlimited length.
+     * @return The number of bytes added to the target buffer.
+     */
+    public int drain(ByteBuffer targetBuffer, int maxDrained) {
         int result = 0;
+
+        if ((maxDrained > 0) && (maxDrained < targetBuffer.remaining())) {
+            // Limit to target buffer to read just the number of bytes needed
+            targetBuffer.limit((int) (maxDrained + targetBuffer.position()));
+        }
 
         if (getBytes().remaining() >= targetBuffer.remaining()) {
             // Target buffer will be full
@@ -420,16 +440,6 @@ public class Buffer {
     }
 
     /**
-     * Indicates if the buffer is empty in either filling or draining state.
-     * 
-     * 
-     * @return True if the buffer is empty.
-     */
-    public boolean isEmpty() {
-        return isFilling() ? (capacity() == remaining()) : !hasRemaining();
-    }
-
-    /**
      * Indicates if the buffer state has the {@link BufferState#DRAINING} value.
      * 
      * @return True if the buffer state has the {@link BufferState#DRAINING}
@@ -440,6 +450,16 @@ public class Buffer {
     }
 
     /**
+     * Indicates if the buffer is empty in either filling or draining state.
+     * 
+     * 
+     * @return True if the buffer is empty.
+     */
+    public boolean isEmpty() {
+        return isFilling() ? (capacity() == remaining()) : !hasRemaining();
+    }
+
+    /**
      * Indicates if the buffer state has the {@link BufferState#FILLING} value.
      * 
      * @return True if the buffer state has the {@link BufferState#FILLING}
@@ -447,24 +467,6 @@ public class Buffer {
      */
     public boolean isFilling() {
         return getState() == BufferState.FILLING;
-    }
-
-    /**
-     * Processes as a loop the IO event by draining or filling the IO buffer.
-     * Note that synchronization of the {@link #getLock()} object is
-     * automatically made.
-     * 
-     * @param processor
-     *            The IO processor to callback.
-     * @param args
-     *            The optional arguments to pass back to the callbacks.
-     * @return The number of bytes drained or -1 if the filling source has
-     *         ended.
-     * @throws IOException
-     */
-    public int process(BufferProcessor processor, Object... args)
-            throws IOException {
-        return process(processor, 0, args);
     }
 
     /**
@@ -577,6 +579,24 @@ public class Buffer {
         }
 
         return result;
+    }
+
+    /**
+     * Processes as a loop the IO event by draining or filling the IO buffer.
+     * Note that synchronization of the {@link #getLock()} object is
+     * automatically made.
+     * 
+     * @param processor
+     *            The IO processor to callback.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
+     * @return The number of bytes drained or -1 if the filling source has
+     *         ended.
+     * @throws IOException
+     */
+    public int process(BufferProcessor processor, Object... args)
+            throws IOException {
+        return process(processor, 0, args);
     }
 
     /**

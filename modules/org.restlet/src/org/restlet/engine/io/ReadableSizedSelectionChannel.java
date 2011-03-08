@@ -39,7 +39,7 @@ import org.restlet.util.SelectionRegistration;
  * @author Jerome Louvel
  */
 public class ReadableSizedSelectionChannel extends ReadableSizedChannel
-        implements SelectionChannel {
+        implements ReadableSelectionChannel {
 
     /** The NIO registration. */
     private volatile SelectionRegistration registration;

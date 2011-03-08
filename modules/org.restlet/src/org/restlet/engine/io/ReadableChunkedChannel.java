@@ -32,7 +32,6 @@ package org.restlet.engine.io;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.ReadableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -41,9 +40,7 @@ import org.restlet.Context;
 /**
  * Readable byte channel capable of decoding chunked entities.
  */
-public class ReadableChunkedChannel extends
-        WrapperSelectionChannel<ReadableBufferedChannel> implements
-        ReadableByteChannel, BufferProcessor {
+public class ReadableChunkedChannel extends ReadableBufferedChannel {
 
     /** The chunk state. */
     private volatile ChunkState chunkState;
@@ -55,16 +52,22 @@ public class ReadableChunkedChannel extends
     private volatile BufferState lineBuilderState;
 
     /** The remaining chunk size that should be read from the source channel. */
-    private volatile long remainingChunkSize;
+    private volatile int remainingChunkSize;
 
     /**
      * Constructor.
      * 
+     * @param completionListener
+     *            The listener to callback upon reading completion.
+     * @param buffer
+     *            The source byte buffer, typically remaining from previous read
+     *            processing.
      * @param source
      *            The source channel.
      */
-    public ReadableChunkedChannel(ReadableBufferedChannel source) {
-        super(source);
+    public ReadableChunkedChannel(CompletionListener completionListener,
+            Buffer buffer, ReadableSelectionChannel source) {
+        super(completionListener, buffer, source);
         this.remainingChunkSize = 0;
         this.chunkState = ChunkState.SIZE;
         this.lineBuilder = new StringBuilder();
@@ -72,37 +75,20 @@ public class ReadableChunkedChannel extends
     }
 
     /**
-     * Indicates if the processing loop can continue.
-     * 
-     * @param buffer
-     *            The IO buffer to drain.
-     * @param args
-     *            The optional arguments to pass back to the callbacks.
-     * @return True if the processing loop can continue.
-     */
-    public boolean canLoop(Buffer buffer, Object... args) {
-        return getWrappedChannel().canLoop(buffer, args);
-    }
-
-    /**
      * Clears the line builder and adjust its state.
      */
-    public void clearLineBuilder() {
+    protected void clearLineBuilder() {
         getLineBuilder().delete(0, getLineBuilder().length());
         setLineBuilderState(BufferState.IDLE);
     }
 
     /**
-     * Indicates if the buffer could be filled again.
+     * Returns the chunk state.
      * 
-     * @param buffer
-     *            The IO buffer to drain.
-     * @param args
-     *            The optional arguments to pass back to the callbacks.
-     * @return True if the buffer could be filled again.
+     * @return The chunk state.
      */
-    public boolean couldFill(Buffer buffer, Object... args) {
-        return getWrappedChannel().couldFill(buffer, args);
+    protected ChunkState getChunkState() {
+        return chunkState;
     }
 
     /**
@@ -110,7 +96,7 @@ public class ReadableChunkedChannel extends
      * 
      * @return The line builder to parse chunk size or trailer.
      */
-    public StringBuilder getLineBuilder() {
+    protected StringBuilder getLineBuilder() {
         return lineBuilder;
     }
 
@@ -121,6 +107,17 @@ public class ReadableChunkedChannel extends
      */
     protected BufferState getLineBuilderState() {
         return lineBuilderState;
+    }
+
+    /**
+     * Returns the remaining chunk size that should be read from the source
+     * channel.
+     * 
+     * @return The remaining chunk size that should be read from the source
+     *         channel.
+     */
+    protected int getRemainingChunkSize() {
+        return remainingChunkSize;
     }
 
     /**
@@ -137,168 +134,118 @@ public class ReadableChunkedChannel extends
      */
     public int onDrain(Buffer buffer, int maxDrained, Object... args)
             throws IOException {
+        int result = 0;
+        ByteBuffer targetBuffer = (ByteBuffer) args[0];
         int before = buffer.remaining();
 
-        // Some bytes are available, fill the line builder
-        setLineBuilderState(buffer.drain(getLineBuilder(),
-                getLineBuilderState()));
+        if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
+            Context.getCurrentLogger().log(Level.FINEST,
+                    "Chunk state: " + getChunkState());
+        }
 
-        return before - buffer.remaining();
-    }
+        switch (getChunkState()) {
+        case SIZE:
+            // Some bytes are available, fill the line builder
+            setLineBuilderState(buffer.drain(getLineBuilder(),
+                    getLineBuilderState()));
 
-    /**
-     * Fills the byte buffer.
-     * 
-     * @param buffer
-     *            The IO buffer to drain.
-     * @param args
-     *            The optional arguments to pass back to the callbacks.
-     * @return The number of bytes filled.
-     * @throws IOException
-     */
-    public int onFill(Buffer buffer, Object... args) throws IOException {
-        return getWrappedChannel().onFill(buffer, args);
-    }
+            if (getLineBuilderState() == BufferState.DRAINING) {
+                // The chunk size line was fully read into the line builder
+                int length = getLineBuilder().length();
 
-    /**
-     * Reads some bytes and put them into the destination buffer. The bytes come
-     * from the underlying channel.
-     * 
-     * @param dst
-     *            The destination buffer.
-     * @return The number of bytes read, or -1 if the end of the channel has
-     *         been reached.
-     */
-    public int read(ByteBuffer dst) throws IOException {
-        int result = 0;
-        boolean tryAgain = true;
-
-        while (tryAgain) {
-            if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
-                Context.getCurrentLogger().log(Level.FINER,
-                        "Chunk state: " + this.chunkState);
-            }
-
-            switch (this.chunkState) {
-            case SIZE:
-                if (refill()) {
-                    try {
-                        // The chunk size line was fully read into the line
-                        // builder
-                        int length = getLineBuilder().length();
-
-                        if (length == 0) {
-                            throw new IOException(
-                                    "An empty chunk size line was detected");
-                        }
-
-                        int index = getLineBuilder().indexOf(";");
-                        index = (index == -1) ? getLineBuilder().length()
-                                : index;
-                        this.remainingChunkSize = Long
-                                .parseLong(getLineBuilder().substring(0, index)
-                                        .trim(), 16);
-
-                        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
-                            Context.getCurrentLogger().log(
-                                    Level.FINER,
-                                    "New chunk detected. Size: "
-                                            + this.remainingChunkSize);
-                        }
-                    } catch (NumberFormatException ex) {
-                        throw new IOException("\"" + getLineBuilder()
-                                + "\" has an invalid chunk size");
-                    } finally {
-                        clearLineBuilder();
-                    }
-
-                    if (this.remainingChunkSize == 0) {
-                        this.chunkState = ChunkState.TRAILER;
-                    } else {
-                        this.chunkState = ChunkState.DATA;
-                    }
-                } else {
-                    tryAgain = false;
-                }
-                break;
-
-            case DATA:
-                if (this.remainingChunkSize > 0) {
-                    if (this.remainingChunkSize < dst.remaining()) {
-                        dst.limit((int) (this.remainingChunkSize + dst
-                                .position()));
-                    }
-
-                    result = getWrappedChannel().read(dst);
-                    tryAgain = false;
-
-                    if (result > 0) {
-                        this.remainingChunkSize -= result;
-                    } else {
-                        if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
-                            Context.getCurrentLogger().fine(
-                                    "No chunk data read");
-                        }
-                    }
-                } else if (this.remainingChunkSize == 0) {
-                    // Try to read the chunk end delimiter
-                    if (refill()) {
-                        // Done, can read the next chunk
-                        clearLineBuilder();
-                        this.chunkState = ChunkState.SIZE;
-                    } else {
-                        tryAgain = false;
-                    }
+                if (length == 0) {
+                    throw new IOException(
+                            "An empty chunk size line was detected");
                 }
 
-                break;
+                int index = getLineBuilder().indexOf(";");
+                index = (index == -1) ? getLineBuilder().length() : index;
 
-            case TRAILER:
-                // TODO
-                this.chunkState = ChunkState.END;
-                break;
+                try {
+                    setRemainingChunkSize(Integer.parseInt(getLineBuilder()
+                            .substring(0, index).trim(), 16));
 
-            case END:
-                if (refill()) {
-                    if (getLineBuilder().length() != 0) {
-                        Context.getCurrentLogger().log(Level.FINE,
-                                "The last chunk line had a non empty line");
+                    if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                        Context.getCurrentLogger().log(
+                                Level.FINER,
+                                "New chunk detected. Size: "
+                                        + this.remainingChunkSize);
                     }
+                } catch (NumberFormatException ex) {
+                    throw new IOException("\"" + getLineBuilder()
+                            + "\" has an invalid chunk size");
+                } finally {
+                    clearLineBuilder();
+                }
 
-                    tryAgain = false;
-                    result = -1;
+                if (getRemainingChunkSize() == 0) {
+                    setChunkState(ChunkState.TRAILER);
                 } else {
-                    tryAgain = false;
+                    setChunkState(ChunkState.DATA);
                 }
                 break;
             }
+
+            break;
+
+        case DATA:
+            if (getRemainingChunkSize() > 0) {
+                result = super.onDrain(buffer, this.remainingChunkSize,
+                        targetBuffer);
+
+                if (result > 0) {
+                    setRemainingChunkSize(getRemainingChunkSize() - result);
+                } else {
+                    if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                        Context.getCurrentLogger().fine("No chunk data read");
+                    }
+                }
+            } else if (getRemainingChunkSize() == 0) {
+                // Done, can read the next chunk
+                clearLineBuilder();
+                setChunkState(ChunkState.SIZE);
+            }
+            break;
+
+        case TRAILER:
+            // TODO
+            setChunkState(ChunkState.END);
+            break;
+
+        case END:
+            // Some bytes are available, fill the line builder
+            setLineBuilderState(buffer.drain(getLineBuilder(),
+                    getLineBuilderState()));
+
+            if (getLineBuilderState() == BufferState.DRAINING) {
+                if (getLineBuilder().length() != 0) {
+                    Context.getCurrentLogger().log(Level.FINE,
+                            "The last chunk line had a non empty line");
+                }
+
+                setEndReached(true);
+            }
+            break;
         }
 
         if ((result == -1)
                 && (getWrappedChannel() instanceof CompletionListener)) {
             ((CompletionListener) getWrappedChannel()).onCompleted(false);
+        } else {
+            result = before - buffer.remaining();
         }
 
         return result;
     }
 
     /**
-     * Read the current line builder (start line or header line).
+     * Sets the chunk state.
      * 
-     * @return True if the message line was fully read.
-     * @throws IOException
+     * @param chunkState
+     *            The chunk state.
      */
-    public boolean refill() throws IOException {
-        boolean result = false;
-
-        if (getLineBuilderState() != BufferState.DRAINING) {
-            getWrappedChannel().getBuffer().process(this);
-            return getLineBuilderState() == BufferState.DRAINING;
-        } else {
-            result = true;
-        }
-
-        return result;
+    protected void setChunkState(ChunkState chunkState) {
+        this.chunkState = chunkState;
     }
 
     /**
@@ -309,5 +256,17 @@ public class ReadableChunkedChannel extends
      */
     protected void setLineBuilderState(BufferState lineBuilderState) {
         this.lineBuilderState = lineBuilderState;
+    }
+
+    /**
+     * Sets the remaining chunk size that should be read from the source
+     * channel.
+     * 
+     * @param remainingChunkSize
+     *            The remaining chunk size that should be read from the source
+     *            channel.
+     */
+    protected void setRemainingChunkSize(int remainingChunkSize) {
+        this.remainingChunkSize = remainingChunkSize;
     }
 }

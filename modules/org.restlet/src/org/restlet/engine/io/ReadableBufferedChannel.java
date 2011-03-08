@@ -51,7 +51,7 @@ public class ReadableBufferedChannel extends
     /** The completion callback. */
     private final CompletionListener completionListener;
 
-    /** Indicates if the end of the wrapped channel has been reached. */
+    /** Indicates if the end of the channel has been reached. */
     private volatile boolean endReached;
 
     /**
@@ -74,11 +74,6 @@ public class ReadableBufferedChannel extends
         this.endReached = false;
     }
 
-    @Override
-    public void close() throws IOException {
-        // Don't actually close to protect the persistent connection
-    }
-
     /**
      * Indicates if the processing loop can continue.
      * 
@@ -92,6 +87,11 @@ public class ReadableBufferedChannel extends
         return true;
     }
 
+    @Override
+    public void close() throws IOException {
+        // Don't actually close to protect the persistent connection
+    }
+
     /**
      * Indicates if the buffer could be filled again.
      * 
@@ -102,7 +102,7 @@ public class ReadableBufferedChannel extends
      * @return True if the buffer could be filled again.
      */
     public boolean couldFill(Buffer buffer, Object... args) {
-        return !this.endReached;
+        return !isEndReached();
     }
 
     /**
@@ -121,6 +121,15 @@ public class ReadableBufferedChannel extends
      */
     private CompletionListener getCompletionListener() {
         return completionListener;
+    }
+
+    /**
+     * Indicates if the end of the channel has been reached.
+     * 
+     * @return True if the end of the channel has been reached.
+     */
+    protected boolean isEndReached() {
+        return endReached;
     }
 
     /**
@@ -150,7 +159,7 @@ public class ReadableBufferedChannel extends
      */
     public int onDrain(Buffer buffer, int maxDrained, Object... args)
             throws IOException {
-        return getBuffer().drain((ByteBuffer) args[0]);
+        return getBuffer().drain((ByteBuffer) args[0], maxDrained);
     }
 
     /**
@@ -162,7 +171,7 @@ public class ReadableBufferedChannel extends
         int result = refill();
 
         if (result == -1) {
-            this.endReached = true;
+            setEndReached(true);
         }
 
         return result;
@@ -189,6 +198,16 @@ public class ReadableBufferedChannel extends
      */
     public int refill() throws IOException {
         return getBuffer().fill(getWrappedChannel());
+    }
+
+    /**
+     * Indicates if the end of the channel has been reached.
+     * 
+     * @param endReached
+     *            True if the end of the channel has been reached.
+     */
+    protected void setEndReached(boolean endReached) {
+        this.endReached = endReached;
     }
 
 }

@@ -31,7 +31,6 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
@@ -46,6 +45,7 @@ import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.ReadableBufferedChannel;
 import org.restlet.engine.io.ReadableChunkedChannel;
+import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.engine.io.ReadableSizedSelectionChannel;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ReadableRepresentation;
@@ -105,22 +105,25 @@ public abstract class InboundWay extends Way {
         // Create the representation
         if ((contentLength != Representation.UNKNOWN_SIZE && contentLength != 0)
                 || chunkedEncoding || connectionClose) {
-            ReadableByteChannel inboundEntityChannel = null;
-
-            // Wraps the remaining bytes into a special buffer channel
-            ReadableBufferedChannel rbc = new ReadableBufferedChannel(this,
-                    getBuffer(), getConnection().getReadableSelectionChannel());
+            ReadableSelectionChannel inboundEntityChannel = null;
 
             if (chunkedEncoding) {
-                // Wrap the buffer channel to decode chunks
-                inboundEntityChannel = new ReadableChunkedChannel(rbc);
+                // Wraps the remaining bytes into a special buffer channel
+                inboundEntityChannel = new ReadableChunkedChannel(this,
+                        getBuffer(), getConnection()
+                                .getReadableSelectionChannel());
             } else {
+                // Wraps the remaining bytes into a special buffer channel
+                ReadableBufferedChannel rbc = new ReadableBufferedChannel(this,
+                        getBuffer(), getConnection()
+                                .getReadableSelectionChannel());
+
                 // Wrap the buffer channel to control its announced size
                 inboundEntityChannel = new ReadableSizedSelectionChannel(rbc,
                         contentLength);
             }
 
-            setEntityRegistration(rbc.getRegistration());
+            setEntityRegistration(inboundEntityChannel.getRegistration());
 
             if (inboundEntityChannel != null) {
                 result = new ReadableRepresentation(inboundEntityChannel, null,
