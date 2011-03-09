@@ -35,7 +35,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 
@@ -339,8 +338,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                         print(" callback");
                     } else {
                         getLogger()
-                                .log(
-                                        Type.WARN,
+                                .log(Type.WARN,
                                         "The "
                                                 + getTypeQName()
                                                 + " interface contains a \""
@@ -504,8 +502,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                         println();
                     } else {
                         getLogger()
-                                .log(
-                                        Type.WARN,
+                                .log(Type.WARN,
                                         "The "
                                                 + getTypeQName()
                                                 + " interface contains a \""
@@ -632,16 +629,20 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
 
             TypeSerializerCreator tsc = null;
             try {
-                tsc = getTypeSerializerCreatorGwt1_7();
-            } catch (Exception e) {
+                tsc = getTypeSerializerCreatorGwt2_1();
+            } catch (Exception e2_1) {
                 try {
-                    tsc = getTypeSerializerCreatorGwt2_0();
-                } catch (Exception e2) {
+                    tsc = getTypeSerializerCreatorGwt2_2();
+                } catch (Exception e2_2) {
                     try {
-                        tsc = getTypeSerializerCreatorGwt2_1();
-                    } catch (Exception e3) {
-                        getLogger().log(TreeLogger.ERROR, "", e3);
-                        throw new UnableToCompleteException();
+                        tsc = getTypeSerializerCreatorGwt2_0();
+                    } catch (Exception e2_0) {
+                        try {
+                            tsc = getTypeSerializerCreatorGwt1_7();
+                        } catch (Exception e1_7) {
+                            getLogger().log(TreeLogger.ERROR, "", e1_7);
+                            throw new UnableToCompleteException();
+                        }
                     }
                 }
             }
@@ -791,6 +792,47 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 String.class);
         result = c.newInstance(getLogger(), getSto(), getSto(), getContext(),
                 getTypeSerializerQualifiedName(getClassType()));
+
+        return result;
+    }
+
+    /**
+     * Instantiates a TypeSerializerCreator instance using the GWT2.2
+     * constructor.
+     * 
+     * @return An instance of a TypeSerializerCreator.
+     * @throws Exception
+     */
+    private TypeSerializerCreator getTypeSerializerCreatorGwt2_2()
+            throws Exception {
+        TypeSerializerCreator result = null;
+        // At the date of 14 february 2011, the GWT GeneratorContextExt class
+        // is considered as experimental and surely to be removed from gwt package
+        Constructor<TypeSerializerCreator> c = null;
+        
+        try {
+            Class<?> genClass = Class.forName("com.google.gwt.core.ext.GeneratorContextExt");
+            c = TypeSerializerCreator.class.getDeclaredConstructor(
+                    TreeLogger.class, SerializableTypeOracle.class,
+                    SerializableTypeOracle.class,
+                    genClass,
+                    String.class, String.class);
+            result = c.newInstance(getLogger(), getSto(), getSto(),
+                    genClass.cast(getContext()),
+                    getTypeSerializerQualifiedName(getClassType()),
+                    getTypeSerializerSimpleName(getClassType()));
+        } catch (ClassNotFoundException e) {
+            c = TypeSerializerCreator.class.getDeclaredConstructor(
+                    TreeLogger.class, SerializableTypeOracle.class,
+                    SerializableTypeOracle.class,
+                    GeneratorContext.class,
+                    String.class, String.class);
+            result = c.newInstance(getLogger(), getSto(), getSto(),
+                    getContext(),
+                    getTypeSerializerQualifiedName(getClassType()),
+                    getTypeSerializerSimpleName(getClassType()));
+        }
+
 
         return result;
     }
