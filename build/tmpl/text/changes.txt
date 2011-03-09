@@ -4,6 +4,9 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Breaking changes
+      - The new support of GWT 2.2 is not backward compatible with applications 
+        based on previous versions of GWT.
     - API changes
       - Deprecated the Client#connectTimeout property as it is hard to find
         compared to other connector parameters. Also, it isn't available for
