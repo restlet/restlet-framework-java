@@ -61,6 +61,7 @@ Changes log
         leveraged in advanced cases for instrumentation purpose for example.
         Suggested by John Logsdon.
       - Updated Jetty library to version 7.3.0.
+      - Updated GWT library to version 2.2.0.
 
 - 2.1 Milestone 2 (12/24/2010)
     - API changes
