@@ -266,9 +266,10 @@ public class Buffer {
      * @return The number of bytes added to the target buffer.
      */
     public int drain(ByteBuffer targetBuffer, long maxDrained) {
-        int result = Math.min(
-                Math.min((int) maxDrained, getBytes().remaining()),
+        int maxBuffer = Math.min(getBytes().remaining(),
                 targetBuffer.remaining());
+        int result = (maxDrained == 0) ? maxBuffer : Math.min((int) maxDrained,
+                maxBuffer);
 
         // Copy the byte to the target buffer
         for (int i = 0; i < result; i++) {
@@ -480,7 +481,7 @@ public class Buffer {
         int totalFilled = 0;
 
         synchronized (getLock()) {
-            if (processor.couldFill(this, args)) {
+            if (couldDrain() || processor.couldFill(this, args)) {
                 boolean tryAgain = true;
                 int drained = 0;
                 int filled = 0;

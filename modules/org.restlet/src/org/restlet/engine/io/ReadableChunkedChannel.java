@@ -138,8 +138,8 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
         ByteBuffer targetBuffer = (ByteBuffer) args[0];
         int before = buffer.remaining();
 
-        if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
-            Context.getCurrentLogger().log(Level.FINEST,
+        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+            Context.getCurrentLogger().log(Level.FINER,
                     "Chunk state: " + getChunkState());
         }
 
