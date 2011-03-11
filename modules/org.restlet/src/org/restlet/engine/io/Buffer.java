@@ -481,7 +481,7 @@ public class Buffer {
         int totalFilled = 0;
 
         synchronized (getLock()) {
-            if (couldDrain() || processor.couldFill(this, args)) {
+            if (canDrain() || couldDrain() || processor.couldFill(this, args)) {
                 boolean tryAgain = true;
                 int drained = 0;
                 int filled = 0;

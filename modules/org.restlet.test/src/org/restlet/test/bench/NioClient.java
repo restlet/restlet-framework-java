@@ -70,8 +70,8 @@ public class NioClient {
         cr.setRetryOnError(false);
         cr.setNext(client);
         Representation r = null;
-        // ClientResource fr = new
-        // ClientResource("file://C/TEST/apache-copy.zip");
+        ClientResource fr = new
+        ClientResource("file://C/TEST/restlet-jse-2.0.5.zip");
 
         System.out.println("Calling resource: " + uri + " " + iterations
                 + " times");

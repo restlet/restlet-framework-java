@@ -118,6 +118,7 @@ public class ReadableSizedSelectionChannel extends ReadableBufferedChannel {
      */
     protected void setAvailableSize(long availableSize) {
         this.availableSize = availableSize;
+        setEndReached(this.availableSize == 0);
     }
 
 }

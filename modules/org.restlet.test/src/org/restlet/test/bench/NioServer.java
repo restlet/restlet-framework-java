@@ -66,7 +66,7 @@ public class NioServer {
         server.getContext().getParameters().add("maxIoIdleTimeMs", "3000000");
 
         final ClientResource fr = new ClientResource(
-                "file://C/TEST/contacts.json");
+                "file://C/TEST/restlet-jse-2.0.5-ff.zip");
 
         // server.setNext(HelloServerResource.class);
         server.setNext(new Restlet() {
@@ -84,6 +84,7 @@ public class NioServer {
                 response.setEntity("hello, world!", MediaType.TEXT_PLAIN);
             }
         });
+
         server.start();
 
     }
