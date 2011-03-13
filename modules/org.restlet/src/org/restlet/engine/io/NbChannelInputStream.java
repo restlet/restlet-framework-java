@@ -255,6 +255,12 @@ public class NbChannelInputStream extends InputStream implements
         return result;
     }
 
+    /**
+     * Called back when a fill operation returns with an EOF status.
+     */
+    public void onFillEof() {
+    }
+
     @Override
     public int read() throws IOException {
         int result = 0;

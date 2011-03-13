@@ -82,6 +82,8 @@ public class ReadableSizedSelectionChannel extends ReadableBufferedChannel {
 
         if (getAvailableSize() > 0) {
             result = super.onDrain(buffer, (int) getAvailableSize(), args);
+        } else {
+            result = -1;
         }
 
         if (result > 0) {
@@ -90,7 +92,7 @@ public class ReadableSizedSelectionChannel extends ReadableBufferedChannel {
             if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
                 Context.getCurrentLogger().finer(
                         "Bytes (read | available) : " + result + " | "
-                                + this.availableSize);
+                                + getAvailableSize());
             }
 
             if (getAvailableSize() == 0) {
@@ -100,10 +102,6 @@ public class ReadableSizedSelectionChannel extends ReadableBufferedChannel {
             }
         } else if (result == -1) {
             setEndReached(true);
-        }
-
-        if (result == -1) {
-            onCompleted(isEndReached());
         }
 
         return result;

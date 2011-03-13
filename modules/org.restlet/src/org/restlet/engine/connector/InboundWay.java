@@ -149,9 +149,19 @@ public abstract class InboundWay extends Way {
      * @throws IOException
      */
     protected boolean fillLine() throws IOException {
+        boolean result = false;
         setLineBuilderState(getBuffer().drain(getLineBuilder(),
                 getLineBuilderState()));
-        return getLineBuilderState() == BufferState.DRAINING;
+
+        if (getLineBuilderState() == BufferState.DRAINING) {
+            result = true;
+
+            if (getLogger().isLoggable(Level.FINE)) {
+                getLogger().log(Level.FINE, getLineBuilder().toString());
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -272,6 +282,12 @@ public abstract class InboundWay extends Way {
         }
 
         return result;
+    }
+
+    /**
+     * Called back when a fill operation returns with an EOF status.
+     */
+    public void onFillEof() {
     }
 
     /**

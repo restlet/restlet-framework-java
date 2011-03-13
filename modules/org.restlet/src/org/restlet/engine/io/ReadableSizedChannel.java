@@ -48,7 +48,7 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
     private volatile long availableSize;
 
     /** Indicates if the end of the wrapped channel has been reached. */
-    private volatile boolean eofDetected;
+    private volatile boolean endDetected;
 
     /**
      * Constructor.
@@ -62,7 +62,7 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
     public ReadableSizedChannel(ReadableByteChannel source, long availableSize) {
         super(source);
         this.availableSize = availableSize;
-        this.eofDetected = false;
+        this.endDetected = false;
     }
 
     /**
@@ -75,12 +75,12 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
     }
 
     /**
-     * Indicates if the EOF of the wrapped channel has been detected.
+     * Indicates if the end of the channel has been detected.
      * 
-     * @return True if the EOF of the wrapped channel has been detected.
+     * @return True if the end of the channel has been detected.
      */
-    protected boolean isEofDetected() {
-        return eofDetected;
+    protected boolean isEndDetected() {
+        return endDetected;
     }
 
     /**
@@ -93,7 +93,7 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
      *         been reached.
      */
     public int read(ByteBuffer dst) throws IOException {
-        int result = -1;
+        int result = 0;
 
         if (getAvailableSize() > 0) {
             if (getAvailableSize() < dst.remaining()) {
@@ -101,6 +101,8 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
             }
 
             result = getWrappedChannel().read(dst);
+        } else {
+            result = -1;
         }
 
         if (result > 0) {
@@ -118,13 +120,7 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
                 }
             }
         } else if (result == -1) {
-            this.eofDetected = true;
-        }
-
-        if ((result == -1)
-                && (getWrappedChannel() instanceof CompletionListener)) {
-            ((CompletionListener) getWrappedChannel())
-                    .onCompleted(isEofDetected());
+            setEndDetected(true);
         }
 
         return result;
@@ -142,12 +138,18 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
     }
 
     /**
-     * Indicates if the EOF of the wrapped channel has been detected.
+     * Indicates if the end of the channel has been detected.
      * 
-     * @param eofDetected
-     *            True if the EOF of the wrapped channel has been detected.
+     * @param endDetected
+     *            True if the end of the channel has been detected.
      */
-    protected void setEofDetected(boolean eofDetected) {
-        this.eofDetected = eofDetected;
+    protected void setEndDetected(boolean endDetected) {
+        this.endDetected = endDetected;
+
+        if (endDetected && (getWrappedChannel() instanceof CompletionListener)) {
+            ((CompletionListener) getWrappedChannel())
+                    .onCompleted(isEndDetected());
+        }
+
     }
 }

@@ -89,4 +89,9 @@ public interface BufferProcessor {
      */
     public int onFill(Buffer buffer, Object... args) throws IOException;
 
+    /**
+     * Called back when a fill operation returns with an EOF status.
+     */
+    public void onFillEof();
+
 }

@@ -591,7 +591,12 @@ public class Connection<T extends Connector> implements SelectionListener {
      *            The error status.
      */
     public void onError(String message, Throwable throwable, Status status) {
-        getLogger().log(Level.FINE, message, throwable);
+        if (getLogger().isLoggable(Level.FINER)) {
+            getLogger().log(Level.FINER, message, throwable);
+        } else if (getLogger().isLoggable(Level.FINE)) {
+            getLogger().log(Level.FINE, message);
+        }
+
         status = new Status(status, throwable, message);
         getInboundWay().onError(status);
         getOutboundWay().onError(status);

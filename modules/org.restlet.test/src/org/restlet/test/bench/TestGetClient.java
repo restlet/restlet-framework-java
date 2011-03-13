@@ -31,7 +31,11 @@
 package org.restlet.test.bench;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
+import org.restlet.Client;
+import org.restlet.engine.ConnectorHelper;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -39,6 +43,10 @@ import org.restlet.resource.ResourceException;
 public class TestGetClient {
 
     public static void main(String[] args) throws IOException {
+        ConnectorHelper<Client> helper;
+        helper = new org.restlet.engine.connector.HttpClientHelper(null);
+        Engine.getInstance().getRegisteredClients().add(0, helper);
+        Engine.setLogLevel(Level.FINE);
         long startTime = System.currentTimeMillis();
 
         ClientResource resource = new ClientResource("http://localhost:8554/");

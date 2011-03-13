@@ -236,9 +236,7 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
             break;
         }
 
-        if (result == -1) {
-            onCompleted(isEndReached());
-        } else {
+        if (result != -1) {
             result = before - buffer.remaining();
         }
 

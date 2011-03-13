@@ -509,8 +509,8 @@ public class Buffer {
                             lastFillFailed = false;
 
                             if (Context.getCurrentLogger().isLoggable(
-                                    Level.FINER)) {
-                                Context.getCurrentLogger().finer(
+                                    Level.FINEST)) {
+                                Context.getCurrentLogger().log(Level.FINEST,
                                         drained + " bytes drained from buffer");
                             }
                         } else {
@@ -537,8 +537,8 @@ public class Buffer {
                             lastFillFailed = false;
 
                             if (Context.getCurrentLogger().isLoggable(
-                                    Level.FINER)) {
-                                Context.getCurrentLogger().finer(
+                                    Level.FINEST)) {
+                                Context.getCurrentLogger().log(Level.FINEST,
                                         filled + " bytes filled into buffer");
                             }
                         } else {
@@ -549,7 +549,11 @@ public class Buffer {
                                 tryAgain = false;
                             }
 
-                            fillEnded = (filled == -1);
+                            if (filled == -1) {
+                                fillEnded = true;
+                                processor.onFillEof();
+                            }
+
                             lastFillFailed = true;
                         }
                     } else {

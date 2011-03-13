@@ -30,29 +30,39 @@
 
 package org.restlet.test.bench;
 
+import java.util.logging.Level;
+
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
+import org.restlet.engine.ConnectorHelper;
+import org.restlet.engine.Engine;
 import org.restlet.representation.FileRepresentation;
 
 public class TestGetServer {
 
     public static void main(String[] args) throws Exception {
+        ConnectorHelper<Server> helper;
+        helper = new org.restlet.engine.connector.HttpServerHelper(null);
+        Engine.getInstance().getRegisteredServers().add(0, helper);
+        Engine.setLogLevel(Level.FINE);
 
-        Server server = new Server(Protocol.HTTP, 8554, new Restlet() {
-            @Override
-            public void handle(Request request, Response response) {
-                FileRepresentation fr = new FileRepresentation(
-                        "file:///c:/test.mpg", MediaType.VIDEO_MPEG);
-                System.out.println("Size sent: " + fr.getSize());
-                response.setEntity(fr);
-            }
-        });
+        Server server = new Server(new Context(), Protocol.HTTP, 8554,
+                new Restlet() {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        FileRepresentation fr = new FileRepresentation(
+                                "file:///c:/TEST/restlet-jse-2.0.5-ff.zip",
+                                MediaType.APPLICATION_ZIP);
+                        System.out.println("Size sent: " + fr.getSize());
+                        response.setEntity(fr);
+                    }
+                });
 
         server.start();
     }
-
 }

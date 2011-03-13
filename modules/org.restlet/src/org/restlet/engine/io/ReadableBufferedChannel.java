@@ -147,6 +147,12 @@ public class ReadableBufferedChannel extends
     }
 
     /**
+     * Called back when a fill operation returns with an EOF status.
+     */
+    public void onFillEof() {
+    }
+
+    /**
      * Drains the byte buffer.
      * 
      * @param buffer
@@ -208,6 +214,10 @@ public class ReadableBufferedChannel extends
      */
     protected void setEndReached(boolean endReached) {
         this.endReached = endReached;
+
+        if (this.endReached) {
+            onCompleted(false);
+        }
     }
 
 }

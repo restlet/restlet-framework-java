@@ -252,20 +252,6 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
-    public void updateState() {
-        if ((getMessageState() == MessageState.IDLE) && (getMessage() != null)) {
-            setMessageState(MessageState.START);
-            setIoState(IoState.INTEREST);
-        }
-
-        if (getBuffer().canDrain()) {
-            setIoState(IoState.INTEREST);
-        }
-
-        super.updateState();
-    }
-
-    @Override
     public int onDrain(Buffer buffer, int maxDrained, Object... args)
             throws IOException {
         int result = getBuffer().drain(
@@ -329,6 +315,13 @@ public abstract class OutboundWay extends Way {
                     // Put the whole builder line in the buffer
                     buffer.fill(StringUtils.getLatin1Bytes(getLineBuilder()
                             .toString()));
+
+                    if (getLogger().isLoggable(Level.FINE)) {
+                        String line = getLineBuilder().toString();
+                        line = line.substring(0, line.length() - 2);
+                        getLogger().log(Level.FINE, line);
+                    }
+
                     clearLineBuilder();
                 } else {
                     // Put the maximum number of characters
@@ -341,6 +334,12 @@ public abstract class OutboundWay extends Way {
         }
 
         return remaining - buffer.remaining();
+    }
+
+    /**
+     * Called back when a fill operation returns with an EOF status.
+     */
+    public void onFillEof() {
     }
 
     @Override
@@ -412,6 +411,20 @@ public abstract class OutboundWay extends Way {
     protected boolean shouldBeChunked(Representation entity) {
         return (entity != null)
                 && (entity.getAvailableSize() == Representation.UNKNOWN_SIZE);
+    }
+
+    @Override
+    public void updateState() {
+        if ((getMessageState() == MessageState.IDLE) && (getMessage() != null)) {
+            setMessageState(MessageState.START);
+            setIoState(IoState.INTEREST);
+        }
+
+        if (getBuffer().canDrain()) {
+            setIoState(IoState.INTEREST);
+        }
+
+        super.updateState();
     }
 
     /**

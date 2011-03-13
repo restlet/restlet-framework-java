@@ -389,16 +389,9 @@ public abstract class Way implements SelectionListener, CompletionListener,
                 // Socket channel exhausted
                 setIoState(IoState.INTEREST);
             }
-
         } catch (Exception e) {
-            getLogger()
-                    .log(Level.FINE,
-                            "Error while processing a message. Closing the connection.",
-                            e);
-            getConnection()
-                    .onError(
-                            "Error while processing a message. Closing the connection.",
-                            e, Status.CONNECTOR_ERROR_COMMUNICATION);
+            getConnection().onError("Error while processing a connection", e,
+                    Status.CONNECTOR_ERROR_COMMUNICATION);
         }
     }
 
