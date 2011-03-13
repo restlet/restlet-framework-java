@@ -231,13 +231,13 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
                             "The last chunk line had a non empty line");
                 }
 
-                setEndReached(true);
+                setEofDetected(true);
             }
             break;
         }
 
         if (result == -1) {
-            onCompleted(isEndReached());
+            onCompleted(isEofDetected());
         } else {
             result = before - buffer.remaining();
         }

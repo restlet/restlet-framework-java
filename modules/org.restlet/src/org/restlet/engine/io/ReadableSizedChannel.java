@@ -48,7 +48,7 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
     private volatile long availableSize;
 
     /** Indicates if the end of the wrapped channel has been reached. */
-    private volatile boolean endReached;
+    private volatile boolean eofDetected;
 
     /**
      * Constructor.
@@ -62,7 +62,7 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
     public ReadableSizedChannel(ReadableByteChannel source, long availableSize) {
         super(source);
         this.availableSize = availableSize;
-        this.endReached = false;
+        this.eofDetected = false;
     }
 
     /**
@@ -72,6 +72,15 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
      */
     protected long getAvailableSize() {
         return availableSize;
+    }
+
+    /**
+     * Indicates if the EOF of the wrapped channel has been detected.
+     * 
+     * @return True if the EOF of the wrapped channel has been detected.
+     */
+    protected boolean isEofDetected() {
+        return eofDetected;
     }
 
     /**
@@ -109,13 +118,13 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
                 }
             }
         } else if (result == -1) {
-            this.endReached = true;
+            this.eofDetected = true;
         }
 
         if ((result == -1)
                 && (getWrappedChannel() instanceof CompletionListener)) {
             ((CompletionListener) getWrappedChannel())
-                    .onCompleted(this.endReached);
+                    .onCompleted(isEofDetected());
         }
 
         return result;
@@ -130,5 +139,15 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
      */
     protected void setAvailableSize(long availableSize) {
         this.availableSize = availableSize;
+    }
+
+    /**
+     * Indicates if the EOF of the wrapped channel has been detected.
+     * 
+     * @param eofDetected
+     *            True if the EOF of the wrapped channel has been detected.
+     */
+    protected void setEofDetected(boolean eofDetected) {
+        this.eofDetected = eofDetected;
     }
 }

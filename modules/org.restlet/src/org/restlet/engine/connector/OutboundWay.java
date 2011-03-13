@@ -241,6 +241,13 @@ public abstract class OutboundWay extends Way {
      */
     protected abstract void handle(Response response);
 
+    /**
+     * Called back upon completion.
+     */
+    public void onCompleted() {
+        onCompleted(false);
+    }
+
     @Override
     public void onCompleted(boolean endReached) {
         super.onCompleted(endReached);

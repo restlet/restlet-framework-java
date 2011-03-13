@@ -52,7 +52,7 @@ public class ReadableBufferedChannel extends
     private final CompletionListener completionListener;
 
     /** Indicates if the end of the channel has been reached. */
-    private volatile boolean endReached;
+    private volatile boolean eofDetected;
 
     /**
      * Constructor.
@@ -71,7 +71,7 @@ public class ReadableBufferedChannel extends
         setRegistration(new SelectionRegistration(0, null));
         this.completionListener = completionListener;
         this.buffer = buffer;
-        this.endReached = false;
+        this.eofDetected = false;
     }
 
     /**
@@ -102,7 +102,7 @@ public class ReadableBufferedChannel extends
      * @return True if the buffer could be filled again.
      */
     public boolean couldFill(Buffer buffer, Object... args) {
-        return !isEndReached();
+        return !isEofDetected();
     }
 
     /**
@@ -128,8 +128,15 @@ public class ReadableBufferedChannel extends
      * 
      * @return True if the end of the channel has been reached.
      */
-    protected boolean isEndReached() {
-        return endReached;
+    protected boolean isEofDetected() {
+        return eofDetected;
+    }
+
+    /**
+     * Called back when the end of the channel has been fully read.
+     */
+    public void onCompleted() {
+        onCompleted(isEofDetected());
     }
 
     /**
@@ -171,7 +178,7 @@ public class ReadableBufferedChannel extends
         int result = refill();
 
         if (result == -1) {
-            setEndReached(true);
+            setEofDetected(true);
         }
 
         return result;
@@ -206,8 +213,8 @@ public class ReadableBufferedChannel extends
      * @param endReached
      *            True if the end of the channel has been reached.
      */
-    protected void setEndReached(boolean endReached) {
-        this.endReached = endReached;
+    protected void setEofDetected(boolean endReached) {
+        this.eofDetected = endReached;
     }
 
 }

@@ -137,6 +137,12 @@ public class NbChannelInputStream extends InputStream implements
     }
 
     /**
+     * Called back upon completion.
+     */
+    public void onCompleted() {
+    }
+
+    /**
      * Drains the byte buffer by returning available bytes as
      * {@link InputStream} bytes.
      * 
