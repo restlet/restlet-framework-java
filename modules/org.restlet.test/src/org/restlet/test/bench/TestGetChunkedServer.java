@@ -38,28 +38,48 @@ import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
+import org.restlet.engine.ConnectorHelper;
+import org.restlet.engine.Engine;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.InputRepresentation;
 
 public class TestGetChunkedServer {
 
     public static void main(String[] args) throws Exception {
+        ConnectorHelper<Server> helper = null;
+        helper = new org.restlet.engine.connector.HttpServerHelper(null);
 
+        // Register the selected connector
+        Engine.getInstance().getRegisteredServers().add(0, helper);
+        // Engine.setLogLevel(Level.FINEST);
+
+        // Create and start a connector instance
         Server server = new Server(Protocol.HTTP, 8554, new Restlet() {
             @Override
             public void handle(Request request, Response response) {
                 try {
                     FileRepresentation fr = new FileRepresentation(
-                            "file:///c:/test.mpg", MediaType.VIDEO_MPEG);
+                            "file:///c:/TEST/restlet-jse-2.0.5-ff.zip",
+                            MediaType.APPLICATION_ZIP);
                     System.out.println("Size sent: " + fr.getSize());
-                    InputRepresentation ir = new InputRepresentation(fr
-                            .getStream(), fr.getMediaType());
+                    InputRepresentation ir = new InputRepresentation(
+                            fr.getStream(), fr.getMediaType());
                     response.setEntity(ir);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
+
+        server.getContext().getParameters().add("tracing", "false");
+        server.getContext().getParameters().add("minThreads", "1");
+        server.getContext().getParameters().add("lowThreads", "30");
+        server.getContext().getParameters().add("maxThreads", "40");
+        server.getContext().getParameters().add("maxQueued", "0");
+        server.getContext().getParameters().add("directBuffers", "false");
+        server.getContext().getParameters().add("workerThreads", "true");
+        server.getContext().getParameters().add("pooledConnections", "true");
+        server.getContext().getParameters().add("maxIoIdleTimeMs", "3000000");
 
         server.start();
     }
