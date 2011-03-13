@@ -195,13 +195,6 @@ public abstract class InboundWay extends Way {
                 && (getMessageState() != MessageState.BODY) && fillLine();
     }
 
-    /**
-     * Called back upon completion.
-     */
-    public void onCompleted() {
-        onCompleted(false);
-    }
-
     @Override
     public void onCompleted(boolean endDetected) {
         super.onCompleted(endDetected);
