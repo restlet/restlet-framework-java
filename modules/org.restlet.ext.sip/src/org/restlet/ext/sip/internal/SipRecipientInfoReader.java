@@ -35,9 +35,7 @@ import java.util.Collection;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.data.RecipientInfo;
 import org.restlet.engine.header.HeaderReader;
-import org.restlet.engine.header.RecipientInfoReader;
 import org.restlet.ext.sip.SipRecipientInfo;
 
 /**
