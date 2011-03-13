@@ -99,11 +99,11 @@ public class ReadableSizedSelectionChannel extends ReadableBufferedChannel {
                 }
             }
         } else if (result == -1) {
-            setEofDetected(true);
+            setEndReached(true);
         }
 
         if (result == -1) {
-            onCompleted(isEofDetected());
+            onCompleted(isEndReached());
         }
 
         return result;
@@ -118,7 +118,7 @@ public class ReadableSizedSelectionChannel extends ReadableBufferedChannel {
      */
     protected void setAvailableSize(long availableSize) {
         this.availableSize = availableSize;
-        setEofDetected(this.availableSize == 0);
+        setEndReached(this.availableSize == 0);
     }
 
 }

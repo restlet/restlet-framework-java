@@ -278,8 +278,8 @@ public abstract class OutboundWay extends Way {
         int result = getBuffer().drain(
                 getConnection().getWritableSelectionChannel());
 
-        if (getLogger().isLoggable(Level.FINE)) {
-            getLogger().log(Level.FINE, result + " bytes written");
+        if (getLogger().isLoggable(Level.FINER)) {
+            getLogger().log(Level.FINER, result + " bytes written");
         }
 
         if (getHelper().getThrottleTimeMs() > 0) {

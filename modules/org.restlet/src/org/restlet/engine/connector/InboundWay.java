@@ -255,8 +255,8 @@ public abstract class InboundWay extends Way {
 
         result = beforeDrain - buffer.remaining();
 
-        if (getLogger().isLoggable(Level.FINE)) {
-            getLogger().log(Level.FINE, result + " bytes read");
+        if (getLogger().isLoggable(Level.FINER)) {
+            getLogger().log(Level.FINER, result + " bytes read");
         }
 
         return result;

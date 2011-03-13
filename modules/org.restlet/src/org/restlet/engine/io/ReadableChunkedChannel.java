@@ -196,8 +196,8 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
                 if (result > 0) {
                     setRemainingChunkSize(getRemainingChunkSize() - result);
                 } else {
-                    if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
-                        Context.getCurrentLogger().fine("No chunk data read");
+                    if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                        Context.getCurrentLogger().finer("No chunk data read");
                     }
                 }
             }
@@ -231,13 +231,13 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
                             "The last chunk line had a non empty line");
                 }
 
-                setEofDetected(true);
+                setEndReached(true);
             }
             break;
         }
 
         if (result == -1) {
-            onCompleted(isEofDetected());
+            onCompleted(isEndReached());
         } else {
             result = before - buffer.remaining();
         }
