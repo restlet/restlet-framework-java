@@ -39,6 +39,7 @@ import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.engine.connector.ClientInboundWay;
 import org.restlet.engine.connector.Connection;
+import org.restlet.engine.connector.MessageState;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.IoState;
 import org.restlet.ext.sip.SipRequest;
@@ -336,6 +337,10 @@ public class SipClientInboundWay extends ClientInboundWay {
 
     @Override
     public void updateState() {
+        if (getMessageState() == MessageState.IDLE) {
+            setMessageState(MessageState.START);
+        }
+
         if (getIoState() == IoState.IDLE) {
             // Read the next response
             setIoState(IoState.INTEREST);
@@ -344,5 +349,4 @@ public class SipClientInboundWay extends ClientInboundWay {
         // Update the registration
         super.updateState();
     }
-
 }

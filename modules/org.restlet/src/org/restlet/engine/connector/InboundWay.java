@@ -389,7 +389,7 @@ public abstract class InboundWay extends Way {
                 getRegistration().setInterestOperations(0);
             }
         } else {
-            getRegistration().setInterestOperations(getInterestOperations());
+            super.updateState();
         }
     }
 }
