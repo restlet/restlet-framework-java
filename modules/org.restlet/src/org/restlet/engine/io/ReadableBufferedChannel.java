@@ -67,11 +67,6 @@ public class ReadableBufferedChannel extends
         this.endReached = false;
     }
 
-    @Override
-    public void close() throws IOException {
-        // Don't actually close to protect the persistent connection
-    }
-
     /**
      * Indicates if the buffer could be filled again.
      * 

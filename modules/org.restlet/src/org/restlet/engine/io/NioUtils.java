@@ -34,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channel;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -55,6 +56,34 @@ import org.restlet.representation.Representation;
  * @author Jerome Louvel
  */
 public class NioUtils {
+
+    /**
+     * Writes the source buffer to the target buffer, up to a maximum number of
+     * bytes.
+     * 
+     * @param sourceBuffer
+     *            The source buffer.
+     * @param targetBuffer
+     *            The target buffer.
+     * @param maxCopied
+     *            The maximum number of bytes copied by this call or 0 for
+     *            unlimited length.
+     * @return The number of bytes added to the target buffer.
+     */
+    public static int copy(ByteBuffer sourceBuffer, ByteBuffer targetBuffer,
+            long maxCopied) {
+        int maxBuffer = Math.min(sourceBuffer.remaining(),
+                targetBuffer.remaining());
+        int result = (maxCopied == 0) ? maxBuffer : Math.min((int) maxCopied,
+                maxBuffer);
+
+        // Copy the byte to the target buffer
+        for (int i = 0; i < result; i++) {
+            targetBuffer.put(sourceBuffer.get());
+        }
+
+        return result;
+    }
 
     /**
      * Writes the representation to a byte channel. Optimizes using the file

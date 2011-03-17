@@ -266,17 +266,7 @@ public class Buffer {
      * @return The number of bytes added to the target buffer.
      */
     public int drain(ByteBuffer targetBuffer, long maxDrained) {
-        int maxBuffer = Math.min(getBytes().remaining(),
-                targetBuffer.remaining());
-        int result = (maxDrained == 0) ? maxBuffer : Math.min((int) maxDrained,
-                maxBuffer);
-
-        // Copy the byte to the target buffer
-        for (int i = 0; i < result; i++) {
-            targetBuffer.put(getBytes().get());
-        }
-
-        return result;
+        return NioUtils.copy(getBytes(), targetBuffer, maxDrained);
     }
 
     /**
@@ -341,15 +331,42 @@ public class Buffer {
     }
 
     /**
-     * Fills the byte buffer by copying as many bytes as possible to the target
-     * buffer, with no modification.
+     * Fills the byte buffer by copying as many bytes as possible from the
+     * source buffer, with no modification.
      * 
-     * @param targetBuffer
-     *            The target buffer.
-     * @return The number of bytes added to the target buffer.
+     * @param sourceBuffer
+     *            The source buffer.
+     * @return The number of bytes added from the source buffer.
      */
-    public void fill(byte[] targetBuffer) {
-        getBytes().put(targetBuffer);
+    public void fill(byte[] sourceBuffer) {
+        getBytes().put(sourceBuffer);
+    }
+
+    /**
+     * Fills the byte buffer by copying as many bytes as possible from the
+     * source buffer, with no modification.
+     * 
+     * @param sourceBuffer
+     *            The source buffer.
+     * @return The number of bytes added from the source buffer.
+     */
+    public int fill(ByteBuffer sourceBuffer) {
+        return fill(sourceBuffer, 0);
+    }
+
+    /**
+     * Fills the byte buffer by copying as many bytes as possible from the
+     * source buffer, with no modification.
+     * 
+     * @param sourceBuffer
+     *            The source buffer.
+     * @param maxFilled
+     *            The maximum number of bytes filled by this call or 0 for
+     *            unlimited length.
+     * @return The number of bytes added from the source buffer.
+     */
+    public int fill(ByteBuffer sourceBuffer, long maxFilled) {
+        return NioUtils.copy(sourceBuffer, getBytes(), maxFilled);
     }
 
     /**
@@ -357,7 +374,7 @@ public class Buffer {
      * 
      * @param sourceChannel
      *            The byte channel to read from.
-     * @return The number of bytes read and added to the buffer or -1 if end of
+     * @return The number of bytes read and added or -1 if end of the source
      *         channel reached.
      * @throws IOException
      */
