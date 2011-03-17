@@ -31,16 +31,13 @@
 package org.restlet.ext.ssl.internal;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.logging.Level;
 
 import javax.net.ssl.SSLEngineResult;
-import javax.net.ssl.SSLSession;
 
 import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.SelectionChannel;
-import org.restlet.engine.io.WrapperSelectionChannel;
+import org.restlet.engine.io.WritableBufferedChannel;
 import org.restlet.engine.io.WritableSelectionChannel;
 
 /**
@@ -50,64 +47,25 @@ import org.restlet.engine.io.WritableSelectionChannel;
  * 
  * @author Jerome Louvel
  */
-public class WritableSslChannel extends
-        WrapperSelectionChannel<WritableSelectionChannel> implements
-        WritableSelectionChannel, TasksListener {
+public class WritableSslChannel extends WritableBufferedChannel implements
+        TasksListener {
 
     /** The parent SSL connection. */
     private final SslConnection<?> connection;
 
-    /** The packet IO buffer. */
-    private volatile Buffer packetBuffer;
-
     /**
      * Constructor.
      * 
-     * @param wrappedChannel
+     * @param target
      *            The wrapped channel.
      * @param connection
      *            The parent SSL connection.
      */
-    public WritableSslChannel(WritableSelectionChannel wrappedChannel,
+    public WritableSslChannel(WritableSelectionChannel target,
             SslConnection<?> connection) {
-        super(wrappedChannel);
+        super(new Buffer(connection.getPacketBufferSize(), connection
+                .getHelper().isDirectBuffers()), target);
         this.connection = connection;
-
-        if (connection != null) {
-            SSLSession session = connection.getSslSession();
-            int packetSize = session.getPacketBufferSize();
-            this.packetBuffer = new Buffer(packetSize, getConnection()
-                    .getHelper().isDirectBuffers());
-        } else {
-            this.packetBuffer = null;
-        }
-    }
-
-    /**
-     * Drains the packet buffer if it is in draining state.
-     * 
-     * @return The number of bytes flushed.
-     * @throws IOException
-     */
-    protected int drain() throws IOException {
-        int result = 0;
-
-        if (getPacketBuffer().isDraining()) {
-            if (getWrappedChannel().isOpen()) {
-                result = getPacketBuffer().drain(getWrappedChannel());
-
-                if (getConnection().getLogger().isLoggable(Level.FINE)) {
-                    getConnection().getLogger().log(Level.FINE,
-                            "Packet bytes written: " + result);
-                }
-
-                if (!getPacketBuffer().hasRemaining()) {
-                    getPacketBuffer().clear();
-                }
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -120,15 +78,6 @@ public class WritableSslChannel extends
     }
 
     /**
-     * Returns the SSL/TLS packet IO buffer.
-     * 
-     * @return The SSL/TLS packet IO buffer.
-     */
-    protected Buffer getPacketBuffer() {
-        return packetBuffer;
-    }
-
-    /**
      * Callback method invoked upon delegated tasks completion.
      */
     public void onCompleted() {
@@ -137,75 +86,38 @@ public class WritableSslChannel extends
         }
     }
 
-    /**
-     * Run the SSL engine to wrap the application bytes into packet bytes.
-     * 
-     * @param applicationBuffer
-     *            The target application buffer.
-     * @return The SSL engine result.
-     * @throws IOException
-     */
-    protected SSLEngineResult wrap(ByteBuffer applicationBuffer)
-            throws IOException {
-        SSLEngineResult result = null;
-        getPacketBuffer().beforeFill();
-
-        if (getConnection().getLogger().isLoggable(Level.FINE)) {
-            getConnection()
-                    .getLogger()
-                    .log(Level.FINE,
-                            "---------------------------------------------------------------------------------");
-            getConnection().getLogger().log(Level.FINE,
-                    "Wrapping application buffer: " + applicationBuffer);
-            getConnection().getLogger().log(Level.FINE,
-                    "into packet buffer: " + getPacketBuffer());
-        }
-
-        result = getConnection().getSslEngine().wrap(applicationBuffer,
-                getPacketBuffer().getBytes());
-
-        // Let's drain the packet buffer
-        if (getPacketBuffer().couldDrain()) {
-            getPacketBuffer().beforeDrain();
-        }
-
-        return result;
-    }
-
-    /**
-     * Writes the available bytes to the wrapped channel by wrapping them with
-     * the SSL/TLS protocols.
-     * 
-     * @param src
-     *            The source buffer.
-     * @return The number of bytes written.
-     */
-    public int write(ByteBuffer src) throws IOException {
+    @Override
+    public int onFill(Buffer buffer, Object... args) throws IOException {
         int result = 0;
 
         if (getConnection().getSslState() == SslState.READING_APPLICATION_DATA) {
             getConnection().setSslState(SslState.WRITING_APPLICATION_DATA);
         }
 
-        // If the packet buffer isn't empty, first try to flush it
-        drain();
-
         // Refill the packet buffer
-        if ((getPacketBuffer().isFilling())
+        if ((getBuffer().isFilling())
                 || (getConnection().getSslState() == SslState.HANDSHAKING)) {
-            int srcSize = src.remaining();
+            int srcSize = buffer.remaining();
 
             if (srcSize > 0) {
-                while (getPacketBuffer().hasRemaining()
+                while (getBuffer().hasRemaining()
                         && (getConnection().getOutboundWay().getIoState() != IoState.IDLE)
-                        && src.hasRemaining()) {
-                    SSLEngineResult sslResult = wrap(src);
-                    getConnection().handleResult(sslResult, getPacketBuffer(),
-                            src, this);
-                    drain();
+                        && buffer.hasRemaining()) {
+                    getBuffer().beforeFill();
+                    SSLEngineResult sslResult = getConnection().getSslEngine()
+                            .wrap(buffer.getBytes(), getBuffer().getBytes());
+
+                    // Let's drain the packet buffer
+                    if (getBuffer().couldDrain()) {
+                        getBuffer().beforeDrain();
+                    }
+
+                    getConnection().handleResult(sslResult, getBuffer(),
+                            buffer.getBytes(), this);
+                    // drain();
                 }
 
-                result = srcSize - src.remaining();
+                result = srcSize - buffer.remaining();
             }
         }
 

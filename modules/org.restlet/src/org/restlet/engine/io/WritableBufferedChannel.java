@@ -80,7 +80,7 @@ public class WritableBufferedChannel extends
      *            The optional arguments to pass back to the callbacks.
      * @throws IOException
      */
-    public int onDrain(Buffer buffer, int maxDrained, Object... args)
+    public final int onDrain(Buffer buffer, int maxDrained, Object... args)
             throws IOException {
         return getBuffer().drain(getWrappedChannel());
     }
@@ -90,7 +90,7 @@ public class WritableBufferedChannel extends
      * 
      * @throws IOException
      */
-    public final int onFill(Buffer buffer, Object... args) throws IOException {
+    public int onFill(Buffer buffer, Object... args) throws IOException {
         return getBuffer().fill((ByteBuffer) args[0]);
     }
 
