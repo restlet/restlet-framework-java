@@ -35,6 +35,7 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 
 import org.restlet.Client;
 import org.restlet.data.Protocol;
@@ -48,7 +49,6 @@ import org.restlet.engine.connector.OutboundWay;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.ext.ssl.internal.SslConnection;
-import org.restlet.ext.ssl.internal.SslManager;
 
 /**
  * HTTPS client helper based on NIO blocking sockets.
@@ -75,10 +75,18 @@ public class HttpsClientHelper extends ClientConnectionHelper {
     protected Connection<Client> createConnection(SocketChannel socketChannel,
             ConnectionController controller, InetSocketAddress socketAddress)
             throws IOException {
-        SslManager sslManager = new SslManager(getSslContext(), socketAddress,
-                isClientSide());
+        // Create the SSL engine
+        SSLEngine engine;
+
+        if (socketAddress != null) {
+            engine = getSslContext().createSSLEngine(
+                    socketAddress.getHostName(), socketAddress.getPort());
+        } else {
+            engine = getSslContext().createSSLEngine();
+        }
+
         return new SslConnection<Client>(this, socketChannel, controller,
-                socketAddress, sslManager);
+                socketAddress, engine);
     }
 
     @Override

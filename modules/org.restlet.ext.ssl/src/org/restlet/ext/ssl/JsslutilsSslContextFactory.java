@@ -33,11 +33,9 @@ package org.restlet.ext.ssl;
 import javax.net.ssl.SSLContext;
 
 import org.jsslutils.sslcontext.SSLContextFactory;
-
 import org.restlet.data.Parameter;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.util.Series;
-
 
 /**
  * This SslContextFactory is a wrapper for the SSLContextFactory of <a

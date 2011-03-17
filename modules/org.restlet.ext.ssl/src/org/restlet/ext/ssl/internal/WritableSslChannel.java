@@ -40,6 +40,7 @@ import javax.net.ssl.SSLSession;
 import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.SelectionChannel;
+import org.restlet.engine.io.WrapperSelectionChannel;
 import org.restlet.engine.io.WritableSelectionChannel;
 
 /**
@@ -49,8 +50,12 @@ import org.restlet.engine.io.WritableSelectionChannel;
  * 
  * @author Jerome Louvel
  */
-public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
-        implements WritableSelectionChannel {
+public class WritableSslChannel extends
+        WrapperSelectionChannel<WritableSelectionChannel> implements
+        WritableSelectionChannel, TasksListener {
+
+    /** The parent SSL connection. */
+    private final SslConnection<?> connection;
 
     /** The packet IO buffer. */
     private volatile Buffer packetBuffer;
@@ -60,17 +65,16 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
      * 
      * @param wrappedChannel
      *            The wrapped channel.
-     * @param manager
-     *            The SSL manager.
      * @param connection
      *            The parent SSL connection.
      */
     public WritableSslChannel(WritableSelectionChannel wrappedChannel,
-            SslManager manager, SslConnection<?> connection) {
-        super(wrappedChannel, manager, connection);
+            SslConnection<?> connection) {
+        super(wrappedChannel);
+        this.connection = connection;
 
-        if (manager != null) {
-            SSLSession session = manager.getSession();
+        if (connection != null) {
+            SSLSession session = connection.getSslSession();
             int packetSize = session.getPacketBufferSize();
             this.packetBuffer = new Buffer(packetSize, getConnection()
                     .getHelper().isDirectBuffers());
@@ -107,6 +111,15 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
     }
 
     /**
+     * Returns the parent SSL connection.
+     * 
+     * @return The parent SSL connection.
+     */
+    protected SslConnection<?> getConnection() {
+        return connection;
+    }
+
+    /**
      * Returns the SSL/TLS packet IO buffer.
      * 
      * @return The SSL/TLS packet IO buffer.
@@ -115,11 +128,48 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
         return packetBuffer;
     }
 
-    @Override
-    protected void onDelegatedTasksCompleted() {
+    /**
+     * Callback method invoked upon delegated tasks completion.
+     */
+    public void onCompleted() {
         if (getConnection().getOutboundWay().getIoState() == IoState.IDLE) {
             getConnection().getOutboundWay().setIoState(IoState.INTEREST);
         }
+    }
+
+    /**
+     * Run the SSL engine to wrap the application bytes into packet bytes.
+     * 
+     * @param applicationBuffer
+     *            The target application buffer.
+     * @return The SSL engine result.
+     * @throws IOException
+     */
+    protected SSLEngineResult wrap(ByteBuffer applicationBuffer)
+            throws IOException {
+        SSLEngineResult result = null;
+        getPacketBuffer().beforeFill();
+
+        if (getConnection().getLogger().isLoggable(Level.FINE)) {
+            getConnection()
+                    .getLogger()
+                    .log(Level.FINE,
+                            "---------------------------------------------------------------------------------");
+            getConnection().getLogger().log(Level.FINE,
+                    "Wrapping application buffer: " + applicationBuffer);
+            getConnection().getLogger().log(Level.FINE,
+                    "into packet buffer: " + getPacketBuffer());
+        }
+
+        result = getConnection().getSslEngine().wrap(applicationBuffer,
+                getPacketBuffer().getBytes());
+
+        // Let's drain the packet buffer
+        if (getPacketBuffer().couldDrain()) {
+            getPacketBuffer().beforeDrain();
+        }
+
+        return result;
     }
 
     /**
@@ -133,8 +183,8 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
     public int write(ByteBuffer src) throws IOException {
         int result = 0;
 
-        if (getManager().getState() == SslState.READING_APPLICATION_DATA) {
-            getManager().setState(SslState.WRITING_APPLICATION_DATA);
+        if (getConnection().getSslState() == SslState.READING_APPLICATION_DATA) {
+            getConnection().setSslState(SslState.WRITING_APPLICATION_DATA);
         }
 
         // If the packet buffer isn't empty, first try to flush it
@@ -142,7 +192,7 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
 
         // Refill the packet buffer
         if ((getPacketBuffer().isFilling())
-                || (getManager().getState() == SslState.HANDSHAKING)) {
+                || (getConnection().getSslState() == SslState.HANDSHAKING)) {
             int srcSize = src.remaining();
 
             if (srcSize > 0) {
@@ -150,7 +200,8 @@ public class WritableSslChannel extends SslChannel<WritableSelectionChannel>
                         && (getConnection().getOutboundWay().getIoState() != IoState.IDLE)
                         && src.hasRemaining()) {
                     SSLEngineResult sslResult = wrap(src);
-                    handleResult(sslResult, src);
+                    getConnection().handleResult(sslResult, getPacketBuffer(),
+                            src, this);
                     drain();
                 }
 

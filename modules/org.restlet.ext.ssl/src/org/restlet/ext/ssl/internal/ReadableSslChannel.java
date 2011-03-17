@@ -32,6 +32,7 @@ package org.restlet.ext.ssl.internal;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
 
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
@@ -42,6 +43,7 @@ import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.ReadableBufferedChannel;
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.engine.io.SelectionChannel;
+import org.restlet.engine.io.WrapperSelectionChannel;
 
 /**
  * SSL byte channel that unwraps all read data using the SSL/TLS protocols. It
@@ -50,22 +52,25 @@ import org.restlet.engine.io.SelectionChannel;
  * 
  * @author Jerome Louvel
  */
-public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
-        implements ReadableSelectionChannel {
+public class ReadableSslChannel extends
+        WrapperSelectionChannel<ReadableBufferedChannel> implements
+        ReadableSelectionChannel, TasksListener {
+
+    /** The parent SSL connection. */
+    private final SslConnection<?> connection;
 
     /**
      * Constructor.
      * 
      * @param wrappedChannel
      *            The wrapped channel.
-     * @param manager
-     *            The SSL manager.
      * @param connection
      *            The parent SSL connection.
      */
     public ReadableSslChannel(ReadableBufferedChannel wrappedChannel,
-            SslManager manager, SslConnection<?> connection) {
-        super(wrappedChannel, manager, connection);
+            SslConnection<?> connection) {
+        super(wrappedChannel);
+        this.connection = connection;
     }
 
     /**
@@ -77,7 +82,7 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
      */
     protected boolean canRead(ByteBuffer dst) {
         return dst.hasRemaining()
-                && (getManager().getState() != SslState.CLOSED)
+                && (getConnection().getSslState() != SslState.CLOSED)
                 && getPacketBuffer().hasRemaining()
                 // && (getPacketBufferState() == BufferState.FILLING)
                 && (getConnection().getInboundWay().getIoState() != IoState.IDLE);
@@ -89,8 +94,8 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
      * @return True if draining can be retried.
      */
     public boolean canRetry(int lastRead, ByteBuffer targetBuffer) {
-        return ((lastRead > 0) || ((getManager().getState() == SslState.HANDSHAKING)
-                && (getManager().getEngineStatus() == Status.OK) && (getManager()
+        return ((lastRead > 0) || ((getConnection().getSslState() == SslState.HANDSHAKING)
+                && (getConnection().getSslEngineStatus() == Status.OK) && (getConnection()
                 .getHandshakeStatus() == HandshakeStatus.NEED_UNWRAP)))
                 && targetBuffer.hasRemaining();
     }
@@ -109,11 +114,12 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
         int dstSize = targetBuffer.remaining();
         SSLEngineResult sslResult = null;
 
-        switch (getManager().getState()) {
+        switch (getConnection().getSslState()) {
         case READING_APPLICATION_DATA:
         case HANDSHAKING:
             sslResult = unwrap(targetBuffer);
-            handleResult(sslResult, targetBuffer);
+            getConnection().handleResult(sslResult, getPacketBuffer(),
+                    targetBuffer, this);
             break;
         case CLOSED:
         case WRITING_APPLICATION_DATA:
@@ -128,13 +134,28 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
         return result;
     }
 
-    @Override
+    /**
+     * Returns the parent SSL connection.
+     * 
+     * @return The parent SSL connection.
+     */
+    protected SslConnection<?> getConnection() {
+        return connection;
+    }
+
+    /**
+     * Returns the SSL/TLS packet IO buffer.
+     * 
+     * @return The SSL/TLS packet IO buffer.
+     */
     protected Buffer getPacketBuffer() {
         return getWrappedChannel().getBuffer();
     }
 
-    @Override
-    protected void onDelegatedTasksCompleted() {
+    /**
+     * Callback method invoked upon delegated tasks completion.
+     */
+    public void onCompleted() {
         if (getConnection().getInboundWay().getIoState() == IoState.IDLE) {
             getConnection().getInboundWay().setIoState(IoState.READY);
         }
@@ -152,16 +173,63 @@ public class ReadableSslChannel extends SslChannel<ReadableBufferedChannel>
         int result = 0;
         boolean continueReading = true;
 
-        if (getManager().getState() == SslState.WRITING_APPLICATION_DATA) {
-            getManager().setState(SslState.READING_APPLICATION_DATA);
+        if (getConnection().getSslState() == SslState.WRITING_APPLICATION_DATA) {
+            getConnection().setSslState(SslState.READING_APPLICATION_DATA);
         }
 
         while (continueReading) {
             result += drain(targetBuffer);
             getPacketBuffer().beforeFill();
             continueReading = (getWrappedChannel().refill() > 0)
-                    || (getPacketBuffer().couldDrain() && (getManager()
-                            .getEngineStatus() == Status.OK));
+                    || (getPacketBuffer().couldDrain() && (getConnection()
+                            .getSslEngineStatus() == Status.OK));
+        }
+
+        return result;
+    }
+
+    /**
+     * Run the SSL engine to unwrap the packet bytes into application bytes.
+     * 
+     * @param applicationBuffer
+     *            The target application buffer.
+     * @return The SSL engine result.
+     * @throws IOException
+     */
+    protected SSLEngineResult unwrap(ByteBuffer applicationBuffer)
+            throws IOException {
+        getPacketBuffer().beforeDrain();
+
+        if (getConnection().getLogger().isLoggable(Level.FINE)) {
+            getConnection()
+                    .getLogger()
+                    .log(Level.FINE,
+                            "---------------------------------------------------------------------------------");
+            getConnection().getLogger().log(Level.FINE,
+                    "Unwrapping packet buffer: " + getPacketBuffer());
+            getConnection().getLogger().log(Level.FINE,
+                    "into application buffer: " + applicationBuffer);
+        }
+
+        if (getConnection().getLogger().isLoggable(Level.FINER)) {
+            getConnection().getLogger().log(
+                    Level.FINER,
+                    "Application buffer suggested size: "
+                            + getConnection().getSslEngine().getSession()
+                                    .getApplicationBufferSize());
+            getConnection().getLogger().log(
+                    Level.FINER,
+                    "Packet buffer suggested size: "
+                            + getConnection().getSslEngine().getSession()
+                                    .getPacketBufferSize());
+        }
+
+        SSLEngineResult result = getConnection().getSslEngine().unwrap(
+                getPacketBuffer().getBytes(), applicationBuffer);
+
+        // Let's fill the packet buffer
+        if (getPacketBuffer().couldFill()) {
+            getPacketBuffer().beforeFill();
         }
 
         return result;
