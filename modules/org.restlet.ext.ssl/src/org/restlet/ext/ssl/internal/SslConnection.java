@@ -48,7 +48,6 @@ import org.restlet.engine.connector.ConnectionController;
 import org.restlet.engine.connector.ConnectionHelper;
 import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
-import org.restlet.engine.io.ReadableBufferedChannel;
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.engine.io.WritableSelectionChannel;
 
@@ -108,13 +107,8 @@ public class SslConnection<T extends Connector> extends Connection<T> {
 
     @Override
     protected ReadableSelectionChannel createReadableSelectionChannel() {
-        SSLSession session = getSslSession();
-        int packetSize = session.getPacketBufferSize();
-        ReadableBufferedChannel rbc = new ReadableBufferedChannel(
-                getInboundWay(), new Buffer(packetSize, getHelper()
-                        .isDirectBuffers()),
-                super.createReadableSelectionChannel());
-        return new ReadableSslChannel(rbc, this);
+        return new ReadableSslChannel(super.createReadableSelectionChannel(),
+                this);
     }
 
     @Override

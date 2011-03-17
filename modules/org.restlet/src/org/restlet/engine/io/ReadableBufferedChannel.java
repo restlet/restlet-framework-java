@@ -173,7 +173,7 @@ public class ReadableBufferedChannel extends
      * 
      * @throws IOException
      */
-    public int onFill(Buffer buffer, Object... args) throws IOException {
+    public final int onFill(Buffer buffer, Object... args) throws IOException {
         int result = refill();
 
         if (result == -1) {
