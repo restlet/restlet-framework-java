@@ -33,8 +33,6 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.restlet.util.SelectionRegistration;
-
 // [excludes gwt]
 /**
  * Readable byte channel based on a source socket channel that must only be
@@ -42,11 +40,8 @@ import org.restlet.util.SelectionRegistration;
  * reading more.
  */
 public class ReadableBufferedChannel extends
-        WrapperSelectionChannel<ReadableSelectionChannel> implements
-        ReadableSelectionChannel, BufferProcessor, CompletionListener {
-
-    /** The source IO buffer. */
-    private final Buffer buffer;
+        BufferedSelectionChannel<ReadableSelectionChannel> implements
+        ReadableSelectionChannel, CompletionListener {
 
     /** The completion callback. */
     private final CompletionListener completionListener;
@@ -67,24 +62,9 @@ public class ReadableBufferedChannel extends
      */
     public ReadableBufferedChannel(CompletionListener completionListener,
             Buffer buffer, ReadableSelectionChannel source) {
-        super(source);
-        setRegistration(new SelectionRegistration(0, null));
+        super(buffer, source);
         this.completionListener = completionListener;
-        this.buffer = buffer;
         this.endReached = false;
-    }
-
-    /**
-     * Indicates if the processing loop can continue.
-     * 
-     * @param buffer
-     *            The IO buffer to drain.
-     * @param args
-     *            The optional arguments to pass back to the callbacks.
-     * @return True if the processing loop can continue.
-     */
-    public boolean canLoop(Buffer buffer, Object... args) {
-        return true;
     }
 
     @Override
@@ -103,15 +83,6 @@ public class ReadableBufferedChannel extends
      */
     public boolean couldFill(Buffer buffer, Object... args) {
         return !isEndReached();
-    }
-
-    /**
-     * Returns the source buffer.
-     * 
-     * @return The source buffer.
-     */
-    public Buffer getBuffer() {
-        return buffer;
     }
 
     /**
@@ -144,12 +115,6 @@ public class ReadableBufferedChannel extends
         if (getCompletionListener() != null) {
             getCompletionListener().onCompleted(eofDetected);
         }
-    }
-
-    /**
-     * Called back when a fill operation returns with an EOF status.
-     */
-    public void onFillEof() {
     }
 
     /**
