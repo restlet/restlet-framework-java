@@ -115,7 +115,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      */
     public boolean canLoop(Buffer buffer, Object... args) {
         return (getConnection().getState() != ConnectionState.CLOSED)
-                && (getIoState() == IoState.PROCESSING);
+                && ((getIoState() == IoState.PROCESSING) || (getIoState() == IoState.READY));
     }
 
     /**

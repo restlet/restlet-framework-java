@@ -145,6 +145,16 @@ public abstract class OutboundWay extends Way {
      */
     protected abstract void addHeaders(Series<Parameter> headers);
 
+    /**
+     * Indicates if we should start processing the current message.
+     * 
+     * @return True if we should start processing the current message.
+     */
+    protected boolean canStart() {
+        return (getMessageState() == MessageState.IDLE)
+                && (getMessage() != null);
+    }
+
     @Override
     public void clear() {
         super.clear();
@@ -240,6 +250,18 @@ public abstract class OutboundWay extends Way {
      * @param response
      */
     protected abstract void handle(Response response);
+
+    /**
+     * Indicates if we want to be selected for IO processing when the socket is
+     * ready.
+     * 
+     * @return True if we want to be selected for IO processing when the socket
+     *         is ready.
+     */
+    protected boolean hasIoInterest() {
+        return (getMessageState() == MessageState.START)
+                || getBuffer().canDrain();
+    }
 
     @Override
     public void onCompleted(boolean endReached) {
@@ -415,12 +437,11 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public void updateState() {
-        if ((getMessageState() == MessageState.IDLE) && (getMessage() != null)) {
+        if (canStart()) {
             setMessageState(MessageState.START);
-            setIoState(IoState.INTEREST);
         }
 
-        if (getBuffer().canDrain()) {
+        if (hasIoInterest()) {
             setIoState(IoState.INTEREST);
         }
 
