@@ -114,10 +114,9 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
     @Override
     public int onDrain(Buffer applicationBuffer, int maxDrained, Object... args)
             throws IOException {
-        // if (getConnection().getSslState() ==
-        // SslState.WRITING_APPLICATION_DATA) {
-        // getConnection().setSslState(SslState.READING_APPLICATION_DATA);
-        // }
+        if (getConnection().getSslState() == SslState.WRITING_APPLICATION_DATA) {
+            getConnection().setSslState(SslState.READING_APPLICATION_DATA);
+        }
 
         int result = 0;
         int dstSize = applicationBuffer.remaining();

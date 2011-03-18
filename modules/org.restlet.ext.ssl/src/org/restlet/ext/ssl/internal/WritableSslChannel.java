@@ -68,6 +68,12 @@ public class WritableSslChannel extends WritableBufferedChannel implements
         this.connection = connection;
     }
 
+    @Override
+    public boolean canLoop(Buffer buffer, Object... args) {
+        return (getConnection().getSslState() == SslState.HANDSHAKING)
+                || (getConnection().getSslState() == SslState.WRITING_APPLICATION_DATA);
+    }
+
     /**
      * Returns the parent SSL connection.
      * 
@@ -88,39 +94,15 @@ public class WritableSslChannel extends WritableBufferedChannel implements
 
     @Override
     public int onFill(Buffer buffer, Object... args) throws IOException {
-        int result = 0;
-
         if (getConnection().getSslState() == SslState.READING_APPLICATION_DATA) {
             getConnection().setSslState(SslState.WRITING_APPLICATION_DATA);
         }
 
-        // Refill the packet buffer
-        if ((getBuffer().isFilling())
-                || (getConnection().getSslState() == SslState.HANDSHAKING)) {
-            int srcSize = buffer.remaining();
-
-            if (srcSize > 0) {
-                while (getBuffer().hasRemaining()
-                        && (getConnection().getOutboundWay().getIoState() != IoState.IDLE)
-                        && buffer.hasRemaining()) {
-                    getBuffer().beforeFill();
-                    SSLEngineResult sslResult = getConnection().getSslEngine()
-                            .wrap(buffer.getBytes(), getBuffer().getBytes());
-
-                    // Let's drain the packet buffer
-                    if (getBuffer().couldDrain()) {
-                        getBuffer().beforeDrain();
-                    }
-
-                    getConnection().handleResult(sslResult, getBuffer(),
-                            buffer.getBytes(), this);
-                    // drain();
-                }
-
-                result = srcSize - buffer.remaining();
-            }
-        }
-
-        return result;
+        int srcSize = buffer.remaining();
+        SSLEngineResult sslResult = getConnection().getSslEngine().wrap(
+                buffer.getBytes(), getBuffer().getBytes());
+        getConnection().handleResult(sslResult, getBuffer(), buffer.getBytes(),
+                this);
+        return srcSize - buffer.remaining();
     }
 }
