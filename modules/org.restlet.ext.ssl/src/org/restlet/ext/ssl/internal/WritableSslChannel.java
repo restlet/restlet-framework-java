@@ -31,6 +31,7 @@
 package org.restlet.ext.ssl.internal;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import javax.net.ssl.SSLEngineResult;
 
@@ -70,8 +71,9 @@ public class WritableSslChannel extends WritableBufferedChannel implements
 
     @Override
     public boolean canLoop(Buffer buffer, Object... args) {
-        return (getConnection().getSslState() == SslState.HANDSHAKING)
-                || (getConnection().getSslState() == SslState.WRITING_APPLICATION_DATA);
+        return getConnection().getOutboundWay().canLoop(buffer, args)
+                && ((getConnection().getSslState() == SslState.HANDSHAKING) || (getConnection()
+                        .getSslState() == SslState.WRITING_APPLICATION_DATA));
     }
 
     /**
@@ -99,10 +101,11 @@ public class WritableSslChannel extends WritableBufferedChannel implements
         }
 
         int srcSize = buffer.remaining();
+        ByteBuffer applicationBuffer = (ByteBuffer) args[0];
         SSLEngineResult sslResult = getConnection().getSslEngine().wrap(
-                buffer.getBytes(), getBuffer().getBytes());
-        getConnection().handleResult(sslResult, getBuffer(), buffer.getBytes(),
-                this);
+                applicationBuffer, buffer.getBytes());
+        getConnection()
+                .handleResult(sslResult, buffer, buffer.getBytes(), this);
         return srcSize - buffer.remaining();
     }
 }

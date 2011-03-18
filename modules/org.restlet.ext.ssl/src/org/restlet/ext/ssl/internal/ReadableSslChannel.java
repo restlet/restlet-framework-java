@@ -73,7 +73,8 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
 
     @Override
     public boolean canLoop(Buffer buffer, Object... args) {
-        return (getConnection().getSslState() != SslState.CLOSED)
+        return getConnection().getInboundWay().canLoop(buffer, args)
+                && (getConnection().getSslState() != SslState.CLOSED)
                 && (getConnection().getSslEngineStatus() == Status.OK);
     }
 
