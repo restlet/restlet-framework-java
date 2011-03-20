@@ -147,7 +147,7 @@ public class ReadableBufferedChannel extends
      * @throws IOException
      */
     public final int onFill(Buffer buffer, Object... args) throws IOException {
-        int result = refill();
+        int result = getBuffer().fill(getWrappedChannel());
 
         if (result == -1) {
             setEndReached(true);
@@ -167,16 +167,6 @@ public class ReadableBufferedChannel extends
      */
     public int read(ByteBuffer targetBuffer) throws IOException {
         return getBuffer().process(this, targetBuffer);
-    }
-
-    /**
-     * Refills the IO buffer with the wrapped channel.
-     * 
-     * @return The number of bytes refilled.
-     * @throws IOException
-     */
-    public int refill() throws IOException {
-        return getBuffer().fill(getWrappedChannel());
     }
 
     /**

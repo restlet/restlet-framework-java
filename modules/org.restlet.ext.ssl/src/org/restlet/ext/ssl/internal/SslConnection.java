@@ -32,7 +32,6 @@ package org.restlet.ext.ssl.internal;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.logging.Level;
 
@@ -46,7 +45,6 @@ import org.restlet.Connector;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.ConnectionController;
 import org.restlet.engine.connector.ConnectionHelper;
-import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.engine.io.WritableSelectionChannel;
@@ -204,36 +202,26 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     }
 
     /**
-     * Handles the handshake states.
+     * Handles the SSL handshake states based on the last result received.
      * 
-     * @param sslResult
-     *            The SSL result to handle.
-     * @param applicationBuffer
-     *            The related application data buffer.
-     * @param listener
-     *            Delegated tasks completion listener.
      * @throws IOException
      */
-    private void handleHandshake(SSLEngineResult sslResult,
-            ByteBuffer applicationBuffer, TasksListener listener)
-            throws IOException {
-
-        // Handle the status
-        switch (sslResult.getHandshakeStatus()) {
+    private void handleSslHandshake() throws IOException {
+        switch (getSslHandshakeStatus()) {
         case FINISHED:
-            onHandshakeFinished(sslResult, applicationBuffer);
+            onFinished();
             break;
 
         case NEED_TASK:
-            runTask(sslResult, applicationBuffer, listener);
+            onNeedTask();
             break;
 
         case NEED_UNWRAP:
-            onUnwrap(sslResult, applicationBuffer);
+            onUnwrap();
             break;
 
         case NEED_WRAP:
-            onWrap(sslResult, applicationBuffer);
+            onWrap();
             break;
 
         case NOT_HANDSHAKING:
@@ -245,45 +233,24 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     /**
      * Handles the result of a previous SSL engine processing.
      * 
-     * @param sslResult
-     *            The SSL result to handle.
-     * @param packetBuffer
-     *            The related network packet buffer.
-     * @param applicationBuffer
-     *            The related application data buffer.
-     * @param listener
-     *            Delegated tasks completion listener.
      * @throws IOException
      */
-    public void handleResult(SSLEngineResult sslResult, Buffer packetBuffer,
-            ByteBuffer applicationBuffer, TasksListener listener)
-            throws IOException {
-        if (sslResult != null) {
-            log(sslResult);
+    public void handleSslResult() throws IOException {
+        switch (getSslEngineStatus()) {
+        case BUFFER_OVERFLOW:
+            break;
 
-            // Store the engine status
-            setSslEngineStatus(sslResult.getStatus());
+        case BUFFER_UNDERFLOW:
+            break;
 
-            // Store the handshake status
-            setSslHandshakeStatus(sslResult.getHandshakeStatus());
+        case CLOSED:
+            setSslState(SslState.CLOSED);
+            close(true);
+            break;
 
-            switch (sslResult.getStatus()) {
-            case BUFFER_OVERFLOW:
-                onBufferOverflow(sslResult, applicationBuffer);
-                break;
-
-            case BUFFER_UNDERFLOW:
-                onBufferUnderflow(sslResult, packetBuffer, applicationBuffer);
-                break;
-
-            case CLOSED:
-                onClosed(sslResult, applicationBuffer, listener);
-                break;
-
-            case OK:
-                onOk(sslResult, applicationBuffer, listener);
-                break;
-            }
+        case OK:
+            handleSslHandshake();
+            break;
         }
     }
 
@@ -301,78 +268,10 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     }
 
     /**
-     * Logs the SSL engine result.
-     * 
-     * @param sslResult
-     *            The SSL engine result to log.
-     */
-    private void log(SSLEngineResult sslResult) {
-        if (getLogger().isLoggable(Level.FINE)) {
-            getLogger().log(Level.FINE, "SSL I/O result: " + sslResult);
-            getLogger().log(Level.FINE, "SSL connection: " + toString());
-        }
-    }
-
-    /**
-     * Warns that an SSL buffer overflow exception occurred.
-     * 
-     * @param sslResult
-     *            The SSL engine result.
-     * @param applicationBuffer
-     *            The related application data buffer.
-     */
-    private void onBufferOverflow(SSLEngineResult sslResult,
-            ByteBuffer applicationBuffer) {
-        // Exit so that the application buffer can be drained
-    }
-
-    /**
-     * Warns that an SSL buffer underflow exception occurred.
-     * 
-     * @param sslResult
-     *            The SSL engine result.
-     * @param applicationBuffer
-     *            The related application buffer.
-     */
-    private void onBufferUnderflow(SSLEngineResult sslResult,
-            Buffer packetBuffer, ByteBuffer applicationBuffer) {
-        if (packetBuffer.canDrain() && !packetBuffer.couldFill()) {
-            // We need to compact the buffer to make room for more bytes
-            packetBuffer.compact();
-        }
-    }
-
-    /**
-     * Notifies that the SSL engine has been properly closed and can no longer
-     * be used.
-     * 
-     * @param sslResult
-     *            The SSL engine result.
-     * @param applicationBuffer
-     *            The related application buffer.
-     * @param listener
-     *            Delegated tasks completion listener.
-     * @throws IOException
-     */
-    private void onClosed(SSLEngineResult sslResult,
-            ByteBuffer applicationBuffer, TasksListener listener)
-            throws IOException {
-        setSslState(SslState.CLOSED);
-        close(true);
-        handleHandshake(sslResult, applicationBuffer, listener);
-    }
-
-    /**
      * Notifies that the SSL handshake is finished. Application data can now be
      * exchanged.
-     * 
-     * @param sslResult
-     *            The SSL engine result.
-     * @param applicationBuffer
-     *            The related application buffer.
      */
-    private void onHandshakeFinished(SSLEngineResult sslResult,
-            ByteBuffer applicationBuffer) {
+    private void onFinished() {
         if (getSslState() == SslState.HANDSHAKING) {
             if (isClientSide()) {
                 setSslState(SslState.WRITING_APPLICATION_DATA);
@@ -393,78 +292,9 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     }
 
     /**
-     * Notifies that the SSL handling was successful.
-     * 
-     * @param sslResult
-     *            The SSL engine result.
-     * @param applicationBuffer
-     *            The related application data buffer.
-     * @param listener
-     *            Delegated tasks completion listener.
-     * @throws IOException
-     */
-    private void onOk(SSLEngineResult sslResult, ByteBuffer applicationBuffer,
-            TasksListener listener) throws IOException {
-        handleHandshake(sslResult, applicationBuffer, listener);
-    }
-
-    /**
-     * Unwraps packet data into handshake or application data. Need to read
-     * next.
-     * 
-     * @param sslResult
-     *            The SSL engine result.
-     * @param applicationBuffer
-     *            The related application buffer.
-     * @throws IOException
-     */
-    private void onUnwrap(SSLEngineResult sslResult,
-            ByteBuffer applicationBuffer) throws IOException {
-        if (getInboundWay().getIoState() != IoState.PROCESSING) {
-            getInboundWay().setIoState(IoState.READY);
-            getOutboundWay().setIoState(IoState.IDLE);
-        }
-    }
-
-    /**
-     * Wraps the handshake or application data into packet data. Need to write
-     * next.
-     * 
-     * @param sslResult
-     *            The SSL engine result.
-     * @param applicationBuffer
-     *            The related application buffer.
-     * @throws IOException
-     */
-    private void onWrap(SSLEngineResult sslResult, ByteBuffer applicationBuffer)
-            throws IOException {
-        if (getOutboundWay().getIoState() == IoState.IDLE) {
-            getInboundWay().setIoState(IoState.IDLE);
-            getOutboundWay().setIoState(IoState.READY);
-        }
-    }
-
-    @Override
-    public void reuse(SocketChannel socketChannel,
-            ConnectionController controller, InetSocketAddress socketAddress)
-            throws IOException {
-        setPeerAddress(socketAddress);
-        initSslEngine();
-        super.reuse(socketChannel, controller, socketAddress);
-    }
-
-    /**
      * Runs the pending lengthy task.
-     * 
-     * @param sslResult
-     *            The SSL engine result.
-     * @param applicationBuffer
-     *            The related application buffer.
-     * @param listener
-     *            Delegated tasks completion listener.
      */
-    private void runTask(SSLEngineResult sslResult,
-            final ByteBuffer applicationBuffer, final TasksListener listener) {
+    private void onNeedTask() {
         // Delegate lengthy tasks to the connector's worker
         // service before checking again
         final Runnable task = getSslEngine().getDelegatedTask();
@@ -489,11 +319,46 @@ public class SslConnection<T extends Connector> extends Connection<T> {
                         nextTask = getSslEngine().getDelegatedTask();
                     }
 
-                    listener.onCompleted();
+                    // onCompleted();
                     getLogger().log(Level.FINE, "Done running delegated tasks");
                 }
             });
         }
+    }
+
+    /**
+     * Unwraps packet data into handshake or application data. Need to read
+     * next.
+     * 
+     * @throws IOException
+     */
+    private void onUnwrap() throws IOException {
+        if (getInboundWay().getIoState() != IoState.PROCESSING) {
+            getInboundWay().setIoState(IoState.READY);
+            getOutboundWay().setIoState(IoState.IDLE);
+        }
+    }
+
+    /**
+     * Wraps the handshake or application data into packet data. Need to write
+     * next.
+     * 
+     * @throws IOException
+     */
+    private void onWrap() throws IOException {
+        if (getOutboundWay().getIoState() == IoState.IDLE) {
+            getInboundWay().setIoState(IoState.IDLE);
+            getOutboundWay().setIoState(IoState.READY);
+        }
+    }
+
+    @Override
+    public void reuse(SocketChannel socketChannel,
+            ConnectionController controller, InetSocketAddress socketAddress)
+            throws IOException {
+        setPeerAddress(socketAddress);
+        initSslEngine();
+        super.reuse(socketChannel, controller, socketAddress);
     }
 
     /**
@@ -535,6 +400,29 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     protected void setSslHandshakeStatus(
             SSLEngineResult.HandshakeStatus handshakeStatus) {
         this.sslHandshakeStatus = handshakeStatus;
+    }
+
+    /**
+     * Saves the result of a previous SSL engine processing.
+     * 
+     * @param sslResult
+     *            The SSL result to handle.
+     * @throws IOException
+     */
+    public void setSslResult(SSLEngineResult sslResult) throws IOException {
+        if (sslResult != null) {
+            // Logs the result
+            if (getLogger().isLoggable(Level.FINE)) {
+                getLogger().log(Level.FINE, "SSL engine result: " + sslResult);
+                getLogger().log(Level.FINE, "SSL connection: " + toString());
+            }
+
+            // Store the engine status
+            setSslEngineStatus(sslResult.getStatus());
+
+            // Store the handshake status
+            setSslHandshakeStatus(sslResult.getHandshakeStatus());
+        }
     }
 
     /**

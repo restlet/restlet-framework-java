@@ -104,8 +104,7 @@ public class WritableSslChannel extends WritableBufferedChannel implements
         ByteBuffer applicationBuffer = (ByteBuffer) args[0];
         SSLEngineResult sslResult = getConnection().getSslEngine().wrap(
                 applicationBuffer, buffer.getBytes());
-        getConnection()
-                .handleResult(sslResult, buffer, buffer.getBytes(), this);
+        getConnection().setSslResult(sslResult);
         return srcSize - buffer.remaining();
     }
 }

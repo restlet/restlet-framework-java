@@ -104,7 +104,7 @@ public abstract class ClientInboundWay extends InboundWay {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Connection<Client> getConnection() {
+    protected Connection<Client> getConnection() {
         return (Connection<Client>) super.getConnection();
     }
 

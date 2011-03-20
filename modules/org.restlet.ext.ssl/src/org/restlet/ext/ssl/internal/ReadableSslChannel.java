@@ -72,6 +72,12 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
     }
 
     @Override
+    public boolean couldDrain(Buffer buffer, Object... args) {
+        return (getConnection().getSslState() == SslState.HANDSHAKING)
+                && (getConnection().getSslHandshakeStatus() == HandshakeStatus.NEED_UNWRAP);
+    }
+
+    @Override
     public boolean canLoop(Buffer buffer, Object... args) {
         return getConnection().getInboundWay().canLoop(buffer, args)
                 && (getConnection().getSslState() != SslState.CLOSED)
@@ -113,35 +119,18 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
      * as many byte as possible to the target buffer, with no modification.
      */
     @Override
-    public int onDrain(Buffer applicationBuffer, int maxDrained, Object... args)
+    public int onDrain(Buffer buffer, int maxDrained, Object... args)
             throws IOException {
         if (getConnection().getSslState() == SslState.WRITING_APPLICATION_DATA) {
             getConnection().setSslState(SslState.READING_APPLICATION_DATA);
         }
 
-        int result = 0;
-        int dstSize = applicationBuffer.remaining();
-        SSLEngineResult sslResult = null;
-
-        switch (getConnection().getSslState()) {
-        case READING_APPLICATION_DATA:
-        case HANDSHAKING:
-            sslResult = getConnection().getSslEngine().unwrap(
-                    getBuffer().getBytes(), applicationBuffer.getBytes());
-            getConnection().handleResult(sslResult, getBuffer(),
-                    applicationBuffer.getBytes(), this);
-            break;
-        case CLOSED:
-        case WRITING_APPLICATION_DATA:
-            break;
-        case CREATED:
-        case IDLE:
-        case REHANDSHAKING:
-            throw new IOException("Unexpected SSL state");
-        }
-
-        result = dstSize - applicationBuffer.remaining();
-        return result;
+        ByteBuffer applicationBuffer = (ByteBuffer) args[0];
+        int initialSize = buffer.remaining();
+        SSLEngineResult sslResult = getConnection().getSslEngine().unwrap(
+                buffer.getBytes(), applicationBuffer);
+        getConnection().setSslResult(sslResult);
+        return initialSize - buffer.remaining();
     }
 
 }

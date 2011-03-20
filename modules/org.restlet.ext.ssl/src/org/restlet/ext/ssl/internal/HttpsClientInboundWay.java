@@ -32,17 +32,16 @@ package org.restlet.ext.ssl.internal;
 
 import java.io.IOException;
 
-import javax.net.ssl.SSLEngineResult.HandshakeStatus;
-
+import org.restlet.Client;
 import org.restlet.engine.connector.Connection;
-import org.restlet.engine.connector.HttpClientOutboundWay;
+import org.restlet.engine.connector.HttpClientInboundWay;
 
 /**
- * HTTPS client outbound way.
+ * HTTPS client inbound way.
  * 
  * @author Jerome Louvel
  */
-public class HttpsClientOutboundWay extends HttpClientOutboundWay {
+public class HttpsClientInboundWay extends HttpClientInboundWay {
 
     /**
      * Constructor.
@@ -52,13 +51,13 @@ public class HttpsClientOutboundWay extends HttpClientOutboundWay {
      * @param bufferSize
      *            The byte buffer size.
      */
-    public HttpsClientOutboundWay(Connection<?> connection, int bufferSize) {
+    public HttpsClientInboundWay(Connection<Client> connection, int bufferSize) {
         super(connection, bufferSize);
     }
 
     @Override
-    protected SslConnection<?> getConnection() {
-        return (SslConnection<?>) super.getConnection();
+    protected SslConnection<Client> getConnection() {
+        return (SslConnection<Client>) super.getConnection();
     }
 
     @Override
@@ -66,13 +65,6 @@ public class HttpsClientOutboundWay extends HttpClientOutboundWay {
         int result = super.processIoBuffer();
         getConnection().handleSslResult();
         return result;
-    }
-
-    @Override
-    protected boolean hasIoInterest() {
-        return super.hasIoInterest()
-                && ((getConnection().getSslState() != SslState.HANDSHAKING) || (getConnection()
-                        .getSslHandshakeStatus() != HandshakeStatus.NEED_UNWRAP));
     }
 
 }
