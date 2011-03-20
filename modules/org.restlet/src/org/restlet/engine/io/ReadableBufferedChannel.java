@@ -77,7 +77,7 @@ public class ReadableBufferedChannel extends
      * @return True if the buffer could be drained again.
      */
     public boolean couldDrain(Buffer buffer, Object... args) {
-        return true;
+        return false;
     }
 
     /**

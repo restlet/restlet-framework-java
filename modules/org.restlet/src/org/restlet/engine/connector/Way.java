@@ -150,7 +150,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * @return True if the buffer could be drained again.
      */
     public boolean couldDrain(Buffer buffer, Object... args) {
-        return true;
+        return false;
     }
 
     /**
