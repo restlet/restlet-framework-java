@@ -544,7 +544,7 @@ public class Buffer {
                     } else if (isFilling()) {
                         filled = 0;
 
-                        if (hasRemaining()) {
+                        if (hasRemaining() && processor.couldFill(this, args)) {
                             filled = processor.onFill(this, args);
                         }
 
