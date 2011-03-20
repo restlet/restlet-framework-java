@@ -46,8 +46,9 @@ public class HttpsClientOutboundWay extends HttpClientOutboundWay {
      * Constructor.
      * 
      * @param connection
-     *            The connection.
+     *            The parent connection.
      * @param bufferSize
+     *            The byte buffer size.
      */
     public HttpsClientOutboundWay(Connection<?> connection, int bufferSize) {
         super(connection, bufferSize);
