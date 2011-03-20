@@ -241,6 +241,11 @@ public class SslConnection<T extends Connector> extends Connection<T> {
             break;
 
         case BUFFER_UNDERFLOW:
+            if ((getSslHandshakeStatus() == HandshakeStatus.NEED_UNWRAP)
+                    && ((getInboundWay().getIoState() == IoState.IDLE) || (getInboundWay()
+                            .getIoState() == IoState.READY))) {
+                getInboundWay().setIoState(IoState.INTEREST);
+            }
             break;
 
         case CLOSED:

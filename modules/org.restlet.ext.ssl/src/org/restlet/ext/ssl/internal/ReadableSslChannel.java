@@ -72,12 +72,6 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
     }
 
     @Override
-    public boolean couldDrain(Buffer buffer, Object... args) {
-        return (getConnection().getSslState() == SslState.HANDSHAKING)
-                && (getConnection().getSslHandshakeStatus() == HandshakeStatus.NEED_UNWRAP);
-    }
-
-    @Override
     public boolean canLoop(Buffer buffer, Object... args) {
         return getConnection().getInboundWay().canLoop(buffer, args)
                 && (getConnection().getSslState() != SslState.CLOSED)
@@ -94,6 +88,13 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
                 && (getConnection().getSslEngineStatus() == Status.OK) && (getConnection()
                 .getSslHandshakeStatus() == HandshakeStatus.NEED_UNWRAP)))
                 && targetBuffer.hasRemaining();
+    }
+
+    @Override
+    public boolean couldDrain(Buffer buffer, Object... args) {
+        return (getConnection().getSslEngineStatus() == Status.OK)
+                && ((getConnection().getSslHandshakeStatus() == HandshakeStatus.NOT_HANDSHAKING) || (getConnection()
+                        .getSslHandshakeStatus() == HandshakeStatus.NEED_UNWRAP));
     }
 
     /**

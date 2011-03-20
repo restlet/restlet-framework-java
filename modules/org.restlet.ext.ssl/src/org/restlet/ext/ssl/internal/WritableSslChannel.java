@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import javax.net.ssl.SSLEngineResult;
+import javax.net.ssl.SSLEngineResult.HandshakeStatus;
+import javax.net.ssl.SSLEngineResult.Status;
 
 import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
@@ -76,6 +78,14 @@ public class WritableSslChannel extends WritableBufferedChannel implements
                         .getSslState() == SslState.WRITING_APPLICATION_DATA));
     }
 
+    @Override
+    public boolean couldFill(Buffer buffer, Object... args) {
+        return super.couldFill(buffer, args)
+                && (getConnection().getSslEngineStatus() == Status.OK)
+                && ((getConnection().getSslHandshakeStatus() == HandshakeStatus.NOT_HANDSHAKING) || (getConnection()
+                        .getSslHandshakeStatus() == HandshakeStatus.NEED_WRAP));
+    }
+
     /**
      * Returns the parent SSL connection.
      * 
@@ -94,11 +104,6 @@ public class WritableSslChannel extends WritableBufferedChannel implements
         }
     }
 
-    @Override
-    public boolean couldFill(Buffer buffer, Object... args) {
-        return super.couldFill(buffer, args);
-    }
-    
     @Override
     public int onFill(Buffer buffer, Object... args) throws IOException {
         int srcSize = buffer.remaining();
