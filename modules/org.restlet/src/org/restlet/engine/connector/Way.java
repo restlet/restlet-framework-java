@@ -141,10 +141,23 @@ public abstract class Way implements SelectionListener, CompletionListener,
     }
 
     /**
-     * Indicates if the buffer could be filled again.
+     * Indicates if the buffer could be drained again.
      * 
      * @param buffer
      *            The IO buffer to drain.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
+     * @return True if the buffer could be drained again.
+     */
+    public boolean couldDrain(Buffer buffer, Object... args) {
+        return true;
+    }
+
+    /**
+     * Indicates if the buffer could be filled again.
+     * 
+     * @param buffer
+     *            The IO buffer to fill.
      * @param args
      *            The optional arguments to pass back to the callbacks.
      * @return True if the buffer could be filled again.
@@ -374,8 +387,17 @@ public abstract class Way implements SelectionListener, CompletionListener,
             }
 
             if (getLogger().isLoggable(Level.FINER)) {
-                getLogger().log(Level.FINER,
-                        "Way selected. Processing IO for : " + this);
+                if (this instanceof InboundWay) {
+                    getLogger()
+                            .log(Level.FINER,
+                                    "Inbound way selected. Processing IO for : "
+                                            + this);
+                } else {
+                    getLogger().log(
+                            Level.FINER,
+                            "Outbound way selected. Processing IO for : "
+                                    + this);
+                }
             }
 
             // IO processing

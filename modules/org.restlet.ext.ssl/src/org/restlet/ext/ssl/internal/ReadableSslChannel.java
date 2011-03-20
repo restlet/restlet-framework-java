@@ -86,7 +86,7 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
     public boolean canRetry(int lastRead, ByteBuffer targetBuffer) {
         return ((lastRead > 0) || ((getConnection().getSslState() == SslState.HANDSHAKING)
                 && (getConnection().getSslEngineStatus() == Status.OK) && (getConnection()
-                .getHandshakeStatus() == HandshakeStatus.NEED_UNWRAP)))
+                .getSslHandshakeStatus() == HandshakeStatus.NEED_UNWRAP)))
                 && targetBuffer.hasRemaining();
     }
 

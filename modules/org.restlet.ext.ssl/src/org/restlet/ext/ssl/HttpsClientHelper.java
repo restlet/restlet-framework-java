@@ -43,11 +43,11 @@ import org.restlet.engine.connector.ClientConnectionHelper;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.ConnectionController;
 import org.restlet.engine.connector.HttpClientInboundWay;
-import org.restlet.engine.connector.HttpClientOutboundWay;
 import org.restlet.engine.connector.InboundWay;
 import org.restlet.engine.connector.OutboundWay;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.engine.security.SslUtils;
+import org.restlet.ext.ssl.internal.HttpsClientOutboundWay;
 import org.restlet.ext.ssl.internal.SslConnection;
 
 /**
@@ -98,7 +98,7 @@ public class HttpsClientHelper extends ClientConnectionHelper {
     @Override
     public OutboundWay createOutboundWay(Connection<Client> connection,
             int bufferSize) {
-        return new HttpClientOutboundWay(connection, bufferSize);
+        return new HttpsClientOutboundWay(connection, bufferSize);
     }
 
     /**

@@ -60,9 +60,6 @@ import org.restlet.engine.io.WritableSelectionChannel;
  */
 public class SslConnection<T extends Connector> extends Connection<T> {
 
-    /** The handshake status. */
-    private volatile SSLEngineResult.HandshakeStatus handshakeStatus;
-
     /** The peer address. */
     private volatile InetSocketAddress peerAddress;
 
@@ -71,6 +68,9 @@ public class SslConnection<T extends Connector> extends Connection<T> {
 
     /** The engine status. */
     private volatile SSLEngineResult.Status sslEngineStatus;
+
+    /** The handshake status. */
+    private volatile SSLEngineResult.HandshakeStatus sslHandshakeStatus;
 
     /** The global SSL state. */
     private volatile SslState sslState;
@@ -101,7 +101,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
         this.sslEngine = sslEngine;
         this.sslState = SslState.IDLE;
         this.sslEngineStatus = SSLEngineResult.Status.OK;
-        this.handshakeStatus = HandshakeStatus.NOT_HANDSHAKING;
+        this.sslHandshakeStatus = HandshakeStatus.NOT_HANDSHAKING;
         initSslEngine();
     }
 
@@ -125,15 +125,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     public int getApplicationBufferSize() {
         return getSslSession() == null ? 0 : getSslSession()
                 .getApplicationBufferSize();
-    }
-
-    /**
-     * Returns the handshake status.
-     * 
-     * @return The handshake status.
-     */
-    protected SSLEngineResult.HandshakeStatus getHandshakeStatus() {
-        return handshakeStatus;
     }
 
     @Override
@@ -183,6 +174,15 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      */
     protected SSLEngineResult.Status getSslEngineStatus() {
         return sslEngineStatus;
+    }
+
+    /**
+     * Returns the handshake status.
+     * 
+     * @return The handshake status.
+     */
+    protected SSLEngineResult.HandshakeStatus getSslHandshakeStatus() {
+        return sslHandshakeStatus;
     }
 
     /**
@@ -265,7 +265,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
             setSslEngineStatus(sslResult.getStatus());
 
             // Store the handshake status
-            setHandshakeStatus(sslResult.getHandshakeStatus());
+            setSslHandshakeStatus(sslResult.getHandshakeStatus());
 
             switch (sslResult.getStatus()) {
             case BUFFER_OVERFLOW:
@@ -380,7 +380,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
                 setSslState(SslState.READING_APPLICATION_DATA);
             }
 
-            setHandshakeStatus(HandshakeStatus.NOT_HANDSHAKING);
+            setSslHandshakeStatus(HandshakeStatus.NOT_HANDSHAKING);
         }
 
         if (isClientSide()) {
@@ -497,17 +497,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     }
 
     /**
-     * Sets the handshake status.
-     * 
-     * @param handshakeStatus
-     *            The handshake status.
-     */
-    protected void setHandshakeStatus(
-            SSLEngineResult.HandshakeStatus handshakeStatus) {
-        this.handshakeStatus = handshakeStatus;
-    }
-
-    /**
      * Sets the peer address.
      * 
      * @param peerAddress
@@ -538,6 +527,17 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     }
 
     /**
+     * Sets the handshake status.
+     * 
+     * @param handshakeStatus
+     *            The handshake status.
+     */
+    protected void setSslHandshakeStatus(
+            SSLEngineResult.HandshakeStatus handshakeStatus) {
+        this.sslHandshakeStatus = handshakeStatus;
+    }
+
+    /**
      * Sets the global state.
      * 
      * @param sslState
@@ -550,7 +550,8 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     @Override
     public String toString() {
         return super.toString() + " | " + getState() + " | " + getSslEngine()
-                + " | " + getSslEngineStatus() + " | " + getHandshakeStatus();
+                + " | " + getSslEngineStatus() + " | "
+                + getSslHandshakeStatus();
     }
 
 }
