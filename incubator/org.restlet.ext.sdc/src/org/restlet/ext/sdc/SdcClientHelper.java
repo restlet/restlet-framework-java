@@ -45,6 +45,7 @@ import javax.net.ssl.SSLSocket;
 
 import org.restlet.Client;
 import org.restlet.Request;
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
@@ -105,14 +106,12 @@ public class SdcClientHelper extends HttpClientHelper {
         try {
             Reference targetRef = request.getResourceRef().getBaseRef() == null ? request
                     .getResourceRef() : request.getResourceRef().getTargetRef();
+            ChallengeResponse cr = request.getProxyChallengeResponse();
 
-            if (request.getChallengeResponse() != null) {
-                if (request.getChallengeResponse().getScheme()
-                        .equals(ChallengeScheme.valueOf("SDC"))) {
-                    String key = request.getChallengeResponse().getIdentifier()
-                            + ":"
-                            + String.valueOf(request.getChallengeResponse()
-                                    .getSecret());
+            if (cr != null) {
+                if (cr.getScheme().equals(ChallengeScheme.valueOf("SDC"))) {
+                    String key = cr.getIdentifier() + ":"
+                            + String.valueOf(cr.getSecret());
                     int retryAttempts = 3;
                     int retryDelay = 3000;
                     SdcServerConnection ssc = null;

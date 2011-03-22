@@ -74,7 +74,7 @@ public class SdcClientCall extends ClientCall {
     /** */
     private final CountDownLatch latch;
 
-    /** The matching SDC server connection to use for tunnelling. */
+    /** The matching SDC server connection to use for tunneling. */
     private final SdcServerConnection connection;
 
     /** Indicates if the response headers were added. */
@@ -252,7 +252,9 @@ public class SdcClientCall extends ClientCall {
 
                 for (Parameter header : getRequestHeaders()) {
                     if (!header.getName().equals(
-                            HeaderConstants.HEADER_CONTENT_LENGTH)) {
+                            HeaderConstants.HEADER_CONTENT_LENGTH)
+                            && !header.getName().equals(
+                                    HeaderConstants.HEADER_PROXY_AUTHORIZATION)) {
                         headers.add(MessageHeader.newBuilder()
                                 .setKey(header.getName())
                                 .setValue(header.getValue()).build());
