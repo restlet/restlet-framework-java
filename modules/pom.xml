@@ -19,14 +19,14 @@
 		<lib-fileupload-version>1.2.1</lib-fileupload-version>
 		<lib-freemarker-version>2.3.16</lib-freemarker-version>
 		<lib-guice-version>1.0</lib-guice-version>
-		<lib-gwt-version>2.1.0</lib-gwt-version>
+		<lib-gwt-version>2.2.0</lib-gwt-version>
 		<lib-gwt-server-version>2.1.0</lib-gwt-server-version>
 		<lib-httpclient-version>4.0.1</lib-httpclient-version>
 		<lib-httpcore-version>4.0.1</lib-httpcore-version>
 		<lib-httpmime-version>4.0.1</lib-httpmime-version>
 		<lib-io-version>1.4</lib-io-version>
-		<lib-jackson-core-version>1.4.3</lib-jackson-core-version>
-		<lib-jackson-mapper-version>1.4.3</lib-jackson-mapper-version>
+		<lib-jackson-core-version>1.7.1</lib-jackson-core-version>
+		<lib-jackson-mapper-version>1.7.1</lib-jackson-mapper-version>
 		<lib-javamail-version>1.4.2</lib-javamail-version>
 		<lib-jaxb-api-version>2.1</lib-jaxb-api-version>
 		<lib-jaxb-ri-version>2.1.12</lib-jaxb-ri-version>
@@ -34,12 +34,12 @@
 		<lib-jcip-annotations-version>1.0</lib-jcip-annotations-version>
 		<lib-jdom-version>1.1</lib-jdom-version>
 		<lib-jettison-version>1.2</lib-jettison-version>
-		<lib-jetty-ajp-version>7.1.6.v20100715</lib-jetty-ajp-version>
-		<lib-jetty-continuation-version>7.1.6.v20100715</lib-jetty-continuation-version>
-		<lib-jetty-http-version>7.1.6.v20100715</lib-jetty-http-version>
-		<lib-jetty-io-version>7.1.6.v20100715</lib-jetty-io-version>
-		<lib-jetty-server-version>7.1.6.v20100715</lib-jetty-server-version>
-		<lib-jetty-util-version>7.1.6.v20100715</lib-jetty-util-version>
+		<lib-jetty-ajp-version>7.3.0.v20110203</lib-jetty-ajp-version>
+		<lib-jetty-continuation-version>7.3.0.v20110203</lib-jetty-continuation-version>
+		<lib-jetty-http-version>7.3.0.v20110203</lib-jetty-http-version>
+		<lib-jetty-io-version>7.3.0.v20110203</lib-jetty-io-version>
+		<lib-jetty-server-version>7.3.0.v20110203</lib-jetty-server-version>
+		<lib-jetty-util-version>7.3.0.v20110203</lib-jetty-util-version>
 		<lib-jibx-version>1.2.2</lib-jibx-version>
 		<lib-json-version>2.0</lib-json-version>
 		<lib-jsslutils-version>1.0.5</lib-jsslutils-version>
@@ -53,6 +53,7 @@
 		<lib-pool-version>1.5</lib-pool-version>
 		<lib-rome-version>1.0</lib-rome-version>
 		<lib-rowset-version>1.0</lib-rowset-version>
+		<lib-sdc-version>1.2.0</lib-sdc-version>
 		<lib-servlet-version>2.5</lib-servlet-version>
 		<lib-simple-version>4.1.21</lib-simple-version>
 		<lib-slf4j-version>1.5.8</lib-slf4j-version>
@@ -147,6 +148,7 @@
 		<module>org.restlet.ext.odata</module>
 		<module>org.restlet.ext.rdf</module>
 		<module>org.restlet.ext.rome</module>
+		<module>org.restlet.ext.sdc</module>
 		<module>org.restlet.ext.servlet</module>
 		<module>org.restlet.ext.simple</module>
 		<module>org.restlet.ext.sip</module>
