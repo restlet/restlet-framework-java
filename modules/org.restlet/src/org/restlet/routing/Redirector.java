@@ -218,6 +218,12 @@ public class Redirector extends Restlet {
         rt.setLogger(getLogger());
 
         // Return the formatted target URI
+        if (new Reference(this.targetTemplate).isRelative()) {
+            // Be sure to keep the resource's base reference.
+            return new Reference(request.getResourceRef(), rt.format(request,
+                    response));
+        }
+
         return new Reference(rt.format(request, response));
     }
 
