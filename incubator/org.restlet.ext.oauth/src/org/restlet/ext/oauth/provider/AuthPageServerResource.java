@@ -290,9 +290,8 @@ public class AuthPageServerResource extends OAuthServerResource {
 
         // Build the model
         HashMap<String, Object> data = new HashMap<String, Object>();
-        // Restlet expert question, how could this be done dynamically in a
-        // better way
-        data.put("target", "/oauth/auth_page"); // TODO hardcoded due to RIAP
+        
+        data.put("target", getRequest().getRootRef()+"/auth_page");
         // TODO check with Restlet lead
         data.put("clientId", clientId);
         data.put("clientDescription", client.toString());
