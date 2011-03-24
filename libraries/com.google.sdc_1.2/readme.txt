@@ -1,6 +1,6 @@
-------------------------------------------------------------
+-----------------------------------------------------------
 SDC - Connect data from behind your firewall to Google Apps
-------------------------------------------------------------
+-----------------------------------------------------------
 
 "The Secure Data Connector (SDC) helps you build custom applications 
 so that your Google Apps users can request access to this data. SDC 

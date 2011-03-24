@@ -81,7 +81,8 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <td>int</td>
  * <td>1</td>
  * <td>Minimum number of worker threads waiting to service calls, even if they
- * are idle.</td>
+ * are idle. Technically speaking, this is a core number of threads that are
+ * pre-started.</td>
  * </tr>
  * <tr>
  * <td>lowThreads</td>
@@ -102,11 +103,14 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>maxQueued</td>
  * <td>int</td>
- * <td>10</td>
+ * <td>0</td>
  * <td>Maximum number of calls that can be queued if there aren't any worker
  * thread available to service them. If the value is '0', then no queue is used
- * and calls are rejected. If the value is '-1', then an unbounded queue is used
- * and calls are never rejected.</td>
+ * and calls are rejected if no worker thread is immediately available. If the
+ * value is '-1', then an unbounded queue is used and calls are never rejected.<br>
+ * <br>
+ * Note: make sure that this value is consistent with {@link #getMinThreads()}
+ * and the behavior of the {@link ThreadPoolExecutor} configured internally.</td>
  * </tr>
  * <tr>
  * <td>maxIoIdleTimeMs</td>
@@ -290,6 +294,7 @@ public abstract class BaseHelper<T extends Connector> extends
             }
         });
 
+        // Ensure that core threads act like a minimum number of threads
         result.prestartAllCoreThreads();
         return result;
     }
@@ -437,14 +442,19 @@ public abstract class BaseHelper<T extends Connector> extends
     /**
      * Returns the maximum number of calls that can be queued if there aren't
      * any worker thread available to service them. If the value is '0', then no
-     * queue is used and calls are rejected. If the value is '-1', then an
-     * unbounded queue is used and calls are never rejected.
+     * queue is used and calls are rejected if no worker thread is immediately
+     * available. If the value is '-1', then an unbounded queue is used and
+     * calls are never rejected.<br>
+     * <br>
+     * Note: make sure that this value is consistent with
+     * {@link #getMinThreads()} and the behavior of the
+     * {@link ThreadPoolExecutor} configured internally.
      * 
      * @return The maximum number of calls that can be queued.
      */
     public int getMaxQueued() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxQueued", "10"));
+                "maxQueued", "0"));
     }
 
     /**
@@ -470,7 +480,8 @@ public abstract class BaseHelper<T extends Connector> extends
     }
 
     /**
-     * Returns the minimum threads waiting to service requests.
+     * Returns the minimum threads waiting to service requests. Technically
+     * speaking, this is a core number of threads that are pre-started.
      * 
      * @return The minimum threads waiting to service requests.
      */
@@ -734,7 +745,6 @@ public abstract class BaseHelper<T extends Connector> extends
 
     @Override
     public void start() throws Exception {
-        
         super.start();
         this.controllerService = createControllerService();
 

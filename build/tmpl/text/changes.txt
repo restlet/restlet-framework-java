@@ -33,6 +33,9 @@ Changes log
         written at the connector level.
       - Deprecated TunnelService#setHeaderTunnel() in favor of the new
         setHeadersTunnel() method.
+      - Fixed default value of "maxQueued" for the internal connector to ensure
+        threads are properly created up the the "maxThreads" value entered.
+        Reported by Kristoffer Gronowski
     - Enhancements
       - Added support for non-blocking HTTPS to the internal NIO connectors, 
         client-side and server-side. Sponsored by NetDev.

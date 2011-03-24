@@ -130,6 +130,7 @@ public abstract class Controller {
             long sleepTime = getHelper().getControllerSleepTimeMs();
             boolean hasWorkerThreads = getHelper().hasWorkerThreads();
             boolean isWorkerServiceOverloaded;
+
             while (isRunning()) {
                 try {
                     if (hasWorkerThreads) {
@@ -163,7 +164,7 @@ public abstract class Controller {
                     "Unexpected error while controlling connector", e);
             setRunning(false);
         } finally {
-            doRelease();            
+            doRelease();
         }
 
     }
