@@ -425,7 +425,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         String[] result = null;
         List<E> params = subList(name, ignoreCase);
 
-        if (params.size() == 0) {
+        if ((params.size() == 0) && (defaultValue != null)) {
             result = new String[1];
             result[0] = defaultValue;
         } else {

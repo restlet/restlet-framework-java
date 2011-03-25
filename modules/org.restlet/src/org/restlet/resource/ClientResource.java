@@ -131,6 +131,12 @@ public class ClientResource extends UniformResource {
     /** Indicates if redirections should be automatically followed. */
     private volatile boolean followingRedirects;
 
+    /**
+     * Indicates if maximum number of redirections that can be automatically
+     * followed for a single call.
+     */
+    private volatile int maxRedirects;
+
     /** The next Restlet. */
     private volatile Uniform next;
 
@@ -163,6 +169,7 @@ public class ClientResource extends UniformResource {
         Response response = new Response(request);
         this.next = resource.getNext();
         this.followingRedirects = resource.isFollowingRedirects();
+        this.maxRedirects = resource.getMaxRedirects();
         this.retryOnError = resource.isRetryOnError();
         this.retryDelay = resource.getRetryDelay();
         this.retryAttempts = resource.getRetryAttempts();
@@ -259,6 +266,7 @@ public class ClientResource extends UniformResource {
         response.setRequest(request);
 
         this.followingRedirects = true;
+        this.maxRedirects = 10;
         this.retryOnError = true;
         this.retryDelay = 2000L;
         this.retryAttempts = 2;
@@ -658,6 +666,17 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Returns the maximum number of redirections that can be automatically
+     * followed for a single call. Default value is 10.
+     * 
+     * @return The maximum number of redirections that can be automatically
+     *         followed for a single call.
+     */
+    public int getMaxRedirects() {
+        return maxRedirects;
+    }
+
+    /**
      * Returns the next Restlet. By default, it is the client dispatcher if a
      * context is available.
      * 
@@ -1016,11 +1035,17 @@ public class ClientResource extends UniformResource {
                             references = new ArrayList<Reference>();
                         }
 
-                        // Add to the list of redirection reference
-                        // to prevent infinite loops
-                        references.add(request.getResourceRef());
-                        request.setResourceRef(newTargetRef);
-                        handle(request, response, references, 0, next);
+                        if (references.size() >= getMaxRedirects()) {
+                            getLogger()
+                                    .warning(
+                                            "Unable to follow the redirection because the request the maximum number of redirections for a single call has been reached.");
+                        } else {
+                            // Add to the list of redirection reference
+                            // to prevent infinite loops
+                            references.add(request.getResourceRef());
+                            request.setResourceRef(newTargetRef);
+                            handle(request, response, references, 0, next);
+                        }
                     }
                 }
             } else if (isRetryOnError()
@@ -1428,6 +1453,18 @@ public class ClientResource extends UniformResource {
      */
     public void setLoggable(boolean loggable) {
         getRequest().setLoggable(loggable);
+    }
+
+    /**
+     * Sets the maximum number of redirections that can be automatically
+     * followed for a single call.
+     * 
+     * @param maxRedirects
+     *            The maximum number of redirections that can be automatically
+     *            followed for a single call.
+     */
+    public void setMaxRedirects(int maxRedirects) {
+        this.maxRedirects = maxRedirects;
     }
 
     /**

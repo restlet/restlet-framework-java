@@ -36,6 +36,10 @@ Changes log
       - Fixed default value of "maxQueued" for the internal connector to ensure
         threads are properly created up the the "maxThreads" value entered.
         Reported by Kristoffer Gronowski
+      - Added new Series#getValuesArray(...) method variants.
+      - Added ClientResource#maxRedirects property to prevent infinite 
+        redirects, in addition to the existing infinite loop detection.
+        Suggested by Henry Story.
     - Enhancements
       - Added support for non-blocking HTTPS to the internal NIO connectors, 
         client-side and server-side. Sponsored by NetDev.
