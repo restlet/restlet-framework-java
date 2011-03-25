@@ -30,6 +30,8 @@
 
 package org.restlet.ext.sip.internal;
 
+import java.util.logging.Level;
+
 import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.engine.connector.ClientOutboundWay;
@@ -226,6 +228,11 @@ public class SipClientOutboundWay extends ClientOutboundWay {
             String tid = request.getTransaction();
             getHelper().getRequests().put(tid, request);
             request.updateLastActivity();
+
+            if (getLogger().isLoggable(Level.FINER)) {
+                getLogger().log(Level.FINER,
+                        "Handling outbound request: " + request);
+            }
 
             // Prepare the writing of the request
             setMessage(sipResponse);

@@ -457,7 +457,8 @@ public abstract class OutboundWay extends Way {
         switch (getMessageState()) {
         case START:
             if (getHelper().getLogger().isLoggable(Level.FINE)) {
-                getHelper().getLogger().fine(
+                getHelper().getLogger().log(
+                        Level.FINE,
                         "Writing message to "
                                 + getConnection().getSocketAddress());
             }

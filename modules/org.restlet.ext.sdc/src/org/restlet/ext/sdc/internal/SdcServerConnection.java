@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2010 Noelios Technologies.
+ * Copyright 2005-2011 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Logger;
 
 import javax.net.ssl.SSLSocket;
 
@@ -69,27 +70,34 @@ import com.google.protobuf.InvalidProtocolBufferException;
  */
 public class SdcServerConnection implements Dispatchable {
 
-    private volatile String key;
-
-    private final SSLSocket socket;
-
-    private final InputStream inputStream;
-
-    private final OutputStream outputStream;
-
-    private final FrameReceiver frameReceiver;
-
-    private final FrameSender frameSender;
-
-    /** Map of pending HTTP/SDC client calls, keyed by the unique call ID. */
+    /** The map of pending SDC/HTTP client calls, keyed by the unique call ID. */
     private final Map<String, SdcClientCall> calls;
 
+    /** The receiver for SDC Frame protocol. */
+    private final FrameReceiver frameReceiver;
+
+    /** The sender for SDC Frame protocol. */
+    private final FrameSender frameSender;
+
+    /** The parent SDC client helper. */
     private final SdcClientHelper helper;
+
+    /** The socket input stream. */
+    private final InputStream inputStream;
+
+    /** The authorization key composed of the email address and the password. */
+    private volatile String key;
+
+    /** The socket output stream. */
+    private final OutputStream outputStream;
+
+    /** The SSL connection socket. */
+    private final SSLSocket socket;
 
     /**
      * Constructor.
      * 
-     * @param socket
+     * @param helper 
      * @throws IOException
      */
     public SdcServerConnection(SdcClientHelper helper, SSLSocket socket)
@@ -126,7 +134,6 @@ public class SdcServerConnection implements Dispatchable {
                         .parseFrom(frameInfo.getPayload());
                 setKey(authorizationRequest.getEmail() + ":"
                         + authorizationRequest.getPassword());
-                // System.out.println(authorizationRequest);
 
                 AuthorizationInfo authorizationResponse = AuthorizationInfo
                         .newBuilder().setResult(ResultCode.OK).build();
@@ -191,11 +198,9 @@ public class SdcServerConnection implements Dispatchable {
                 e.printStackTrace();
             }
         } else if (frameInfo.getType() == FrameInfo.Type.REGISTRATION) {
-            RegistrationRequestV4 registrationRequest;
-
             try {
-                registrationRequest = RegistrationRequestV4.parseFrom(frameInfo
-                        .getPayload());
+                RegistrationRequestV4 registrationRequest = RegistrationRequestV4
+                        .parseFrom(frameInfo.getPayload());
                 // System.out.println(registrationRequest);
 
                 RegistrationResponseV4 registrationResponse = RegistrationResponseV4
@@ -230,38 +235,96 @@ public class SdcServerConnection implements Dispatchable {
         }
     }
 
+    /**
+     * Returns the map of pending SDC/HTTP client calls, keyed by the unique
+     * call ID.
+     * 
+     * @return The map of pending SDC/HTTP client calls, keyed by the unique
+     *         call ID.
+     */
     public Map<String, SdcClientCall> getCalls() {
         return calls;
     }
 
+    /**
+     * Returns the receiver for SDC Frame protocol.
+     * 
+     * @return The receiver for SDC Frame protocol.
+     */
     public FrameReceiver getFrameReceiver() {
         return frameReceiver;
     }
 
+    /**
+     * Returns the sender for SDC Frame protocol.
+     * 
+     * @return The sender for SDC Frame protocol.
+     */
     public FrameSender getFrameSender() {
         return frameSender;
     }
 
+    /**
+     * Returns the parent SDC client helper.
+     * 
+     * @return The parent SDC client helper.
+     */
     public SdcClientHelper getHelper() {
         return helper;
     }
 
+    /**
+     * Returns the socket input stream.
+     * 
+     * @return The socket input stream.
+     */
     public InputStream getInputStream() {
         return inputStream;
     }
 
+    /**
+     * Returns the authorization key composed of the email address and the
+     * password separated by a colon character.
+     * 
+     * @return The authorization key.
+     */
     public String getKey() {
         return key;
     }
 
+    /**
+     * Returns the current logger.
+     * 
+     * @return The current logger.
+     */
+    public Logger getLogger() {
+        return getHelper().getLogger();
+    }
+
+    /**
+     * Returns the socket output stream.
+     * 
+     * @return The socket output stream.
+     */
     public OutputStream getOutputStream() {
         return outputStream;
     }
 
+    /**
+     * Returns the SSL connection socket.
+     * 
+     * @return The SSL connection socket.
+     */
     public SSLSocket getSocket() {
         return socket;
     }
 
+    /**
+     * Reads the SDC initial handshake message from the socket input stream.
+     * 
+     * @return The SDC initial handshake message from the socket input stream.
+     * @throws IOException
+     */
     protected boolean readHandshake() throws IOException {
         boolean result = true;
         byte[] hsm = SdcConnection.INITIAL_HANDSHAKE_MSG.getBytes();
@@ -275,6 +338,14 @@ public class SdcServerConnection implements Dispatchable {
         return result;
     }
 
+    /**
+     * Effectively send the requests using the SDC frame protocol. It also
+     * stores the call in the map to be later be able to associate it with its
+     * response.
+     * 
+     * @param call
+     *            The SDC client call to be sent.
+     */
     public void sendRequest(SdcClientCall call) {
         getCalls().put(call.getFetchRequest().getId(), call);
         getFrameSender().sendFrame(FrameInfo.Type.FETCH_REQUEST,
@@ -282,6 +353,13 @@ public class SdcServerConnection implements Dispatchable {
 
     }
 
+    /**
+     * Sets the authorization key composed of the email address and the password
+     * separated by a colon character.
+     * 
+     * @param key
+     *            The authorization key.
+     */
     public void setKey(String key) {
         this.key = key;
     }

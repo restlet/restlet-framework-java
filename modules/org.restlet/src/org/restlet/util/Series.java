@@ -288,7 +288,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
     public String getFirstValue(String name, boolean ignoreCase,
             String defaultValue) {
         String result = defaultValue;
-        final Parameter param = getFirst(name, ignoreCase);
+        Parameter param = getFirst(name, ignoreCase);
 
         if ((param != null) && (param.getValue() != null)) {
             result = param.getValue();
@@ -365,8 +365,8 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
                         result = param.getValue();
                     } else {
                         sb = new StringBuilder();
-                        sb.append(result).append(separator).append(
-                                param.getValue());
+                        sb.append(result).append(separator)
+                                .append(param.getValue());
                     }
                 } else {
                     sb.append(separator).append(param.getValue());
@@ -404,14 +404,54 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @return The array of values.
      */
     public String[] getValuesArray(String name, boolean ignoreCase) {
-        List<E> params = subList(name, ignoreCase);
-        String[] result = new String[params.size()];
+        return getValuesArray(name, ignoreCase, null);
+    }
 
-        for (int i = 0; i < params.size(); i++) {
-            result[i] = params.get(i).getValue();
+    /**
+     * Returns an array of all the values associated to the given parameter
+     * name.
+     * 
+     * @param name
+     *            The parameter name to match.
+     * @param ignoreCase
+     *            Indicates if the name comparison is case sensitive.
+     * @param defaultValue
+     *            The default value to return if no matching parameter found or
+     *            if the parameter has a null value.
+     * @return The array of values.
+     */
+    public String[] getValuesArray(String name, boolean ignoreCase,
+            String defaultValue) {
+        String[] result = null;
+        List<E> params = subList(name, ignoreCase);
+
+        if (params.size() == 0) {
+            result = new String[1];
+            result[0] = defaultValue;
+        } else {
+            result = new String[params.size()];
+
+            for (int i = 0; i < params.size(); i++) {
+                result[i] = params.get(i).getValue();
+            }
         }
 
         return result;
+    }
+
+    /**
+     * Returns an array of all the values associated to the given parameter
+     * name.
+     * 
+     * @param name
+     *            The parameter name to match.
+     * @param defaultValue
+     *            The default value to return if no matching parameter found or
+     *            if the parameter has a null value.
+     * @return The array of values.
+     */
+    public String[] getValuesArray(String name, String defaultValue) {
+        return getValuesArray(name, false, defaultValue);
     }
 
     /**
@@ -422,9 +462,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @return The map of name, value pairs.
      */
     public Map<String, String> getValuesMap() {
-        final Map<String, String> result = new LinkedHashMap<String, String>();
+        Map<String, String> result = new LinkedHashMap<String, String>();
 
-        for (final Parameter param : this) {
+        for (Parameter param : this) {
             if (!result.containsKey(param.getName())) {
                 result.put(param.getName(), param.getValue());
             }
@@ -601,9 +641,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @return The list of values.
      */
     public Series<E> subList(String name, boolean ignoreCase) {
-        final Series<E> result = createSeries(null);
+        Series<E> result = createSeries(null);
 
-        for (final E param : this) {
+        for (E param : this) {
             if (equals(param.getName(), name, ignoreCase)) {
                 result.add(param);
             }

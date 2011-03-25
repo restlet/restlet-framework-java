@@ -58,7 +58,7 @@ import org.restlet.engine.security.SslUtils;
  * <td>null</td>
  * <td>Let you specify a {@link SslContextFactory} class name as a parameter, or
  * an instance as an attribute for a more complete and flexible SSL context
- * setting. If set, it takes precedance over the other SSL parameters below.</td>
+ * setting. If set, it takes precedence over the other SSL parameters below.</td>
  * </tr>
  * <tr>
  * <td>keystorePath</td>

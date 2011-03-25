@@ -130,12 +130,15 @@ public class SslUtils {
         List<String> disabledCipherSuites = new ArrayList<String>();
         String[] disabledCipherSuitesParams = helper.getHelpedParameters()
                 .getValuesArray("disabledCipherSuites");
+
         for (String disabledCipherSuitesParam : disabledCipherSuitesParams) {
             StringTokenizer st = new StringTokenizer(disabledCipherSuitesParam);
+
             while (st.hasMoreElements()) {
                 disabledCipherSuites.add(st.nextToken());
             }
         }
+
         return disabledCipherSuites.size() > 0 ? disabledCipherSuites
                 .toArray(new String[0]) : null;
     }
@@ -151,12 +154,15 @@ public class SslUtils {
         List<String> enabledCipherSuites = new ArrayList<String>();
         String[] enabledCipherSuitesParams = helper.getHelpedParameters()
                 .getValuesArray("enabledCipherSuites");
+
         for (String enabledCipherSuitesParam : enabledCipherSuitesParams) {
             StringTokenizer st = new StringTokenizer(enabledCipherSuitesParam);
+
             while (st.hasMoreElements()) {
                 enabledCipherSuites.add(st.nextToken());
             }
         }
+
         return enabledCipherSuites.size() > 0 ? enabledCipherSuites
                 .toArray(new String[0]) : null;
     }
@@ -193,10 +199,8 @@ public class SslUtils {
                                 "Unable to find SslContextFactory class: "
                                         + sslContextFactoryName, e);
                     } catch (ClassCastException e) {
-                        Context
-                                .getCurrentLogger()
-                                .log(
-                                        Level.WARNING,
+                        Context.getCurrentLogger()
+                                .log(Level.WARNING,
                                         "Class "
                                                 + sslContextFactoryName
                                                 + " does not implement SslContextFactory.",

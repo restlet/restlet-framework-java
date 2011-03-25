@@ -34,7 +34,9 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.engine.security.AuthenticatorHelper;
 
 /**
- * Implements the SDC adhoc authentication.
+ * Implements the SDC adhoc authentication. This challenge scheme is used to
+ * pass the credentials of the tunnel to which you want your SDC call to go
+ * through.
  * 
  * @author Jerome Louvel
  */
