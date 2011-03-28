@@ -106,6 +106,7 @@ public class OauthTestApplication extends Application {
         ServerManager manager = new ServerManager();
         manager.setOPEndpointUrl(AuthorizationServerTest.prot + "://localhost:"
                 + AuthorizationServerTest.serverPort + "/oauth/provider");
+        manager.setEnforceRpId(true);
         attribs.put("openid_manager", manager);
         attribs.put("xrds", AuthorizationServerTest.prot + "://localhost:"
                 + AuthorizationServerTest.serverPort + "/oauth/xrds");
