@@ -58,7 +58,9 @@ public class TimedTokenTest {
         System.setProperty("javax.net.ssl.trustStorePassword", "testpass");
 
         // Server server = new Server(Protocol.HTTPS, serverPort);
-        Server server = new Server(Protocol.HTTP, serverPort);
+        Server server = new Server( new Context(), Protocol.HTTP, serverPort);
+        //Strange workaround for the server to not hang.
+        server.getContext().getParameters().add("maxQueued", "0");
         component = new Component();
         component.getServers().add(server);
         component.getClients().add(Protocol.HTTP);
