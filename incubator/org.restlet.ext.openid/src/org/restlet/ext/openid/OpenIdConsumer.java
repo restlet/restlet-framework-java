@@ -181,18 +181,15 @@ public class OpenIdConsumer extends ServerResource {
             returnToUrl.append("?return=true");
 
             // --- Forward proxy setup (only if needed) ---
-            // ProxyProperties proxyProps = new ProxyProperties();
+            //ProxyProperties proxyProps = new ProxyProperties();
             // proxyProps.setProxyName("proxy.example.com");
             // proxyProps.setProxyPort(8080);
             // HttpClientFactory.setProxyProperties(proxyProps);
 
             // perform discovery on the user-supplied identifier
-            // HttpParams httpparams = DefaultHttpParams.getDefaultParams();
-            // httpparams.setIntParameter("http.connection.timeout", 30000); //
-            // 10
-            // sec
+                        
             List<?> discoveries = null;
-            discoveries = discovery.discover(target);
+           	discoveries = discovery.discover(target);
             for (Object o : discoveries) {
                 if (o instanceof DiscoveryInformation) {
                     DiscoveryInformation di = (DiscoveryInformation) o;
@@ -225,17 +222,22 @@ public class OpenIdConsumer extends ServerResource {
             // obtain a AuthRequest message to be sent to the OpenID provider
             AuthRequest authReq = manager.authenticate(discovered,
                     returnToUrl.toString()); // TODO maybe add TIMESTAMP?
-            log.info("OpenID - REALM = " + getReference().getHostIdentifier());
-            authReq.setRealm(getReference().getHostIdentifier().toString());
+            //Domain wide realm add meta to main page
+            //http://localhost:8080/oauth/xrds?returnTo=http://localhost:8080/oauth/openid_login\r\n
+            //log.info("OpenID - REALM = " + getReference().getHostIdentifier());
+            //authReq.setRealm(getReference().getHostIdentifier().toString());
+            log.info("OpenID - REALM = " + getReference().getBaseRef());
+            authReq.setRealm(getReference().getBaseRef().toString());
 
             // Attribute Exchange - getting optional and required
-            FetchRequest fetch = FetchRequest.createFetchRequest();
+            FetchRequest fetch = null;
             String[] optional = params.getValuesArray("ax_optional", true);
             for (String o : optional) {
                 if (!ax.containsKey(o)) {
                     log.warning("Not supported AX extension : " + o);
                     continue;
                 }
+                if( fetch == null ) fetch = FetchRequest.createFetchRequest();
                 fetch.addAttribute(o, ax.get(o), false);
             }
 
@@ -245,10 +247,13 @@ public class OpenIdConsumer extends ServerResource {
                     log.warning("Not supported AX extension : " + r);
                     continue;
                 }
+                if( fetch == null ) fetch = FetchRequest.createFetchRequest();
                 fetch.addAttribute(r, ax.get(r), true);
             }
 
-            authReq.addExtension(fetch);
+            if( fetch != null ) {
+            	authReq.addExtension(fetch);
+            }
 
             if (!discovered.isVersion2()) {
                 // Option 1: GET HTTP-redirect to the OpenID Provider endpoint
