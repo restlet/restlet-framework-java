@@ -45,10 +45,8 @@ import org.restlet.data.Method;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.representation.Variant;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
 /**
@@ -59,25 +57,13 @@ import org.restlet.resource.ServerResource;
  * 
  * @author Kristoffer Gronowski
  */
+
+//TODO yadisResolver.discoverRP(realm);
+
 public class OpenIdProvider extends ServerResource {
 
     public OpenIdProvider() {
         System.out.println("OpenID CREATED NEW PROVIDER");
-    }
-
-    @Override
-    protected Representation head() throws ResourceException {
-        getLogger().info("IN head()");
-
-        sendXRDSLocation();
-
-        return new EmptyRepresentation();
-    }
-
-    @Override
-    protected Representation head(Variant variant) throws ResourceException {
-        getLogger().info("IN head(variant) : " + variant);
-        return super.head(variant);
     }
 
     @Post("form")
