@@ -288,8 +288,10 @@ public class ClientResource extends UniformResource {
         this.retryOnError = true;
         this.retryDelay = 2000L;
         this.retryAttempts = 2;
+        // [ifndef gwt]
         this.requestEntityBuffering = false;
         this.responseEntityBuffering = false;
+        // [enddef]
         init(context, request, response);
     }
 
@@ -1483,6 +1485,7 @@ public class ClientResource extends UniformResource {
         getRequest().setCookies(cookies);
     }
 
+    // [ifndef gwt] method
     /**
      * Indicates if transient entities should be buffered after being received
      * or before being sent.
