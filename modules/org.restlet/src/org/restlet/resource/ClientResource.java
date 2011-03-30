@@ -186,6 +186,8 @@ public class ClientResource extends UniformResource {
         this.retryOnError = resource.isRetryOnError();
         this.retryDelay = resource.getRetryDelay();
         this.retryAttempts = resource.getRetryAttempts();
+        this.requestEntityBuffering = resource.isRequestEntityBuffering();
+        this.responseEntityBuffering = resource.isResponseEntityBuffering();
         // [ifndef gwt] instruction
         setApplication(resource.getApplication());
         init(resource.getContext(), request, response);
