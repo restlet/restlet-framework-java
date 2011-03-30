@@ -51,6 +51,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.io.BufferingRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -142,6 +143,18 @@ public class ClientResource extends UniformResource {
 
     /** Indicates if the next Restlet has been created. */
     private volatile boolean nextCreated;
+
+    /**
+     * Indicates if transient request entities should be buffered before being
+     * sent.
+     */
+    private volatile boolean requestEntityBuffering;
+
+    /**
+     * Indicates if transient response entities should be buffered after being
+     * received.
+     */
+    private volatile boolean responseEntityBuffering;
 
     /** Number of retry attempts before reporting an error. */
     private volatile int retryAttempts;
@@ -270,6 +283,8 @@ public class ClientResource extends UniformResource {
         this.retryOnError = true;
         this.retryDelay = 2000L;
         this.retryAttempts = 2;
+        this.requestEntityBuffering = false;
+        this.responseEntityBuffering = false;
         init(context, request, response);
     }
 
@@ -994,6 +1009,14 @@ public class ClientResource extends UniformResource {
     protected void handle(Request request, Response response,
             List<Reference> references, int retryAttempt, Uniform next) {
         if (next != null) {
+            // Check if request entity buffering must be done
+            if (isRequestEntityBuffering() && (request.getEntity() != null)
+                    && request.getEntity().isTransient()
+                    && request.getEntity().isAvailable()) {
+                request.setEntity(new BufferingRepresentation(request
+                        .getEntity()));
+            }
+
             // Actually handle the call
             next.handle(request, response);
 
@@ -1052,7 +1075,7 @@ public class ClientResource extends UniformResource {
                     && response.getStatus().isRecoverableError()
                     && request.getMethod().isIdempotent()
                     && (retryAttempt < getRetryAttempts())
-                    && ((getRequestEntity() == null) || getRequestEntity()
+                    && ((request.getEntity() == null) || request.getEntity()
                             .isAvailable())) {
                 getLogger().log(
                         Level.INFO,
@@ -1083,6 +1106,17 @@ public class ClientResource extends UniformResource {
                 // Retry the call
                 handle(request, response, references, ++retryAttempt, next);
             }
+
+            // Check if response entity buffering must be done
+            if (isResponseEntityBuffering() && (response.getEntity() != null)
+                    && response.getEntity().isTransient()
+                    && response.getEntity().isAvailable()) {
+                response.setEntity(new BufferingRepresentation(response
+                        .getEntity()));
+            }
+        } else {
+            getLogger().log(Level.WARNING,
+                    "Request ignored as no next Restlet is available");
         }
     }
 
@@ -1147,6 +1181,31 @@ public class ClientResource extends UniformResource {
      */
     public boolean isFollowingRedirects() {
         return followingRedirects;
+    }
+
+    /**
+     * Indicates if transient response entities should be buffered after being
+     * received. This is useful to increase the chance of being able to resubmit
+     * a failed request due to network error, or to prevent chunked encoding
+     * from being used an HTTP connector.
+     * 
+     * @return True if transient response entities should be buffered after
+     *         being received.
+     */
+    public boolean isRequestEntityBuffering() {
+        return requestEntityBuffering;
+    }
+
+    /**
+     * Indicates if transient response entities should be buffered after being
+     * received. This is useful to be able to systematically reuse and process a
+     * response entity several times after retrieval.
+     * 
+     * @return True if transient response entities should be buffered after
+     *         being received.
+     */
+    public boolean isResponseEntityBuffering() {
+        return responseEntityBuffering;
     }
 
     /**
@@ -1414,6 +1473,20 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Indicates if transient entities should be buffered after being received
+     * or before being sent.
+     * 
+     * @param entityBuffering
+     *            True if transient entities should be buffered.
+     * @see ClientResource#setRequestEntityBuffering(boolean)
+     * @see #setResponseEntityBuffering(boolean)
+     */
+    public void setEntityBuffering(boolean entityBuffering) {
+        setRequestEntityBuffering(entityBuffering);
+        setResponseEntityBuffering(entityBuffering);
+    }
+
+    /**
      * Indicates if redirections are followed.
      * 
      * @param followingRedirects
@@ -1601,6 +1674,33 @@ public class ClientResource extends UniformResource {
      */
     public void setReferrerRef(String referrerUri) {
         getRequest().setReferrerRef(referrerUri);
+    }
+
+    /**
+     * Indicates if transient response entities should be buffered after being
+     * received. This is useful to increase the chance of being able to resubmit
+     * a failed request due to network error, or to prevent chunked encoding
+     * from being used an HTTP connector.
+     * 
+     * @param requestEntityBuffering
+     *            True if transient request entities should be buffered after
+     *            being received.
+     */
+    public void setRequestEntityBuffering(boolean requestEntityBuffering) {
+        this.requestEntityBuffering = requestEntityBuffering;
+    }
+
+    /**
+     * Indicates if transient response entities should be buffered after being
+     * received. This is useful to be able to systematically reuse and process a
+     * response entity several times after retrieval.
+     * 
+     * @param responseEntityBuffering
+     *            True if transient response entities should be buffered after
+     *            being received.
+     */
+    public void setResponseEntityBuffering(boolean responseEntityBuffering) {
+        this.responseEntityBuffering = responseEntityBuffering;
     }
 
     /**

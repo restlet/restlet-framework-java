@@ -40,6 +40,10 @@ Changes log
       - Added ClientResource#maxRedirects property to prevent infinite 
         redirects, in addition to the existing infinite loop detection.
         Suggested by Henry Story.
+      - Added ClientResource#requestEntityBuffering, responseEntityBuffering
+        Boolean properties and setEntityBuffering(boolean) method in order to
+        make transient entities reusable (retry attempts, chunk encoding issues
+        with GAE, response entity reuse).
     - Enhancements
       - Keep alive empty lines between messages in a persistent connections are
         now eat silently. Reported by John Logsdon.
