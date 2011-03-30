@@ -51,7 +51,6 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.io.BufferingRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -144,12 +143,14 @@ public class ClientResource extends UniformResource {
     /** Indicates if the next Restlet has been created. */
     private volatile boolean nextCreated;
 
+    // [ifndef gwt] member
     /**
      * Indicates if transient request entities should be buffered before being
      * sent.
      */
     private volatile boolean requestEntityBuffering;
 
+    // [ifndef gwt] member
     /**
      * Indicates if transient response entities should be buffered after being
      * received.
@@ -186,10 +187,12 @@ public class ClientResource extends UniformResource {
         this.retryOnError = resource.isRetryOnError();
         this.retryDelay = resource.getRetryDelay();
         this.retryAttempts = resource.getRetryAttempts();
+
+        // [ifndef gwt]
         this.requestEntityBuffering = resource.isRequestEntityBuffering();
         this.responseEntityBuffering = resource.isResponseEntityBuffering();
-        // [ifndef gwt] instruction
         setApplication(resource.getApplication());
+        // [enddef]
         init(resource.getContext(), request, response);
     }
 
@@ -1011,13 +1014,15 @@ public class ClientResource extends UniformResource {
     protected void handle(Request request, Response response,
             List<Reference> references, int retryAttempt, Uniform next) {
         if (next != null) {
+            // [ifndef gwt]
             // Check if request entity buffering must be done
             if (isRequestEntityBuffering() && (request.getEntity() != null)
                     && request.getEntity().isTransient()
                     && request.getEntity().isAvailable()) {
-                request.setEntity(new BufferingRepresentation(request
-                        .getEntity()));
+                request.setEntity(new org.restlet.engine.io.BufferingRepresentation(
+                        request.getEntity()));
             }
+            // [enddef]
 
             // Actually handle the call
             next.handle(request, response);
@@ -1109,13 +1114,15 @@ public class ClientResource extends UniformResource {
                 handle(request, response, references, ++retryAttempt, next);
             }
 
+            // [ifndef gwt]
             // Check if response entity buffering must be done
             if (isResponseEntityBuffering() && (response.getEntity() != null)
                     && response.getEntity().isTransient()
                     && response.getEntity().isAvailable()) {
-                response.setEntity(new BufferingRepresentation(response
-                        .getEntity()));
+                response.setEntity(new org.restlet.engine.io.BufferingRepresentation(
+                        response.getEntity()));
             }
+            // [enddef]
         } else {
             getLogger().log(Level.WARNING,
                     "Request ignored as no next Restlet is available");
@@ -1185,6 +1192,7 @@ public class ClientResource extends UniformResource {
         return followingRedirects;
     }
 
+    // [ifndef gwt] method
     /**
      * Indicates if transient response entities should be buffered after being
      * received. This is useful to increase the chance of being able to resubmit
@@ -1198,6 +1206,7 @@ public class ClientResource extends UniformResource {
         return requestEntityBuffering;
     }
 
+    // [ifndef gwt] method
     /**
      * Indicates if transient response entities should be buffered after being
      * received. This is useful to be able to systematically reuse and process a
@@ -1678,6 +1687,7 @@ public class ClientResource extends UniformResource {
         getRequest().setReferrerRef(referrerUri);
     }
 
+    // [ifndef gwt] method
     /**
      * Indicates if transient response entities should be buffered after being
      * received. This is useful to increase the chance of being able to resubmit
@@ -1692,6 +1702,7 @@ public class ClientResource extends UniformResource {
         this.requestEntityBuffering = requestEntityBuffering;
     }
 
+    // [ifndef gwt] method
     /**
      * Indicates if transient response entities should be buffered after being
      * received. This is useful to be able to systematically reuse and process a
