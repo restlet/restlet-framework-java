@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.1 Milestone 3 (03/31/2011)
     - Breaking changes
       - The new support of GWT 2.2 is not backward compatible with applications 
         based on previous versions of GWT.
