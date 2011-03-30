@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.net.ssl.SSLSocket;
@@ -97,7 +98,10 @@ public class SdcServerConnection implements Dispatchable {
     /**
      * Constructor.
      * 
-     * @param helper 
+     * @param helper
+     *            The parent SDC client helper.
+     * @param socket
+     *            The SSL connection socket.
      * @throws IOException
      */
     public SdcServerConnection(SdcClientHelper helper, SSLSocket socket)
@@ -143,7 +147,6 @@ public class SdcServerConnection implements Dispatchable {
 
                 // Register frame dispatchers
                 getFrameReceiver().registerDispatcher(Type.FETCH_REQUEST, this);
-                getFrameReceiver().registerDispatcher(Type.AUTHORIZATION, this);
                 getFrameReceiver().registerDispatcher(Type.REGISTRATION, this);
                 getFrameReceiver().registerDispatcher(Type.HEALTH_CHECK, this);
 
@@ -176,32 +179,44 @@ public class SdcServerConnection implements Dispatchable {
 
     /**
      * Asynchronously process the response frames received from the SDC agent.
+     * 
+     * @param frameInfo
+     *            The SDC frame to parse.
      */
     public void dispatch(FrameInfo frameInfo) throws FramingException {
-        if (frameInfo.getType() == Type.FETCH_REQUEST) {
-            // System.out.println(frameInfo);
-
-            try {
+        try {
+            if (frameInfo.getType() == Type.FETCH_REQUEST) {
                 FetchReply fetchReply = FetchReply.parseFrom(frameInfo
                         .getPayload());
+
+                if (getLogger().isLoggable(Level.FINE)) {
+                    getLogger().log(Level.FINE,
+                            "SDC response received: " + fetchReply.toString());
+                }
+
+                // Lookup the associated SDC request
                 SdcClientCall call = getCalls().get(fetchReply.getId());
 
                 if (call != null) {
                     call.setFetchReply(fetchReply);
-                    call.getLatch().countDown();
-                } else {
-                    System.out
-                            .println("Unable to find the client call associated to the received response");
-                }
 
-            } catch (InvalidProtocolBufferException e) {
-                e.printStackTrace();
-            }
-        } else if (frameInfo.getType() == FrameInfo.Type.REGISTRATION) {
-            try {
+                    // Unblock the client thread
+                    call.getLatch().countDown();
+                } else if (getLogger().isLoggable(Level.WARNING)) {
+                    getLogger()
+                            .log(Level.WARNING,
+                                    "Unable to find the SDC request associated to the received response");
+                }
+            } else if (frameInfo.getType() == FrameInfo.Type.REGISTRATION) {
                 RegistrationRequestV4 registrationRequest = RegistrationRequestV4
                         .parseFrom(frameInfo.getPayload());
-                // System.out.println(registrationRequest);
+
+                if (getLogger().isLoggable(Level.FINE)) {
+                    getLogger().log(
+                            Level.FINE,
+                            "SDC tunnel registration received: "
+                                    + registrationRequest);
+                }
 
                 RegistrationResponseV4 registrationResponse = RegistrationResponseV4
                         .newBuilder()
@@ -215,23 +230,31 @@ public class SdcServerConnection implements Dispatchable {
 
                 getFrameSender().sendFrame(FrameInfo.Type.REGISTRATION,
                         registrationResponse.toByteString());
-            } catch (InvalidProtocolBufferException e) {
-                e.printStackTrace();
-            }
-        } else if (frameInfo.getType() == Type.HEALTH_CHECK) {
-            // System.out.println(frameInfo);
+            } else if (frameInfo.getType() == Type.HEALTH_CHECK) {
+                HealthCheckInfo healthCheckResponse = HealthCheckInfo
+                        .newBuilder()
+                        .setSource(Source.SERVER)
+                        .setTimeStamp(System.currentTimeMillis())
+                        .setType(
+                                com.google.dataconnector.protocol.proto.SdcFrame.HealthCheckInfo.Type.RESPONSE)
+                        .build();
 
-            HealthCheckInfo checkResponse = HealthCheckInfo
-                    .newBuilder()
-                    .setSource(Source.SERVER)
-                    .setTimeStamp(System.currentTimeMillis())
-                    .setType(
-                            com.google.dataconnector.protocol.proto.SdcFrame.HealthCheckInfo.Type.RESPONSE)
-                    .build();
-            getFrameSender().sendFrame(Type.HEALTH_CHECK,
-                    checkResponse.toByteString());
-        } else {
-            System.out.println("Unexpected frame:" + frameInfo);
+                if (getLogger().isLoggable(Level.FINE)) {
+                    getLogger()
+                            .log(Level.FINE,
+                                    "SDC health check received: "
+                                            + healthCheckResponse);
+                }
+
+                // Reply to the check
+                getFrameSender().sendFrame(Type.HEALTH_CHECK,
+                        healthCheckResponse.toByteString());
+            } else if (getLogger().isLoggable(Level.FINE)) {
+                getLogger().log(Level.FINE,
+                        "Unexpected SDC frame received: " + frameInfo);
+            }
+        } catch (InvalidProtocolBufferException e) {
+            getLogger().log(Level.WARNING, "Invalid SDC frame received", e);
         }
     }
 

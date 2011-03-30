@@ -7,12 +7,9 @@
 	</package>
 	<version>1.0</version>
 	<homeUri>
-		https://rome.dev.java.net/
+		http://java.net/projects/rome/
 	</homeUri>
 	<downloadUri>
-		https://rome.dev.java.net/
+		http://java.net/projects/rome/downloads
 	</downloadUri>
-	<javadocs>
-		<link href="https://rome.dev.java.net/apidocs/1_0/" />
-	</javadocs>
 </library>

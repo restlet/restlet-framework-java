@@ -1,8 +1,8 @@
-<module id="sdc" excludes="android,gwt" type="standard"
+<module id="sdc" excludes="android,gae,gwt" type="standard"
 	package="org.restlet.ext.sdc">
 	<name>Restlet Extension - Secure Data Connector</name>
 	<description>
-		Support for Google SDC tunnel on the cloud side.
+		Integration with Google SDC on the cloud side.
 	</description>
 	<distributions>
 		<distribution id="classic" />

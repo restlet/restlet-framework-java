@@ -185,37 +185,40 @@ public class SslUtils {
         if (result == null) {
             String[] sslContextFactoryNames = helper.getHelpedParameters()
                     .getValuesArray("sslContextFactory");
+
             if (sslContextFactoryNames != null) {
                 for (String sslContextFactoryName : sslContextFactoryNames) {
-                    try {
-                        Class<? extends SslContextFactory> sslContextFactoryClass = Class
-                                .forName(sslContextFactoryName).asSubclass(
-                                        SslContextFactory.class);
-                        result = sslContextFactoryClass.newInstance();
-                        result.init(helper.getHelpedParameters());
-                    } catch (ClassNotFoundException e) {
-                        Context.getCurrentLogger().log(
-                                Level.WARNING,
-                                "Unable to find SslContextFactory class: "
-                                        + sslContextFactoryName, e);
-                    } catch (ClassCastException e) {
-                        Context.getCurrentLogger()
-                                .log(Level.WARNING,
-                                        "Class "
-                                                + sslContextFactoryName
-                                                + " does not implement SslContextFactory.",
-                                        e);
-                    } catch (InstantiationException e) {
-                        Context.getCurrentLogger().log(
-                                Level.WARNING,
-                                "Could not instantiate class "
-                                        + sslContextFactoryName
-                                        + " with default constructor.", e);
-                    } catch (IllegalAccessException e) {
-                        Context.getCurrentLogger().log(
-                                Level.WARNING,
-                                "Illegal access when instantiating class "
-                                        + sslContextFactoryName + ".", e);
+                    if (sslContextFactoryName != null) {
+                        try {
+                            Class<? extends SslContextFactory> sslContextFactoryClass = Class
+                                    .forName(sslContextFactoryName).asSubclass(
+                                            SslContextFactory.class);
+                            result = sslContextFactoryClass.newInstance();
+                            result.init(helper.getHelpedParameters());
+                        } catch (ClassNotFoundException e) {
+                            Context.getCurrentLogger().log(
+                                    Level.WARNING,
+                                    "Unable to find SslContextFactory class: "
+                                            + sslContextFactoryName, e);
+                        } catch (ClassCastException e) {
+                            Context.getCurrentLogger()
+                                    .log(Level.WARNING,
+                                            "Class "
+                                                    + sslContextFactoryName
+                                                    + " does not implement SslContextFactory.",
+                                            e);
+                        } catch (InstantiationException e) {
+                            Context.getCurrentLogger().log(
+                                    Level.WARNING,
+                                    "Could not instantiate class "
+                                            + sslContextFactoryName
+                                            + " with default constructor.", e);
+                        } catch (IllegalAccessException e) {
+                            Context.getCurrentLogger().log(
+                                    Level.WARNING,
+                                    "Illegal access when instantiating class "
+                                            + sslContextFactoryName + ".", e);
+                        }
                     }
                 }
             }

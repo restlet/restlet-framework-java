@@ -41,12 +41,13 @@ Changes log
         redirects, in addition to the existing infinite loop detection.
         Suggested by Henry Story.
     - Enhancements
-      - Added support for non-blocking HTTPS to the internal NIO connectors, 
-        client-side and server-side. Sponsored by NetDev.
       - Keep alive empty lines between messages in a persistent connections are
         now eat silently. Reported by John Logsdon.
       - Refactored the internal NIO connector to better support the differences
         between HTTP and SIP protocols regarding transaction management.
+      - Added a new SDC extension providing a client connector for the 
+        Google Secure Data Connector protocol compatible with the official SDC 
+        agent.
     - Bugs fixed
       - Fixed bug preventing persistent connections reuse when an entity is
         present. Reported by John Logsdon.
@@ -56,7 +57,7 @@ Changes log
         preventing the resue of persistent connections. 
         Reported by Phil Dunks.
       - Fixed NIO connector (HTTP and SIP) bug potentially causing infinite
-        loops. Reported by John Logdson and Phil Dunks.
+        loops. Reported by John Logsdon and Phil Dunks.
       - Fixed SIP methods INFO, SUBSCRIBE and SUBSCRIBE to allow responses.
         Reported by Phil Dunks.
       - Fixed NIO connector regression potentially blocking a connection if 
@@ -72,7 +73,6 @@ Changes log
         Suggested by John Logsdon.
       - Updated Jetty library to version 7.3.0.
       - Updated GWT library to version 2.2.0.
-      - Added SDC extension based on the Google Secure Data Connector API.
       
 - 2.1 Milestone 2 (12/24/2010)
     - API changes
@@ -89,7 +89,7 @@ Changes log
     - Enhancements
       - Added Request#loggable property, LogService#isLoggable(Request)
         method and LogService#loggableTemplate to enable selective request 
-        logging. Suggested by John Logdson.
+        logging. Suggested by John Logsdon.
       - Added setters with String parameters in addition to Text ones to
         the Feed and Entry classes.
       - Added an EncoderService to automatically compress sent entities
@@ -119,7 +119,7 @@ Changes log
         formatters.
       - Improved the precision of log messages, for example giving the list
         of template variables matched and their value. 
-        Suggested by John Logdson.
+        Suggested by John Logsdon.
       - Optimized routing when 0 characters are matched on an URI template.
       - Added IoUtils.TIMEOUT_MS constant to globally configure I/O related
         timeouts. Its value is 60 seconds by default, but can be configured
@@ -142,7 +142,7 @@ Changes log
       - Moved UniformResource#doCatch() logic down to ServerResource as it
         was specific to server-side and kept a simpler log trace.
       - Made TCP socket reuse active by default on internal connector.
-        Reported by John Logdson.
+        Reported by John Logsdon.
       - Lowered log traces for Directory. Suggested by Rickard Oberg.       
       - Moved exception to status conversion logic from UniformResource and
         ServerResource doCatch() methods to the StatusService.
@@ -156,7 +156,7 @@ Changes log
       - Added an UniformResource#setApplication() setter to be able
         to explicitly set the parent application used to pick up the
         ConverterService or MetadataService. This property is also 
-        carried on by the copy constructor. Suggested by John Logdson.
+        carried on by the copy constructor. Suggested by John Logsdon.
       - Added UniformResource#toString() for easier debugging.
       - Added Representation#isSelectable() and getRegistration() method
         to manipulate the registration of the NIO channel with its 
