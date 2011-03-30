@@ -1,0 +1,17 @@
+<library id="gcollections">
+	<name>Google Collections</name>
+	<description>Google collections.</description>
+	<package name="com.google.collections">
+		<maven>
+			<groupId>com.google.collections</groupId>
+			<artifactId>google-collections</artifactId>
+		</maven>
+	</package>
+	<version>1.0</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://code.google.com/p/google-collections/
+	</homeUri>
+</library>

@@ -1,0 +1,15 @@
+<module id="jackson" excludes="gwt" type="integration" package="org.restlet.ext.jackson">
+   <name>Restlet Extension - Jackson</name>
+   <description>
+      Integration with Jackson.
+	</description>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
+
+   <dependencies>
+      <dependency type="library" id="jackson" primary="true" />
+      <dependency type="module" id="core" />
+   </dependencies>
+</module>

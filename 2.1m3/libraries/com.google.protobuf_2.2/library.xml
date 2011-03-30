@@ -1,0 +1,15 @@
+<library id="protobuf">
+	<name>Google Protobuffer</name>
+	<description>Google Protobuffer.</description>
+	<package name="com.google.protobuf" />
+	<version>2.2</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://code.google.com/p/protobuf/
+	</homeUri>
+	<downloadUri>
+		http://code.google.com/p/protobuf/downloads/list
+	</downloadUri>
+</library>

@@ -1,0 +1,17 @@
+<library id="jaxb-api">
+	<package name="javax.xml.bind">
+		<maven>
+			<artifactId>jaxb-api</artifactId>
+		</maven>
+	</package>
+	<version>2.1</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		https://jaxb.dev.java.net/
+	</homeUri>
+	<downloadUri>
+		https://jaxb.dev.java.net/servlets/ProjectDocumentList
+	</downloadUri>
+</library>

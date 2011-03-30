@@ -1,0 +1,11 @@
+-----------------------------------------------------------
+Protocol Buffers - Google's data interchange format
+-----------------------------------------------------------
+
+"Protocol Buffers are a way of encoding structured data in 
+an efficient yet extensible format. Google uses Protocol 
+Buffers for almost all of its internal RPC protocols and 
+file formats."
+
+For more information:
+http://code.google.com/p/protobuf/

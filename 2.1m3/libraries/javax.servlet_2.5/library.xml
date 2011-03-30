@@ -1,0 +1,23 @@
+<library id="servlet">
+	<package name="javax.servlet">
+		<maven>
+			<artifactId>servlet-api</artifactId>
+		</maven>
+	</package>
+	<version>2.5</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://java.sun.com/products/servlet/index.jsp
+	</homeUri>
+	<downloadUri>
+		http://java.sun.com/products/servlet/download.html
+	</downloadUri>
+	<javadocs>
+		<link href="http://download.oracle.com/javaee/5/api/" />
+	</javadocs>
+</library>
+
+
+
