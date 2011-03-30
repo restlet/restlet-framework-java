@@ -1003,7 +1003,7 @@ public class ClientResource extends UniformResource {
                     && response.getStatus().isRecoverableError()
                     && request.getMethod().isIdempotent()
                     && (retryAttempt < getRetryAttempts())
-                    && ((getRequestEntity() == null) || getRequestEntity()
+                    && ((request.getEntity() == null) || request.getEntity()
                             .isAvailable())) {
                 getLogger().log(
                         Level.INFO,

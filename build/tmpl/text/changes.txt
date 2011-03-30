@@ -7,6 +7,8 @@ Changes log
     - Bugs fixed
        - Fixed Redirector when the targer URI is on a distinct domain.
          Reported by Guido Schmidt.
+       - Fixed potential issue in ClientResource regarding the actual
+         entity being resent in case of error.
     - Misc
        - Clarified default property values of the TunnelService class.
          
