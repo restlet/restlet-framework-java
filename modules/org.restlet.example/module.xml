@@ -29,5 +29,6 @@
       <dependency type="module" id="wadl" />
       <dependency type="module" id="crypto" />
       <dependency type="module" id="jaas" />
+      <dependency type="module" id="sdc" />
    </dependencies>
 </module>

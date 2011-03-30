@@ -4,8 +4,7 @@ Bundle-Name: Restlet Extension - Secure Data Connector
 Bundle-SymbolicName: org.restlet.ext.sdc
 Bundle-Version: 2.1
 Bundle-Vendor: Noelios Technologies
-Import-Package: com.google.dataconnector.client,
- com.google.dataconnector.protocol,
+Import-Package:  com.google.dataconnector.protocol,
  com.google.dataconnector.protocol.proto,
  com.google.dataconnector.util,
  com.google.protobuf,
@@ -27,5 +26,4 @@ Import-Package: com.google.dataconnector.client,
  org.restlet.service,
  org.restlet.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.restlet.ext.sdc,
- org.restlet.ext.sdc.internal
+Export-Package: org.restlet.ext.sdc

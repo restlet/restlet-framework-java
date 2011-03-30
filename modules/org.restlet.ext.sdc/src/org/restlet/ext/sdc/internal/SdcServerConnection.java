@@ -44,7 +44,6 @@ import javax.net.ssl.SSLSocket;
 
 import org.restlet.ext.sdc.SdcClientHelper;
 
-import com.google.dataconnector.client.SdcConnection;
 import com.google.dataconnector.protocol.Dispatchable;
 import com.google.dataconnector.protocol.FrameReceiver;
 import com.google.dataconnector.protocol.FrameSender;
@@ -350,7 +349,9 @@ public class SdcServerConnection implements Dispatchable {
      */
     protected boolean readHandshake() throws IOException {
         boolean result = true;
-        byte[] hsm = SdcConnection.INITIAL_HANDSHAKE_MSG.getBytes();
+        byte[] hsm = ("v5.0 "
+                + FrameReceiver.class.getPackage().getImplementationVersion() + "\n")
+                .getBytes();
         int c;
 
         for (int i = 0; result && (i < hsm.length); i++) {

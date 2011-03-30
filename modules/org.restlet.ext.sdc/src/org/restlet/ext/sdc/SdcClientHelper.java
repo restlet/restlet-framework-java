@@ -290,7 +290,7 @@ public class SdcClientHelper extends HttpClientHelper {
      */
     public int getServerPort() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "serverPort", "4443"));
+                "serverPort", "4433"));
     }
 
     /**
@@ -335,7 +335,12 @@ public class SdcClientHelper extends HttpClientHelper {
                             SdcServerConnection ssc = new SdcServerConnection(
                                     SdcClientHelper.this, socket);
                             ssc.connect();
-                            getConnections().put(ssc.getKey(), ssc);
+                            if (ssc.getKey() != null) {
+                                getConnections().put(ssc.getKey(), ssc);
+                            } else {
+                                getLogger().warning(
+                                        "Detected wrong connection.");
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

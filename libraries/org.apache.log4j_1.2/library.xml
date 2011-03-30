@@ -1,0 +1,21 @@
+<library id="log4j">
+	<name>Apache log4j</name>
+	<description>Apache Log4j.</description>
+	<package name="org.apache.log4j">
+		<maven>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</maven>
+	</package>
+	<version>1.2</version>
+	<release>16</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://logging.apache.org/log4j/1.2/
+	</homeUri>
+	<downloadUri>
+		http://logging.apache.org/log4j/1.2/download.html
+	</downloadUri>
+</library>
