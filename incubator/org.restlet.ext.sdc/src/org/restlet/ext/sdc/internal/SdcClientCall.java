@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2010 Noelios Technologies.
+ * Copyright 2005-2011 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
@@ -52,7 +52,6 @@ import org.restlet.data.Status;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.http.ClientCall;
 import org.restlet.engine.http.header.HeaderConstants;
-import org.restlet.engine.io.NioUtils;
 import org.restlet.ext.sdc.SdcClientHelper;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
@@ -71,35 +70,35 @@ import com.google.protobuf.ByteString;
  */
 public class SdcClientCall extends ClientCall {
 
-    /** */
-    private final CountDownLatch latch;
-
     /** The matching SDC server connection to use for tunneling. */
     private final SdcServerConnection connection;
 
-    /** Indicates if the response headers were added. */
-    private volatile boolean responseHeadersAdded;
-
-    /** */
-    private volatile FetchRequest fetchRequest;
-
-    /** */
+    /** The SDC HTTP response. */
     private volatile FetchReply fetchReply;
 
+    /** The SDC HTTP request. */
+    private volatile FetchRequest fetchRequest;
+
+    /** Efficiently blocks the calling thread while the call is tunneled. */
+    private final CountDownLatch latch;
+
+    /** The request entity stream convertible to a byte array. */
     private final ByteArrayOutputStream requestEntityStream;
+
+    /** Indicates if the response headers were added. */
+    private volatile boolean responseHeadersAdded;
 
     /**
      * Constructor.
      * 
      * @param sdcClientHelper
      *            The parent HTTP client helper.
+     * @param connection
+     *            The associated SDC tunnel connection.
      * @param method
      *            The method name.
      * @param requestUri
      *            The request URI.
-     * @param hasEntity
-     *            Indicates if the call will have an entity to send to the
-     *            server.
      * @throws IOException
      */
     public SdcClientCall(SdcClientHelper sdcClientHelper,
@@ -120,10 +119,20 @@ public class SdcClientCall extends ClientCall {
         return this.connection;
     }
 
+    /**
+     * Returns the SDC HTTP response.
+     * 
+     * @return The SDC HTTP response.
+     */
     public FetchReply getFetchReply() {
         return fetchReply;
     }
 
+    /**
+     * Returns the SDC HTTP request.
+     * 
+     * @return The SDC HTTP request.
+     */
     public FetchRequest getFetchRequest() {
         return fetchRequest;
     }
@@ -138,6 +147,13 @@ public class SdcClientCall extends ClientCall {
         return (SdcClientHelper) super.getHelper();
     }
 
+    /**
+     * Returns the latch that efficiently blocks the calling thread while the
+     * call is tunneled.
+     * 
+     * @return The latch that efficiently blocks the calling thread while the
+     *         call is tunneled.
+     */
     public CountDownLatch getLatch() {
         return latch;
     }
@@ -161,6 +177,11 @@ public class SdcClientCall extends ClientCall {
         return null;
     }
 
+    /**
+     * Returns the request entity stream convertible to a byte array.
+     * 
+     * @return The request entity stream convertible to a byte array.
+     */
     @Override
     public OutputStream getRequestEntityStream() {
         return requestEntityStream;
@@ -302,8 +323,7 @@ public class SdcClientCall extends ClientCall {
 
                 // Block the thread until we receive the response or a
                 // timeout occurs
-                if (!getLatch().await(NioUtils.NIO_TIMEOUT,
-                        TimeUnit.MILLISECONDS)) {
+                if (!getLatch().await(60000, TimeUnit.MILLISECONDS)) {
                     // Timeout detected
                     result = new Status(Status.CONNECTOR_ERROR_INTERNAL,
                             "The calling thread timed out while waiting for a response to unblock it.");
@@ -359,10 +379,22 @@ public class SdcClientCall extends ClientCall {
         }
     }
 
+    /**
+     * Sets the SDC HTTP response.
+     * 
+     * @param fetchReply
+     *            The SDC HTTP response.
+     */
     public void setFetchReply(FetchReply fetchReply) {
         this.fetchReply = fetchReply;
     }
 
+    /**
+     * Sets the SDC HTTP request.
+     * 
+     * @param fetchRequest
+     *            The SDC HTTP request.
+     */
     public void setFetchRequest(FetchRequest fetchRequest) {
         this.fetchRequest = fetchRequest;
     }

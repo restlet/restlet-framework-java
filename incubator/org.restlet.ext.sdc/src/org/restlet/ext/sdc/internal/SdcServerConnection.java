@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2010 Noelios Technologies.
+ * Copyright 2005-2011 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
@@ -37,12 +37,14 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.net.ssl.SSLSocket;
 
+import org.restlet.Context;
 import org.restlet.ext.sdc.SdcClientHelper;
 
-import com.google.dataconnector.client.SdcConnection;
 import com.google.dataconnector.protocol.Dispatchable;
 import com.google.dataconnector.protocol.FrameReceiver;
 import com.google.dataconnector.protocol.FrameSender;
@@ -69,27 +71,37 @@ import com.google.protobuf.InvalidProtocolBufferException;
  */
 public class SdcServerConnection implements Dispatchable {
 
-    private volatile String key;
-
-    private final SSLSocket socket;
-
-    private final InputStream inputStream;
-
-    private final OutputStream outputStream;
-
-    private final FrameReceiver frameReceiver;
-
-    private final FrameSender frameSender;
-
-    /** Map of pending HTTP/SDC client calls, keyed by the unique call ID. */
+    /** The map of pending SDC/HTTP client calls, keyed by the unique call ID. */
     private final Map<String, SdcClientCall> calls;
 
+    /** The receiver for SDC Frame protocol. */
+    private final FrameReceiver frameReceiver;
+
+    /** The sender for SDC Frame protocol. */
+    private final FrameSender frameSender;
+
+    /** The parent SDC client helper. */
     private final SdcClientHelper helper;
+
+    /** The socket input stream. */
+    private final InputStream inputStream;
+
+    /** The authorization key composed of the email address and the password. */
+    private volatile String key;
+
+    /** The socket output stream. */
+    private final OutputStream outputStream;
+
+    /** The SSL connection socket. */
+    private final SSLSocket socket;
 
     /**
      * Constructor.
      * 
+     * @param helper
+     *            The parent SDC client helper.
      * @param socket
+     *            The SSL connection socket.
      * @throws IOException
      */
     public SdcServerConnection(SdcClientHelper helper, SSLSocket socket)
@@ -115,7 +127,7 @@ public class SdcServerConnection implements Dispatchable {
      */
     public void connect() throws IOException {
         try {
-            // Initial handshake
+            // Initial handshakecom.google.dataconnector.util.ShutdownManager
             readHandshake();
 
             // Authorization step
@@ -126,7 +138,6 @@ public class SdcServerConnection implements Dispatchable {
                         .parseFrom(frameInfo.getPayload());
                 setKey(authorizationRequest.getEmail() + ":"
                         + authorizationRequest.getPassword());
-                // System.out.println(authorizationRequest);
 
                 AuthorizationInfo authorizationResponse = AuthorizationInfo
                         .newBuilder().setResult(ResultCode.OK).build();
@@ -136,13 +147,11 @@ public class SdcServerConnection implements Dispatchable {
 
                 // Register frame dispatchers
                 getFrameReceiver().registerDispatcher(Type.FETCH_REQUEST, this);
-                getFrameReceiver().registerDispatcher(Type.AUTHORIZATION, this);
                 getFrameReceiver().registerDispatcher(Type.REGISTRATION, this);
                 getFrameReceiver().registerDispatcher(Type.HEALTH_CHECK, this);
 
                 // Launch a thread to asynchronously receive incoming frames
                 getHelper().getWorkerService().execute(new Runnable() {
-                    @Override
                     public void run() {
                         try {
                             getFrameReceiver().startDispatching();
@@ -154,7 +163,6 @@ public class SdcServerConnection implements Dispatchable {
 
                 // Launch a thread to asynchronously send outgoing frames
                 getHelper().getWorkerService().execute(new Runnable() {
-                    @Override
                     public void run() {
                         getFrameSender().run();
                     }
@@ -171,35 +179,44 @@ public class SdcServerConnection implements Dispatchable {
 
     /**
      * Asynchronously process the response frames received from the SDC agent.
+     * 
+     * @param frameInfo
+     *            The SDC frame to parse.
      */
-    @Override
     public void dispatch(FrameInfo frameInfo) throws FramingException {
-        if (frameInfo.getType() == Type.FETCH_REQUEST) {
-            // System.out.println(frameInfo);
-
-            try {
+        try {
+            if (frameInfo.getType() == Type.FETCH_REQUEST) {
                 FetchReply fetchReply = FetchReply.parseFrom(frameInfo
                         .getPayload());
+
+                if (getLogger().isLoggable(Level.FINE)) {
+                    getLogger().log(Level.FINE,
+                            "SDC response received: " + fetchReply.toString());
+                }
+
+                // Lookup the associated SDC request
                 SdcClientCall call = getCalls().get(fetchReply.getId());
 
                 if (call != null) {
                     call.setFetchReply(fetchReply);
+
+                    // Unblock the client thread
                     call.getLatch().countDown();
-                } else {
-                    System.out
-                            .println("Unable to find the client call associated to the received response");
+                } else if (getLogger().isLoggable(Level.WARNING)) {
+                    getLogger()
+                            .log(Level.WARNING,
+                                    "Unable to find the SDC request associated to the received response");
                 }
+            } else if (frameInfo.getType() == FrameInfo.Type.REGISTRATION) {
+                RegistrationRequestV4 registrationRequest = RegistrationRequestV4
+                        .parseFrom(frameInfo.getPayload());
 
-            } catch (InvalidProtocolBufferException e) {
-                e.printStackTrace();
-            }
-        } else if (frameInfo.getType() == FrameInfo.Type.REGISTRATION) {
-            RegistrationRequestV4 registrationRequest;
-
-            try {
-                registrationRequest = RegistrationRequestV4.parseFrom(frameInfo
-                        .getPayload());
-                // System.out.println(registrationRequest);
+                if (getLogger().isLoggable(Level.FINE)) {
+                    getLogger().log(
+                            Level.FINE,
+                            "SDC tunnel registration received: "
+                                    + registrationRequest);
+                }
 
                 RegistrationResponseV4 registrationResponse = RegistrationResponseV4
                         .newBuilder()
@@ -213,61 +230,129 @@ public class SdcServerConnection implements Dispatchable {
 
                 getFrameSender().sendFrame(FrameInfo.Type.REGISTRATION,
                         registrationResponse.toByteString());
-            } catch (InvalidProtocolBufferException e) {
-                e.printStackTrace();
-            }
-        } else if (frameInfo.getType() == Type.HEALTH_CHECK) {
-            // System.out.println(frameInfo);
+            } else if (frameInfo.getType() == Type.HEALTH_CHECK) {
+                HealthCheckInfo healthCheckResponse = HealthCheckInfo
+                        .newBuilder()
+                        .setSource(Source.SERVER)
+                        .setTimeStamp(System.currentTimeMillis())
+                        .setType(
+                                com.google.dataconnector.protocol.proto.SdcFrame.HealthCheckInfo.Type.RESPONSE)
+                        .build();
 
-            HealthCheckInfo checkResponse = HealthCheckInfo
-                    .newBuilder()
-                    .setSource(Source.SERVER)
-                    .setTimeStamp(System.currentTimeMillis())
-                    .setType(
-                            com.google.dataconnector.protocol.proto.SdcFrame.HealthCheckInfo.Type.RESPONSE)
-                    .build();
-            getFrameSender().sendFrame(Type.HEALTH_CHECK,
-                    checkResponse.toByteString());
-        } else {
-            System.out.println("Unexpected frame:" + frameInfo);
+                if (getLogger().isLoggable(Level.FINE)) {
+                    getLogger()
+                            .log(Level.FINE,
+                                    "SDC health check received: "
+                                            + healthCheckResponse);
+                }
+
+                // Reply to the check
+                getFrameSender().sendFrame(Type.HEALTH_CHECK,
+                        healthCheckResponse.toByteString());
+            } else if (getLogger().isLoggable(Level.FINE)) {
+                getLogger().log(Level.FINE,
+                        "Unexpected SDC frame received: " + frameInfo);
+            }
+        } catch (InvalidProtocolBufferException e) {
+            getLogger().log(Level.WARNING, "Invalid SDC frame received", e);
         }
     }
 
+    /**
+     * Returns the map of pending SDC/HTTP client calls, keyed by the unique
+     * call ID.
+     * 
+     * @return The map of pending SDC/HTTP client calls, keyed by the unique
+     *         call ID.
+     */
     public Map<String, SdcClientCall> getCalls() {
         return calls;
     }
 
+    /**
+     * Returns the receiver for SDC Frame protocol.
+     * 
+     * @return The receiver for SDC Frame protocol.
+     */
     public FrameReceiver getFrameReceiver() {
         return frameReceiver;
     }
 
+    /**
+     * Returns the sender for SDC Frame protocol.
+     * 
+     * @return The sender for SDC Frame protocol.
+     */
     public FrameSender getFrameSender() {
         return frameSender;
     }
 
+    /**
+     * Returns the parent SDC client helper.
+     * 
+     * @return The parent SDC client helper.
+     */
     public SdcClientHelper getHelper() {
         return helper;
     }
 
+    /**
+     * Returns the socket input stream.
+     * 
+     * @return The socket input stream.
+     */
     public InputStream getInputStream() {
         return inputStream;
     }
 
+    /**
+     * Returns the authorization key composed of the email address and the
+     * password separated by a colon character.
+     * 
+     * @return The authorization key.
+     */
     public String getKey() {
         return key;
     }
 
+    /**
+     * Returns the current logger.
+     * 
+     * @return The current logger.
+     */
+    public Logger getLogger() {
+        return Context.getCurrentLogger();
+    }
+
+    /**
+     * Returns the socket output stream.
+     * 
+     * @return The socket output stream.
+     */
     public OutputStream getOutputStream() {
         return outputStream;
     }
 
+    /**
+     * Returns the SSL connection socket.
+     * 
+     * @return The SSL connection socket.
+     */
     public SSLSocket getSocket() {
         return socket;
     }
 
+    /**
+     * Reads the SDC initial handshake message from the socket input stream.
+     * 
+     * @return The SDC initial handshake message from the socket input stream.
+     * @throws IOException
+     */
     protected boolean readHandshake() throws IOException {
         boolean result = true;
-        byte[] hsm = SdcConnection.INITIAL_HANDSHAKE_MSG.getBytes();
+        byte[] hsm = ("v5.0 "
+                + FrameReceiver.class.getPackage().getImplementationVersion() + "\n")
+                .getBytes();
         int c;
 
         for (int i = 0; result && (i < hsm.length); i++) {
@@ -278,6 +363,14 @@ public class SdcServerConnection implements Dispatchable {
         return result;
     }
 
+    /**
+     * Effectively send the requests using the SDC frame protocol. It also
+     * stores the call in the map to be later be able to associate it with its
+     * response.
+     * 
+     * @param call
+     *            The SDC client call to be sent.
+     */
     public void sendRequest(SdcClientCall call) {
         getCalls().put(call.getFetchRequest().getId(), call);
         getFrameSender().sendFrame(FrameInfo.Type.FETCH_REQUEST,
@@ -285,6 +378,13 @@ public class SdcServerConnection implements Dispatchable {
 
     }
 
+    /**
+     * Sets the authorization key composed of the email address and the password
+     * separated by a colon character.
+     * 
+     * @param key
+     *            The authorization key.
+     */
     public void setKey(String key) {
         this.key = key;
     }

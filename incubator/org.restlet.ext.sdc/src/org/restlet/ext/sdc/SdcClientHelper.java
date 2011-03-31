@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2010 Noelios Technologies.
+ * Copyright 2005-2011 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
@@ -51,15 +51,31 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.http.ClientCall;
 import org.restlet.engine.http.HttpClientHelper;
-import org.restlet.engine.io.NioUtils;
 import org.restlet.engine.security.SslContextFactory;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.ext.sdc.internal.SdcClientCall;
 import org.restlet.ext.sdc.internal.SdcServerConnection;
 
 /**
- * SDC tunnel connector. Here is the list of parameters that are supported. They
- * should be set in the Client's context before it is started:
+ * SDC tunnel connector. This is a client connector from the Restlet application
+ * developer point of view, but internally it launches an SDC tunnel server to
+ * allow SDC agents located inside intranet to establish SDC tunnels.<br>
+ * <br>
+ * Note that currently all SDC tunnel connections are accepted and are matched
+ * with SDC client requests based on the SDC user name, domain and password.
+ * Here is a usage example:<br>
+ * 
+ * <pre>
+ * Request request = new Request(Method.GET, &quot;http://www.restlet.org&quot;);
+ * request.setProtocol(Protocol.valueOf(&quot;SDC&quot;));
+ * request.setProxyChallengeResponse(new ChallengeResponse(ChallengeScheme
+ *         .valueOf(&quot;SDC&quot;), &quot;myUser@example.com&quot;, &quot;myPassword&quot;));
+ * Response response = sdcClient.handle(request);
+ * response.getEntity().write(System.out);
+ * </pre>
+ * 
+ * Here is the list of additional parameters that are supported. They should be
+ * set in the Server's context before it is started:
  * <table>
  * <tr>
  * <th>Parameter name</th>
@@ -68,22 +84,93 @@ import org.restlet.ext.sdc.internal.SdcServerConnection;
  * <th>Description</th>
  * </tr>
  * <tr>
- * <td>adapter</td>
+ * <td>serverPort</td>
+ * <td>int</td>
+ * <td>4433</td>
+ * <td>The port number of the SDC tunnels server.</td>
+ * </tr>
+ * <tr>
+ * <td>sslContextFactory</td>
  * <td>String</td>
- * <td>org.restlet.engine.http.ClientAdapter</td>
- * <td>Class name of the adapter of low-level HTTP calls into high level
- * requests and responses.</td>
+ * <td>null</td>
+ * <td>Let you specify a {@link SslContextFactory} class name as a parameter, or
+ * an instance as an attribute for a more complete and flexible SSL context
+ * setting. If set, it takes precedence over the other SSL parameters below.</td>
+ * </tr>
+ * <tr>
+ * <tr>
+ * <td>keystorePath</td>
+ * <td>String</td>
+ * <td>${user.home}/.keystore</td>
+ * <td>SSL keystore path.</td>
+ * </tr>
+ * <tr>
+ * <td>keystorePassword</td>
+ * <td>String</td>
+ * <td></td>
+ * <td>SSL keystore password.</td>
+ * </tr>
+ * <tr>
+ * <td>keystoreType</td>
+ * <td>String</td>
+ * <td>JKS</td>
+ * <td>SSL keystore type</td>
+ * </tr>
+ * <tr>
+ * <td>keyPassword</td>
+ * <td>String</td>
+ * <td>${keystorePassword}</td>
+ * <td>SSL key password.</td>
+ * </tr>
+ * <tr>
+ * <td>certAlgorithm</td>
+ * <td>String</td>
+ * <td>SunX509</td>
+ * <td>SSL certificate algorithm.</td>
+ * </tr>
+ * <tr>
+ * <td>enabledCipherSuites</td>
+ * <td>String</td>
+ * <td>TLS_RSA_WITH_AES_128_CBC_SHA</td>
+ * <td>Whitespace-separated list of enabled cipher suites and/or can be
+ * specified multiple times.</td>
+ * </tr>
+ * <tr>
+ * <td>disabledCipherSuites</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Whitespace-separated list of disabled cipher suites and/or can be
+ * specified multiple times. It affects the cipher suites manually enabled or
+ * the default ones.</td>
+ * </tr>
+ * <tr>
+ * <td>needClientAuthentication</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if we require client certificate authentication.</td>
+ * </tr>
+ * <tr>
+ * <td>sslProtocol</td>
+ * <td>String</td>
+ * <td>TLS</td>
+ * <td>SSL protocol.</td>
+ * </tr>
+ * <tr>
+ * <td>wantClientAuthentication</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if we would like client certificate authentication (only for
+ * the BIO connector type).</td>
  * </tr>
  * </table>
+ * 
  * 
  * @author Jerome Louvel
  */
 public class SdcClientHelper extends HttpClientHelper {
 
+    /** The map of SDC tunnel connections. */
     private final Map<String, SdcServerConnection> connections;
-
-    /** The connection worker service. */
-    private final ExecutorService workerService;
 
     /**
      * The latch that can be used to block until the connector is ready to
@@ -91,6 +178,15 @@ public class SdcClientHelper extends HttpClientHelper {
      */
     private final CountDownLatch latch;
 
+    /** The connection worker service. */
+    private final ExecutorService workerService;
+
+    /**
+     * Constructor.
+     * 
+     * @param client
+     *            The parent client.
+     */
     public SdcClientHelper(Client client) {
         super(client);
         getProtocols().add(Protocol.valueOf("SDC"));
@@ -147,18 +243,51 @@ public class SdcClientHelper extends HttpClientHelper {
         return result;
     }
 
+    /**
+     * Returns the map of SDC tunnel connections.
+     * 
+     * @return The map of SDC tunnel connections.
+     */
     public Map<String, SdcServerConnection> getConnections() {
         return connections;
     }
 
+    /**
+     * Returns the list of enabled cipher suites. By default, this suite is
+     * returned: "TLS_RSA_WITH_AES_128_CBC_SHA".
+     * 
+     * @return The list of enabled cipher suites.
+     */
     public String[] getEnabledCipherSuites() {
         return new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA" };
     }
 
+    /**
+     * Returns the latch that can be used to block until the connector is ready
+     * to process requests.
+     * 
+     * @return The latch that can be used to block until the connector is ready
+     *         to process requests.
+     */
     public CountDownLatch getLatch() {
         return latch;
     }
 
+    /**
+     * Returns the port number of the SDC tunnels server.
+     * 
+     * @return The port number of the SDC tunnels server.
+     */
+    public int getServerPort() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "serverPort", "4433"));
+    }
+
+    /**
+     * Returns the connection worker service.
+     * 
+     * @return The connection worker service.
+     */
     public ExecutorService getWorkerService() {
         return workerService;
     }
@@ -166,18 +295,21 @@ public class SdcClientHelper extends HttpClientHelper {
     @Override
     public synchronized void start() throws Exception {
         super.start();
-        getLogger().info("Starting the SDC tunnel on port 4433.");
+        getLogger().info(
+                "Starting the SDC client and its tunnel server on port "
+                        + getServerPort());
 
         new Thread() {
             @Override
             public void run() {
                 try {
+                    // Creates the server socket
                     SslContextFactory contextFactory = SslUtils
                             .getSslContextFactory(SdcClientHelper.this);
                     SSLServerSocketFactory ssf = contextFactory
                             .createSslContext().getServerSocketFactory();
                     SSLServerSocket serverSocket = (SSLServerSocket) ssf
-                            .createServerSocket(4433);
+                            .createServerSocket(getServerPort());
 
                     // Accept the next socket
                     boolean loop = true;
@@ -190,11 +322,15 @@ public class SdcClientHelper extends HttpClientHelper {
                         try {
                             socket = (SSLSocket) serverSocket.accept();
                             socket.setEnabledCipherSuites(getEnabledCipherSuites());
-                            SdcServerConnection ssc;
-                            ssc = new SdcServerConnection(SdcClientHelper.this,
-                                    socket);
+                            SdcServerConnection ssc = new SdcServerConnection(
+                                    SdcClientHelper.this, socket);
                             ssc.connect();
-                            getConnections().put(ssc.getKey(), ssc);
+                            if (ssc.getKey() != null) {
+                                getConnections().put(ssc.getKey(), ssc);
+                            } else {
+                                getLogger().warning(
+                                        "Detected wrong connection.");
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -209,7 +345,7 @@ public class SdcClientHelper extends HttpClientHelper {
         // Wait for the listener to start up and count down the latch
         // This blocks until the server is ready to receive connections
         try {
-            if (!latch.await(NioUtils.NIO_TIMEOUT, TimeUnit.MILLISECONDS)) {
+            if (!getLatch().await(60000, TimeUnit.MILLISECONDS)) {
                 // Timeout detected
                 getLogger()
                         .warning(
@@ -227,7 +363,7 @@ public class SdcClientHelper extends HttpClientHelper {
     @Override
     public synchronized void stop() throws Exception {
         super.stop();
-        getLogger().info("Stopping the SDC tunnel");
+        getLogger().info("Stopping the SDC client and its tunnel server");
     }
 
 }
