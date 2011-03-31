@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.0.6 (2011-03-31)
     - Bugs fixed
        - Fixed Redirector when the targer URI is on a distinct domain.
          Reported by Guido Schmidt.
