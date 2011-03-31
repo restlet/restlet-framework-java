@@ -1,0 +1,22 @@
+<library id="fileupload">
+   <package name="org.apache.commons.fileupload">
+		<maven>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+		</maven>
+   </package>
+   <version>1.2</version>
+   <release>1</release>
+   <distributions>
+      <distribution id="classic" />
+   </distributions>
+   <homeUri>
+      http://commons.apache.org/fileupload/
+	</homeUri>
+   <downloadUri>
+      http://commons.apache.org/downloads/download_fileupload.cgi
+	</downloadUri>
+   <javadocs>
+      <link href="http://commons.apache.org/fileupload/apidocs/" />
+   </javadocs>
+</library>

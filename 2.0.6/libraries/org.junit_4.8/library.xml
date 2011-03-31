@@ -1,0 +1,19 @@
+<library id="junit">
+	<package name="org.junit">
+		<maven>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</maven>
+	</package>
+	<version>4.8</version>
+	<release>1</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://www.junit.org/
+	</homeUri>
+	<downloadUri>
+		<![CDATA[http://sourceforge.net/project/showfiles.php?group_id=15278&package_id=12472]]>
+	</downloadUri>
+</library>

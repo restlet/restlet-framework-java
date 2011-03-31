@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - Netty
+Bundle-SymbolicName: org.restlet.ext.netty
+Bundle-Version: 2.0
+Bundle-Vendor: Noelios Technologies
+Import-Package: org.jboss.netty.bootstrap,
+ org.jboss.netty.buffer,
+ org.jboss.netty.channel,
+ org.jboss.netty.channel.group,
+ org.jboss.netty.channel.socket.nio,
+ org.jboss.netty.handler.codec.frame,
+ org.jboss.netty.handler.codec.http,
+ org.jboss.netty.handler.ssl,
+ org.jboss.netty.handler.stream,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.engine,
+ org.restlet.engine.http,
+ org.restlet.engine.http.header,
+ org.restlet.engine.http.io,
+ org.restlet.engine.io,
+ org.restlet.engine.security,
+ org.restlet.representation,
+ org.restlet.service,
+ org.restlet.util
+Export-Package: org.restlet.ext.netty,
+ org.restlet.ext.netty.internal
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

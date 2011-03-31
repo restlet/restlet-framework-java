@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OAuth library
+Bundle-SymbolicName: net.oauth
+Bundle-Version: 1.0
+Bundle-ClassPath: net.oauth.jar
+Bundle-Vendor: 
+Export-Package: net.oauth;uses:="net.oauth.http,net.oauth.client",
+ net.oauth.client;uses:="net.oauth.http,net.oauth",
+ net.oauth.http;uses:="net.oauth",
+ net.oauth.signature;uses:="net.oauth",
+ net.oauth.signature.pem
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
