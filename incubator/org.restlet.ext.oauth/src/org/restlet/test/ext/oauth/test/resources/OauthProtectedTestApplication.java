@@ -3,7 +3,7 @@ package org.restlet.test.ext.oauth.test.resources;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.ext.oauth.protectedresource.RemoteAuthorizer;
+import org.restlet.ext.oauth.OAuthAuthorizer;
 import org.restlet.routing.Router;
 import org.restlet.test.ext.oauth.provider.AuthorizationServerTest;
 
@@ -13,7 +13,7 @@ public class OauthProtectedTestApplication extends Application {
 		Context ctx = getContext();
 		Router router = new Router(ctx);
 		
-		RemoteAuthorizer auth = new RemoteAuthorizer(
+		OAuthAuthorizer auth = new OAuthAuthorizer(
 				AuthorizationServerTest.prot+"://localhost:"
 				+AuthorizationServerTest.serverPort+
 			"/oauth/validate",
@@ -23,7 +23,7 @@ public class OauthProtectedTestApplication extends Application {
 		auth.setNext(DummyResource.class);
 		router.attach("/protected",auth);
 		
-		RemoteAuthorizer auth2 = new RemoteAuthorizer(
+		OAuthAuthorizer auth2 = new OAuthAuthorizer(
 				AuthorizationServerTest.prot+"://localhost:"
 				+AuthorizationServerTest.serverPort+
 			"/oauth/validate",

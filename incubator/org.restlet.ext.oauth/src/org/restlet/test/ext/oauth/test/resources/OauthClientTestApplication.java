@@ -3,9 +3,9 @@ package org.restlet.test.ext.oauth.test.resources;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.ext.oauth.provider.OAuthUser;
-import org.restlet.ext.oauth.util.OAuthParameters;
-import org.restlet.ext.oauth.webclient.OAuthProxy;
+import org.restlet.ext.oauth.OAuthParameters;
+import org.restlet.ext.oauth.OAuthProxy;
+import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.routing.Router;
 import org.restlet.test.ext.oauth.provider.AuthorizationServerTest;
 

@@ -3,8 +3,8 @@ package org.restlet.test.ext.oauth.test.resources;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.ext.oauth.util.OAuthParameters;
-import org.restlet.ext.oauth.webclient.FacebookProxy;
+import org.restlet.ext.oauth.FacebookProxy;
+import org.restlet.ext.oauth.OAuthParameters;
 import org.restlet.routing.Router;
 
 public class FbClientTestApplication extends Application {

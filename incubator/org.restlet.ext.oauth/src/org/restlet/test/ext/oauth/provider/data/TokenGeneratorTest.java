@@ -4,12 +4,12 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.restlet.ext.oauth.provider.data.AuthenticatedUser;
-import org.restlet.ext.oauth.provider.data.ExpireToken;
-import org.restlet.ext.oauth.provider.data.Token;
-import org.restlet.ext.oauth.provider.data.TokenGenerator;
-import org.restlet.ext.oauth.provider.data.impl.AuthenticatedUserImpl;
-import org.restlet.ext.oauth.provider.data.impl.MemTokenGenerator;
+import org.restlet.ext.oauth.AuthenticatedUser;
+import org.restlet.ext.oauth.ExpireToken;
+import org.restlet.ext.oauth.Token;
+import org.restlet.ext.oauth.TokenGenerator;
+import org.restlet.ext.oauth.internal.provider.data.AuthenticatedUserImpl;
+import org.restlet.ext.oauth.internal.provider.data.MemTokenGenerator;
 
 public class TokenGeneratorTest {
     private static ScheduledThreadPoolExecutor pool;

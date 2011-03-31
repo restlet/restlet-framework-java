@@ -2,7 +2,7 @@ package org.restlet.test.ext.oauth.test.resources;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.ext.oauth.protectedresource.ScopedResource;
+import org.restlet.ext.oauth.ScopedResource;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;

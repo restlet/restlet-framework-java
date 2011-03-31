@@ -9,7 +9,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.ext.oauth.util.OAuthUtils;
+import org.restlet.ext.oauth.OAuthUtils;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
