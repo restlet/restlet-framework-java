@@ -101,13 +101,15 @@ public class Engine {
     /** The registered engine. */
     private static volatile Engine instance = null;
 
+    // [ifdef jse] member
     /** The org.restlet log level . */
     private static volatile boolean logConfigured = false;
 
-    // [ifndef gwt] member
+    // [ifdef jse] member
     /** The general log formatter. */
     private static volatile Class<? extends Formatter> logFormatter = org.restlet.engine.log.SimplestFormatter.class;
 
+    // [ifdef jse] member
     /** The general log level . */
     private static volatile Level logLevel = Level.INFO;
 
@@ -120,6 +122,7 @@ public class Engine {
     /** Release number. */
     public static final String RELEASE_NUMBER = "@release-type@@release-number@";
 
+    // [ifdef jse] member
     /** The org.restlet log level . */
     private static volatile Level restletLogLevel;
 
@@ -148,11 +151,11 @@ public class Engine {
         org.restlet.Application.setCurrent(null);
     }
 
+    // [ifdef jse] method
     /**
      * Updates the global log configuration of the JVM programmatically.
      */
     public static void configureLog() {
-        // [ifndef gwt]
         if ((System.getProperty("java.util.logging.config.file") == null)
                 && (System.getProperty("java.util.logging.config.class") == null)) {
             StringBuilder sb = new StringBuilder();
@@ -188,13 +191,10 @@ public class Engine {
                                 CharacterSet.DEFAULT));
             } catch (Exception e) {
                 e.printStackTrace();
-            } finally {
-                logConfigured = true;
             }
         }
-        // [enddef]
-        // [ifdef gwt] instruction uncomment
-        // logConfigured = true;
+
+        logConfigured = true;
     }
 
     /**
@@ -222,7 +222,7 @@ public class Engine {
         return result;
     }
 
-    // [ifndef gwt] method
+    // [ifdef jse] method
     /**
      * Returns the general log formatter.
      * 
@@ -284,6 +284,7 @@ public class Engine {
         return getInstance().getLoggerFacade().getLogger(loggerName);
     }
 
+    // [ifdef jse] method
     /**
      * Returns the general log level.
      * 
@@ -305,6 +306,7 @@ public class Engine {
         return getInstance().getClassLoader().getResource(name);
     }
 
+    // [ifdef jse] method
     /**
      * Returns the Restlet log level. For loggers with a name starting with
      * "org.restlet".
@@ -346,10 +348,11 @@ public class Engine {
      * @return The registered engine.
      */
     public static synchronized Engine register(boolean discoverPlugins) {
+        // [ifdef jse]
         if (!logConfigured) {
             configureLog();
         }
-
+        // [enddef]
         Engine result = new Engine(discoverPlugins);
         org.restlet.engine.Engine.setInstance(result);
         return result;
@@ -368,7 +371,7 @@ public class Engine {
         instance = engine;
     }
 
-    // [ifndef gwt] method
+    // [ifdef jse] method
     /**
      * Sets the general log formatter.
      * 
@@ -380,6 +383,7 @@ public class Engine {
         configureLog();
     }
 
+    // [ifdef jse] method
     /**
      * Sets the general log level. Modifies the global JVM's {@link LogManager}.
      * 
@@ -391,6 +395,7 @@ public class Engine {
         configureLog();
     }
 
+    // [ifdef jse] method
     /**
      * Sets the Restlet log level. For loggers with a name starting with
      * "org.restlet".

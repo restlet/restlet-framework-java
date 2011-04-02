@@ -11,6 +11,10 @@ Changes log
         500 status being returned to the client instead of the given status.
         Reported by Avi Flax and Rhett Sutphin.
     - Misc
+      - The simplified logging formatter (one line) is now available only in
+        the Java SE edition as it could cause troubles with Java EE container
+        and potentially GAE/Android as we reconfigure the default log manager
+        programmatically. Reported by Kristoffer Gronowski and Bo Xing.
 
 - 2.1 Milestone 3 (03/31/2011)
     - Breaking changes
