@@ -162,8 +162,7 @@ public class StatusService extends Service {
 
             if (re.getCause() != null) {
                 // What is most interesting is the embedded cause
-                throwable = re.getCause();
-                result = getStatus(throwable, request, response);
+                result = new Status(re.getStatus(), re.getCause());
             } else {
                 result = re.getStatus();
             }

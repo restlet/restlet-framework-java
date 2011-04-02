@@ -4,6 +4,15 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - API changes
+    - Enhancements
+    - Bug fixed
+      - Throwing a ResourceException with a given status, was resulting in
+        500 status being returned to the client instead of the given status.
+        Reported by Avi Flax and Rhett Sutphin.
+    - Misc
+
+- 2.1 Milestone 3 (03/31/2011)
     - Breaking changes
       - The new support of GWT 2.2 is not backward compatible with applications 
         based on previous versions of GWT.
