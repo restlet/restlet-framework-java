@@ -5,7 +5,7 @@
 			<artifactId>httpclient</artifactId>
 		</maven>
 	</package>
-	<version>4.0</version>
+	<version>4.1</version>
     <release>1</release>
 	<distributions>
 		<distribution id="classic" />
