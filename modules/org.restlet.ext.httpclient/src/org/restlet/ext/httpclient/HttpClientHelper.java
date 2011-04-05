@@ -39,7 +39,6 @@ import javax.net.ssl.SSLContext;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
-import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnManagerParams;
@@ -49,6 +48,7 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.cookie.CookieSpecRegistry;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -63,6 +63,7 @@ import org.restlet.engine.security.SslContextFactory;
 import org.restlet.engine.security.SslUtils;
 import org.restlet.ext.httpclient.internal.HttpIdleConnectionReaper;
 import org.restlet.ext.httpclient.internal.HttpMethodCall;
+import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
 
 /**
  * HTTP client connector using the HttpMethodCall and Apache HTTP Client
@@ -196,12 +197,15 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
                 this.httpClient.setHttpRequestRetryHandler(retryHandler);
             } catch (Exception e) {
                 getLogger()
-                        .log(
-                                Level.WARNING,
+                        .log(Level.WARNING,
                                 "An error occurred during the instantiation of the retry handler.",
                                 e);
             }
         }
+
+        CookieSpecRegistry csr = new CookieSpecRegistry();
+        csr.register("ignore", new IgnoreCookieSpecFactory());
+        this.httpClient.setCookieSpecs(csr);
     }
 
     /**
@@ -220,8 +224,7 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
         // Configure other parameters
         HttpClientParams.setAuthenticating(params, false);
         HttpClientParams.setRedirecting(params, isFollowRedirects());
-        HttpClientParams.setCookiePolicy(params,
-                CookiePolicy.BROWSER_COMPATIBILITY);
+        HttpClientParams.setCookiePolicy(params, "ignore");
         HttpConnectionParams.setTcpNoDelay(params, getTcpNoDelay());
         HttpConnectionParams.setConnectionTimeout(params, getConnectTimeout());
         HttpConnectionParams.setSoTimeout(params, getSocketTimeout());
@@ -277,8 +280,8 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
 
         try {
             result = new HttpMethodCall(this, request.getMethod().toString(),
-                    request.getResourceRef().toString(), request
-                            .isEntityAvailable());
+                    request.getResourceRef().toString(),
+                    request.isEntityAvailable());
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING,
                     "Unable to create the HTTP client call", ioe);

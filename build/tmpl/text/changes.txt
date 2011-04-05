@@ -9,6 +9,10 @@ Changes log
          Reported by Guido Schmidt.
        - Fixed potential issue in ClientResource regarding the actual
          entity being resent in case of error.
+       - Apache HTTP Client was processing cookies like a browser while
+         as a Restlet client connector it shouldn't have done so, like
+         for other connector such as the internal client.
+         Reported by Kristoffer Gronowski and Martin Svensson
     - Misc
        - Clarified default property values of the TunnelService class.
          
