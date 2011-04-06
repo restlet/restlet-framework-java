@@ -5,6 +5,11 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
+       - Fixed integration of JAXB in the JAXRS extension.
+         Reported by Julien Landuré.
+
+- 2.0.6 (2011-03-31)
+    - Bugs fixed
        - Fixed Redirector when the targer URI is on a distinct domain.
          Reported by Guido Schmidt.
        - Fixed potential issue in ClientResource regarding the actual

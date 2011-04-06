@@ -1029,6 +1029,9 @@ public class JaxRsRestlet extends Restlet {
         // not yet tested
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.FileUploadProvider");
 
+        // Fall-back on the Restlet converter service
+        addDefaultProvider(new ConverterProvider());
+
         addDefaultProvider(new FileProvider());
         addDefaultProvider(new InputStreamProvider());
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider");
@@ -1045,8 +1048,6 @@ public class JaxRsRestlet extends Restlet {
         addDefaultProvider(new SourceProvider());
         addDefaultProvider(new WebAppExcMapper());
 
-        // Fall-back on the Restlet converter service
-        addDefaultProvider(new ConverterProvider());
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.JsonProvider");
     }
 
