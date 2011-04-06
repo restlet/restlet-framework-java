@@ -41,6 +41,7 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.ext.oauth.internal.CookieCopyClientResource;
 import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -71,7 +72,7 @@ public class OAuthUtils {
     public static OAuthUser refreshToken(OAuthParameters params,
             String refreshToken) {
         OAuthUser result = null;
-        ClientResource tokenResource = new ClientResource(params.getBaseRef()
+        ClientResource tokenResource = new CookieCopyClientResource(params.getBaseRef()
                 + params.getAccessTokenPath());
 
         Form form = new Form();
@@ -139,7 +140,7 @@ public class OAuthUtils {
         String q = form.getQueryString();
         Reference redirRef = new Reference(params.getBaseRef(),
                 params.getAuthorizePath(), q, null);
-        ClientResource authResource = new ClientResource(redirRef.toUri());
+        ClientResource authResource = new CookieCopyClientResource(redirRef.toUri());
         authResource.setFollowingRedirects(false); // token is in a 3xx
         Representation r = authResource.get();
 
@@ -147,6 +148,7 @@ public class OAuthUtils {
         int cnt = 0;
 
         while (authResource.getStatus().isRedirection()) {
+            System.out.println("WE ARE IN REDIRECTION!");
             String fragment = authResource.getLocationRef().getFragment();
             if (fragment != null && fragment.length() > 0) {
                 Form f = new Form(fragment);
@@ -188,6 +190,12 @@ public class OAuthUtils {
                             + authResource.getResponse().getLocationRef());
             authResource.setReference(authResource.getResponse()
                     .getLocationRef());
+            //FOR TESTING!!!!
+            if(cnt == 1){
+            for(CookieSetting cs : authResource.getCookieSettings()){
+                authResource.getCookies().add(cs.getName(), cs.getValue());
+            }
+            }
             r = authResource.get();
             //Check if it is a OpenID form forward
 		    try {
@@ -240,7 +248,7 @@ public class OAuthUtils {
         String q = form.getQueryString();
         Reference redirRef = new Reference(params.getBaseRef(),
                 params.getAuthorizePath(), q, null);
-        ClientResource authResource = new ClientResource(redirRef.toUri());
+        ClientResource authResource = new CookieCopyClientResource(redirRef.toUri());
         authResource.setFollowingRedirects(false); // token is in a 3xx
         Representation r = authResource.get();
 
@@ -318,7 +326,7 @@ public class OAuthUtils {
             form.add(OAuthServerResource.SCOPE, params.getScope());
         }
 
-        ClientResource tokenResource = new ClientResource(params.getBaseRef()
+        ClientResource tokenResource = new CookieCopyClientResource(params.getBaseRef()
                 + params.getAccessTokenPath());
 
         Context.getCurrentLogger().info(
@@ -346,7 +354,7 @@ public class OAuthUtils {
         form.add(OAuthServerResource.USERNAME, username);
         form.add(OAuthServerResource.PASSWORD, password);
         
-        ClientResource tokenResource = new ClientResource(params.getBaseRef()
+        ClientResource tokenResource = new CookieCopyClientResource(params.getBaseRef()
                 + params.getAccessTokenPath());
 
         Context.getCurrentLogger().info(

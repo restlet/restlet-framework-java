@@ -24,6 +24,7 @@ import org.restlet.ext.oauth.OAuthHelper;
 import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.ext.oauth.OAuthUtils;
 import org.restlet.ext.openid.OpenIdFormFrowarder;
+import org.restlet.ext.oauth.internal.CookieCopyClientResource;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -103,7 +104,7 @@ public class TimedTokenTest {
     public void testTimedTokens() throws Exception {
 
         assertNull(client.getToken());
-        ClientResource cr = new ClientResource(prot + "://localhost:"
+        ClientResource cr = new CookieCopyClientResource(prot + "://localhost:"
                 + serverPort + "/client/webclient");
         Representation r = cr.get();
         assertNotNull(r);

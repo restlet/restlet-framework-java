@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.oauth;
+package org.restlet.ext.oauth.internal;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +40,7 @@ import org.restlet.Response;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
+import org.restlet.ext.oauth.OAuthParameters;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.security.Authorizer;
@@ -52,7 +53,10 @@ import org.restlet.security.User;
  * @author Kristoffer Gronowski
  */
 @Deprecated
-public class OldOauthProxy extends Authorizer {
+public class OauthProxyV2 extends Authorizer {
+    
+    public static final String VERSION = "DRAFT-2";
+    
 
     List<CacheDirective> no = new ArrayList<CacheDirective>();
 
@@ -62,7 +66,7 @@ public class OldOauthProxy extends Authorizer {
 
     private String accessToken = null;
 
-    public OldOauthProxy(OAuthParameters params, Context ctx) {
+    public OauthProxyV2(OAuthParameters params, Context ctx) {
         setContext(ctx);
         this.params = params;
         no.add(CacheDirective.noStore());
@@ -122,10 +126,13 @@ public class OldOauthProxy extends Authorizer {
             form.add("type", "web_server");
             form.add("client_id", params.getClientId());
             // form.add("redirect_uri", redirectUri);
-            form.add("redirect_uri", request.getResourceRef().getBaseRef()
-                    .toUri().toString());
+            form.add("redirect_uri", request.getResourceRef().getBaseRef().toUri().toString());
+            String redir = request.getResourceRef().getHostIdentifier() + 
+            request.getResourceRef().getPath();
+            form.add("redirect_uri", redir);
             form.add("client_secret", params.getClientSecret());
             form.add("code", code);
+
             Representation body = tokenResource.post(form
                     .getWebRepresentation());
             if (tokenResource.getResponse().getStatus().isSuccess()) {
@@ -133,8 +140,8 @@ public class OldOauthProxy extends Authorizer {
                 getLogger().info(
                         "Got answer on AccessToken = " + answer.toString());
                 accessToken = answer.getFirstValue("access_token");
-                getLogger().info("AccessToken = " + accessToken);
-                request.getClientInfo().setUser(new User(accessToken));
+                getLogger().info("AccessToken in changed OldOauthProxy = " + accessToken);
+                request.getClientInfo().setUser(new User(accessToken, accessToken.toCharArray()));
                 request.getClientInfo().setAuthenticated(true);
                 auth = true;
             }

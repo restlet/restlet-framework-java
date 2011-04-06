@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.oauth;
+package org.restlet.example.ext.oauth;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,6 +42,10 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.ext.oauth.OAuthParameters;
+import org.restlet.ext.oauth.OAuthProxy;
+import org.restlet.ext.oauth.OAuthServerResource;
+import org.restlet.ext.oauth.OAuthUtils;
 import org.restlet.resource.ClientResource;
 import org.restlet.security.User;
 

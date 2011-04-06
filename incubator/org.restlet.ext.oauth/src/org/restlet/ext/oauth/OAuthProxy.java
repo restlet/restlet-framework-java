@@ -47,6 +47,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.util.Base64;
 import org.restlet.ext.oauth.OAuthError.ErrorCode;
+import org.restlet.ext.oauth.internal.CookieCopyClientResource;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -80,6 +81,8 @@ import org.restlet.security.Authorizer;
 public class OAuthProxy extends Authorizer {
 
     List<CacheDirective> no = new ArrayList<CacheDirective>();
+    
+    public static final String VERSION = "DRAFT-10";
 
     private final OAuthParameters params;
 
@@ -128,7 +131,7 @@ public class OAuthProxy extends Authorizer {
     @Override
     public synchronized void start() throws Exception {
         super.start();
-        tokenResource = new ClientResource(params.getBaseRef()
+        tokenResource = new CookieCopyClientResource(params.getBaseRef()
                 + params.getAccessTokenPath());
     }
 
@@ -244,10 +247,6 @@ public class OAuthProxy extends Authorizer {
         } else {
             log.info("Came back after SNS code = " + code);
 
-            // ClientResource authResource = new ClientResource(params.baseRef);
-
-            // ClientResource tokenResource = authResource
-            // .getChild(params.accessTokenPath);
 
             Form form = new Form();
             form.add(OAuthServerResource.GRANT_TYPE,
