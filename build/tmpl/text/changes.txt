@@ -5,9 +5,11 @@ Changes log
 
 - @version-full@ (@release-date@)
     - API changes
-      - Added protected redirect(...) and retry(...) methods to facilite
-        extension of default behavior such as passing on cookies.
+      - Added protected redirect(...) and retry(...) methods on on ClientResource
+        to facilitate extension of default behavior such as passing on cookies.
         Suggested by Martin Svensson.
+      - ClientResource#entityBuffering now buffers non transient representations of
+        unknown size. Necessary for GAE chunked issue.
     - Enhancements
     - Bug fixed
       - Throwing a ResourceException with a given status, was resulting in

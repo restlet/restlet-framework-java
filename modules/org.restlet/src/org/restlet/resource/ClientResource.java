@@ -145,15 +145,15 @@ public class ClientResource extends UniformResource {
 
     // [ifndef gwt] member
     /**
-     * Indicates if transient request entities should be buffered before being
-     * sent.
+     * Indicates if transient or unknown size request entities should be
+     * buffered before being sent.
      */
     private volatile boolean requestEntityBuffering;
 
     // [ifndef gwt] member
     /**
-     * Indicates if transient response entities should be buffered after being
-     * received.
+     * Indicates if transient or unknown size response entities should be
+     * buffered after being received.
      */
     private volatile boolean responseEntityBuffering;
 
@@ -1018,11 +1018,14 @@ public class ClientResource extends UniformResource {
         if (next != null) {
             // [ifndef gwt]
             // Check if request entity buffering must be done
-            if (isRequestEntityBuffering() && (request.getEntity() != null)
-                    && request.getEntity().isTransient()
-                    && request.getEntity().isAvailable()) {
+            Representation entity = request.getEntity();
+
+            if (isRequestEntityBuffering()
+                    && (entity != null)
+                    && (entity.isTransient() || (entity.getSize() == Representation.UNKNOWN_SIZE))
+                    && entity.isAvailable()) {
                 request.setEntity(new org.restlet.engine.io.BufferingRepresentation(
-                        request.getEntity()));
+                        entity));
             }
             // [enddef]
 
@@ -1067,11 +1070,14 @@ public class ClientResource extends UniformResource {
 
             // [ifndef gwt]
             // Check if response entity buffering must be done
-            if (isResponseEntityBuffering() && (response.getEntity() != null)
-                    && response.getEntity().isTransient()
-                    && response.getEntity().isAvailable()) {
+            entity = response.getEntity();
+
+            if (isResponseEntityBuffering()
+                    && (entity != null)
+                    && (entity.isTransient() || (entity.getSize() == Representation.UNKNOWN_SIZE))
+                    && entity.isAvailable()) {
                 response.setEntity(new org.restlet.engine.io.BufferingRepresentation(
-                        response.getEntity()));
+                        entity));
             }
             // [enddef]
         } else {
@@ -1145,10 +1151,10 @@ public class ClientResource extends UniformResource {
 
     // [ifndef gwt] method
     /**
-     * Indicates if transient response entities should be buffered after being
-     * received. This is useful to increase the chance of being able to resubmit
-     * a failed request due to network error, or to prevent chunked encoding
-     * from being used an HTTP connector.
+     * Indicates if transient or unknown size response entities should be
+     * buffered after being received. This is useful to increase the chance of
+     * being able to resubmit a failed request due to network error, or to
+     * prevent chunked encoding from being used an HTTP connector.
      * 
      * @return True if transient response entities should be buffered after
      *         being received.
@@ -1159,9 +1165,10 @@ public class ClientResource extends UniformResource {
 
     // [ifndef gwt] method
     /**
-     * Indicates if transient response entities should be buffered after being
-     * received. This is useful to be able to systematically reuse and process a
-     * response entity several times after retrieval.
+     * Indicates if transient or unknown size response entities should be
+     * buffered after being received. This is useful to be able to
+     * systematically reuse and process a response entity several times after
+     * retrieval.
      * 
      * @return True if transient response entities should be buffered after
      *         being received.
@@ -1736,10 +1743,10 @@ public class ClientResource extends UniformResource {
 
     // [ifndef gwt] method
     /**
-     * Indicates if transient response entities should be buffered after being
-     * received. This is useful to increase the chance of being able to resubmit
-     * a failed request due to network error, or to prevent chunked encoding
-     * from being used an HTTP connector.
+     * Indicates if transient or unknown size response entities should be
+     * buffered after being received. This is useful to increase the chance of
+     * being able to resubmit a failed request due to network error, or to
+     * prevent chunked encoding from being used an HTTP connector.
      * 
      * @param requestEntityBuffering
      *            True if transient request entities should be buffered after
@@ -1751,9 +1758,10 @@ public class ClientResource extends UniformResource {
 
     // [ifndef gwt] method
     /**
-     * Indicates if transient response entities should be buffered after being
-     * received. This is useful to be able to systematically reuse and process a
-     * response entity several times after retrieval.
+     * Indicates if transient or unknown size response entities should be
+     * buffered after being received. This is useful to be able to
+     * systematically reuse and process a response entity several times after
+     * retrieval.
      * 
      * @param responseEntityBuffering
      *            True if transient response entities should be buffered after
