@@ -5,6 +5,9 @@ Changes log
 
 - @version-full@ (@release-date@)
     - API changes
+      - Added protected redirect(...) and retry(...) methods to facilite
+        extension of default behavior such as passing on cookies.
+        Suggested by Martin Svensson.
     - Enhancements
     - Bug fixed
       - Throwing a ResourceException with a given status, was resulting in

@@ -1050,35 +1050,11 @@ public class ClientResource extends UniformResource {
                 }
 
                 if (doRedirection) {
-                    Reference newTargetRef = response.getLocationRef();
-
-                    if ((references != null)
-                            && references.contains(newTargetRef)) {
-                        getLogger().warning(
-                                "Infinite redirection loop detected with URI: "
-                                        + newTargetRef);
-                    } else if (request.getEntity() != null
-                            && !request.isEntityAvailable()) {
-                        getLogger()
-                                .warning(
-                                        "Unable to follow the redirection because the request entity isn't available anymore.");
-                    } else {
-                        if (references == null) {
-                            references = new ArrayList<Reference>();
-                        }
-
-                        if (references.size() >= getMaxRedirects()) {
-                            getLogger()
-                                    .warning(
-                                            "Unable to follow the redirection because the request the maximum number of redirections for a single call has been reached.");
-                        } else {
-                            // Add to the list of redirection reference
-                            // to prevent infinite loops
-                            references.add(request.getResourceRef());
-                            request.setResourceRef(newTargetRef);
-                            handle(request, response, references, 0, next);
-                        }
-                    }
+                    redirect(request, response, references, retryAttempt, next);
+                } else {
+                    getLogger().fine(
+                            "Unable to redirect the client call after a response"
+                                    + response);
                 }
             } else if (isRetryOnError()
                     && response.getStatus().isRecoverableError()
@@ -1086,34 +1062,7 @@ public class ClientResource extends UniformResource {
                     && (retryAttempt < getRetryAttempts())
                     && ((request.getEntity() == null) || request.getEntity()
                             .isAvailable())) {
-                getLogger().log(
-                        Level.INFO,
-                        "A recoverable error was detected ("
-                                + response.getStatus().getCode()
-                                + "), attempting again in " + getRetryDelay()
-                                + " ms.");
-
-                // Wait before attempting again
-                if (getRetryDelay() > 0) {
-                    // [ifndef gwt]
-                    try {
-                        Thread.sleep(getRetryDelay());
-                    } catch (InterruptedException e) {
-                        getLogger().log(Level.FINE,
-                                "Retry delay sleep was interrupted", e);
-                    }
-                    // [enddef]
-                    // [ifdef gwt] uncomment
-                    // com.google.gwt.user.client.Timer timer = new
-                    // com.google.gwt.user.client.Timer() {
-                    // public void run() {}
-                    // };
-                    // timer.schedule((int) getRetryDelay());
-                    // [enddef]
-                }
-
-                // Retry the call
-                handle(request, response, references, ++retryAttempt, next);
+                retry(request, response, references, retryAttempt, next);
             }
 
             // [ifndef gwt]
@@ -1422,6 +1371,101 @@ public class ClientResource extends UniformResource {
      */
     public Representation put(Representation entity) throws ResourceException {
         return handle(Method.PUT, entity);
+    }
+
+    /**
+     * Effectively redirects a client call. By default, it checks for infinite
+     * loops and unavailable entities, the references list is updated and the
+     * {@link #handle(Request, Response, List, int, Uniform)} method invoked.
+     * 
+     * @param request
+     *            The request to send.
+     * @param response
+     *            The response to update.
+     * @param references
+     *            The references that caused a redirection to prevent infinite
+     *            loops.
+     * @param retryAttempt
+     *            The number of remaining attempts.
+     * @param next
+     *            The next handler handling the call.
+     */
+    protected void redirect(Request request, Response response,
+            List<Reference> references, int retryAttempt, Uniform next) {
+        Reference newTargetRef = response.getLocationRef();
+
+        if ((references != null) && references.contains(newTargetRef)) {
+            getLogger().warning(
+                    "Infinite redirection loop detected with URI: "
+                            + newTargetRef);
+        } else if (request.getEntity() != null && !request.isEntityAvailable()) {
+            getLogger()
+                    .warning(
+                            "Unable to follow the redirection because the request entity isn't available anymore.");
+        } else {
+            if (references == null) {
+                references = new ArrayList<Reference>();
+            }
+
+            if (references.size() >= getMaxRedirects()) {
+                getLogger()
+                        .warning(
+                                "Unable to follow the redirection because the request the maximum number of redirections for a single call has been reached.");
+            } else {
+                // Add to the list of redirection reference
+                // to prevent infinite loops
+                references.add(request.getResourceRef());
+                request.setResourceRef(newTargetRef);
+                handle(request, response, references, 0, next);
+            }
+        }
+    }
+
+    /**
+     * Effectively retries a failed client call. By default, it sleeps before
+     * the retry attempt and increments the number of retries.
+     * 
+     * @param request
+     *            The request to send.
+     * @param response
+     *            The response to update.
+     * @param references
+     *            The references that caused a redirection to prevent infinite
+     *            loops.
+     * @param retryAttempt
+     *            The number of remaining attempts.
+     * @param next
+     *            The next handler handling the call.
+     */
+    protected void retry(Request request, Response response,
+            List<Reference> references, int retryAttempt, Uniform next) {
+        getLogger().log(
+                Level.INFO,
+                "A recoverable error was detected ("
+                        + response.getStatus().getCode()
+                        + "), attempting again in " + getRetryDelay() + " ms.");
+
+        // Wait before attempting again
+        if (getRetryDelay() > 0) {
+            // [ifndef gwt]
+            try {
+                Thread.sleep(getRetryDelay());
+            } catch (InterruptedException e) {
+                getLogger().log(Level.FINE,
+                        "Retry delay sleep was interrupted", e);
+            }
+            // [enddef]
+            // [ifdef gwt] uncomment
+            // com.google.gwt.user.client.Timer timer = new
+            // com.google.gwt.user.client.Timer() {
+            // public void run() {}
+            // };
+            // timer.schedule((int) getRetryDelay());
+            // [enddef]
+        }
+
+        // Retry the call
+        handle(request, response, references, ++retryAttempt, next);
     }
 
     /**
