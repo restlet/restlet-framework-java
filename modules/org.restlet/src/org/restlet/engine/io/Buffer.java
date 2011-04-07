@@ -495,99 +495,99 @@ public class Buffer {
     public int process(BufferProcessor processor, int maxDrained,
             Object... args) throws IOException {
         int result = 0;
-        int totalFilled = 0;
 
         synchronized (getLock()) {
-            if (canDrain() || processor.couldDrain(this, args) || couldDrain()
-                    || processor.couldFill(this, args)) {
-                boolean tryAgain = true;
-                int drained = 0;
-                int filled = 0;
-                boolean lastDrainFailed = false;
-                boolean lastFillFailed = false;
-                boolean fillEnded = false;
+            int totalFilled = 0;
+            int drained = 0;
+            int filled = 0;
+            boolean lastDrainFailed = false;
+            boolean lastFillFailed = false;
+            boolean fillEnded = false;
+            boolean tryAgain = true;
 
-                while (tryAgain && processor.canLoop(this, args)) {
-                    if (isDraining()) {
-                        drained = 0;
+            if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
+                Context.getCurrentLogger().log(Level.FINEST,
+                        "Processing buffer " + this);
+            }
 
-                        if (hasRemaining() || processor.couldDrain(this, args)) {
-                            if (maxDrained <= 0) {
-                                drained = processor.onDrain(this, 0, args);
-                            } else if (maxDrained - result > 0) {
-                                drained = processor.onDrain(this, maxDrained
-                                        - result, args);
-                            }
+            while (tryAgain && processor.canLoop(this, args)) {
+                if (isDraining()) {
+                    drained = 0;
+
+                    if (hasRemaining() || processor.couldDrain(this, args)) {
+                        if (maxDrained <= 0) {
+                            drained = processor.onDrain(this, 0, args);
+                        } else if (maxDrained - result > 0) {
+                            drained = processor.onDrain(this, maxDrained
+                                    - result, args);
                         }
+                    }
 
-                        if (drained > 0) {
-                            // Can attempt to drain again
-                            result += drained;
-                            lastDrainFailed = false;
-                            lastFillFailed = false;
+                    if (drained > 0) {
+                        // Can attempt to drain again
+                        result += drained;
+                        lastDrainFailed = false;
+                        lastFillFailed = false;
 
-                            if (Context.getCurrentLogger().isLoggable(
-                                    Level.FINEST)) {
-                                Context.getCurrentLogger().log(Level.FINEST,
-                                        drained + " bytes drained from buffer");
-                            }
-                        } else {
-                            if (!lastFillFailed && couldFill()) {
-                                // We may still be able to fill
-                                beforeFill();
-                            } else {
-                                tryAgain = false;
-                            }
-
-                            lastDrainFailed = true;
-                        }
-                    } else if (isFilling()) {
-                        filled = 0;
-
-                        if (hasRemaining() && processor.couldFill(this, args)) {
-                            filled = processor.onFill(this, args);
-                        }
-
-                        if (filled > 0) {
-                            // Can attempt to refill again
-                            totalFilled += filled;
-                            lastDrainFailed = false;
-                            lastFillFailed = false;
-
-                            if (Context.getCurrentLogger().isLoggable(
-                                    Level.FINEST)) {
-                                Context.getCurrentLogger().log(Level.FINEST,
-                                        filled + " bytes filled into buffer");
-                            }
-                        } else {
-                            if (!lastDrainFailed
-                                    && (couldDrain() || processor.couldDrain(
-                                            this, args))) {
-                                // We may still be able to drain
-                                beforeDrain();
-                            } else {
-                                tryAgain = false;
-                            }
-
-                            if (filled == -1) {
-                                fillEnded = true;
-                                processor.onFillEof();
-                            }
-
-                            lastFillFailed = true;
+                        if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
+                            Context.getCurrentLogger().log(
+                                    Level.FINEST,
+                                    drained + " bytes drained from buffer, "
+                                            + remaining() + " remaining bytes");
                         }
                     } else {
-                        // Can't drain nor fill
-                        tryAgain = false;
-                    }
-                }
+                        if (!lastFillFailed && couldFill()) {
+                            // We may still be able to fill
+                            beforeFill();
+                        } else {
+                            tryAgain = false;
+                        }
 
-                if ((result == 0)
-                        && (!processor.couldFill(this, args) || fillEnded)) {
-                    // Nothing was drained and no hope to fill again
-                    result = -1;
+                        lastDrainFailed = true;
+                    }
+                } else if (isFilling()) {
+                    filled = 0;
+
+                    if (hasRemaining() && processor.couldFill(this, args)) {
+                        filled = processor.onFill(this, args);
+                    }
+
+                    if (filled > 0) {
+                        // Can attempt to refill again
+                        totalFilled += filled;
+                        lastDrainFailed = false;
+                        lastFillFailed = false;
+
+                        if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
+                            Context.getCurrentLogger().log(Level.FINEST,
+                                    filled + " bytes filled into buffer");
+                        }
+                    } else {
+                        if (!lastDrainFailed
+                                && (couldDrain() || processor.couldDrain(this,
+                                        args))) {
+                            // We may still be able to drain
+                            beforeDrain();
+                        } else {
+                            tryAgain = false;
+                        }
+
+                        if (filled == -1) {
+                            fillEnded = true;
+                            processor.onFillEof();
+                        }
+
+                        lastFillFailed = true;
+                    }
+                } else {
+                    // Can't drain nor fill
+                    tryAgain = false;
                 }
-            } else {
+            }
+
+            if ((result == 0)
+                    && (!processor.couldFill(this, args) || fillEnded)) {
+                // Nothing was drained and no hope to fill again
                 result = -1;
             }
         }

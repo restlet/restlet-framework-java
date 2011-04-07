@@ -81,7 +81,7 @@ public class WritableSslChannel extends WritableBufferedChannel implements
     @Override
     public boolean couldFill(Buffer buffer, Object... args) {
         return super.couldFill(buffer, args)
-                && (getConnection().getSslEngineStatus() == Status.OK)
+                && (getConnection().getSslEngineStatus() != Status.CLOSED)
                 && ((getConnection().getSslHandshakeStatus() == HandshakeStatus.NOT_HANDSHAKING) || (getConnection()
                         .getSslHandshakeStatus() == HandshakeStatus.NEED_WRAP));
     }
@@ -112,5 +112,10 @@ public class WritableSslChannel extends WritableBufferedChannel implements
                 applicationBuffer, buffer.getBytes());
         getConnection().setSslResult(sslResult);
         return srcSize - buffer.remaining();
+    }
+
+    @Override
+    public int write(ByteBuffer sourceBuffer) throws IOException {
+        return super.write(sourceBuffer);
     }
 }

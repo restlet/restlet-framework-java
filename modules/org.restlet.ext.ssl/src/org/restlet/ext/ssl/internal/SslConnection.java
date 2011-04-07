@@ -67,9 +67,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     /** The engine status. */
     private volatile SSLEngineResult.Status sslEngineStatus;
 
-    /** The handshake status. */
-    private volatile SSLEngineResult.HandshakeStatus sslHandshakeStatus;
-
     /** The global SSL state. */
     private volatile SslState sslState;
 
@@ -99,7 +96,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
         this.sslEngine = sslEngine;
         this.sslState = SslState.IDLE;
         this.sslEngineStatus = SSLEngineResult.Status.OK;
-        this.sslHandshakeStatus = HandshakeStatus.NOT_HANDSHAKING;
         initSslEngine();
     }
 
@@ -180,7 +176,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      * @return The handshake status.
      */
     protected SSLEngineResult.HandshakeStatus getSslHandshakeStatus() {
-        return sslHandshakeStatus;
+        return getSslEngine().getHandshakeStatus();
     }
 
     /**
@@ -238,6 +234,8 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     public void handleSslResult() throws IOException {
         switch (getSslEngineStatus()) {
         case BUFFER_OVERFLOW:
+            getLogger().log(Level.FINE,
+                    "Unexpected SSL buffer overflow state reached!");
             break;
 
         case BUFFER_UNDERFLOW:
@@ -282,8 +280,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
             } else {
                 setSslState(SslState.READING);
             }
-
-            setSslHandshakeStatus(HandshakeStatus.NOT_HANDSHAKING);
         }
 
         if (isClientSide()) {
@@ -323,8 +319,19 @@ public class SslConnection<T extends Connector> extends Connection<T> {
                         nextTask = getSslEngine().getDelegatedTask();
                     }
 
-                    // onCompleted();
-                    getLogger().log(Level.FINE, "Done running delegated tasks");
+                    if (getLogger().isLoggable(Level.FINE)) {
+                        getLogger().log(
+                                Level.FINE,
+                                "Done running delegated tasks. "
+                                        + SslConnection.this.toString());
+                    }
+
+                    try {
+                        handleSslHandshake();
+                    } catch (IOException e) {
+                        getLogger().log(Level.WARNING,
+                                "Unable to handle SSL handshake", e);
+                    }
                 }
             });
         }
@@ -396,17 +403,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     }
 
     /**
-     * Sets the handshake status.
-     * 
-     * @param handshakeStatus
-     *            The handshake status.
-     */
-    protected void setSslHandshakeStatus(
-            SSLEngineResult.HandshakeStatus handshakeStatus) {
-        this.sslHandshakeStatus = handshakeStatus;
-    }
-
-    /**
      * Saves the result of a previous SSL engine processing.
      * 
      * @param sslResult
@@ -423,9 +419,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
 
             // Store the engine status
             setSslEngineStatus(sslResult.getStatus());
-
-            // Store the handshake status
-            setSslHandshakeStatus(sslResult.getHandshakeStatus());
         }
     }
 

@@ -75,7 +75,8 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
     public boolean canLoop(Buffer buffer, Object... args) {
         return getConnection().getInboundWay().canLoop(buffer, args)
                 && (getConnection().getSslState() != SslState.END)
-                && (getConnection().getSslEngineStatus() == Status.OK);
+                && ((getConnection().getSslEngineStatus() == Status.OK) || (getConnection()
+                        .getSslEngineStatus() == Status.BUFFER_UNDERFLOW));
     }
 
     /**
@@ -92,7 +93,7 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
 
     @Override
     public boolean couldDrain(Buffer buffer, Object... args) {
-        return (getConnection().getSslEngineStatus() == Status.OK)
+        return (getConnection().getSslEngineStatus() != Status.CLOSED)
                 && ((getConnection().getSslHandshakeStatus() == HandshakeStatus.NOT_HANDSHAKING) || (getConnection()
                         .getSslHandshakeStatus() == HandshakeStatus.NEED_UNWRAP));
     }
@@ -128,6 +129,11 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
                 buffer.getBytes(), applicationBuffer);
         getConnection().setSslResult(sslResult);
         return initialSize - buffer.remaining();
+    }
+
+    @Override
+    public int read(ByteBuffer targetBuffer) throws IOException {
+        return super.read(targetBuffer);
     }
 
 }
