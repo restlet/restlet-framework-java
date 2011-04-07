@@ -67,9 +67,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     /** The engine status. */
     private volatile SSLEngineResult.Status sslEngineStatus;
 
-    /** The global SSL state. */
-    private volatile SslState sslState;
-
     /**
      * Constructor.
      * 
@@ -94,7 +91,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
                 .getSession().getApplicationBufferSize(), sslEngine
                 .getSession().getApplicationBufferSize());
         this.sslEngine = sslEngine;
-        this.sslState = SslState.IDLE;
         this.sslEngineStatus = SSLEngineResult.Status.OK;
         initSslEngine();
     }
@@ -189,15 +185,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     }
 
     /**
-     * Returns the global SSL state.
-     * 
-     * @return The global SSL state.
-     */
-    public SslState getSslState() {
-        return sslState;
-    }
-
-    /**
      * Handles the SSL handshake states based on the last result received.
      * 
      * @throws IOException
@@ -247,7 +234,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
             break;
 
         case CLOSED:
-            setSslState(SslState.END);
             close(true);
             break;
 
@@ -266,7 +252,15 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     public void initSslEngine() throws SSLException {
         getSslEngine().setUseClientMode(isClientSide());
         getSslEngine().beginHandshake();
-        setSslState(SslState.HANDSHAKE);
+    }
+
+    /**
+     * Indicates if the SSL handshake is going on.
+     * 
+     * @return True if the SSL handshake is going on.
+     */
+    public boolean isSslHandshaking() {
+        return getSslHandshakeStatus() != HandshakeStatus.NOT_HANDSHAKING;
     }
 
     /**
@@ -274,14 +268,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      * exchanged.
      */
     private void onFinished() {
-        if (getSslState() == SslState.HANDSHAKE) {
-            if (isClientSide()) {
-                setSslState(SslState.WRITING);
-            } else {
-                setSslState(SslState.READING);
-            }
-        }
-
         if (isClientSide()) {
             getInboundWay().setIoState(IoState.IDLE);
             getOutboundWay().setIoState(IoState.INTEREST);
@@ -422,21 +408,10 @@ public class SslConnection<T extends Connector> extends Connection<T> {
         }
     }
 
-    /**
-     * Sets the global state.
-     * 
-     * @param sslState
-     *            The global state.
-     */
-    public void setSslState(SslState sslState) {
-        this.sslState = sslState;
-    }
-
     @Override
     public String toString() {
-        return super.toString() + " | " + getState() + " | " + getSslEngine()
-                + " | " + getSslEngineStatus() + " | "
-                + getSslHandshakeStatus();
+        return super.toString() + " | " + getSslEngine() + " | "
+                + getSslEngineStatus() + " | " + getSslHandshakeStatus();
     }
 
 }

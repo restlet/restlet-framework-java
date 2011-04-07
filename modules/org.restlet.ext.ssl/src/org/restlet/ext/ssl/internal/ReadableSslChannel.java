@@ -74,7 +74,6 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
     @Override
     public boolean canLoop(Buffer buffer, Object... args) {
         return getConnection().getInboundWay().canLoop(buffer, args)
-                && (getConnection().getSslState() != SslState.END)
                 && ((getConnection().getSslEngineStatus() == Status.OK) || (getConnection()
                         .getSslEngineStatus() == Status.BUFFER_UNDERFLOW));
     }
@@ -85,7 +84,7 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
      * @return True if draining can be retried.
      */
     public boolean canRetry(int lastRead, ByteBuffer targetBuffer) {
-        return ((lastRead > 0) || ((getConnection().getSslState() == SslState.HANDSHAKE)
+        return ((lastRead > 0) || (getConnection().isSslHandshaking()
                 && (getConnection().getSslEngineStatus() == Status.OK) && (getConnection()
                 .getSslHandshakeStatus() == HandshakeStatus.NEED_UNWRAP)))
                 && targetBuffer.hasRemaining();
