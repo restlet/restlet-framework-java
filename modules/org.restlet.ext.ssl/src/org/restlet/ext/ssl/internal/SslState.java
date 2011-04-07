@@ -38,14 +38,11 @@ package org.restlet.ext.ssl.internal;
  */
 public enum SslState {
 
-    /** Ready for creation. */
+    /** Created, ready for handshake. */
     IDLE,
 
-    /** Ready for handshake. */
-    CREATED,
-
     /** Authentication (optional) and negotiation of cipher suite. */
-    HANDSHAKING,
+    HANDSHAKE,
 
     /** Send or receive application data. */
     WRITING,
@@ -53,6 +50,6 @@ public enum SslState {
     /** Send or receive application data. */
     READING,
 
-    /** Engine closed. */
-    CLOSED;
+    /** End of session, SSL engine closed. */
+    END;
 }

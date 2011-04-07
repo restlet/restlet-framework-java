@@ -249,7 +249,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
             break;
 
         case CLOSED:
-            setSslState(SslState.CLOSED);
+            setSslState(SslState.END);
             close(true);
             break;
 
@@ -266,10 +266,9 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      * @throws SSLException
      */
     public void initSslEngine() throws SSLException {
-        setSslState(SslState.CREATED);
         getSslEngine().setUseClientMode(isClientSide());
         getSslEngine().beginHandshake();
-        setSslState(SslState.HANDSHAKING);
+        setSslState(SslState.HANDSHAKE);
     }
 
     /**
@@ -277,7 +276,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      * exchanged.
      */
     private void onFinished() {
-        if (getSslState() == SslState.HANDSHAKING) {
+        if (getSslState() == SslState.HANDSHAKE) {
             if (isClientSide()) {
                 setSslState(SslState.WRITING);
             } else {

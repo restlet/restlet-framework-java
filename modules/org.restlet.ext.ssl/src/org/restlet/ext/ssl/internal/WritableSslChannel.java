@@ -74,7 +74,7 @@ public class WritableSslChannel extends WritableBufferedChannel implements
     @Override
     public boolean canLoop(Buffer buffer, Object... args) {
         return getConnection().getOutboundWay().canLoop(buffer, args)
-                && ((getConnection().getSslState() == SslState.HANDSHAKING) || (getConnection()
+                && ((getConnection().getSslState() == SslState.HANDSHAKE) || (getConnection()
                         .getSslState() == SslState.WRITING));
     }
 

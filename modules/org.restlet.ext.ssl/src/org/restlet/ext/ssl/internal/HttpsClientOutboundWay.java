@@ -71,7 +71,7 @@ public class HttpsClientOutboundWay extends HttpClientOutboundWay {
     @Override
     protected boolean hasIoInterest() {
         return super.hasIoInterest()
-                && ((getConnection().getSslState() != SslState.HANDSHAKING) || (getConnection()
+                && ((getConnection().getSslState() != SslState.HANDSHAKE) || (getConnection()
                         .getSslHandshakeStatus() != HandshakeStatus.NEED_UNWRAP));
     }
 
