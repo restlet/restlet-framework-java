@@ -382,8 +382,6 @@ public abstract class Way implements SelectionListener, CompletionListener,
             // Adjust states
             if (getIoState() == IoState.INTEREST) {
                 setIoState(IoState.PROCESSING);
-            } else if (getIoState() == IoState.CANCELING) {
-                setIoState(IoState.CANCELLED);
             }
 
             if (getLogger().isLoggable(Level.FINER)) {

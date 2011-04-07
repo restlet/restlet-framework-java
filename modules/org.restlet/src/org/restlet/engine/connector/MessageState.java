@@ -49,9 +49,6 @@ public enum MessageState {
     /** The body is being processed. */
     BODY,
 
-    /** The trailer lines are being processed. */
-    TRAILERS,
-
     /** The end line is being processed. */
     END;
 }

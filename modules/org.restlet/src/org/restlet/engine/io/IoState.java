@@ -48,11 +48,5 @@ public enum IoState {
     READY,
 
     /** IO activity going on. */
-    PROCESSING,
-
-    /** IO canceling going on. */
-    CANCELING,
-
-    /** No more activity expected. */
-    CANCELLED;
+    PROCESSING;
 }
