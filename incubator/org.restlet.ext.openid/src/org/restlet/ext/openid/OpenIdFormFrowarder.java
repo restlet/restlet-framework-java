@@ -33,6 +33,7 @@ package org.restlet.ext.openid;
 import java.io.IOException;
 
 import org.restlet.Context;
+import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.ext.xml.DomRepresentation;
@@ -64,6 +65,13 @@ public class OpenIdFormFrowarder {
 	
 	public static Representation handleFormRedirect(Representation input, ClientResource resource) throws IOException {
 		Representation output = input;
+		/****COPY COOKIES*******************/
+		if(resource != null){
+		    for(CookieSetting cs : resource.getCookieSettings()){
+	                    resource.getCookies().add(cs.getName(), cs.getValue());
+	                }
+		}
+		
 		if( MediaType.TEXT_HTML.equals( input.getMediaType() ) && 
 				input.getSize() != 0 ) {
 			//Check for a form

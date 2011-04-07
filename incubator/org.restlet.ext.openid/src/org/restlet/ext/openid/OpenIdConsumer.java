@@ -55,6 +55,7 @@ import org.openid4java.message.MessageExtension;
 import org.openid4java.message.ParameterList;
 import org.openid4java.message.ax.AxMessage;
 import org.openid4java.message.ax.FetchRequest;
+import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -216,9 +217,11 @@ public class OpenIdConsumer extends ServerResource {
             String sessionId = String.valueOf(System
                     .identityHashCode(discovered));
             session.put(sessionId, discovered);
+            
             getResponse().getCookieSettings().add(
                     new CookieSetting(DESCRIPTOR_COOKIE, sessionId));
-
+            log.info("Setting DESCRIPTOR COOKIE");
+            
             // obtain a AuthRequest message to be sent to the OpenID provider
             AuthRequest authReq = manager.authenticate(discovered,
                     returnToUrl.toString()); // TODO maybe add TIMESTAMP?
@@ -256,6 +259,7 @@ public class OpenIdConsumer extends ServerResource {
             }
 
             if (!discovered.isVersion2()) {
+                log.info("REDIRECTING TEMPORARY");
                 // Option 1: GET HTTP-redirect to the OpenID Provider endpoint
                 // The only method supported in OpenID 1.x
                 // redirect-URL usually limited ~2048 bytes
@@ -311,11 +315,29 @@ public class OpenIdConsumer extends ServerResource {
             log.info("response = " + response);
 
             // retrieve the previously stored discovery information
-
+            log.info("GET COOKIES");
             String openidDisc = getCookies().getFirstValue(DESCRIPTOR_COOKIE);
+            //String openidDisc = getCookieSettings().getFirstValue(DESCRIPTOR_COOKIE);
+            log.info("openIdDiscServer - " +getCookieSettings().getFirstValue("DESCRIPTOR_COOKIE"));
+            log.info("openIdDiscServerLength -"+getCookieSettings().size());
+            log.info("openIdDiscClient - " +openidDisc);
+            log.info("openIdDiscClientLength -"+getCookies().size());
+            
+            if(getCookieSettings().size() > 0){
+                for(CookieSetting setting : getCookieSettings()){
+                   log.info("CookieSetting: "+setting.getName()+setting.getFirst());
+                }
+            }
+            if(getCookies().size() > 0){
+                for(Cookie setting : getCookies()){
+                   log.info("Cookie: "+setting.getName()+setting.getFirst());
+                }
+            }
+            
             DiscoveryInformation discovered = (DiscoveryInformation) session
                     .get(openidDisc); // TODO cleanup
-
+            
+            
             log.info("discovered = " + discovered);
 
             // extract the receiving URL from the HTTP request

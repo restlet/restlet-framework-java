@@ -63,7 +63,7 @@ import org.restlet.resource.ServerResource;
 public class OpenIdProvider extends ServerResource {
 
     public OpenIdProvider() {
-        System.out.println("OpenID CREATED NEW PROVIDER");
+        getLogger().info("OpenID CREATED NEW PROVIDER");
     }
 
     @Post("form")
