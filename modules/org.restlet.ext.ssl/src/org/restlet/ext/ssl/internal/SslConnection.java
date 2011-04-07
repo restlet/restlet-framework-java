@@ -279,9 +279,9 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     private void onFinished() {
         if (getSslState() == SslState.HANDSHAKING) {
             if (isClientSide()) {
-                setSslState(SslState.WRITING_APPLICATION_DATA);
+                setSslState(SslState.WRITING);
             } else {
-                setSslState(SslState.READING_APPLICATION_DATA);
+                setSslState(SslState.READING);
             }
 
             setSslHandshakeStatus(HandshakeStatus.NOT_HANDSHAKING);

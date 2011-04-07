@@ -47,14 +47,11 @@ public enum SslState {
     /** Authentication (optional) and negotiation of cipher suite. */
     HANDSHAKING,
 
-    /** Re-negotiation of session keys or cipher suite. */
-    REHANDSHAKING,
+    /** Send or receive application data. */
+    WRITING,
 
     /** Send or receive application data. */
-    WRITING_APPLICATION_DATA,
-
-    /** Send or receive application data. */
-    READING_APPLICATION_DATA,
+    READING,
 
     /** Engine closed. */
     CLOSED;
