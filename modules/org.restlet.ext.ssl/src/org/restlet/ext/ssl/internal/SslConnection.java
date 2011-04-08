@@ -32,6 +32,7 @@ package org.restlet.ext.ssl.internal;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.channels.SocketChannel;
 import java.security.cert.Certificate;
 import java.util.Arrays;
@@ -71,65 +72,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
 
     /** The engine result. */
     private volatile SSLEngineResult sslEngineResult;
-
-    /**
-     * Returns the SSL cipher suite.
-     * 
-     * @return The SSL cipher suite.
-     */
-    public String getSslCipherSuite() {
-        if (getSocket() instanceof SSLSocket) {
-            SSLSocket sslSocket = (SSLSocket) getSocket();
-            SSLSession sslSession = sslSocket.getSession();
-
-            if (sslSession != null) {
-                return sslSession.getCipherSuite();
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns the list of client SSL certificates.
-     * 
-     * @return The list of client SSL certificates.
-     */
-    public List<Certificate> getSslClientCertificates() {
-        if (getSocket() instanceof SSLSocket) {
-            SSLSocket sslSocket = (SSLSocket) getSocket();
-            SSLSession sslSession = sslSocket.getSession();
-
-            if (sslSession != null) {
-                try {
-                    List<Certificate> clientCertificates = Arrays
-                            .asList(sslSession.getPeerCertificates());
-                    return clientCertificates;
-                } catch (SSLPeerUnverifiedException e) {
-                    getLogger().log(Level.FINE,
-                            "Can't get the client certificates.", e);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns the SSL key size, if available and accessible.
-     * 
-     * @return The SSL key size, if available and accessible.
-     */
-    public Integer getSslKeySize() {
-        Integer keySize = null;
-        String sslCipherSuite = getSslCipherSuite();
-
-        if (sslCipherSuite != null) {
-            keySize = SslUtils.extractKeySize(sslCipherSuite);
-        }
-
-        return keySize;
-    }
 
     /**
      * Constructor.
@@ -213,6 +155,49 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     }
 
     /**
+     * Returns the SSL cipher suite.
+     * 
+     * @return The SSL cipher suite.
+     */
+    public String getSslCipherSuite() {
+        if (getSocket() instanceof SSLSocket) {
+            SSLSocket sslSocket = (SSLSocket) getSocket();
+            SSLSession sslSession = sslSocket.getSession();
+
+            if (sslSession != null) {
+                return sslSession.getCipherSuite();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the list of client SSL certificates.
+     * 
+     * @return The list of client SSL certificates.
+     */
+    public List<Certificate> getSslClientCertificates() {
+        if (getSocket() instanceof SSLSocket) {
+            SSLSocket sslSocket = (SSLSocket) getSocket();
+            SSLSession sslSession = sslSocket.getSession();
+
+            if (sslSession != null) {
+                try {
+                    List<Certificate> clientCertificates = Arrays
+                            .asList(sslSession.getPeerCertificates());
+                    return clientCertificates;
+                } catch (SSLPeerUnverifiedException e) {
+                    getLogger().log(Level.FINE,
+                            "Can't get the client certificates.", e);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Returns the engine to use for wrapping and unwrapping.
      * 
      * @return The engine to use for wrapping and unwrapping.
@@ -251,6 +236,22 @@ public class SslConnection<T extends Connector> extends Connection<T> {
         return (getSslEngineResult() == null) ? getSslEngine()
                 .getHandshakeStatus() : getSslEngineResult()
                 .getHandshakeStatus();
+    }
+
+    /**
+     * Returns the SSL key size, if available and accessible.
+     * 
+     * @return The SSL key size, if available and accessible.
+     */
+    public Integer getSslKeySize() {
+        Integer keySize = null;
+        String sslCipherSuite = getSslCipherSuite();
+
+        if (sslCipherSuite != null) {
+            keySize = SslUtils.extractKeySize(sslCipherSuite);
+        }
+
+        return keySize;
     }
 
     /**
@@ -486,6 +487,13 @@ public class SslConnection<T extends Connector> extends Connection<T> {
 
             // Store the engine result
             setSslEngineResult(sslResult);
+        }
+    }
+
+    @Override
+    protected void shutdown(Socket socket) throws IOException {
+        if (!(socket instanceof SSLSocket)) {
+            super.shutdown(socket);
         }
     }
 

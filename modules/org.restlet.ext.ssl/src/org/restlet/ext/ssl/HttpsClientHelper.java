@@ -51,7 +51,83 @@ import org.restlet.ext.ssl.internal.SslContextFactory;
 import org.restlet.ext.ssl.internal.SslUtils;
 
 /**
- * HTTPS client helper based on NIO blocking sockets.
+ * HTTPS client helper based on NIO blocking sockets. Here is the list of
+ * parameters that are supported. They should be set in the Client's context
+ * before it is started:
+ * <table>
+ * <tr>
+ * <th>Parameter name</th>
+ * <th>Value type</th>
+ * <th>Default value</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>keystorePath</td>
+ * <td>String</td>
+ * <td>${user.home}/.keystore</td>
+ * <td>SSL keystore path.</td>
+ * </tr>
+ * <tr>
+ * <td>keystorePassword</td>
+ * <td>String</td>
+ * <td>System property "javax.net.ssl.keyStorePassword"</td>
+ * <td>SSL keystore password.</td>
+ * </tr>
+ * <tr>
+ * <td>keystoreType</td>
+ * <td>String</td>
+ * <td>JKS</td>
+ * <td>SSL keystore type</td>
+ * </tr>
+ * <tr>
+ * <td>keyPassword</td>
+ * <td>String</td>
+ * <td>System property "javax.net.ssl.keyStorePassword"</td>
+ * <td>SSL key password.</td>
+ * </tr>
+ * <tr>
+ * <td>certAlgorithm</td>
+ * <td>String</td>
+ * <td>SunX509</td>
+ * <td>SSL certificate algorithm.</td>
+ * </tr>
+ * <tr>
+ * <td>secureRandomAlgorithm</td>
+ * <td>String</td>
+ * <td>null (see java.security.SecureRandom)</td>
+ * <td>Name of the RNG algorithm. (see java.security.SecureRandom class).</td>
+ * </tr>
+ * <tr>
+ * <td>securityProvider</td>
+ * <td>String</td>
+ * <td>null (see javax.net.ssl.SSLContext)</td>
+ * <td>Java security provider name (see java.security.Provider class).</td>
+ * </tr>
+ * <tr>
+ * <td>sslProtocol</td>
+ * <td>String</td>
+ * <td>TLS</td>
+ * <td>SSL protocol.</td>
+ * </tr>
+ * <tr>
+ * <td>truststoreType</td>
+ * <td>String</td>
+ * <td>System property "javax.net.ssl.trustStoreType"</td>
+ * <td>Trust store type</td>
+ * </tr>
+ * <tr>
+ * <td>truststorePath</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Path to trust store</td>
+ * </tr>
+ * <tr>
+ * <td>truststorePassword</td>
+ * <td>String</td>
+ * <td>System property "javax.net.ssl.trustStorePassword"</td>
+ * <td>Trust store password</td>
+ * </tr>
+ * </table>
  * 
  * @author Jerome Louvel
  */

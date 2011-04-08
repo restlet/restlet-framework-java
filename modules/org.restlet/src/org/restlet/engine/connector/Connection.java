@@ -38,8 +38,6 @@ import java.nio.channels.SocketChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.net.ssl.SSLSocket;
-
 import org.restlet.Connector;
 import org.restlet.Response;
 import org.restlet.data.Status;
@@ -173,10 +171,7 @@ public class Connection<T extends Connector> implements SelectionListener {
                 Socket socket = getSocket();
 
                 if ((socket != null) && !socket.isClosed()) {
-                    if (!(socket instanceof SSLSocket)) {
-                        socket.shutdownInput();
-                        socket.shutdownOutput();
-                    }
+                    shutdown(socket);
                 }
             } catch (IOException ex) {
                 getLogger().log(Level.FINE,
@@ -459,6 +454,17 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
+     * Indicates if the connection is available to handle new messages.
+     * 
+     * @return True if the connection is available to handle new messages.
+     */
+    public boolean isAvailable() {
+        return isPersistent() && getState().equals(ConnectionState.OPEN)
+                && isEmpty() && getInboundWay().isAvailable()
+                && getOutboundWay().isAvailable();
+    }
+
+    /**
      * Indicates if it is a client-side connection.
      * 
      * @return True if it is a client-side connection.
@@ -492,17 +498,6 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public boolean isPipelining() {
         return pipelining;
-    }
-
-    /**
-     * Indicates if the connection is available to handle new messages.
-     * 
-     * @return True if the connection is available to handle new messages.
-     */
-    public boolean isAvailable() {
-        return isPersistent() && getState().equals(ConnectionState.OPEN)
-                && isEmpty() && getInboundWay().isAvailable()
-                && getOutboundWay().isAvailable();
     }
 
     /**
@@ -681,6 +676,18 @@ public class Connection<T extends Connector> implements SelectionListener {
 
             this.state = state;
         }
+    }
+
+    /**
+     * Shutdowns the socket, first its input then its output.
+     * 
+     * @param socket
+     *            The socket to shutdown.
+     * @throws IOException
+     */
+    protected void shutdown(Socket socket) throws IOException {
+        socket.shutdownInput();
+        socket.shutdownOutput();
     }
 
     @Override

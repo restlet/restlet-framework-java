@@ -30,28 +30,15 @@
 
 package org.restlet.engine.connector;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-
-import javax.net.SocketFactory;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 
 import org.restlet.Client;
 import org.restlet.Request;
@@ -129,72 +116,6 @@ import org.restlet.data.Status;
  * <td>0</td>
  * <td>Type of service to set in IP packets.</td>
  * </tr>
- * <tr>
- * <td>keystorePath</td>
- * <td>String</td>
- * <td>${user.home}/.keystore</td>
- * <td>SSL keystore path.</td>
- * </tr>
- * <tr>
- * <td>keystorePassword</td>
- * <td>String</td>
- * <td>System property "javax.net.ssl.keyStorePassword"</td>
- * <td>SSL keystore password.</td>
- * </tr>
- * <tr>
- * <td>keystoreType</td>
- * <td>String</td>
- * <td>JKS</td>
- * <td>SSL keystore type</td>
- * </tr>
- * <tr>
- * <td>keyPassword</td>
- * <td>String</td>
- * <td>System property "javax.net.ssl.keyStorePassword"</td>
- * <td>SSL key password.</td>
- * </tr>
- * <tr>
- * <td>certAlgorithm</td>
- * <td>String</td>
- * <td>SunX509</td>
- * <td>SSL certificate algorithm.</td>
- * </tr>
- * <tr>
- * <td>secureRandomAlgorithm</td>
- * <td>String</td>
- * <td>null (see java.security.SecureRandom)</td>
- * <td>Name of the RNG algorithm. (see java.security.SecureRandom class).</td>
- * </tr>
- * <tr>
- * <td>securityProvider</td>
- * <td>String</td>
- * <td>null (see javax.net.ssl.SSLContext)</td>
- * <td>Java security provider name (see java.security.Provider class).</td>
- * </tr>
- * <tr>
- * <td>sslProtocol</td>
- * <td>String</td>
- * <td>TLS</td>
- * <td>SSL protocol.</td>
- * </tr>
- * <tr>
- * <td>truststoreType</td>
- * <td>String</td>
- * <td>System property "javax.net.ssl.trustStoreType"</td>
- * <td>Trust store type</td>
- * </tr>
- * <tr>
- * <td>truststorePath</td>
- * <td>String</td>
- * <td>null</td>
- * <td>Path to trust store</td>
- * </tr>
- * <tr>
- * <td>truststorePassword</td>
- * <td>String</td>
- * <td>System property "javax.net.ssl.trustStorePassword"</td>
- * <td>Trust store password</td>
- * </tr>
  * </table>
  * 
  * @author Jerome Louvel
@@ -224,99 +145,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     @Override
     protected ConnectionController createController() {
         return new ConnectionController(this);
-    }
-
-    /**
-     * Creates a properly configured secure socket factory.
-     * 
-     * @return Properly configured secure socket factory.
-     * @throws IOException
-     * @throws GeneralSecurityException
-     */
-    protected SocketFactory createSecureSocketFactory() throws IOException,
-            GeneralSecurityException {
-        // Retrieve the configuration variables
-        String certAlgorithm = getCertAlgorithm();
-        String keystorePath = getKeystorePath();
-        String keystorePassword = getKeystorePassword();
-        String keyPassword = getKeyPassword();
-        String truststoreType = getTruststoreType();
-        String truststorePath = getTruststorePath();
-        String truststorePassword = getTruststorePassword();
-        String secureRandomAlgorithm = getSecureRandomAlgorithm();
-        String securityProvider = getSecurityProvider();
-
-        // Initialize a key store
-        InputStream keystoreInputStream = null;
-        if ((keystorePath != null) && (new File(keystorePath).exists())) {
-            keystoreInputStream = new FileInputStream(keystorePath);
-        }
-
-        KeyStore keystore = null;
-        if (keystoreInputStream != null) {
-            try {
-                keystore = KeyStore.getInstance(getKeystoreType());
-                keystore.load(
-                        keystoreInputStream,
-                        keystorePassword == null ? null : keystorePassword
-                                .toCharArray());
-            } catch (IOException ioe) {
-                getLogger().log(Level.WARNING, "Unable to load the key store",
-                        ioe);
-                keystore = null;
-            }
-        }
-
-        KeyManager[] keyManagers = null;
-        if ((keystore != null) && (keyPassword != null)) {
-            // Initialize a key manager
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory
-                    .getInstance(certAlgorithm);
-            keyManagerFactory.init(keystore, keyPassword.toCharArray());
-            keyManagers = keyManagerFactory.getKeyManagers();
-        }
-
-        // Initialize the trust store
-        InputStream truststoreInputStream = null;
-        if ((truststorePath != null) && (new File(truststorePath).exists())) {
-            truststoreInputStream = new FileInputStream(truststorePath);
-        }
-
-        KeyStore truststore = null;
-        if ((truststoreType != null) && (truststoreInputStream != null)) {
-            try {
-                truststore = KeyStore.getInstance(truststoreType);
-                truststore.load(
-                        truststoreInputStream,
-                        truststorePassword == null ? null : truststorePassword
-                                .toCharArray());
-            } catch (IOException ioe) {
-                getLogger().log(Level.WARNING,
-                        "Unable to load the trust store", ioe);
-                truststore = null;
-            }
-        }
-
-        TrustManager[] trustManagers = null;
-        if (truststore != null) {
-            // Initialize the trust manager
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory
-                    .getInstance(certAlgorithm);
-            trustManagerFactory.init(truststore);
-            trustManagers = trustManagerFactory.getTrustManagers();
-        }
-
-        // Initialize the SSL context
-        SecureRandom secureRandom = secureRandomAlgorithm == null ? null
-                : SecureRandom.getInstance(secureRandomAlgorithm);
-
-        SSLContext context = securityProvider == null ? SSLContext
-                .getInstance(getSslProtocol()) : SSLContext.getInstance(
-                getSslProtocol(), securityProvider);
-        context.init(keyManagers, trustManagers, secureRandom);
-
-        // Return the SSL socket factory
-        return context.getSocketFactory();
     }
 
     /**
@@ -376,37 +204,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
         InetSocketAddress address = new InetSocketAddress(hostDomain, hostPort);
         result.connect(address);
-        return result;
-    }
-
-    /**
-     * Creates a normal or secure socket factory.
-     * 
-     * @param secure
-     *            Indicates if the sockets should be secured.
-     * @return A normal or secure socket factory.
-     */
-    protected SocketFactory createSocketFactory(boolean secure) {
-        SocketFactory result = null;
-
-        if (secure) {
-            try {
-                return createSecureSocketFactory();
-            } catch (IOException ex) {
-                getLogger().log(
-                        Level.SEVERE,
-                        "Could not create secure socket factory: "
-                                + ex.getMessage(), ex);
-            } catch (GeneralSecurityException ex) {
-                getLogger().log(
-                        Level.SEVERE,
-                        "Could not create secure socket factory: "
-                                + ex.getMessage(), ex);
-            }
-        } else {
-            result = SocketFactory.getDefault();
-        }
-
         return result;
     }
 
@@ -563,54 +360,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     }
 
     /**
-     * Returns the SSL certificate algorithm.
-     * 
-     * @return The SSL certificate algorithm.
-     */
-    public String getCertAlgorithm() {
-        return getHelpedParameters().getFirstValue("certAlgorithm", "SunX509");
-    }
-
-    /**
-     * Returns the SSL key password.
-     * 
-     * @return The SSL key password.
-     */
-    public String getKeyPassword() {
-        return getHelpedParameters().getFirstValue("keyPassword",
-                System.getProperty("javax.net.ssl.keyStorePassword"));
-    }
-
-    /**
-     * Returns the SSL keystore password.
-     * 
-     * @return The SSL keystore password.
-     */
-    public String getKeystorePassword() {
-        return getHelpedParameters().getFirstValue("keystorePassword",
-                System.getProperty("javax.net.ssl.keyStorePassword"));
-    }
-
-    /**
-     * Returns the SSL keystore path.
-     * 
-     * @return The SSL keystore path.
-     */
-    public String getKeystorePath() {
-        return getHelpedParameters().getFirstValue("keystorePath",
-                System.getProperty("user.home") + File.separator + ".keystore");
-    }
-
-    /**
-     * Returns the SSL keystore type.
-     * 
-     * @return The SSL keystore type.
-     */
-    public String getKeystoreType() {
-        return getHelpedParameters().getFirstValue("keystoreType", "JKS");
-    }
-
-    /**
      * Returns the host name of the HTTP proxy, if specified.
      * 
      * @return the host name of the HTTP proxy, if specified.
@@ -634,25 +383,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
         }
 
         return Integer.parseInt(proxyPort);
-    }
-
-    /**
-     * Returns the name of the RNG algorithm.
-     * 
-     * @return The name of the RNG algorithm.
-     */
-    public String getSecureRandomAlgorithm() {
-        return getHelpedParameters().getFirstValue("secureRandomAlgorithm",
-                null);
-    }
-
-    /**
-     * Returns the Java security provider name.
-     * 
-     * @return The Java security provider name.
-     */
-    public String getSecurityProvider() {
-        return getHelpedParameters().getFirstValue("securityProvider", null);
     }
 
     /**
@@ -765,44 +495,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "socketTrafficClass", "0"));
 
-    }
-
-    /**
-     * Returns the SSL keystore type.
-     * 
-     * @return The SSL keystore type.
-     */
-    public String getSslProtocol() {
-        return getHelpedParameters().getFirstValue("sslProtocol", "TLS");
-    }
-
-    /**
-     * Returns the SSL trust store password.
-     * 
-     * @return The SSL trust store password.
-     */
-    public String getTruststorePassword() {
-        return getHelpedParameters().getFirstValue("truststorePassword",
-                System.getProperty("javax.net.ssl.keyStorePassword"));
-    }
-
-    /**
-     * Returns the SSL trust store path.
-     * 
-     * @return The SSL trust store path.
-     */
-    public String getTruststorePath() {
-        return getHelpedParameters().getFirstValue("truststorePath", null);
-    }
-
-    /**
-     * Returns the SSL trust store type.
-     * 
-     * @return The SSL trust store type.
-     */
-    public String getTruststoreType() {
-        return getHelpedParameters().getFirstValue("truststoreType",
-                System.getProperty("javax.net.ssl.trustStoreType"));
     }
 
     @Override
