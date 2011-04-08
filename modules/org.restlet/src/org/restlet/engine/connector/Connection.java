@@ -410,7 +410,8 @@ public class Connection<T extends Connector> implements SelectionListener {
      * @return True if the connection has timed out.
      */
     public boolean hasTimedOut() {
-        return (System.currentTimeMillis() - this.lastActivity) >= getMaxIoIdleTimeMs();
+        return (getMaxIoIdleTimeMs() > 0)
+                && (System.currentTimeMillis() - this.lastActivity) >= getMaxIoIdleTimeMs();
     }
 
     /**

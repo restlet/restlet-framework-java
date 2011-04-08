@@ -61,11 +61,11 @@ public class Server extends Connector {
     /** The helper provided by the implementation. */
     private final RestletHelper<Server> helper;
 
-    /** The listening port if specified. */
-    private volatile int port;
-
     /** The next Restlet. */
     private volatile Restlet next;
+
+    /** The listening port if specified. */
+    private volatile int port;
 
     /**
      * Constructor.
@@ -433,6 +433,16 @@ public class Server extends Connector {
      */
     public Server(Protocol protocol, String address, Restlet next) {
         this((Context) null, protocol, address, protocol.getDefaultPort(), next);
+    }
+
+    /**
+     * Returns the actual server port after it has started. If an ephemeral port
+     * is used it will be returned, otherwise the fixed port will be provided.
+     * 
+     * @return The actual server port.
+     */
+    public int getActualPort() {
+        return (getPort() == 0) ? getEphemeralPort() : getPort();
     }
 
     /**

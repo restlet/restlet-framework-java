@@ -282,8 +282,8 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
      *            The ephemeral local port.
      */
     public void setEphemeralPort(int localPort) {
-        // If an ephemeral port is used, make sure we update the attribute for
-        // the API
+        // If an ephemeral port is used, make sure we update
+        // the attribute for the API
         if (getHelped().getPort() == 0) {
             getAttributes().put("ephemeralPort", localPort);
         }
@@ -301,10 +301,6 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
 
     @Override
     public synchronized void start() throws Exception {
-        getLogger().info(
-                "Starting the internal " + getProtocols() + " server on port "
-                        + getHelped().getPort());
-
         // Create the server socket channel
         this.serverSocketChannel = createServerSocketChannel();
 
@@ -312,6 +308,9 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
         setEphemeralPort(this.serverSocketChannel.socket());
 
         // Start the controller
+        getLogger().info(
+                "Starting the internal " + getProtocols() + " server on port "
+                        + getHelped().getActualPort());
         super.start();
 
         // Wait for the listener to start up and count down the latch
