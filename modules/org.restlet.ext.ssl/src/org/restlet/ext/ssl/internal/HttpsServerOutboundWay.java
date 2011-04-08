@@ -34,16 +34,16 @@ import java.io.IOException;
 
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 
-import org.restlet.Client;
+import org.restlet.Server;
 import org.restlet.engine.connector.Connection;
-import org.restlet.engine.connector.HttpClientOutboundWay;
+import org.restlet.engine.connector.HttpServerOutboundWay;
 
 /**
- * HTTPS client outbound way.
+ * HTTPS server outbound way.
  * 
  * @author Jerome Louvel
  */
-public class HttpsClientOutboundWay extends HttpClientOutboundWay {
+public class HttpsServerOutboundWay extends HttpServerOutboundWay {
 
     /**
      * Constructor.
@@ -53,13 +53,13 @@ public class HttpsClientOutboundWay extends HttpClientOutboundWay {
      * @param bufferSize
      *            The byte buffer size.
      */
-    public HttpsClientOutboundWay(Connection<?> connection, int bufferSize) {
+    public HttpsServerOutboundWay(Connection<Server> connection, int bufferSize) {
         super(connection, bufferSize);
     }
 
     @Override
-    public SslConnection<Client> getConnection() {
-        return (SslConnection<Client>) super.getConnection();
+    public SslConnection<Server> getConnection() {
+        return (SslConnection<Server>) super.getConnection();
     }
 
     @Override

@@ -32,6 +32,7 @@ package org.restlet.engine.connector;
 
 import java.io.IOException;
 
+import org.restlet.Client;
 import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -115,6 +116,12 @@ public abstract class ClientOutboundWay extends OutboundWay {
     @Override
     protected Message getActualMessage() {
         return getMessage().getRequest();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Connection<Client> getConnection() {
+        return (Connection<Client>) super.getConnection();
     }
 
     @Override

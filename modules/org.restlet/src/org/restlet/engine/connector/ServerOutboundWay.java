@@ -144,6 +144,12 @@ public abstract class ServerOutboundWay extends OutboundWay {
         return getMessage();
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Connection<Server> getConnection() {
+        return (Connection<Server>) super.getConnection();
+    }
+
     @Override
     public void onCompleted(boolean endDetected) {
         // Check if we need to close the connection
