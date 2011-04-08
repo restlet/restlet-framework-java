@@ -11,6 +11,8 @@ Changes log
       - ClientResource#entityBuffering now buffers non transient representations of
         unknown size. Necessary for GAE chunked issue.
     - Enhancements
+      - Added new HTTPS client connector based on the internal non-blocking NIO
+        connector. Co-developped with NetDev.
     - Bug fixed
       - Throwing a ResourceException with a given status, was resulting in
         500 status being returned to the client instead of the given status.

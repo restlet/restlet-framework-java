@@ -435,8 +435,15 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
     @Override
     public void doHandleOutbound(Response response) {
-        if ((response != null) && (response.getRequest() != null)) {
-            try {
+        try {
+            if ((response != null) && (response.getRequest() != null)) {
+                if (getLogger().isLoggable(Level.FINE)) {
+                    getLogger().log(
+                            Level.FINE,
+                            "Client request to be sent: "
+                                    + response.getRequest());
+                }
+
                 Connection<Client> bestConn = getBestConnection(response
                         .getRequest());
 
@@ -450,14 +457,14 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                             "Unable to find a connection to send the request");
                     unblock(response);
                 }
-            } catch (Throwable t) {
-                getLogger()
-                        .log(Level.FINE,
-                                "An error occured during the communication with the remote server.",
-                                t);
-                response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, t);
-                unblock(response);
             }
+        } catch (Throwable t) {
+            getLogger()
+                    .log(Level.FINE,
+                            "An error occured during the communication with the remote server.",
+                            t);
+            response.setStatus(Status.CONNECTOR_ERROR_COMMUNICATION, t);
+            unblock(response);
         }
     }
 
@@ -801,7 +808,10 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     @Override
     public void handle(Request request, Response response) {
         try {
-            getLogger().finer("Handling request...");
+            if (getLogger().isLoggable(Level.FINE)) {
+                getLogger().log(Level.FINE,
+                        "Handling client request: " + request);
+            }
 
             if (isSynchronous(request) && request.isExpectingResponse()) {
                 // Prepare the latch to block the caller thread

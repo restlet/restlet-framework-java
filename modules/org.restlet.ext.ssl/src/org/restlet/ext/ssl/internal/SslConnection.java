@@ -64,8 +64,8 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     /** The engine to use for wrapping and unwrapping. */
     private volatile SSLEngine sslEngine;
 
-    /** The engine status. */
-    private volatile SSLEngineResult.Status sslEngineStatus;
+    /** The engine result. */
+    private volatile SSLEngineResult sslEngineResult;
 
     /**
      * Constructor.
@@ -91,7 +91,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
                 .getSession().getApplicationBufferSize(), sslEngine
                 .getSession().getApplicationBufferSize());
         this.sslEngine = sslEngine;
-        this.sslEngineStatus = SSLEngineResult.Status.OK;
+        this.sslEngineResult = null;
         initSslEngine();
     }
 
@@ -158,21 +158,35 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     }
 
     /**
-     * Returns the engine status.
+     * Returns the engine result.
      * 
-     * @return The engine status.
+     * @return The engine result.
      */
-    protected SSLEngineResult.Status getSslEngineStatus() {
-        return sslEngineStatus;
+    public SSLEngineResult getSslEngineResult() {
+        return sslEngineResult;
     }
 
     /**
-     * Returns the handshake status.
+     * Returns the latest SSL engine status, or
+     * {@link SSLEngineResult.Status#OK} otherwise.
      * 
-     * @return The handshake status.
+     * @return The latest SSL engine status.
      */
-    protected SSLEngineResult.HandshakeStatus getSslHandshakeStatus() {
-        return getSslEngine().getHandshakeStatus();
+    public SSLEngineResult.Status getSslEngineStatus() {
+        return (getSslEngineResult() == null) ? SSLEngineResult.Status.OK
+                : getSslEngineResult().getStatus();
+    }
+
+    /**
+     * Returns the SSL handshake status, either from the latest engine result or
+     * from the SSL engine.
+     * 
+     * @return The SSL handshake status.
+     */
+    public HandshakeStatus getSslHandshakeStatus() {
+        return (getSslEngineResult() == null) ? getSslEngine()
+                .getHandshakeStatus() : getSslEngineResult()
+                .getHandshakeStatus();
     }
 
     /**
@@ -241,6 +255,9 @@ public class SslConnection<T extends Connector> extends Connection<T> {
             handleSslHandshake();
             break;
         }
+
+        // Reset the result
+        setSslEngineResult(null);
     }
 
     /**
@@ -379,13 +396,13 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     }
 
     /**
-     * Sets the engine status.
+     * Sets the engine result.
      * 
-     * @param engineStatus
-     *            The engine status.
+     * @param engineResult
+     *            The engine result.
      */
-    protected void setSslEngineStatus(SSLEngineResult.Status engineStatus) {
-        this.sslEngineStatus = engineStatus;
+    protected void setSslEngineResult(SSLEngineResult engineResult) {
+        this.sslEngineResult = engineResult;
     }
 
     /**
@@ -403,15 +420,15 @@ public class SslConnection<T extends Connector> extends Connection<T> {
                 getLogger().log(Level.FINE, "SSL connection: " + toString());
             }
 
-            // Store the engine status
-            setSslEngineStatus(sslResult.getStatus());
+            // Store the engine result
+            setSslEngineResult(sslResult);
         }
     }
 
     @Override
     public String toString() {
         return super.toString() + " | " + getSslEngine() + " | "
-                + getSslEngineStatus() + " | " + getSslHandshakeStatus();
+                + getSslEngineResult();
     }
 
 }
