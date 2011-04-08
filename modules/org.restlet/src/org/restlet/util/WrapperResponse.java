@@ -32,8 +32,8 @@ package org.restlet.util;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 
 import org.restlet.Request;
 import org.restlet.Response;
@@ -132,7 +132,7 @@ public class WrapperResponse extends Response {
      * @return The modifiable attributes map.
      */
     @Override
-    public Map<String, Object> getAttributes() {
+    public ConcurrentMap<String, Object> getAttributes() {
         return getWrappedResponse().getAttributes();
     }
 

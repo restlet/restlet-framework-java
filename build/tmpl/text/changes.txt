@@ -10,6 +10,10 @@ Changes log
         Suggested by Martin Svensson.
       - ClientResource#entityBuffering now buffers non transient representations of
         unknown size. Necessary for GAE chunked issue.
+      - Added Server#getActualPort() to return either the value of getPort()
+        or getEphemeralPort() is the listening port is '0'.
+      - Message#attributes is now a ConcurrentMap instead of a Map.
+        Suggested by Tal Liron.
     - Enhancements
       - Added new HTTPS client connector based on the internal non-blocking NIO
         connector. Co-developped with NetDev.

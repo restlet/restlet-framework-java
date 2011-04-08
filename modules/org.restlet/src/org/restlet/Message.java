@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.CacheDirective;
@@ -50,7 +51,7 @@ import org.restlet.representation.StringRepresentation;
  */
 public abstract class Message {
     /** The modifiable attributes map. */
-    private volatile Map<String, Object> attributes;
+    private volatile ConcurrentMap<String, Object> attributes;
 
     /** The caching directives. */
     private volatile List<CacheDirective> cacheDirectives;
@@ -146,9 +147,9 @@ public abstract class Message {
      * 
      * @return The modifiable attributes map.
      */
-    public Map<String, Object> getAttributes() {
+    public ConcurrentMap<String, Object> getAttributes() {
         // Lazy initialization with double-check.
-        Map<String, Object> r = this.attributes;
+        ConcurrentMap<String, Object> r = this.attributes;
         if (r == null) {
             synchronized (this) {
                 r = this.attributes;
