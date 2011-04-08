@@ -47,6 +47,7 @@ import org.restlet.Server;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.engine.adapter.ServerCall;
+import org.restlet.ext.ssl.internal.SslUtils;
 import org.restlet.util.Series;
 import org.simpleframework.http.Request;
 import org.simpleframework.http.Response;
@@ -240,6 +241,18 @@ public class SimpleCall extends ServerCall {
             }
         }
         return null;
+    }
+
+    @Override
+    public Integer getSslKeySize() {
+        Integer keySize = null;
+        String sslCipherSuite = getSslCipherSuite();
+
+        if (sslCipherSuite != null) {
+            keySize = SslUtils.extractKeySize(sslCipherSuite);
+        }
+
+        return keySize;
     }
 
     @Override

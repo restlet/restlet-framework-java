@@ -46,9 +46,9 @@ import org.restlet.engine.connector.HttpServerInboundWay;
 import org.restlet.engine.connector.HttpServerOutboundWay;
 import org.restlet.engine.connector.OutboundWay;
 import org.restlet.engine.connector.ServerInboundWay;
-import org.restlet.engine.security.SslContextFactory;
-import org.restlet.engine.security.SslUtils;
 import org.restlet.ext.ssl.internal.SslConnection;
+import org.restlet.ext.ssl.internal.SslContextFactory;
+import org.restlet.ext.ssl.internal.SslUtils;
 
 /**
  * HTTPS server helper based on NIO blocking sockets.

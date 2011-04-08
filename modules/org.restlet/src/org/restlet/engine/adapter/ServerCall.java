@@ -51,7 +51,6 @@ import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.header.LanguageReader;
 import org.restlet.engine.header.RangeReader;
 import org.restlet.engine.io.BioUtils;
-import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.EmptyRepresentation;
@@ -271,14 +270,7 @@ public abstract class ServerCall extends Call {
      * @return The SSL key size, if available and accessible.
      */
     public Integer getSslKeySize() {
-        Integer keySize = null;
-        String sslCipherSuite = getSslCipherSuite();
-
-        if (sslCipherSuite != null) {
-            keySize = SslUtils.extractKeySize(sslCipherSuite);
-        }
-
-        return keySize;
+        return null;
     }
 
     /**

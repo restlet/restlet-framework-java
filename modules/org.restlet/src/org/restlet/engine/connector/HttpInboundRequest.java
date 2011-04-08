@@ -31,7 +31,6 @@
 package org.restlet.engine.connector;
 
 import java.security.Principal;
-import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -184,27 +183,6 @@ public class HttpInboundRequest extends Request implements InboundRequest {
 
         // Set the properties
         setMethod(Method.valueOf(methodName));
-
-        // Set the SSL certificates
-        List<Certificate> clientCertificates = getConnection()
-                .getSslClientCertificates();
-        if (clientCertificates != null) {
-            getAttributes().put(
-                    HeaderConstants.ATTRIBUTE_HTTPS_CLIENT_CERTIFICATES,
-                    clientCertificates);
-        }
-
-        String cipherSuite = getConnection().getSslCipherSuite();
-        if (cipherSuite != null) {
-            getAttributes().put(HeaderConstants.ATTRIBUTE_HTTPS_CIPHER_SUITE,
-                    cipherSuite);
-        }
-
-        Integer keySize = getConnection().getSslKeySize();
-        if (keySize != null) {
-            getAttributes().put(HeaderConstants.ATTRIBUTE_HTTPS_KEY_SIZE,
-                    keySize);
-        }
     }
 
     @Override

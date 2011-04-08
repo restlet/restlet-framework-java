@@ -37,10 +37,10 @@ import javax.net.ssl.SSLContext;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.security.SslContextFactory;
-import org.restlet.engine.security.SslUtils;
 import org.restlet.ext.simple.internal.SimpleContainer;
 import org.restlet.ext.simple.internal.SimpleServer;
+import org.restlet.ext.ssl.internal.SslContextFactory;
+import org.restlet.ext.ssl.internal.SslUtils;
 import org.simpleframework.http.core.Container;
 import org.simpleframework.http.core.ContainerServer;
 import org.simpleframework.transport.connect.Connection;
@@ -61,19 +61,10 @@ import org.simpleframework.transport.connect.SocketConnection;
  * <td>sslContextFactory</td>
  * <td>String</td>
  * <td>null</td>
- * <td>Let you specify a {@link SslContextFactory} instance for a more complete
- * and flexible SSL context setting. If this parameter is set, it takes
- * Precedence over the other SSL parameters below.</td>
- * </tr>
- * <tr>
- * <td>sslContextFactory</td>
- * <td>String</td>
- * <td>null</td>
  * <td>Let you specify a {@link SslContextFactory} class name as a parameter, or
  * an instance as an attribute for a more complete and flexible SSL context
  * setting. If set, it takes precedence over the other SSL parameters below.</td>
  * </tr>
- * <tr>
  * <tr>
  * <td>keystorePath</td>
  * <td>String</td>
@@ -135,8 +126,7 @@ import org.simpleframework.transport.connect.SocketConnection;
  * <td>wantClientAuthentication</td>
  * <td>boolean</td>
  * <td>false</td>
- * <td>Indicates if we would like client certificate authentication (only for
- * the BIO connector type).</td>
+ * <td>Indicates if we would like client certificate authentication.</td>
  * </tr>
  * </table>
  * 
@@ -162,26 +152,6 @@ public class HttpsServerHelper extends SimpleServerHelper {
     }
 
     /**
-     * Indicates if we require client certificate authentication.
-     * 
-     * @return True if we require client certificate authentication.
-     */
-    public boolean isNeedClientAuthentication() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "needClientAuthentication", "false"));
-    }
-
-    /**
-     * Indicates if we would like client certificate authentication.
-     * 
-     * @return True if we would like client certificate authentication.
-     */
-    public boolean isWantClientAuthentication() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "wantClientAuthentication", "false"));
-    }
-
-    /**
      * Gets the SSL context used by this server.
      * 
      * @return this returns the SSL context.
@@ -204,16 +174,16 @@ public class HttpsServerHelper extends SimpleServerHelper {
     @Override
     public void start() throws Exception {
         // Initialize the SSL context
-        final SslContextFactory sslContextFactory = SslUtils
+        SslContextFactory sslContextFactory = SslUtils
                 .getSslContextFactory(this);
         SSLContext sslContext = sslContextFactory.createSslContext();
+        String addr = getHelped().getAddress();
 
-        final String addr = getHelped().getAddress();
         if (addr != null) {
             // This call may throw UnknownHostException and otherwise always
             // returns an instance of INetAddress.
             // Note: textual representation of inet addresses are supported
-            final InetAddress iaddr = InetAddress.getByName(addr);
+            InetAddress iaddr = InetAddress.getByName(addr);
 
             // Note: the backlog of 50 is the default
             setAddress(new InetSocketAddress(iaddr, getHelped().getPort()));
@@ -227,17 +197,17 @@ public class HttpsServerHelper extends SimpleServerHelper {
         }
 
         // Complete initialization
-        final Container container = new SimpleContainer(this);
-        final ContainerServer server = new ContainerServer(container,
+        Container container = new SimpleContainer(this);
+        ContainerServer server = new ContainerServer(container,
                 getDefaultThreads());
-        final SimpleServer filter = new SimpleServer(server);
-        final Connection connection = new SocketConnection(filter);
-
+        SimpleServer filter = new SimpleServer(server);
+        Connection connection = new SocketConnection(filter);
         setSslContext(sslContext);
         setConfidential(true);
         setContainerServer(server);
         setConnection(connection);
 
+        // Effectively connect the server socket
         InetSocketAddress address = (InetSocketAddress) getConnection()
                 .connect(getAddress(), getSslContext());
         setEphemeralPort(address.getPort());

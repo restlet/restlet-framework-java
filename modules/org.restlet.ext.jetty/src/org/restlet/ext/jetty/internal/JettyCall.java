@@ -242,9 +242,11 @@ public class JettyCall extends ServerCall {
     public Integer getSslKeySize() {
         Integer keySize = (Integer) getConnection().getRequest().getAttribute(
                 "javax.servlet.request.key_size");
+
         if (keySize == null) {
             keySize = super.getSslKeySize();
         }
+
         return keySize;
     }
 

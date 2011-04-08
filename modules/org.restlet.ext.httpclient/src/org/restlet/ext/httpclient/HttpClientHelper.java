@@ -59,11 +59,11 @@ import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.adapter.ClientCall;
-import org.restlet.engine.security.SslContextFactory;
-import org.restlet.engine.security.SslUtils;
 import org.restlet.ext.httpclient.internal.HttpIdleConnectionReaper;
 import org.restlet.ext.httpclient.internal.HttpMethodCall;
 import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
+import org.restlet.ext.ssl.internal.SslContextFactory;
+import org.restlet.ext.ssl.internal.SslUtils;
 
 /**
  * HTTP client connector using the HttpMethodCall and Apache HTTP Client

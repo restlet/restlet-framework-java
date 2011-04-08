@@ -46,8 +46,8 @@ import org.jsslutils.sslcontext.SSLContextFactory.SSLContextFactoryException;
 import org.jsslutils.sslcontext.keymanagers.FixedServerAliasKeyManager;
 
 import org.restlet.data.Parameter;
-import org.restlet.engine.security.DefaultSslContextFactory;
-import org.restlet.engine.security.SslContextFactory;
+import org.restlet.ext.ssl.internal.DefaultSslContextFactory;
+import org.restlet.ext.ssl.internal.SslContextFactory;
 import org.restlet.util.Series;
 
 /**

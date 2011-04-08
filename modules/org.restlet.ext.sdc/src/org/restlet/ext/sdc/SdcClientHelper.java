@@ -52,10 +52,10 @@ import org.restlet.data.Reference;
 import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.adapter.HttpClientHelper;
 import org.restlet.engine.io.IoUtils;
-import org.restlet.engine.security.SslContextFactory;
-import org.restlet.engine.security.SslUtils;
 import org.restlet.ext.sdc.internal.SdcClientCall;
 import org.restlet.ext.sdc.internal.SdcServerConnection;
+import org.restlet.ext.ssl.internal.SslContextFactory;
+import org.restlet.ext.ssl.internal.SslUtils;
 
 /**
  * SDC tunnel connector. This is a client connector from the Restlet application
@@ -91,77 +91,11 @@ import org.restlet.ext.sdc.internal.SdcServerConnection;
  * <td>The port number of the SDC tunnels server.</td>
  * </tr>
  * <tr>
- * <td>sslContextFactory</td>
- * <td>String</td>
- * <td>null</td>
- * <td>Let you specify a {@link SslContextFactory} class name as a parameter, or
- * an instance as an attribute for a more complete and flexible SSL context
- * setting. If set, it takes precedence over the other SSL parameters below.</td>
- * </tr>
- * <tr>
- * <tr>
- * <td>keystorePath</td>
- * <td>String</td>
- * <td>${user.home}/.keystore</td>
- * <td>SSL keystore path.</td>
- * </tr>
- * <tr>
- * <td>keystorePassword</td>
- * <td>String</td>
- * <td></td>
- * <td>SSL keystore password.</td>
- * </tr>
- * <tr>
- * <td>keystoreType</td>
- * <td>String</td>
- * <td>JKS</td>
- * <td>SSL keystore type</td>
- * </tr>
- * <tr>
- * <td>keyPassword</td>
- * <td>String</td>
- * <td>${keystorePassword}</td>
- * <td>SSL key password.</td>
- * </tr>
- * <tr>
- * <td>certAlgorithm</td>
- * <td>String</td>
- * <td>SunX509</td>
- * <td>SSL certificate algorithm.</td>
- * </tr>
- * <tr>
  * <td>enabledCipherSuites</td>
  * <td>String</td>
  * <td>TLS_RSA_WITH_AES_128_CBC_SHA</td>
  * <td>Whitespace-separated list of enabled cipher suites and/or can be
  * specified multiple times.</td>
- * </tr>
- * <tr>
- * <td>disabledCipherSuites</td>
- * <td>String</td>
- * <td>null</td>
- * <td>Whitespace-separated list of disabled cipher suites and/or can be
- * specified multiple times. It affects the cipher suites manually enabled or
- * the default ones.</td>
- * </tr>
- * <tr>
- * <td>needClientAuthentication</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>Indicates if we require client certificate authentication.</td>
- * </tr>
- * <tr>
- * <td>sslProtocol</td>
- * <td>String</td>
- * <td>TLS</td>
- * <td>SSL protocol.</td>
- * </tr>
- * <tr>
- * <td>wantClientAuthentication</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>Indicates if we would like client certificate authentication (only for
- * the BIO connector type).</td>
  * </tr>
  * </table>
  * 

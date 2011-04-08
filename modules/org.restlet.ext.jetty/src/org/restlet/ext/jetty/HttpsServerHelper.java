@@ -38,8 +38,8 @@ import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.security.SslContextFactory;
-import org.restlet.engine.security.SslUtils;
+import org.restlet.ext.ssl.internal.SslContextFactory;
+import org.restlet.ext.ssl.internal.SslUtils;
 
 /**
  * Jetty HTTPS server connector. Here is the list of additional parameters that
@@ -51,6 +51,20 @@ import org.restlet.engine.security.SslUtils;
  * <th>Value type</th>
  * <th>Default value</th>
  * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>type</td>
+ * <td>int</td>
+ * <td>2</td>
+ * <td>The type of Jetty connector to use.<br>
+ * 1 : Selecting NIO connector (Jetty's SslSelectChannelConnector class).<br>
+ * 2 : Blocking BIO connector (Jetty's SslSocketConnector class)</td>
+ * </tr>
+ * <tr>
+ * <td>securityProvider</td>
+ * <td>String</td>
+ * <td>null (see javax.net.ssl.SSLContext)</td>
+ * <td>Java security provider name (see java.security.Provider class)</td>
  * </tr>
  * <tr>
  * <td>sslContextFactory</td>
@@ -110,24 +124,10 @@ import org.restlet.engine.security.SslUtils;
  * <td>Name of the RNG algorithm. (see java.security.SecureRandom class)</td>
  * </tr>
  * <tr>
- * <td>securityProvider</td>
- * <td>String</td>
- * <td>null (see javax.net.ssl.SSLContext)</td>
- * <td>Java security provider name (see java.security.Provider class)</td>
- * </tr>
- * <tr>
  * <td>sslProtocol</td>
  * <td>String</td>
  * <td>TLS</td>
  * <td>SSL protocol</td>
- * </tr>
- * <tr>
- * <td>type</td>
- * <td>int</td>
- * <td>2</td>
- * <td>The type of Jetty connector to use.<br>
- * 1 : Selecting NIO connector (Jetty's SslSelectChannelConnector class).<br>
- * 2 : Blocking BIO connector (Jetty's SslSocketConnector class)</td>
  * </tr>
  * <tr>
  * <td>wantClientAuthentication</td>
@@ -165,7 +165,6 @@ public class HttpsServerHelper extends JettyServerHelper {
         AbstractConnector result = null;
         final SslContextFactory sslContextFactory = SslUtils
                 .getSslContextFactory(this);
-
         final String[] excludedCipherSuites = SslUtils
                 .getDisabledCipherSuites(this);
 

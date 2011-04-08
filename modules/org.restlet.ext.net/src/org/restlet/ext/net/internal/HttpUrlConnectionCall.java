@@ -49,9 +49,9 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Edition;
 import org.restlet.engine.adapter.ClientCall;
-import org.restlet.engine.security.SslUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.net.HttpClientHelper;
+import org.restlet.ext.ssl.internal.SslUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -114,15 +114,14 @@ public class HttpUrlConnectionCall extends ClientCall {
             if (this.connection instanceof javax.net.ssl.HttpsURLConnection) {
                 setConfidential(true);
                 javax.net.ssl.HttpsURLConnection https = (javax.net.ssl.HttpsURLConnection) this.connection;
-                org.restlet.engine.security.SslContextFactory sslContextFactory = SslUtils
+                org.restlet.ext.ssl.internal.SslContextFactory sslContextFactory = SslUtils
                         .getSslContextFactory(getHelper());
+
                 if (sslContextFactory != null) {
                     try {
                         javax.net.ssl.SSLContext sslContext = sslContextFactory
                                 .createSslContext();
-                        https
-                                .setSSLSocketFactory(sslContext
-                                        .getSocketFactory());
+                        https.setSSLSocketFactory(sslContext.getSocketFactory());
                     } catch (Exception e) {
                         throw new RuntimeException(
                                 "Unable to create SSLContext.", e);
@@ -350,40 +349,35 @@ public class HttpUrlConnectionCall extends ClientCall {
         } catch (ConnectException ce) {
             getHelper()
                     .getLogger()
-                    .log(
-                            Level.FINE,
+                    .log(Level.FINE,
                             "An error occurred during the connection to the remote HTTP server.",
                             ce);
             result = new Status(Status.CONNECTOR_ERROR_CONNECTION, ce);
         } catch (SocketTimeoutException ste) {
             getHelper()
                     .getLogger()
-                    .log(
-                            Level.FINE,
+                    .log(Level.FINE,
                             "An timeout error occurred during the communication with the remote HTTP server.",
                             ste);
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ste);
         } catch (FileNotFoundException fnfe) {
             getHelper()
                     .getLogger()
-                    .log(
-                            Level.FINE,
+                    .log(Level.FINE,
                             "An unexpected error occurred during the sending of the HTTP request.",
                             fnfe);
             result = new Status(Status.CONNECTOR_ERROR_INTERNAL, fnfe);
         } catch (IOException ioe) {
             getHelper()
                     .getLogger()
-                    .log(
-                            Level.FINE,
+                    .log(Level.FINE,
                             "An error occurred during the communication with the remote HTTP server.",
                             ioe);
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
         } catch (Exception e) {
             getHelper()
                     .getLogger()
-                    .log(
-                            Level.FINE,
+                    .log(Level.FINE,
                             "An unexpected error occurred during the sending of the HTTP request.",
                             e);
             result = new Status(Status.CONNECTOR_ERROR_INTERNAL, e);

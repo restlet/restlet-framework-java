@@ -17,5 +17,6 @@
       <dependency type="library" id="logging" />
       <dependency type="library" id="mime4j" />
       <dependency type="module" id="core" />
+      <dependency type="module" id="ssl" />
    </dependencies>
 </module>

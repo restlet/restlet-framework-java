@@ -250,27 +250,32 @@ public class XdbServletCall extends ServerCall {
     public Integer getSslKeySize() {
         Integer keySize = (Integer) getRequest().getAttribute(
                 "javax.servlet.request.key_size");
+
         if (keySize == null) {
             keySize = super.getSslKeySize();
         }
+
         return keySize;
     }
-    
+
     @Override
     public String getSslSessionId() {
-        Object sessionId = getRequest().getAttribute("javax.servlet.request.ssl_session_id");
+        Object sessionId = getRequest().getAttribute(
+                "javax.servlet.request.ssl_session_id");
 
         if ((sessionId != null) && (sessionId instanceof String)) {
-            return (String)sessionId;
+            return (String) sessionId;
         }
 
         /*
-         * The following is for the non-standard, pre-Servlet 3 spec used by Tomcat/Coyote.
+         * The following is for the non-standard, pre-Servlet 3 spec used by
+         * Tomcat/Coyote.
          */
-        sessionId = getRequest().getAttribute("javax.servlet.request.ssl_session");
+        sessionId = getRequest().getAttribute(
+                "javax.servlet.request.ssl_session");
 
         if (sessionId instanceof String) {
-            return (String)sessionId;
+            return (String) sessionId;
         }
 
         return null;

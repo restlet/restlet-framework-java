@@ -22,6 +22,12 @@ Changes log
         the Java SE edition as it could cause troubles with Java EE container
         and potentially GAE/Android as we reconfigure the default log manager
         programmatically. Reported by Kristoffer Gronowski and Bo Xing.
+      - Moved all SSL dependencies from the engine into the "org.restlet.ext.ssl"
+        extension, forcing it as a new extension for several other ones such as
+        Jetty, Apache HTTP Client or Simple. This extension takes more importance
+        as it also contains the new scalable HTTPS/NIO internal connector just
+        added. Please ensure that your classpath is adjusted. This also helps
+        keeping core org.restlet.jar size small.
 
 - 2.1 Milestone 3 (03/31/2011)
     - Breaking changes

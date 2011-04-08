@@ -290,9 +290,11 @@ public class ServletCall extends ServerCall {
     public Integer getSslKeySize() {
         Integer keySize = (Integer) getRequest().getAttribute(
                 "javax.servlet.request.key_size");
+
         if (keySize == null) {
             keySize = super.getSslKeySize();
         }
+
         return keySize;
     }
 

@@ -33,10 +33,15 @@ package org.restlet.ext.ssl.internal;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
+import java.security.cert.Certificate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
@@ -66,6 +71,65 @@ public class SslConnection<T extends Connector> extends Connection<T> {
 
     /** The engine result. */
     private volatile SSLEngineResult sslEngineResult;
+
+    /**
+     * Returns the SSL cipher suite.
+     * 
+     * @return The SSL cipher suite.
+     */
+    public String getSslCipherSuite() {
+        if (getSocket() instanceof SSLSocket) {
+            SSLSocket sslSocket = (SSLSocket) getSocket();
+            SSLSession sslSession = sslSocket.getSession();
+
+            if (sslSession != null) {
+                return sslSession.getCipherSuite();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the list of client SSL certificates.
+     * 
+     * @return The list of client SSL certificates.
+     */
+    public List<Certificate> getSslClientCertificates() {
+        if (getSocket() instanceof SSLSocket) {
+            SSLSocket sslSocket = (SSLSocket) getSocket();
+            SSLSession sslSession = sslSocket.getSession();
+
+            if (sslSession != null) {
+                try {
+                    List<Certificate> clientCertificates = Arrays
+                            .asList(sslSession.getPeerCertificates());
+                    return clientCertificates;
+                } catch (SSLPeerUnverifiedException e) {
+                    getLogger().log(Level.FINE,
+                            "Can't get the client certificates.", e);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the SSL key size, if available and accessible.
+     * 
+     * @return The SSL key size, if available and accessible.
+     */
+    public Integer getSslKeySize() {
+        Integer keySize = null;
+        String sslCipherSuite = getSslCipherSuite();
+
+        if (sslCipherSuite != null) {
+            keySize = SslUtils.extractKeySize(sslCipherSuite);
+        }
+
+        return keySize;
+    }
 
     /**
      * Constructor.
@@ -310,7 +374,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
             // Runs the pending lengthy task.
             getHelper().getWorkerService().execute(new Runnable() {
                 public void run() {
-                    getLogger().log(Level.FINE, "Running delegated tasks...");
+                    getLogger().log(Level.FINER, "Running delegated tasks...");
                     task.run();
 
                     // Check if a next task is pending
@@ -322,9 +386,9 @@ public class SslConnection<T extends Connector> extends Connection<T> {
                         nextTask = getSslEngine().getDelegatedTask();
                     }
 
-                    if (getLogger().isLoggable(Level.FINE)) {
+                    if (getLogger().isLoggable(Level.FINER)) {
                         getLogger().log(
-                                Level.FINE,
+                                Level.FINER,
                                 "Done running delegated tasks. "
                                         + SslConnection.this.toString());
                     }
@@ -415,9 +479,9 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     public void setSslResult(SSLEngineResult sslResult) throws IOException {
         if (sslResult != null) {
             // Logs the result
-            if (getLogger().isLoggable(Level.FINE)) {
-                getLogger().log(Level.FINE, "SSL engine result: " + sslResult);
-                getLogger().log(Level.FINE, "SSL connection: " + toString());
+            if (getLogger().isLoggable(Level.FINER)) {
+                getLogger().log(Level.FINER, "SSL engine result: " + sslResult);
+                getLogger().log(Level.FINER, "SSL connection: " + toString());
             }
 
             // Store the engine result

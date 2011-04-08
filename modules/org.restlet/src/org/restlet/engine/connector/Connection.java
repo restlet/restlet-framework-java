@@ -35,14 +35,9 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
-import java.security.cert.Certificate;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.net.ssl.SSLPeerUnverifiedException;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 import org.restlet.Connector;
@@ -55,7 +50,6 @@ import org.restlet.engine.io.ReadableTraceChannel;
 import org.restlet.engine.io.WritableSelectionChannel;
 import org.restlet.engine.io.WritableSocketChannel;
 import org.restlet.engine.io.WritableTraceChannel;
-import org.restlet.engine.security.SslUtils;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
 
@@ -395,65 +389,6 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public SocketChannel getSocketChannel() {
         return socketChannel;
-    }
-
-    /**
-     * Returns the SSL cipher suite.
-     * 
-     * @return The SSL cipher suite.
-     */
-    public String getSslCipherSuite() {
-        if (getSocket() instanceof SSLSocket) {
-            SSLSocket sslSocket = (SSLSocket) getSocket();
-            SSLSession sslSession = sslSocket.getSession();
-
-            if (sslSession != null) {
-                return sslSession.getCipherSuite();
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns the list of client SSL certificates.
-     * 
-     * @return The list of client SSL certificates.
-     */
-    public List<Certificate> getSslClientCertificates() {
-        if (getSocket() instanceof SSLSocket) {
-            SSLSocket sslSocket = (SSLSocket) getSocket();
-            SSLSession sslSession = sslSocket.getSession();
-
-            if (sslSession != null) {
-                try {
-                    List<Certificate> clientCertificates = Arrays
-                            .asList(sslSession.getPeerCertificates());
-                    return clientCertificates;
-                } catch (SSLPeerUnverifiedException e) {
-                    getLogger().log(Level.FINE,
-                            "Can't get the client certificates.", e);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns the SSL key size, if available and accessible.
-     * 
-     * @return The SSL key size, if available and accessible.
-     */
-    public Integer getSslKeySize() {
-        Integer keySize = null;
-        String sslCipherSuite = getSslCipherSuite();
-
-        if (sslCipherSuite != null) {
-            keySize = SslUtils.extractKeySize(sslCipherSuite);
-        }
-
-        return keySize;
     }
 
     /**
