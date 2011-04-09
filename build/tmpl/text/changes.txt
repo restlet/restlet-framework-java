@@ -5,8 +5,12 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-       - Fixed integration of JAXB in the JAXRS extension.
-         Reported by Julien Landuré.
+       - Optimized support of JAXB in the JAXRS extension in case
+         the org.restlet.ext.jaxb extension is present in the 
+         classpath. Reported by Julien Landure.
+    - Misc
+       - Clarified in log trace the need to manually register connector
+         helpers on the Android edition.
 
 - 2.0.6 (2011-03-31)
     - Bugs fixed

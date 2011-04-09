@@ -423,6 +423,10 @@ public class Engine {
 
                 sb.append(". Please add the JAR of a matching connector to your classpath.");
 
+                if (Edition.CURRENT == Edition.ANDROID) {
+                    sb.append(" Then, register this connector helper manually.");
+                }
+
                 Context.getCurrentLogger().log(Level.WARNING, sb.toString());
             }
         }
@@ -480,6 +484,10 @@ public class Engine {
                 }
 
                 sb.append(". Please add the JAR of a matching connector to your classpath.");
+
+                if (Edition.CURRENT == Edition.ANDROID) {
+                    sb.append(" Then, register this connector helper manually.");
+                }
 
                 Context.getCurrentLogger().log(Level.WARNING, sb.toString());
             }
