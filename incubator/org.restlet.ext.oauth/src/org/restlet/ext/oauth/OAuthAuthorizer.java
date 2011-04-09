@@ -56,6 +56,7 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
+import org.restlet.routing.Router;
 import org.restlet.security.Authorizer;
 import org.restlet.security.User;
 import org.restlet.util.Series;
@@ -90,7 +91,7 @@ public class OAuthAuthorizer extends Authorizer {
     protected Reference authorizeRef;
 
     protected Reference validateRef;
-    
+
     /**
      * Set up a RemoteAuthorizer
      * 
@@ -104,9 +105,9 @@ public class OAuthAuthorizer extends Authorizer {
     }
 
     /**
-     * Set up a Remote or Local Authorizer. Can only be deployed together with the 
-     * Authorization Server Restlet application. A Validation resource must be 
-     * started and mapped in the auth server.
+     * Set up a Remote or Local Authorizer. Can only be deployed together with
+     * the Authorization Server Restlet application. A Validation resource must
+     * be started and mapped in the auth server.
      * 
      * 
      * @param validationURI
@@ -116,12 +117,12 @@ public class OAuthAuthorizer extends Authorizer {
      * @param local
      *            if true a local authorizer will be created
      */
-    public OAuthAuthorizer(String validationURI, String authorizationURI, boolean local) {
-        if(local){
+    public OAuthAuthorizer(String validationURI, String authorizationURI,
+            boolean local) {
+        if (local) {
             authorizeRef = new Reference(authorizationURI);
             validateRef = new Reference("riap://application" + validationURI);
-        }
-        else{
+        } else {
             authorizeRef = new Reference(authorizationURI);
             validateRef = new Reference(validationURI);
         }
@@ -167,8 +168,8 @@ public class OAuthAuthorizer extends Authorizer {
         // check the query for token
         else if (accessToken == null || accessToken.length() == 0) {
             log.info("Didn't contain a Authorization header - checking query");
-            accessToken = req.getOriginalRef().getQueryAsForm()
-                    .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
+            accessToken = req.getOriginalRef().getQueryAsForm().getFirstValue(
+                    OAuthServerResource.OAUTH_TOKEN);
             // Last chance, checking body
             if (accessToken == null || accessToken.length() == 0) {
                 if (req.getMethod() == Method.POST
@@ -201,7 +202,8 @@ public class OAuthAuthorizer extends Authorizer {
             resp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         } else {
             getLogger().info("Found Access Token " + accessToken);
-            ClientResource authResource = new CookieCopyClientResource(validateRef);
+            ClientResource authResource = new CookieCopyClientResource(
+                    validateRef);
             JSONObject request = new JSONObject();
             try {
                 Reference uri = req.getOriginalRef();
@@ -221,6 +223,8 @@ public class OAuthAuthorizer extends Authorizer {
                         // next = ((Filter)next).getNext();
                     } else if (next instanceof Filter) {
                         next = ((Filter) next).getNext();
+                    } else if (next instanceof Router) { 
+                        next = ((Router) next).getNext(req, resp);
                     } else {
                         getLogger().warning(
                                 "Unsupported class found in loop : "
@@ -235,7 +239,7 @@ public class OAuthAuthorizer extends Authorizer {
                         request.put("owner", owner);
                     log.info("Found owner = " + owner);
                     // More job here but easier for the developer to use []
-                    String[] scopes = scoped.getScope(uri);
+                    String[] scopes = scoped.getScope(uri, req.getMethod());
                     log.info("Found scopes = " + scopes.length);
                     if (scopes != null && scopes.length > 0) {
                         JSONArray jArray = new JSONArray();
@@ -247,8 +251,8 @@ public class OAuthAuthorizer extends Authorizer {
                 request.put("uri", uri.getHierarchicalPart());
                 // GET SIZE TO HANDLE BUG IN GLASSFISH
                 JsonRepresentation repr = new JsonRepresentation(request);
-                StringRepresentation sr = new StringRepresentation(
-                        request.toString());
+                StringRepresentation sr = new StringRepresentation(request
+                        .toString());
                 sr.setCharacterSet(repr.getCharacterSet());
                 repr.setSize(sr.getSize());
 
@@ -293,7 +297,7 @@ public class OAuthAuthorizer extends Authorizer {
                 else if (error != null && error.length() > 0) {
                     ChallengeRequest cr = new ChallengeRequest(
                             ChallengeScheme.HTTP_OAUTH, "oauth"); // TODO set
-                                                                  // realm
+                    // realm
                     Series<Parameter> parameters = new Form();
                     parameters.add("error", error);
 

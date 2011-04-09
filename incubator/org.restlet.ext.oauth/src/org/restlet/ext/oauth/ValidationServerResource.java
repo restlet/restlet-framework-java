@@ -57,7 +57,7 @@ import org.restlet.resource.ResourceException;
  * of the protected resource application. In this mode the Validator will check
  * that a validation request is performed using the RIAP protocol.
  * 
- * @see org.restlet.ext.oauth.org.restlet.ext.oauth.internal.protectedresource.LocalAuthorizer
+ * @see org.restlet.ext.oauth.internal.org.restlet.ext.oauth.internal.protectedresource.LocalAuthorizer
  * @see org.restlet.ext.oauth.OAuthAuthorizer.restlet.ext.oauth.internal.protectedresource.RemoteAuthorizer
  * 
  * @author Kristoffer Gronowski

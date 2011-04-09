@@ -28,9 +28,11 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.oauth;
+package org.restlet.ext.oauth.internal;
 
 import org.restlet.data.Reference;
+import org.restlet.ext.oauth.OAuthAuthorizer;
+import org.restlet.ext.oauth.ValidationServerResource;
 
 /**
  * Class for OAuth 2.0 protection of REST resources. Can only be deployed

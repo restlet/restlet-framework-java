@@ -1,8 +1,8 @@
 package org.restlet.test.ext.oauth.test.resources;
 
 import org.restlet.Restlet;
-import org.restlet.ext.oauth.LocalAuthorizer;
 import org.restlet.ext.oauth.ValidationServerResource;
+import org.restlet.ext.oauth.internal.LocalAuthorizer;
 import org.restlet.routing.Router;
 import org.restlet.test.ext.oauth.provider.AuthorizationServerTest;
 

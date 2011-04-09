@@ -52,6 +52,7 @@ import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 import org.restlet.security.Authorizer;
 
 /**
@@ -271,22 +272,25 @@ public class OAuthProxy extends Authorizer {
             log.info("Sending access form : " + form.getQueryString()
                     + " to : " + tokenResource.getReference());
 
-            Representation body = tokenResource.post(form
-                    .getWebRepresentation());
-
-            if (tokenResource.getResponse().getStatus().isSuccess()) {
-                // Store away the user
-                authUser = OAuthUtils.handleSuccessResponse(body);
-                if (authUser != null) {
-                    request.getClientInfo().setUser(authUser);
-                    request.getClientInfo().setAuthenticated(true);
-                    log.info("storing to context = : " + getContext());
-                    // continue in the filter chain
-                    auth = true;
+            try {
+                Representation input = form.getWebRepresentation();
+                Representation body = tokenResource.post(input);
+                if (tokenResource.getResponse().getStatus().isSuccess()) {
+                    // Store away the user
+                    authUser = OAuthUtils.handleSuccessResponse(body);
+                    if (authUser != null) {
+                        request.getClientInfo().setUser(authUser);
+                        request.getClientInfo().setAuthenticated(true);
+                        log.info("storing to context = : " + getContext());
+                        // continue in the filter chain
+                        auth = true;
+                    }
                 }
+                log.info("Before sns release");
+                body.release();
+            } catch( ResourceException re ) {
+                log.warning("Could not find token resource.");
             }
-            log.info("Before sns release");
-            body.release();
         }
         return auth;
     }

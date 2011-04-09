@@ -30,17 +30,19 @@
 
 package org.restlet.ext.oauth;
 
-import org.restlet.routing.Filter;
+import org.restlet.ext.oauth.ScopedResource;
 
 /**
- * Placeholder for a essential piece that can help developer discover OAuth
- * protected resources and how to proceed when access id denied.
+ * EXPERIMENTAL, and not part of the OAuth specification Implementation might
+ * change in future releases.
+ * 
+ * Marker interface that can help developer discover OAuth protected resources
+ * and how to proceed when access id denied.
  * 
  * There is an old XRD based OAuth 1.0 discovery but is not updated.
  * 
  * @author Kristoffer Gronowski
  * 
  */
-public class DiscoverableResource extends Filter {
-
+public interface DiscoverableResource extends ScopedResource {
 }

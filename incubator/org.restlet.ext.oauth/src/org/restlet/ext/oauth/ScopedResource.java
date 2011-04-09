@@ -30,6 +30,7 @@
 
 package org.restlet.ext.oauth;
 
+import org.restlet.data.Method;
 import org.restlet.data.Reference;
 
 /**
@@ -86,10 +87,12 @@ public interface ScopedResource {
      * 
      * @param uri
      *            URI used to access this resource
+     * @param method
+     *            HTTP request method in use
      * @return Array of string representing all the mandatory scopes in order to
      *         proceed.
      */
-    public String[] getScope(Reference uri);
+    public String[] getScope(Reference uri, Method method);
 
     /**
      * Gets the URI that the requestor used to access this resource. An

@@ -3,15 +3,17 @@ package org.restlet.test.ext.oauth.test.resources;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.ext.oauth.ScopedResource;
+import org.restlet.ext.oauth.DiscoverableResource;
+import org.restlet.ext.wadl.WadlServerResource;
+import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-import org.restlet.resource.ServerResource;
+import org.restlet.resource.ResourceException;
 import org.restlet.test.ext.oauth.provider.AuthorizationServerTest;
 
-public class ScopedDummyResource extends ServerResource implements ScopedResource{
+public class DiscoverableDummyResource extends WadlServerResource implements DiscoverableResource{
 
 	@Get
 	public Representation getDummy() {
@@ -23,6 +25,11 @@ public class ScopedDummyResource extends ServerResource implements ScopedResourc
 		//return null;
 		//return new EmptyRepresentation();
 		return new StringRepresentation("ScopedDummy");
+	}
+
+	@Override
+	protected Representation delete() throws ResourceException {
+		return new EmptyRepresentation();
 	}
 
 	public String getOwner(Reference uri) {
