@@ -437,7 +437,7 @@ public class ClientResource extends UniformResource {
      *            The prototype request.
      * @return The new response.
      */
-    protected Request createRequest(Request prototype) {
+    public Request createRequest(Request prototype) {
         return new Request(prototype);
     }
 
@@ -503,7 +503,7 @@ public class ClientResource extends UniformResource {
      * By default, it throws a new resource exception.
      */
     @Override
-    protected void doError(Status errorStatus) {
+    public void doError(Status errorStatus) {
         throw new ResourceException(errorStatus);
     }
 
@@ -979,7 +979,7 @@ public class ClientResource extends UniformResource {
      * @return The response created.
      * @see #getNext()
      */
-    protected Response handle(Request request) {
+    public Response handle(Request request) {
         Response response = createResponse(request);
         Uniform next = getNext();
 
@@ -1816,131 +1816,9 @@ public class ClientResource extends UniformResource {
     public <T> T wrap(Class<? extends T> resourceInterface) {
         T result = null;
 
-        // Introspect the interface for Restlet annotations
-        final List<org.restlet.engine.resource.AnnotationInfo> annotations = org.restlet.engine.resource.AnnotationUtils
-                .getAnnotations(resourceInterface);
-        final ClientResource clientResource = this;
-
         // Create the client resource proxy
-        java.lang.reflect.InvocationHandler h = new java.lang.reflect.InvocationHandler() {
-
-            @SuppressWarnings("rawtypes")
-            public Object invoke(Object proxy,
-                    java.lang.reflect.Method javaMethod, Object[] args)
-                    throws Throwable {
-                Object result = null;
-
-                if (javaMethod.equals(Object.class.getMethod("toString"))) {
-                    // Help debug
-                    result = "ClientProxy for resource: " + clientResource;
-                } else if (javaMethod.equals(ClientProxy.class
-                        .getMethod("getClientResource"))) {
-                    result = clientResource;
-                } else {
-                    org.restlet.engine.resource.AnnotationInfo annotation = org.restlet.engine.resource.AnnotationUtils
-                            .getAnnotation(annotations, javaMethod);
-
-                    if (annotation != null) {
-                        Representation requestEntity = null;
-                        boolean isSynchronous = true;
-
-                        if ((args != null) && args.length > 0) {
-                            // Checks if the user has defined its own
-                            // callback.
-                            for (int i = 0; i < args.length; i++) {
-                                Object o = args[i];
-
-                                if (o == null) {
-                                    requestEntity = null;
-                                } else if (Result.class.isAssignableFrom(o
-                                        .getClass())) {
-                                    // Asynchronous mode where a callback
-                                    // object is to be called.
-                                    isSynchronous = false;
-
-                                    // Get the kind of result expected.
-                                    final Result rCallback = (Result) o;
-                                    java.lang.reflect.Type[] genericParameterTypes = javaMethod
-                                            .getGenericParameterTypes();
-                                    java.lang.reflect.Type genericParameterType = genericParameterTypes[i];
-                                    java.lang.reflect.ParameterizedType parameterizedType = (genericParameterType instanceof java.lang.reflect.ParameterizedType) ? (java.lang.reflect.ParameterizedType) genericParameterType
-                                            : null;
-                                    final Class<?> actualType = (parameterizedType
-                                            .getActualTypeArguments()[0] instanceof Class<?>) ? (Class<?>) parameterizedType
-                                            .getActualTypeArguments()[0] : null;
-
-                                    // Define the callback
-                                    Uniform callback = new Uniform() {
-                                        public void handle(Request request,
-                                                Response response) {
-                                            if (response.getStatus().isError()) {
-                                                rCallback
-                                                        .onFailure(new ResourceException(
-                                                                response.getStatus()));
-                                            } else {
-                                                if (actualType != null) {
-                                                    rCallback
-                                                            .onSuccess(toObject(
-                                                                    response.getEntity(),
-                                                                    actualType
-                                                                            .getClass()));
-                                                } else {
-                                                    rCallback.onSuccess(null);
-                                                }
-                                            }
-                                        }
-                                    };
-
-                                    setOnResponse(callback);
-                                } else {
-                                    requestEntity = toRepresentation(args[i],
-                                            null);
-                                }
-                            }
-                        }
-
-                        // Clone the prototype request
-                        Request request = createRequest(getRequest());
-
-                        // The Java method was annotated
-                        request.setMethod(annotation.getRestletMethod());
-
-                        // Set the entity
-                        request.setEntity(requestEntity);
-
-                        // Updates the client preferences
-                        List<org.restlet.representation.Variant> responseVariants = annotation
-                                .getResponseVariants(getMetadataService(),
-                                        getConverterService());
-
-                        if (responseVariants != null) {
-                            request.setClientInfo(new ClientInfo(
-                                    responseVariants));
-                        }
-
-                        // Effectively handle the call
-                        Response response = handle(request);
-
-                        // Handle the response
-                        if (isSynchronous) {
-                            if (response.getStatus().isError()) {
-                                doError(response.getStatus());
-                            }
-
-                            if (!annotation.getJavaOutputType().equals(
-                                    void.class)) {
-                                result = toObject((response == null ? null
-                                        : response.getEntity()),
-                                        annotation.getJavaOutputType());
-                            }
-                        }
-                    }
-                }
-
-                return result;
-            }
-
-        };
+        java.lang.reflect.InvocationHandler h = new org.restlet.engine.resource.ClientInvocationHandler<T>(
+                this, resourceInterface);
 
         // Instantiate our dynamic proxy
         result = (T) java.lang.reflect.Proxy.newProxyInstance(

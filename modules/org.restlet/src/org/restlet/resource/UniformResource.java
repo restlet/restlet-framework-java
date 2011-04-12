@@ -693,7 +693,7 @@ public abstract class UniformResource {
      * @return The converted Java object.
      * @throws ResourceException
      */
-    protected <T> T toObject(Representation source, Class<T> target)
+    public <T> T toObject(Representation source, Class<T> target)
             throws ResourceException {
         T result = null;
 
@@ -718,7 +718,7 @@ public abstract class UniformResource {
      *            The target representation variant.
      * @return The wrapper representation.
      */
-    protected Representation toRepresentation(Object source, Variant target) {
+    public Representation toRepresentation(Object source, Variant target) {
         Representation result = null;
 
         if (source != null) {

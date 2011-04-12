@@ -14,6 +14,12 @@ Changes log
         or getEphemeralPort() is the listening port is '0'.
       - Message#attributes is now a ConcurrentMap instead of a Map.
         Suggested by Tal Liron.
+      - ClientResource now respects any change to the clientInfo preferences
+        when using dynamic proxies (via wrap() for example). It only overwrites
+        them if the default preferences state (empty lists) is found at invocation
+        time. Suggested by Christoph Dietze.
+      - The visibility of several methods on UniformResource and ClientResource
+        has been changed to public.
     - Enhancements
       - Added new HTTPS client connector based on the internal non-blocking NIO
         connector. Co-developped with NetDev.
