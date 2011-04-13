@@ -47,6 +47,7 @@ import org.restlet.ext.sip.SipClientResource;
 public class UacClientResource implements UacResource {
 
     public static void main(String[] args) {
+        // [ifdef jse] instruction
         Engine.setLogLevel(Level.FINE);
         UacClientResource cr = new UacClientResource("sip:bob@locahost");
         cr.start();

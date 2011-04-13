@@ -56,6 +56,7 @@ public class UacServerResource extends SipServerResource implements UacResource 
     private static boolean TRACE;
 
     public static void main(String[] args) throws Exception {
+        // [ifdef jse] instruction
         Engine.setLogLevel(Level.FINE);
         Server server = null;
 
