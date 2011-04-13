@@ -59,6 +59,7 @@ import org.restlet.routing.Router;
 public class SslGetTestCase extends SslBaseConnectorsTestCase {
 
     public static void main(String[] args) throws Exception {
+        // [ifdef jse] instruction
         Engine.setLogLevel(Level.FINE);
         SslGetTestCase sgt = new SslGetTestCase();
         sgt.setUp();

@@ -49,6 +49,7 @@ public class TestGetServer {
         ConnectorHelper<Server> helper;
         helper = new org.restlet.engine.connector.HttpServerHelper(null);
         Engine.getInstance().getRegisteredServers().add(0, helper);
+        // [ifdef jse] instruction
         Engine.setLogLevel(Level.FINE);
 
         Server server = new Server(new Context(), Protocol.HTTP, 8554,

@@ -50,10 +50,12 @@ public class NioClient {
         // helper = new org.restlet.ext.httpclient.HttpClientHelper(null);
         // helper = new org.restlet.ext.net.HttpClientHelper(null);
         Engine.getInstance().getRegisteredClients().add(0, helper);
+        // [ifdef jse] instruction
         Engine.setLogLevel(Level.FINE);
 
         Client client = new Client(new Context(), Protocol.HTTP);
-        // client.getContext().getParameters().add("persistingConnections", "false");
+        // client.getContext().getParameters().add("persistingConnections",
+        // "false");
         client.getContext().getParameters().add("tracing", "false");
         client.getContext().getParameters().add("minThreads", "1");
         client.getContext().getParameters().add("lowThreads", "30");
@@ -70,8 +72,8 @@ public class NioClient {
         cr.setRetryOnError(false);
         cr.setNext(client);
         Representation r = null;
-        ClientResource fr = new
-        ClientResource("file://C/TEST/restlet-jse-2.0.5.zip");
+        ClientResource fr = new ClientResource(
+                "file://C/TEST/restlet-jse-2.0.5.zip");
 
         System.out.println("Calling resource: " + uri + " " + iterations
                 + " times");

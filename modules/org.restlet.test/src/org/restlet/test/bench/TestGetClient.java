@@ -46,6 +46,7 @@ public class TestGetClient {
         ConnectorHelper<Client> helper;
         helper = new org.restlet.engine.connector.HttpClientHelper(null);
         Engine.getInstance().getRegisteredClients().add(0, helper);
+        // [ifdef jse] instruction
         Engine.setLogLevel(Level.FINE);
         long startTime = System.currentTimeMillis();
 
