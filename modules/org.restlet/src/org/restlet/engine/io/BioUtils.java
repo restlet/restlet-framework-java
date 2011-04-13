@@ -308,12 +308,9 @@ public final class BioUtils {
                     pipedWriter);
             final org.restlet.Application application = org.restlet.Application
                     .getCurrent();
-            org.restlet.service.TaskService taskService = (application == null) ? new org.restlet.service.TaskService()
-                    : application.getTaskService();
-
             // Gets a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
-            taskService.execute(new Runnable() {
+            Runnable task = new Runnable() {
                 public void run() {
                     try {
                         representation.write(pipedWriter);
@@ -325,7 +322,12 @@ public final class BioUtils {
                                         ioe);
                     }
                 }
-            });
+            };
+            if (application != null && application.getTaskService() != null) {
+                application.getTaskService().execute(task);
+            } else {
+                new Thread(task).run();
+            }
 
             result = pipedReader;
             // [enddef]
@@ -395,12 +397,9 @@ public final class BioUtils {
             final PipeStream pipe = new PipeStream();
             final org.restlet.Application application = org.restlet.Application
                     .getCurrent();
-
             // Creates a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
-            org.restlet.service.TaskService taskService = (application == null) ? new org.restlet.service.TaskService()
-                    : application.getTaskService();
-            taskService.execute(new Runnable() {
+            Runnable task = new Runnable() {
                 public void run() {
                     try {
                         java.io.OutputStream os = pipe.getOutputStream();
@@ -414,7 +413,12 @@ public final class BioUtils {
                                         ioe);
                     }
                 }
-            });
+            };
+            if (application != null && application.getTaskService() != null) {
+                application.getTaskService().execute(task);
+            } else {
+                new Thread(task).run();
+            }
 
             result = pipe.getInputStream();
             // [enddef]
