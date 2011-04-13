@@ -51,7 +51,6 @@ import org.restlet.engine.Edition;
 import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.net.HttpClientHelper;
-import org.restlet.ext.ssl.internal.SslUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -114,7 +113,7 @@ public class HttpUrlConnectionCall extends ClientCall {
             if (this.connection instanceof javax.net.ssl.HttpsURLConnection) {
                 setConfidential(true);
                 javax.net.ssl.HttpsURLConnection https = (javax.net.ssl.HttpsURLConnection) this.connection;
-                org.restlet.ext.ssl.internal.SslContextFactory sslContextFactory = SslUtils
+                org.restlet.ext.ssl.internal.SslContextFactory sslContextFactory = org.restlet.ext.ssl.internal.SslUtils
                         .getSslContextFactory(getHelper());
 
                 if (sslContextFactory != null) {

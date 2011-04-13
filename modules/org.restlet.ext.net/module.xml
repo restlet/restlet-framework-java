@@ -10,7 +10,7 @@
 
    <dependencies>
       <dependency type="module" id="core" />
-      <dependency type="module" id="ssl" />
+      <dependency type="module" id="ssl" excludes="gae" />
    </dependencies>
    <source edition="android">
       <files-mappers>
