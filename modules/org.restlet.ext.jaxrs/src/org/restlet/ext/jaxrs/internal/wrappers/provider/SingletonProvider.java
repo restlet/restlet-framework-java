@@ -85,11 +85,6 @@ public class SingletonProvider extends AbstractProviderWrapper implements
      * 
      * @param jaxRsProvider
      *            the JAX-RS provider class.
-     * @param objectFactory
-     *            The object factory is responsible for the provider
-     *            instantiation, if given.
-     * @param allResolvers
-     *            all available {@link ContextResolver}s. >>>>>>> .r3440
      * @param logger
      *            the logger to use.
      * @throws IllegalArgumentException

@@ -58,6 +58,7 @@
 			<artifactId>stax-api</artifactId>
 			<version>1.0-2</version>
 		</dependency>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>

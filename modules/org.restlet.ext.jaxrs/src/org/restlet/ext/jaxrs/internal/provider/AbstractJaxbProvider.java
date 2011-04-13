@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
@@ -52,23 +54,55 @@ import javax.xml.bind.Marshaller;
  */
 abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
 
+    /** Improves performance by caching contexts which are expensive to create. */
+    private final static Map<Class<?>, JAXBContext> contexts = new TreeMap<Class<?>, JAXBContext>();
+
+    /**
+     * Returns the JAXB context, if possible from the cached contexts.
+     * 
+     * @param type
+     * 
+     * @param contextResolver
+     * 
+     * @return The JAXB context.
+     * @throws JAXBException
+     */
+    public static synchronized JAXBContext getJaxbContext(Class<?> type,
+            ContextResolver<JAXBContext> contextResolver) throws JAXBException {
+        // Contexts are thread-safe so reuse those.
+        JAXBContext result = contexts.get(type);
+
+        if (result == null) {
+            if (contextResolver != null) {
+                result = contextResolver.getContext(type);
+            }
+            if (result == null) {
+                try {
+                    result = JAXBContext.newInstance(type);
+                } catch (NoClassDefFoundError e) {
+                    throw new WebApplicationException(Response.serverError()
+                            .entity(e.getMessage()).build());
+                }
+            }
+            contexts.put(type, result);
+        }
+
+        return result;
+    }
+
     /** public for testing */
     public ContextResolver<JAXBContext> contextResolver;
 
-    protected JAXBContext getJaxbContext(Class<?> type) throws JAXBException {
-        // NICE perhaps caching the JAXBContext
-        if (this.contextResolver != null) {
-            JAXBContext jaxbContext = this.contextResolver.getContext(type);
-            if (jaxbContext != null) {
-                return jaxbContext;
-            }
-        }
-        try {
-            return JAXBContext.newInstance(type);
-        } catch (NoClassDefFoundError e) {
-            throw new WebApplicationException(Response.serverError().entity(
-                    e.getMessage()).build());
-        }
+    /**
+     * Returns the JAXB context, if possible from the cached contexts.
+     * 
+     * @param type
+     * 
+     * @return The JAXB context.
+     * @throws JAXBException
+     */
+    public JAXBContext getJaxbContext(Class<?> type) throws JAXBException {
+        return getJaxbContext(type, this.contextResolver);
     }
 
     abstract Logger getLogger();
@@ -89,8 +123,8 @@ abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
             final Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.marshal(object, entityStream);
         } catch (JAXBException e) {
-            throw logAndIOExc(getLogger(), "Could not marshal the "
-                    + type.getName(), e);
+            throw logAndIOExc(getLogger(),
+                    "Could not marshal the " + type.getName(), e);
         }
     }
 

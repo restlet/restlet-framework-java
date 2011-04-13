@@ -116,7 +116,7 @@ import org.restlet.service.MetadataService;
 /**
  * <p>
  * This class choose the JAX-RS resource class and method to use for a request
- * and handles the result from he resource method. Typically you should
+ * and handles the result from the resource method. Typically you should
  * instantiate a {@link JaxRsApplication} to run JAX-RS resource classes.
  * </p>
  * 
@@ -1029,9 +1029,6 @@ public class JaxRsRestlet extends Restlet {
         // not yet tested
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.FileUploadProvider");
 
-        // Fall-back on the Restlet converter service
-        addDefaultProvider(new ConverterProvider());
-
         addDefaultProvider(new FileProvider());
         addDefaultProvider(new InputStreamProvider());
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider");
@@ -1048,6 +1045,8 @@ public class JaxRsRestlet extends Restlet {
         addDefaultProvider(new SourceProvider());
         addDefaultProvider(new WebAppExcMapper());
 
+        // Fall-back on the Restlet converter service
+        addDefaultProvider(new ConverterProvider());
         addDefaultProvider("org.restlet.ext.jaxrs.internal.provider.JsonProvider");
     }
 
