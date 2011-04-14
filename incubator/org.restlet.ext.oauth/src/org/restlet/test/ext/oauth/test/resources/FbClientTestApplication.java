@@ -30,13 +30,14 @@ public class FbClientTestApplication extends Application {
         return router;
     }
 
+    /*
     public String getToken() {
         if (local != null) {
             return local.getAccessToken();
         }
         return null;
     }
-
+    */
     public OAuthParameters getOauthParameters() {
         OAuthParameters params = new OAuthParameters("118328624855019",
                 "26e1ccb99f6135ebbf901b04508cba09",

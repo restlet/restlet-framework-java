@@ -126,7 +126,7 @@ public class OauthProxyV2 extends Authorizer {
             form.add("type", "web_server");
             form.add("client_id", params.getClientId());
             // form.add("redirect_uri", redirectUri);
-            form.add("redirect_uri", request.getResourceRef().getBaseRef().toUri().toString());
+            //form.add("redirect_uri", request.getResourceRef().getBaseRef().toUri().toString());
             String redir = request.getResourceRef().getHostIdentifier() + 
             request.getResourceRef().getPath();
             form.add("redirect_uri", redir);

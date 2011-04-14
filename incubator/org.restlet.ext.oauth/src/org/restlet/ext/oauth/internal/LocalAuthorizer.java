@@ -74,7 +74,8 @@ public class LocalAuthorizer extends OAuthAuthorizer {
      *            url that should be invoked on errors
      */
     public LocalAuthorizer(String validationURI, String authorizationURI) {
-        authorizeRef = new Reference(authorizationURI);
-        validateRef = new Reference("riap://application" + validationURI);
+        super(validationURI, authorizationURI, true);
+        //authorizeRef = new Reference(authorizationURI);
+        //validateRef = new Reference("riap://application" + validationURI);
     }
 }

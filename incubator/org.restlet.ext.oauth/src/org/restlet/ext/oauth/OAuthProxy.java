@@ -81,32 +81,34 @@ import org.restlet.security.Authorizer;
  */
 public class OAuthProxy extends Authorizer {
 
-    List<CacheDirective> no = new ArrayList<CacheDirective>();
+    private final static List<CacheDirective> no = new ArrayList<CacheDirective>();
     
-    public static final String VERSION = "DRAFT-10";
+    private final static String VERSION = "DRAFT-10";
 
     private final OAuthParameters params;
 
-    private ClientResource tokenResource;
+    //private ClientResource tokenResource;
 
-    private String redirectUri;
+    //private String redirectUri;
 
-    private OAuthUser authUser;
+    //private OAuthUser authUser;
 
-    private boolean basicSecret = false;
+    private final boolean basicSecret;
 
-    protected Logger log;
+    protected final Logger log;
 
     /**
-     * Set up an OAuthProxy. Defaults to form based authentication and not http
-     * basic
+     * Set up an OAuthProxy.
      * 
      * @param params
      *            OAuth parameters
+     * @param useBasicSecret
+     *            If true use http basic authentication otherwise use form based
      * @param ctx
      *            Restlet context
      */
-    public OAuthProxy(OAuthParameters params, Context ctx) {
+    public OAuthProxy(OAuthParameters params, Context ctx, boolean useBasicSecret) {
+        this.basicSecret = useBasicSecret;
         setContext(ctx);
         this.params = params;
         no.add(CacheDirective.noStore());
@@ -114,32 +116,29 @@ public class OAuthProxy extends Authorizer {
     }
 
     /**
-     * Set up a an OauthProxy.
+     * Set up a an OauthProxy. Defaults to form based authentication and not http
+     * basic
      * 
      * @param params
      *            The parameters
      * @param ctx
      *            Restlet Context
-     * @param useBasicSecret
-     *            If true use http basic authentication otherwise use form based
      */
-    public OAuthProxy(OAuthParameters params, Context ctx,
-            boolean useBasicSecret) {
-        this(params, ctx);
-        basicSecret = useBasicSecret;
+    public OAuthProxy(OAuthParameters params, Context ctx) {
+        this(params, ctx, false);
     }
 
     @Override
     public synchronized void start() throws Exception {
         super.start();
-        tokenResource = new CookieCopyClientResource(params.getBaseRef()
-                + params.getAccessTokenPath());
+        //tokenResource = new CookieCopyClientResource(params.getBaseRef()
+        //        + params.getAccessTokenPath());
     }
 
     @Override
     public synchronized void stop() throws Exception {
         super.stop();
-        tokenResource.release();
+        //tokenResource.release();
     }
 
     @Override
@@ -148,11 +147,12 @@ public class OAuthProxy extends Authorizer {
         Boolean auth = false;
         // Sets the no-store Cache-Control header
         request.setCacheDirectives(no);
-
-        redirectUri = request.getResourceRef().toUrl().toString();
+        String redirectUri = request.getResourceRef().toUrl().toString();
+        
         Form query = new Form(request.getOriginalRef().getQuery());
 
         String error = query.getFirstValue(OAuthServerResource.ERROR);
+        
         if (error != null && error.length() > 0) {
             // Failed in initial auth resource request
 
@@ -247,13 +247,15 @@ public class OAuthProxy extends Authorizer {
             // return null;
         } else {
             log.info("Came back after SNS code = " + code);
-
+            ClientResource tokenResource = new CookieCopyClientResource(params.getBaseRef()
+                    + params.getAccessTokenPath());
 
             Form form = new Form();
             form.add(OAuthServerResource.GRANT_TYPE,
                     OAuthServerResource.GrantType.authorization_code.name());
-            form.add(OAuthServerResource.REDIR_URI, request.getResourceRef()
-                    .getBaseRef().toUri().toString());
+            String redir = request.getResourceRef().getHostIdentifier() + 
+            request.getResourceRef().getPath();
+            form.add(OAuthServerResource.REDIR_URI, redir);
             if (basicSecret) {
                 ChallengeResponse authentication = new ChallengeResponse(
                         ChallengeScheme.HTTP_BASIC);
@@ -277,7 +279,7 @@ public class OAuthProxy extends Authorizer {
                 Representation body = tokenResource.post(input);
                 if (tokenResource.getResponse().getStatus().isSuccess()) {
                     // Store away the user
-                    authUser = OAuthUtils.handleSuccessResponse(body);
+                    OAuthUser authUser = OAuthUtils.handleSuccessResponse(body);
                     if (authUser != null) {
                         request.getClientInfo().setUser(authUser);
                         request.getClientInfo().setAuthenticated(true);
@@ -291,6 +293,7 @@ public class OAuthProxy extends Authorizer {
             } catch( ResourceException re ) {
                 log.warning("Could not find token resource.");
             }
+            tokenResource.release();
         }
         return auth;
     }
@@ -305,7 +308,12 @@ public class OAuthProxy extends Authorizer {
         // If redirect or a specific client error just propaget it on
         return STOP;
     }
+    
+    public static String getVersion(){
+        return VERSION;
+    }
 
+    /*
     public String getAccessToken() {
         if (authUser == null)
             return null;
@@ -327,5 +335,6 @@ public class OAuthProxy extends Authorizer {
     public OAuthUser getAuthUser() {
         return authUser;
     }
+    */
 
 }

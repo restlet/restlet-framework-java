@@ -13,6 +13,8 @@ public class OauthClientTestApplication extends Application {
     private OAuthProxy local;
 
     private OAuthParameters params;
+    
+    protected static OAuthUser user;
 
     @Override
     public synchronized Restlet createInboundRoot() {
@@ -34,20 +36,26 @@ public class OauthClientTestApplication extends Application {
         return router;
     }
 
+    
     public String getToken() {
-        if (local != null) {
-            return local.getAccessToken();
+        if (user != null) {
+            return user.getAccessToken();
         }
         return null;
     }
 
     public OAuthUser getUser() {
-        if (local != null) {
-            return local.getAuthUser();
+        if (user != null) {
+            return user;
         }
         return null;
     }
-
+    
+    public void clearUser(){
+        user = null;
+    }
+    
+    
     public OAuthParameters getOauthParameters() {
         return params;
     }

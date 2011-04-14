@@ -102,14 +102,14 @@ public class TimedTokenTest {
 
     @Test
     public void testTimedTokens() throws Exception {
-
+        client.clearUser();
         assertNull(client.getToken());
         ClientResource cr = new CookieCopyClientResource(prot + "://localhost:"
                 + serverPort + "/client/webclient");
         Representation r = cr.get();
         assertNotNull(r);
-	    r = OpenIdFormFrowarder.handleFormRedirect(r, cr);
-	    assertNotNull(r);
+        r = OpenIdFormFrowarder.handleFormRedirect(r, cr);
+        assertNotNull(r);
         String text = r.getText();
         assertEquals("Response text test", text, "TestSuccessful");
         assertEquals("Response content type test", r.getMediaType(),

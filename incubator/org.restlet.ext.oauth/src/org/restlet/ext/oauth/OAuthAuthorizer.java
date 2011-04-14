@@ -88,9 +88,9 @@ import org.restlet.util.Series;
 public class OAuthAuthorizer extends Authorizer {
 
     // Resource authenticateURI;
-    protected Reference authorizeRef;
+    protected final Reference authorizeRef;
 
-    protected Reference validateRef;
+    protected final Reference validateRef;
 
     /**
      * Set up a RemoteAuthorizer
@@ -127,6 +127,8 @@ public class OAuthAuthorizer extends Authorizer {
             validateRef = new Reference(validationURI);
         }
     }
+    
+    
 
     /**
      * Set up a RemoteAuthorizer
@@ -152,6 +154,8 @@ public class OAuthAuthorizer extends Authorizer {
     }
 
     protected OAuthAuthorizer() {
+        this.authorizeRef = null;
+        this.validateRef = null;
     } // For extending the class
 
     @Override
@@ -240,7 +244,7 @@ public class OAuthAuthorizer extends Authorizer {
                     log.info("Found owner = " + owner);
                     // More job here but easier for the developer to use []
                     String[] scopes = scoped.getScope(uri, req.getMethod());
-                    log.info("Found scopes = " + scopes.length);
+                    log.info("Found scopes = "+scopes);
                     if (scopes != null && scopes.length > 0) {
                         JSONArray jArray = new JSONArray();
                         for (String scope : scopes)

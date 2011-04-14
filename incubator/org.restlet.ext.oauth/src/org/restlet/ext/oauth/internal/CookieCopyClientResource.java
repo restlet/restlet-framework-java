@@ -143,7 +143,22 @@ public class CookieCopyClientResource extends ClientResource {
         return this.copyCookies;
     }
 
+    
+    
+    @Override
+    protected void redirect(Request request, Response response,
+            List<Reference> references, int retryAttempt, Uniform next) {
+        // TODO Auto-generated method stub
+        if(retryAttempt < 0){
+            for(CookieSetting cs : response.getCookieSettings()){
+                request.getCookies().add(cs.getName(), cs.getValue());
+            }
+        }
+        super.redirect(request, response, references, retryAttempt, next);
+    }
+
     //TODO: CHANGE WHEN NEW SNAPSHOT IS AVAIL and override redirect() instead
+    /*
     @Override
     protected void handle(Request request, Response response,
             List<Reference> references, int retryAttempt, Uniform next) {
@@ -175,7 +190,8 @@ public class CookieCopyClientResource extends ClientResource {
         }    
         super.handle(request, response, references, retryAttempt, next);
     }
-
+    */
+    
     public void setCopyCookies(boolean copyCookies) {
         this.copyCookies = copyCookies;
     }

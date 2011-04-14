@@ -39,6 +39,7 @@ import org.json.JSONObject;
 import org.restlet.Context;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
@@ -148,7 +149,6 @@ public class OAuthUtils {
         int cnt = 0;
 
         while (authResource.getStatus().isRedirection()) {
-            System.out.println("WE ARE IN REDIRECTION!");
             String fragment = authResource.getLocationRef().getFragment();
             if (fragment != null && fragment.length() > 0) {
                 Form f = new Form(fragment);
@@ -192,7 +192,9 @@ public class OAuthUtils {
                     .getLocationRef());
             //FOR TESTING!!!!
             if(cnt == 1){
+                
             for(CookieSetting cs : authResource.getCookieSettings()){
+                
                 authResource.getCookies().add(cs.getName(), cs.getValue());
             }
             }
@@ -344,7 +346,12 @@ public class OAuthUtils {
         return result;
     }
     
-    public static OAuthUser passwordFlow(OAuthParameters params, String username, String password) {
+    public static OAuthUser passwordFlow(OAuthParameters params, String username, String password){
+        return passwordFlow(params, username, password, new org.restlet.Client(Protocol.HTTP));
+    }
+    
+    public static OAuthUser passwordFlow(OAuthParameters params, String username, String password, 
+            org.restlet.Client c) {
         OAuthUser result = null;
         Form form = new Form();
         form.add(OAuthServerResource.GRANT_TYPE,
@@ -356,18 +363,23 @@ public class OAuthUtils {
         
         ClientResource tokenResource = new CookieCopyClientResource(params.getBaseRef()
                 + params.getAccessTokenPath());
-
+        tokenResource.setNext(c);
+        
         Context.getCurrentLogger().info(
                 "Sending PasswordFlow form : " + form.getQueryString());
-
-        Representation body = tokenResource.post(form.getWebRepresentation());
+        Representation body = null;
+        try{
+            body = tokenResource.post(form.getWebRepresentation());
 
         if (tokenResource.getResponse().getStatus().isSuccess()) {
             result = handleSuccessResponse(body);
         }
-
-        body.release();
-        tokenResource.release();
+        }
+        finally{
+            if (body != null) body.release();
+            tokenResource.release();
+        }
+        
         
         return result;
     }

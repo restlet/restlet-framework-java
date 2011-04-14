@@ -59,6 +59,9 @@ public class AuthorizationServerTest {
 
     @BeforeClass
     public static void startServer() throws Exception {
+        
+        //org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory i;
+        
         Logger log = Context.getCurrentLogger();
         log.info("Starting server test!");
 
@@ -120,6 +123,7 @@ public class AuthorizationServerTest {
 
     @Test
     public void testWebServerFlow() throws Exception {
+        client.clearUser();
         assertNull(client.getToken());
         ClientResource cr = new ClientResource(prot + "://localhost:"
                 + serverPort + "/client/webclient");
@@ -312,7 +316,7 @@ public class AuthorizationServerTest {
     			OauthTestApplication.TEST_USER,
     			OauthTestApplication.TEST_PASS);
         assertNotNull(user);
-
+        
         // Try to use the token...
         Reference ref = new Reference(prot + "://localhost:" + serverPort
                 + "/server/protected");
