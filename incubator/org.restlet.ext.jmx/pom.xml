@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.restlet</groupId>
-		<artifactId>org.restlet.parent</artifactId>
-		<version>1.2-SNAPSHOT</version>
+		<groupId>org.restlet.dev</groupId>
+		<artifactId>org.restlet.incubator</artifactId>
+		<version>2.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>org.restlet.ext.jmx</artifactId>
