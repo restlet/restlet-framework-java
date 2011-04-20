@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.oauth</artifactId>
-	<name>Restlet Extension - OAuth</name>
+	<name>Restlet Extension: OAuth</name>
 	<version>2.1-SNAPSHOT</version>
 	<description>Support for OAuth HTTP authentication.</description>
 	<repositories><repository><id>oauth-repo</id><name>OAuth repository</name><url>http://oauth.googlecode.com/svn/code/maven</url></repository></repositories>
@@ -17,61 +17,58 @@
 	<dependencies>
 
     <dependency>
-      <groupId>org.restlet.jse</groupId>
+      <groupId>org.restlet.dev</groupId>
       <artifactId>org.restlet</artifactId>
-      <version>2.1-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     
     <dependency>
-      <groupId>org.restlet.jse</groupId>
+      <groupId>org.restlet.dev</groupId>
       <artifactId>org.restlet.ext.json</artifactId>
-      <version>2.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     
     <dependency>
-      <groupId>org.restlet.jse</groupId>
+      <groupId>org.restlet.dev</groupId>
       <artifactId>org.restlet.ext.xml</artifactId>
-      <version>2.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     
     <dependency>
       <groupId>org.restlet.dev</groupId>
       <artifactId>org.restlet.ext.openid</artifactId>
-      <version>2.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>provided</scope> <!-- Should be test -->
     </dependency>
     
     <dependency>
-      <groupId>org.restlet.jse</groupId>
+      <groupId>org.restlet.dev</groupId>
       <artifactId>org.restlet.ext.wadl</artifactId>
-      <version>2.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>provided</scope> <!-- Should be test -->
     </dependency>
     
     <dependency>
-      <groupId>org.restlet.jse</groupId>
+      <groupId>org.restlet.dev</groupId>
       <artifactId>org.restlet.ext.freemarker</artifactId>
-      <version>2.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-    
-    
+        
     <dependency>
-      <groupId>org.restlet.jse</groupId>
+      <groupId>org.restlet.dev</groupId>
       <artifactId>org.restlet.ext.httpclient</artifactId>
-      <version>2.1-SNAPSHOT</version>
-    </dependency>
-    
-    
+      <version>${project.version}</version>
+    </dependency> 
     
     <!-- Only for test, used for HTTPS suport in standalone mode -->
     
     <dependency>
-      <groupId>org.restlet.jse</groupId>
+      <groupId>org.restlet.dev</groupId>
       <artifactId>org.restlet.ext.jetty</artifactId>
-      <version>2.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     
@@ -110,7 +107,7 @@
     <testOutputDirectory>${basedir}/target/classes</testOutputDirectory>
     <testResources>
       <testResource>
-        <filtering>false</filtering>
+       <filtering>false</filtering>
         <directory>${basedir}/resources</directory>
         <includes>
           <include>**/*</include>
