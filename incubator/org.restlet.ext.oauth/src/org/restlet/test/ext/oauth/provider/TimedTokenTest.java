@@ -58,9 +58,9 @@ import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
-import org.restlet.test.ext.oauth.test.resources.Oauth2ClientTestApplication;
-import org.restlet.test.ext.oauth.test.resources.Oauth2ProtectedTestApplication;
-import org.restlet.test.ext.oauth.test.resources.Oauth2TestApplication;
+import org.restlet.test.ext.oauth.test.resources.OAuthClientTestApplication;
+import org.restlet.test.ext.oauth.test.resources.OAuthProtectedTestApplication;
+import org.restlet.test.ext.oauth.test.resources.OAuthTestApplication;
 import org.restlet.util.Series;
 
 public class TimedTokenTest {
@@ -74,7 +74,7 @@ public class TimedTokenTest {
     // public static int serverPort = 8443;
     // public static final String prot = "https";
 
-    public static Oauth2ClientTestApplication client = new Oauth2ClientTestApplication();
+    public static OAuthClientTestApplication client = new OAuthClientTestApplication();
 
     @BeforeClass
     public static void startServer() throws Exception {
@@ -99,10 +99,10 @@ public class TimedTokenTest {
         // component.getClients().add(Protocol.CLAP);
         component.getClients().add(Protocol.RIAP);
         component.getDefaultHost().attach("/oauth",
-                new Oauth2TestApplication(20)); // limited token life
+                new OAuthTestApplication(20)); // limited token life
         component.getDefaultHost().attach("/client", client);
         component.getDefaultHost().attach("/server",
-                new Oauth2ProtectedTestApplication());
+                new OAuthProtectedTestApplication());
         // server.getContext().getParameters().add("maxThreads", "30");
 
         // Setup TLS

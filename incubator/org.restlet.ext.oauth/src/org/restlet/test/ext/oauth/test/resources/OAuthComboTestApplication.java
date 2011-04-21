@@ -44,9 +44,9 @@ import org.restlet.test.ext.oauth.provider.AuthorizationServerTest;
  *
  */
 
-public class Oauth2ComboTestApplication extends Oauth2TestApplication {
+public class OAuthComboTestApplication extends OAuthTestApplication {
 
-	public Oauth2ComboTestApplication(long timeout) {
+	public OAuthComboTestApplication(long timeout) {
 		super(timeout);
 	}
 	

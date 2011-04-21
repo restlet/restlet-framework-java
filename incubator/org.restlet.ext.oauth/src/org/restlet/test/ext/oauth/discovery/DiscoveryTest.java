@@ -45,14 +45,14 @@ import org.restlet.data.Protocol;
 import org.restlet.ext.oauth.experimental.DiscoverableFilter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
-import org.restlet.test.ext.oauth.test.resources.Oauth2DiscoverableTestApplication;
+import org.restlet.test.ext.oauth.test.resources.OAuthDiscoverableTestApplication;
 
 public class DiscoveryTest {
     public static Component component;
 
     public static int serverPort = 8080;
 
-    public static Oauth2DiscoverableTestApplication client = new Oauth2DiscoverableTestApplication();
+    public static OAuthDiscoverableTestApplication client = new OAuthDiscoverableTestApplication();
 
     @BeforeClass
     public static void startServer() throws Exception {

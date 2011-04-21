@@ -59,13 +59,13 @@ import org.openid4java.consumer.ConsumerException;
 import org.openid4java.consumer.ConsumerManager;
 import org.openid4java.server.ServerManager;
 
-public class Oauth2TestApplication extends Application {
+public class OAuthMultipleUserTestApplication extends Application {
 	public static final String TEST_USER = "dummyUser";
 	public static final String TEST_PASS = "dummyPassword";
 	
     private long timeout = 0; // unlimited
 
-    public Oauth2TestApplication(long timeout) {
+    public OAuthMultipleUserTestApplication(long timeout) {
         this.timeout = timeout;
     }
 
@@ -86,14 +86,18 @@ public class Oauth2TestApplication extends Application {
         ClientStoreFactory.setClientStoreImpl(MemClientStore.class, params);
 
         ClientStore<?> clientStore = ClientStoreFactory.getInstance();
-        Client client = clientStore.createClient("1234567890", "1234567890",
-                AuthorizationServerTest.prot + "://localhost:"
-                        + AuthorizationServerTest.serverPort + "/");
         
-        //Bootstrap for password flow test...
-        AuthenticatedUser user = client.createUser(TEST_USER);
-        user.setPassword(TEST_PASS);
-
+        Client client = clientStore.createClient("client1234", "secret1234",
+                AuthorizationServerTest.prot + "://localhost:"
+                + AuthorizationServerTest.serverPort + "/");
+        
+        //Create 10 users:
+        for(int i = 1; i < 6; i++){
+            //Bootstrap for password flow test...
+            AuthenticatedUser user = client.createUser("user"+i);
+            user.setPassword("pass"+i);
+        }
+        
         attribs.put(ClientStore.class.getCanonicalName(), clientStore);
 
         Router router = new Router(ctx);

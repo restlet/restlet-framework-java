@@ -57,9 +57,9 @@ import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
-import org.restlet.test.ext.oauth.test.resources.Oauth2ClientTestApplication;
-import org.restlet.test.ext.oauth.test.resources.Oauth2MultipleUserProtectedTestApplication;
-import org.restlet.test.ext.oauth.test.resources.Oauth2MultipleUserTestApplication;
+import org.restlet.test.ext.oauth.test.resources.OAuthClientTestApplication;
+import org.restlet.test.ext.oauth.test.resources.OAuthMultipleUserProtectedTestApplication;
+import org.restlet.test.ext.oauth.test.resources.OAuthMultipleUserTestApplication;
 import org.restlet.test.ext.oauth.test.resources.SingletonStore;
 import org.restlet.util.Series;
 
@@ -76,7 +76,7 @@ public class MultipleUserAuthorizationServerTest {
     // public static int serverPort = 8443;
     // public static final String prot = "https";
 
-    public static Oauth2ClientTestApplication client = new Oauth2ClientTestApplication();
+    public static OAuthClientTestApplication client = new OAuthClientTestApplication();
 
     @BeforeClass
     public static void startServer() throws Exception {
@@ -103,7 +103,7 @@ public class MultipleUserAuthorizationServerTest {
         component.getClients().add(Protocol.HTTPS);
         component.getClients().add(Protocol.RIAP);
         component.getDefaultHost().attach("/server",
-                new Oauth2MultipleUserProtectedTestApplication());
+                new OAuthMultipleUserProtectedTestApplication());
 
         // oauth server
         Server oauthServer = new Server(new Context(), Protocol.HTTP,
@@ -117,7 +117,7 @@ public class MultipleUserAuthorizationServerTest {
         oauthcomp.getClients().add(Protocol.RIAP);
 
         oauthcomp.getDefaultHost().attach("/oauth",
-                new Oauth2MultipleUserTestApplication(0)); // unlimited
+                new OAuthMultipleUserTestApplication(0)); // unlimited
         // token life
 
         Series<Parameter> parameters = server.getContext().getParameters();

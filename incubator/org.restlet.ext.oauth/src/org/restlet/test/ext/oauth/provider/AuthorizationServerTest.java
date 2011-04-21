@@ -68,10 +68,10 @@ import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
-import org.restlet.test.ext.oauth.test.resources.Oauth2ClientTestApplication;
-import org.restlet.test.ext.oauth.test.resources.Oauth2ComboTestApplication;
-import org.restlet.test.ext.oauth.test.resources.Oauth2ProtectedTestApplication;
-import org.restlet.test.ext.oauth.test.resources.Oauth2TestApplication;
+import org.restlet.test.ext.oauth.test.resources.OAuthClientTestApplication;
+import org.restlet.test.ext.oauth.test.resources.OAuthComboTestApplication;
+import org.restlet.test.ext.oauth.test.resources.OAuthProtectedTestApplication;
+import org.restlet.test.ext.oauth.test.resources.OAuthTestApplication;
 import org.restlet.util.Series;
 
 public class AuthorizationServerTest {
@@ -85,7 +85,7 @@ public class AuthorizationServerTest {
     // public static int serverPort = 8443;
     // public static final String prot = "https";
 
-    public static Oauth2ClientTestApplication client = new Oauth2ClientTestApplication();
+    public static OAuthClientTestApplication client = new OAuthClientTestApplication();
 
     @BeforeClass
     public static void startServer() throws Exception {
@@ -116,13 +116,13 @@ public class AuthorizationServerTest {
         // component.getClients().add(Protocol.CLAP);
         component.getClients().add(Protocol.RIAP);
         component.getDefaultHost()
-                .attach("/oauth", new Oauth2TestApplication(0)); // unlimited
+                .attach("/oauth", new OAuthTestApplication(0)); // unlimited
                                                                 // token life
         component.getDefaultHost().attach("/client", client);
         component.getDefaultHost().attach("/server",
-                new Oauth2ProtectedTestApplication());
+                new OAuthProtectedTestApplication());
         component.getDefaultHost().attach("/combo",
-                new Oauth2ComboTestApplication(0)); // unlimited token life
+                new OAuthComboTestApplication(0)); // unlimited token life
 
         // Setup TLS
         Series<Parameter> parameters = server.getContext().getParameters();
@@ -343,7 +343,7 @@ public class AuthorizationServerTest {
     @Test
     public void testPasswordFlow() throws IOException {
         OAuthUser user = OAuthUtils.passwordFlow(client.getOauthParameters(),
-                Oauth2TestApplication.TEST_USER, Oauth2TestApplication.TEST_PASS);
+                OAuthTestApplication.TEST_USER, OAuthTestApplication.TEST_PASS);
         assertNotNull(user);
 
         // Try to use the token...
@@ -362,7 +362,7 @@ public class AuthorizationServerTest {
         // Wrong username test
         try {
             user = OAuthUtils.passwordFlow(client.getOauthParameters(),
-                    "sowrong", Oauth2TestApplication.TEST_PASS);
+                    "sowrong", OAuthTestApplication.TEST_PASS);
         } catch (ResourceException re) { // Should be invalidated
             assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, re.getStatus());
         }
@@ -370,7 +370,7 @@ public class AuthorizationServerTest {
         // Wrong pasword test
         try {
             user = OAuthUtils.passwordFlow(client.getOauthParameters(),
-                    Oauth2TestApplication.TEST_USER, "sowrong");
+                    OAuthTestApplication.TEST_USER, "sowrong");
         } catch (ResourceException re) { // Should be invalidated
             assertEquals(Status.CLIENT_ERROR_FORBIDDEN, re.getStatus());
         }

@@ -30,45 +30,40 @@
 
 package org.restlet.test.ext.oauth.test.resources;
 
+import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.ext.oauth.ValidationServerResource;
-import org.restlet.ext.oauth.experimental.DiscoverableAuthServerInfo;
-import org.restlet.ext.oauth.experimental.DiscoverableFilter;
+import org.restlet.ext.oauth.OAuthAuthorizer;
 import org.restlet.routing.Router;
+import org.restlet.test.ext.oauth.provider.AuthorizationServerTest;
 
-/**
- * Test for a protected resource embedded with an authorization server
- * 
- * 
- * @author Kristoffer Gronowski
- *
- */
-
-public class Oauth2DiscoverableTestApplication extends Oauth2TestApplication {
-
-	public Oauth2DiscoverableTestApplication() {
-		super(0);
-	}
-	
+public class OAuthProtectedTestApplication extends Application {
 	@Override
 	public synchronized Restlet createInboundRoot() {
-		//Set context param to only allow local token validation.
-		getContext().getAttributes().put(ValidationServerResource.LOCAL_ACCESS_ONLY, "true");
+		Context ctx = getContext();
+		Router router = new Router(ctx);
 		
-		DiscoverableAuthServerInfo asi = new DiscoverableAuthServerInfo("/authorize", "authenticate", "validate");
-                DiscoverableFilter disc = new DiscoverableFilter(asi);
+		OAuthAuthorizer auth = new OAuthAuthorizer(
+				AuthorizationServerTest.prot+"://localhost:"
+				+AuthorizationServerTest.serverPort+
+			"/oauth/validate",
+			AuthorizationServerTest.prot+"://localhost:"+
+			AuthorizationServerTest.serverPort+"/oauth/authorize"
+			);
+		auth.setNext(DummyResource.class);
+		router.attach("/protected",auth);
 		
-		Restlet r = super.createInboundRoot();
-		Router router = (Router)r;
-	
-//		disc.setNext(DiscoverableDummyResource.class);
-//		router.attach("/resource{trailing}",disc);
-//		
-//		return router;
+		OAuthAuthorizer auth2 = new OAuthAuthorizer(
+				AuthorizationServerTest.prot+"://localhost:"
+				+AuthorizationServerTest.serverPort+
+			"/oauth/validate",
+			AuthorizationServerTest.prot+"://localhost:"+
+			AuthorizationServerTest.serverPort+"/oauth/authorize"
+			);
+		auth2.setNext(ScopedDummyResource.class);
+		router.attach("/scoped",auth2);
 		
-		router.attach("/resource{trailing}", DiscoverableDummyResource.class);
-		disc.setNext(router);
-		return disc;
+		return router;
 	}
 
 }

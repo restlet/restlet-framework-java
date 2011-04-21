@@ -44,7 +44,7 @@ public class DummyResource extends ServerResource {
     public Representation getDummy() {
         org.restlet.security.User u = getRequest().getClientInfo().getUser();
         if (u != null && u instanceof OAuthUser)
-            Oauth2ClientTestApplication.user = (OAuthUser) u;
+            OAuthClientTestApplication.user = (OAuthUser) u;
         return new StringRepresentation("TestSuccessful", MediaType.TEXT_HTML);
     }
 
@@ -52,7 +52,7 @@ public class DummyResource extends ServerResource {
     public Representation postDummy(Representation input) {
         org.restlet.security.User u = getRequest().getClientInfo().getUser();
         if (u != null && u instanceof OAuthUser)
-            Oauth2ClientTestApplication.user = (OAuthUser) u;
+            OAuthClientTestApplication.user = (OAuthUser) u;
         return new StringRepresentation("Dummy");
     }
 }

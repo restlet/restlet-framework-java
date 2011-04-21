@@ -33,60 +33,43 @@ package org.restlet.test.ext.oauth.test.resources;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.ext.oauth.OAuthParameters;
-import org.restlet.ext.oauth.OAuthProxy;
-import org.restlet.ext.oauth.OAuthUser;
+import org.restlet.ext.oauth.OAuthAuthorizer;
 import org.restlet.routing.Router;
 import org.restlet.test.ext.oauth.provider.AuthorizationServerTest;
+import org.restlet.test.ext.oauth.provider.MultipleUserAuthorizationServerTest;
 
-public class Oauth2ClientTestApplication extends Application {
-    private OAuthProxy local;
+public class OAuthMultipleUserProtectedTestApplication extends Application {
+	@Override
+	public synchronized Restlet createInboundRoot() {
+		Context ctx = getContext();
+		Router router = new Router(ctx);
+		
+		/*
+		OAuthAuthorizer auth = new OAuthAuthorizer(
+				AuthorizationServerTest.prot+"://localhost:"
+				+AuthorizationServerTest.serverPort+
+			"/oauth/validate",
+			AuthorizationServerTest.prot+"://localhost:"+
+			AuthorizationServerTest.serverPort+"/oauth/authorize"
+			);
+		auth.setNext(DummyResource.class);
+		router.attach("/protected",auth);
+		*/
+		
+		OAuthAuthorizer auth2 = new OAuthAuthorizer(
+				AuthorizationServerTest.prot+"://localhost:"
+				+MultipleUserAuthorizationServerTest.oauthServerPort+
+			"/oauth/validate",
+			AuthorizationServerTest.prot+"://localhost:"+
+			MultipleUserAuthorizationServerTest.oauthServerPort+"/oauth/authorize"
+			);
+		//auth2.setNext(ScopedDummyResource.class);
+		ScopedRouter sr = new ScopedRouter();
+		auth2.setNext(sr);
+		router.attach("/scoped", auth2);
+		sr.init();
+		
+		return router;
+	}
 
-    private OAuthParameters params;
-    
-    protected static OAuthUser user;
-
-    @Override
-    public synchronized Restlet createInboundRoot() {
-
-        Context ctx = getContext();
-        Router router = new Router(ctx);
-
-        params = new OAuthParameters("1234567890", "1234567890",
-                AuthorizationServerTest.prot + "://localhost:"
-                        + AuthorizationServerTest.serverPort + "/oauth/",
-                "foo bar");
-
-        local = new OAuthProxy(params, getContext(), true); // Use basic
-        local.setNext(DummyResource.class);
-        router.attach("/webclient", local);
-
-        router.attach("/unprotected", DummyResource.class);
-
-        return router;
-    }
-
-    
-    public String getToken() {
-        if (user != null) {
-            return user.getAccessToken();
-        }
-        return null;
-    }
-
-    public OAuthUser getUser() {
-        if (user != null) {
-            return user;
-        }
-        return null;
-    }
-    
-    public void clearUser(){
-        user = null;
-    }
-    
-    
-    public OAuthParameters getOauthParameters() {
-        return params;
-    }
 }

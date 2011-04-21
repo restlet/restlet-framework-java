@@ -32,7 +32,7 @@ package org.restlet.test.ext.oauth.test;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.restlet.test.ext.oauth.test.resources.Oauth2TestApplication;
+import org.restlet.test.ext.oauth.test.resources.OAuthTestApplication;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -55,7 +55,7 @@ public class ProviderTest {
         component.getClients().add(Protocol.CLAP);
         component.getClients().add(Protocol.RIAP);
         component.getDefaultHost()
-                .attach("/oauth", new Oauth2TestApplication(0));
+                .attach("/oauth", new OAuthTestApplication(0));
         component.start();
     }
 
