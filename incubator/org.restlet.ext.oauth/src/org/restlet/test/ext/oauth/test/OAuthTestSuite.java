@@ -40,7 +40,7 @@ import org.restlet.test.ext.oauth.webclient.FacebookTest;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ AuthorizationServerTest.class, TimedTokenTest.class,
-        FacebookTest.class, ProviderTest.class, TokenGeneratorTest.class, MultipleUserAuthorizationServerTest.class })
+        FacebookTest.class, ProviderTest.class, TokenGeneratorTest.class /*,MultipleUserAuthorizationServerTest.class */})
 public class OAuthTestSuite {
 
 }

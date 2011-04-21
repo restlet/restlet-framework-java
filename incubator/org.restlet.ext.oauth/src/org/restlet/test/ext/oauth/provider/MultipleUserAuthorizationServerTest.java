@@ -33,11 +33,17 @@ package org.restlet.test.ext.oauth.provider;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import javax.xml.datatype.Duration;
+
 
 import junit.framework.Assert;
+
+
+import org.hamcrest.Matchers;
+import org.json.JSONObject;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -63,6 +69,9 @@ import org.restlet.test.ext.oauth.test.resources.OAuthMultipleUserTestApplicatio
 import org.restlet.test.ext.oauth.test.resources.SingletonStore;
 import org.restlet.util.Series;
 
+import com.jayway.awaitility.Awaitility;
+import com.jayway.awaitility.Duration;
+
 public class MultipleUserAuthorizationServerTest {
     public static Component component;
 
@@ -72,6 +81,7 @@ public class MultipleUserAuthorizationServerTest {
     public static int oauthServerPort = 8081;
 
     public static final String prot = "http";
+    public static Logger log;
 
     // public static int serverPort = 8443;
     // public static final String prot = "https";
@@ -81,9 +91,10 @@ public class MultipleUserAuthorizationServerTest {
     @BeforeClass
     public static void startServer() throws Exception {
 
-        // org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory i;
-
-        Logger log = Context.getCurrentLogger();
+        //org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory i;
+        //LogManager.getLogManager().
+        Engine.setLogLevel(Level.WARNING);
+        log = Context.getCurrentLogger();
         log.info("Starting server test!");
 
         // SSL global configuration
@@ -139,7 +150,7 @@ public class MultipleUserAuthorizationServerTest {
         }
         authenticators.add(new OAuthHelper());
 
-        System.out.println(Engine.getInstance().getRegisteredClients().get(0));
+        //System.out.println(Engine.getInstance().getRegisteredClients().get(0));
     }
 
     @AfterClass
@@ -149,28 +160,38 @@ public class MultipleUserAuthorizationServerTest {
 
     @Test
     public void multipleRequestTest() throws Exception {
-        int numThreads = 100;
+        int numThreads = 10;
         int numCalls = 10;
         int totRequests = (numThreads * numCalls) + numThreads;
         Thread[] clients = new Thread[numThreads];
         Context c = new Context();
-        for (int i = 0; i < numThreads; i++) {
-            clients[i] = new ClientCall(numCalls, c);
+
+        //Client client = new Client(Protocol.HTTP);
+        Client client = null;
+        log.warning("Starting long running test with "+numThreads+" threads doing "+numCalls+" requests each");
+        long l = System.currentTimeMillis();
+        for(int i = 0; i <numThreads; i++){
+            if(i % 25 == 0)
+                client = new Client(Protocol.HTTP);
+            clients[i] = new ClientCall(numCalls, c, client);
             clients[i].start();
         }
         Awaitility.setDefaultTimeout(Duration.FOREVER);
-        Awaitility.await().until(numCalls(), Matchers.equalTo(totRequests));
-        System.out.println(SingletonStore.I().getCallbacks() + " "
-                + SingletonStore.I().getErrors());
+        Awaitility.await().until(numCalls(), Matchers.equalTo(totRequests) );
+        long tot = System.currentTimeMillis() - l;
+        log.warning("Executed "+(numThreads*numCalls)+" in "+tot+" millseconds, average time "+
+                (tot/(numThreads*numCalls))+" millis/request");
+        System.out.println(SingletonStore.I().getCallbacks()+" "+SingletonStore.I().getErrors());
         Assert.assertEquals(0, SingletonStore.I().getErrors());
     }
 
     private Callable<Integer> numCalls() {
         return new Callable<Integer>() {
-            public Integer call() throws Exception {
-                return SingletonStore.I().getCallbacks(); // The condition
-                                                          // supplier part
-            }
+                public Integer call() throws Exception {
+                    return SingletonStore.I().getCallbacks();
+                    //if(i % 100 == 0) log.warning("requests executed: "+i);
+                    //    return i; // The condition supplier part
+                }
         };
     }
 
@@ -183,12 +204,14 @@ public class MultipleUserAuthorizationServerTest {
         OAuthParameters params;
 
         Context c;
-
-        Client myClient = new Client(Protocol.HTTP);
-
-        public ClientCall(int numTimes, Context c) {
+        Client myClient;
+        public ClientCall(int numTimes, Context c, Client client){
             this.numTimes = numTimes;
             this.c = c;
+            if(client != null)
+                myClient = client;
+            else
+                myClient = new Client(Protocol.HTTP);
             r = new Random(System.nanoTime());
             params = new OAuthParameters(
                     "client1234",
@@ -201,15 +224,8 @@ public class MultipleUserAuthorizationServerTest {
 
         @Override
         public void run() {
-
-            try {
-                this.sleep(r.nextInt(500));
-            } catch (InterruptedException e1) {
-
-                e1.printStackTrace();
-            }
-            for (int i = 0; i < numTimes; i++) {
-                System.out.println(this.getName() + " " + i);
+            for(int i = 0; i < numTimes; i++){
+                //System.out.println(this.getName()+" "+i);
                 int u = r.nextInt(5) + 1;
                 OAuthUser user = OAuthUtils.passwordFlow(params, "user" + u,
                         "pass" + u, myClient);
