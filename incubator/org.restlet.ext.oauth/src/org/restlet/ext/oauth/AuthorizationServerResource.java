@@ -39,7 +39,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.ext.oauth.OAuthError.ErrorCode;
+import org.restlet.ext.oauth.OAuthError;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -114,11 +114,11 @@ public class AuthorizationServerResource extends OAuthServerResource {
             } else
                 setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         } catch (IllegalArgumentException iae) {
-            sendError(sessionId, ErrorCode.unsupported_response_type,
+            sendError(sessionId, OAuthError.UNSUPPORTED_RESPONSE_TYPE,
                     params.getFirstValue(STATE), "Unsupported flow", null);
             log.log(Level.WARNING, "Error in execution.", iae);
         } catch (NullPointerException npe) {
-            sendError(sessionId, ErrorCode.invalid_request,
+            sendError(sessionId, OAuthError.INVALID_REQUEST,
                     params.getFirstValue(STATE),
                     "No response_type parameter found.", null);
         }
@@ -146,7 +146,7 @@ public class AuthorizationServerResource extends OAuthServerResource {
                 log.log(Level.WARNING, "", e);
             }
         } else { // No client ID
-            sendError(sessionId, ErrorCode.invalid_request,
+            sendError(sessionId, OAuthError.INVALID_REQUEST,
                     params.getFirstValue(STATE),
                     "No client_id parameter found.", null);
             log.info("Could not find client ID");
@@ -163,7 +163,7 @@ public class AuthorizationServerResource extends OAuthServerResource {
             sessionId = session.getId();
 
         if (redirUri == null || redirUri.length() == 0) {
-            sendError(sessionId, ErrorCode.invalid_request,
+            sendError(sessionId, OAuthError.INVALID_REQUEST,
                     params.getFirstValue(STATE),
                     "No redirect_uri parameter found.", null);
             log.info("No mandatory redirect URI provided");
@@ -176,7 +176,7 @@ public class AuthorizationServerResource extends OAuthServerResource {
 
         if (client == null) {
             // client = clients.createClient(clientId, redirUri);
-            sendError(sessionId, ErrorCode.invalid_client,
+            sendError(sessionId, OAuthError.INVALID_CLIENT,
                     params.getFirstValue(STATE),
                     "Need to register the client : " + clientId, null);
             log.info("Need to register the client : " + clientId);
@@ -187,7 +187,7 @@ public class AuthorizationServerResource extends OAuthServerResource {
                 + client.getRedirectUri() + ":" + redirUri);
 
         if (!redirUri.startsWith(client.getRedirectUri())) {
-            sendError(sessionId, ErrorCode.redirect_uri_mismatch,
+            sendError(sessionId, OAuthError.REDIRECT_URI_MISMATCH,
                     params.getFirstValue(STATE),
                     "Callback URI does not match.", null);
             log.info("Callback URI does not match.");
@@ -320,8 +320,7 @@ public class AuthorizationServerResource extends OAuthServerResource {
 
     }
 
-    public void sendError(String sessionId, OAuthError.ErrorCode error,
-            String state) {
+    public void sendError(String sessionId, OAuthError error, String state) {
         sendError(sessionId, error, state, null, null);
     }
 
@@ -341,8 +340,8 @@ public class AuthorizationServerResource extends OAuthServerResource {
      *            uri to a page with more description about the error
      */
 
-    public void sendError(String sessionId, OAuthError.ErrorCode error,
-            String state, String description, String errorUri) {
+    public void sendError(String sessionId, OAuthError error, String state,
+            String description, String errorUri) {
         Form params = getQuery();
         String redirUri = params.getFirstValue(REDIR_URI);
         if (redirUri == null || redirUri.length() == 0) {

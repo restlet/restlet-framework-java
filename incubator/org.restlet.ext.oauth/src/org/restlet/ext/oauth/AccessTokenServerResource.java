@@ -41,7 +41,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.util.Base64;
 import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.ext.oauth.OAuthError.ErrorCode;
+import org.restlet.ext.oauth.OAuthError;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
@@ -103,14 +103,14 @@ public class AccessTokenServerResource extends OAuthServerResource {
         }
 
         if (clientId == null || clientId.length() == 0) {
-            sendError(ErrorCode.invalid_request,
+            sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter client_id is missing", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return new EmptyRepresentation();
         }
 
         if (clientSecret == null || clientSecret.length() == 0) {
-            sendError(ErrorCode.invalid_request,
+            sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter client_secret is missing", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return new EmptyRepresentation();
@@ -136,7 +136,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
                         doPasswordFlow(clientId, clientSecret, params);
                         break;
                     case assertion:
-                        sendError(ErrorCode.unsupported_grant_type,
+                        sendError(OAuthError.UNSUPPORTED_GRANT_TYPE,
                                 "Assertion flow not supported", null);
                         setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
                         break;
@@ -147,25 +147,25 @@ public class AccessTokenServerResource extends OAuthServerResource {
                         doNoneFlow(clientId, clientSecret, params);
                         break;
                     default:
-                        sendError(ErrorCode.unsupported_grant_type,
+                        sendError(OAuthError.UNSUPPORTED_GRANT_TYPE,
                                 "Flow not supported", null);
                         setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
                     }
                 } catch (IllegalArgumentException e) { // can not exchange code.
-                    sendError(ErrorCode.invalid_grant, e.getMessage(), null);
+                    sendError(OAuthError.INVALID_GRANT, e.getMessage(), null);
                     setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
                 }
             } else {
-                sendError(ErrorCode.invalid_request,
+                sendError(OAuthError.INVALID_REQUEST,
                         "Only supporting HTTP POST.", null);
                 setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
             }
         } catch (IllegalArgumentException iae) {
-            sendError(ErrorCode.unsupported_grant_type, "Flow not supported",
+            sendError(OAuthError.UNSUPPORTED_GRANT_TYPE, "Flow not supported",
                     null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         } catch (NullPointerException npe) {
-            sendError(ErrorCode.unsupported_grant_type, "Flow not supported",
+            sendError(OAuthError.UNSUPPORTED_GRANT_TYPE, "Flow not supported",
                     null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         }
@@ -177,7 +177,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
             Form params) throws IllegalArgumentException {
         String redirUri = params.getFirstValue(REDIR_URI);
         if (redirUri == null || redirUri.length() == 0) {
-            sendError(ErrorCode.invalid_request,
+            sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter redirect_uri is missing", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return;
@@ -185,7 +185,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         String code = params.getFirstValue(CODE);
         if (code == null || code.length() == 0) {
-            sendError(ErrorCode.invalid_request,
+            sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter code is missing", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return;
@@ -194,7 +194,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
         Client client = validate(clientId, clientSecret);
         // null check on failed
         if (client == null) {
-            sendError(ErrorCode.invalid_client,
+            sendError(OAuthError.INVALID_CLIENT,
                     "Client id verification failed.", null);
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             return;
@@ -202,7 +202,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         // check the client secret
         if (!clientSecret.equals(client.getClientSecret())) {
-            sendError(ErrorCode.invalid_grant, "Client secret did not match",
+            sendError(OAuthError.INVALID_GRANT, "Client secret did not match",
                     null);
             setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
             return;
@@ -230,7 +230,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
         Client client = validate(clientId, clientSecret);
         // null check on failed
         if (client == null) {
-            sendError(ErrorCode.invalid_client,
+            sendError(OAuthError.INVALID_CLIENT,
                     "Client id verification failed.", null);
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             return;
@@ -263,7 +263,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
         Client client = validate(clientId, clientSecret);
         // null check on failed
         if (client == null) {
-            sendError(ErrorCode.invalid_client,
+            sendError(OAuthError.INVALID_CLIENT,
                     "Client id verification failed.", null);
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             return;
@@ -272,21 +272,21 @@ public class AccessTokenServerResource extends OAuthServerResource {
         String username = params.getFirstValue(USERNAME);
         AuthenticatedUser user = null;
         if (username == null || (user = client.findUser(username)) == null) {
-            sendError(ErrorCode.invalid_request,
+            sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter username missing.", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return;
         }
         String password = params.getFirstValue(PASSWORD);
         if (password == null) {
-            sendError(ErrorCode.invalid_request,
+            sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter password missing.", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return;
         }
 
         if (!password.equals(user.getPassword())) {
-            sendError(ErrorCode.invalid_grant, "Password not correct.", null);
+            sendError(OAuthError.INVALID_GRANT, "Password not correct.", null);
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             return;
         }
@@ -305,7 +305,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
     private void doRefreshFlow(String clientId, String clientSecret, Form params) {
         String rToken = params.getFirstValue(REFRESH_TOKEN);
         if (rToken == null || rToken.length() == 0) {
-            sendError(ErrorCode.invalid_request,
+            sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter refresh_token is missing", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return;
@@ -315,7 +315,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         // null check on failed
         if (client == null) {
-            sendError(ErrorCode.invalid_client,
+            sendError(OAuthError.INVALID_CLIENT,
                     "Client id verification failed.", null);
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             return;
@@ -336,12 +336,12 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
                 getResponse().setEntity(new JsonRepresentation(body));
             } else { // error not owner
-                sendError(ErrorCode.unauthorized_client,
+                sendError(OAuthError.UNAUTHORIZED_CLIENT,
                         "User does not match.", null);
                 setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             }
         } else { // error no such token.
-            sendError(ErrorCode.invalid_grant, "Refresh token.", null);
+            sendError(OAuthError.INVALID_GRANT, "Refresh token.", null);
             setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
         }
 
@@ -369,7 +369,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
         Client client = clients.findById(clientId);
         log.info("Client = " + client);
         if (client == null) {
-            sendError(ErrorCode.invalid_client,
+            sendError(OAuthError.INVALID_CLIENT,
                     "Could not find the correct client with id : " + clientId,
                     null);
             setStatus(Status.CLIENT_ERROR_NOT_FOUND);
@@ -378,7 +378,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         if (clientSecret == null
                 || !clientSecret.equals(client.getClientSecret())) {
-            sendError(ErrorCode.invalid_grant, "Client secret did not match",
+            sendError(OAuthError.INVALID_GRANT, "Client secret did not match",
                     null);
             setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
             log.info("Could not find or match client secret " + clientSecret
@@ -388,8 +388,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
         return client;
     }
 
-    public void sendError(OAuthError.ErrorCode error, String description,
-            String errorUri) {
+    public void sendError(OAuthError error, String description, String errorUri) {
         JSONObject result = new JSONObject();
         try {
             result.put(OAuthServerResource.ERROR, error.name());

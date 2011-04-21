@@ -46,7 +46,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.util.Base64;
-import org.restlet.ext.oauth.OAuthError.ErrorCode;
+import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
 import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.representation.EmptyRepresentation;
@@ -179,33 +179,33 @@ public class OAuthProxy extends Authorizer {
                         MediaType.TEXT_HTML);
             }
 
-            ErrorCode ec = ErrorCode.valueOf(error);
+            OAuthError ec = OAuthError.valueOf(error);
             switch (ec) {
-            case invalid_request:
+            case INVALID_REQUEST:
                 response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, error);
                 response.setEntity(repr);
                 break;
-            case invalid_client:
+            case INVALID_CLIENT:
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND, error);
                 response.setEntity(repr);
                 break;
-            case unauthorized_client:
+            case UNAUTHORIZED_CLIENT:
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
                 response.setEntity(repr);
                 break;
-            case redirect_uri_mismatch:
+            case REDIRECT_URI_MISMATCH:
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
                 response.setEntity(repr);
                 break;
-            case access_denied:
+            case ACCESS_DENIED:
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
                 response.setEntity(repr);
                 break;
-            case unsupported_response_type:
+            case UNSUPPORTED_RESPONSE_TYPE:
                 response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, error);
                 response.setEntity(repr);
                 break;
-            case invalid_scope:
+            case INVALID_SCOPE:
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
                 response.setEntity(repr);
                 break;

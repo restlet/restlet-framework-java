@@ -40,7 +40,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.freemarker.ContextTemplateLoader;
 import org.restlet.ext.freemarker.TemplateRepresentation;
-import org.restlet.ext.oauth.OAuthError.ErrorCode;
+import org.restlet.ext.oauth.OAuthError;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
@@ -202,7 +202,7 @@ public class AuthPageServerResource extends OAuthServerResource {
 
         if ("Reject".equals(action)) {
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-            sendError(session, ErrorCode.access_denied, session.getState(),
+            sendError(session, OAuthError.ACCESS_DENIED, session.getState(),
                     "Rejected.", null);
             log.info("Rejected.");
             return;
@@ -321,7 +321,7 @@ public class AuthPageServerResource extends OAuthServerResource {
      *            uri to a page with more description about the error
      */
 
-    protected void sendError(AuthSession session, OAuthError.ErrorCode error,
+    protected void sendError(AuthSession session, OAuthError error,
             String state, String description, String errorUri) {
         String redirUri = session.getDynamicCallbackURI();
 

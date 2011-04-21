@@ -103,7 +103,7 @@ public class ValidationServerResource extends OAuthServerResource {
             Token t = generator.findToken(token);
             if (t == null) {
                 response.put("authenticated", authenticated);
-                error = OAuthError.ErrorCode.invalid_token.name();
+                error = OAuthError.INVALID_TOKEN.name();
                 // setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             } else {
                 log.info("In Validator resource - got token = " + t);
@@ -111,7 +111,7 @@ public class ValidationServerResource extends OAuthServerResource {
                     // check that the right token was used
                     ExpireToken et = (ExpireToken) t;
                     if (!token.equals(et.getToken())) {
-                        error = OAuthError.ErrorCode.invalid_token.name();
+                        error = OAuthError.INVALID_TOKEN.name();
                         getLogger().warning(
                                 "Should not use the refresh_token to sign!");
                     }
@@ -125,7 +125,7 @@ public class ValidationServerResource extends OAuthServerResource {
                 AuthenticatedUser user = t.getUser();
                 authenticated = (user == null) ? false : true;
                 if (!authenticated) {
-                    error = OAuthError.ErrorCode.invalid_request.name();
+                    error = OAuthError.INVALID_REQUEST.name();
                 }
                 if (authenticated && scopes != null && scopes.length() > 0) {
                     // All scopes must match if there are any listed
@@ -138,8 +138,7 @@ public class ValidationServerResource extends OAuthServerResource {
                                 "Granted permission : " + scope + " = "
                                         + granted);
                         if (!granted) {
-                            error = OAuthError.ErrorCode.insufficient_scope
-                                    .name();
+                            error = OAuthError.INSUFFICIENT_SCOPE.name();
                             authenticated = false;
                             break;
                         }
@@ -151,7 +150,7 @@ public class ValidationServerResource extends OAuthServerResource {
                             && !AUTONOMOUS_USER.equals(user.getId())
                             && !owner.equals(user.getId())) {
                         authenticated = false;
-                        error = OAuthError.ErrorCode.invalid_request.name();
+                        error = OAuthError.INVALID_REQUEST.name();
                     } else {
                         response.put("tokenOwner", user.getId());
                     }

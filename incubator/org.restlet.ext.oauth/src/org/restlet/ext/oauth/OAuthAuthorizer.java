@@ -207,8 +207,7 @@ public class OAuthAuthorizer extends Authorizer {
             ChallengeRequest cr = new ChallengeRequest(
                     ChallengeScheme.HTTP_OAUTH, "oauth"); // TODO set realm
             Series<Parameter> parameters = new Form();
-            parameters
-                    .add("error", OAuthError.ErrorCode.invalid_request.name());
+            parameters.add("error", OAuthError.INVALID_REQUEST.name());
             cr.setParameters(parameters);
             resp.getChallengeRequests().add(cr);
             resp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
@@ -313,23 +312,22 @@ public class OAuthAuthorizer extends Authorizer {
                     Series<Parameter> parameters = new Form();
                     parameters.add("error", error);
 
-                    OAuthError.ErrorCode code = OAuthError.ErrorCode
-                            .valueOf(error);
+                    OAuthError code = OAuthError.valueOf(error);
                     switch (code) {
-                    case invalid_request:
+                    case INVALID_REQUEST:
                         // TODO report bug in Restlet and verify, can not handle
                         // space char.
                         // parameters.add("error_description",
                         // "The request is missing a required parameter.");
                         resp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
                         break;
-                    case invalid_token:
-                    case expired_token:
+                    case INVALID_TOKEN:
+                    case EXPIRED_TOKEN:
                         // parameters.add("error_description",
                         // "The access token provided is invalid.");
                         resp.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
                         break;
-                    case insufficient_scope:
+                    case INSUFFICIENT_SCOPE:
                         // parameters.add("error_description",
                         // "The request requires higher privileges than provided "
                         // +"by the access token.");

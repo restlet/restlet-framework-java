@@ -28,7 +28,7 @@ import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
-import org.restlet.test.ext.oauth.test.resources.OAuthClientTestApplication;
+import org.restlet.test.ext.oauth.test.resources.OauthClientTestApplication;
 import org.restlet.test.ext.oauth.test.resources.OauthProtectedTestApplication;
 import org.restlet.test.ext.oauth.test.resources.OauthTestApplication;
 import org.restlet.util.Series;
@@ -44,7 +44,7 @@ public class TimedTokenTest {
     // public static int serverPort = 8443;
     // public static final String prot = "https";
 
-    public static OAuthClientTestApplication client = new OAuthClientTestApplication();
+    public static OauthClientTestApplication client = new OauthClientTestApplication();
 
     @BeforeClass
     public static void startServer() throws Exception {

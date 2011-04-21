@@ -305,7 +305,7 @@ public class AuthorizationServerTest {
             assertNotNull(challenge);
             String error = challenge.getParameters().getFirstValue("error");
             assertEquals("Checking error code",
-                    OAuthError.ErrorCode.insufficient_scope.name(), error);
+                    OAuthError.INSUFFICIENT_SCOPE.name(), error);
         }
         cr.release();
     }

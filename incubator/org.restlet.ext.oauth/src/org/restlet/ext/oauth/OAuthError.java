@@ -50,25 +50,47 @@ import org.restlet.data.Form;
  *      href="http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.2.1">WWW-Authenticate
  *      Error Responses</a>
  */
-public class OAuthError {
+public enum OAuthError {
 
-    public enum ErrorCode {
-        invalid_request, // 3.2.1 & 4.3.1 & 5.2.1
-        invalid_client, // 3.2.1 & 4.3.1
-        unauthorized_client, // 3.2.1 & 4.3.1
-        redirect_uri_mismatch, // 3.2.1
-        access_denied, // 3.2.1
-        unsupported_response_type, // 3.2.1
-        invalid_scope, // 3.2.1 & 4.3.1
+    ACCESS_DENIED, // 3.2.1 & 4.3.1 & 5.2.1
+    EXPIRED_TOKEN, // 3.2.1 & 4.3.1
+    INSUFFICIENT_SCOPE, // 3.2.1 & 4.3.1
+    INVALID_CLIENT, // 3.2.1
+    INVALID_GRANT, // 3.2.1
+    INVALID_REQUEST, // 3.2.1
+    INVALID_SCOPE, // 3.2.1 & 4.3.1
 
-        invalid_grant, // 4.3.1
-        unsupported_grant_type, // 4.3.1
+    INVALID_TOKEN, // 4.3.1
+    REDIRECT_URI_MISMATCH, // 4.3.1
 
-        invalid_token, // 5.2.1
-        expired_token, // 5.2.1
-        insufficient_scope
-        // 5.2.1
-    };
+    UNAUTHORIZED_CLIENT, // 5.2.1
+    UNSUPPORTED_GRANT_TYPE, // 5.2.1
+    UNSUPPORTED_RESPONSE_TYPE;
+    // 5.2.1
+
+    /**
+     * Used for formatting error according to chapter 4.3.1
+     * 
+     * 
+     * @param error
+     * @param description
+     * @param errorUri
+     * @return
+     * @throws JSONException
+     */
+    static JSONObject getErrorMessage(OAuthError error, String description,
+            String errorUri) throws JSONException {
+        JSONObject response = new JSONObject();
+        response.put("error", error.name());
+        if (description != null && description.length() > 0) {
+            response.put("error_description", description);
+        }
+        if (errorUri != null && errorUri.length() > 0) {
+            response.put("error_uri", errorUri);
+        }
+
+        return response;
+    }
 
     /**
      * Used for formatting error according to chapter 3.2.1
@@ -80,7 +102,7 @@ public class OAuthError {
      * @param state
      * @return
      */
-    static Form getErrorMessage(ErrorCode error, String description,
+    static Form getErrorMessage(OAuthError error, String description,
             String errorUri, String state) {
         Form response = new Form();
         response.add("error", error.name());
@@ -98,30 +120,6 @@ public class OAuthError {
     }
 
     /**
-     * Used for formatting error according to chapter 4.3.1
-     * 
-     * 
-     * @param error
-     * @param description
-     * @param errorUri
-     * @return
-     * @throws JSONException
-     */
-    static JSONObject getErrorMessage(ErrorCode error, String description,
-            String errorUri) throws JSONException {
-        JSONObject response = new JSONObject();
-        response.put("error", error.name());
-        if (description != null && description.length() > 0) {
-            response.put("error_description", description);
-        }
-        if (errorUri != null && errorUri.length() > 0) {
-            response.put("error_uri", errorUri);
-        }
-
-        return response;
-    }
-
-    /**
      * Used for formatting error according to chapter 5.2.1
      * 
      * 
@@ -132,7 +130,7 @@ public class OAuthError {
      * @param scopes
      * @return
      */
-    static ChallengeRequest getErrorMessage(String realm, ErrorCode error,
+    static ChallengeRequest getErrorMessage(String realm, OAuthError error,
             String description, String errorUri, String[] scopes) {
         ChallengeRequest challenge = new ChallengeRequest(
                 ChallengeScheme.HTTP_OAUTH, realm);
