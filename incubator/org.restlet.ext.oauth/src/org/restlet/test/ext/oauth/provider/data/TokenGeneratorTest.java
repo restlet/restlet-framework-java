@@ -8,8 +8,8 @@ import org.restlet.ext.oauth.AuthenticatedUser;
 import org.restlet.ext.oauth.ExpireToken;
 import org.restlet.ext.oauth.Token;
 import org.restlet.ext.oauth.TokenGenerator;
-import org.restlet.ext.oauth.internal.provider.data.AuthenticatedUserImpl;
-import org.restlet.ext.oauth.internal.provider.data.MemTokenGenerator;
+import org.restlet.ext.oauth.internal.AuthenticatedUserImpl;
+import org.restlet.ext.oauth.internal.MemTokenGenerator;
 
 public class TokenGeneratorTest {
     private static ScheduledThreadPoolExecutor pool;

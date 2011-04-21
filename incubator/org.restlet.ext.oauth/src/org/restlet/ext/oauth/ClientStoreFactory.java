@@ -36,7 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
-import org.restlet.ext.oauth.internal.provider.data.MemClientStore;
+import org.restlet.ext.oauth.internal.MemClientStore;
 
 /**
  * Factory for ClientStore. The Default is to create a memory based client store

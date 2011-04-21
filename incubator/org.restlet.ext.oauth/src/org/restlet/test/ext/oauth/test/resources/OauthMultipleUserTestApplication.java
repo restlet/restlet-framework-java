@@ -15,7 +15,7 @@ import org.restlet.ext.oauth.ClientStore;
 import org.restlet.ext.oauth.ClientStoreFactory;
 import org.restlet.ext.oauth.OAuthServerResource;
 import org.restlet.ext.oauth.ValidationServerResource;
-import org.restlet.ext.oauth.internal.provider.data.MemClientStore;
+import org.restlet.ext.oauth.internal.MemClientStore;
 import org.restlet.ext.openid.CallbackCacheFilter;
 import org.restlet.ext.openid.OpenIdConsumer;
 import org.restlet.ext.openid.OpenIdProvider;

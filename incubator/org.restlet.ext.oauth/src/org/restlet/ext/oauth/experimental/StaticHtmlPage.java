@@ -28,28 +28,51 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.oauth.internal.util;
+package org.restlet.ext.oauth.experimental;
 
+import java.io.IOException;
+
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
-import org.restlet.resource.Get;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
 
 /**
- * Resource that returns the same static content.
+ * Utility for setting up a static html page resource. For more complex and
+ * dynamic pages Freemarker is a better choice.
  * 
  * @author Kristoffer Gronowski
  */
-public class StaticServerResource extends ServerResource {
+public class StaticHtmlPage extends Finder {
 
-    private final Representation page;
+    private String page;
 
-    public StaticServerResource(Representation page) {
-        this.page = page;
+    private MediaType type;
+
+    public StaticHtmlPage(String uri) {
+        Reference ref = new Reference(uri);
+        // TODO could check that it is CLAP and ends .html
+        ClientResource local = new ClientResource(ref);
+        Representation tmpPage = local.get();
+        try {
+            page = tmpPage.getText();
+        } catch (IOException e) {
+            page = e.getLocalizedMessage();
+        }
+        type = tmpPage.getMediaType();
+        tmpPage.release();
+        local.release();
     }
 
-    @Get("html")
-    public Representation represent() {
-        getLogger().info("Returning page - " + page);
-        return page;
+    @Override
+    public ServerResource find(Request request, Response response) {
+        Representation result = new StringRepresentation(page, type);
+        // page.setLocationRef(request.getResourceRef());
+        return new StaticServerResource(result);
     }
 }
