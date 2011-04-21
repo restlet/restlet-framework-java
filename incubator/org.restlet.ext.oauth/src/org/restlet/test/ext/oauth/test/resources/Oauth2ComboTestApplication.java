@@ -30,35 +30,42 @@
 
 package org.restlet.test.ext.oauth.test.resources;
 
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
-import org.restlet.ext.oauth.ScopedResource;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
-import org.restlet.resource.ServerResource;
+import org.restlet.Restlet;
+import org.restlet.ext.oauth.ValidationServerResource;
+import org.restlet.ext.oauth.internal.LocalAuthorizer;
+import org.restlet.routing.Router;
+import org.restlet.test.ext.oauth.provider.AuthorizationServerTest;
 
-public class Scoped4 extends ServerResource implements ScopedResource{
+/**
+ * Test for a protected resource embedded with an authorization server
+ * 
+ * 
+ * @author Kristoffer Gronowski
+ *
+ */
 
-	@Get
-	public Representation getDummy() {
-		return new StringRepresentation("TestSuccessful", MediaType.TEXT_HTML);
+public class Oauth2ComboTestApplication extends Oauth2TestApplication {
+
+	public Oauth2ComboTestApplication(long timeout) {
+		super(timeout);
 	}
 	
-	@Post("form")
-	public Representation postDummy(Representation input) {
-		//return null;
-		//return new EmptyRepresentation();
-		return new StringRepresentation("ScopedDummy");
+	@Override
+	public synchronized Restlet createInboundRoot() {
+		//Set context param to only allow local token validation.
+		getContext().getAttributes().put(ValidationServerResource.LOCAL_ACCESS_ONLY, "true");
+		Restlet r = super.createInboundRoot();
+		Router router = (Router)r;
+		
+		LocalAuthorizer auth = new LocalAuthorizer(
+			"/validate",
+			AuthorizationServerTest.prot+"://localhost:"+
+			AuthorizationServerTest.serverPort+"/combo/authorize"
+			);
+		auth.setNext(DummyResource.class);
+		router.attach("/protected",auth);
+		
+		return router;
 	}
 
-	public String getOwner(Reference uri) {
-		return "user4";
-	}
-
-	public String[] getScope(Reference uri, Method method) {
-		return null;
-	}
 }

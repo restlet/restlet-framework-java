@@ -30,35 +30,40 @@
 
 package org.restlet.test.ext.oauth.test.resources;
 
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
-import org.restlet.ext.oauth.ScopedResource;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
-import org.restlet.resource.ServerResource;
+import org.restlet.Application;
+import org.restlet.Context;
+import org.restlet.Restlet;
+import org.restlet.ext.oauth.OAuthAuthorizer;
+import org.restlet.routing.Router;
+import org.restlet.test.ext.oauth.provider.AuthorizationServerTest;
 
-public class Scoped4 extends ServerResource implements ScopedResource{
+public class Oauth2ProtectedTestApplication extends Application {
+	@Override
+	public synchronized Restlet createInboundRoot() {
+		Context ctx = getContext();
+		Router router = new Router(ctx);
+		
+		OAuthAuthorizer auth = new OAuthAuthorizer(
+				AuthorizationServerTest.prot+"://localhost:"
+				+AuthorizationServerTest.serverPort+
+			"/oauth/validate",
+			AuthorizationServerTest.prot+"://localhost:"+
+			AuthorizationServerTest.serverPort+"/oauth/authorize"
+			);
+		auth.setNext(DummyResource.class);
+		router.attach("/protected",auth);
+		
+		OAuthAuthorizer auth2 = new OAuthAuthorizer(
+				AuthorizationServerTest.prot+"://localhost:"
+				+AuthorizationServerTest.serverPort+
+			"/oauth/validate",
+			AuthorizationServerTest.prot+"://localhost:"+
+			AuthorizationServerTest.serverPort+"/oauth/authorize"
+			);
+		auth2.setNext(ScopedDummyResource.class);
+		router.attach("/scoped",auth2);
+		
+		return router;
+	}
 
-	@Get
-	public Representation getDummy() {
-		return new StringRepresentation("TestSuccessful", MediaType.TEXT_HTML);
-	}
-	
-	@Post("form")
-	public Representation postDummy(Representation input) {
-		//return null;
-		//return new EmptyRepresentation();
-		return new StringRepresentation("ScopedDummy");
-	}
-
-	public String getOwner(Reference uri) {
-		return "user4";
-	}
-
-	public String[] getScope(Reference uri, Method method) {
-		return null;
-	}
 }

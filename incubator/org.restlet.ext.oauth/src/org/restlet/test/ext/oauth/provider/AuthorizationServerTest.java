@@ -1,3 +1,33 @@
+/**
+ * Copyright 2005-2011 Noelios Technologies.
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
+ * "Licenses"). You can select the license that you prefer but you may not use
+ * this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0.html
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1.php
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1.php
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0.php
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
+ */
+
 package org.restlet.test.ext.oauth.provider;
 
 import static org.junit.Assert.assertEquals;
@@ -38,10 +68,10 @@ import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
-import org.restlet.test.ext.oauth.test.resources.OauthClientTestApplication;
-import org.restlet.test.ext.oauth.test.resources.OauthComboTestApplication;
-import org.restlet.test.ext.oauth.test.resources.OauthProtectedTestApplication;
-import org.restlet.test.ext.oauth.test.resources.OauthTestApplication;
+import org.restlet.test.ext.oauth.test.resources.Oauth2ClientTestApplication;
+import org.restlet.test.ext.oauth.test.resources.Oauth2ComboTestApplication;
+import org.restlet.test.ext.oauth.test.resources.Oauth2ProtectedTestApplication;
+import org.restlet.test.ext.oauth.test.resources.Oauth2TestApplication;
 import org.restlet.util.Series;
 
 public class AuthorizationServerTest {
@@ -55,7 +85,7 @@ public class AuthorizationServerTest {
     // public static int serverPort = 8443;
     // public static final String prot = "https";
 
-    public static OauthClientTestApplication client = new OauthClientTestApplication();
+    public static Oauth2ClientTestApplication client = new Oauth2ClientTestApplication();
 
     @BeforeClass
     public static void startServer() throws Exception {
@@ -86,13 +116,13 @@ public class AuthorizationServerTest {
         // component.getClients().add(Protocol.CLAP);
         component.getClients().add(Protocol.RIAP);
         component.getDefaultHost()
-                .attach("/oauth", new OauthTestApplication(0)); // unlimited
+                .attach("/oauth", new Oauth2TestApplication(0)); // unlimited
                                                                 // token life
         component.getDefaultHost().attach("/client", client);
         component.getDefaultHost().attach("/server",
-                new OauthProtectedTestApplication());
+                new Oauth2ProtectedTestApplication());
         component.getDefaultHost().attach("/combo",
-                new OauthComboTestApplication(0)); // unlimited token life
+                new Oauth2ComboTestApplication(0)); // unlimited token life
 
         // Setup TLS
         Series<Parameter> parameters = server.getContext().getParameters();
@@ -313,7 +343,7 @@ public class AuthorizationServerTest {
     @Test
     public void testPasswordFlow() throws IOException {
         OAuthUser user = OAuthUtils.passwordFlow(client.getOauthParameters(),
-                OauthTestApplication.TEST_USER, OauthTestApplication.TEST_PASS);
+                Oauth2TestApplication.TEST_USER, Oauth2TestApplication.TEST_PASS);
         assertNotNull(user);
 
         // Try to use the token...
@@ -332,7 +362,7 @@ public class AuthorizationServerTest {
         // Wrong username test
         try {
             user = OAuthUtils.passwordFlow(client.getOauthParameters(),
-                    "sowrong", OauthTestApplication.TEST_PASS);
+                    "sowrong", Oauth2TestApplication.TEST_PASS);
         } catch (ResourceException re) { // Should be invalidated
             assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, re.getStatus());
         }
@@ -340,7 +370,7 @@ public class AuthorizationServerTest {
         // Wrong pasword test
         try {
             user = OAuthUtils.passwordFlow(client.getOauthParameters(),
-                    OauthTestApplication.TEST_USER, "sowrong");
+                    Oauth2TestApplication.TEST_USER, "sowrong");
         } catch (ResourceException re) { // Should be invalidated
             assertEquals(Status.CLIENT_ERROR_FORBIDDEN, re.getStatus());
         }
