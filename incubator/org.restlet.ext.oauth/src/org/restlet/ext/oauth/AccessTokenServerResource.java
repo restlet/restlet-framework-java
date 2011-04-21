@@ -48,7 +48,6 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
 /**
- * 
  * AccessTokenResource is used to acquire an oauth token. A code, or refresh
  * token can be exchange for a working token. This resource also supports the
  * none flow.
@@ -134,7 +133,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
                         doAuthCodeFlow(clientId, clientSecret, params);
                         break;
                     case password:
-                    	doPasswordFlow(clientId, clientSecret, params);
+                        doPasswordFlow(clientId, clientSecret, params);
                         break;
                     case assertion:
                         sendError(ErrorCode.unsupported_grant_type,
@@ -195,9 +194,10 @@ public class AccessTokenServerResource extends OAuthServerResource {
         Client client = validate(clientId, clientSecret);
         // null check on failed
         if (client == null) {
-        	sendError(ErrorCode.invalid_client,"Client id verification failed.",null);
-        	setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-        	return;
+            sendError(ErrorCode.invalid_client,
+                    "Client id verification failed.", null);
+            setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+            return;
         }
 
         // check the client secret
@@ -230,9 +230,10 @@ public class AccessTokenServerResource extends OAuthServerResource {
         Client client = validate(clientId, clientSecret);
         // null check on failed
         if (client == null) {
-        	sendError(ErrorCode.invalid_client,"Client id verification failed.",null);
-        	setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-        	return;
+            sendError(ErrorCode.invalid_client,
+                    "Client id verification failed.", null);
+            setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+            return;
         }
 
         if (!client.containsUser(AUTONOMOUS_USER))
@@ -256,37 +257,40 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         getResponse().setEntity(new JsonRepresentation(body));
     }
-    
-    private void doPasswordFlow(String clientId, String clientSecret, Form params) {
-    	Client client = validate(clientId, clientSecret);
+
+    private void doPasswordFlow(String clientId, String clientSecret,
+            Form params) {
+        Client client = validate(clientId, clientSecret);
         // null check on failed
         if (client == null) {
-        	sendError(ErrorCode.invalid_client,"Client id verification failed.",null);
-        	setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-        	return;
+            sendError(ErrorCode.invalid_client,
+                    "Client id verification failed.", null);
+            setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+            return;
         }
-            
-        
+
         String username = params.getFirstValue(USERNAME);
         AuthenticatedUser user = null;
-        if( username == null || (user = client.findUser(username)) == null ) {
-        	sendError(ErrorCode.invalid_request,"Mandatory parameter username missing.",null);
-        	setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+        if (username == null || (user = client.findUser(username)) == null) {
+            sendError(ErrorCode.invalid_request,
+                    "Mandatory parameter username missing.", null);
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return;
         }
         String password = params.getFirstValue(PASSWORD);
-        if( password == null ) {
-        	sendError(ErrorCode.invalid_request,"Mandatory parameter password missing.",null);
-        	setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+        if (password == null) {
+            sendError(ErrorCode.invalid_request,
+                    "Mandatory parameter password missing.", null);
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return;
         }
-        
-        if( !password.equals(user.getPassword()) ) {
-        	sendError(ErrorCode.invalid_grant,"Password not correct.",null);
-        	setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+
+        if (!password.equals(user.getPassword())) {
+            sendError(ErrorCode.invalid_grant, "Password not correct.", null);
+            setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             return;
         }
-        
+
         Token token = generator.generateToken(user, tokenTimeSec);
 
         JSONObject body = createJsonToken(token, null); // Scopes N/A
@@ -295,7 +299,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
         getResponse().setCacheDirectives(noStore);
 
         getResponse().setEntity(new JsonRepresentation(body));
-    	
+
     }
 
     private void doRefreshFlow(String clientId, String clientSecret, Form params) {
@@ -311,11 +315,12 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         // null check on failed
         if (client == null) {
-        	sendError(ErrorCode.invalid_client,"Client id verification failed.",null);
-        	setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-        	return;
+            sendError(ErrorCode.invalid_client,
+                    "Client id verification failed.", null);
+            setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+            return;
         }
-        
+
         Token token = generator.findToken(rToken);
         if (token != null && (token instanceof ExpireToken)) {
             AuthenticatedUser user = token.getUser();

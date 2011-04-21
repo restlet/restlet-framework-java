@@ -28,21 +28,24 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.oauth;
+package org.restlet.ext.oauth.experimental;
 
-import org.restlet.ext.oauth.ScopedResource;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * EXPERIMENTAL, and not part of the OAuth specification Implementation might
- * change in future releases.
- * 
- * Marker interface that can help developer discover OAuth protected resources
- * and how to proceed when access id denied.
- * 
- * There is an old XRD based OAuth 1.0 discovery but is not updated.
+ * Not supported yet.
  * 
  * @author Kristoffer Gronowski
- * 
  */
-public interface DiscoverableResource extends ScopedResource {
+
+// It would only make sense to add this once oauth moves out of incubator.
+// This annotation would be useful if scanned by the restlet Application
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface ClientAuthStore {
+
 }

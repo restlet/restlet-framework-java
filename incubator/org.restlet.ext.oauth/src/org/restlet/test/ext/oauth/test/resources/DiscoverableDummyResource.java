@@ -3,7 +3,7 @@ package org.restlet.test.ext.oauth.test.resources;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.ext.oauth.DiscoverableResource;
+import org.restlet.ext.oauth.experimental.DiscoverableResource;
 import org.restlet.ext.wadl.WadlServerResource;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;

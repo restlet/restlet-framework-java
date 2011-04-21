@@ -20,7 +20,7 @@ import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.ext.oauth.OAuthHelper;
-import org.restlet.ext.oauth.OAuthUtils;
+import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.test.ext.oauth.test.resources.FbClientTestApplication;

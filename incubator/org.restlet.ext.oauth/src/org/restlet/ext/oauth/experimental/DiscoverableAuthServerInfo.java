@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.oauth;
+package org.restlet.ext.oauth.experimental;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,14 +47,13 @@ import org.json.JSONObject;
  * 
  * All values should be quite static once a server is up and running.
  * 
- * Note that the URL's are rellative since they will be concatenated in runtime
+ * Note that the URL's are relative since they will be concatenated in runtime
  * based on the current base URI that they were accessed from.
  * 
  * @author Kristoffer Gronowski
- * 
  */
-
 public class DiscoverableAuthServerInfo {
+
     public enum GrantType {
         authorization_code, password, assertion, refresh_token, none
     }
@@ -91,8 +90,8 @@ public class DiscoverableAuthServerInfo {
 
     private List<String> idTechnologies; // Supported ways to login
 
-    public DiscoverableAuthServerInfo(String authorizationUrl, String accessTokenUrl,
-            String validationUrl) {
+    public DiscoverableAuthServerInfo(String authorizationUrl,
+            String accessTokenUrl, String validationUrl) {
         this.authorizationUrl = authorizationUrl;
         this.accessTokenUrl = accessTokenUrl;
         this.validationUrl = validationUrl;

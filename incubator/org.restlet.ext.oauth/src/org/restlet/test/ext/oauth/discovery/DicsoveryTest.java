@@ -12,7 +12,7 @@ import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.ext.oauth.DiscoverableFilter;
+import org.restlet.ext.oauth.experimental.DiscoverableFilter;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.test.ext.oauth.test.resources.OauthDiscoverableTestApplication;

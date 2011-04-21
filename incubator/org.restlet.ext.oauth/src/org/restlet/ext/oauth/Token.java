@@ -40,9 +40,9 @@ package org.restlet.ext.oauth;
  */
 public abstract class Token {
 
-	/**
-	 * Value indicating that the Token should not expire 
-	 */
+    /**
+     * Value indicating that the Token should not expire
+     */
     public static final long UNLIMITED = 0;
 
     /**
@@ -56,13 +56,13 @@ public abstract class Token {
      * @return the user that is the owner of this token
      */
     public abstract AuthenticatedUser getUser();
-    
+
     /**
-     * Generic package method since the Token can be revoked
-     * and re-issued or just persisted and re-instantiated.
+     * Generic package method since the Token can be revoked and re-issued or
+     * just persisted and re-instantiated.
      * 
      * 
      * @param token
      */
-    abstract void setToken( String token );
+    abstract void setToken(String token);
 }

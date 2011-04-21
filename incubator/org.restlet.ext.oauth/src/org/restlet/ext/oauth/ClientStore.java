@@ -32,7 +32,7 @@ package org.restlet.ext.oauth;
 
 import java.util.Collection;
 
-//import org.restlet.Context;
+// import org.restlet.Context;
 
 /**
  * Abstract class that defines a client store for the Authentication Server. The

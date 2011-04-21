@@ -72,7 +72,7 @@ import org.restlet.util.Series;
  * {@code
  * public Restlet createInboundRoot(){
  *   ...
- *   RemoteAuthorizer auth = new RemoteAuthorizer(
+ *   OAuthAuthorizer auth = new OAuthAuthorizer(
  *              "http://localhost:8080/OAuth2Provider/validate",
  *              "http://localhost:8080/OAuth2Provider/authorize");
  *   auth.setNext(ProtectedResource.class);
@@ -93,15 +93,17 @@ public class OAuthAuthorizer extends Authorizer {
     protected final Reference validateRef;
 
     /**
-     * Set up a RemoteAuthorizer
+     * Constructor.
      * 
-     * @param validationURI
-     *            validation url pointing to the auth server validation resource
-     * @param authorizationURI
-     *            url that should be invoked on errors
+     * @param validationRef
+     *            The validation URI referencing the auth server validation
+     *            resource.
+     * @param authorizationRef
+     *            The authorization URI referencing that should be invoked on
+     *            errors.
      */
-    public OAuthAuthorizer(String validationURI, String authorizationURI) {
-        this(validationURI, authorizationURI, false);
+    public OAuthAuthorizer(String validationRef, String authorizationRef) {
+        this(validationRef, authorizationRef, false);
     }
 
     /**
@@ -110,33 +112,35 @@ public class OAuthAuthorizer extends Authorizer {
      * be started and mapped in the auth server.
      * 
      * 
-     * @param validationURI
-     *            validation url pointing to the auth server validation resource
-     * @param authorizationURI
-     *            url that should be invoked on errors
+     * @param validationRef
+     *            The validation URI referencing the auth server validation
+     *            resource.
+     * @param authorizationRef
+     *            The authorization URI referencing that should be invoked on
+     *            errors.
      * @param local
      *            if true a local authorizer will be created
      */
-    public OAuthAuthorizer(String validationURI, String authorizationURI,
+    public OAuthAuthorizer(String validationRef, String authorizationRef,
             boolean local) {
         if (local) {
-            authorizeRef = new Reference(authorizationURI);
-            validateRef = new Reference("riap://application" + validationURI);
+            authorizeRef = new Reference(authorizationRef);
+            validateRef = new Reference("riap://application" + validationRef);
         } else {
-            authorizeRef = new Reference(authorizationURI);
-            validateRef = new Reference(validationURI);
+            authorizeRef = new Reference(authorizationRef);
+            validateRef = new Reference(validationRef);
         }
     }
-    
-    
 
     /**
      * Set up a RemoteAuthorizer
      * 
      * @param validationRef
-     *            validation url pointing to the auth server validation resource
+     *            The validation URI referencing the auth server validation
+     *            resource.
      * @param authorizationRef
-     *            url that should be invoked on errors
+     *            The authorization URI referencing that should be invoked on
+     *            errors.
      */
     public OAuthAuthorizer(Reference validationRef, Reference authorizationRef) {
         authorizeRef = authorizationRef;
@@ -144,15 +148,19 @@ public class OAuthAuthorizer extends Authorizer {
     }
 
     /**
-     * Set up a RemoteAuthorizer
+     * Constructor.
      * 
      * @param validationRef
-     *            validation url pointing to the auth server validation resource
+     *            The validation URI referencing the auth server validation
+     *            resource.
      */
     public OAuthAuthorizer(Reference validationRef) {
         this(validationRef, null); // Nothing on errors
     }
 
+    /**
+     * Default constructor.
+     */
     protected OAuthAuthorizer() {
         this.authorizeRef = null;
         this.validateRef = null;
@@ -172,8 +180,8 @@ public class OAuthAuthorizer extends Authorizer {
         // check the query for token
         else if (accessToken == null || accessToken.length() == 0) {
             log.info("Didn't contain a Authorization header - checking query");
-            accessToken = req.getOriginalRef().getQueryAsForm().getFirstValue(
-                    OAuthServerResource.OAUTH_TOKEN);
+            accessToken = req.getOriginalRef().getQueryAsForm()
+                    .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
             // Last chance, checking body
             if (accessToken == null || accessToken.length() == 0) {
                 if (req.getMethod() == Method.POST
@@ -227,7 +235,7 @@ public class OAuthAuthorizer extends Authorizer {
                         // next = ((Filter)next).getNext();
                     } else if (next instanceof Filter) {
                         next = ((Filter) next).getNext();
-                    } else if (next instanceof Router) { 
+                    } else if (next instanceof Router) {
                         next = ((Router) next).getNext(req, resp);
                     } else {
                         getLogger().warning(
@@ -244,7 +252,7 @@ public class OAuthAuthorizer extends Authorizer {
                     log.info("Found owner = " + owner);
                     // More job here but easier for the developer to use []
                     String[] scopes = scoped.getScope(uri, req.getMethod());
-                    log.info("Found scopes = "+scopes);
+                    log.info("Found scopes = " + scopes);
                     if (scopes != null && scopes.length > 0) {
                         JSONArray jArray = new JSONArray();
                         for (String scope : scopes)
@@ -255,8 +263,8 @@ public class OAuthAuthorizer extends Authorizer {
                 request.put("uri", uri.getHierarchicalPart());
                 // GET SIZE TO HANDLE BUG IN GLASSFISH
                 JsonRepresentation repr = new JsonRepresentation(request);
-                StringRepresentation sr = new StringRepresentation(request
-                        .toString());
+                StringRepresentation sr = new StringRepresentation(
+                        request.toString());
                 sr.setCharacterSet(repr.getCharacterSet());
                 repr.setSize(sr.getSize());
 

@@ -46,7 +46,6 @@ import org.restlet.resource.Post;
 import org.restlet.routing.Redirector;
 
 /**
- * 
  * Restlet implementation class AuthorizationService Used for initiating an
  * OAuth 2.0 authorization request.
  * 

@@ -40,7 +40,6 @@ import org.restlet.Uniform;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.data.Status;
 import org.restlet.resource.ClientResource;
 
 /**

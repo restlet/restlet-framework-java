@@ -9,7 +9,6 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
-import org.restlet.test.ext.oauth.provider.AuthorizationServerTest;
 
 public class Scoped3 extends ServerResource implements ScopedResource{
 

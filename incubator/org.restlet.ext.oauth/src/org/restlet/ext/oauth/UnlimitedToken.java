@@ -35,52 +35,55 @@ package org.restlet.ext.oauth;
  * 
  * @author Kristoffer Gronowski
  */
-
 public class UnlimitedToken extends Token {
-	private String token;
-	private AuthenticatedUser user;
-	
-	/**
-	 * 
-	 * @param token string representing the oauth token
-	 * @param user the end user being represented
-	 */
-	public UnlimitedToken(String token, AuthenticatedUser user) {
-		this.token = token;
-		this.user = user;
-	}
 
-	/**
-	 * 
+    private String token;
+
+    private AuthenticatedUser user;
+
+    /**
+     * 
+     * @param token
+     *            string representing the OAuth token
+     * @param user
+     *            the end user being represented
+     */
+    public UnlimitedToken(String token, AuthenticatedUser user) {
+        this.token = token;
+        this.user = user;
+    }
+
+    /**
+     * 
      * @return the actual token to be used for OAuth invocations.
      */
-	@Override
-	public String getToken() {
-		return token;
-	}
+    @Override
+    public String getToken() {
+        return token;
+    }
 
-	/**
+    /**
      * 
      * @return the user that is the owner of this token
      */
-	@Override
-	public AuthenticatedUser getUser() {
-		return user;
-	}
-	
-	 /**
-     * Generic package method since the Token can be revoked
-     * and re-issued or just persisted and re-instantiated.
+    @Override
+    public AuthenticatedUser getUser() {
+        return user;
+    }
+
+    /**
+     * Generic package method since the Token can be revoked and re-issued or
+     * just persisted and re-instantiated.
      * 
      * 
      * @param token
      */
-	@Override
-	void setToken(String token) {
-		this.token = token;
-	}
-	
-	 // TODO improve on equals.
+    @Override
+    void setToken(String token) {
+        this.token = token;
+    }
+
+    // TODO improve on equals.
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Token) {

@@ -32,13 +32,13 @@ package org.restlet.ext.oauth;
 
 /**
  * A POJO representing a OAuth client_id. Each client can have collected a
- * number of authnticated users to allow working on their behalf.
+ * number of authenticated users to allow working on their behalf.
  * 
  * Implementors should implement the storage and retrieval.
  * 
  * @author Kristoffer Gronowski
  */
-public abstract class Client implements UserStore{
+public abstract class Client implements UserStore {
 
     /**
      * Client id that the client has registered at the auth provider.

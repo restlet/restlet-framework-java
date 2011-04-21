@@ -53,10 +53,10 @@ import freemarker.template.Configuration;
  * 
  * To intercept and allow a user to control a Context parameter
  * 'oauth_auth_page' should be set in the attributes. It should contain a static
- * HTML page or a Fremarker page that will be loaded with the CLAP protocol
+ * HTML page or a FreeMarker page that will be loaded with the CLAP protocol
  * straight from root.
  * 
- * The freemarker data model looks like the following
+ * The FreeMarker data model looks like the following
  * 
  * <pre>
  * {
@@ -72,7 +72,7 @@ import freemarker.template.Configuration;
  * }
  * </pre>
  * 
- * Below is an example of a simple freemarker page for authorization
+ * Below is an example of a simple FreeMarker page for authorization
  * 
  * <pre>
  * {@code
@@ -122,7 +122,8 @@ import freemarker.template.Configuration;
  * 
  * 
  * should be set in the attributes. It should contain a static HTML page or a
- * Fremarker page that will be loaded with the CLAP protocol straight from root.
+ * FreeMarker page that will be loaded with the CLAP protocol straight from
+ * root.
  * 
  * @author Kristoffer Gronowski
  */
@@ -224,10 +225,11 @@ public class AuthPageServerResource extends OAuthServerResource {
 
         // Following scopes were approved
         AuthenticatedUser user = client.findUser(session.getScopeOwner());
-        if( user == null ) {
-        	setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Can't find User id : "+session.getScopeOwner());
+        if (user == null) {
+            setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Can't find User id : "
+                    + session.getScopeOwner());
         }
-        
+
         // clear scopes.... if user wants to downgrade
         user.revokeScopes();
 
@@ -250,7 +252,7 @@ public class AuthPageServerResource extends OAuthServerResource {
         session.setState(null);
         // Save the user if using DB
         user.persist();
-        
+
         redirectTemporary(location);
     }
 
@@ -288,8 +290,8 @@ public class AuthPageServerResource extends OAuthServerResource {
 
         // Build the model
         HashMap<String, Object> data = new HashMap<String, Object>();
-        
-        data.put("target", getRequest().getRootRef()+"/auth_page");
+
+        data.put("target", getRequest().getRootRef() + "/auth_page");
         // TODO check with Restlet lead
         data.put("clientId", clientId);
         data.put("clientDescription", client.toString());

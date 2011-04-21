@@ -59,7 +59,8 @@ import org.restlet.ext.oauth.internal.provider.data.MemClientStore;
  * @author Kristoffer Gronowski
  */
 public abstract class ClientStoreFactory {
-    private static Class<? extends ClientStore<?> > defaultImpl = MemClientStore.class;
+
+    private static Class<? extends ClientStore<?>> defaultImpl = MemClientStore.class;
 
     private static Object[] params = {};
 

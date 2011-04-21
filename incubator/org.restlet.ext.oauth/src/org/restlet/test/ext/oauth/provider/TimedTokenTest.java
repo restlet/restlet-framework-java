@@ -22,13 +22,13 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.ext.oauth.OAuthHelper;
 import org.restlet.ext.oauth.OAuthUser;
-import org.restlet.ext.oauth.OAuthUtils;
 import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
+import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
-import org.restlet.test.ext.oauth.test.resources.OauthClientTestApplication;
+import org.restlet.test.ext.oauth.test.resources.OAuthClientTestApplication;
 import org.restlet.test.ext.oauth.test.resources.OauthProtectedTestApplication;
 import org.restlet.test.ext.oauth.test.resources.OauthTestApplication;
 import org.restlet.util.Series;
@@ -44,7 +44,7 @@ public class TimedTokenTest {
     // public static int serverPort = 8443;
     // public static final String prot = "https";
 
-    public static OauthClientTestApplication client = new OauthClientTestApplication();
+    public static OAuthClientTestApplication client = new OAuthClientTestApplication();
 
     @BeforeClass
     public static void startServer() throws Exception {

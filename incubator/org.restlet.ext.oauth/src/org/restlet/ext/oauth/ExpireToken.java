@@ -41,11 +41,13 @@ import java.util.concurrent.ScheduledFuture;
  * @see TokenGenerator#refreshToken(ExpireToken)
  */
 public class ExpireToken extends Token {
+
     private final long expireTime;
 
     private final String refreshToken;
+
     private String token;
-    
+
     private AuthenticatedUser user;
 
     private ScheduledFuture<?> future; // can be used to clean up
@@ -79,19 +81,19 @@ public class ExpireToken extends Token {
             future.cancel(false);
         token = null;
     }
-    
-    public AuthenticatedUser getUser() {
-		return user;
-	}
 
-	public String getToken() {
-		return token;
-	}
-    
+    public AuthenticatedUser getUser() {
+        return user;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
     void setToken(String token) {
         this.token = token;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ExpireToken) {

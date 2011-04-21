@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.oauth;
+package org.restlet.ext.oauth.internal;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -42,7 +42,9 @@ import org.restlet.data.Form;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.ext.oauth.internal.CookieCopyClientResource;
+import org.restlet.ext.oauth.OAuthParameters;
+import org.restlet.ext.oauth.OAuthServerResource;
+import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -73,8 +75,8 @@ public class OAuthUtils {
     public static OAuthUser refreshToken(OAuthParameters params,
             String refreshToken) {
         OAuthUser result = null;
-        ClientResource tokenResource = new CookieCopyClientResource(params.getBaseRef()
-                + params.getAccessTokenPath());
+        ClientResource tokenResource = new CookieCopyClientResource(
+                params.getBaseRef() + params.getAccessTokenPath());
 
         Form form = new Form();
         form.add(OAuthServerResource.GRANT_TYPE,
@@ -141,7 +143,8 @@ public class OAuthUtils {
         String q = form.getQueryString();
         Reference redirRef = new Reference(params.getBaseRef(),
                 params.getAuthorizePath(), q, null);
-        ClientResource authResource = new CookieCopyClientResource(redirRef.toUri());
+        ClientResource authResource = new CookieCopyClientResource(
+                redirRef.toUri());
         authResource.setFollowingRedirects(false); // token is in a 3xx
         Representation r = authResource.get();
 
@@ -190,21 +193,22 @@ public class OAuthUtils {
                             + authResource.getResponse().getLocationRef());
             authResource.setReference(authResource.getResponse()
                     .getLocationRef());
-            //FOR TESTING!!!!
-            if(cnt == 1){
-                
-            for(CookieSetting cs : authResource.getCookieSettings()){
-                
-                authResource.getCookies().add(cs.getName(), cs.getValue());
-            }
+            // FOR TESTING!!!!
+            if (cnt == 1) {
+
+                for (CookieSetting cs : authResource.getCookieSettings()) {
+
+                    authResource.getCookies().add(cs.getName(), cs.getValue());
+                }
             }
             r = authResource.get();
-            //Check if it is a OpenID form forward
-		    try {
-				r = OpenIdFormFrowarder.handleFormRedirect(r, authResource);
-			} catch( IOException e ) {
-				Context.getCurrentLogger().log(Level.WARNING, "Failed in OpenID FW", e );
-			}
+            // Check if it is a OpenID form forward
+            try {
+                r = OpenIdFormFrowarder.handleFormRedirect(r, authResource);
+            } catch (IOException e) {
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Failed in OpenID FW", e);
+            }
         }
 
         r.release();
@@ -250,7 +254,8 @@ public class OAuthUtils {
         String q = form.getQueryString();
         Reference redirRef = new Reference(params.getBaseRef(),
                 params.getAuthorizePath(), q, null);
-        ClientResource authResource = new CookieCopyClientResource(redirRef.toUri());
+        ClientResource authResource = new CookieCopyClientResource(
+                redirRef.toUri());
         authResource.setFollowingRedirects(false); // token is in a 3xx
         Representation r = authResource.get();
 
@@ -328,8 +333,8 @@ public class OAuthUtils {
             form.add(OAuthServerResource.SCOPE, params.getScope());
         }
 
-        ClientResource tokenResource = new CookieCopyClientResource(params.getBaseRef()
-                + params.getAccessTokenPath());
+        ClientResource tokenResource = new CookieCopyClientResource(
+                params.getBaseRef() + params.getAccessTokenPath());
 
         Context.getCurrentLogger().info(
                 "Sending NoneFlow form : " + form.getQueryString());
@@ -345,13 +350,15 @@ public class OAuthUtils {
 
         return result;
     }
-    
-    public static OAuthUser passwordFlow(OAuthParameters params, String username, String password){
-        return passwordFlow(params, username, password, new org.restlet.Client(Protocol.HTTP));
+
+    public static OAuthUser passwordFlow(OAuthParameters params,
+            String username, String password) {
+        return passwordFlow(params, username, password, new org.restlet.Client(
+                Protocol.HTTP));
     }
-    
-    public static OAuthUser passwordFlow(OAuthParameters params, String username, String password, 
-            org.restlet.Client c) {
+
+    public static OAuthUser passwordFlow(OAuthParameters params,
+            String username, String password, org.restlet.Client c) {
         OAuthUser result = null;
         Form form = new Form();
         form.add(OAuthServerResource.GRANT_TYPE,
@@ -360,27 +367,26 @@ public class OAuthUtils {
         form.add(OAuthServerResource.CLIENT_SECRET, params.getClientSecret());
         form.add(OAuthServerResource.USERNAME, username);
         form.add(OAuthServerResource.PASSWORD, password);
-        
-        ClientResource tokenResource = new CookieCopyClientResource(params.getBaseRef()
-                + params.getAccessTokenPath());
+
+        ClientResource tokenResource = new CookieCopyClientResource(
+                params.getBaseRef() + params.getAccessTokenPath());
         tokenResource.setNext(c);
-        
+
         Context.getCurrentLogger().info(
                 "Sending PasswordFlow form : " + form.getQueryString());
         Representation body = null;
-        try{
+        try {
             body = tokenResource.post(form.getWebRepresentation());
 
-        if (tokenResource.getResponse().getStatus().isSuccess()) {
-            result = handleSuccessResponse(body);
-        }
-        }
-        finally{
-            if (body != null) body.release();
+            if (tokenResource.getResponse().getStatus().isSuccess()) {
+                result = handleSuccessResponse(body);
+            }
+        } finally {
+            if (body != null)
+                body.release();
             tokenResource.release();
         }
-        
-        
+
         return result;
     }
 

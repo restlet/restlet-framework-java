@@ -31,17 +31,14 @@
 package org.restlet.ext.oauth;
 
 /**
- * The user store interface represents the entry point where user
- * requests are created, searched and removed.
- * It is an excellent indicator where to modify when implementing another
- * persistancy model.
+ * The user store interface represents the entry point where user requests are
+ * created, searched and removed. It is an excellent indicator where to modify
+ * when implementing another persistence model.
  * 
  * @author Kristoffer Gronowski
- *
  */
-
 public interface UserStore {
-	/**
+    /**
      * Create a user
      */
     public abstract AuthenticatedUser createUser(String id);
@@ -57,7 +54,8 @@ public interface UserStore {
     public abstract boolean containsUser(String id);
 
     /**
-     * @param id of the user to revoke/delete
+     * @param id
+     *            of the user to revoke/delete
      */
     public abstract void revokeUser(String id); // Same as delete a user.
 

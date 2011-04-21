@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.oauth;
+package org.restlet.ext.oauth.experimental;
 
 import java.util.HashSet;
 import java.util.List;
@@ -45,8 +45,6 @@ import org.restlet.data.Method;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.ext.wadl.ResourceInfo;
-import org.restlet.ext.wadl.WadlRepresentation;
 import org.restlet.ext.wadl.WadlServerResource;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
@@ -58,9 +56,7 @@ import org.restlet.routing.Router;
  * change in future releases.
  * 
  * @author Kristoffer Gronowski
- * 
  */
-
 public class DiscoverableFilter extends Filter {
     public static final String CONTENT_TYPE = "application/restlet-oauth-discovery+json";
 
@@ -184,8 +180,8 @@ public class DiscoverableFilter extends Filter {
         // Supported methods
         DiscoverableEndpointInfo result = new DiscoverableEndpointInfo(methods);
         // Required scopes
-        String[] scopes = scoped.getScope(request.getResourceRef(), request
-                .getMethod());
+        String[] scopes = scoped.getScope(request.getResourceRef(),
+                request.getMethod());
         if (scopes != null)
             result.setScopes(scopes);
         // Resource owner

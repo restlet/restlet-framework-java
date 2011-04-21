@@ -33,7 +33,7 @@ import org.restlet.ext.oauth.OAuthForm;
 import org.restlet.ext.oauth.OAuthHelper;
 import org.restlet.ext.oauth.OAuthParameters;
 import org.restlet.ext.oauth.OAuthUser;
-import org.restlet.ext.oauth.OAuthUtils;
+import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -59,9 +59,9 @@ public class AuthorizationServerTest {
 
     @BeforeClass
     public static void startServer() throws Exception {
-        
-        //org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory i;
-        
+
+        // org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory i;
+
         Logger log = Context.getCurrentLogger();
         log.info("Starting server test!");
 
@@ -73,10 +73,10 @@ public class AuthorizationServerTest {
         System.setProperty("javax.net.ssl.trustStorePassword", "testpass");
 
         // Server server = new Server(Protocol.HTTPS, serverPort);
-        Server server = new Server( new Context(), Protocol.HTTP, serverPort);
-        //Strange workaround for the server to not hang.
+        Server server = new Server(new Context(), Protocol.HTTP, serverPort);
+        // Strange workaround for the server to not hang.
         server.getContext().getParameters().add("maxQueued", "0");
-        
+
         // server.setName("localhost.local");
         // server.setAddress("localhost.local");
         component = new Component();
@@ -129,8 +129,8 @@ public class AuthorizationServerTest {
                 + serverPort + "/client/webclient");
         Representation r = cr.get();
         assertNotNull(r);
-	    r = OpenIdFormFrowarder.handleFormRedirect(r, cr);
-	    assertNotNull(r);
+        r = OpenIdFormFrowarder.handleFormRedirect(r, cr);
+        assertNotNull(r);
         String text = r.getText();
         assertEquals("Response text test", text, "TestSuccessful");
         assertEquals("Response content type test", r.getMediaType(),
@@ -309,14 +309,13 @@ public class AuthorizationServerTest {
         }
         cr.release();
     }
-    
+
     @Test
     public void testPasswordFlow() throws IOException {
-    	OAuthUser user = OAuthUtils.passwordFlow(client.getOauthParameters(),
-    			OauthTestApplication.TEST_USER,
-    			OauthTestApplication.TEST_PASS);
+        OAuthUser user = OAuthUtils.passwordFlow(client.getOauthParameters(),
+                OauthTestApplication.TEST_USER, OauthTestApplication.TEST_PASS);
         assertNotNull(user);
-        
+
         // Try to use the token...
         Reference ref = new Reference(prot + "://localhost:" + serverPort
                 + "/server/protected");
@@ -329,26 +328,24 @@ public class AuthorizationServerTest {
         assertEquals("Response content type test", r.getMediaType(),
                 MediaType.TEXT_HTML);
         cr.release();
-        
-      //Wrong username test
+
+        // Wrong username test
         try {
-        	user = OAuthUtils.passwordFlow(client.getOauthParameters(),
-    			"sowrong",
-    			OauthTestApplication.TEST_PASS);
+            user = OAuthUtils.passwordFlow(client.getOauthParameters(),
+                    "sowrong", OauthTestApplication.TEST_PASS);
         } catch (ResourceException re) { // Should be invalidated
             assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, re.getStatus());
         }
-        
-        //Wrong pasword test
+
+        // Wrong pasword test
         try {
-        	user = OAuthUtils.passwordFlow(client.getOauthParameters(),
-    			OauthTestApplication.TEST_USER,
-    			"sowrong");
+            user = OAuthUtils.passwordFlow(client.getOauthParameters(),
+                    OauthTestApplication.TEST_USER, "sowrong");
         } catch (ResourceException re) { // Should be invalidated
             assertEquals(Status.CLIENT_ERROR_FORBIDDEN, re.getStatus());
         }
     }
-    
+
     @Ignore
     @Test
     public void testValidationSingleConnection() throws Exception {

@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.oauth;
+package org.restlet.ext.oauth.experimental;
 
 import java.util.Collections;
 import java.util.Set;
@@ -45,14 +45,15 @@ import org.restlet.data.Method;
  * @author Kristoffer Gronowski
  * 
  */
-
 public class DiscoverableEndpointInfo {
+
     public enum ScopeSet { // Describe if the scope set is mutable or not
         fixed, dynamic
     }
 
     private String[] scopes = {};
 
+    @SuppressWarnings("unchecked")
     private Set<Method> methods = Collections.EMPTY_SET;
 
     private String owner;

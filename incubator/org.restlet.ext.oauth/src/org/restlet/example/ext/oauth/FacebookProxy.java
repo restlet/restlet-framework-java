@@ -45,7 +45,7 @@ import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.OAuthParameters;
 import org.restlet.ext.oauth.OAuthProxy;
 import org.restlet.ext.oauth.OAuthServerResource;
-import org.restlet.ext.oauth.OAuthUtils;
+import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.resource.ClientResource;
 import org.restlet.security.User;
 

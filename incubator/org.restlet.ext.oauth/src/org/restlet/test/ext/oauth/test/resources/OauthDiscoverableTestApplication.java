@@ -1,9 +1,9 @@
 package org.restlet.test.ext.oauth.test.resources;
 
 import org.restlet.Restlet;
-import org.restlet.ext.oauth.DiscoverableAuthServerInfo;
-import org.restlet.ext.oauth.DiscoverableFilter;
 import org.restlet.ext.oauth.ValidationServerResource;
+import org.restlet.ext.oauth.experimental.DiscoverableAuthServerInfo;
+import org.restlet.ext.oauth.experimental.DiscoverableFilter;
 import org.restlet.routing.Router;
 
 /**
