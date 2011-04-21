@@ -70,8 +70,8 @@ public class MailServerComponent extends Component {
         getServers().add(server);
 
         // Configure the default virtual host
-        // getDefaultHost().setHostDomain("www.rmep.com|www.rmep.net|www.rmep.org");
-        // getDefaultHost().setServerAddress("1.2.3.10|1.2.3.20");
+        // getDefaultHost().setHostDomain("www\.rmep\.com|www\.rmep\.net|www\.rmep\.org");
+        // getDefaultHost().setServerAddress("1\.2\.3\.10|1\.2\.3\.20");
         // getDefaultHost().setServerPort("80");
 
         // Attach the application to the default virtual host

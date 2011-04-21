@@ -34,11 +34,12 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
@@ -75,8 +76,8 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
             headerName = param.getName().toLowerCase();
             if (headerName.startsWith("x-amz-")) {
                 if (!amzHeaders.containsKey(headerName)) {
-                    amzHeaders.put(headerName, requestHeaders
-                            .getValues(headerName));
+                    amzHeaders.put(headerName,
+                            requestHeaders.getValues(headerName));
                 }
             }
         }
@@ -95,29 +96,53 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
     /**
      * Returns the canonicalized resource name.
      * 
-     * @param resourceRef
+     * @param reference
      *            The resource reference.
      * @return The canonicalized resource name.
      */
-    private static String getCanonicalizedResourceName(Reference resourceRef) {
-        final StringBuilder sb = new StringBuilder();
+    private static String getCanonicalizedResourceName(Reference reference) {
+        String hostName = reference.getHostDomain();
+        String path = reference.getPath();
+        Pattern hostNamePattern = Pattern
+                .compile("s3[a-z0-1\\-]*.amazonaws.com");
+        StringBuilder sb = new StringBuilder();
 
-        String hostName = resourceRef.getHostDomain();
-        if (hostName.endsWith(".s3.amazonaws.com")) {
-            // The bucket name needs to be extracted
-            String bucketName = hostName.substring(0, hostName.length() - 17);
-            sb.append("/" + bucketName);
+        // Append the bucket
+        if (hostName != null) {
+            // If the host name contains a port number remove it
+            if (hostName.contains(":"))
+                hostName = hostName.substring(0, hostName.indexOf(":"));
+
+            Matcher hostNameMatcher = hostNamePattern.matcher(hostName);
+            if (hostName.endsWith(".s3.amazonaws.com")) {
+                String bucketName = hostName.substring(0,
+                        hostName.length() - 17);
+                sb.append("/" + bucketName);
+            } else if (!hostNameMatcher.matches()) {
+                sb.append("/" + hostName);
+            }
         }
 
-        sb.append(resourceRef.getPath());
+        int queryIdx = path.indexOf("?");
 
-        final Form query = resourceRef.getQueryAsForm();
-        if (query.getFirst("acl", true) != null) {
-            sb.append("?acl");
-        } else if (query.getFirst("torrent", true) != null) {
-            sb.append("?torrent");
-        } else if (query.getFirst("location", true) != null) {
-            sb.append("?location");
+        // Append the resource path
+        if (queryIdx >= 0)
+            sb.append(path.substring(0, queryIdx));
+        else
+            sb.append(path.substring(0, path.length()));
+
+        // Append the AWS sub-resource
+        if (queryIdx >= 0) {
+            String query = path.substring(queryIdx - 1, path.length());
+
+            if (query.contains("?acl"))
+                sb.append("?acl");
+            else if (query.contains("?location"))
+                sb.append("?location");
+            else if (query.contains("?logging"))
+                sb.append("?logging");
+            else if (query.contains("?torrent"))
+                sb.append("?torrent");
         }
 
         return sb.toString();
@@ -146,8 +171,8 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
             date = httpHeaders.getFirstValue(HeaderConstants.HEADER_DATE, true);
             if (date == null) {
                 // Add a fresh Date header
-                date = DateUtils.format(new Date(), DateUtils.FORMAT_RFC_1123
-                        .get(0));
+                date = DateUtils.format(new Date(),
+                        DateUtils.FORMAT_RFC_1123.get(0));
                 httpHeaders.add(HeaderConstants.HEADER_DATE, date);
             }
         }
@@ -205,9 +230,12 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
                 .append(canonicalizedAmzHeaders).append(canonicalizedResource);
 
         // Append the AWS credentials
-        cw.append(challenge.getIdentifier()).append(':').append(
-                Base64.encode(DigestUtils.toHMac(rest.toString(), BioUtils
-                        .toByteArray(challenge.getSecret())), false));
+        cw.append(challenge.getIdentifier())
+                .append(':')
+                .append(Base64.encode(
+                        DigestUtils.toHMac(rest.toString(),
+                                BioUtils.toByteArray(challenge.getSecret())),
+                        false));
 
     }
 

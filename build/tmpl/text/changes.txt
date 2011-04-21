@@ -8,6 +8,8 @@ Changes log
        - Optimized support of JAXB in the JAXRS extension in case
          the org.restlet.ext.jaxb extension is present in the 
          classpath. Reported by Julien Landure.
+       - Amazon S3 authentication could fail due to new subdomain 
+         names like "s3[a-z0-1\\-]*.amazonaws.com".
     - Misc
        - Clarified in log trace the need to manually register connector
          helpers on the Android edition.
