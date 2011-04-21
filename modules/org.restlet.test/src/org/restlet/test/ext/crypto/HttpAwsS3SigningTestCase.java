@@ -50,7 +50,7 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author Jean-Philippe Steinmetz <caskater47@gmail.com>
  */
-public class HttpAwsS3UtilsTestCase extends RestletTestCase {
+public class HttpAwsS3SigningTestCase extends RestletTestCase {
     private static final String ACCESS_KEY = "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o";
 
     private static final String ATTRIBUTES_HEADERS = "org.restlet.http.headers";

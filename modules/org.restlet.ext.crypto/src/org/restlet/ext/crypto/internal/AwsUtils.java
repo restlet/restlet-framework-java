@@ -117,6 +117,8 @@ public class AwsUtils {
     public static String getCanonicalizedResourceName(Reference reference) {
         String hostName = reference.getHostDomain();
         String path = reference.getPath();
+        Pattern hostNamePattern = Pattern
+                .compile("s3[a-z0-1\\-]*.amazonaws.com");
         StringBuilder sb = new StringBuilder();
 
         // Append the bucket
@@ -125,14 +127,12 @@ public class AwsUtils {
             if (hostName.contains(":"))
                 hostName = hostName.substring(0, hostName.indexOf(":"));
 
-            if (hostName.endsWith("s3.amazonaws.com")) {
-                if (hostName.charAt(hostName.length() - 17) == '.') {
-                    String bucketName = hostName.substring(0,
-                            hostName.length() - 17);
-
-                    sb.append("/" + bucketName);
-                }
-            } else {
+            Matcher hostNameMatcher = hostNamePattern.matcher(hostName);
+            if (hostName.endsWith(".s3.amazonaws.com")) {
+                String bucketName = hostName.substring(0,
+                        hostName.length() - 17);
+                sb.append("/" + bucketName);
+            } else if (!hostNameMatcher.matches()) {
                 sb.append("/" + hostName);
             }
         }
@@ -161,7 +161,7 @@ public class AwsUtils {
 
         return sb.toString();
     }
-    
+
     /**
      * Returns the AWS S3 authentication compatible signature for the given
      * request and secret.
@@ -174,7 +174,7 @@ public class AwsUtils {
      */
     public static String getSignature(Request request, char[] secret) {
         Form headers = (Form) request.getAttributes().get(
-            "org.restlet.http.headers");
+                "org.restlet.http.headers");
         return getSignature(request, headers, secret);
     }
 
@@ -198,7 +198,7 @@ public class AwsUtils {
                 false);
         return sig;
     }
-    
+
     /**
      * Returns the string to sign.
      * 
@@ -208,7 +208,7 @@ public class AwsUtils {
      */
     public static String getStringToSign(Request request) {
         Form headers = (Form) request.getAttributes().get(
-            "org.restlet.http.headers");
+                "org.restlet.http.headers");
         return getStringToSign(request, headers);
     }
 
@@ -221,7 +221,8 @@ public class AwsUtils {
      *            The HTTP headers associated with the request
      * @return The string to sign
      */
-    public static String getStringToSign(Request request, Series<Parameter> headers) {
+    public static String getStringToSign(Request request,
+            Series<Parameter> headers) {
         String canonicalizedAmzHeaders = getCanonicalizedAmzHeaders(headers);
         String canonicalizedResource = getCanonicalizedResourceName(request
                 .getResourceRef());
