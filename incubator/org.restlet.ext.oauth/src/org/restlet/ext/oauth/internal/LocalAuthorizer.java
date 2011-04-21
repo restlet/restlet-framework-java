@@ -60,7 +60,6 @@ import org.restlet.ext.oauth.OAuthAuthorizer;
  * @see OAuthAuthorizer
  * 
  * @author Kristoffer Gronowski
- * 
  */
 @Deprecated
 public class LocalAuthorizer extends OAuthAuthorizer {
@@ -73,7 +72,7 @@ public class LocalAuthorizer extends OAuthAuthorizer {
      */
     public LocalAuthorizer(String validationURI, String authorizationURI) {
         super(validationURI, authorizationURI, true);
-        //authorizeRef = new Reference(authorizationURI);
-        //validateRef = new Reference("riap://application" + validationURI);
+        // authorizeRef = new Reference(authorizationURI);
+        // validateRef = new Reference("riap://application" + validationURI);
     }
 }

@@ -54,9 +54,8 @@ import org.restlet.security.User;
  */
 @Deprecated
 public class OauthProxyV2 extends Authorizer {
-    
+
     public static final String VERSION = "DRAFT-2";
-    
 
     List<CacheDirective> no = new ArrayList<CacheDirective>();
 
@@ -126,9 +125,10 @@ public class OauthProxyV2 extends Authorizer {
             form.add("type", "web_server");
             form.add("client_id", params.getClientId());
             // form.add("redirect_uri", redirectUri);
-            //form.add("redirect_uri", request.getResourceRef().getBaseRef().toUri().toString());
-            String redir = request.getResourceRef().getHostIdentifier() + 
-            request.getResourceRef().getPath();
+            // form.add("redirect_uri",
+            // request.getResourceRef().getBaseRef().toUri().toString());
+            String redir = request.getResourceRef().getHostIdentifier()
+                    + request.getResourceRef().getPath();
             form.add("redirect_uri", redir);
             form.add("client_secret", params.getClientSecret());
             form.add("code", code);
@@ -140,8 +140,11 @@ public class OauthProxyV2 extends Authorizer {
                 getLogger().info(
                         "Got answer on AccessToken = " + answer.toString());
                 accessToken = answer.getFirstValue("access_token");
-                getLogger().info("AccessToken in changed OldOauthProxy = " + accessToken);
-                request.getClientInfo().setUser(new User(accessToken, accessToken.toCharArray()));
+                getLogger()
+                        .info("AccessToken in changed OldOauthProxy = "
+                                + accessToken);
+                request.getClientInfo().setUser(
+                        new User(accessToken, accessToken.toCharArray()));
                 request.getClientInfo().setAuthenticated(true);
                 auth = true;
             }

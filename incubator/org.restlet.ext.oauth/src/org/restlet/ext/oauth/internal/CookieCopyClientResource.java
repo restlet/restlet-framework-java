@@ -44,11 +44,9 @@ import org.restlet.resource.ClientResource;
 
 /**
  * ClientResource that will copy any server cookies to client cookies in
- * redirects. Default behaviour is to copy cookies
+ * redirects. Default behavior is to copy cookies
  * 
- *
  * @author Martin Svensson
- * 
  */
 public class CookieCopyClientResource extends ClientResource {
 
@@ -63,9 +61,7 @@ public class CookieCopyClientResource extends ClientResource {
         super(resource);
         // TODO Auto-generated constructor stub
     }
-    
-    
-    
+
     public CookieCopyClientResource(Context context, Method method,
             Reference reference) {
         super(context, method, reference);
@@ -142,55 +138,40 @@ public class CookieCopyClientResource extends ClientResource {
         return this.copyCookies;
     }
 
-    
-    
     @Override
     protected void redirect(Request request, Response response,
             List<Reference> references, int retryAttempt, Uniform next) {
         // TODO Auto-generated method stub
-        if(retryAttempt < 0){
-            for(CookieSetting cs : response.getCookieSettings()){
+        if (retryAttempt < 0) {
+            for (CookieSetting cs : response.getCookieSettings()) {
                 request.getCookies().add(cs.getName(), cs.getValue());
             }
         }
         super.redirect(request, response, references, retryAttempt, next);
     }
 
-    //TODO: CHANGE WHEN NEW SNAPSHOT IS AVAIL and override redirect() instead
+    // TODO: CHANGE WHEN NEW SNAPSHOT IS AVAIL and override redirect() instead
     /*
-    @Override
-    protected void handle(Request request, Response response,
-            List<Reference> references, int retryAttempt, Uniform next) {
-        if (copyCookies && isFollowingRedirects() && response.getStatus().isRedirection()
-                && (response.getLocationRef() != null)) {
-            
-        
-            boolean doRedirection = false;
+     * @Override protected void handle(Request request, Response response,
+     * List<Reference> references, int retryAttempt, Uniform next) { if
+     * (copyCookies && isFollowingRedirects() &&
+     * response.getStatus().isRedirection() && (response.getLocationRef() !=
+     * null)) {
+     * 
+     * 
+     * boolean doRedirection = false;
+     * 
+     * if (request.getMethod().isSafe()) { doRedirection = true; } else { if
+     * (Status.REDIRECTION_SEE_OTHER.equals(response .getStatus())) { // The
+     * user agent is redirected using the GET method
+     * //request.setMethod(Method.GET); //request.setEntity(null); doRedirection
+     * = true; } else if (Status.REDIRECTION_USE_PROXY.equals(response
+     * .getStatus())) { doRedirection = true; } } if (doRedirection){
+     * for(CookieSetting cs : response.getCookieSettings()){
+     * request.getCookies().add(cs.getName(), cs.getValue()); } } }
+     * super.handle(request, response, references, retryAttempt, next); }
+     */
 
-            if (request.getMethod().isSafe()) {
-                doRedirection = true;
-            } else {
-                if (Status.REDIRECTION_SEE_OTHER.equals(response
-                        .getStatus())) {
-                    // The user agent is redirected using the GET method
-                    //request.setMethod(Method.GET);
-                    //request.setEntity(null);
-                    doRedirection = true;
-                } else if (Status.REDIRECTION_USE_PROXY.equals(response
-                        .getStatus())) {
-                    doRedirection = true;
-                }
-            }
-            if (doRedirection){
-                for(CookieSetting cs : response.getCookieSettings()){
-                    request.getCookies().add(cs.getName(), cs.getValue());
-                }
-            }
-        }    
-        super.handle(request, response, references, retryAttempt, next);
-    }
-    */
-    
     public void setCopyCookies(boolean copyCookies) {
         this.copyCookies = copyCookies;
     }

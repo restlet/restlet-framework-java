@@ -45,17 +45,17 @@ import org.restlet.ext.oauth.Token;
  * @author Kristoffer Gronowski
  */
 public class AuthenticatedUserImpl extends AuthenticatedUser {
-	
-	private Client client;
+
+    private Client client;
 
     private final String id;
 
     private Map<String, String> grantedScope = new ConcurrentHashMap<String, String>();
-    
+
     private String code;
-    
+
     private Token token;
-    
+
     private String password; // optional for oauth password flow
 
     public AuthenticatedUserImpl(String userId, Client client) {
@@ -72,10 +72,10 @@ public class AuthenticatedUserImpl extends AuthenticatedUser {
     public String getId() {
         return id;
     }
-    
+
     @Override
     public String getCode() {
-    	return code;
+        return code;
     }
 
     @Override
@@ -124,30 +124,30 @@ public class AuthenticatedUserImpl extends AuthenticatedUser {
     public void revokeScopes() {
         grantedScope.clear();
     }
-    
+
     @Override
     public Token getToken() {
-    	return token;
+        return token;
     }
-    
+
     @Override
     public void setToken(Token token) {
-    	this.token = token;
+        this.token = token;
     }
-    
+
     @Override
     public String getPassword() {
-    	return password;
+        return password;
     }
-    
+
     @Override
     public void setPassword(String password) {
-    	this.password = password;
+        this.password = password;
     }
-    
+
     @Override
     public Client getClient() {
-    	return client;
+        return client;
     }
 
     @Override

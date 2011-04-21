@@ -39,7 +39,7 @@ import org.restlet.ext.oauth.Client;
 
 /**
  * A POJO representing a OAuth client_id. Each client can have collected a
- * number of authnticated users to allow working on their behalf.
+ * number of authenticated users to allow working on their behalf.
  * 
  * Note that authenticated users will not be persisted after a JVM restart.
  * 

@@ -100,7 +100,8 @@ public class MemTokenGenerator extends TokenGenerator {
         if (user == null)
             throw new IllegalArgumentException("Code not valid");
         Token t = generateToken(user, expire);
-        user.clearCode(); //TODO could also match if the user code matches codestore
+        user.clearCode(); // TODO could also match if the user code matches
+                          // codestore
         return t;
     }
 
