@@ -20,9 +20,16 @@ Changes log
         time. Suggested by Christoph Dietze.
       - The visibility of several methods on UniformResource and ClientResource
         has been changed to public.
+      - Added Protocol#SDC constant for the Secure Data Connector protocol.
     - Enhancements
       - Added new HTTPS client connector based on the internal non-blocking NIO
         connector. Co-developped with NetDev.
+      - The SDC protocol to connect to intranets from the cloud is now also 
+        supported on the GAE edition via the org.restlet.ext.net extension. It 
+        automatically sets the "use_intranet" HTTP header and increases the
+        portability of your code between Restlet/GAE and other Restlet editions. 
+        As SDC is natively supported on GAE, it doesn't require the 
+        org.restlet.ext.sdc extension.
     - Bug fixed
       - Throwing a ResourceException with a given status, was resulting in
         500 status being returned to the client instead of the given status.

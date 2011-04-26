@@ -63,8 +63,7 @@ public abstract class Call {
             result = (exception.getMessage().indexOf("Broken pipe") != -1)
                     || (exception
                             .getMessage()
-                            .equals(
-                                    "An existing connection must have been closed by the remote party.") || (exception
+                            .equals("An existing connection must have been closed by the remote party.") || (exception
                             .getMessage()
                             .equals("An open connection has been abandonned by your network stack.")));
         }

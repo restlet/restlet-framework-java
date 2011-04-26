@@ -40,6 +40,7 @@ import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
+import org.restlet.engine.Edition;
 import org.restlet.engine.adapter.ClientCall;
 import org.restlet.ext.net.internal.HttpUrlConnectionCall;
 
@@ -121,6 +122,10 @@ public class HttpClientHelper extends
         super(client);
         getProtocols().add(Protocol.HTTP);
         getProtocols().add(Protocol.HTTPS);
+
+        if (Edition.CURRENT == Edition.GAE) {
+            getProtocols().add(Protocol.SDC);
+        }
     }
 
     /**

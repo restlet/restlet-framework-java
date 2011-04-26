@@ -46,9 +46,11 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.Edition;
 import org.restlet.engine.adapter.ClientCall;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.net.HttpClientHelper;
 import org.restlet.representation.Representation;
@@ -56,6 +58,8 @@ import org.restlet.util.Series;
 
 /**
  * HTTP client connector call based on JDK's java.net.HttpURLConnection class.
+ * On the GAE edition, it also supports the SDC protocol by setting
+ * automatically the special "use_intranet" header.
  * 
  * @author Jerome Louvel
  */
@@ -338,6 +342,16 @@ public class HttpUrlConnectionCall extends ClientCall {
             for (Parameter header : getRequestHeaders()) {
                 getConnection().addRequestProperty(header.getName(),
                         header.getValue());
+            }
+
+            if ((Edition.CURRENT == Edition.GAE)
+                    && (request.getProtocol() == Protocol.SDC)) {
+                // This is to ensure portable code with other Restlet editions.
+                // that uses the proxy authorization header to transmit SDC
+                // security parameters (not required on GAE).
+                getConnection().getRequestProperties().remove(
+                        HeaderConstants.HEADER_PROXY_AUTHORIZATION);
+                getConnection().setRequestProperty("use_intranet", "true");
             }
 
             // Ensure that the connection is active

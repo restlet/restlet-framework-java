@@ -89,14 +89,6 @@ public final class Protocol {
     public static final Protocol HTTPS = new Protocol("https", "HTTPS", "HTTP",
             "HyperText Transport Protocol (Secure)", 443, true, "1.1");
 
-    /** SIP protocol. */
-    public static final Protocol SIP = new Protocol("sip", "SIP",
-            "Session Initiation Protocol", 5060, "2.0");
-
-    /** SIPS protocol (via SSL socket). */
-    public static final Protocol SIPS = new Protocol("sips", "SIPS", "SIP",
-            "Session Initiation Protocol (Secure)", 5061, true, "2.0");
-
     /**
      * JAR (Java ARchive) is a common scheme to access to representations inside
      * archive files. Example URI:
@@ -133,6 +125,23 @@ public final class Protocol {
      */
     public static final Protocol RIAP = new Protocol("riap", "RIAP",
             "Restlet Internal Access Protocol", UNKNOWN_PORT, true);
+
+    /**
+     * SDC (Secure Data Connector) protocol. <br>
+     * <br>
+     * SDC is natively available on the Google App Engine platform and via a
+     * special Restlet extension on other platforms.
+     */
+    public static final Protocol SDC = new Protocol("sdc", "SDC",
+            "Secure Data Connector Protocol", UNKNOWN_PORT, true);
+
+    /** SIP protocol. */
+    public static final Protocol SIP = new Protocol("sip", "SIP",
+            "Session Initiation Protocol", 5060, "2.0");
+
+    /** SIPS protocol (via SSL socket). */
+    public static final Protocol SIPS = new Protocol("sips", "SIPS", "SIP",
+            "Session Initiation Protocol (Secure)", 5061, true, "2.0");
 
     /** SMTP protocol. */
     public static final Protocol SMTP = new Protocol("smtp", "SMTP",
@@ -222,11 +231,11 @@ public final class Protocol {
     /** The name. */
     private final String name;
 
-    /** The technical name that appears on the wire. */
-    private final String technicalName;
-
     /** The scheme name. */
     private volatile String schemeName;
+
+    /** The technical name that appears on the wire. */
+    private final String technicalName;
 
     /** The version. */
     private volatile String version;
