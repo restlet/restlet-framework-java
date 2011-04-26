@@ -40,21 +40,13 @@ public final class ChallengeScheme {
     public static final ChallengeScheme CUSTOM = new ChallengeScheme("CUSTOM",
             "Custom", "Custom authentication");
 
+    /** Plain FTP scheme. */
+    public static final ChallengeScheme FTP_PLAIN = new ChallengeScheme(
+            "FTP_PLAIN", "PLAIN", "Plain FTP authentication");
+
     /** Amazon S3 HTTP scheme. */
     public static final ChallengeScheme HTTP_AWS_S3 = new ChallengeScheme(
             "HTTP_AWS", "AWS", "Amazon S3 HTTP authentication");
-
-    /** Basic HTTP scheme. */
-    public static final ChallengeScheme HTTP_BASIC = new ChallengeScheme(
-            "HTTP_BASIC", "Basic", "Basic HTTP authentication");
-
-    /** Cookie HTTP scheme. */
-    public static final ChallengeScheme HTTP_COOKIE = new ChallengeScheme(
-            "HTTP_Cookie", "Cookie", "Cookie HTTP authentication");
-
-    /** Digest HTTP scheme. */
-    public static final ChallengeScheme HTTP_DIGEST = new ChallengeScheme(
-            "HTTP_DIGEST", "Digest", "Digest HTTP authentication");
 
     /**
      * Microsoft Azure Shared Key scheme.
@@ -78,6 +70,18 @@ public final class ChallengeScheme {
             "HTTP_AZURE_SHAREDKEY_LITE", "SharedKeyLite",
             "Microsoft Azure Shared Key lite authorization (authentication)");
 
+    /** Basic HTTP scheme. */
+    public static final ChallengeScheme HTTP_BASIC = new ChallengeScheme(
+            "HTTP_BASIC", "Basic", "Basic HTTP authentication");
+
+    /** Cookie HTTP scheme. */
+    public static final ChallengeScheme HTTP_COOKIE = new ChallengeScheme(
+            "HTTP_Cookie", "Cookie", "Cookie HTTP authentication");
+
+    /** Digest HTTP scheme. */
+    public static final ChallengeScheme HTTP_DIGEST = new ChallengeScheme(
+            "HTTP_DIGEST", "Digest", "Digest HTTP authentication");
+
     /** Microsoft NTML HTTP scheme. */
     public static final ChallengeScheme HTTP_NTLM = new ChallengeScheme(
             "HTTP_NTLM", "NTLM", "Microsoft NTLM HTTP authentication");
@@ -95,13 +99,13 @@ public final class ChallengeScheme {
     public static final ChallengeScheme POP_DIGEST = new ChallengeScheme(
             "POP_DIGEST", "Digest", "Digest POP authentication (APOP command)");
 
+    /** Secure Data Connector scheme. */
+    public static final ChallengeScheme SDC = new ChallengeScheme(
+            "SDC", "SDC", "Secure Data Connector authentication");
+
     /** Plain SMTP scheme. */
     public static final ChallengeScheme SMTP_PLAIN = new ChallengeScheme(
             "SMTP_PLAIN", "PLAIN", "Plain SMTP authentication");
-
-    /** Plain FTP scheme. */
-    public static final ChallengeScheme FTP_PLAIN = new ChallengeScheme(
-            "FTP_PLAIN", "PLAIN", "Plain FTP authentication");
 
     /**
      * Returns the challenge scheme associated to a scheme name. If an existing

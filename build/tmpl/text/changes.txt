@@ -20,7 +20,8 @@ Changes log
         time. Suggested by Christoph Dietze.
       - The visibility of several methods on UniformResource and ClientResource
         has been changed to public.
-      - Added Protocol#SDC constant for the Secure Data Connector protocol.
+      - Added Protocol#SDC and ChallengeScheme#SDC constants for the 
+        Secure Data Connector protocol.
     - Enhancements
       - Added new HTTPS client connector based on the internal non-blocking NIO
         connector. Co-developped with NetDev.
