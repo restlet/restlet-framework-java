@@ -182,15 +182,15 @@ public class OpenIdConsumer extends ServerResource {
             returnToUrl.append("?return=true");
 
             // --- Forward proxy setup (only if needed) ---
-            //ProxyProperties proxyProps = new ProxyProperties();
+            // ProxyProperties proxyProps = new ProxyProperties();
             // proxyProps.setProxyName("proxy.example.com");
             // proxyProps.setProxyPort(8080);
             // HttpClientFactory.setProxyProperties(proxyProps);
 
             // perform discovery on the user-supplied identifier
-                        
+
             List<?> discoveries = null;
-           	discoveries = discovery.discover(target);
+            discoveries = discovery.discover(target);
             for (Object o : discoveries) {
                 if (o instanceof DiscoveryInformation) {
                     DiscoveryInformation di = (DiscoveryInformation) o;
@@ -217,18 +217,19 @@ public class OpenIdConsumer extends ServerResource {
             String sessionId = String.valueOf(System
                     .identityHashCode(discovered));
             session.put(sessionId, discovered);
-            
+
             getResponse().getCookieSettings().add(
                     new CookieSetting(DESCRIPTOR_COOKIE, sessionId));
             log.info("Setting DESCRIPTOR COOKIE");
-            
+
             // obtain a AuthRequest message to be sent to the OpenID provider
             AuthRequest authReq = manager.authenticate(discovered,
                     returnToUrl.toString()); // TODO maybe add TIMESTAMP?
-            //Domain wide realm add meta to main page
-            //http://localhost:8080/oauth/xrds?returnTo=http://localhost:8080/oauth/openid_login\r\n
-            //log.info("OpenID - REALM = " + getReference().getHostIdentifier());
-            //authReq.setRealm(getReference().getHostIdentifier().toString());
+            // Domain wide realm add meta to main page
+            // http://localhost:8080/oauth/xrds?returnTo=http://localhost:8080/oauth/openid_login\r\n
+            // log.info("OpenID - REALM = " +
+            // getReference().getHostIdentifier());
+            // authReq.setRealm(getReference().getHostIdentifier().toString());
             log.info("OpenID - REALM = " + getReference().getBaseRef());
             authReq.setRealm(getReference().getBaseRef().toString());
 
@@ -240,7 +241,8 @@ public class OpenIdConsumer extends ServerResource {
                     log.warning("Not supported AX extension : " + o);
                     continue;
                 }
-                if( fetch == null ) fetch = FetchRequest.createFetchRequest();
+                if (fetch == null)
+                    fetch = FetchRequest.createFetchRequest();
                 fetch.addAttribute(o, ax.get(o), false);
             }
 
@@ -250,12 +252,13 @@ public class OpenIdConsumer extends ServerResource {
                     log.warning("Not supported AX extension : " + r);
                     continue;
                 }
-                if( fetch == null ) fetch = FetchRequest.createFetchRequest();
+                if (fetch == null)
+                    fetch = FetchRequest.createFetchRequest();
                 fetch.addAttribute(r, ax.get(r), true);
             }
 
-            if( fetch != null ) {
-            	authReq.addExtension(fetch);
+            if (fetch != null) {
+                authReq.addExtension(fetch);
             }
 
             if (!discovered.isVersion2()) {
@@ -277,14 +280,14 @@ public class OpenIdConsumer extends ServerResource {
                             + authReq.getParameterValue(key.toString()));
                 }
 
-//                Redirector dispatcher = new Redirector(getContext(),
-//                        authReq.getOPEndpoint(),
-//                        Redirector.MODE_SERVER_OUTBOUND);
-//                Request req = getRequest();
-//                req.setEntity(msg.getWebRepresentation());
-//                req.setMethod(Method.POST);
-//                dispatcher.handle(getRequest(), getResponse());
-                
+                // Redirector dispatcher = new Redirector(getContext(),
+                // authReq.getOPEndpoint(),
+                // Redirector.MODE_SERVER_OUTBOUND);
+                // Request req = getRequest();
+                // req.setEntity(msg.getWebRepresentation());
+                // req.setMethod(Method.POST);
+                // dispatcher.handle(getRequest(), getResponse());
+
                 return generateForm(authReq);
             }
         } catch (DiscoveryException e) {
@@ -317,27 +320,30 @@ public class OpenIdConsumer extends ServerResource {
             // retrieve the previously stored discovery information
             log.info("GET COOKIES");
             String openidDisc = getCookies().getFirstValue(DESCRIPTOR_COOKIE);
-            //String openidDisc = getCookieSettings().getFirstValue(DESCRIPTOR_COOKIE);
-            log.info("openIdDiscServer - " +getCookieSettings().getFirstValue("DESCRIPTOR_COOKIE"));
-            log.info("openIdDiscServerLength -"+getCookieSettings().size());
-            log.info("openIdDiscClient - " +openidDisc);
-            log.info("openIdDiscClientLength -"+getCookies().size());
-            
-            if(getCookieSettings().size() > 0){
-                for(CookieSetting setting : getCookieSettings()){
-                   log.info("CookieSetting: "+setting.getName()+setting.getFirst());
+            // String openidDisc =
+            // getCookieSettings().getFirstValue(DESCRIPTOR_COOKIE);
+            log.info("openIdDiscServer - "
+                    + getCookieSettings().getFirstValue("DESCRIPTOR_COOKIE"));
+            log.info("openIdDiscServerLength -" + getCookieSettings().size());
+            log.info("openIdDiscClient - " + openidDisc);
+            log.info("openIdDiscClientLength -" + getCookies().size());
+
+            if (getCookieSettings().size() > 0) {
+                for (CookieSetting setting : getCookieSettings()) {
+                    log.info("CookieSetting: " + setting.getName()
+                            + setting.getFirst());
                 }
             }
-            if(getCookies().size() > 0){
-                for(Cookie setting : getCookies()){
-                   log.info("Cookie: "+setting.getName()+setting.getFirst());
+            if (getCookies().size() > 0) {
+                for (Cookie setting : getCookies()) {
+                    log.info("Cookie: " + setting.getName()
+                            + setting.getFirst());
                 }
             }
-            
+
             DiscoveryInformation discovered = (DiscoveryInformation) session
                     .get(openidDisc); // TODO cleanup
-            
-            
+
             log.info("discovered = " + discovered);
 
             // extract the receiving URL from the HTTP request
@@ -441,29 +447,29 @@ public class OpenIdConsumer extends ServerResource {
         }
         return location;
     }
-    
-    private Representation generateForm( AuthRequest authReq ) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("<html>");
-		sb.append("<head>");
-		sb.append("<title>OpenID HTML FORM Redirection</title>");
-    	sb.append("</head>");
-    	sb.append("<body onload=\"document.forms['openid-form-redirection'].submit();\">");
-    	sb.append("<form name=\"openid-form-redirection\" action=\"");
-    	sb.append(authReq.getOPEndpoint());
-    	sb.append("\" method=\"post\" accept-charset=\"utf-8\">");
-    	for( Object key : authReq.getParameterMap().keySet() ) {
-    		sb.append(" <input type=\"hidden\" name=\"");
-    		sb.append(key.toString());
-    				//${parameter.key}
-    		sb.append("\" value=\"");
-    		sb.append(authReq.getParameterMap().get(key));
-    		sb.append("\"/>");
-    	}
-    	sb.append("</form>");
-		sb.append("</body>");
-		sb.append("</html>");
-		return new StringRepresentation(sb.toString(),MediaType.TEXT_HTML);
-	}
+
+    private Representation generateForm(AuthRequest authReq) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html>");
+        sb.append("<head>");
+        sb.append("<title>OpenID HTML FORM Redirection</title>");
+        sb.append("</head>");
+        sb.append("<body onload=\"document.forms['openid-form-redirection'].submit();\">");
+        sb.append("<form name=\"openid-form-redirection\" action=\"");
+        sb.append(authReq.getOPEndpoint());
+        sb.append("\" method=\"post\" accept-charset=\"utf-8\">");
+        for (Object key : authReq.getParameterMap().keySet()) {
+            sb.append(" <input type=\"hidden\" name=\"");
+            sb.append(key.toString());
+            // ${parameter.key}
+            sb.append("\" value=\"");
+            sb.append(authReq.getParameterMap().get(key));
+            sb.append("\"/>");
+        }
+        sb.append("</form>");
+        sb.append("</body>");
+        sb.append("</html>");
+        return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
+    }
 
 }

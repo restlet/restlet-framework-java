@@ -54,6 +54,7 @@ import org.restlet.routing.Redirector;
  * @author Kristoffer Gronowski
  */
 public class CallbackCacheFilter extends Filter implements CacheLookup {
+
     public static final String UserCookieID = "_uid";
 
     public static final String INTERNAL_SERVER_COOKIE = "auth-callback";

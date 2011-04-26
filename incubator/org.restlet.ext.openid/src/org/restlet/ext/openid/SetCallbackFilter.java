@@ -43,6 +43,7 @@ import org.restlet.routing.Filter;
  * @author Kristoffer Gronowski
  */
 public class SetCallbackFilter extends Filter {
+
     private CacheLookup cache = null;
 
     public SetCallbackFilter() {
@@ -57,9 +58,11 @@ public class SetCallbackFilter extends Filter {
     protected int doHandle(Request request, Response response) {
         if (cache != null) { // Let's try to find it
             boolean found = cache.handleCached(request, response);
+
             if (found)
                 return Filter.STOP;
         }
+
         return super.doHandle(request, response);
     }
 
@@ -70,6 +73,7 @@ public class SetCallbackFilter extends Filter {
 
         if (cb != null && cb.length() > 0 && response.getStatus().isSuccess()) {
             Reference ref = new Reference(cb);
+
             if (ref.getQueryAsForm().removeFirst("internal")) {
                 getLogger().info("OpenID - setting internal cb cookie = " + cb);
                 CookieSetting cs = new CookieSetting(
@@ -87,6 +91,7 @@ public class SetCallbackFilter extends Filter {
                 response.getCookieSettings().add(cs);
             }
         }
+
         return super.beforeHandle(request, response);
     }
 }

@@ -44,82 +44,89 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class OpenIdFormFrowarder {
-	
-	/**
-	 * Helper class to programatically handle the OpenID 2.0 HTML Form
-	 * redirection.
-	 * The class can be added and if needed it will intercept and perform
-	 * the post on behalf of the end user.
-	 * In normal operation a browser would automatically post the form.
-	 * 
-	 * There is no harm in having the forwarder in place even if there is
-	 * no post there then the code would be skipped.
-	 * 
-	 * @see OpenIdConsumer
-	 * 
-	 * @param input - html form to post
-	 * @param resource - existing or null
-	 * @return response from OpenID OP
-	 * @throws IOException - on failed html xml parsing.
-	 */
-	
-	public static Representation handleFormRedirect(Representation input, ClientResource resource) throws IOException {
-		Representation output = input;
-		/****COPY COOKIES*******************/
-		if(resource != null){
-		    for(CookieSetting cs : resource.getCookieSettings()){
-	                    resource.getCookies().add(cs.getName(), cs.getValue());
-	                }
-		}
-		
-		if( MediaType.TEXT_HTML.equals( input.getMediaType() ) && 
-				input.getSize() != 0 ) {
-			//Check for a form
-			DomRepresentation htmlRep = new DomRepresentation(input);
-			
-			Node form = htmlRep.getNode("//form");
-			if( form != null ) { //Check for an on load....
-				Node body = htmlRep.getNode("//body");
-				NamedNodeMap nnm = body.getAttributes();
-				Node onload = nnm.getNamedItem("onload");
-				String val = onload.getNodeValue();
-				if( val.endsWith(".submit();")) {
-					NamedNodeMap nnm2 = form.getAttributes();
-					String name = nnm2.getNamedItem("name").getNodeValue();
-					String action = nnm2.getNamedItem("action").getNodeValue();
-					String method = nnm2.getNamedItem("method").getNodeValue();
-					Context.getCurrentLogger().info("name = "+name+" action = "+action+" method = "+method);
-					if( name != null && name.length() > 0 &&
-							action != null && action.length() > 0 &&
-							method != null && method.length() > 0 &&
-							"post".equalsIgnoreCase(method) ) {
-						Form f = new Form();
-						NodeList nl = form.getChildNodes();
-						for( int i = 0 ; i < nl.getLength() ; i++ ) {
-							Node n = nl.item(i);
-							if( "input".equalsIgnoreCase( n.getNodeName() ) ) {
-								NamedNodeMap nnm3 = n.getAttributes();
-								String key = nnm3.getNamedItem("name").getNodeValue();
-								String value = nnm3.getNamedItem("value").getNodeValue();
-								if( key != null && key.length() > 0 ) {
-									f.add(key, value);
-								}
-							}
-						}
-						//The form is ready to send...
-						Context.getCurrentLogger().info( " Form size to send = " + f.size() );
-						if( resource == null ) {
-							resource = new ClientResource(action);
-						}
-						resource.setReference(action);
-						output = resource.post(f.getWebRepresentation() );
-					}
-				}
-				
-			}
-		}
-		
-		return output;
-	}
+
+    /**
+     * Helper class to programatically handle the OpenID 2.0 HTML Form
+     * redirection. The class can be added and if needed it will intercept and
+     * perform the post on behalf of the end user. In normal operation a browser
+     * would automatically post the form.
+     * 
+     * There is no harm in having the forwarder in place even if there is no
+     * post there then the code would be skipped.
+     * 
+     * @see OpenIdConsumer
+     * 
+     * @param input
+     *            - html form to post
+     * @param resource
+     *            - existing or null
+     * @return response from OpenID OP
+     * @throws IOException
+     *             - on failed html xml parsing.
+     */
+    public static Representation handleFormRedirect(Representation input,
+            ClientResource resource) throws IOException {
+        Representation output = input;
+        /**** COPY COOKIES *******************/
+        if (resource != null) {
+            for (CookieSetting cs : resource.getCookieSettings()) {
+                resource.getCookies().add(cs.getName(), cs.getValue());
+            }
+        }
+
+        if (MediaType.TEXT_HTML.equals(input.getMediaType())
+                && input.getSize() != 0) {
+            // Check for a form
+            DomRepresentation htmlRep = new DomRepresentation(input);
+
+            Node form = htmlRep.getNode("//form");
+            if (form != null) { // Check for an on load....
+                Node body = htmlRep.getNode("//body");
+                NamedNodeMap nnm = body.getAttributes();
+                Node onload = nnm.getNamedItem("onload");
+                String val = onload.getNodeValue();
+                if (val.endsWith(".submit();")) {
+                    NamedNodeMap nnm2 = form.getAttributes();
+                    String name = nnm2.getNamedItem("name").getNodeValue();
+                    String action = nnm2.getNamedItem("action").getNodeValue();
+                    String method = nnm2.getNamedItem("method").getNodeValue();
+                    Context.getCurrentLogger().info(
+                            "name = " + name + " action = " + action
+                                    + " method = " + method);
+                    if (name != null && name.length() > 0 && action != null
+                            && action.length() > 0 && method != null
+                            && method.length() > 0
+                            && "post".equalsIgnoreCase(method)) {
+                        Form f = new Form();
+                        NodeList nl = form.getChildNodes();
+                        for (int i = 0; i < nl.getLength(); i++) {
+                            Node n = nl.item(i);
+                            if ("input".equalsIgnoreCase(n.getNodeName())) {
+                                NamedNodeMap nnm3 = n.getAttributes();
+                                String key = nnm3.getNamedItem("name")
+                                        .getNodeValue();
+                                String value = nnm3.getNamedItem("value")
+                                        .getNodeValue();
+                                if (key != null && key.length() > 0) {
+                                    f.add(key, value);
+                                }
+                            }
+                        }
+                        // The form is ready to send...
+                        Context.getCurrentLogger().info(
+                                " Form size to send = " + f.size());
+                        if (resource == null) {
+                            resource = new ClientResource(action);
+                        }
+                        resource.setReference(action);
+                        output = resource.post(f.getWebRepresentation());
+                    }
+                }
+
+            }
+        }
+
+        return output;
+    }
 
 }

@@ -50,7 +50,7 @@ import org.restlet.ext.openid.CallbackCacheFilter;
 import org.restlet.ext.openid.OpenIdConsumer;
 import org.restlet.ext.openid.OpenIdProvider;
 import org.restlet.ext.openid.SetCallbackFilter;
-import org.restlet.ext.openid.XrdsResource;
+import org.restlet.ext.openid.XrdsServerResource;
 import org.restlet.resource.Finder;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
@@ -131,7 +131,7 @@ public class OAuthTestApplication extends Application {
         authCache.setNext(new Finder(getContext(), OpenIdConsumer.class));
         router.attach("/openid_login", authCache);
 
-        router.attach("/xrds", XrdsResource.class);
+        router.attach("/xrds", XrdsServerResource.class);
 
         ServerManager manager = new ServerManager();
         manager.setOPEndpointUrl(AuthorizationServerTest.prot + "://localhost:"

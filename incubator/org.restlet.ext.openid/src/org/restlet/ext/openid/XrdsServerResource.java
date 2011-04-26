@@ -46,12 +46,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Implementation of a XRDS server side resource. It is used for openId
+ * Implementation of a XRDS server side resource. It is used for OpenID
  * discovery both from the consumer and the provider.
  * 
  * @author Kristoffer Gronowski
  */
-public class XrdsResource extends ServerResource {
+public class XrdsServerResource extends ServerResource {
+
     public static final String TYPE_RETURN_TO = "http://specs.openid.net/auth/2.0/return_to";
 
     public static final String TYPE_SIGNON = "http://specs.openid.net/auth/2.0/signon";

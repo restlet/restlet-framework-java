@@ -57,9 +57,7 @@ import org.restlet.resource.ServerResource;
  * 
  * @author Kristoffer Gronowski
  */
-
-//TODO yadisResolver.discoverRP(realm);
-
+// TODO yadisResolver.discoverRP(realm);
 public class OpenIdProvider extends ServerResource {
 
     public OpenIdProvider() {
@@ -125,7 +123,7 @@ public class OpenIdProvider extends ServerResource {
                 // option1: GET HTTP-redirect to the return_to URL
                 // return new
                 // StringRepresentation(response.getDestinationUrl(true));
-            	redirectSeeOther(response.getDestinationUrl(true));
+                redirectSeeOther(response.getDestinationUrl(true));
                 return new EmptyRepresentation();
 
                 // option2: HTML FORM Redirection
