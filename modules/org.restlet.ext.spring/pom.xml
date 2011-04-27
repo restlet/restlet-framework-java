@@ -64,6 +64,7 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>3.0.1.RELEASE</version>
 		</dependency>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>

@@ -13,6 +13,7 @@
 	<description>Support for the WADL specification.</description>
 
 	<dependencies>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>

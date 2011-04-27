@@ -18,6 +18,7 @@
 			<artifactId>jibx-run</artifactId>
 			<version>1.2.2</version>
 		</dependency>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>

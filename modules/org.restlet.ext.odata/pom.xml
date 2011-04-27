@@ -18,6 +18,7 @@
 			<artifactId>freemarker</artifactId>
 			<version>2.3.16</version>
 		</dependency>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>

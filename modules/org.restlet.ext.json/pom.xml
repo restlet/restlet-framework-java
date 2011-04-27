@@ -23,6 +23,7 @@
 			<artifactId>org.restlet.lib.org.json</artifactId>
 			<version>${lib-json-version}</version>
 		</dependency>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>

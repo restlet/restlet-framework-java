@@ -48,6 +48,7 @@
 			<artifactId>apache-mime4j</artifactId>
 			<version>0.6</version>
 		</dependency>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>

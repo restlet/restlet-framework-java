@@ -23,6 +23,7 @@
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.4.3</version>
 		</dependency>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>
