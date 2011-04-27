@@ -100,11 +100,10 @@ public class Role implements Principal {
         }
         if (arg0 instanceof Role) {
             Role r = (Role) arg0;
-            // Test equality of names,
-            result = this.name.equals(r.getName());
-            // and child roles.
-            if (!getChildRoles().isEmpty()
-                    && getChildRoles().size() == r.getChildRoles().size()) {
+            // Test equality of names and child roles.
+            result = this.name.equals(r.getName())
+                    && getChildRoles().size() == r.getChildRoles().size();
+            if (result && !getChildRoles().isEmpty()) {
                 for (int i = 0; result && i < getChildRoles().size(); i++) {
                     result = getChildRoles().get(i).equals(
                             r.getChildRoles().get(i));
