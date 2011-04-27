@@ -37,6 +37,8 @@ Changes log
         Reported by Avi Flax and Rhett Sutphin.
       - Fixed bug with unlimited IO timeouts in internal HTTP connector.
         Reported by Michael Guiral.
+      - Fixed bug with the testing of equality of Roles in RoleAuthorizer.
+        Reported by Tim Peierls.
     - Misc
       - The simplified logging formatter (one line) is now available only in
         the Java SE edition as it could cause troubles with Java EE container
