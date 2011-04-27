@@ -93,13 +93,13 @@ public class Role implements Principal {
     }
 
     @Override
-    public boolean equals(Object arg0) {
+    public boolean equals(Object target) {
         boolean result = false;
         if (this.name == null) {
-            return arg0 == null;
+            return target == null;
         }
-        if (arg0 instanceof Role) {
-            Role r = (Role) arg0;
+        if (target instanceof Role) {
+            Role r = (Role) target;
             // Test equality of names and child roles.
             result = this.name.equals(r.getName())
                     && getChildRoles().size() == r.getChildRoles().size();
