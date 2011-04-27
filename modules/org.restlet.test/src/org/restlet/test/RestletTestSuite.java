@@ -74,6 +74,7 @@ import org.restlet.test.routing.ValidatorTestCase;
 import org.restlet.test.security.DigestVerifierTestCase;
 import org.restlet.test.security.HttpBasicTestCase;
 import org.restlet.test.security.HttpDigestTestCase;
+import org.restlet.test.security.RoleTestCase;
 import org.restlet.test.security.SecurityTestCase;
 import org.restlet.test.util.TemplateTestCase;
 
@@ -121,6 +122,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(RouteListTestCase.class);
         addTestSuite(DigestVerifierTestCase.class);
         addTestSuite(RecipientInfoTestCase.class);
+        addTestSuite(RoleTestCase.class);
         addTestSuite(StatusTestCase.class);
         addTestSuite(TemplateTestCase.class);
         addTestSuite(TransformerTestCase.class);
