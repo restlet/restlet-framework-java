@@ -11,7 +11,15 @@ Changes log
        - Amazon S3 authentication could fail due to new subdomain 
          names like "s3[a-z0-1\\-]*.amazonaws.com".
        - Fixed bug with the testing of equality of Roles in RoleAuthorizer.
-         Reported by Tim Peierls.         
+         Reported by Tim Peierls.
+       - Fixed issue with dormant threads in some IO operations due to 
+         excessive thread pool instantiation (via TaskService). Now a 
+         single temporary thread is used when an existing TaskService 
+         can't be found.
+       - Apache HTTP Client was processing cookies like a browser while
+         as a Restlet client connector it shouldn't have done so, like
+         for other connector such as the internal client.
+         Reported by Kristoffer Gronowski and Martin Svensson
     - Misc
        - Clarified in log trace the need to manually register connector
          helpers on the Android edition.
@@ -22,10 +30,6 @@ Changes log
          Reported by Guido Schmidt.
        - Fixed potential issue in ClientResource regarding the actual
          entity being resent in case of error.
-       - Apache HTTP Client was processing cookies like a browser while
-         as a Restlet client connector it shouldn't have done so, like
-         for other connector such as the internal client.
-         Reported by Kristoffer Gronowski and Martin Svensson
     - Misc
        - Clarified default property values of the TunnelService class.
          
