@@ -39,9 +39,9 @@
 			<version>${lib-gdata-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet.jse</groupId>
-			<artifactId>org.restlet.lib.com.google.protobuf</artifactId>
-			<version>${lib-protobuf-version}</version>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>com.google.protobuf</artifactId>
+			<version>2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.collections</groupId>
@@ -62,6 +62,13 @@
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>
+<!--			<version>2.1-SNAPSHOT</version> -->
+			<version>${version}</version>
+			
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.dev</groupId>
+			<artifactId>org.restlet.ext.ssl</artifactId>
 <!--			<version>2.1-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
