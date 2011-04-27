@@ -32,6 +32,8 @@ package org.restlet.ext.oauth;
 
 import java.util.Collection;
 
+import org.restlet.ext.oauth.internal.TokenGenerator;
+
 // import org.restlet.Context;
 
 /**

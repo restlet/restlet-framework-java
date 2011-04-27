@@ -59,10 +59,12 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.OAuthError;
+import org.restlet.ext.oauth.OAuthFlows;
 import org.restlet.ext.oauth.OAuthForm;
 import org.restlet.ext.oauth.OAuthHelper;
 import org.restlet.ext.oauth.OAuthParameters;
 import org.restlet.ext.oauth.OAuthUser;
+import org.restlet.ext.oauth.OAuthFlows.Flow;
 import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.representation.Representation;
@@ -220,8 +222,7 @@ public class AuthorizationServerTest {
     public void testUserAgentFlow() throws IOException {
         // Same Uri as the web client
         String callbackUri = prot + "://localhost:" + serverPort + "/";
-        OAuthUser user = OAuthUtils.userAgent(client.getOauthParameters(),
-                callbackUri, null);
+        OAuthUser user = OAuthFlows.doFlow(client.getOauthParameters(), callbackUri, null, null, null, null, Flow.USERAGENT);
         assertNotNull(user);
 
         // Try to use the token...
@@ -240,7 +241,8 @@ public class AuthorizationServerTest {
 
     @Test
     public void testNoneFlow() throws IOException {
-        OAuthUser user = OAuthUtils.noneFlow(client.getOauthParameters());
+        OAuthUser user = OAuthFlows.doFlow(client.getOauthParameters(), 
+                null, null, null, null, null, Flow.NONE);
         assertNotNull(user);
 
         // Try to use the token...
@@ -277,7 +279,8 @@ public class AuthorizationServerTest {
         String baseRef = prot + "://localhost:" + serverPort + "/combo/";
         OAuthParameters params = new OAuthParameters("1234567890",
                 "1234567890", baseRef, "foo bar");
-        OAuthUser user = OAuthUtils.userAgent(params, callbackUri, null);
+        OAuthUser user = OAuthFlows.doFlow(params, callbackUri, null, null, null, null, 
+                Flow.USERAGENT);
         assertNotNull(user);
 
         // Try to use the token...
@@ -319,7 +322,7 @@ public class AuthorizationServerTest {
         OAuthParameters wrong = new OAuthParameters(right.getClientId(),
                 right.getClientSecret(), right.getBaseRef().toString(),
                 "one two");
-        OAuthUser user = OAuthUtils.userAgent(wrong, callbackUri, null);
+        OAuthUser user = OAuthFlows.doFlow(wrong, callbackUri, null, null, null, null, Flow.USERAGENT);
         assertNotNull(user);
 
         // Try to use the token...
@@ -342,8 +345,10 @@ public class AuthorizationServerTest {
 
     @Test
     public void testPasswordFlow() throws IOException {
-        OAuthUser user = OAuthUtils.passwordFlow(client.getOauthParameters(),
-                OAuthTestApplication.TEST_USER, OAuthTestApplication.TEST_PASS);
+        OAuthUser user = OAuthFlows.doFlow(
+                client.getOauthParameters(), null, null, 
+                OAuthTestApplication.TEST_USER,
+                OAuthTestApplication.TEST_PASS, null, Flow.PASSWORD);
         assertNotNull(user);
 
         // Try to use the token...
@@ -361,16 +366,19 @@ public class AuthorizationServerTest {
 
         // Wrong username test
         try {
-            user = OAuthUtils.passwordFlow(client.getOauthParameters(),
-                    "sowrong", OAuthTestApplication.TEST_PASS);
+            user = OAuthFlows.doFlow(client.getOauthParameters(), 
+                    null, null, "somewrong", OAuthTestApplication.TEST_PASS,
+                    null, Flow.PASSWORD);
         } catch (ResourceException re) { // Should be invalidated
             assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, re.getStatus());
         }
 
         // Wrong pasword test
         try {
-            user = OAuthUtils.passwordFlow(client.getOauthParameters(),
-                    OAuthTestApplication.TEST_USER, "sowrong");
+            user = OAuthFlows.doFlow(client.getOauthParameters(), 
+                    null, null, OAuthTestApplication.TEST_USER, "somewrong",
+                    null, Flow.PASSWORD);
+            
         } catch (ResourceException re) { // Should be invalidated
             assertEquals(Status.CLIENT_ERROR_FORBIDDEN, re.getStatus());
         }

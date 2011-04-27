@@ -30,6 +30,8 @@
 
 package org.restlet.ext.oauth;
 
+import org.restlet.ext.oauth.internal.Token;
+
 /**
  * POJO for keeping a grant that a user has approved. User with a specific id
  * has granted a set of scopes.

@@ -50,6 +50,8 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.security.AuthenticatorHelper;
+import org.restlet.ext.oauth.OAuthFlows;
+import org.restlet.ext.oauth.OAuthFlows.Flow;
 import org.restlet.ext.oauth.OAuthHelper;
 import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.ext.openid.OpenIdFormFrowarder;
@@ -177,16 +179,15 @@ public class TimedTokenTest {
     public void testRefresh() throws Exception {
         OAuthUser user = client.getUser();
         assertNotNull(user);
-        OAuthUser refreshed = OAuthUtils
-                .refreshToken(client.getOauthParameters(), client.getUser()
-                        .getRefreshToken());
+        OAuthUser refreshed = OAuthFlows.doFlow(client.getOauthParameters(), 
+                null, null, null, null, client.getUser().getRefreshToken(), Flow.REFRESH);
         assertNotNull(user);
         String wrongToken = refreshed.getAccessToken();
         assertNotNull(wrongToken);
 
         // Back to back test
-        refreshed = OAuthUtils.refreshToken(client.getOauthParameters(),
-                client.getUser().getRefreshToken());
+        refreshed = OAuthFlows.doFlow(client.getOauthParameters(), 
+                null, null, null, null, client.getUser().getRefreshToken(), Flow.REFRESH);
         String newToken = refreshed.getAccessToken();
         assertNotNull(newToken);
 

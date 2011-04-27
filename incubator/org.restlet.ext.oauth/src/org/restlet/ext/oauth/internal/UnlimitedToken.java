@@ -28,34 +28,50 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.oauth;
+package org.restlet.ext.oauth.internal;
+
+import org.restlet.ext.oauth.AuthenticatedUser;
 
 /**
- * Abstract Token that must be extended by all token implementations
+ * Token that never expires but that can be revoked/deleted.
  * 
  * @author Kristoffer Gronowski
- * 
- * @see UnlimitedToken
- * @see ExpireToken
  */
-public abstract class Token {
+public class UnlimitedToken extends Token {
+
+    private String token;
+
+    private AuthenticatedUser user;
 
     /**
-     * Value indicating that the Token should not expire
+     * 
+     * @param token
+     *            string representing the OAuth token
+     * @param user
+     *            the end user being represented
      */
-    public static final long UNLIMITED = 0;
+    public UnlimitedToken(String token, AuthenticatedUser user) {
+        this.token = token;
+        this.user = user;
+    }
 
     /**
      * 
      * @return the actual token to be used for OAuth invocations.
      */
-    public abstract String getToken();
+    @Override
+    public String getToken() {
+        return token;
+    }
 
     /**
      * 
      * @return the user that is the owner of this token
      */
-    public abstract AuthenticatedUser getUser();
+    @Override
+    public AuthenticatedUser getUser() {
+        return user;
+    }
 
     /**
      * Generic package method since the Token can be revoked and re-issued or
@@ -64,5 +80,23 @@ public abstract class Token {
      * 
      * @param token
      */
-    abstract void setToken(String token);
+    @Override
+    void setToken(String token) {
+        this.token = token;
+    }
+
+    // TODO improve on equals.
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Token) {
+            Token t = (Token) obj;
+            return token.equals(t.getToken());
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return token.hashCode();
+    }
 }

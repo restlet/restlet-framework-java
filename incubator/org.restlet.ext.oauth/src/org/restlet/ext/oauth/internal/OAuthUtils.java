@@ -54,8 +54,11 @@ import org.restlet.util.Series;
 
 /**
  * Helper class for creating client OAuth code
+ *
+ * 
  * 
  * @author Kristoffer Gronowski
+ * @deprecated
  */
 public class OAuthUtils {
 

@@ -42,6 +42,8 @@ import org.restlet.data.Status;
 import org.restlet.engine.util.Base64;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.OAuthError;
+import org.restlet.ext.oauth.internal.ExpireToken;
+import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;

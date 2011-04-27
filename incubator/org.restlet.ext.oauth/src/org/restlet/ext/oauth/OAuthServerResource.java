@@ -38,6 +38,9 @@ import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.data.CacheDirective;
+import org.restlet.ext.oauth.internal.AuthSession;
+import org.restlet.ext.oauth.internal.Token;
+import org.restlet.ext.oauth.internal.TokenGenerator;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 

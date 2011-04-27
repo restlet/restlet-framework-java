@@ -1,9 +1,11 @@
-package org.restlet.ext.oauth;
+package org.restlet.ext.oauth.internal;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import org.restlet.ext.oauth.AuthenticatedUser;
 
 /**
  * Class that controls the generation of code, token and refresh token.

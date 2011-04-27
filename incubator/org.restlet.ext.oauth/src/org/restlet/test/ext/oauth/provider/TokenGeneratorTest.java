@@ -35,11 +35,11 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.restlet.ext.oauth.AuthenticatedUser;
-import org.restlet.ext.oauth.ExpireToken;
-import org.restlet.ext.oauth.Token;
-import org.restlet.ext.oauth.TokenGenerator;
 import org.restlet.ext.oauth.internal.AuthenticatedUserImpl;
+import org.restlet.ext.oauth.internal.ExpireToken;
 import org.restlet.ext.oauth.internal.MemTokenGenerator;
+import org.restlet.ext.oauth.internal.Token;
+import org.restlet.ext.oauth.internal.TokenGenerator;
 
 public class TokenGeneratorTest {
     private static ScheduledThreadPoolExecutor pool;

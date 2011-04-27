@@ -28,11 +28,15 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.oauth;
+package org.restlet.ext.oauth.experimental;
 
 import java.util.concurrent.ConcurrentMap;
 
 import org.restlet.Context;
+import org.restlet.ext.oauth.Client;
+import org.restlet.ext.oauth.ClientStore;
+import org.restlet.ext.oauth.OAuthParameters;
+import org.restlet.ext.oauth.OAuthProxy;
 
 /**
  * OAuth web flow proxy class used for setting up a callback channel in the

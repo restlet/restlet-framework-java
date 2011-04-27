@@ -35,7 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.restlet.ext.oauth.AuthenticatedUser;
 import org.restlet.ext.oauth.Client;
-import org.restlet.ext.oauth.Token;
 
 /**
  * In memory implementation of the AuthenticatedUser interface.

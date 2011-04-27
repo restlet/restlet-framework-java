@@ -37,9 +37,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.restlet.ext.oauth.AuthenticatedUser;
-import org.restlet.ext.oauth.ExpireToken;
-import org.restlet.ext.oauth.Token;
-import org.restlet.ext.oauth.TokenGenerator;
 
 /**
  * TokenGenerator implementation that keeps tokens in memory. Note that tokens

@@ -28,73 +28,86 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.oauth;
+package org.restlet.ext.oauth.internal;
+
+import java.util.concurrent.ScheduledFuture;
+
+import org.restlet.ext.oauth.AuthenticatedUser;
 
 /**
- * Token that never expires but that can be revoked/deleted.
+ * Token that can be set to expire at a given point in time. This behavior
+ * should be controlled by the token generator
  * 
  * @author Kristoffer Gronowski
+ * @see TokenGenerator#generateToken(AuthenticatedUser, long)
+ * @see TokenGenerator#refreshToken(ExpireToken)
  */
-public class UnlimitedToken extends Token {
+public class ExpireToken extends Token {
+
+    private final long expireTime;
+
+    private final String refreshToken;
 
     private String token;
 
     private AuthenticatedUser user;
 
-    /**
-     * 
-     * @param token
-     *            string representing the OAuth token
-     * @param user
-     *            the end user being represented
-     */
-    public UnlimitedToken(String token, AuthenticatedUser user) {
+    private ScheduledFuture<?> future; // can be used to clean up
+
+    public ExpireToken(String refreshToken, long expTimeSec, String token,
+            AuthenticatedUser user) {
+        this.refreshToken = refreshToken;
         this.token = token;
         this.user = user;
+        expireTime = expTimeSec;
     }
 
-    /**
-     * 
-     * @return the actual token to be used for OAuth invocations.
-     */
-    @Override
-    public String getToken() {
-        return token;
+    public void setFuture(ScheduledFuture<?> future) {
+        this.future = future;
     }
 
-    /**
-     * 
-     * @return the user that is the owner of this token
-     */
-    @Override
+    public ScheduledFuture<?> getFuture() {
+        return future;
+    }
+
+    public long getExpirePeriod() {
+        return expireTime;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void expireToken() {
+        if (future != null)
+            future.cancel(false);
+        token = null;
+    }
+
     public AuthenticatedUser getUser() {
         return user;
     }
 
-    /**
-     * Generic package method since the Token can be revoked and re-issued or
-     * just persisted and re-instantiated.
-     * 
-     * 
-     * @param token
-     */
-    @Override
+    public String getToken() {
+        return token;
+    }
+
     void setToken(String token) {
         this.token = token;
     }
 
-    // TODO improve on equals.
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Token) {
-            Token t = (Token) obj;
-            return token.equals(t.getToken());
+        if (obj instanceof ExpireToken) {
+            ExpireToken t = (ExpireToken) obj;
+            return (refreshToken.equals(t.refreshToken))
+                    && (expireTime == t.expireTime);
         }
-        return false;
+        return super.equals(obj);
     }
 
     @Override
     public int hashCode() {
-        return token.hashCode();
+        return refreshToken.hashCode();
     }
 }

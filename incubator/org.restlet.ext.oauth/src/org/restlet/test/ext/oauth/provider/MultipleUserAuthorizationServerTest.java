@@ -57,9 +57,11 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.security.AuthenticatorHelper;
+import org.restlet.ext.oauth.OAuthFlows;
 import org.restlet.ext.oauth.OAuthHelper;
 import org.restlet.ext.oauth.OAuthParameters;
 import org.restlet.ext.oauth.OAuthUser;
+import org.restlet.ext.oauth.OAuthFlows.Flow;
 import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -227,8 +229,10 @@ public class MultipleUserAuthorizationServerTest {
             for(int i = 0; i < numTimes; i++){
                 //System.out.println(this.getName()+" "+i);
                 int u = r.nextInt(5) + 1;
-                OAuthUser user = OAuthUtils.passwordFlow(params, "user" + u,
-                        "pass" + u, myClient);
+                OAuthUser user = OAuthFlows.doFlow(params, null, null, 
+                        "user"+u, "pass"+u, null, myClient, Flow.PASSWORD);
+                /*OAuthUser user = OAuthUtils.passwordFlow(params, "user" + u,
+                        "pass" + u, myClient);*/
                 if (user == null) {
                     SingletonStore.I().addError();
                     SingletonStore.I().addRequest();
