@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.1 Milestone 4 (04/27/2011)
     - API changes
       - Added protected redirect(...) and retry(...) methods on on ClientResource
         to facilitate extension of default behavior such as passing on cookies.
