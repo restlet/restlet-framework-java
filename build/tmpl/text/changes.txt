@@ -31,6 +31,9 @@ Changes log
         portability of your code between Restlet/GAE and other Restlet editions. 
         As SDC is natively supported on GAE, it doesn't require the 
         org.restlet.ext.sdc extension.
+      - Added a new GAE extension for the GAE edition. It provides a dedicated
+        authenticator based on the GAE UserService feature.
+        Contributed by Matt Kennedy.
     - Bug fixed
       - Throwing a ResourceException with a given status, was resulting in
         500 status being returned to the client instead of the given status.
