@@ -92,6 +92,29 @@ public class Role implements Principal {
         this.childRoles = new CopyOnWriteArrayList<Role>();
     }
 
+    @Override
+    public boolean equals(Object arg0) {
+        boolean result = false;
+        if (this.name == null) {
+            return arg0 == null;
+        }
+        if (arg0 instanceof Role) {
+            Role r = (Role) arg0;
+            // Test equality of names,
+            result = this.name.equals(r.getName());
+            // and child roles.
+            if (!getChildRoles().isEmpty()
+                    && getChildRoles().size() == r.getChildRoles().size()) {
+                for (int i = 0; result && i < getChildRoles().size(); i++) {
+                    result = getChildRoles().get(i).equals(
+                            r.getChildRoles().get(i));
+                }
+            }
+        }
+
+        return result;
+    }
+
     /**
      * Returns the modifiable list of child roles.
      * 
@@ -117,6 +140,24 @@ public class Role implements Principal {
      */
     public String getName() {
         return name;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        if (name == null) {
+            result = super.hashCode();
+        } else if (getChildRoles().isEmpty()) {
+            result = name.hashCode();
+        } else {
+            StringBuilder sb = new StringBuilder(name).append("(");
+            for (Role role : getChildRoles()) {
+                sb.append(role.hashCode()).append("-");
+            }
+            sb.append(")");
+            result = sb.toString().hashCode();
+        }
+        return result;
     }
 
     /**
