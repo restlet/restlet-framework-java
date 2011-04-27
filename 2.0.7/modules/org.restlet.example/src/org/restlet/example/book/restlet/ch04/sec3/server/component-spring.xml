@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<bean id="component" class="org.restlet.ext.spring.SpringComponent">
+		<property name="name" value="RESTful Mail Server component" />
+		<property name="description" value="Example for 'Restlet in Action' book" />
+		<property name="owner" value="Noelios Technologies" />
+		<property name="author" value="The Restlet Team" />
+		<property name="client" value="clap" />
+		<property name="server" ref="server" />
+		<property name="defaultHost" ref="defaultHost" />
+	</bean>
+
+	<bean id="component.context"
+		class="org.springframework.beans.factory.config.PropertyPathFactoryBean" />
+
+	<bean id="server" class="org.restlet.ext.spring.SpringServer">
+		<constructor-arg value="http" />
+		<constructor-arg value="8111" />
+
+		<property name="parameters">
+			<props>
+				<prop key="tracing">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="defaultHost" class="org.restlet.ext.spring.SpringHost">
+		<constructor-arg ref="component" />
+
+		<!--
+			<property name="hostDomain"
+			value="www.rmep.com|www.rmep.net|www.rmep.org" /> <property
+			name="serverAddress" value="1.2.3.10|1.2.3.20" /> <property
+			name="serverPort" value="80" />
+		-->
+
+		<property name="defaultAttachment" ref="mailServerApplication" />
+	</bean>
+
+	<bean id="componentChildContext" class="org.restlet.Context">
+		<lookup-method name="createChildContext" bean="component.context" />
+	</bean>
+
+	<bean id="mailServerApplication" class="org.restlet.Application">
+		<constructor-arg ref="componentChildContext" />
+
+		<property name="name" value="RESTful Mail Server application" />
+		<property name="description"
+			value="Example application for 'Restlet in Action' book" />
+		<property name="owner" value="Noelios Technologies" />
+		<property name="author" value="The Restlet Team" />
+		<property name="inboundRoot">
+			<bean class="org.restlet.ext.spring.SpringRouter">
+				<constructor-arg ref="mailServerApplication" />
+
+				<property name="attachments">
+					<map>
+						<entry key="/"
+							value="org.restlet.example.book.restlet.ch04.sec3.server.RootServerResource" />
+						<entry key="/accounts/"
+							value="org.restlet.example.book.restlet.ch04.sec3.server.AccountsServerResource" />
+						<entry key="/accounts/{accountId}"
+							value="org.restlet.example.book.restlet.ch04.sec3.server.AccountServerResource" />
+					</map>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+</beans>
