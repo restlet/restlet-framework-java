@@ -43,19 +43,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Jerome Louvel
  */
 public class Role implements Principal {
-    public static void main(String[] args) {
-        Role role1 = new Role("totoche", "plonk");
-        Role role2 = new Role("totoche", "plonky");
-        System.out.println(role1.equals(role2));
-        Role role3 = new Role("plonky3", "plonk");
-        Role role4 = new Role("plonky4", "plonk");
-        role1.getChildRoles().add(role3);
-        role1.getChildRoles().add(role4);
-        System.out.println(role1.equals(role2));
-        role2.getChildRoles().add(role4);
-        role2.getChildRoles().add(role3);
-        System.out.println(role1.equals(role2));
-    }
 
     /**
      * Unmodifiable role that covers all existing roles. Its name is "*" by
