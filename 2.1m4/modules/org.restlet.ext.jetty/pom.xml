@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.restlet.dev</groupId>
+		<artifactId>org.restlet.parent</artifactId>
+		<version>2.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>org.restlet.ext.jetty</artifactId>
+	<name>Restlet Extension - Jetty</name>
+	<description>Integration with Jetty.</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-ajp</artifactId>
+			<version>7.3.0.v20110203</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-continuation</artifactId>
+			<version>7.3.0.v20110203</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-http</artifactId>
+			<version>7.3.0.v20110203</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-io</artifactId>
+			<version>7.3.0.v20110203</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>7.3.0.v20110203</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+			<version>7.3.0.v20110203</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.restlet.dev</groupId>
+			<artifactId>org.restlet</artifactId>
+<!--			<version>2.1-SNAPSHOT</version> -->
+			<version>${version}</version>
+			
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.dev</groupId>
+			<artifactId>org.restlet.ext.ssl</artifactId>
+<!--			<version>2.1-SNAPSHOT</version> -->
+			<version>${version}</version>
+			
+		</dependency>
+	</dependencies>
+</project>

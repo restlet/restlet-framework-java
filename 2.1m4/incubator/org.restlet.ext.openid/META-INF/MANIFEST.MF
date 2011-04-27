@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - OpenID
+Bundle-SymbolicName: org.restlet.ext.openid
+Bundle-Version: 2.1
+Bundle-Vendor: Noelios Technologies
+Import-Package: freemarker.template;resolution:=optional,
+ org.apache.commons.codec.digest,
+ org.apache.commons.dbcp;resolution:=optional,
+ org.apache.commons.pool;resolution:=optional,
+ org.apache.commons.pool.impl;resolution:=optional,
+ org.json;resolution:=optional,
+ org.junit,
+ org.restlet;resolution:=optional,
+ org.restlet.data;resolution:=optional,
+ org.restlet.engine;resolution:=optional,
+ org.restlet.engine.application;resolution:=optional,
+ org.restlet.engine.component;resolution:=optional,
+ org.restlet.engine.header;resolution:=optional,
+ org.restlet.engine.local;resolution:=optional,
+ org.restlet.engine.security;resolution:=optional,
+ org.restlet.engine.util;resolution:=optional,
+ org.restlet.ext.freemarker;resolution:=optional,
+ org.restlet.ext.json;resolution:=optional,
+ org.restlet.ext.xml;resolution:=optional,
+ org.restlet.representation;resolution:=optional,
+ org.restlet.resource;resolution:=optional,
+ org.restlet.routing;resolution:=optional,
+ org.restlet.security;resolution:=optional,
+ org.restlet.service;resolution:=optional,
+ org.restlet.util;resolution:=optional
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.restlet.ext.openid

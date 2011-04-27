@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.restlet.dev</groupId>
+		<artifactId>org.restlet.incubator</artifactId>
+		<version>2.1-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>org.restlet.ext.oauth</artifactId>
+	<name>Restlet Extension: OAuth</name>
+	<version>2.1-SNAPSHOT</version>
+	<description>Support for OAuth HTTP authentication.</description>
+	<repositories><repository><id>oauth-repo</id><name>OAuth repository</name><url>http://oauth.googlecode.com/svn/code/maven</url></repository></repositories>
+
+	<dependencies>
+
+    <dependency>
+      <groupId>org.restlet.dev</groupId>
+      <artifactId>org.restlet</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.restlet.dev</groupId>
+      <artifactId>org.restlet.ext.json</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.restlet.dev</groupId>
+      <artifactId>org.restlet.ext.xml</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.restlet.dev</groupId>
+      <artifactId>org.restlet.ext.openid</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope> <!-- Should be test -->
+    </dependency>
+    
+    <dependency>
+      <groupId>org.restlet.dev</groupId>
+      <artifactId>org.restlet.ext.wadl</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope> <!-- Should be test -->
+    </dependency>
+    
+    <dependency>
+      <groupId>org.restlet.dev</groupId>
+      <artifactId>org.restlet.ext.freemarker</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+        
+    <dependency>
+      <groupId>org.restlet.dev</groupId>
+      <artifactId>org.restlet.ext.httpclient</artifactId>
+      <version>${project.version}</version>
+    </dependency> 
+    
+    <!-- Only for test, used for HTTPS suport in standalone mode -->
+    
+    <dependency>
+      <groupId>org.restlet.dev</groupId>
+      <artifactId>org.restlet.ext.jetty</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    
+    
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.4</version>
+      <scope>compile</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.jayway.awaitility</groupId> 
+      <artifactId>awaitility</artifactId>
+      <version>1.3</version>
+      <scope>compile</scope>
+    </dependency>
+    
+	</dependencies>
+  
+  <build>
+    <sourceDirectory>${basedir}/src</sourceDirectory>
+    <resources>
+      <resource>
+        <filtering>false</filtering>
+        <directory>${basedir}/src</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+        <excludes>
+          <exclude>**/*.java</exclude>
+          <exclude>**/package.html</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    <testOutputDirectory>${basedir}/target/classes</testOutputDirectory>
+    <testResources>
+      <testResource>
+       <filtering>false</filtering>
+        <directory>${basedir}/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+        <excludes>
+          <exclude>**/*.java</exclude>
+          <exclude>**/package.html</exclude>
+        </excludes>
+      </testResource>
+    </testResources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.4.3</version>
+        <configuration>
+          <argLine>-Xmx1024m</argLine>
+          <systemProperties>
+            <property>
+              <name>java.util.logging.config.file</name>
+              <value>${basedir}/target/classes/logging.properties</value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
