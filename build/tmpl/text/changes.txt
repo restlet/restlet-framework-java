@@ -20,6 +20,8 @@ Changes log
          as a Restlet client connector it shouldn't have done so, like
          for other connector such as the internal client.
          Reported by Kristoffer Gronowski and Martin Svensson
+       - Fixed bug with the testing of equality of Roles in RoleAuthorizer.
+         Reported by Tim Peierls.
     - Misc
        - Clarified in log trace the need to manually register connector
          helpers on the Android edition.
