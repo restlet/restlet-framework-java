@@ -79,6 +79,7 @@ import org.restlet.test.routing.ValidatorTestCase;
 import org.restlet.test.security.DigestVerifierTestCase;
 import org.restlet.test.security.HttpBasicTestCase;
 import org.restlet.test.security.HttpDigestTestCase;
+import org.restlet.test.security.RoleTestCase;
 import org.restlet.test.security.SecurityTestCase;
 import org.restlet.test.util.TemplateTestCase;
 
@@ -130,6 +131,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(RouteListTestCase.class);
         addTestSuite(DigestVerifierTestCase.class);
         addTestSuite(RecipientInfoTestCase.class);
+        addTestSuite(RoleTestCase.class);
         addTestSuite(StatusTestCase.class);
         addTestSuite(TemplateTestCase.class);
         addTestSuite(TransformerTestCase.class);
@@ -138,6 +140,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(WadlTestCase.class);
         addTest(ODataTestSuite.suite());
 
+        
         // Tests based on extension only supported by the JEE edition.
         // [ifdef jee]
         addTestSuite(org.restlet.test.ext.xdb.ChunkedInputStreamTestCase.class);
