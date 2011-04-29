@@ -42,6 +42,8 @@ import javax.net.ssl.SSLSessionContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.restlet.ext.ssl.DefaultSslContextFactory;
+
 /**
  * Default SSL context SPI capable or setting additional properties on the
  * created SSL engines and socket factories.

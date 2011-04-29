@@ -38,7 +38,7 @@ import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.ext.ssl.internal.SslContextFactory;
+import org.restlet.ext.ssl.SslContextFactory;
 import org.restlet.ext.ssl.internal.SslUtils;
 
 /**

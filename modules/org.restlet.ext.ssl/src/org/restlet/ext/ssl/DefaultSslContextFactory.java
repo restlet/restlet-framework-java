@@ -28,13 +28,14 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.ssl.internal;
+package org.restlet.ext.ssl;
 
 import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 
 import org.restlet.data.Parameter;
+import org.restlet.ext.ssl.internal.DefaultSslContext;
 import org.restlet.util.Series;
 
 /**

@@ -54,7 +54,7 @@ import org.restlet.engine.adapter.HttpClientHelper;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.ext.sdc.internal.SdcClientCall;
 import org.restlet.ext.sdc.internal.SdcServerConnection;
-import org.restlet.ext.ssl.internal.SslContextFactory;
+import org.restlet.ext.ssl.SslContextFactory;
 import org.restlet.ext.ssl.internal.SslUtils;
 
 /**

@@ -38,10 +38,10 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.ext.openid.OpenIdFormFrowarder;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 
 /**
  * Class that lets clients retrieve tokens using different OAuth2 flows. Currently this class
@@ -64,7 +64,6 @@ import org.restlet.ext.openid.OpenIdFormFrowarder;
  * 
  * @author Martin Svensson
  * @author Kristoffer Gronowski
- *
  */
 public class OAuthFlows {
     

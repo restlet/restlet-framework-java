@@ -39,7 +39,7 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.ext.simple.internal.SimpleContainer;
 import org.restlet.ext.simple.internal.SimpleServer;
-import org.restlet.ext.ssl.internal.SslContextFactory;
+import org.restlet.ext.ssl.SslContextFactory;
 import org.restlet.ext.ssl.internal.SslUtils;
 import org.simpleframework.http.core.Container;
 import org.simpleframework.http.core.ContainerServer;

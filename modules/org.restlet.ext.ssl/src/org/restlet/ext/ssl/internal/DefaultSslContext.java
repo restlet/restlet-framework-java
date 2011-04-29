@@ -32,6 +32,8 @@ package org.restlet.ext.ssl.internal;
 
 import javax.net.ssl.SSLContext;
 
+import org.restlet.ext.ssl.DefaultSslContextFactory;
+
 /**
  * Default SSL context that delegates calls to {@link DefaultSslContextSpi}
  * 

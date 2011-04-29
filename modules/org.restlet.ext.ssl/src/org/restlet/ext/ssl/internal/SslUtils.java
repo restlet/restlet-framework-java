@@ -40,6 +40,8 @@ import java.util.logging.Level;
 import org.restlet.Context;
 
 import org.restlet.engine.RestletHelper;
+import org.restlet.ext.ssl.DefaultSslContextFactory;
+import org.restlet.ext.ssl.SslContextFactory;
 
 /**
  * Various HTTPS utilities.

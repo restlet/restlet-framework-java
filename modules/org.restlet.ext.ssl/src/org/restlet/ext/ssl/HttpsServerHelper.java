@@ -47,7 +47,6 @@ import org.restlet.engine.connector.HttpServerOutboundWay;
 import org.restlet.engine.connector.OutboundWay;
 import org.restlet.engine.connector.ServerInboundWay;
 import org.restlet.ext.ssl.internal.SslConnection;
-import org.restlet.ext.ssl.internal.SslContextFactory;
 import org.restlet.ext.ssl.internal.SslUtils;
 
 /**

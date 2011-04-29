@@ -34,7 +34,6 @@ import javax.net.ssl.SSLContext;
 
 import org.jsslutils.sslcontext.SSLContextFactory;
 import org.restlet.data.Parameter;
-import org.restlet.ext.ssl.internal.SslContextFactory;
 import org.restlet.util.Series;
 
 /**

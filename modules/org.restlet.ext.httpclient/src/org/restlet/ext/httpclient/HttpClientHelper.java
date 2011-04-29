@@ -62,7 +62,7 @@ import org.restlet.engine.adapter.ClientCall;
 import org.restlet.ext.httpclient.internal.HttpIdleConnectionReaper;
 import org.restlet.ext.httpclient.internal.HttpMethodCall;
 import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
-import org.restlet.ext.ssl.internal.SslContextFactory;
+import org.restlet.ext.ssl.SslContextFactory;
 import org.restlet.ext.ssl.internal.SslUtils;
 
 /**

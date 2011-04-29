@@ -117,7 +117,7 @@ public class HttpUrlConnectionCall extends ClientCall {
             if (this.connection instanceof javax.net.ssl.HttpsURLConnection) {
                 setConfidential(true);
                 javax.net.ssl.HttpsURLConnection https = (javax.net.ssl.HttpsURLConnection) this.connection;
-                org.restlet.ext.ssl.internal.SslContextFactory sslContextFactory = org.restlet.ext.ssl.internal.SslUtils
+                org.restlet.ext.ssl.SslContextFactory sslContextFactory = org.restlet.ext.ssl.internal.SslUtils
                         .getSslContextFactory(getHelper());
 
                 if (sslContextFactory != null) {
