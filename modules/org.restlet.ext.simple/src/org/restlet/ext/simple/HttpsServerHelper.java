@@ -39,6 +39,7 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.ext.simple.internal.SimpleContainer;
 import org.restlet.ext.simple.internal.SimpleServer;
+import org.restlet.ext.ssl.DefaultSslContextFactory;
 import org.restlet.ext.ssl.SslContextFactory;
 import org.restlet.ext.ssl.internal.SslUtils;
 import org.simpleframework.http.core.Container;
@@ -60,85 +61,19 @@ import org.simpleframework.transport.connect.SocketConnection;
  * <tr>
  * <td>sslContextFactory</td>
  * <td>String</td>
- * <td>null</td>
- * <td>Let you specify a {@link SslContextFactory} class name as a parameter, or
- * an instance as an attribute for a more complete and flexible SSL context
- * setting. If set, it takes precedence over the other SSL parameters below.</td>
- * </tr>
- * <tr>
- * <td>keystorePath</td>
- * <td>String</td>
- * <td>${user.home}/.keystore</td>
- * <td>SSL keystore path.</td>
- * </tr>
- * <tr>
- * <td>keystorePassword</td>
- * <td>String</td>
- * <td></td>
- * <td>SSL keystore password.</td>
- * </tr>
- * <tr>
- * <td>keystoreType</td>
- * <td>String</td>
- * <td>JKS</td>
- * <td>SSL keystore type</td>
- * </tr>
- * <tr>
- * <td>keyPassword</td>
- * <td>String</td>
- * <td>${keystorePassword}</td>
- * <td>SSL key password.</td>
- * </tr>
- * <tr>
- * <td>certAlgorithm</td>
- * <td>String</td>
- * <td>SunX509</td>
- * <td>SSL certificate algorithm.</td>
- * </tr>
- * <tr>
- * <td>enabledCipherSuites</td>
- * <td>String</td>
- * <td>null</td>
- * <td>Whitespace-separated list of enabled cipher suites and/or can be
- * specified multiple times.</td>
- * </tr>
- * <tr>
- * <td>disabledCipherSuites</td>
- * <td>String</td>
- * <td>null</td>
- * <td>Whitespace-separated list of disabled cipher suites and/or can be
- * specified multiple times. It affects the cipher suites manually enabled or
- * the default ones.</td>
- * </tr>
- * <tr>
- * <td>needClientAuthentication</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>Indicates if we require client certificate authentication.</td>
- * </tr>
- * <tr>
- * <td>sslProtocol</td>
- * <td>String</td>
- * <td>TLS</td>
- * <td>SSL protocol.</td>
- * </tr>
- * <tr>
- * <td>wantClientAuthentication</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>Indicates if we would like client certificate authentication.</td>
+ * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
+ * <td>Let you specify a {@link SslContextFactory} qualified class name as a
+ * parameter, or an instance as an attribute for a more complete and flexible
+ * SSL context setting.</td>
  * </tr>
  * </table>
+ * For the default SSL parameters see the Javadocs of the
+ * {@link DefaultSslContextFactory} class.
  * 
  * @author Lars Heuer
  * @author Jerome Louvel
  */
 public class HttpsServerHelper extends SimpleServerHelper {
-
-    /**
-     * This is the SSL context.
-     */
-    private SSLContext sslContext;
 
     /**
      * Constructor.
@@ -149,25 +84,6 @@ public class HttpsServerHelper extends SimpleServerHelper {
     public HttpsServerHelper(Server server) {
         super(server);
         getProtocols().add(Protocol.HTTPS);
-    }
-
-    /**
-     * Gets the SSL context used by this server.
-     * 
-     * @return this returns the SSL context.
-     */
-    public SSLContext getSslContext() {
-        return sslContext;
-    }
-
-    /**
-     * Sets the SSL context for the server.
-     * 
-     * @param sslContext
-     *            the SSL context
-     */
-    public void setSslContext(SSLContext sslContext) {
-        this.sslContext = sslContext;
     }
 
     /** Starts the Restlet. */
@@ -202,14 +118,13 @@ public class HttpsServerHelper extends SimpleServerHelper {
                 getDefaultThreads());
         SimpleServer filter = new SimpleServer(server);
         Connection connection = new SocketConnection(filter);
-        setSslContext(sslContext);
         setConfidential(true);
         setContainerServer(server);
         setConnection(connection);
 
         // Effectively connect the server socket
         InetSocketAddress address = (InetSocketAddress) getConnection()
-                .connect(getAddress(), getSslContext());
+                .connect(getAddress(), sslContext);
         setEphemeralPort(address.getPort());
         super.start();
     }

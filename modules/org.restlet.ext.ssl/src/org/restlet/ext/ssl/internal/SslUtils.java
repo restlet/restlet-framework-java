@@ -190,7 +190,7 @@ public class SslUtils {
 
             if (sslContextFactoryNames != null) {
                 for (String sslContextFactoryName : sslContextFactoryNames) {
-                    if (sslContextFactoryName != null) {
+                    if ((result == null) && (sslContextFactoryName != null)) {
                         try {
                             Class<? extends SslContextFactory> sslContextFactoryClass = Class
                                     .forName(sslContextFactoryName).asSubclass(

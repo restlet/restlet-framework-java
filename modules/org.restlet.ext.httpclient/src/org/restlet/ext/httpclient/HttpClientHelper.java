@@ -62,6 +62,7 @@ import org.restlet.engine.adapter.ClientCall;
 import org.restlet.ext.httpclient.internal.HttpIdleConnectionReaper;
 import org.restlet.ext.httpclient.internal.HttpMethodCall;
 import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
+import org.restlet.ext.ssl.DefaultSslContextFactory;
 import org.restlet.ext.ssl.SslContextFactory;
 import org.restlet.ext.ssl.internal.SslUtils;
 
@@ -155,7 +156,17 @@ import org.restlet.ext.ssl.internal.SslUtils;
  * <td>false</td>
  * <td>Indicate if Nagle's TCP_NODELAY algorithm should be used.</td>
  * </tr>
+ * <tr>
+ * <td>sslContextFactory</td>
+ * <td>String</td>
+ * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
+ * <td>Let you specify a {@link SslContextFactory} qualified class name as a
+ * parameter, or an instance as an attribute for a more complete and flexible
+ * SSL context setting.</td>
+ * </tr>
  * </table>
+ * For the default SSL parameters see the Javadocs of the
+ * {@link DefaultSslContextFactory} class.
  * 
  * @see <a href= "http://hc.apache.org/httpcomponents-client/tutorial/html/"
  *      >Apache HTTP Client tutorial</a>

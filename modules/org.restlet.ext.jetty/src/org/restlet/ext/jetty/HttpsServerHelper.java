@@ -38,6 +38,7 @@ import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.ext.ssl.DefaultSslContextFactory;
 import org.restlet.ext.ssl.SslContextFactory;
 import org.restlet.ext.ssl.internal.SslUtils;
 
@@ -61,82 +62,16 @@ import org.restlet.ext.ssl.internal.SslUtils;
  * 2 : Blocking BIO connector (Jetty's SslSocketConnector class)</td>
  * </tr>
  * <tr>
- * <td>securityProvider</td>
- * <td>String</td>
- * <td>null (see javax.net.ssl.SSLContext)</td>
- * <td>Java security provider name (see java.security.Provider class)</td>
- * </tr>
- * <tr>
  * <td>sslContextFactory</td>
  * <td>String</td>
- * <td>null</td>
- * <td>Let you specify a {@link SslContextFactory} class name as a parameter, or
- * an instance as an attribute for a more complete and flexible SSL context
- * setting. If set, it takes precedence over the other SSL parameters below.</td>
- * </tr>
- * <tr>
- * <td>keystorePath</td>
- * <td>String</td>
- * <td>${user.home}/.keystore</td>
- * <td>SSL keystore path</td>
- * </tr>
- * <tr>
- * <td>keystorePassword</td>
- * <td>String</td>
- * <td></td>
- * <td>SSL keystore password</td>
- * </tr>
- * <tr>
- * <td>keystoreType</td>
- * <td>String</td>
- * <td>JKS</td>
- * <td>SSL keystore type</td>
- * </tr>
- * <tr>
- * <td>keyPassword</td>
- * <td>String</td>
- * <td>${keystorePassword}</td>
- * <td>SSL key password</td>
- * </tr>
- * <tr>
- * <td>certAlgorithm</td>
- * <td>String</td>
- * <td>SunX509</td>
- * <td>SSL certificate algorithm</td>
- * </tr>
- * <tr>
- * <td>disabledCipherSuites</td>
- * <td>String</td>
- * <td>null</td>
- * <td>Whitespace-separated list of disabled cipher suites and/or can be
- * specified multiple times</td>
- * </tr>
- * <tr>
- * <td>needClientAuthentication</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>Indicates if we require client certificate authentication</td>
- * </tr>
- * <tr>
- * <td>secureRandomAlgorithm</td>
- * <td>String</td>
- * <td>null (see java.security.SecureRandom)</td>
- * <td>Name of the RNG algorithm. (see java.security.SecureRandom class)</td>
- * </tr>
- * <tr>
- * <td>sslProtocol</td>
- * <td>String</td>
- * <td>TLS</td>
- * <td>SSL protocol</td>
- * </tr>
- * <tr>
- * <td>wantClientAuthentication</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>Indicates if we would like client certificate authentication (only for
- * the BIO connector type)</td>
+ * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
+ * <td>Let you specify a {@link SslContextFactory} qualified class name as a
+ * parameter, or an instance as an attribute for a more complete and flexible
+ * SSL context setting.</td>
  * </tr>
  * </table>
+ * For the default SSL parameters see the Javadocs of the
+ * {@link DefaultSslContextFactory} class.
  * 
  * @see <a
  *      href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How
@@ -180,12 +115,6 @@ public class HttpsServerHelper extends JettyServerHelper {
                 }
             };
 
-            if (isNeedClientAuthentication()) {
-                nioResult.setNeedClientAuth(true);
-            } else if (isWantClientAuthentication()) {
-                nioResult.setWantClientAuth(true);
-            }
-
             if (excludedCipherSuites != null) {
                 nioResult.setExcludeCipherSuites(excludedCipherSuites);
             }
@@ -203,12 +132,6 @@ public class HttpsServerHelper extends JettyServerHelper {
                     return sslContext.getServerSocketFactory();
                 }
             };
-
-            if (isNeedClientAuthentication()) {
-                bioResult.setNeedClientAuth(true);
-            } else if (isWantClientAuthentication()) {
-                bioResult.setWantClientAuth(true);
-            }
 
             if (excludedCipherSuites != null) {
                 bioResult.setExcludeCipherSuites(excludedCipherSuites);
@@ -229,26 +152,6 @@ public class HttpsServerHelper extends JettyServerHelper {
     public int getType() {
         return Integer.parseInt(getHelpedParameters()
                 .getFirstValue("type", "2"));
-    }
-
-    /**
-     * Indicates if we require client certificate authentication.
-     * 
-     * @return True if we require client certificate authentication.
-     */
-    public boolean isNeedClientAuthentication() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "needClientAuthentication", "false"));
-    }
-
-    /**
-     * Indicates if we would like client certificate authentication.
-     * 
-     * @return True if we would like client certificate authentication.
-     */
-    public boolean isWantClientAuthentication() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "wantClientAuthentication", "false"));
     }
 
 }

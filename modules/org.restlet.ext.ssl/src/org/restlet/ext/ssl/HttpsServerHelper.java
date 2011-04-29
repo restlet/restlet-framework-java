@@ -50,7 +50,26 @@ import org.restlet.ext.ssl.internal.SslConnection;
 import org.restlet.ext.ssl.internal.SslUtils;
 
 /**
- * HTTPS server helper based on NIO blocking sockets.
+ * HTTPS server helper based on NIO blocking sockets. Here is the list of SSL
+ * related parameters that are also supported:
+ * <table>
+ * <tr>
+ * <th>Parameter name</th>
+ * <th>Value type</th>
+ * <th>Default value</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>sslContextFactory</td>
+ * <td>String</td>
+ * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
+ * <td>Let you specify a {@link SslContextFactory} qualified class name as a
+ * parameter, or an instance as an attribute for a more complete and flexible
+ * SSL context setting.</td>
+ * </tr>
+ * </table>
+ * For the default SSL parameters see the Javadocs of the
+ * {@link DefaultSslContextFactory} class.
  * 
  * @author Jerome Louvel
  */

@@ -43,6 +43,8 @@ import org.restlet.data.Reference;
 import org.restlet.engine.Edition;
 import org.restlet.engine.adapter.ClientCall;
 import org.restlet.ext.net.internal.HttpUrlConnectionCall;
+import org.restlet.ext.ssl.DefaultSslContextFactory;
+import org.restlet.ext.ssl.SslContextFactory;
 
 /**
  * HTTP client connector using the {@link HttpUrlConnectionCall}. Here is the
@@ -90,11 +92,21 @@ import org.restlet.ext.net.internal.HttpUrlConnectionCall;
  * <td>false</td>
  * <td>If true, the protocol is allowed to use caching whenever it can.</td>
  * </tr>
+ * <tr>
+ * <td>sslContextFactory</td>
+ * <td>String</td>
+ * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
+ * <td>Let you specify a {@link SslContextFactory} qualified class name as a
+ * parameter, or an instance as an attribute for a more complete and flexible
+ * SSL context setting.</td>
+ * </tr>
  * </table>
- * <br>
+ * For the default SSL parameters see the Javadocs of the
+ * {@link DefaultSslContextFactory} class.
+ * <p>
  * It is also possible to specify a hostname verifier for HTTPS connections. See
- * the {@link #getHostnameVerifier()} method for details.<br>
- * <br>
+ * the {@link #getHostnameVerifier()} method for details.
+ * <p>
  * Note that by default, the {@link HttpURLConnection} class as implemented by
  * Sun will retry a request if an IO exception is caught, for example due to a
  * connection reset by the server. This can be annoying, especially because the

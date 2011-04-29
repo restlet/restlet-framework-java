@@ -54,6 +54,7 @@ import org.restlet.engine.adapter.HttpClientHelper;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.ext.sdc.internal.SdcClientCall;
 import org.restlet.ext.sdc.internal.SdcServerConnection;
+import org.restlet.ext.ssl.DefaultSslContextFactory;
 import org.restlet.ext.ssl.SslContextFactory;
 import org.restlet.ext.ssl.internal.SslUtils;
 
@@ -97,8 +98,17 @@ import org.restlet.ext.ssl.internal.SslUtils;
  * <td>Whitespace-separated list of enabled cipher suites and/or can be
  * specified multiple times.</td>
  * </tr>
+ * <tr>
+ * <td>sslContextFactory</td>
+ * <td>String</td>
+ * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
+ * <td>Let you specify a {@link SslContextFactory} qualified class name as a
+ * parameter, or an instance as an attribute for a more complete and flexible
+ * SSL context setting.</td>
+ * </tr>
  * </table>
- * 
+ * For the default SSL parameters see the Javadocs of the
+ * {@link DefaultSslContextFactory} class.
  * 
  * @author Jerome Louvel
  */

@@ -42,7 +42,94 @@ import org.restlet.util.Series;
  * This {@link SslContextFactory} makes it possible to configure most basic
  * options when building an SSLContext. See the {@link #init(Series)} method for
  * the list of parameters supported by this factory when configuring your HTTP
- * client or server connector.
+ * client or server connector. Here is the list of SSL related parameters that
+ * are also supported:
+ * <table>
+ * <tr>
+ * <th>Parameter name</th>
+ * <th>Value type</th>
+ * <th>Default value</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>certAlgorithm</td>
+ * <td>String</td>
+ * <td>SunX509</td>
+ * <td>SSL certificate algorithm.</td>
+ * </tr>
+ * <tr>
+ * <td>keystorePath</td>
+ * <td>String</td>
+ * <td>${user.home}/.keystore</td>
+ * <td>SSL keystore path.</td>
+ * </tr>
+ * <tr>
+ * <td>keystorePassword</td>
+ * <td>String</td>
+ * <td>System property "javax.net.ssl.keyStorePassword"</td>
+ * <td>SSL keystore password.</td>
+ * </tr>
+ * <tr>
+ * <td>keystoreType</td>
+ * <td>String</td>
+ * <td>JKS</td>
+ * <td>SSL keystore type</td>
+ * </tr>
+ * <tr>
+ * <td>keyPassword</td>
+ * <td>String</td>
+ * <td>System property "javax.net.ssl.keyStorePassword"</td>
+ * <td>SSL key password.</td>
+ * </tr>
+ * <tr>
+ * <td>needClientAuthentication</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if we require client certificate authentication</td>
+ * </tr>
+ * <tr>
+ * <td>secureRandomAlgorithm</td>
+ * <td>String</td>
+ * <td>null (see java.security.SecureRandom)</td>
+ * <td>Name of the RNG algorithm. (see java.security.SecureRandom class).</td>
+ * </tr>
+ * <tr>
+ * <td>securityProvider</td>
+ * <td>String</td>
+ * <td>null (see javax.net.ssl.SSLContext)</td>
+ * <td>Java security provider name (see java.security.Provider class).</td>
+ * </tr>
+ * <tr>
+ * <td>sslProtocol</td>
+ * <td>String</td>
+ * <td>TLS</td>
+ * <td>SSL protocol.</td>
+ * </tr>
+ * <tr>
+ * <td>truststorePath</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Path to trust store</td>
+ * </tr>
+ * <tr>
+ * <td>truststorePassword</td>
+ * <td>String</td>
+ * <td>System property "javax.net.ssl.trustStorePassword"</td>
+ * <td>Trust store password</td>
+ * </tr>
+ * <tr>
+ * <td>truststoreType</td>
+ * <td>String</td>
+ * <td>System property "javax.net.ssl.trustStoreType"</td>
+ * <td>Trust store type</td>
+ * </tr>
+ * <tr>
+ * <td>wantClientAuthentication</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if we would like client certificate authentication</td>
+ * </tr>
+ * </table>
  * <p>
  * In short, two instances of KeyStore are used when configuring an SSLContext:
  * the keystore (which contains the public and private keys and certificates to
@@ -450,6 +537,24 @@ public class DefaultSslContextFactory extends SslContextFactory {
      * <td>String</td>
      * <td>TLS</td>
      * <td>SSL protocol.</td>
+     * </tr>
+     * <tr>
+     * <td>truststorePath</td>
+     * <td>String</td>
+     * <td>null</td>
+     * <td>Path to trust store</td>
+     * </tr>
+     * <tr>
+     * <td>truststorePassword</td>
+     * <td>String</td>
+     * <td>System property "javax.net.ssl.trustStorePassword"</td>
+     * <td>Trust store password</td>
+     * </tr>
+     * <tr>
+     * <td>truststoreType</td>
+     * <td>String</td>
+     * <td>System property "javax.net.ssl.trustStoreType"</td>
+     * <td>Trust store type</td>
      * </tr>
      * <tr>
      * <td>wantClientAuthentication</td>

@@ -8,6 +8,8 @@ Changes log
       - Moved SslContextFactory and DefaultSslContextFactory classes from 
         internal to public org.restlet.ext.ssl package.
     - Enhancements
+      - Updated and consolidated the SSL/HTTPS configuration parameters
+        for all HTTPS connectors.
     - Bug fixed
     - Misc
 
