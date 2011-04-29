@@ -40,7 +40,9 @@ import org.restlet.util.Series;
 
 /**
  * This {@link SslContextFactory} makes it possible to configure most basic
- * options when building an SSLContext.
+ * options when building an SSLContext. See the {@link #init(Series)} method for
+ * the list of parameters supported by this factory when configuring your HTTP
+ * client or server connector.
  * <p>
  * In short, two instances of KeyStore are used when configuring an SSLContext:
  * the keystore (which contains the public and private keys and certificates to
@@ -144,10 +146,10 @@ public class DefaultSslContextFactory extends SslContextFactory {
     }
 
     /**
-     * Creates a configured and initialised SSLContext from the values set via
+     * Creates a configured and initialized SSLContext from the values set via
      * the various setters of this class. If <code>keyStorePath</code>,
      * <code>keyStoreProvider</code>, <code>keyStoreType</code> are all
-     * <code>null</code>, the SSLContext will be initialised with a
+     * <code>null</code>, the SSLContext will be initialized with a
      * <code>null</core> array of <code>KeyManager</code>s. Similarly, if
      * <code>trustStorePath</code>, <code>trustStoreProvider</code>,
      * <code>trustStoreType</code> are all <code>null</code>, a
@@ -378,7 +380,7 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
     /**
      * Sets the following options according to parameters that may have been set
-     * up directly in the HttpsServerHelper parameters.
+     * up directly in the HttpsClientHelper or HttpsServerHelper parameters.
      * <table>
      * <tr>
      * <th>Parameter name</th>
