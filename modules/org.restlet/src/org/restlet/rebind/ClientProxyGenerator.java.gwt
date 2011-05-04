@@ -60,9 +60,10 @@ import org.restlet.resource.Result;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.ext.GeneratorContext;
+import com.google.gwt.core.ext.PropertyOracle;
 import com.google.gwt.core.ext.TreeLogger;
-import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.TreeLogger.Type;
+import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameter;
@@ -525,8 +526,17 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
      */
     protected void generateSerializers() throws UnableToCompleteException {
         try {
-            this.stob = new SerializableTypeOracleBuilder(getLogger(),
-                    getContext().getPropertyOracle(), getTypeOracle());
+            try {
+                this.stob = getSerializableTypeOracleBuilder2_3();
+            } catch (Exception e2_3) {
+                try {
+                    this.stob = getSerializableTypeOracleBuilder2_2();
+                } catch (Exception e2_2) {
+                    getLogger().log(TreeLogger.ERROR, "", e2_2);
+                    throw new UnableToCompleteException();
+                }
+            }
+
             this.stob.setTypeFilter(new RestletBlackListTypeFilter(getLogger(),
                     getContext().getPropertyOracle()));
 
@@ -707,6 +717,52 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
     }
 
     /**
+     * Instantiates a SerializableTypeOracleBuilder instance using the GWT2.2
+     * and before constructor.
+     * 
+     * @return An instance of a {@link SerializableTypeOracleBuilder}.
+     * @throws Exception
+     */
+    private SerializableTypeOracleBuilder getSerializableTypeOracleBuilder2_2()
+            throws Exception {
+        SerializableTypeOracleBuilder result = null;
+
+        Constructor<SerializableTypeOracleBuilder> c = null;
+        c = SerializableTypeOracleBuilder.class.getDeclaredConstructor(
+                TreeLogger.class, PropertyOracle.class, TypeOracle.class);
+        result = c.newInstance(getLogger(), getContext().getPropertyOracle(),
+                getTypeOracle());
+
+        return result;
+    }
+
+    /**
+     * Instantiates a SerializableTypeOracleBuilder instance using the GWT2.3
+     * constructor.
+     * 
+     * @return An instance of a {@link SerializableTypeOracleBuilder}.
+     * @throws Exception
+     */
+    private SerializableTypeOracleBuilder getSerializableTypeOracleBuilder2_3()
+            throws Exception {
+        SerializableTypeOracleBuilder result = null;
+
+        // At the date of 04 may 2011, the GWT GeneratorContextExt class
+        // is considered as experimental and surely to be removed from gwt
+        // package.
+        Class<?> genClass = Class
+                .forName("com.google.gwt.core.ext.GeneratorContextExt");
+
+        Constructor<SerializableTypeOracleBuilder> c = null;
+        c = SerializableTypeOracleBuilder.class.getDeclaredConstructor(
+                TreeLogger.class, PropertyOracle.class, genClass);
+        result = c.newInstance(getLogger(), getContext().getPropertyOracle(),
+                getContext());
+
+        return result;
+    }
+
+    /**
      * Returns the writer used for the content of the proxy class.
      * 
      * @return The writer used for the content of the proxy class.
@@ -797,47 +853,6 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
     }
 
     /**
-     * Instantiates a TypeSerializerCreator instance using the GWT2.2
-     * constructor.
-     * 
-     * @return An instance of a TypeSerializerCreator.
-     * @throws Exception
-     */
-    private TypeSerializerCreator getTypeSerializerCreatorGwt2_2()
-            throws Exception {
-        TypeSerializerCreator result = null;
-        // At the date of 14 february 2011, the GWT GeneratorContextExt class
-        // is considered as experimental and surely to be removed from gwt package
-        Constructor<TypeSerializerCreator> c = null;
-        
-        try {
-            Class<?> genClass = Class.forName("com.google.gwt.core.ext.GeneratorContextExt");
-            c = TypeSerializerCreator.class.getDeclaredConstructor(
-                    TreeLogger.class, SerializableTypeOracle.class,
-                    SerializableTypeOracle.class,
-                    genClass,
-                    String.class, String.class);
-            result = c.newInstance(getLogger(), getSto(), getSto(),
-                    genClass.cast(getContext()),
-                    getTypeSerializerQualifiedName(getClassType()),
-                    getTypeSerializerSimpleName(getClassType()));
-        } catch (ClassNotFoundException e) {
-            c = TypeSerializerCreator.class.getDeclaredConstructor(
-                    TreeLogger.class, SerializableTypeOracle.class,
-                    SerializableTypeOracle.class,
-                    GeneratorContext.class,
-                    String.class, String.class);
-            result = c.newInstance(getLogger(), getSto(), getSto(),
-                    getContext(),
-                    getTypeSerializerQualifiedName(getClassType()),
-                    getTypeSerializerSimpleName(getClassType()));
-        }
-
-
-        return result;
-    }
-
-    /**
      * Instantiates a TypeSerializerCreator instance using the GWT2.1
      * constructor.
      * 
@@ -856,6 +871,46 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
         result = c.newInstance(getLogger(), getSto(), getSto(), getContext(),
                 getTypeSerializerQualifiedName(getClassType()),
                 getTypeSerializerSimpleName(getClassType()));
+
+        return result;
+    }
+
+    /**
+     * Instantiates a TypeSerializerCreator instance using the GWT2.2
+     * constructor.
+     * 
+     * @return An instance of a TypeSerializerCreator.
+     * @throws Exception
+     */
+    private TypeSerializerCreator getTypeSerializerCreatorGwt2_2()
+            throws Exception {
+        TypeSerializerCreator result = null;
+        // At the date of 14 february 2011, the GWT GeneratorContextExt class
+        // is considered as experimental and surely to be removed from gwt
+        // package.
+        Constructor<TypeSerializerCreator> c = null;
+
+        try {
+            Class<?> genClass = Class
+                    .forName("com.google.gwt.core.ext.GeneratorContextExt");
+            c = TypeSerializerCreator.class.getDeclaredConstructor(
+                    TreeLogger.class, SerializableTypeOracle.class,
+                    SerializableTypeOracle.class, genClass, String.class,
+                    String.class);
+            result = c.newInstance(getLogger(), getSto(), getSto(),
+                    genClass.cast(getContext()),
+                    getTypeSerializerQualifiedName(getClassType()),
+                    getTypeSerializerSimpleName(getClassType()));
+        } catch (ClassNotFoundException e) {
+            c = TypeSerializerCreator.class.getDeclaredConstructor(
+                    TreeLogger.class, SerializableTypeOracle.class,
+                    SerializableTypeOracle.class, GeneratorContext.class,
+                    String.class, String.class);
+            result = c.newInstance(getLogger(), getSto(), getSto(),
+                    getContext(),
+                    getTypeSerializerQualifiedName(getClassType()),
+                    getTypeSerializerSimpleName(getClassType()));
+        }
 
         return result;
     }

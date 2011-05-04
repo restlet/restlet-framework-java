@@ -11,6 +11,7 @@ Changes log
       - Updated and consolidated the SSL/HTTPS configuration parameters
         for all HTTPS connectors.
     - Bug fixed
+      - Fixed compatibility issue with GWT 2.3.
     - Misc
 
 - 2.1 Milestone 4 (04/27/2011)
