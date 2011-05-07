@@ -177,20 +177,22 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private SortedMetadata(Collection<Preference<T>> preferences) {
-        final SortedMap<Float, Collection<T>> map = new TreeMap<Float, Collection<T>>(
+        SortedMap<Float, Collection<T>> map = new TreeMap<Float, Collection<T>>(
                 Collections.reverseOrder());
 
-        for (final Preference<T> preference : preferences) {
-            final Float quality = preference.getQuality();
+        for (Preference<T> preference : preferences) {
+            Float quality = preference.getQuality();
             Collection<T> metadatas = map.get(quality);
+
             if (metadatas == null) {
                 metadatas = new ArrayList<T>(2);
                 map.put(quality, metadatas);
             }
+
             metadatas.add(preference.getMetadata());
         }
 
-        final Collection<Collection<T>> values = map.values();
+        Collection<Collection<T>> values = map.values();
         this.metadatas = Collections.unmodifiableList(new ArrayList(values));
     }
 

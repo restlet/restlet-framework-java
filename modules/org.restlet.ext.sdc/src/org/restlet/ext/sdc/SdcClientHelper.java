@@ -32,7 +32,7 @@ package org.restlet.ext.sdc;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -135,7 +135,7 @@ public class SdcClientHelper extends HttpClientHelper {
     public SdcClientHelper(Client client) {
         super(client);
         getProtocols().add(Protocol.valueOf("SDC"));
-        this.connections = new TreeMap<String, SdcServerConnection>();
+        this.connections = new ConcurrentHashMap<String, SdcServerConnection>();
         this.workerService = Executors.newCachedThreadPool();
         this.latch = new CountDownLatch(1);
     }

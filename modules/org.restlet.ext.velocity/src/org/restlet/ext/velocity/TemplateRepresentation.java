@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.apache.velocity.Template;
@@ -172,8 +172,7 @@ public class TemplateRepresentation extends WriterRepresentation {
         this.template = new Template();
 
         CharacterSet charSet = (templateRepresentation.getCharacterSet() == null) ? templateRepresentation
-                .getCharacterSet()
-                : CharacterSet.DEFAULT;
+                .getCharacterSet() : CharacterSet.DEFAULT;
         this.template.setEncoding(charSet.getName());
         if (templateRepresentation.getModificationDate() != null) {
             this.template.setLastModified(templateRepresentation
@@ -206,8 +205,7 @@ public class TemplateRepresentation extends WriterRepresentation {
         this.template = new Template();
 
         CharacterSet charSet = (templateRepresentation.getCharacterSet() == null) ? templateRepresentation
-                .getCharacterSet()
-                : CharacterSet.DEFAULT;
+                .getCharacterSet() : CharacterSet.DEFAULT;
         this.template.setEncoding(charSet.getName());
         this.template.setLastModified((templateRepresentation
                 .getModificationDate() == null) ? new Date().getTime()
@@ -255,7 +253,7 @@ public class TemplateRepresentation extends WriterRepresentation {
      *            The representation's media type.
      */
     public TemplateRepresentation(String templateName, MediaType mediaType) {
-        this(templateName, new TreeMap<String, Object>(), mediaType);
+        this(templateName, new ConcurrentHashMap<String, Object>(), mediaType);
     }
 
     /**

@@ -33,7 +33,7 @@ package org.restlet.ext.jaxb;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import javax.xml.bind.JAXBContext;
@@ -60,7 +60,7 @@ import org.restlet.representation.WriterRepresentation;
 public class JaxbRepresentation<T> extends WriterRepresentation {
 
     /** Improves performance by caching contexts which are expensive to create. */
-    private final static Map<String, JAXBContext> contexts = new TreeMap<String, JAXBContext>();
+    private final static Map<String, JAXBContext> contexts = new ConcurrentHashMap<String, JAXBContext>();
 
     /**
      * Returns the JAXB context, if possible from the cached contexts.

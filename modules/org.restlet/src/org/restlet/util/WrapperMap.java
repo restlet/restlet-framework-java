@@ -33,7 +33,7 @@ package org.restlet.util;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Map wrapper. Modifiable map that delegates all methods to a wrapped map. This
@@ -53,7 +53,7 @@ public class WrapperMap<K, V> implements Map<K, V> {
      * Constructor.
      */
     public WrapperMap() {
-        this.delegate = new TreeMap<K, V>();
+        this.delegate = new ConcurrentHashMap<K, V>();
     }
 
     /**

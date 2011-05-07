@@ -34,8 +34,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -111,7 +111,7 @@ public class SdcServerConnection implements Dispatchable {
         this.outputStream = socket.getOutputStream();
         this.frameReceiver = new FrameReceiver();
         this.frameReceiver.setInputStream(getInputStream());
-        this.calls = new TreeMap<String, SdcClientCall>();
+        this.calls = new ConcurrentHashMap<String, SdcClientCall>();
 
         BlockingQueue<FrameInfo> sendQueue = new LinkedBlockingQueue<SdcFrame.FrameInfo>();
         ShutdownManager shutdownManager = new ShutdownManager();

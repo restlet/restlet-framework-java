@@ -33,7 +33,7 @@ package org.restlet.ext.jibx;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.jibx.runtime.BindingDirectory;
 import org.jibx.runtime.IBindingFactory;
@@ -62,7 +62,7 @@ public class JibxRepresentation<T> extends WriterRepresentation {
      * (All binding factory instances are guaranteed to be thread safe and
      * reusable.)
      */
-    private final static Map<String, IBindingFactory> bindingFactories = new TreeMap<String, IBindingFactory>();
+    private final static Map<String, IBindingFactory> bindingFactories = new ConcurrentHashMap<String, IBindingFactory>();
 
     /**
      * Get a cached binding factory.
@@ -193,8 +193,8 @@ public class JibxRepresentation<T> extends WriterRepresentation {
             IBindingFactory jibxBFact = JibxRepresentation.getBindingFactory(
                     this.bindingName, this.bindingClass);
             IUnmarshallingContext uctx = jibxBFact.createUnmarshallingContext();
-            return (T) uctx.unmarshalDocument(this.xmlRepresentation
-                    .getStream(), null);
+            return (T) uctx.unmarshalDocument(
+                    this.xmlRepresentation.getStream(), null);
         }
 
         return this.object;

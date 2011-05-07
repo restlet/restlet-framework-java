@@ -33,7 +33,7 @@ package org.restlet.ext.atom.internal;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -132,7 +132,7 @@ public class EntryContentReader extends EntryReader {
         this.contentBuffer = null;
         this.currentCategory = null;
         this.currentContent = null;
-        this.prefixMappings = new TreeMap<String, String>();
+        this.prefixMappings = new ConcurrentHashMap<String, String>();
     }
 
     @Override

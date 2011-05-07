@@ -33,7 +33,7 @@ package org.restlet.ext.atom.internal;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -135,7 +135,7 @@ public class FeedContentReader extends FeedReader {
         this.contentBuffer = null;
         this.currentCategory = null;
         this.currentContent = null;
-        this.prefixMappings = new TreeMap<String, String>();
+        this.prefixMappings = new ConcurrentHashMap<String, String>();
         this.contentDepth = -1;
     }
 
@@ -209,7 +209,7 @@ public class FeedContentReader extends FeedReader {
                         this.currentEntry.setSummary(this.currentText
                                 .getContent());
                     }
-                    
+
                     this.state = State.FEED_ENTRY;
                 }
             } else if (localName.equals("updated")) {
@@ -236,8 +236,8 @@ public class FeedContentReader extends FeedReader {
                     this.currentEntry.getAuthors().add(this.currentPerson);
                     this.state = State.FEED_ENTRY;
                 } else if (this.state == State.FEED_ENTRY_SOURCE_AUTHOR) {
-                    this.currentEntry.getSource().getAuthors().add(
-                            this.currentPerson);
+                    this.currentEntry.getSource().getAuthors()
+                            .add(this.currentPerson);
                     this.state = State.FEED_ENTRY_SOURCE;
                 }
             } else if (localName.equals("name")) {
@@ -270,8 +270,8 @@ public class FeedContentReader extends FeedReader {
                     this.currentEntry.getLinks().add(this.currentLink);
                     this.state = State.FEED_ENTRY;
                 } else if (this.state == State.FEED_ENTRY_SOURCE_LINK) {
-                    this.currentEntry.getSource().getLinks().add(
-                            this.currentLink);
+                    this.currentEntry.getSource().getLinks()
+                            .add(this.currentLink);
                     this.state = State.FEED_ENTRY_SOURCE;
                 }
 
@@ -312,8 +312,8 @@ public class FeedContentReader extends FeedReader {
                     this.currentEntry.getCategories().add(this.currentCategory);
                     this.state = State.FEED_ENTRY;
                 } else if (this.state == State.FEED_ENTRY_SOURCE_CATEGORY) {
-                    this.currentEntry.getSource().getCategories().add(
-                            this.currentCategory);
+                    this.currentEntry.getSource().getCategories()
+                            .add(this.currentCategory);
                     this.state = State.FEED_ENTRY_SOURCE;
                 }
             } else if (localName.equalsIgnoreCase("content")) {
