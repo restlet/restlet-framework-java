@@ -5,6 +5,12 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
+       - AbstractJaxbProvider, JaxbRepresentation and JibxRepresentation use TreeMap 
+         which isn't synchronized with ConcurrentHashMap. Reported by Julien Landure
+    - Misc
+
+- 2.0.7 (2011-04-27)
+    - Bugs fixed
        - Optimized support of JAXB in the JAXRS extension in case
          the org.restlet.ext.jaxb extension is present in the 
          classpath. Reported by Julien Landure.

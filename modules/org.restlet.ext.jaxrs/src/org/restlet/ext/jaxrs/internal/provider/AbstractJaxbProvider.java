@@ -34,8 +34,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
@@ -55,7 +55,7 @@ import javax.xml.bind.Marshaller;
 abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
 
     /** Improves performance by caching contexts which are expensive to create. */
-    private final static Map<Class<?>, JAXBContext> contexts = new TreeMap<Class<?>, JAXBContext>();
+    private final static ConcurrentMap<Class<?>, JAXBContext> contexts = new ConcurrentHashMap<Class<?>, JAXBContext>();
 
     /**
      * Returns the JAXB context, if possible from the cached contexts.
