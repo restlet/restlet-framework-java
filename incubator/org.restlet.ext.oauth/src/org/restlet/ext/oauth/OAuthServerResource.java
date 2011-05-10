@@ -109,19 +109,19 @@ public abstract class OAuthServerResource extends ServerResource {
 
     public static final String AUTONOMOUS_USER = "__autonomous";
 
-    protected ClientStore<?> clients;
+    protected volatile ClientStore<?> clients;
 
-    protected TokenGenerator generator;
+    protected volatile TokenGenerator generator;
 
-    protected Logger log;
+    protected volatile Logger log;
 
-    protected static List<CacheDirective> noStore;
+    protected final static List<CacheDirective> noStore;
 
-    protected static List<CacheDirective> noCache;
+    protected final static List<CacheDirective> noCache;
 
-    protected long tokenTimeSec = Token.UNLIMITED;
+    protected volatile long tokenTimeSec = Token.UNLIMITED;
 
-    protected long tokenMaxTimeSec = Token.UNLIMITED;
+    protected volatile long tokenMaxTimeSec = Token.UNLIMITED;
 
     static {
         noStore = new ArrayList<CacheDirective>();

@@ -88,12 +88,6 @@ public class OAuthProxy extends Authorizer {
 
     private final OAuthParameters params;
 
-    // private ClientResource tokenResource;
-
-    // private String redirectUri;
-
-    // private OAuthUser authUser;
-
     private final boolean basicSecret;
 
     protected final Logger log;

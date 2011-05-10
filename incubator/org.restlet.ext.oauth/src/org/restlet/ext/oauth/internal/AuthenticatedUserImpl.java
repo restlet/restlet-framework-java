@@ -45,21 +45,22 @@ import org.restlet.ext.oauth.Client;
  */
 public class AuthenticatedUserImpl extends AuthenticatedUser {
 
-    private Client client;
+    private final Client client;
 
     private final String id;
 
-    private Map<String, String> grantedScope = new ConcurrentHashMap<String, String>();
+    private final Map<String, String> grantedScope;
 
-    private String code;
+    private volatile String code;
 
-    private Token token;
+    private volatile Token token;
 
-    private String password; // optional for oauth password flow
+    private volatile String password; // optional for oauth password flow
 
     public AuthenticatedUserImpl(String userId, Client client) {
         id = userId;
         this.client = client;
+        this.grantedScope = new ConcurrentHashMap<String, String>();
     }
 
     // Timestamp can be encoded in the code value

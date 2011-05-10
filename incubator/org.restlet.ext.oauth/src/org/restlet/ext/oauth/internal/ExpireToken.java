@@ -47,12 +47,12 @@ public class ExpireToken extends Token {
     private final long expireTime;
 
     private final String refreshToken;
+    
+    private final AuthenticatedUser user;
 
-    private String token;
+    private volatile String token;
 
-    private AuthenticatedUser user;
-
-    private ScheduledFuture<?> future; // can be used to clean up
+    private volatile ScheduledFuture<?> future; // can be used to clean up
 
     public ExpireToken(String refreshToken, long expTimeSec, String token,
             AuthenticatedUser user) {

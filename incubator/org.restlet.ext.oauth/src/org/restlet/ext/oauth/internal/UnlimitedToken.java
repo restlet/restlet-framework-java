@@ -39,9 +39,9 @@ import org.restlet.ext.oauth.AuthenticatedUser;
  */
 public class UnlimitedToken extends Token {
 
-    private String token;
+    private volatile String token;
 
-    private AuthenticatedUser user;
+    private final AuthenticatedUser user;
 
     /**
      * 

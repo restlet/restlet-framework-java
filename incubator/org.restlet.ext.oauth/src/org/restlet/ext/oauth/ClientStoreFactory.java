@@ -60,13 +60,13 @@ import org.restlet.ext.oauth.internal.MemClientStore;
  */
 public abstract class ClientStoreFactory {
 
-    private static Class<? extends ClientStore<?>> defaultImpl = MemClientStore.class;
+    private static volatile Class<? extends ClientStore<?>> defaultImpl = MemClientStore.class;
 
-    private static Object[] params = {};
+    private static volatile Object[] params = {};
 
-    private static ClientStore<?> store;
+    private static volatile ClientStore<?> store;
 
-    private static Logger log;
+    private static volatile Logger log;
 
     private ClientStoreFactory() {
     }

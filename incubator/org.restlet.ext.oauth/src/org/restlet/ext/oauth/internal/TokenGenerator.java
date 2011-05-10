@@ -14,13 +14,13 @@ import org.restlet.ext.oauth.AuthenticatedUser;
  */
 public abstract class TokenGenerator {
 
-    private SecureRandom random;
+    private volatile SecureRandom random;
 
-    protected long maxTokenTimeSec;
+    protected volatile long maxTokenTimeSec;
 
-    private static int tokens = 1000;
+    private static final int tokens = 1000;
 
-    private int count = 0;
+    private volatile int count = 0;
 
     public TokenGenerator() {
         try {
@@ -28,6 +28,7 @@ public abstract class TokenGenerator {
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+            
         }
 
     }

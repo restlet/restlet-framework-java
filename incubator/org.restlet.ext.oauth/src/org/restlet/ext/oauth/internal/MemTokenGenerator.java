@@ -46,10 +46,10 @@ import org.restlet.ext.oauth.AuthenticatedUser;
  */
 public class MemTokenGenerator extends TokenGenerator {
 
-    private Map<String, AuthenticatedUser> codeStore = new ConcurrentHashMap<String, AuthenticatedUser>();
+    private final Map<String, AuthenticatedUser> codeStore = new ConcurrentHashMap<String, AuthenticatedUser>();
 
     // Used only to store tokens
-    private Map<String, Token> tokenStore = new ConcurrentHashMap<String, Token>();
+    private final Map<String, Token> tokenStore = new ConcurrentHashMap<String, Token>();
 
     private final ScheduledThreadPoolExecutor timers;
 

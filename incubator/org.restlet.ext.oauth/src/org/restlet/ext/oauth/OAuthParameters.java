@@ -48,19 +48,19 @@ import org.restlet.data.Reference;
  */
 public class OAuthParameters {
 
-    final String clientId;
+    private final String clientId;
 
-    final String clientSecret;
+    private final String clientSecret;
 
-    Reference baseRef = new Reference("http://localhost:8080/oauth/");
+    private final Reference baseRef;
 
-    String scope;
+    private volatile String scope;
 
-    String authorizePath = "authorize";
+    private volatile String authorizePath = "authorize";
 
-    String accessTokenPath = "access_token";
+    private volatile String accessTokenPath = "access_token";
 
-    String owner = null;
+    private volatile String owner = null;
 
     /**
      * Create a new OAuthParameters object with specfied clientId and secret
@@ -68,6 +68,7 @@ public class OAuthParameters {
     public OAuthParameters(String clientId, String clientSecret) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+        this.baseRef = new Reference("http://localhost:8080/oauth/");
     }
 
     /**
@@ -75,7 +76,9 @@ public class OAuthParameters {
      * baseRef
      */
     public OAuthParameters(String clientId, String clientSecret, String baseRef) {
-        this(clientId, clientSecret);
+        //this(clientId, clientSecret);
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
         this.baseRef = new Reference(baseRef);
     }
 

@@ -51,9 +51,10 @@ import org.restlet.ext.oauth.OAuthServerResource.ResponseType;
  */
 public class AuthSession {
 
-    private ConcurrentMap<String, Object> attribs = new ConcurrentHashMap<String, Object>();
+    private final ConcurrentMap<String, Object> attribs;
 
-    long lastActivity = System.currentTimeMillis();
+    //TODO: Remove?
+    private volatile long lastActivity  = System.currentTimeMillis();
 
     private static final String ID = "id";
 
@@ -70,11 +71,12 @@ public class AuthSession {
     private static final String STATE = "state";
 
     // If executor is set sessions will be removed.
-    protected ScheduledThreadPoolExecutor executor;
+    protected volatile ScheduledThreadPoolExecutor executor;
 
-    protected long timeoutMin = 3600;
+    protected volatile long timeoutMin = 3600;
 
-    ConcurrentMap<String, Object> sessions;
+    //TODO: Most likely not needed!
+    private final ConcurrentMap<String, Object> sessions;
 
     /**
      * 
@@ -85,17 +87,19 @@ public class AuthSession {
      */
     public AuthSession(ConcurrentMap<String, Object> sessions,
             ScheduledThreadPoolExecutor executor) {
+        this.attribs = new ConcurrentHashMap<String, Object>();
         String sessionId = UUID.randomUUID().toString();
-        setId(sessionId); // Generate a new ID
+        //setId(sessionId); // Generate a new ID
+        setAttribute(ID, sessionId);
         this.sessions = sessions;
         sessions.put(sessionId, this);
         // TODO start a timer...
     }
 
     // Only from constructor
-    private void setId(String id) {
+    /*private void setId(String id) {
         setAttribute(ID, id);
-    }
+    }*/
 
     /**
      * @return the session id for this object.

@@ -45,7 +45,7 @@ public class OAuthUser extends User {
 
     private final long expiresIn;
 
-    private String state;
+    private volatile String state;
 
     /**
      * Constructor used for unlimited tokens
