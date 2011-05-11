@@ -66,54 +66,62 @@ public class RangeFilter extends Filter {
             if (request.getMethod().isSafe() && response.isEntityAvailable()) {
                 boolean rangedEntity = response.getEntity().getRange() != null;
 
-                if (response.getStatus().isSuccess()
-                        && !Status.SUCCESS_PARTIAL_CONTENT.equals(response
-                                .getStatus())) {
-                    // At this time, list of ranges are not supported.
-                    if (request.getRanges().size() == 1
-                            && (!request.getConditions().hasSomeRange() || request
-                                    .getConditions()
-                                    .getRangeStatus(response.getEntity())
-                                    .isSuccess())) {
-                        Range requestedRange = request.getRanges().get(0);
-
-                        if (response.getEntity().getSize() == Representation.UNKNOWN_SIZE) {
-                            if ((requestedRange.getIndex() == Range.INDEX_LAST || requestedRange
-                                    .getSize() == Range.SIZE_MAX)
-                                    && !(requestedRange.getIndex() == Range.INDEX_LAST && requestedRange
-                                            .getSize() == Range.SIZE_MAX)) {
-                                // The end index cannot be properly computed
-                                response.setStatus(Status.SERVER_ERROR_INTERNAL);
-                                getLogger()
-                                        .warning(
-                                                "Unable to serve this range since at least the end index of the range cannot be computed.");
-                                response.setEntity(null);
-                            }
-                        } else if (!requestedRange.equals(response.getEntity()
-                                .getRange())) {
-                            if (rangedEntity) {
-                                getLogger()
-                                        .info("The range of the response entity is not equal to the requested one.");
-                            }
-
-                            response.setEntity(new RangeRepresentation(response
-                                    .getEntity(), requestedRange));
-                            response.setStatus(Status.SUCCESS_PARTIAL_CONTENT);
+                if (response.getStatus().isSuccess()) {
+                    if (Status.SUCCESS_PARTIAL_CONTENT.equals(response
+                            .getStatus())) {
+                        if (!rangedEntity) {
+                            getLogger()
+                                    .warning(
+                                            "When returning a \"206 Partial content\" status, your response entity must be properly ranged.");
+                        } else {
+                            // We assume that the response entity has been
+                            // properly ranged.
                         }
-                    } else if (request.getRanges().size() > 1) {
-                        // Return a server error as this feature isn't supported
-                        // yet
-                        response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
-                        getLogger()
-                                .warning(
-                                        "Multiple ranges are not supported at this time.");
-                        response.setEntity(null);
+                    } else {
+                        // At this time, list of ranges are not supported.
+                        if (request.getRanges().size() == 1
+                                && (!request.getConditions().hasSomeRange() || request
+                                        .getConditions()
+                                        .getRangeStatus(response.getEntity())
+                                        .isSuccess())) {
+                            Range requestedRange = request.getRanges().get(0);
+
+                            if (response.getEntity().getSize() == Representation.UNKNOWN_SIZE) {
+                                if ((requestedRange.getIndex() == Range.INDEX_LAST || requestedRange
+                                        .getSize() == Range.SIZE_MAX)
+                                        && !(requestedRange.getIndex() == Range.INDEX_LAST && requestedRange
+                                                .getSize() == Range.SIZE_MAX)) {
+                                    // The end index cannot be properly computed
+                                    response.setStatus(Status.SERVER_ERROR_INTERNAL);
+                                    getLogger()
+                                            .warning(
+                                                    "Unable to serve this range since at least the end index of the range cannot be computed.");
+                                    response.setEntity(null);
+                                }
+                            } else if (!requestedRange.equals(response
+                                    .getEntity().getRange())) {
+                                if (rangedEntity) {
+                                    getLogger()
+                                            .info("The range of the response entity is not equal to the requested one.");
+                                }
+
+                                response.setEntity(new RangeRepresentation(
+                                        response.getEntity(), requestedRange));
+                                response.setStatus(Status.SUCCESS_PARTIAL_CONTENT);
+                            }
+                        } else if (request.getRanges().size() > 1) {
+                            // Return a server error as this feature isn't
+                            // supported
+                            // yet
+                            response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+                            getLogger()
+                                    .warning(
+                                            "Multiple ranges are not supported at this time.");
+                            response.setEntity(null);
+                        }
                     }
                 } else {
-                    if (rangedEntity) {
-                        getLogger()
-                                .info("The status of a response to a partial GET must be \"206 Partial content\".");
-                    }
+                    // Ignore error responses
                 }
             }
         }

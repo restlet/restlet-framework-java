@@ -17,6 +17,8 @@ Changes log
       - Fixed parsing of HTTP requests with internal connector when the
         Host header was missing. Now falling back to IP address.
         Reported by Aaron Summers.
+      - Fixed misleading log message when response are manually ranged
+        (206 status and entity with range set). Reported by John Logsdon.
     - Misc
 
 - 2.1 Milestone 4 (04/27/2011)
