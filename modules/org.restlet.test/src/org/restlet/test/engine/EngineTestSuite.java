@@ -30,6 +30,7 @@
 
 package org.restlet.test.engine;
 
+import org.restlet.test.engine.connector.HttpInboundRequestTestCase;
 import org.restlet.test.engine.io.BioUtilsTestCase;
 
 import junit.framework.Test;
@@ -61,6 +62,7 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(ContentTypeTestCase.class);
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpCallTestCase.class);
+        addTestSuite(HttpInboundRequestTestCase.class);
         addTestSuite(ImmutableDateTestCase.class);
         addTestSuite(UnclosableInputStreamTestCase.class);
         addTestSuite(UnclosableOutputStreamTestCase.class);

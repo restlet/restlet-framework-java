@@ -14,6 +14,9 @@ Changes log
       - Fixed compatibility issue with GWT 2.3.
       - Fixed potential NPE in Restlet class when no context is available.
       - Fixed potential NPE in LogFilter. Reported by Aaron Summers.
+      - Fixed parsing of HTTP requests with internal connector when the
+        Host header was missing. Now falling back to IP address.
+        Reported by Aaron Summers.
     - Misc
 
 - 2.1 Milestone 4 (04/27/2011)

@@ -179,7 +179,6 @@ public class HttpInboundRequest extends Request implements InboundRequest {
         this.resourceUri = resourceUri;
         this.securityAdded = false;
         this.warningsAdded = false;
-        
 
         // Set the properties
         setMethod(Method.valueOf(methodName));
@@ -264,10 +263,8 @@ public class HttpInboundRequest extends Request implements InboundRequest {
                 // Parse the headers and update the call preferences
 
                 // Parse the Accept* headers. If an error occurs during the
-                // parsing
-                // of each header, the error is traced and we keep on with the
-                // other
-                // headers.
+                // parsing of each header, the error is traced and we keep on
+                // with the other headers.
                 try {
                     PreferenceReader.addCharacterSets(acceptCharset, result);
                 } catch (Exception e) {
@@ -669,8 +666,23 @@ public class HttpInboundRequest extends Request implements InboundRequest {
                     serverProtocol.getSchemeName())
                     && !Protocol.SIPS.getSchemeName().equals(
                             serverProtocol.getSchemeName())) {
-                Context.getCurrentLogger().info(
-                        "Couldn't find the mandatory \"Host\" HTTP header.");
+                Context.getCurrentLogger()
+                        .info("Couldn't find the mandatory \"Host\" HTTP header. Falling back to the IP address.");
+                hostDomain = getConnection().getAddress();
+                hostPort = getConnection().getPort();
+
+                if (hostDomain == null) {
+                    hostDomain = "localhost";
+                }
+
+                if (hostPort == -1) {
+                    hostPort = getConnection().getHelper().getHelped()
+                            .getActualPort();
+                }
+
+                if (hostPort == -1) {
+                    getProtocol().getDefaultPort();
+                }
             }
         }
 
