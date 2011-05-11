@@ -233,7 +233,14 @@ public abstract class Restlet implements Uniform {
                 start();
             } catch (Exception e) {
                 // Occurred while starting the Restlet
-                getContext().getLogger().log(Level.WARNING, UNABLE_TO_START, e);
+                if (getContext() != null) {
+                    getContext().getLogger().log(Level.WARNING,
+                            UNABLE_TO_START, e);
+                } else {
+                    Context.getCurrentLogger().log(Level.WARNING,
+                            UNABLE_TO_START, e);
+                }
+
                 response.setStatus(Status.SERVER_ERROR_INTERNAL);
             }
 

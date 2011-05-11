@@ -125,10 +125,10 @@ public class LogFilter extends Filter {
         request.setLoggable(this.logService.isLoggable(request));
 
         if (request.isLoggable() && this.logLogger.isLoggable(Level.FINE)) {
-            this.logLogger
-                    .fine("Processing request to: \""
-                            + request.getResourceRef().getTargetRef()
-                                    .toString() + "\"");
+            this.logLogger.fine("Processing request to: \""
+                    + ((request.getResourceRef() == null) ? "Unknown URI"
+                            : request.getResourceRef().getTargetRef()
+                                    .toString()) + "\"");
         }
 
         return CONTINUE;

@@ -12,6 +12,8 @@ Changes log
         for all HTTPS connectors.
     - Bug fixed
       - Fixed compatibility issue with GWT 2.3.
+      - Fixed potential NPE in Restlet class when no context is available.
+      - Fixed potential NPE in LogFilter. Reported by Aaron Summers.
     - Misc
 
 - 2.1 Milestone 4 (04/27/2011)
