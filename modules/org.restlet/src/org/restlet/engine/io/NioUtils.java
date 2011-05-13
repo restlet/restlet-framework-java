@@ -231,7 +231,7 @@ public class NioUtils {
      *            The readable byte channel.
      * @return An input stream based on a given readable byte channel.
      */
-    public static InputStream getStream(ReadableByteChannel readableChannel) {
+    public static InputStream getInputStream(ReadableByteChannel readableChannel) {
         InputStream result = null;
 
         if (readableChannel != null) {
@@ -248,7 +248,8 @@ public class NioUtils {
      *            The writable byte channel.
      * @return An output stream based on a given writable byte channel.
      */
-    public static OutputStream getStream(WritableByteChannel writableChannel) {
+    public static OutputStream getOutputStream(
+            WritableByteChannel writableChannel) {
         return isBlocking(writableChannel) ? Channels
                 .newOutputStream(writableChannel) : new NbChannelOutputStream(
                 writableChannel);

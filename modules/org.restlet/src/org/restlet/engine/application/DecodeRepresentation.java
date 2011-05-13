@@ -251,7 +251,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         if (isDecoding()) {
-            write(NioUtils.getStream(writableChannel));
+            write(NioUtils.getOutputStream(writableChannel));
         } else {
             getWrappedRepresentation().write(writableChannel);
         }

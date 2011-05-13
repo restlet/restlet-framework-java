@@ -34,8 +34,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -388,6 +391,7 @@ public final class BioUtils {
      */
     public static InputStream getStream(final Representation representation) {
         InputStream result = null;
+
         if (Edition.CURRENT != Edition.GAE) {
             // [ifndef gae]
             if (representation == null) {
@@ -397,6 +401,7 @@ public final class BioUtils {
             final PipeStream pipe = new PipeStream();
             final org.restlet.Application application = org.restlet.Application
                     .getCurrent();
+
             // Creates a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
             Runnable task = new Runnable() {
@@ -414,6 +419,7 @@ public final class BioUtils {
                     }
                 }
             };
+
             if (application != null && application.getTaskService() != null) {
                 application.getTaskService().execute(task);
             } else {
@@ -453,6 +459,32 @@ public final class BioUtils {
                 representation.write(sw);
                 result = sw.toString();
             }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a writer to the given output stream, using the given character
+     * set for encoding to bytes.
+     * 
+     * @param outputStream
+     *            The target output stream.
+     * @param characterSet
+     *            The character set for encoding.
+     * @return The wrapping writer.
+     */
+    public static Writer getWriter(OutputStream outputStream,
+            CharacterSet characterSet) {
+        Writer result = null;
+
+        if (characterSet != null) {
+            result = new OutputStreamWriter(outputStream,
+                    characterSet.toCharset());
+        } else {
+            // Use the default HTTP character set
+            result = new OutputStreamWriter(outputStream,
+                    CharacterSet.ISO_8859_1.toCharset());
         }
 
         return result;

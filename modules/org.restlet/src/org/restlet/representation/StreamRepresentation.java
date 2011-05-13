@@ -69,7 +69,7 @@ public abstract class StreamRepresentation extends Representation {
     @Override
     public void write(java.nio.channels.WritableByteChannel writableChannel)
             throws IOException {
-        write(org.restlet.engine.io.NioUtils.getStream(writableChannel));
+        write(org.restlet.engine.io.NioUtils.getOutputStream(writableChannel));
     }
 
     // [ifndef gwt] method

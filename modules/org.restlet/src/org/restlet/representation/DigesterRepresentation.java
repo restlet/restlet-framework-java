@@ -283,7 +283,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        write(NioUtils.getStream(writableChannel));
+        write(NioUtils.getOutputStream(writableChannel));
     }
 
     @Override

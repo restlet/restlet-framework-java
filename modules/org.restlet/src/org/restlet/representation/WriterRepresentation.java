@@ -31,12 +31,8 @@
 package org.restlet.representation;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.Writer;
 
-import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.BioUtils;
 
@@ -86,23 +82,6 @@ public abstract class WriterRepresentation extends CharacterRepresentation {
     @Override
     public void release() {
         super.release();
-    }
-
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        Writer writer = null;
-
-        if (getCharacterSet() != null) {
-            writer = new OutputStreamWriter(outputStream, getCharacterSet()
-                    .getName());
-        } else {
-            // Use the default HTTP character set
-            writer = new OutputStreamWriter(outputStream,
-                    CharacterSet.ISO_8859_1.getName());
-        }
-
-        write(writer);
-        writer.flush();
     }
 
 }

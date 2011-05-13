@@ -32,6 +32,7 @@ package org.restlet.test.engine;
 
 import org.restlet.test.engine.connector.HttpInboundRequestTestCase;
 import org.restlet.test.engine.io.BioUtilsTestCase;
+import org.restlet.test.engine.io.ReaderInputStreamTestCase;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -67,6 +68,8 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(UnclosableInputStreamTestCase.class);
         addTestSuite(UnclosableOutputStreamTestCase.class);
         addTestSuite(PreferencesTestCase.class);
+        addTestSuite(ReaderInputStreamTestCase.class);
+
         // Tests based on HTTP client connectors are not supported by the GAE
         // edition.
         // [ifndef gae]
@@ -74,6 +77,7 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(TunnelFilterTestCase.class);
         addTestSuite(UserAgentTunnelFilterTestCase.class);
         // [enddef]
+
         // [ifndef gae,jee]
         addTestSuite(ChunkedEncodingPutTestCase.class);
         addTestSuite(ChunkedEncodingTestCase.class);

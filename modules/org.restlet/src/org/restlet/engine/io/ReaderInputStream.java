@@ -33,34 +33,48 @@ package org.restlet.engine.io;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.io.Reader;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharsetEncoder;
 
 import org.restlet.data.CharacterSet;
 
 // [excludes gwt]
 /**
- * Input stream based on a reader.
+ * Input stream based on a reader. The implementation relies on the NIO
+ * {@link CharsetEncoder} class.
  * 
  * @author Jerome Louvel
  */
 public class ReaderInputStream extends InputStream {
-    /**
-     * Writer to an output stream that converts characters according to a given
-     * character set.
-     */
-    private final OutputStreamWriter outputStreamWriter;
 
-    /** Input stream that gets its content from the piped output stream. */
-    private final PipedInputStream pipedInputStream;
+    /** The NIO byte buffer. */
+    private final ByteBuffer byteBuffer;
 
-    /** Output stream that sends its content to the piped input stream. */
-    private final PipedOutputStream pipedOutputStream;
+    /** The NIO character buffer. */
+    private final CharBuffer charBuffer;
+
+    /** The character set encoder. */
+    private final CharsetEncoder charsetEncoder;
+
+    /** Indicates if the end of the wrapped reader has been reached. */
+    private volatile boolean endReached;
 
     /** The wrapped reader. */
     private final BufferedReader reader;
+
+    /**
+     * Constructor. Uses the {@link CharacterSet#ISO_8859_1} character set by
+     * default.
+     * 
+     * @param reader
+     *            The reader to wrap as an input stream.
+     * @throws IOException
+     */
+    public ReaderInputStream(Reader reader) throws IOException {
+        this(reader, CharacterSet.ISO_8859_1);
+    }
 
     /**
      * Constructor.
@@ -73,50 +87,85 @@ public class ReaderInputStream extends InputStream {
      */
     public ReaderInputStream(Reader reader, CharacterSet characterSet)
             throws IOException {
+        this.byteBuffer = ByteBuffer.allocate(1024);
+        this.byteBuffer.flip();
+        this.charBuffer = CharBuffer.allocate(1024);
+        this.charBuffer.flip();
+        this.charsetEncoder = (characterSet == null) ? CharacterSet.ISO_8859_1
+                .toCharset().newEncoder() : characterSet.toCharset()
+                .newEncoder();
+        this.endReached = false;
         this.reader = (reader instanceof BufferedReader) ? (BufferedReader) reader
                 : new BufferedReader(reader, IoUtils.BUFFER_SIZE);
-        this.pipedInputStream = new PipedInputStream();
-        this.pipedOutputStream = new PipedOutputStream(this.pipedInputStream);
-
-        if (characterSet != null) {
-            this.outputStreamWriter = new OutputStreamWriter(
-                    this.pipedOutputStream, characterSet.getName());
-        } else {
-            this.outputStreamWriter = new OutputStreamWriter(
-                    this.pipedOutputStream, CharacterSet.ISO_8859_1.getName());
-        }
     }
 
     @Override
     public int available() throws IOException {
-        return this.pipedInputStream.available();
+        return this.byteBuffer.hasRemaining() ? this.byteBuffer.remaining() : 0;
     }
 
+    /**
+     * Closes the wrapped reader.
+     */
     @Override
     public void close() throws IOException {
         this.reader.close();
-        this.outputStreamWriter.close();
-        this.pipedInputStream.close();
     }
 
     @Override
     public int read() throws IOException {
-        int result = -1;
+        byte[] temp = new byte[1];
+        return (read(temp) == -1) ? -1 : temp[0] & 0xFF;
+    }
 
-        if (this.pipedInputStream.available() == 0) {
-            int character = this.reader.read();
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        int result = 0;
+        boolean iterate = true;
 
-            if (character != -1) {
-                this.outputStreamWriter.write(character);
-                this.outputStreamWriter.flush();
-                this.pipedOutputStream.flush();
-                result = this.pipedInputStream.read();
+        while (iterate) {
+            // Do we need to refill the byte buffer?
+            if (!this.byteBuffer.hasRemaining() && !this.endReached) {
+                // Do we need to refill the char buffer?
+                if (!this.charBuffer.hasRemaining()) {
+                    this.charBuffer.clear();
+                    int read = this.reader.read(this.charBuffer);
+                    this.charBuffer.flip();
+
+                    if (read == -1) {
+                        this.endReached = true;
+                    }
+                }
+
+                if ((len > 0) && this.charBuffer.hasRemaining()) {
+                    // Refill the byte buffer
+                    this.byteBuffer.clear();
+                    this.charsetEncoder.encode(this.charBuffer,
+                            this.byteBuffer, this.endReached);
+                    this.byteBuffer.flip();
+                }
             }
-        } else {
-            result = this.pipedInputStream.read();
+
+            // Copies as much bytes as possible in the target array
+            int readLength = Math.min(len, this.byteBuffer.remaining());
+
+            if (readLength > 0) {
+                this.byteBuffer.get(b, off, readLength);
+                off += readLength;
+                len -= readLength;
+                result += readLength;
+            }
+
+            // Can we iterate again?
+            iterate = (len > 0)
+                    && (!this.endReached || this.byteBuffer.hasRemaining() || this.charBuffer
+                            .hasRemaining());
+        }
+
+        if (this.endReached && (result == 0)) {
+            result = -1;
         }
 
         return result;
     }
-
 }

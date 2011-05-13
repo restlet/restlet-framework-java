@@ -71,14 +71,14 @@ public abstract class CharacterRepresentation extends Representation {
     // [ifndef gwt] method
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        BioUtils.copy(getStream(), outputStream);
+        write(BioUtils.getWriter(outputStream, getCharacterSet()));
     }
 
     // [ifndef gwt] method
     @Override
     public void write(java.nio.channels.WritableByteChannel writableChannel)
             throws IOException {
-        write(org.restlet.engine.io.NioUtils.getStream(writableChannel));
+        write(org.restlet.engine.io.NioUtils.getOutputStream(writableChannel));
     }
 
 }

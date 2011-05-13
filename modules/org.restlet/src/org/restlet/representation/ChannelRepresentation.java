@@ -63,7 +63,7 @@ public abstract class ChannelRepresentation extends Representation {
 
     @Override
     public InputStream getStream() throws IOException {
-        return NioUtils.getStream(getChannel());
+        return NioUtils.getInputStream(getChannel());
     }
 
     @Override
