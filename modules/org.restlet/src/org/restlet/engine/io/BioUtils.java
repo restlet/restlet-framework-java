@@ -301,12 +301,13 @@ public final class BioUtils {
             final org.restlet.representation.WriterRepresentation representation)
             throws IOException {
         Reader result = null;
+
         if (Edition.CURRENT != Edition.GAE) {
             // [ifndef gae]
             final java.io.PipedWriter pipedWriter = new java.io.PipedWriter();
-            final java.io.PipedReader pipedReader = new java.io.PipedReader(
+            java.io.PipedReader pipedReader = new java.io.PipedReader(
                     pipedWriter);
-            final org.restlet.Application application = org.restlet.Application
+            org.restlet.Application application = org.restlet.Application
                     .getCurrent();
             // Gets a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
@@ -323,10 +324,11 @@ public final class BioUtils {
                     }
                 }
             };
+
             if (application != null && application.getTaskService() != null) {
                 application.getTaskService().execute(task);
             } else {
-                new Thread(task).run();
+                new Thread(task).start();
             }
 
             result = pipedReader;
@@ -395,7 +397,7 @@ public final class BioUtils {
             }
 
             final PipeStream pipe = new PipeStream();
-            final org.restlet.Application application = org.restlet.Application
+            org.restlet.Application application = org.restlet.Application
                     .getCurrent();
 
             // Gets a thread that will handle the task of continuously
@@ -415,10 +417,11 @@ public final class BioUtils {
                     }
                 }
             };
+
             if (application != null && application.getTaskService() != null) {
                 application.getTaskService().execute(task);
             } else {
-                new Thread(task).run();
+                new Thread(task).start();
             }
 
             result = pipe.getInputStream();

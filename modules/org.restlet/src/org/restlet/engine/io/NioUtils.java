@@ -86,23 +86,6 @@ public class NioUtils {
     }
 
     /**
-     * Writes a readable channel to a writable channel.
-     * 
-     * @param readableChannel
-     *            The readable channel.
-     * @param writableChannel
-     *            The writable channel.
-     * @throws IOException
-     */
-    public static void copy(ReadableByteChannel readableChannel,
-            WritableByteChannel writableChannel) throws IOException {
-        if ((readableChannel != null) && (writableChannel != null)) {
-            BioUtils.copy(new NbChannelInputStream(readableChannel),
-                    new NbChannelOutputStream(writableChannel));
-        }
-    }
-
-    /**
      * Writes a NIO readable channel to a BIO output stream.
      * 
      * @param readableChannel
@@ -116,6 +99,23 @@ public class NioUtils {
         if ((readableChannel != null) && (outputStream != null)) {
             BioUtils.copy(new NbChannelInputStream(readableChannel),
                     outputStream);
+        }
+    }
+
+    /**
+     * Writes a readable channel to a writable channel.
+     * 
+     * @param readableChannel
+     *            The readable channel.
+     * @param writableChannel
+     *            The writable channel.
+     * @throws IOException
+     */
+    public static void copy(ReadableByteChannel readableChannel,
+            WritableByteChannel writableChannel) throws IOException {
+        if ((readableChannel != null) && (writableChannel != null)) {
+            BioUtils.copy(new NbChannelInputStream(readableChannel),
+                    new NbChannelOutputStream(writableChannel));
         }
     }
 
@@ -159,12 +159,12 @@ public class NioUtils {
         if (Edition.CURRENT != Edition.GAE) {
             // [ifndef gae]
             final java.nio.channels.Pipe pipe = java.nio.channels.Pipe.open();
-            final org.restlet.Application application = org.restlet.Application
+            org.restlet.Application application = org.restlet.Application
                     .getCurrent();
 
             // Get a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
-            application.getTaskService().execute(new Runnable() {
+            Runnable task = new Runnable() {
                 public void run() {
                     try {
                         WritableByteChannel wbc = pipe.sink();
@@ -176,7 +176,13 @@ public class NioUtils {
                                 ioe);
                     }
                 }
-            });
+            };
+
+            if (application != null && application.getTaskService() != null) {
+                application.getTaskService().execute(task);
+            } else {
+                new Thread(task).start();
+            }
 
             result = pipe.source();
             // [enddef]

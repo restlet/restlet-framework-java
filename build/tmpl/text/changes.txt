@@ -9,8 +9,9 @@ Changes log
          used TreeMap which required Comparable implementation and isn't
          synchronized. Replaced with ConcurrentHashMap. 
          Reported by Julien Landure
-       - Fixed issues with WriterRepresentation and subclasses sending 
-         long entities. Reported by Tim Peierls.
+       - Fixed regression introduced in 2.0.7 with WriterRepresentation, 
+         OutputRepresentation and subclasses when sending long entities 
+         (1024 and longer). Reported by Tim Peierls.
     - Misc
 
 - 2.0.7 (2011-04-27)
