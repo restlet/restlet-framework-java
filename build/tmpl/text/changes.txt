@@ -5,8 +5,12 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-       - AbstractJaxbProvider, JaxbRepresentation and JibxRepresentation use TreeMap 
-         which isn't synchronized with ConcurrentHashMap. Reported by Julien Landure
+       - AbstractJaxbProvider, JaxbRepresentation and JibxRepresentation 
+         used TreeMap which required Comparable implementation and isn't
+         synchronized. Replaced with ConcurrentHashMap. 
+         Reported by Julien Landure
+       - Fixed issues with WriterRepresentation and subclasses sending 
+         long entities. Reported by Tim Peierls.
     - Misc
 
 - 2.0.7 (2011-04-27)
