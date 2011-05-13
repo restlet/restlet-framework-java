@@ -73,7 +73,7 @@ public abstract class ChannelRepresentation extends Representation {
 
     @Override
     public void write(Writer writer) throws IOException {
-        write(BioUtils.getStream(writer));
+        write(BioUtils.getOutputStream(writer));
     }
 
 }

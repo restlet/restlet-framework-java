@@ -31,10 +31,10 @@
 package org.restlet.engine;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -49,7 +49,6 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.CharacterSet;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.io.IoUtils;
@@ -186,9 +185,7 @@ public class Engine {
 
             try {
                 LogManager.getLogManager().readConfiguration(
-                        new org.restlet.engine.io.ReaderInputStream(
-                                new StringReader(sb.toString()),
-                                CharacterSet.DEFAULT));
+                        new ByteArrayInputStream(sb.toString().getBytes()));
             } catch (Exception e) {
                 e.printStackTrace();
             }

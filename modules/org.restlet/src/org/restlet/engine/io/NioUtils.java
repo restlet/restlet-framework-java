@@ -189,18 +189,18 @@ public class NioUtils {
      * @return A readable byte channel.
      * @throws IOException
      */
-    public static ReadableByteChannel getChannel(
+    public static ReadableByteChannel getReadableByteChannel(
             final Representation representation) throws IOException {
         ReadableByteChannel result = null;
         if (Edition.CURRENT != Edition.GAE) {
             // [ifndef gae]
             final java.nio.channels.Pipe pipe = java.nio.channels.Pipe.open();
-            final org.restlet.Application application = org.restlet.Application
+            org.restlet.Application application = org.restlet.Application
                     .getCurrent();
 
             // Get a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
-            application.getTaskService().execute(new Runnable() {
+            Runnable task = new Runnable() {
                 public void run() {
                     try {
                         WritableByteChannel wbc = pipe.sink();
@@ -212,7 +212,13 @@ public class NioUtils {
                                 ioe);
                     }
                 }
-            });
+            };
+
+            if (application != null && application.getTaskService() != null) {
+                application.getTaskService().execute(task);
+            } else {
+                new Thread(task, "Restlet-PipedWritableChannel").start();
+            }
 
             result = pipe.source();
             // [enddef]

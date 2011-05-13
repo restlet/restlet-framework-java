@@ -20,6 +20,7 @@ Changes log
       - Fixed misleading log message when response are manually ranged
         (206 status and entity with range set). Reported by John Logsdon.
     - Misc
+      - 
 
 - 2.1 Milestone 4 (04/27/2011)
     - API changes

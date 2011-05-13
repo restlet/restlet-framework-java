@@ -45,6 +45,7 @@ import java.util.concurrent.TimeUnit;
  * @author Jerome Louvel
  */
 public class PipeStream {
+
     /** The queue timeout. */
     private static final long QUEUE_TIMEOUT = 5;
 

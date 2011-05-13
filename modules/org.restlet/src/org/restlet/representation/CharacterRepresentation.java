@@ -65,7 +65,7 @@ public abstract class CharacterRepresentation extends Representation {
     // [ifndef gwt] method
     @Override
     public InputStream getStream() throws IOException {
-        return BioUtils.getStream(getReader(), getCharacterSet());
+        return BioUtils.getInputStream(getReader(), getCharacterSet());
     }
 
     // [ifndef gwt] method

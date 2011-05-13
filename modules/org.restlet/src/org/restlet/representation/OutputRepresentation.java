@@ -78,7 +78,7 @@ public abstract class OutputRepresentation extends StreamRepresentation {
      */
     @Override
     public InputStream getStream() throws IOException {
-        return BioUtils.getStream(this);
+        return BioUtils.getInputStream(this);
     }
 
 }

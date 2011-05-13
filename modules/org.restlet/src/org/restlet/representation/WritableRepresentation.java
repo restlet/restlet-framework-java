@@ -62,7 +62,7 @@ public abstract class WritableRepresentation extends ChannelRepresentation {
 
     @Override
     public ReadableByteChannel getChannel() throws IOException {
-        return NioUtils.getChannel(this);
+        return NioUtils.getReadableByteChannel(this);
     }
 
     /**

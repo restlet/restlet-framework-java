@@ -242,7 +242,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public InputStream getStream() throws IOException {
         if (canEncode()) {
-            return BioUtils.getStream(this);
+            return BioUtils.getInputStream(this);
         }
 
         return getWrappedRepresentation().getStream();

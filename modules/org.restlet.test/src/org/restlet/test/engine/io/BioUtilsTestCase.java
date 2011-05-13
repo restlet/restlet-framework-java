@@ -46,7 +46,7 @@ public class BioUtilsTestCase extends RestletTestCase {
 
     public void testGetStream() throws IOException {
         StringWriter writer = new StringWriter();
-        OutputStream out = BioUtils.getStream(writer);
+        OutputStream out = BioUtils.getOutputStream(writer);
         out.write("test".getBytes());
         out.flush();
         out.close();

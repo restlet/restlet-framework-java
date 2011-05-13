@@ -331,7 +331,7 @@ public final class BioUtils {
             if (application != null && application.getTaskService() != null) {
                 application.getTaskService().execute(task);
             } else {
-                new Thread(task).run();
+                new Thread(task, "Restlet-PipeWriter").start();
             }
 
             result = pipedReader;
@@ -353,7 +353,7 @@ public final class BioUtils {
      *            The writer.
      * @return the output stream of the writer
      */
-    public static java.io.OutputStream getStream(java.io.Writer writer) {
+    public static java.io.OutputStream getOutputStream(java.io.Writer writer) {
         return new WriterOutputStream(writer);
     }
 
@@ -367,7 +367,8 @@ public final class BioUtils {
      *            The stream character set.
      * @return An input stream based on a given character reader.
      */
-    public static InputStream getStream(Reader reader, CharacterSet characterSet) {
+    public static InputStream getInputStream(Reader reader,
+            CharacterSet characterSet) {
         InputStream result = null;
 
         try {
@@ -391,7 +392,7 @@ public final class BioUtils {
      *            from.
      * @return A stream with the representation's content.
      */
-    public static InputStream getStream(final Representation representation) {
+    public static InputStream getInputStream(final Representation representation) {
         InputStream result = null;
 
         if (Edition.CURRENT != Edition.GAE) {
@@ -401,7 +402,7 @@ public final class BioUtils {
             }
 
             final PipeStream pipe = new PipeStream();
-            final org.restlet.Application application = org.restlet.Application
+            org.restlet.Application application = org.restlet.Application
                     .getCurrent();
 
             // Creates a thread that will handle the task of continuously
@@ -425,7 +426,7 @@ public final class BioUtils {
             if (application != null && application.getTaskService() != null) {
                 application.getTaskService().execute(task);
             } else {
-                new Thread(task).run();
+                new Thread(task, "Restlet-PipedOutputStream").start();
             }
 
             result = pipe.getInputStream();
