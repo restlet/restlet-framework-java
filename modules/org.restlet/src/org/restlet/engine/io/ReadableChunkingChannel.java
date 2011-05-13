@@ -33,7 +33,9 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.engine.util.StringUtils;
 
 // [excludes gwt]
@@ -121,6 +123,14 @@ public class ReadableChunkingChannel extends
                     // Read the chunk data in the buffer
                     dst.position(chunkStart + this.chunkSizeLength + 2);
                     dst.limit(dst.position() + maxChunkDataSize);
+
+                    if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                        Context.getCurrentLogger().finer(
+                                "Position before read | Limit | MaxChunkDataSize : "
+                                        + dst.position() + " | " + dst.limit()
+                                        + " | " + maxChunkDataSize);
+                    }
+
                     chunkDataSize = getWrappedChannel().read(dst);
                     dst.limit(dst.capacity());
 
@@ -145,7 +155,22 @@ public class ReadableChunkingChannel extends
                         fillChunkSizeString(chunkDataSize, dst);
 
                         // Restore buffer state
+                        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                            Context.getCurrentLogger().finer(
+                                    "Old position | Limit | MaxChunkDataSize | ChunkDataSize : "
+                                            + dst.position() + " | "
+                                            + dst.limit() + " | "
+                                            + maxChunkDataSize + " | "
+                                            + chunkDataSize);
+                        }
+
                         dst.position(dst.position() + chunkDataSize + 2);
+
+                        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                            Context.getCurrentLogger().finer(
+                                    "New position : " + dst.position());
+                        }
+
                         result += dst.position() - chunkStart;
                     } else {
                         // Nothing read on the wrapped channel. Try again later.
