@@ -23,7 +23,7 @@
 		<lib-gdata-version>1.0</lib-gdata-version>
 		<lib-gdata-version>1.0</lib-gdata-version>
 		<lib-gdata-client-version>1.0</lib-gdata-client-version>
-		<lib-guice-version>1.0</lib-guice-version>
+		<lib-guice-version>2.2.0</lib-guice-version>
 		<lib-gwt-version>2.2.0</lib-gwt-version>
 		<lib-gwt-server-version>2.1.0</lib-gwt-server-version>
 		<lib-httpclient-version>4.0.1</lib-httpclient-version>

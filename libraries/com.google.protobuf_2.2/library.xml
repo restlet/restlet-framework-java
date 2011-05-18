@@ -1,7 +1,11 @@
 <library id="protobuf">
 	<name>Google Protobuffer</name>
 	<description>Google Protobuffer.</description>
-	<package name="com.google.protobuf" />
+	<package name="com.google.protobuf">
+		<maven>
+			<artifactId>protobuf-java</artifactId>
+		</maven>
+	</package>
 	<version>2.2</version>
 	<distributions>
 		<distribution id="classic" />
