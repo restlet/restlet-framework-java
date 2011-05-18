@@ -21,12 +21,7 @@
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
-			<version>2.2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.restlet.jse</groupId>
-			<artifactId>org.restlet.lib.</artifactId>
-			<version>${lib-gdata-version}</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.jse</groupId>
@@ -41,7 +36,7 @@
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
-			<version>2.2</version>
+			<version>2.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.collections</groupId>

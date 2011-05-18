@@ -1,7 +1,6 @@
 <library id="gdata" dir="com.google.gdata">
 	<name>Google GData</name>
 	<description>Google GData.</description>
-	<package name="" />
 	<package id="gdata" name="com.google.gdata">
 		<maven>
 			<groupId>com.google.gdata</groupId>
