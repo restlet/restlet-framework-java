@@ -95,7 +95,7 @@ public class CallbackProxy extends OAuthProxy {
 
         clients = (ClientStore<?>) attribs.get(ClientStore.class
                 .getCanonicalName());
-        log.info("Found client store = " + clients);
+        getLogger().info("Found client store = " + clients);
     }
 
     /**
@@ -146,11 +146,14 @@ public class CallbackProxy extends OAuthProxy {
         // flow
 
         Client client = clients.findById(clientId);
+
         if (client == null)
             client = clients.createClient(clientId, clientSecret, /* redirUri */
             null);
-        log.info("Registered callback client - " + clientId + " : "
-                + clientSecret);
+
+        getLogger().info(
+                "Registered callback client - " + clientId + " : "
+                        + clientSecret);
     }
 
 }
