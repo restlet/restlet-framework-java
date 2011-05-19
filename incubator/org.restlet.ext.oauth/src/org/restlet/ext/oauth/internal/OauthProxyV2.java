@@ -135,7 +135,7 @@ public class OauthProxyV2 extends Authorizer {
 
             Representation body = tokenResource.post(form
                     .getWebRepresentation());
-            if (tokenResource.getResponse().getStatus().isSuccess()) {
+            if (tokenResource.getStatus().isSuccess()) {
                 Form answer = new Form(body);
                 getLogger().info(
                         "Got answer on AccessToken = " + answer.toString());

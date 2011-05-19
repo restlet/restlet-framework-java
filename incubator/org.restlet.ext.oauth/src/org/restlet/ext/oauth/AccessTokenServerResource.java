@@ -37,11 +37,9 @@ import org.json.JSONObject;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
-import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.util.Base64;
 import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.internal.ExpireToken;
 import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.EmptyRepresentation;
@@ -50,12 +48,10 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
 /**
- * AccessTokenResource is used to acquire an oauth token. A code, or refresh
- * token can be exchange for a working token. This resource also supports the
- * none flow.
+ * Server resource used to acquire an OAuth token. A code, or refresh token can
+ * be exchanged for a working token. This resource also supports the none flow.
  * 
- * At the moment password and assertion flows are not supported.
- * 
+ * Note: at the moment password and assertion flows are not supported.
  * Implements OAuth 2.0 draft 10
  * 
  * @author Kristoffer Gronowski
@@ -66,113 +62,25 @@ import org.restlet.resource.ResourceException;
  */
 public class AccessTokenServerResource extends OAuthServerResource {
 
-    /**
-     * @param input
-     *            HTML form formated token request per oauth-v2 spec.
-     * @return JSON response with token or error.
-     */
-    @Post("form:json")
-    public Representation represent(Representation input) {
-        log.info("Method = " + getRequest().getMethod().getName());
-        log.info("In request : " + getOriginalRef().toString());
-
-        Form params = new Form(input);
-        String typeString = params.getFirstValue(GRANT_TYPE);
-        log.info("Token Service - In service type = " + typeString);
-
-        String clientId = params.getFirstValue(CLIENT_ID);
-        String clientSecret = params.getFirstValue(CLIENT_SECRET);
-
-        if (clientSecret == null || clientSecret.length() == 0) {
-            // Check for a basic HTTP auth
-            ChallengeResponse cr = getRequest().getChallengeResponse();
-            if (ChallengeScheme.HTTP_BASIC.equals(cr.getScheme())) {
-                String basic = new String(Base64.decode(cr.getRawValue()));
-                int colon = basic.indexOf(':');
-                if (colon > -1) {
-                    clientSecret = basic.substring(colon + 1);
-                    log.info("Found secret in BASIC Authentication : "
-                            + clientSecret);
-                    // Also allow for client ID to be transfered in user part
-                    if (colon > 0) { // There is a user part
-                        clientId = basic.substring(0, colon);
-                        log.info("Found id in BASIC Authentication : "
-                                + clientId);
-                    }
-                }
-            }
-
-        }
-
-        if (clientId == null || clientId.length() == 0) {
-            sendError(OAuthError.INVALID_REQUEST,
-                    "Mandatory parameter client_id is missing", null);
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            return new EmptyRepresentation();
-        }
-
-        if (clientSecret == null || clientSecret.length() == 0) {
-            sendError(OAuthError.INVALID_REQUEST,
-                    "Mandatory parameter client_secret is missing", null);
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            return new EmptyRepresentation();
-        }
-
-        // String sessionId = getCookies().getFirstValue(CookieID);
-        // ConcurrentMap<String,Object> attribs = getContext().getAttributes();
-        // AuthSession session = (sessionId==null)?null:(AuthSession)
-        // attribs.get(sessionId);
+    private JSONObject createJsonToken(Token token, String scopes)
+            throws ResourceException {
+        JSONObject body = new JSONObject();
 
         try {
-            GrantType type = Enum.valueOf(GrantType.class, typeString);
-            log.info("Found flow - " + type);
+            body.put(ACCESS_TOKEN, token.getToken());
 
-            if (Method.POST.equals(getMethod())) {
-                try {
-                    switch (type) {
-                    case authorization_code:
-                        log.info("doWebServerFlow() - flow");
-                        doAuthCodeFlow(clientId, clientSecret, params);
-                        break;
-                    case password:
-                        doPasswordFlow(clientId, clientSecret, params);
-                        break;
-                    case assertion:
-                        sendError(OAuthError.UNSUPPORTED_GRANT_TYPE,
-                                "Assertion flow not supported", null);
-                        setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
-                        break;
-                    case refresh_token:
-                        doRefreshFlow(clientId, clientSecret, params);
-                        break;
-                    case none:
-                        doNoneFlow(clientId, clientSecret, params);
-                        break;
-                    default:
-                        sendError(OAuthError.UNSUPPORTED_GRANT_TYPE,
-                                "Flow not supported", null);
-                        setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-                    }
-                } catch (IllegalArgumentException e) { // can not exchange code.
-                    sendError(OAuthError.INVALID_GRANT, e.getMessage(), null);
-                    setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-                }
-            } else {
-                sendError(OAuthError.INVALID_REQUEST,
-                        "Only supporting HTTP POST.", null);
-                setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            if (token instanceof ExpireToken) {
+                ExpireToken et = (ExpireToken) token;
+                body.put(EXPIRES_IN, et.getExpirePeriod());
+                body.put(REFRESH_TOKEN, et.getRefreshToken());
             }
-        } catch (IllegalArgumentException iae) {
-            sendError(OAuthError.UNSUPPORTED_GRANT_TYPE, "Flow not supported",
-                    null);
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-        } catch (NullPointerException npe) {
-            sendError(OAuthError.UNSUPPORTED_GRANT_TYPE, "Flow not supported",
-                    null);
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+            // TODO add scope
+        } catch (JSONException e) {
+            throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
+                    "Failed to generate JSON", e);
         }
 
-        return getResponse().getEntity();
+        return body;
     }
 
     private void doAuthCodeFlow(String clientId, String clientSecret,
@@ -230,6 +138,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
     private void doNoneFlow(String clientId, String clientSecret, Form params) {
         Client client = validate(clientId, clientSecret);
+
         // null check on failed
         if (client == null) {
             sendError(OAuthError.INVALID_CLIENT,
@@ -240,29 +149,30 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         if (!client.containsUser(AUTONOMOUS_USER))
             client.createUser(AUTONOMOUS_USER);
+
         AuthenticatedUser user = client.findUser(AUTONOMOUS_USER);
 
         // Adding all scopes since super-user
         String[] scopes = parseScope(params.getFirstValue(SCOPE));
+
         for (String scope : scopes) {
-            log.info("Requested scopes none flow = " + scope);
+            getLogger().info("Requested scopes none flow = " + scope);
             user.addScope(scope, "");
-            log.info("Adding scope = " + scope + " to auto user");
+            getLogger().info("Adding scope = " + scope + " to auto user");
         }
 
         Token token = generator.generateToken(user, tokenTimeSec);
-
         JSONObject body = createJsonToken(token, null); // Scopes N/A
 
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
-
         getResponse().setEntity(new JsonRepresentation(body));
     }
 
     private void doPasswordFlow(String clientId, String clientSecret,
             Form params) {
         Client client = validate(clientId, clientSecret);
+
         // null check on failed
         if (client == null) {
             sendError(OAuthError.INVALID_CLIENT,
@@ -273,13 +183,16 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         String username = params.getFirstValue(USERNAME);
         AuthenticatedUser user = null;
+
         if (username == null || (user = client.findUser(username)) == null) {
             sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter username missing.", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return;
         }
+
         String password = params.getFirstValue(PASSWORD);
+
         if (password == null) {
             sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter password missing.", null);
@@ -294,18 +207,16 @@ public class AccessTokenServerResource extends OAuthServerResource {
         }
 
         Token token = generator.generateToken(user, tokenTimeSec);
-
         JSONObject body = createJsonToken(token, null); // Scopes N/A
 
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
-
         getResponse().setEntity(new JsonRepresentation(body));
-
     }
 
     private void doRefreshFlow(String clientId, String clientSecret, Form params) {
         String rToken = params.getFirstValue(REFRESH_TOKEN);
+
         if (rToken == null || rToken.length() == 0) {
             sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter refresh_token is missing", null);
@@ -324,8 +235,10 @@ public class AccessTokenServerResource extends OAuthServerResource {
         }
 
         Token token = generator.findToken(rToken);
+
         if (token != null && (token instanceof ExpireToken)) {
             AuthenticatedUser user = token.getUser();
+
             // Make sure that the user owning the token is owned by this client
             if (client.containsUser(user.getId())) {
                 // refresh the token
@@ -349,27 +262,141 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
     }
 
-    private JSONObject createJsonToken(Token token, String scopes)
-            throws ResourceException {
-        JSONObject body = new JSONObject();
-        try {
-            body.put(ACCESS_TOKEN, token.getToken());
-            if (token instanceof ExpireToken) {
-                ExpireToken et = (ExpireToken) token;
-                body.put(EXPIRES_IN, et.getExpirePeriod());
-                body.put(REFRESH_TOKEN, et.getRefreshToken());
+    /**
+     * @param input
+     *            HTML form formated token request per oauth-v2 spec.
+     * @return JSON response with token or error.
+     */
+    @Post("form:json")
+    public Representation represent(Representation input) {
+        getLogger().info("Method = " + getMethod().getName());
+        getLogger().info("In request : " + getOriginalRef().toString());
+
+        Form params = new Form(input);
+        String typeString = params.getFirstValue(GRANT_TYPE);
+        getLogger().info("Token Service - In service type = " + typeString);
+
+        String clientId = params.getFirstValue(CLIENT_ID);
+        String clientSecret = params.getFirstValue(CLIENT_SECRET);
+
+        if (clientSecret == null || clientSecret.length() == 0) {
+            // Check for a basic HTTP auth
+            ChallengeResponse cr = getChallengeResponse();
+
+            if (ChallengeScheme.HTTP_BASIC.equals(cr.getScheme())) {
+                String basic = new String(Base64.decode(cr.getRawValue()));
+                int colon = basic.indexOf(':');
+
+                if (colon > -1) {
+                    clientSecret = basic.substring(colon + 1);
+                    getLogger().info(
+                            "Found secret in BASIC Authentication : "
+                                    + clientSecret);
+
+                    // Also allow for client ID to be transfered in user part
+                    if (colon > 0) { // There is a user part
+                        clientId = basic.substring(0, colon);
+                        getLogger().info(
+                                "Found id in BASIC Authentication : "
+                                        + clientId);
+                    }
+                }
             }
-            // TODO add scope
-        } catch (JSONException e) {
-            throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
-                    "Failed to generate JSON", e);
+
         }
-        return body;
+
+        if (clientId == null || clientId.length() == 0) {
+            sendError(OAuthError.INVALID_REQUEST,
+                    "Mandatory parameter client_id is missing", null);
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+            return new EmptyRepresentation();
+        }
+
+        if (clientSecret == null || clientSecret.length() == 0) {
+            sendError(OAuthError.INVALID_REQUEST,
+                    "Mandatory parameter client_secret is missing", null);
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+            return new EmptyRepresentation();
+        }
+
+        // String sessionId = getCookies().getFirstValue(CookieID);
+        // ConcurrentMap<String,Object> attribs = getContext().getAttributes();
+        // AuthSession session = (sessionId==null)?null:(AuthSession)
+        // attribs.get(sessionId);
+
+        try {
+            GrantType type = Enum.valueOf(GrantType.class, typeString);
+            getLogger().info("Found flow - " + type);
+
+            try {
+                switch (type) {
+                case authorization_code:
+                    getLogger().info("doWebServerFlow() - flow");
+                    doAuthCodeFlow(clientId, clientSecret, params);
+                    break;
+                case password:
+                    doPasswordFlow(clientId, clientSecret, params);
+                    break;
+                case assertion:
+                    sendError(OAuthError.UNSUPPORTED_GRANT_TYPE,
+                            "Assertion flow not supported", null);
+                    setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+                    break;
+                case refresh_token:
+                    doRefreshFlow(clientId, clientSecret, params);
+                    break;
+                case none:
+                    doNoneFlow(clientId, clientSecret, params);
+                    break;
+                default:
+                    sendError(OAuthError.UNSUPPORTED_GRANT_TYPE,
+                            "Flow not supported", null);
+                    setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+                }
+            } catch (IllegalArgumentException e) { // can not exchange code.
+                sendError(OAuthError.INVALID_GRANT, e.getMessage(), null);
+                setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+            }
+        } catch (IllegalArgumentException iae) {
+            sendError(OAuthError.UNSUPPORTED_GRANT_TYPE, "Flow not supported",
+                    null);
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+        } catch (NullPointerException npe) {
+            sendError(OAuthError.UNSUPPORTED_GRANT_TYPE, "Flow not supported",
+                    null);
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+        }
+
+        return getResponseEntity();
+    }
+
+    protected void sendError(OAuthError error, String description,
+            String errorUri) {
+        JSONObject result = new JSONObject();
+
+        try {
+            result.put(OAuthServerResource.ERROR, error.name());
+
+            if (description != null && description.length() > 0) {
+                result.put(OAuthServerResource.ERROR_DESC, description);
+            }
+
+            if (errorUri != null && errorUri.length() > 0) {
+                result.put(OAuthServerResource.ERROR_URI, errorUri);
+            }
+
+            JsonRepresentation repr = new JsonRepresentation(result);
+            getResponse().setEntity(repr);
+        } catch (JSONException e) {
+            getLogger().log(Level.WARNING, "Error while sending OAuth error.",
+                    e);
+        }
     }
 
     private Client validate(String clientId, String clientSecret) {
         Client client = clients.findById(clientId);
-        log.info("Client = " + client);
+        getLogger().info("Client = " + client);
+
         if (client == null) {
             sendError(OAuthError.INVALID_CLIENT,
                     "Could not find the correct client with id : " + clientId,
@@ -383,28 +410,12 @@ public class AccessTokenServerResource extends OAuthServerResource {
             sendError(OAuthError.INVALID_GRANT, "Client secret did not match",
                     null);
             setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-            log.info("Could not find or match client secret " + clientSecret
-                    + " : " + client.getClientSecret());
+            getLogger().info(
+                    "Could not find or match client secret " + clientSecret
+                            + " : " + client.getClientSecret());
         }
 
         return client;
-    }
-
-    public void sendError(OAuthError error, String description, String errorUri) {
-        JSONObject result = new JSONObject();
-        try {
-            result.put(OAuthServerResource.ERROR, error.name());
-            if (description != null && description.length() > 0) {
-                result.put(OAuthServerResource.ERROR_DESC, description);
-            }
-            if (errorUri != null && errorUri.length() > 0) {
-                result.put(OAuthServerResource.ERROR_URI, errorUri);
-            }
-            JsonRepresentation repr = new JsonRepresentation(result);
-            getResponse().setEntity(repr);
-        } catch (JSONException e) {
-            log.log(Level.WARNING, "Error while sending OAuth error.", e);
-        }
     }
 
 }

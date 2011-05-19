@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.data.CacheDirective;
@@ -113,8 +112,6 @@ public abstract class OAuthServerResource extends ServerResource {
 
     protected volatile TokenGenerator generator;
 
-    protected volatile Logger log;
-
     protected final static List<CacheDirective> noStore;
 
     protected final static List<CacheDirective> noCache;
@@ -152,17 +149,17 @@ public abstract class OAuthServerResource extends ServerResource {
         Context ctx = getContext();
         ConcurrentMap<String, Object> attribs = ctx.getAttributes();
 
-        log = ctx.getLogger();
         clients = (ClientStore<?>) attribs.get(ClientStore.class
                 .getCanonicalName());
-        log.info("Found client store = " + clients);
+        getLogger().info("Found client store = " + clients);
 
         generator = clients.getTokenGenerator();
-        log.info("Found token generator = " + generator);
+        getLogger().info("Found token generator = " + generator);
 
         if (attribs.containsKey(TOKEN_SERVER_TIME_SEC)) {
             tokenTimeSec = (Long) attribs.get(TOKEN_SERVER_TIME_SEC);
         }
+
         if (attribs.containsKey(TOKEN_SERVER_MAX_TIME_SEC)) {
             tokenMaxTimeSec = (Long) attribs.get(TOKEN_SERVER_MAX_TIME_SEC);
         }
@@ -189,7 +186,7 @@ public abstract class OAuthServerResource extends ServerResource {
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
 
-        log.info("Redirecting to -> " + location.toString());
+        getLogger().info("Redirecting to -> " + location.toString());
         // TODO add state to request string
         return location.toString();
     }
@@ -212,7 +209,7 @@ public abstract class OAuthServerResource extends ServerResource {
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
 
-        log.info("Redirecting to -> " + location.toString());
+        getLogger().info("Redirecting to -> " + location.toString());
         // TODO add state to request string
         return location.toString();
     }

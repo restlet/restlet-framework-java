@@ -57,7 +57,7 @@ public class OAuthUser extends User {
     }
 
     /**
-     * Constructor used for tokens with a exparation time
+     * Constructor used for tokens with a expiration time
      * 
      * @param accessToken
      */

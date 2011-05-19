@@ -168,7 +168,8 @@ public class AuthPageServerResource extends OAuthServerResource {
                 if (previousScopes.containsAll(scopes)) {
                     // we already have approved the current scopes being
                     // requested...
-                    log.fine("All scopes already approved. - skip auth page.");
+                    getLogger().fine(
+                            "All scopes already approved. - skip auth page.");
                     handleAction("Accept", scopesArray);
                     return new EmptyRepresentation(); // Will redirect
                 }
@@ -205,9 +206,10 @@ public class AuthPageServerResource extends OAuthServerResource {
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             sendError(session, OAuthError.ACCESS_DENIED, session.getState(),
                     "Rejected.", null);
-            log.info("Rejected.");
+            getLogger().info("Rejected.");
             return;
         }
+
         Client client = session.getClient();
         String id = session.getScopeOwner();
 
@@ -292,7 +294,7 @@ public class AuthPageServerResource extends OAuthServerResource {
         // Build the model
         HashMap<String, Object> data = new HashMap<String, Object>();
 
-        data.put("target", getRequest().getRootRef() + "/auth_page");
+        data.put("target", getRootRef() + "/auth_page");
         // TODO check with Restlet lead
         data.put("clientId", clientId);
         data.put("clientDescription", client.toString());

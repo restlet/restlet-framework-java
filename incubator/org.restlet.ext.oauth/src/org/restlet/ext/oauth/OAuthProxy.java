@@ -260,7 +260,7 @@ public class OAuthProxy extends Authorizer {
                         + params.getClientSecret();
                 authentication.setRawValue(Base64.encode(basic.getBytes(),
                         false));
-                tokenResource.getRequest().setChallengeResponse(authentication);
+                tokenResource.setChallengeResponse(authentication);
             } else {
                 form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
                 form.add(OAuthServerResource.CLIENT_SECRET,
@@ -273,7 +273,7 @@ public class OAuthProxy extends Authorizer {
             try {
                 Representation input = form.getWebRepresentation();
                 Representation body = tokenResource.post(input);
-                if (tokenResource.getResponse().getStatus().isSuccess()) {
+                if (tokenResource.getStatus().isSuccess()) {
                     // Store away the user
                     OAuthUser authUser = OAuthUtils.handleSuccessResponse(body);
                     if (authUser != null) {

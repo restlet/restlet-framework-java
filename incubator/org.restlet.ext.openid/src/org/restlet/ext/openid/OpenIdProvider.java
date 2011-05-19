@@ -141,7 +141,7 @@ public class OpenIdProvider extends ServerResource {
             response = manager.verify(request);
             log.info("OpenID : " + response.keyValueFormEncoding());
             responseText = response.keyValueFormEncoding();
-        } else if (Method.GET.equals(getRequest().getMethod())) {
+        } else if (Method.GET.equals(getMethod())) {
             // Could be a discovery request
             sendXRDSLocation();
             return new StringRepresentation("XRDS Discovery Information");

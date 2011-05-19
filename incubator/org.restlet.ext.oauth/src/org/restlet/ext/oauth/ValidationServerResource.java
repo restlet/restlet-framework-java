@@ -77,10 +77,13 @@ public class ValidationServerResource extends OAuthServerResource {
         boolean authenticated = false;
         String lo = (String) getContext().getAttributes()
                 .get(LOCAL_ACCESS_ONLY);
+
         if (lo != null && lo.length() > 0) {
             boolean localOnly = Boolean.parseBoolean(lo);
+
             if (localOnly) { // Check that protocol = RIAP
-                String scheme = getRequest().getOriginalRef().getScheme();
+                String scheme = getOriginalRef().getScheme();
+
                 if (!Protocol.RIAP.getSchemeName().equals(scheme)) {
                     setStatus(Status.CLIENT_ERROR_FORBIDDEN,
                             "Auth server only allows local resource validation");
@@ -88,6 +91,7 @@ public class ValidationServerResource extends OAuthServerResource {
                 }
             }
         }
+
         try {
             String error = null;
             JsonRepresentation rest = new JsonRepresentation(input);
@@ -95,23 +99,29 @@ public class ValidationServerResource extends OAuthServerResource {
             String token = call.get("access_token").toString();
             String uri = call.get("uri").toString();
             JSONArray scopes = null;
+
             if (call.has("scope"))
                 scopes = call.getJSONArray("scope");
+
             String owner = null;
+
             if (call.has("owner"))
                 owner = call.getString("owner");
 
             log.info("In Validator resource - searching for token = " + token);
             Token t = generator.findToken(token);
+
             if (t == null) {
                 response.put("authenticated", authenticated);
                 error = OAuthError.INVALID_TOKEN.name();
                 // setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             } else {
                 log.info("In Validator resource - got token = " + t);
+
                 if (t instanceof ExpireToken) {
                     // check that the right token was used
                     ExpireToken et = (ExpireToken) t;
+
                     if (!token.equals(et.getToken())) {
                         error = OAuthError.INVALID_TOKEN.name();
                         getLogger().warning(
@@ -126,9 +136,11 @@ public class ValidationServerResource extends OAuthServerResource {
 
                 AuthenticatedUser user = t.getUser();
                 authenticated = (user == null) ? false : true;
+
                 if (!authenticated) {
                     error = OAuthError.INVALID_REQUEST.name();
                 }
+
                 if (authenticated && scopes != null && scopes.length() > 0) {
                     // All scopes must match if there are any listed
                     for (int i = 0; i < scopes.length(); i++) {
@@ -146,6 +158,7 @@ public class ValidationServerResource extends OAuthServerResource {
                         }
                     }
                 }
+
                 // Matching on the owner if there is one and scope checke out
                 if (authenticated) {
                     if (owner != null && owner.length() > 0

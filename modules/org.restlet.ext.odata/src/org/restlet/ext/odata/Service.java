@@ -655,8 +655,8 @@ public class Service {
                     found = true;
                     Object value = null;
                     try {
-                        value = ReflectUtils.invokeGetter(entity, property
-                                .getName());
+                        value = ReflectUtils.invokeGetter(entity,
+                                property.getName());
                         if (value != null) {
                             sb.append(value);
                         }
@@ -918,8 +918,8 @@ public class Service {
                         getSubpath(entity, propertyName), propertyClass)
                         .iterator();
 
-                ReflectUtils.setProperty(entity, propertyName, association
-                        .isToMany(), iterator, propertyClass);
+                ReflectUtils.setProperty(entity, propertyName,
+                        association.isToMany(), iterator, propertyClass);
             } catch (Exception e) {
                 getLogger().log(
                         Level.WARNING,
@@ -1019,8 +1019,7 @@ public class Service {
             // TODO Take into acount the case where the target does exist.
             Metadata metadata = (Metadata) getMetadata();
             ClientResource resource = createResource(metadata
-                    .getSubpath(source)
-                    + "/$links/" + sourceProperty);
+                    .getSubpath(source) + "/$links/" + sourceProperty);
 
             try {
                 // TODO Fix chunked request with net client connector
@@ -1154,8 +1153,8 @@ public class Service {
                                 }
                                 if (value != null) {
                                     writer.startElement(
-                                            WCF_DATASERVICES_NAMESPACE, prop
-                                                    .getName());
+                                            WCF_DATASERVICES_NAMESPACE,
+                                            prop.getName());
                                     if (prop instanceof ComplexProperty) {
                                         write(writer, value, nullAttrs);
                                     } else {
@@ -1163,8 +1162,8 @@ public class Service {
                                                 value, prop.getType()));
                                     }
                                     writer.endElement(
-                                            WCF_DATASERVICES_NAMESPACE, prop
-                                                    .getName());
+                                            WCF_DATASERVICES_NAMESPACE,
+                                            prop.getName());
                                 } else {
                                     if (prop.isNullable()) {
                                         writer.emptyElement(

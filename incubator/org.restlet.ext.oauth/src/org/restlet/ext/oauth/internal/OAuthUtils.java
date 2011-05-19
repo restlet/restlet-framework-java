@@ -54,7 +54,7 @@ import org.restlet.util.Series;
 
 /**
  * Helper class for creating client OAuth code
- *
+ * 
  * 
  * 
  * @author Kristoffer Gronowski
@@ -95,7 +95,7 @@ public class OAuthUtils {
 
         Representation body = tokenResource.post(form.getWebRepresentation());
 
-        if (tokenResource.getResponse().getStatus().isSuccess()) {
+        if (tokenResource.getStatus().isSuccess()) {
             result = handleSuccessResponse(body);
         }
 
@@ -191,11 +191,10 @@ public class OAuthUtils {
             if (++cnt >= maxRedirCnt)
                 break;
 
-            Context.getCurrentLogger()
-                    .info("Redir to = "
-                            + authResource.getResponse().getLocationRef());
-            authResource.setReference(authResource.getResponse()
-                    .getLocationRef());
+            Context.getCurrentLogger().info(
+                    "Redir to = " + authResource.getLocationRef());
+            authResource.setReference(authResource.getLocationRef());
+
             // FOR TESTING!!!!
             if (cnt == 1) {
 
@@ -204,7 +203,9 @@ public class OAuthUtils {
                     authResource.getCookies().add(cs.getName(), cs.getValue());
                 }
             }
+
             r = authResource.get();
+
             // Check if it is a OpenID form forward
             try {
                 r = OpenIdFormFrowarder.handleFormRedirect(r, authResource);
@@ -295,11 +296,9 @@ public class OAuthUtils {
             if (++cnt >= maxRedirCnt)
                 break;
 
-            Context.getCurrentLogger()
-                    .info("Redir to = "
-                            + authResource.getResponse().getLocationRef());
-            authResource.setReference(authResource.getResponse()
-                    .getLocationRef());
+            Context.getCurrentLogger().info(
+                    "Redir to = " + authResource.getLocationRef());
+            authResource.setReference(authResource.getLocationRef());
             authResource.get();
         }
 
@@ -344,7 +343,7 @@ public class OAuthUtils {
 
         Representation body = tokenResource.post(form.getWebRepresentation());
 
-        if (tokenResource.getResponse().getStatus().isSuccess()) {
+        if (tokenResource.getStatus().isSuccess()) {
             result = handleSuccessResponse(body);
         }
 
@@ -381,7 +380,7 @@ public class OAuthUtils {
         try {
             body = tokenResource.post(form.getWebRepresentation());
 
-            if (tokenResource.getResponse().getStatus().isSuccess()) {
+            if (tokenResource.getStatus().isSuccess()) {
                 result = handleSuccessResponse(body);
             }
         } finally {

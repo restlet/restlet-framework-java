@@ -44,90 +44,108 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 /**
- * Class that lets clients retrieve tokens using different OAuth2 flows. Currently this class
- * enables use of the NONE (Autonomous) flow, the PASSWORD flow and UserAgent flow. It also
- * supports a client to refresh a token.
+ * Class that lets clients retrieve tokens using different OAuth2 flows.
+ * Currently this class enables use of the NONE (Autonomous) flow, the PASSWORD
+ * flow and UserAgent flow. It also supports a client to refresh a token.
  * 
- * The class defines one function doFlow that wraps the above specified ways of retrieving a
- * token from an authorization server.
+ * The class defines one function doFlow that wraps the above specified ways of
+ * retrieving a token from an authorization server.
  * 
  * @see <a
  *      href="http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-1.4.2">User
  *      Agent Flow</a>
  * 
  * @see <a
- *         href="http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-1.4.4"
- *         >Autonomous Flow</a>
+ *      href="http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-1.4.4"
+ *      >Autonomous Flow</a>
  * @see <a
- *         href="http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-1.4.3"
- *         >Password Flow (Native Application)</a>
+ *      href="http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-1.4.3"
+ *      >Password Flow (Native Application)</a>
  * 
  * @author Martin Svensson
  * @author Kristoffer Gronowski
  */
 public class OAuthFlows {
-    
-    public enum Flow {NONE, PASSWORD, USERAGENT, REFRESH};
-    
-    
+
+    public enum Flow {
+        NONE, PASSWORD, USERAGENT, REFRESH
+    };
+
     /**
-     * Executes a specific OAuth Flow (including token refresh). Based on the chosen flow some
-     * of the parameters need to be set (see description). Upon successful authorization returns
-     * a new OAuthUser containing an access token that can be used for getting protected resources.
-     * @param params parameters specifying (clientId, clientSecret, scope etc). Used for all flows
-     * @param callbackUri callbackUri used for the userAgent flow. The server 
-     * @param state used in the userAgent flow
-     * @param username used in the password flow
-     * @param password used in the password flow
-     * @param refreshToken  the token to refresh, used in the refresh flow
-     * @param flow the flow to execute
+     * Executes a specific OAuth Flow (including token refresh). Based on the
+     * chosen flow some of the parameters need to be set (see description). Upon
+     * successful authorization returns a new OAuthUser containing an access
+     * token that can be used for getting protected resources.
+     * 
+     * @param params
+     *            parameters specifying (clientId, clientSecret, scope etc).
+     *            Used for all flows
+     * @param callbackUri
+     *            callbackUri used for the userAgent flow. The server
+     * @param state
+     *            used in the userAgent flow
+     * @param username
+     *            used in the password flow
+     * @param password
+     *            used in the password flow
+     * @param refreshToken
+     *            the token to refresh, used in the refresh flow
+     * @param flow
+     *            the flow to execute
      * @return OAuthUser containing a token that can be used for access
      */
-    public static OAuthUser doFlow(OAuthParameters params,
-            String callbackUri, String state, String username, String password,
-            String refreshToken, Flow flow){
-        return doFlow(params, callbackUri, state, username, password, refreshToken, null, flow);
+    public static OAuthUser doFlow(OAuthParameters params, String callbackUri,
+            String state, String username, String password,
+            String refreshToken, Flow flow) {
+        return doFlow(params, callbackUri, state, username, password,
+                refreshToken, null, flow);
     }
-    
+
     /**
-     * Executes a specific OAuth Flow (including token refresh). Based on the chosen flow some
-     * of the parameters need to be set (see description). Upon successful authorization returns
-     * a new OAuthUser containing an access token that can be used for getting protected resources.
-     * @param params parameters specifying OAuth end point. Used for all flows
-     * @param callbackUri callbackUri used for the userAgent flow
-     * @param state state that should be returned by the Authorization server. Used in UserAgent flow
-     * @param username used in the password flow
-     * @param password used in the password flow
-     * @param refreshToken  the token to refresh, used in the refresh flow
-     * @param flow the flow to execute
-     * @param client provided client
+     * Executes a specific OAuth Flow (including token refresh). Based on the
+     * chosen flow some of the parameters need to be set (see description). Upon
+     * successful authorization returns a new OAuthUser containing an access
+     * token that can be used for getting protected resources.
+     * 
+     * @param params
+     *            parameters specifying OAuth end point. Used for all flows
+     * @param callbackUri
+     *            callbackUri used for the userAgent flow
+     * @param state
+     *            state that should be returned by the Authorization server.
+     *            Used in UserAgent flow
+     * @param username
+     *            used in the password flow
+     * @param password
+     *            used in the password flow
+     * @param refreshToken
+     *            the token to refresh, used in the refresh flow
+     * @param flow
+     *            the flow to execute
+     * @param client
+     *            provided client
      * @return OAuthUser containing a token that can be used for access
      */
-    public static OAuthUser doFlow(OAuthParameters params,
-            String callbackUri, String state, String username, String password, String refreshToken,
-            org.restlet.Client c, Flow flow){
-        if(flow == Flow.PASSWORD){
+    public static OAuthUser doFlow(OAuthParameters params, String callbackUri,
+            String state, String username, String password,
+            String refreshToken, org.restlet.Client c, Flow flow) {
+        if (flow == Flow.PASSWORD) {
             return passwordFlow(params, username, password, c);
-        }
-        else if(flow == Flow.NONE){
+        } else if (flow == Flow.NONE) {
             return noneFlow(params, c);
-        }
-        else if(flow == Flow.USERAGENT){
+        } else if (flow == Flow.USERAGENT) {
             return userAgent(params, callbackUri, state, c);
-        }
-        else if(flow == Flow.REFRESH){
+        } else if (flow == Flow.REFRESH) {
             return refreshToken(params, refreshToken, c);
         }
         return null;
     }
-    
-    
-    
+
     private static OAuthUser refreshToken(OAuthParameters params,
             String refreshToken, org.restlet.Client c) {
-        
+
         OAuthUser result = null;
-        
+
         ClientResource tokenResource = new CookieCopyClientResource(
                 params.getBaseRef() + params.getAccessTokenPath());
         tokenResource.setNext(c);
@@ -143,7 +161,7 @@ public class OAuthFlows {
 
         Representation body = tokenResource.post(form.getWebRepresentation());
 
-        if (tokenResource.getResponse().getStatus().isSuccess()) {
+        if (tokenResource.getStatus().isSuccess()) {
             result = OAuthUtils.handleSuccessResponse(body);
         }
 
@@ -152,7 +170,7 @@ public class OAuthFlows {
 
         return result;
     }
-    
+
     public static OAuthUser userAgent(OAuthParameters params,
             String callbackUri, String state, org.restlet.Client c) {
 
@@ -219,11 +237,10 @@ public class OAuthFlows {
             if (++cnt >= maxRedirCnt)
                 break;
 
-            Context.getCurrentLogger()
-                    .info("Redir to = "
-                            + authResource.getResponse().getLocationRef());
-            authResource.setReference(authResource.getResponse()
-                    .getLocationRef());
+            Context.getCurrentLogger().info(
+                    "Redir to = " + authResource.getLocationRef());
+            authResource.setReference(authResource.getLocationRef());
+
             // FOR TESTING!!!!
             if (cnt == 1) {
 
@@ -232,8 +249,10 @@ public class OAuthFlows {
                     authResource.getCookies().add(cs.getName(), cs.getValue());
                 }
             }
+
             r = authResource.get();
             // Check if it is a OpenID form forward
+
             try {
                 r = OpenIdFormFrowarder.handleFormRedirect(r, authResource);
             } catch (IOException e) {
@@ -247,9 +266,9 @@ public class OAuthFlows {
 
         return result;
     }
-    
-    
-    private static OAuthUser noneFlow(OAuthParameters params, org.restlet.Client c) {
+
+    private static OAuthUser noneFlow(OAuthParameters params,
+            org.restlet.Client c) {
         OAuthUser result = null;
 
         Form form = new Form();
@@ -269,7 +288,7 @@ public class OAuthFlows {
 
         Representation body = tokenResource.post(form.getWebRepresentation());
 
-        if (tokenResource.getResponse().getStatus().isSuccess()) {
+        if (tokenResource.getStatus().isSuccess()) {
             result = OAuthUtils.handleSuccessResponse(body);
         }
 
@@ -278,7 +297,7 @@ public class OAuthFlows {
 
         return result;
     }
-    
+
     private static OAuthUser passwordFlow(OAuthParameters params,
             String username, String password, org.restlet.Client c) {
         OAuthUser result = null;
@@ -300,7 +319,7 @@ public class OAuthFlows {
         try {
             body = tokenResource.post(form.getWebRepresentation());
 
-            if (tokenResource.getResponse().getStatus().isSuccess()) {
+            if (tokenResource.getStatus().isSuccess()) {
                 result = OAuthUtils.handleSuccessResponse(body);
             }
         } finally {
