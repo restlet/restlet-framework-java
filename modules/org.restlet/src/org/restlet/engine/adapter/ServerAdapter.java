@@ -94,7 +94,7 @@ public class ServerAdapter extends Adapter {
                 response.getHttpCall().setStatusCode(
                         response.getStatus().getCode());
                 response.getHttpCall().setReasonPhrase(
-                        response.getStatus().getName());
+                        response.getStatus().getReasonPhrase());
             }
         } catch (Exception e) {
             getLogger().log(Level.INFO,
@@ -103,7 +103,7 @@ public class ServerAdapter extends Adapter {
             response.getHttpCall().setStatusCode(
                     Status.SERVER_ERROR_INTERNAL.getCode());
             response.getHttpCall().setReasonPhrase(
-                    Status.SERVER_ERROR_INTERNAL.getName());
+                    Status.SERVER_ERROR_INTERNAL.getReasonPhrase());
         }
     }
 

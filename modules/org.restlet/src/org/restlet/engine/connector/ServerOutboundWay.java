@@ -168,8 +168,8 @@ public abstract class ServerOutboundWay extends OutboundWay {
         getLineBuilder().append(getMessage().getStatus().getCode());
         getLineBuilder().append(' ');
 
-        if (getMessage().getStatus().getName() != null) {
-            getLineBuilder().append(getMessage().getStatus().getName());
+        if (getMessage().getStatus().getReasonPhrase() != null) {
+            getLineBuilder().append(getMessage().getStatus().getReasonPhrase());
         } else {
             getLineBuilder().append(
                     "Status " + getMessage().getStatus().getCode());

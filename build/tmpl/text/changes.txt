@@ -7,6 +7,9 @@ Changes log
     - API changes
       - Moved SslContextFactory and DefaultSslContextFactory classes from 
         internal to public org.restlet.ext.ssl package.
+      - Renamed Status#getName() method to getReasonPhrase() for more clarity
+        regarding the purpose of the additional "description" property used
+        for lengthier explanations.
     - Enhancements
       - Updated and consolidated the SSL/HTTPS configuration parameters
         for all HTTPS connectors.

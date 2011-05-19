@@ -32,6 +32,7 @@ package org.restlet.data;
 
 import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
+import org.restlet.service.StatusService;
 
 /**
  * Status to return after handling a call.
@@ -300,49 +301,6 @@ public final class Status {
     public static final Status INFO_CONTINUE = new Status(100);
 
     /**
-     * This interim response is used to inform the client that the server has
-     * accepted the complete request, but has not yet completed it since the
-     * server has a reasonable expectation that the request will take
-     * significant time to complete.
-     * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_102">WEBDAV
-     *      RFC - 10.1 102 Processing</a>
-     */
-    public static final Status INFO_PROCESSING = new Status(102);
-
-    /**
-     * The server understands and is willing to comply with the client's
-     * request, via the Upgrade message header field, for a change in the
-     * application protocol being used on this connection.
-     * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.1.2">HTTP
-     *      RFC - 10.1.1 101 Switching Protocols</a>
-     */
-    public static final Status INFO_SWITCHING_PROTOCOL = new Status(101);
-
-    /**
-     * Warning status code, typically returned by a cache, indicating that the
-     * response is stale.
-     * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
-     *      RFC - 14.46 Warning</a>
-     */
-    public static final Status INFO_STALE_RESPONSE = new Status(110);
-
-    /**
-     * Warning status code, typically returned by a cache, indicating that the
-     * response is stale because an attempt to revalidate the response failed,
-     * due to an inability to reach the server.
-     * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
-     *      RFC - 14.46 Warning</a>
-     */
-    public static final Status INFO_REVALIDATION_FAILED = new Status(111);
-
-    /**
      * Warning status code, typically returned by a cache, indicating that it is
      * intentionally disconnected from the rest of the network for a period of
      * time.
@@ -373,6 +331,49 @@ public final class Status {
      *      RFC - 14.46 Warning</a>
      */
     public static final Status INFO_MISC_WARNING = new Status(199);
+
+    /**
+     * This interim response is used to inform the client that the server has
+     * accepted the complete request, but has not yet completed it since the
+     * server has a reasonable expectation that the request will take
+     * significant time to complete.
+     * 
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_102">WEBDAV
+     *      RFC - 10.1 102 Processing</a>
+     */
+    public static final Status INFO_PROCESSING = new Status(102);
+
+    /**
+     * Warning status code, typically returned by a cache, indicating that the
+     * response is stale because an attempt to revalidate the response failed,
+     * due to an inability to reach the server.
+     * 
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
+     *      RFC - 14.46 Warning</a>
+     */
+    public static final Status INFO_REVALIDATION_FAILED = new Status(111);
+
+    /**
+     * Warning status code, typically returned by a cache, indicating that the
+     * response is stale.
+     * 
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
+     *      RFC - 14.46 Warning</a>
+     */
+    public static final Status INFO_STALE_RESPONSE = new Status(110);
+
+    /**
+     * The server understands and is willing to comply with the client's
+     * request, via the Upgrade message header field, for a change in the
+     * application protocol being used on this connection.
+     * 
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.1.2">HTTP
+     *      RFC - 10.1.1 101 Switching Protocols</a>
+     */
+    public static final Status INFO_SWITCHING_PROTOCOL = new Status(101);
 
     /**
      * The requested resource resides temporarily under a different URI which
@@ -541,6 +542,16 @@ public final class Status {
     public static final Status SUCCESS_CREATED = new Status(201);
 
     /**
+     * Warning status code, optionally including arbitrary information to be
+     * presented to a human user, typically returned by a cache.
+     * 
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
+     *      RFC - 14.46 Warning</a>
+     */
+    public static final Status SUCCESS_MISC_PERSISTENT_WARNING = new Status(299);
+
+    /**
      * This response is used to inform the client that the HTTP response entity
      * contains a set of status codes generated during the method invocation.
      * 
@@ -581,26 +592,6 @@ public final class Status {
     public static final Status SUCCESS_OK = new Status(200);
 
     /**
-     * Warning status code, typically returned by a cache or a proxy, indicating
-     * that the response has been transformed.
-     * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
-     *      RFC - 14.46 Warning</a>
-     */
-    public static final Status SUCCESS_TRANSFORMATION_APPLIED = new Status(214);
-
-    /**
-     * Warning status code, optionally including arbitrary information to be
-     * presented to a human user, typically returned by a cache.
-     * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
-     *      RFC - 14.46 Warning</a>
-     */
-    public static final Status SUCCESS_MISC_PERSISTENT_WARNING = new Status(299);
-
-    /**
      * The server has fulfilled the partial GET request for the resource
      * assuming the request has included a Range header field indicating the
      * desired range.
@@ -622,25 +613,36 @@ public final class Status {
     public static final Status SUCCESS_RESET_CONTENT = new Status(205);
 
     /**
-     * Check if the provided name of the status contains forbidden characters
-     * such as CR and LF. an IllegalArgumentException is thrown in this case.
+     * Warning status code, typically returned by a cache or a proxy, indicating
+     * that the response has been transformed.
+     * 
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.46">HTTP
+     *      RFC - 14.46 Warning</a>
+     */
+    public static final Status SUCCESS_TRANSFORMATION_APPLIED = new Status(214);
+
+    /**
+     * Check if the provided reason phrase of the status contains forbidden
+     * characters such as CR and LF. an IllegalArgumentException is thrown in
+     * this case.
      * 
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1.1">Status
      *      Code and Reason Phrase</a>
-     * @param name
-     *            The name to check
+     * @param reasonPhrase
+     *            The reason phrase to check
      * @return The name if it is correct.
      */
-    private static String checkName(String name) {
-        if (name != null) {
-            if (name.contains("\n") || name.contains("\r")) {
+    private static String checkReasonPhrase(String reasonPhrase) {
+        if (reasonPhrase != null) {
+            if (reasonPhrase.contains("\n") || reasonPhrase.contains("\r")) {
                 throw new IllegalArgumentException(
-                        "Name of the status must not contain CR or LF characters.");
+                        "Reason phrase of the status must not contain CR or LF characters.");
             }
         }
 
-        return name;
+        return reasonPhrase;
     }
 
     /**
@@ -935,11 +937,11 @@ public final class Status {
     /** The specification code. */
     private final int code;
 
-    /** The description. */
+    /** The longer description. */
     private final String description;
 
-    /** The name. */
-    private volatile String name;
+    /** The short reason phrase. */
+    private volatile String reasonPhrase;
 
     /** The related error or exception. */
     private final Throwable throwable;
@@ -962,16 +964,16 @@ public final class Status {
      * 
      * @param code
      *            The specification code.
-     * @param name
-     *            The name.
+     * @param reasonPhrase
+     *            The short reason phrase.
      * @param description
-     *            The description.
+     *            The longer description.
      * @param uri
      *            The URI of the specification describing the method.
      */
-    public Status(int code, final String name, final String description,
-            final String uri) {
-        this(code, null, name, description, uri);
+    public Status(int code, final String reasonPhrase,
+            final String description, final String uri) {
+        this(code, null, reasonPhrase, description, uri);
     }
 
     /**
@@ -993,16 +995,16 @@ public final class Status {
      *            The specification code.
      * @param throwable
      *            The related error or exception.
-     * @param name
-     *            The name.
+     * @param reasonPhrase
+     *            The short reason phrase.
      * @param description
-     *            The description.
+     *            The longer description.
      * @param uri
      *            The URI of the specification describing the method.
      */
-    public Status(int code, Throwable throwable, String name,
+    public Status(int code, Throwable throwable, String reasonPhrase,
             String description, String uri) {
-        this.name = checkName(name);
+        this.reasonPhrase = checkReasonPhrase(reasonPhrase);
         this.description = description;
         this.throwable = throwable;
         this.code = code;
@@ -1018,7 +1020,8 @@ public final class Status {
      *            The description to associate.
      */
     public Status(Status status, String description) {
-        this(status.getCode(), status.getName(), description, status.getUri());
+        this(status.getCode(), status.getReasonPhrase(), description, status
+                .getUri());
     }
 
     /**
@@ -1030,7 +1033,7 @@ public final class Status {
      *            The related error or exception.
      */
     public Status(Status status, Throwable throwable) {
-        this(status.getCode(), throwable, status.getName(),
+        this(status.getCode(), throwable, status.getReasonPhrase(),
                 (throwable == null) ? null : throwable.getMessage(), status
                         .getUri());
     }
@@ -1046,8 +1049,8 @@ public final class Status {
      *            The description to associate.
      */
     public Status(Status status, Throwable throwable, String description) {
-        this(status.getCode(), throwable, status.getName(), description, status
-                .getUri());
+        this(status.getCode(), throwable, status.getReasonPhrase(),
+                description, status.getUri());
     }
 
     /**
@@ -1073,7 +1076,9 @@ public final class Status {
     }
 
     /**
-     * Returns the description.
+     * Returns the description. This value is typically used by the
+     * {@link StatusService} to build a meaningful description of an error via a
+     * response entity.
      * 
      * @return The description.
      */
@@ -1265,9 +1270,22 @@ public final class Status {
      * Returns the name of this status.
      * 
      * @return The name of this status.
+     * @deprecated Use {@link #getReasonPhrase()} instead.
      */
+    @Deprecated
     public String getName() {
-        String result = this.name;
+        return getReasonPhrase();
+    }
+
+    /**
+     * Returns the reason phrase of this status. When supported by the HTTP
+     * server connector, this is returned in the first line of the HTTP
+     * response, next to to the status code.
+     * 
+     * @return The reason phrase of this status.
+     */
+    public String getReasonPhrase() {
+        String result = this.reasonPhrase;
 
         if (result == null) {
             switch (this.code) {
@@ -1741,13 +1759,13 @@ public final class Status {
     }
 
     /**
-     * Returns the name of the status followed by its HTTP code.
+     * Returns the reason phrase of the status followed by its HTTP code.
      * 
-     * @return The name of the status followed by its HTTP code.
+     * @return The reason phrase of the status followed by its HTTP code.
      */
     @Override
     public String toString() {
-        return getName() + " (" + this.code + ")"
+        return getReasonPhrase() + " (" + this.code + ")"
                 + ((getDescription() == null) ? "" : " - " + getDescription());
     }
 

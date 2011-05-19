@@ -277,7 +277,7 @@ public class StatusFilter extends Filter {
 
     /**
      * Returns the status information to display in the default representation.
-     * By default it returns the status's name.
+     * By default it returns the status's reason phrase.
      * 
      * @param status
      *            The status.
@@ -285,7 +285,7 @@ public class StatusFilter extends Filter {
      * @see #getDefaultRepresentation(Status, Request, Response)
      */
     protected String getStatusInfo(Status status) {
-        return (status.getName() != null) ? status.getName()
+        return (status.getReasonPhrase() != null) ? status.getReasonPhrase()
                 : "No information available for this result status";
     }
 

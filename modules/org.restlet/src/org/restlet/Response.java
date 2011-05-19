@@ -749,12 +749,12 @@ public class Response extends Message {
      * Sets the status.
      * 
      * @param status
-     *            The status to set.
-     * @param message
-     *            The status message.
+     *            The status to set (code and reason phrase).
+     * @param description
+     *            The longer status description.
      */
-    public void setStatus(Status status, String message) {
-        setStatus(new Status(status, message));
+    public void setStatus(Status status, String description) {
+        setStatus(new Status(status, description));
     }
 
     /**
