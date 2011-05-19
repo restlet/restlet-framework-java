@@ -46,17 +46,20 @@ import org.restlet.routing.Filter;
 public abstract class CompositeHelper<T extends Restlet> extends
         RestletHelper<T> {
 
+    /** The first outbound Filter. */
+    private volatile Filter firstOutboundFilter;
+
     /** The first inbound Restlet. */
-    private volatile Restlet firstInbound;
+    private volatile Restlet inboundNext;
 
     /** The last inbound Filter. */
-    private volatile Filter lastInbound;
-
-    /** The first outbound Restlet. */
-    private volatile Restlet firstOutbound;
+    private volatile Filter lastInboundFilter;
 
     /** The last outbound Filter. */
-    private volatile Filter lastOutbound;
+    private volatile Filter lastOutboundFilter;
+
+    /** The first outbound Restlet. */
+    private volatile Restlet outboundNext;
 
     /**
      * Constructor.
@@ -66,8 +69,11 @@ public abstract class CompositeHelper<T extends Restlet> extends
      */
     public CompositeHelper(T helped) {
         super(helped);
-        this.firstInbound = null;
-        this.firstOutbound = null;
+        this.inboundNext = null;
+        this.firstOutboundFilter = null;
+        this.lastInboundFilter = null;
+        this.lastOutboundFilter = null;
+        this.outboundNext = null;
     }
 
     /**
@@ -77,14 +83,14 @@ public abstract class CompositeHelper<T extends Restlet> extends
      *            The inbound filter to add.
      */
     protected synchronized void addInboundFilter(Filter filter) {
-        if (getLastInbound() != null) {
-            getLastInbound().setNext(filter);
-            setLastInbound(filter);
-        } else {
-            filter.setNext(getFirstInbound());
-            setFirstInbound(filter);
-            setLastInbound(filter);
+        Restlet next = getInboundNext();
+
+        if (getLastInboundFilter() != null) {
+            getLastInboundFilter().setNext(filter);
         }
+
+        setLastInboundFilter(filter);
+        setInboundNext(next);
     }
 
     /**
@@ -94,42 +100,52 @@ public abstract class CompositeHelper<T extends Restlet> extends
      *            The outbound filter to add.
      */
     protected synchronized void addOutboundFilter(Filter filter) {
-        if (getLastOutbound() != null) {
-            getLastOutbound().setNext(filter);
-            setLastOutbound(filter);
-        } else {
-            filter.setNext(getFirstOutbound());
-            setFirstOutbound(filter);
-            setLastOutbound(filter);
+        Restlet next = getOutboundNext();
+
+        if (getFirstOutboundFilter() == null) {
+            setFirstOutboundFilter(filter);
+        } else if (getLastOutboundFilter() != null) {
+            getLastOutboundFilter().setNext(filter);
         }
+
+        setLastOutboundFilter(filter);
+        setOutboundNext(next);
     }
 
     /**
      * Clears the chain. Sets the first and last filters to null.
      */
     public void clear() {
-        setFirstInbound(null);
         setInboundNext(null);
-        setFirstOutbound(null);
+        setInboundNext(null);
+        setOutboundNext(null);
         setOutboundNext(null);
     }
 
     /**
-     * Returns the first inbound Restlet.
+     * Returns the first outbound filter.
      * 
-     * @return the first inbound Restlet.
+     * @return The first outbound filter.
      */
-    protected Restlet getFirstInbound() {
-        return this.firstInbound;
+    public Filter getFirstOutboundFilter() {
+        return firstOutboundFilter;
     }
 
     /**
-     * Returns the first outbound Restlet.
+     * Returns the next Restlet in the inbound chain.
      * 
-     * @return the first outbound Restlet.
+     * @return The next Restlet in the inbound chain.
      */
-    public Restlet getFirstOutbound() {
-        return this.firstOutbound;
+    protected synchronized Restlet getInboundNext() {
+        Restlet result = null;
+
+        if (getLastInboundFilter() != null) {
+            result = getLastInboundFilter().getNext();
+        } else {
+            result = this.inboundNext;
+        }
+
+        return result;
     }
 
     /**
@@ -137,8 +153,8 @@ public abstract class CompositeHelper<T extends Restlet> extends
      * 
      * @return the last inbound Filter.
      */
-    protected Filter getLastInbound() {
-        return this.lastInbound;
+    protected Filter getLastInboundFilter() {
+        return this.lastInboundFilter;
     }
 
     /**
@@ -146,16 +162,33 @@ public abstract class CompositeHelper<T extends Restlet> extends
      * 
      * @return the last outbound Filter.
      */
-    protected Filter getLastOutbound() {
-        return this.lastOutbound;
+    protected Filter getLastOutboundFilter() {
+        return this.lastOutboundFilter;
+    }
+
+    /**
+     * Returns the next Restlet in the outbound chain.
+     * 
+     * @return The next Restlet in the outbound chain.
+     */
+    public synchronized Restlet getOutboundNext() {
+        Restlet result = null;
+
+        if (getLastOutboundFilter() != null) {
+            result = getLastOutboundFilter().getNext();
+        } else {
+            result = this.outboundNext;
+        }
+
+        return result;
     }
 
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
-        if (getFirstInbound() != null) {
-            getFirstInbound().handle(request, response);
+        if (getInboundNext() != null) {
+            getInboundNext().handle(request, response);
         } else {
             response.setStatus(Status.SERVER_ERROR_INTERNAL);
             getHelped()
@@ -168,23 +201,13 @@ public abstract class CompositeHelper<T extends Restlet> extends
     }
 
     /**
-     * Sets the first inbound Restlet.
+     * Sets the first outbound filter.
      * 
-     * @param first
-     *            The first inbound Restlet.
+     * @param firstOutboundFilter
+     *            The first outbound filter.
      */
-    protected void setFirstInbound(Restlet first) {
-        this.firstInbound = first;
-    }
-
-    /**
-     * Sets the first outbound Restlet.
-     * 
-     * @param first
-     *            The first outbound Restlet.
-     */
-    protected void setFirstOutbound(Restlet first) {
-        this.firstOutbound = first;
+    protected void setFirstOutboundFilter(Filter firstOutboundFilter) {
+        this.firstOutboundFilter = firstOutboundFilter;
     }
 
     /**
@@ -194,11 +217,11 @@ public abstract class CompositeHelper<T extends Restlet> extends
      *            The Restlet to process after the inbound chain.
      */
     protected synchronized void setInboundNext(Restlet next) {
-        if (getFirstInbound() == null) {
-            setFirstInbound(next);
-        } else {
-            getLastInbound().setNext(next);
+        if (getLastInboundFilter() != null) {
+            getLastInboundFilter().setNext(next);
         }
+
+        this.inboundNext = next;
     }
 
     /**
@@ -207,8 +230,8 @@ public abstract class CompositeHelper<T extends Restlet> extends
      * @param last
      *            The last inbound Filter.
      */
-    protected void setLastInbound(Filter last) {
-        this.lastInbound = last;
+    protected void setLastInboundFilter(Filter last) {
+        this.lastInboundFilter = last;
     }
 
     /**
@@ -217,8 +240,8 @@ public abstract class CompositeHelper<T extends Restlet> extends
      * @param last
      *            The last outbound Filter.
      */
-    protected void setLastOutbound(Filter last) {
-        this.lastOutbound = last;
+    protected void setLastOutboundFilter(Filter last) {
+        this.lastOutboundFilter = last;
     }
 
     /**
@@ -228,11 +251,11 @@ public abstract class CompositeHelper<T extends Restlet> extends
      *            The Restlet to process after the outbound chain.
      */
     protected synchronized void setOutboundNext(Restlet next) {
-        if (getFirstOutbound() == null) {
-            setFirstOutbound(next);
-        } else {
-            getLastOutbound().setNext(next);
+        if (getLastOutboundFilter() != null) {
+            getLastOutboundFilter().setNext(next);
         }
+
+        this.outboundNext = next;
     }
 
 }

@@ -200,7 +200,7 @@ public class Application extends Restlet {
      * @return The outbound root Restlet.
      */
     public Restlet createOutboundRoot() {
-        return getHelper().getFirstOutbound();
+        return getHelper().getFirstOutboundFilter();
     }
 
     /**

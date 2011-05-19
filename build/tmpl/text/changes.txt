@@ -13,6 +13,9 @@ Changes log
     - Enhancements
       - Updated and consolidated the SSL/HTTPS configuration parameters
         for all HTTPS connectors.
+      - Added a warning message to indicate that an application without a 
+        parent component can handle by default outbound calls.
+        Reported by John Logdson and Kristoffer Gronowski. 
     - Bug fixed
       - Fixed compatibility issue with GWT 2.3.
       - Fixed potential NPE in Restlet class when no context is available.

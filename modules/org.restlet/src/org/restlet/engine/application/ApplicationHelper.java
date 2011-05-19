@@ -34,6 +34,8 @@ import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.data.Status;
 import org.restlet.engine.CompositeHelper;
 import org.restlet.routing.Filter;
 import org.restlet.service.Service;
@@ -81,11 +83,7 @@ public class ApplicationHelper extends CompositeHelper<Application> {
      */
     public void setContext(Context context) {
         if (context != null) {
-            if (getLastOutbound() == null) {
-                setFirstOutbound(context.getClientDispatcher());
-            } else {
-                getLastOutbound().setNext(context.getClientDispatcher());
-            }
+            setOutboundNext(context.getClientDispatcher());
         }
     }
 
@@ -118,6 +116,20 @@ public class ApplicationHelper extends CompositeHelper<Application> {
 
         // Attach the Application's server root Restlet
         setInboundNext(getHelped().getInboundRoot());
+
+        if (getOutboundNext() == null) {
+            // Warn about chaining problem
+            setOutboundNext(new Restlet() {
+                @Override
+                public void handle(Request request, Response response) {
+                    response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                            "The server isn't properly configured to handle client calls.");
+                    getLogger()
+                            .warning(
+                                    "By default, the outbound root of an application can't handle calls without being attached to a parent component.");
+                }
+            });
+        }
     }
 
     @Override

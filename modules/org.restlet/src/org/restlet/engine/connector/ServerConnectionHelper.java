@@ -41,6 +41,7 @@ import java.util.logging.Level;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.data.Status;
 
 /**
  * Base server helper based on NIO non blocking sockets. Here is the list of
@@ -179,8 +180,12 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
         if ((response != null) && (response.getRequest() != null)) {
             getLogger().finer("Handling request...");
 
-            // Effectively handle the request
-            handle(response.getRequest(), response);
+            try {
+                // Effectively handle the request
+                handle(response.getRequest(), response);
+            } catch (Throwable t) {
+                response.setStatus(Status.SERVER_ERROR_INTERNAL, t);
+            }
 
             if (!response.isCommitted() && response.isAutoCommitting()) {
                 response.setCommitted(true);

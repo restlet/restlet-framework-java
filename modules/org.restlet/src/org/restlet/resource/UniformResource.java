@@ -739,7 +739,7 @@ public abstract class UniformResource {
     @Override
     public String toString() {
         return (getRequest() == null ? "" : getRequest().toString())
-                + (getResponse() == null ? "" : " - "
+                + (getResponse() == null ? "" : " => "
                         + getResponse().toString());
     }
 }
