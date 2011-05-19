@@ -38,7 +38,7 @@ package org.restlet.ext.oauth;
  * 
  * @author Kristoffer Gronowski
  */
-public abstract class Client implements UserStore {
+public abstract class Client extends UserStore {
 
     /**
      * Client id that the client has registered at the auth provider.

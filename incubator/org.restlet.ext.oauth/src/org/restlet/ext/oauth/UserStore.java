@@ -37,7 +37,7 @@ package org.restlet.ext.oauth;
  * 
  * @author Kristoffer Gronowski
  */
-public interface UserStore {
+public abstract class UserStore {
 
     /**
      * Create a user

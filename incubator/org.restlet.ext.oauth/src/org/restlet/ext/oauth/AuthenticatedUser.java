@@ -145,7 +145,7 @@ public abstract class AuthenticatedUser {
 
     /**
      * Helper method to indicate when to checkpoint the user data. If not
-     * handeling permanent persistance should return true.
+     * handling permanent persistence should return true.
      * 
      * @return true if stored - false if the caller wants to abort
      */
