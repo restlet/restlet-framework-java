@@ -32,12 +32,15 @@ package org.restlet.security;
 
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.Restlet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Status;
+import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 
 /**
- * Filter authorizing requests.
+ * Filter authorizing inbound request. It can be attached to protect a set of
+ * downstream {@link Restlet} and {@link ServerResource} objects.
  * 
  * @see <a href="http://wiki.restlet.org/docs_2.1/113-restlet.html">User Guide -
  *      Authorization</a>

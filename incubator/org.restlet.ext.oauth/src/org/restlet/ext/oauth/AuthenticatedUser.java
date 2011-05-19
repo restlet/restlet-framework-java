@@ -43,9 +43,23 @@ import org.restlet.ext.oauth.internal.Token;
 public abstract class AuthenticatedUser {
 
     /**
-     * @return user id of the user
+     * Add a scope for this user given a specified owner
      */
-    public abstract String getId();
+    public abstract void addScope(String scope, String owner);
+
+    /**
+     * Remove a generated code that was used or revoked.
+     */
+    public abstract void clearCode();
+
+    /**
+     * Gets the client object that associated and created this user. The Client
+     * corresponds to a service provider that acts on behalf of a Authenticated
+     * user.
+     * 
+     * @return parent client instance
+     */
+    public abstract Client getClient();
 
     /**
      * 
@@ -54,69 +68,14 @@ public abstract class AuthenticatedUser {
     public abstract String getCode();
 
     /**
-     * Set a generated code that was given out for this user
-     */
-    public abstract void setCode(String code);
-
-    /**
-     * Remove a generated code that was used or revoked.
-     */
-    public abstract void clearCode();
-
-    /**
-     * Add a scope for this user given a specified owner
-     */
-    public abstract void addScope(String scope, String owner);
-
-    /**
-     * Check if this user has a specific scope
-     */
-    public abstract boolean isGrantedScope(String scope, String owner);
-
-    /**
-     * Remove a specific scope
-     */
-    public abstract void revokeScope(String scope, String owner);
-
-    /**
      * Get all scopes. Observe that no owner information is passed.
      */
     public abstract String[] getGrantedScopes();
 
     /**
-     * 
-     * @return the default token expire time for this user
+     * @return user id of the user
      */
-
-    public abstract long getTokenExpire();
-
-    /**
-     * 
-     * @param deltaTimeSec
-     *            time for all token expire time for this user
-     */
-
-    public abstract void setTokenExpire(long deltaTimeSec);
-
-    /**
-     * Revoke previously granted scopes.
-     */
-    public abstract void revokeScopes();
-
-    /**
-     * 
-     * @return the currently issued token for this user
-     */
-
-    public abstract Token getToken();
-
-    /**
-     * 
-     * @param token
-     *            sets the current issued token
-     */
-
-    public abstract void setToken(Token token);
+    public abstract String getId();
 
     /**
      * Password field for the username and password oauth flow
@@ -127,21 +86,23 @@ public abstract class AuthenticatedUser {
     public abstract String getPassword();
 
     /**
-     * Set the user password
      * 
-     * @param password
+     * @return the currently issued token for this user
      */
 
-    public abstract void setPassword(String password);
+    public abstract Token getToken();
 
     /**
-     * Gets the client object that associated and created this user. The CLient
-     * corresponds to a service provider that acts on behalf of a Authenticated
-     * user.
      * 
-     * @return parent client instance
+     * @return the default token expire time for this user
      */
-    public abstract Client getClient();
+
+    public abstract long getTokenExpire();
+
+    /**
+     * Check if this user has a specific scope
+     */
+    public abstract boolean isGrantedScope(String scope, String owner);
 
     /**
      * Helper method to indicate when to checkpoint the user data. If not
@@ -152,5 +113,44 @@ public abstract class AuthenticatedUser {
     public boolean persist() {
         return true;
     }
+
+    /**
+     * Remove a specific scope
+     */
+    public abstract void revokeScope(String scope, String owner);
+
+    /**
+     * Revoke previously granted scopes.
+     */
+    public abstract void revokeScopes();
+
+    /**
+     * Set a generated code that was given out for this user
+     */
+    public abstract void setCode(String code);
+
+    /**
+     * Set the user password
+     * 
+     * @param password
+     */
+
+    public abstract void setPassword(String password);
+
+    /**
+     * 
+     * @param token
+     *            sets the current issued token
+     */
+
+    public abstract void setToken(Token token);
+
+    /**
+     * 
+     * @param deltaTimeSec
+     *            time for all token expire time for this user
+     */
+
+    public abstract void setTokenExpire(long deltaTimeSec);
 
 }

@@ -173,7 +173,6 @@ public class OAuthFlows {
 
     public static OAuthUser userAgent(OAuthParameters params,
             String callbackUri, String state, org.restlet.Client c) {
-
         OAuthUser result = null;
 
         Form form = new Form();
@@ -181,9 +180,11 @@ public class OAuthFlows {
                 OAuthServerResource.ResponseType.token.name());
         form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
         form.add(OAuthServerResource.REDIR_URI, callbackUri);
+
         if (params.getScope() != null && params.getScope().length() > 0) {
             form.add(OAuthServerResource.SCOPE, params.getScope());
         }
+
         if (state != null && state.length() > 0) {
             form.add(OAuthServerResource.STATE, state);
         }
@@ -213,6 +214,7 @@ public class OAuthFlows {
 
                 long expiresIn = 0;
                 String exp = f.getFirstValue(OAuthServerResource.EXPIRES_IN);
+
                 if (exp != null && exp.length() > 0) {
                     expiresIn = Long.parseLong(exp);
                 }
@@ -276,6 +278,7 @@ public class OAuthFlows {
                 OAuthServerResource.GrantType.none.name());
         form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
         form.add(OAuthServerResource.CLIENT_SECRET, params.getClientSecret());
+
         if (params.getScope() != null && params.getScope().length() > 0) {
             form.add(OAuthServerResource.SCOPE, params.getScope());
         }
@@ -316,6 +319,7 @@ public class OAuthFlows {
         Context.getCurrentLogger().info(
                 "Sending PasswordFlow form : " + form.getQueryString());
         Representation body = null;
+
         try {
             body = tokenResource.post(form.getWebRepresentation());
 

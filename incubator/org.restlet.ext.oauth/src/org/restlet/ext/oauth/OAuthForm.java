@@ -40,7 +40,7 @@ import org.restlet.representation.Representation;
 /**
  * Helper class used when the OAuth token should be transmitted as a form. Only
  * viable for HTTP PUT, POST and DELETE Still the best practice as a client is
- * to set the token in Authorization header.
+ * to set the token in "Authorization" HTTP header.
  * 
  * @author Kristoffer Gronowski
  */

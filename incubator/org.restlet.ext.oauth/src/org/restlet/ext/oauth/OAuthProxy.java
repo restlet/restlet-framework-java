@@ -90,8 +90,6 @@ public class OAuthProxy extends Authorizer {
 
     private final boolean basicSecret;
 
-    protected final Logger log;
-
     /**
      * Set up an OAuthProxy.
      * 
@@ -108,7 +106,6 @@ public class OAuthProxy extends Authorizer {
         setContext(ctx);
         this.params = params;
         no.add(CacheDirective.noStore());
-        log = ctx.getLogger();
     }
 
     /**
@@ -151,22 +148,25 @@ public class OAuthProxy extends Authorizer {
 
         if (error != null && error.length() > 0) {
             // Failed in initial auth resource request
-
             Representation repr = new EmptyRepresentation();
             String desc = query.getFirstValue(OAuthServerResource.ERROR_DESC);
             String uri = query.getFirstValue(OAuthServerResource.ERROR_URI);
+
             if (desc != null || uri != null) {
                 StringBuilder sb = new StringBuilder();
                 sb.append("<html><body><pre>");
                 sb.append("OAuth2 error detected.\n");
+
                 if (desc != null) {
                     sb.append("Error description : ").append(desc);
                 }
+
                 if (uri != null) {
                     sb.append("<a href=\"");
                     sb.append(uri);
                     sb.append("\">Error Description</a>");
                 }
+
                 sb.append("</pre></body></html>");
 
                 repr = new StringRepresentation(sb.toString(),
@@ -174,6 +174,7 @@ public class OAuthProxy extends Authorizer {
             }
 
             OAuthError ec = OAuthError.valueOf(error);
+
             switch (ec) {
             case INVALID_REQUEST:
                 response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, error);
@@ -204,14 +205,15 @@ public class OAuthProxy extends Authorizer {
                 response.setEntity(repr);
                 break;
             default:
-                log.warning("Unhandled error response type. " + ec.name());
+                getLogger().warning(
+                        "Unhandled error response type. " + ec.name());
             }
 
             return false;
         }
 
         String code = query.getFirstValue(OAuthServerResource.CODE);
-        log.info("Incomming request query = " + query);
+        getLogger().info("Incomming request query = " + query);
 
         if (code == null) {
             Form form = new Form();
@@ -220,6 +222,7 @@ public class OAuthProxy extends Authorizer {
             form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
             form.add(OAuthServerResource.REDIR_URI, redirectUri);
             form.add(OAuthServerResource.SCOPE, params.getScope());
+
             // if( params.getOwner() != null && params.getOwner().length() > 0 )
             // {
             // form.add(OAuthResource.OWNER,params.getOwner());
@@ -229,20 +232,21 @@ public class OAuthProxy extends Authorizer {
             } catch (IOException ioe) {
                 getLogger().warning(ioe.getMessage());
             }
+
             String q = form.getQueryString();
 
             Reference redirRef = new Reference(params.getBaseRef(),
                     params.getAuthorizePath(), q, null);
-            log.info("Redirecting to : " + redirRef.toUri());
+            getLogger().info("Redirecting to : " + redirRef.toUri());
             // response.redirectSeeOther(redirRef);
             response.setCacheDirectives(no);
             response.redirectTemporary(redirRef);
             // response.commit();
-            log.info("After Redirecting to : " + redirRef.toUri());
+            getLogger().info("After Redirecting to : " + redirRef.toUri());
             // return true;
             // return null;
         } else {
-            log.info("Came back after SNS code = " + code);
+            getLogger().info("Came back after SNS code = " + code);
             ClientResource tokenResource = new CookieCopyClientResource(
                     params.getBaseRef() + params.getAccessTokenPath());
 
@@ -252,6 +256,7 @@ public class OAuthProxy extends Authorizer {
             String redir = request.getResourceRef().getHostIdentifier()
                     + request.getResourceRef().getPath();
             form.add(OAuthServerResource.REDIR_URI, redir);
+
             if (basicSecret) {
                 ChallengeResponse authentication = new ChallengeResponse(
                         ChallengeScheme.HTTP_BASIC);
@@ -266,28 +271,34 @@ public class OAuthProxy extends Authorizer {
                 form.add(OAuthServerResource.CLIENT_SECRET,
                         params.getClientSecret());
             }
+
             form.add(OAuthServerResource.CODE, code);
-            log.info("Sending access form : " + form.getQueryString()
-                    + " to : " + tokenResource.getReference());
+            getLogger().info(
+                    "Sending access form : " + form.getQueryString() + " to : "
+                            + tokenResource.getReference());
 
             try {
                 Representation input = form.getWebRepresentation();
                 Representation body = tokenResource.post(input);
+
                 if (tokenResource.getStatus().isSuccess()) {
                     // Store away the user
                     OAuthUser authUser = OAuthUtils.handleSuccessResponse(body);
+
                     if (authUser != null) {
                         request.getClientInfo().setUser(authUser);
                         request.getClientInfo().setAuthenticated(true);
-                        log.info("storing to context = : " + getContext());
+                        getLogger().info(
+                                "storing to context = : " + getContext());
                         // continue in the filter chain
                         auth = true;
                     }
                 }
-                log.info("Before sns release");
+
+                getLogger().info("Before sns release");
                 body.release();
             } catch (ResourceException re) {
-                log.warning("Could not find token resource.");
+                getLogger().warning("Could not find token resource.");
             }
             tokenResource.release();
         }

@@ -51,47 +51,28 @@ import org.restlet.resource.ServerResource;
 public abstract class OAuthServerResource extends ServerResource {
 
     public enum GrantType {
-        authorization_code, password, assertion, refresh_token, none
+        assertion, authorization_code, none, password, refresh_token
     }
 
     public enum ResponseType {
         code, code_and_token, token
     }
 
-    /**
-     * MandatoryClient Request Authorization parameters.
-     */
-    public static final String RESPONSE_TYPE = "response_type";
-
-    public static final String GRANT_TYPE = "grant_type";
-
-    public static final String CLIENT_ID = "client_id";
-
-    public static final String REDIR_URI = "redirect_uri";
-
-    public static final String CLIENT_SECRET = "client_secret";
-
-    public static final String USERNAME = "username";
-
-    public static final String PASSWORD = "password";
-
-    public static final String ASSERTION_TYPE = "assertion_type";
+    public static final String ACCESS_TOKEN = "access_token";
 
     public static final String ASSERTION = "assertion";
 
-    public static final String REFRESH_TOKEN = "refresh_token";
+    public static final String ASSERTION_TYPE = "assertion_type";
 
-    public static final String ACCESS_TOKEN = "access_token";
+    public static final String AUTONOMOUS_USER = "__autonomous";
 
-    public static final String OAUTH_TOKEN = "oauth_token";
+    public static final String CLIENT_ID = "client_id";
 
-    public static final String EXPIRES_IN = "expires_in";
+    public static final String CLIENT_SECRET = "client_secret";
 
-    public static final String STATE = "state";
+    public static final String ClientCookieID = "_cid";
 
     public static final String CODE = "code";
-
-    public static final String SCOPE = "scope";
 
     // public static final String OWNER = "owner"; //OAE Extension
     public static final String ERROR = "error";
@@ -100,25 +81,36 @@ public abstract class OAuthServerResource extends ServerResource {
 
     public static final String ERROR_URI = "error_uri";
 
-    public static final String ClientCookieID = "_cid";
+    public static final String EXPIRES_IN = "expires_in";
 
-    public static final String TOKEN_SERVER_TIME_SEC = "_token_server_time_sec";
-
-    public static final String TOKEN_SERVER_MAX_TIME_SEC = "_token_server_max_time_sec";
-
-    public static final String AUTONOMOUS_USER = "__autonomous";
-
-    protected volatile ClientStore<?> clients;
-
-    protected volatile TokenGenerator generator;
-
-    protected final static List<CacheDirective> noStore;
+    public static final String GRANT_TYPE = "grant_type";
 
     protected final static List<CacheDirective> noCache;
 
-    protected volatile long tokenTimeSec = Token.UNLIMITED;
+    protected final static List<CacheDirective> noStore;
 
-    protected volatile long tokenMaxTimeSec = Token.UNLIMITED;
+    public static final String OAUTH_TOKEN = "oauth_token";
+
+    public static final String PASSWORD = "password";
+
+    public static final String REDIR_URI = "redirect_uri";
+
+    public static final String REFRESH_TOKEN = "refresh_token";
+
+    /**
+     * MandatoryClient Request Authorization parameters.
+     */
+    public static final String RESPONSE_TYPE = "response_type";
+
+    public static final String SCOPE = "scope";
+
+    public static final String STATE = "state";
+
+    public static final String TOKEN_SERVER_MAX_TIME_SEC = "_token_server_max_time_sec";
+
+    public static final String TOKEN_SERVER_TIME_SEC = "_token_server_time_sec";
+
+    public static final String USERNAME = "username";
 
     static {
         noStore = new ArrayList<CacheDirective>();
@@ -126,6 +118,14 @@ public abstract class OAuthServerResource extends ServerResource {
         noCache = new ArrayList<CacheDirective>();
         noCache.add(CacheDirective.noCache());
     }
+
+    protected volatile ClientStore<?> clients;
+
+    protected volatile TokenGenerator generator;
+
+    protected volatile long tokenMaxTimeSec = Token.UNLIMITED;
+
+    protected volatile long tokenTimeSec = Token.UNLIMITED;
 
     public OAuthServerResource() {
         super();

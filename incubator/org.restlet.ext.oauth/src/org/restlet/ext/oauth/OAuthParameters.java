@@ -63,7 +63,7 @@ public class OAuthParameters {
     private volatile String owner = null;
 
     /**
-     * Create a new OAuthParameters object with specfied clientId and secret
+     * Create a new OAuthParameters object with specified clientId and secret
      */
     public OAuthParameters(String clientId, String clientSecret) {
         this.clientId = clientId;
@@ -72,18 +72,18 @@ public class OAuthParameters {
     }
 
     /**
-     * Create a new OAuthParameters object with specfied clientId, secret, and
+     * Create a new OAuthParameters object with specified clientId, secret, and
      * baseRef
      */
     public OAuthParameters(String clientId, String clientSecret, String baseRef) {
-        //this(clientId, clientSecret);
+        // this(clientId, clientSecret);
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.baseRef = new Reference(baseRef);
     }
 
     /**
-     * Create a new OAuthParameters object with specfied clientId, secret,
+     * Create a new OAuthParameters object with specified clientId, secret,
      * baseRef and scope
      */
     public OAuthParameters(String clientId, String clientSecret,

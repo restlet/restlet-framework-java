@@ -31,7 +31,6 @@
 package org.restlet.ext.oauth;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,8 +70,7 @@ public class ValidationServerResource extends OAuthServerResource {
     @Post("json")
     public JsonRepresentation validate(Representation input)
             throws ResourceException {
-        Logger log = getLogger();
-        log.info("In Validator resource");
+        getLogger().info("In Validator resource");
         JSONObject response = new JSONObject();
         boolean authenticated = false;
         String lo = (String) getContext().getAttributes()
@@ -108,7 +106,8 @@ public class ValidationServerResource extends OAuthServerResource {
             if (call.has("owner"))
                 owner = call.getString("owner");
 
-            log.info("In Validator resource - searching for token = " + token);
+            getLogger().info(
+                    "In Validator resource - searching for token = " + token);
             Token t = generator.findToken(token);
 
             if (t == null) {
@@ -116,7 +115,7 @@ public class ValidationServerResource extends OAuthServerResource {
                 error = OAuthError.INVALID_TOKEN.name();
                 // setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             } else {
-                log.info("In Validator resource - got token = " + t);
+                getLogger().info("In Validator resource - got token = " + t);
 
                 if (t instanceof ExpireToken) {
                     // check that the right token was used
@@ -130,9 +129,9 @@ public class ValidationServerResource extends OAuthServerResource {
                 }
 
                 // Todo do more fine grained scope comparison.
-                log.info("Received uri = " + uri);
-                log.info("Received scope = " + scopes);
-                log.info("Received owner = " + owner);
+                getLogger().info("Received uri = " + uri);
+                getLogger().info("Received scope = " + scopes);
+                getLogger().info("Received owner = " + owner);
 
                 AuthenticatedUser user = t.getUser();
                 authenticated = (user == null) ? false : true;

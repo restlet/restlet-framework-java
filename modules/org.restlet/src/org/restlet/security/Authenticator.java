@@ -33,11 +33,14 @@ package org.restlet.security;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.Status;
 import org.restlet.routing.Filter;
 
 /**
- * Filter authenticating the client sending the request.
+ * Filter authenticating the client sending the inbound request. Its main role
+ * is to inspect various credentials provided by the client and to add related
+ * application roles to the request's {@link ClientInfo} property.
  * 
  * @author Jerome Louvel
  */

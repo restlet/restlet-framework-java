@@ -44,7 +44,7 @@ import org.restlet.util.Series;
 
 /**
  * Implementation of OAuth2 Authentication. If this helper is not automatically
- * added to your Engine add it
+ * added to your Engine add it with:
  * 
  * <pre>
  * {
@@ -72,6 +72,7 @@ public class OAuthHelper extends AuthenticatorHelper {
         cw.append("realm='");
         cw.append(challenge.getRealm());
         cw.append("'");
+
         for (Parameter p : challenge.getParameters()) {
             cw.append(", ");
             cw.append(p.getName());
@@ -85,22 +86,29 @@ public class OAuthHelper extends AuthenticatorHelper {
     public void parseRequest(ChallengeRequest challenge, Response response,
             Series<Parameter> httpHeaders) {
         String raw = challenge.getRawValue();
+
         if (raw != null && raw.length() > 0) {
             StringTokenizer st = new StringTokenizer(raw, ",");
             String realm = st.nextToken();
+
             if (realm != null && realm.length() > 0) {
                 int eq = realm.indexOf('=');
+
                 if (eq > 0) {
                     String value = realm.substring(eq + 1).trim();
                     // Remove the quotes, first and last after trim...
                     challenge.setRealm(value.substring(1, value.length() - 1));
                 }
             }
+
             Series<Parameter> params = new Form();
+
             while (st.hasMoreTokens()) {
                 String param = st.nextToken();
+
                 if (param != null && param.length() > 0) {
                     int eq = param.indexOf('=');
+
                     if (eq > 0) {
                         String name = param.substring(0, eq).trim();
                         String value = param.substring(eq + 1).trim();
@@ -109,6 +117,7 @@ public class OAuthHelper extends AuthenticatorHelper {
                     }
                 }
             }
+
             challenge.setParameters(params);
         }
     }

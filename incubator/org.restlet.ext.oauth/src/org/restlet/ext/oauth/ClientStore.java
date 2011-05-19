@@ -53,21 +53,22 @@ import org.restlet.ext.oauth.internal.TokenGenerator;
  * 
  * @author Kristoffer Gronowski
  */
-public abstract class ClientStore <G extends TokenGenerator> {
+public abstract class ClientStore<G extends TokenGenerator> {
 
-    //private final Context context;
+    // private final Context context;
 
     private final G generator;
 
     protected ClientStore(G generator) {
-    	this.generator = generator;
-        //this(generator, Context.getCurrent());
+        this.generator = generator;
+        // this(generator, Context.getCurrent());
     }
-//
-//    protected ClientStore(G generator, Context context) {
-//        //this.context = context;
-//        this.generator = generator;
-//    }
+
+    //
+    // protected ClientStore(G generator, Context context) {
+    // //this.context = context;
+    // this.generator = generator;
+    // }
 
     /**
      * Useful only for clients using the user agent oauth flow where secret is
@@ -123,11 +124,12 @@ public abstract class ClientStore <G extends TokenGenerator> {
      *            id of the user to retrieve. (openid)
      * @return active clients or empty collection.
      */
-    public abstract Collection<? extends Client> findClientsForUser(String userid);
+    public abstract Collection<? extends Client> findClientsForUser(
+            String userid);
 
-//    public Context getContext() {
-//        return context;
-//    }
+    // public Context getContext() {
+    // return context;
+    // }
 
     /**
      * @return an instance of the TokenGenerator
