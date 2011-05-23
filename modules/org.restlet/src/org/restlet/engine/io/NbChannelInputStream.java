@@ -119,19 +119,6 @@ public class NbChannelInputStream extends InputStream implements
     }
 
     /**
-     * Indicates if the buffer could be drained again.
-     * 
-     * @param buffer
-     *            The IO buffer to drain.
-     * @param args
-     *            The optional arguments to pass back to the callbacks.
-     * @return True if the buffer could be drained again.
-     */
-    public boolean couldDrain(Buffer buffer, Object... args) {
-        return false;
-    }
-
-    /**
      * Indicates if the buffer could be filled again.
      * 
      * @param buffer
@@ -201,6 +188,12 @@ public class NbChannelInputStream extends InputStream implements
         if (result == 0) {
             // No bytes were read, try to register
             // a select key to get more
+            if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                Context.getCurrentLogger()
+                        .log(Level.FINER,
+                                "Couldn't fill the buffer immediately. Trying to register a select key to get more.");
+            }
+
             if (selectionChannel != null) {
                 try {
                     if (this.selectionRegistration == null) {
@@ -276,6 +269,9 @@ public class NbChannelInputStream extends InputStream implements
      * Called back when a fill operation returns with an EOF status.
      */
     public void onFillEof() {
+    }
+
+    public void onProcessed(int drained) throws IOException {
     }
 
     @Override

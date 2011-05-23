@@ -61,10 +61,8 @@ public class HttpsClientInboundWay extends HttpClientInboundWay {
     }
 
     @Override
-    public int processIoBuffer() throws IOException {
-        int result = super.processIoBuffer();
+    public void onProcessed(int drained) throws IOException {
         getConnection().handleSslResult();
-        return result;
     }
 
 }

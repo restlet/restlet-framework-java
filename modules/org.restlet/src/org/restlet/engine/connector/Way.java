@@ -383,6 +383,12 @@ public abstract class Way implements SelectionListener, CompletionListener,
     }
 
     /**
+     * Does nothing by default.
+     */
+    public void onProcessed(int drained) throws IOException {
+    }
+
+    /**
      * Callback method invoked when the way has been selected for IO operations
      * it registered interest in.
      */

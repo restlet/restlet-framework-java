@@ -63,17 +63,15 @@ public class HttpsClientOutboundWay extends HttpClientOutboundWay {
     }
 
     @Override
-    public int processIoBuffer() throws IOException {
-        int result = super.processIoBuffer();
-        getConnection().handleSslResult();
-        return result;
-    }
-
-    @Override
     protected boolean hasIoInterest() {
         return super.hasIoInterest()
                 && (!getConnection().isSslHandshaking() || (getConnection()
                         .getSslHandshakeStatus() != HandshakeStatus.NEED_UNWRAP));
+    }
+
+    @Override
+    public void onProcessed(int drained) throws IOException {
+        getConnection().handleSslResult();
     }
 
 }

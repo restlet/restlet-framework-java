@@ -609,6 +609,7 @@ public class Buffer {
             }
         }
 
+        processor.onProcessed(result);
         return result;
     }
 

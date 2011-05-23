@@ -92,4 +92,10 @@ public abstract class BufferedSelectionChannel<T extends SelectionChannel>
     public void onFillEof() {
     }
 
+    /**
+     * Does nothing by default.
+     */
+    public void onProcessed(int drained) throws IOException {
+    }
+
 }

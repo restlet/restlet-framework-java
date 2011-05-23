@@ -94,4 +94,13 @@ public interface BufferProcessor {
      */
     public void onFillEof();
 
+    /**
+     * Called back after a complete processing pass.
+     * 
+     * @param drained
+     *            The number of bytes drained or -1 if the filling source has
+     *            ended.
+     */
+    public void onProcessed(int drained) throws IOException;
+
 }
