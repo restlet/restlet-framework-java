@@ -304,9 +304,11 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     public synchronized void handleSslResult() throws IOException {
         switch (getSslEngineStatus()) {
         case BUFFER_OVERFLOW:
-            getLogger()
-                    .log(Level.FINE,
-                            "Unexpected SSL buffer overflow state reached! Application buffer needs to be consumed before retrying.");
+            if (getLogger().isLoggable(Level.FINER)) {
+                getLogger()
+                        .log(Level.FINER,
+                                "SSL buffer overflow state detected. Application buffer needs to be consumed before retrying.");
+            }
             break;
 
         case BUFFER_UNDERFLOW:
