@@ -41,11 +41,12 @@ import java.util.logging.Level;
 
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
-import javax.net.ssl.SSLPeerUnverifiedException;
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
+import javax.net.ssl.SSLEngineResult.Status;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 
 import org.restlet.Connector;
 import org.restlet.engine.connector.Connection;
@@ -268,27 +269,31 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      * 
      * @throws IOException
      */
-    private void handleSslHandshake() throws IOException {
-        switch (getSslHandshakeStatus()) {
-        case FINISHED:
-            onFinished();
-            break;
+    private synchronized void handleSslHandshake() throws IOException {
+        HandshakeStatus hs = getSslHandshakeStatus();
 
-        case NEED_TASK:
-            onNeedTask();
-            break;
+        if (hs != HandshakeStatus.NOT_HANDSHAKING) {
+            switch (getSslHandshakeStatus()) {
+            case FINISHED:
+                onFinished();
+                break;
 
-        case NEED_UNWRAP:
-            onUnwrap();
-            break;
+            case NEED_TASK:
+                onNeedTask();
+                break;
 
-        case NEED_WRAP:
-            onWrap();
-            break;
+            case NEED_UNWRAP:
+                onUnwrap();
+                break;
 
-        case NOT_HANDSHAKING:
-            // Don't do anything
-            break;
+            case NEED_WRAP:
+                onWrap();
+                break;
+
+            case NOT_HANDSHAKING:
+                // Don't do anything
+                break;
+            }
         }
     }
 
@@ -300,8 +305,9 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     public void handleSslResult() throws IOException {
         switch (getSslEngineStatus()) {
         case BUFFER_OVERFLOW:
-            getLogger().log(Level.FINE,
-                    "Unexpected SSL buffer overflow state reached!");
+            getLogger()
+                    .log(Level.FINE,
+                            "Unexpected SSL buffer overflow state reached! Application buffer needs to be consumed before retrying.");
             break;
 
         case BUFFER_UNDERFLOW:
@@ -406,8 +412,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     }
 
     /**
-     * Unwraps packet data into handshake or application data. Need to read
-     * next.
+     * Callback invoked when the SSL handshake requires unwrapping.
      * 
      * @throws IOException
      */
@@ -419,8 +424,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     }
 
     /**
-     * Wraps the handshake or application data into packet data. Need to write
-     * next.
+     * Callback invoked when the SSL handshake requires wrapping.
      * 
      * @throws IOException
      */

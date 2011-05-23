@@ -37,6 +37,7 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLEngineResult.Status;
 
+import org.restlet.engine.connector.MessageState;
 import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.ReadableBufferedChannel;
@@ -110,7 +111,8 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
      * Callback method invoked upon delegated tasks completion.
      */
     public void onCompleted() {
-        if (getConnection().getInboundWay().getIoState() == IoState.IDLE) {
+        if ((getConnection().getInboundWay().getMessageState() == MessageState.START)
+                && (getConnection().getInboundWay().getIoState() == IoState.IDLE)) {
             getConnection().getInboundWay().setIoState(IoState.READY);
         }
     }
