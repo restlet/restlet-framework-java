@@ -117,30 +117,22 @@ public class InputStreamChannel implements ReadableByteChannel,
      */
     public int read(ByteBuffer target) throws IOException {
         int result = 0;
-        int available = getInputStream().available();
 
         if (!isBlocking()) {
+            int available = getInputStream().available();
+            int readLength = 0;
+
             if (available > 0) {
-                if (target.hasArray()) {
-                    // Use directly the underlying byte array
-                    byte[] byteArray = target.array();
-
-                    result = getInputStream().read(byteArray,
-                            target.position(),
-                            Math.min(available, target.remaining()));
-
-                    if (result > 0) {
-                        target.position(target.position() + result);
-                    } else if (result == -1) {
-                        target.position(target.position() + available);
-                    }
-                } else {
-                    // Create or reuse a specific byte array as buffer
-                    result = read(target, available);
-                }
+                // Attempt to read only the available byte to prevent blocking
+                readLength = Math.min(available, target.remaining());
             } else {
-                result = -1;
+                // Attempt to read as many bytes as possible even if blocking
+                // occurs
+                readLength = target.remaining();
             }
+
+            // Create or reuse a specific byte array as buffer
+            result = read(target, readLength);
         } else {
             // Potentially blocking read
             result = read(target, IoUtils.BUFFER_SIZE);
@@ -154,26 +146,38 @@ public class InputStreamChannel implements ReadableByteChannel,
      * 
      * @param target
      *            The target byte buffer.
-     * @param bytesToRead
+     * @param readLength
      *            The number of bytes to read.
      * @return The number of bytes effectively read or -1 if end reached.
      * @throws IOException
      */
-    private int read(ByteBuffer target, int bytesToRead) throws IOException {
+    private int read(ByteBuffer target, int readLength) throws IOException {
         int result = 0;
 
-        if (this.buffer.length < IoUtils.BUFFER_SIZE) {
-            this.buffer = new byte[IoUtils.BUFFER_SIZE];
-        }
+        if (target.hasArray()) {
+            // Use directly the underlying byte array
+            byte[] byteArray = target.array();
 
-        result = getInputStream().read(
-                this.buffer,
-                0,
-                Math.min(Math.min(bytesToRead, IoUtils.BUFFER_SIZE), target
-                        .remaining()));
+            result = getInputStream().read(byteArray, target.position(),
+                    readLength);
 
-        if (result > 0) {
-            target.put(buffer, 0, result);
+            if (result > 0) {
+                target.position(target.position() + result);
+            }
+        } else {
+            if (this.buffer.length < IoUtils.BUFFER_SIZE) {
+                this.buffer = new byte[IoUtils.BUFFER_SIZE];
+            }
+
+            result = getInputStream().read(
+                    this.buffer,
+                    0,
+                    Math.min(Math.min(readLength, IoUtils.BUFFER_SIZE),
+                            target.remaining()));
+
+            if (result > 0) {
+                target.put(buffer, 0, result);
+            }
         }
 
         return result;

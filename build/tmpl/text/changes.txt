@@ -14,7 +14,7 @@ Changes log
       - Updated and consolidated the SSL/HTTPS configuration parameters
         for all HTTPS connectors.
       - Added a warning message to indicate that an application without a 
-        parent component can handle by default outbound calls.
+        parent component can't handle outbound calls by default.
         Reported by John Logdson and Kristoffer Gronowski. 
     - Bug fixed
       - Fixed compatibility issue with GWT 2.3.
@@ -25,6 +25,8 @@ Changes log
         Reported by Aaron Summers.
       - Fixed misleading log message when response are manually ranged
         (206 status and entity with range set). Reported by John Logsdon.
+      - Fixed issue causing blocking of internal HTTP/SIP connector when 
+        the entity was coming from Apache HTTP client.
     - Misc
       - 
 
