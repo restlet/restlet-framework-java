@@ -68,7 +68,7 @@ public class Buffer {
     }
 
     /** The index of the buffer's beginning while filling. */
-    private volatile int begin;
+    private volatile int fillBegin;
 
     /** The byte buffer. */
     private final ByteBuffer bytes;
@@ -96,7 +96,7 @@ public class Buffer {
      */
     public Buffer(ByteBuffer byteBuffer, BufferState byteBufferState) {
         super();
-        this.begin = 0;
+        this.fillBegin = 0;
         this.bytes = byteBuffer;
         this.state = byteBufferState;
     }
@@ -151,7 +151,7 @@ public class Buffer {
      * @return True if a compacting operation can be beneficial.
      */
     public boolean canCompact() {
-        return this.begin > 0;
+        return isFilling() ? (this.fillBegin > 0) : (getBytes().position() > 0);
     }
 
     /**
@@ -185,7 +185,7 @@ public class Buffer {
      * Recycles the buffer so it can be reused.
      */
     public void clear() {
-        this.begin = 0;
+        this.fillBegin = 0;
         this.bytes.clear();
         this.state = BufferState.FILLING;
     }
@@ -197,6 +197,10 @@ public class Buffer {
         if (isDraining()) {
             getBytes().compact();
             getBytes().flip();
+        } else {
+            flip();
+            compact();
+            flip();
         }
     }
 
@@ -206,7 +210,7 @@ public class Buffer {
      * @return True if bytes could be drained.
      */
     public boolean couldDrain() {
-        return (isFilling() && (getBytes().position() > this.begin));
+        return (isFilling() && (getBytes().position() > this.fillBegin));
     }
 
     /**
@@ -395,12 +399,12 @@ public class Buffer {
         if (isFilling()) {
             setState(BufferState.DRAINING);
             getBytes().limit(getBytes().position());
-            getBytes().position(this.begin);
-            this.begin = 0;
+            getBytes().position(this.fillBegin);
+            this.fillBegin = 0;
         } else if (isDraining()) {
             if (hasRemaining()) {
                 setState(BufferState.FILLING);
-                this.begin = getBytes().position();
+                this.fillBegin = getBytes().position();
                 getBytes().position(getBytes().limit());
                 getBytes().limit(getBytes().capacity());
             } else {
@@ -541,9 +545,15 @@ public class Buffer {
                                             + remaining() + " remaining bytes");
                         }
                     } else {
-                        if (!lastFillFailed && couldFill()) {
-                            // We may still be able to fill
-                            beforeFill();
+                        if (!lastFillFailed) {
+                            if (couldFill()) {
+                                // We may still be able to fill
+                                beforeFill();
+                            } else if (canCompact()) {
+                                compact();
+                            } else {
+                                tryAgain = false;
+                            }
                         } else {
                             tryAgain = false;
                         }

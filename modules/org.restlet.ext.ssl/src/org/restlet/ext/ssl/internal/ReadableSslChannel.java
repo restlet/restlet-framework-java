@@ -104,4 +104,9 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
         return initialSize - buffer.remaining();
     }
 
+    @Override
+    public void onProcessed(int drained) throws IOException {
+        getConnection().handleSslResult();
+    }
+
 }

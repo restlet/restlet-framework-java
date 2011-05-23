@@ -307,11 +307,17 @@ public class SslConnection<T extends Connector> extends Connection<T> {
             if (getLogger().isLoggable(Level.FINER)) {
                 getLogger()
                         .log(Level.FINER,
-                                "SSL buffer overflow state detected. Application buffer needs to be consumed before retrying.");
+                                "SSL buffer overflow state detected. Application buffer needs to be consumed or compacted before retrying.");
             }
             break;
 
         case BUFFER_UNDERFLOW:
+            if (getLogger().isLoggable(Level.FINER)) {
+                getLogger()
+                        .log(Level.FINER,
+                                "SSL buffer underflow state detected. Network buffer needs to be consumed or compacted before retrying.");
+            }
+
             if ((getSslHandshakeStatus() == HandshakeStatus.NEED_UNWRAP)
                     && ((getInboundWay().getIoState() == IoState.IDLE) || (getInboundWay()
                             .getIoState() == IoState.READY))) {
