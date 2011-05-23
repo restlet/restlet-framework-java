@@ -27,6 +27,8 @@ Changes log
         (206 status and entity with range set). Reported by John Logsdon.
       - Fixed issue causing blocking of internal HTTP/SIP connector when 
         the entity was coming from Apache HTTP client.
+      - Fixed issue causing potential loop in internal HTTP/SIP client
+        when the response entity wasn't being consumed immediately.
     - Misc
       - 
 

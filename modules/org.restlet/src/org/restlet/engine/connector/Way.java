@@ -374,6 +374,15 @@ public abstract class Way implements SelectionListener, CompletionListener,
             throws IOException;
 
     /**
+     * Called back after the IO processing to indicate if there is further IO
+     * interest. By default, it sets the IO state to {@link IoState#INTEREST}.
+     */
+    protected void onPostProcessing() {
+        // Socket channel exhausted
+        setIoState(IoState.INTEREST);
+    }
+
+    /**
      * Callback method invoked when the way has been selected for IO operations
      * it registered interest in.
      */
@@ -405,9 +414,8 @@ public abstract class Way implements SelectionListener, CompletionListener,
                     && (getConnection().getState() == ConnectionState.CLOSING)) {
                 // No hope to drain more bytes, complete the closing
                 getBuffer().clear();
-            } else if (getIoState() == IoState.PROCESSING) {
-                // Socket channel exhausted
-                setIoState(IoState.INTEREST);
+            } else if ((getIoState() == IoState.PROCESSING)) {
+                onPostProcessing();
             }
         } catch (Exception e) {
             getConnection().onError("Error while processing a connection", e,

@@ -268,7 +268,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      * 
      * @throws IOException
      */
-    private synchronized void handleSslHandshake() throws IOException {
+    private void handleSslHandshake() throws IOException {
         HandshakeStatus hs = getSslHandshakeStatus();
 
         if (hs != HandshakeStatus.NOT_HANDSHAKING) {
@@ -301,7 +301,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      * 
      * @throws IOException
      */
-    public void handleSslResult() throws IOException {
+    public synchronized void handleSslResult() throws IOException {
         switch (getSslEngineStatus()) {
         case BUFFER_OVERFLOW:
             getLogger()
@@ -400,7 +400,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
                     }
 
                     try {
-                        handleSslHandshake();
+                        handleSslResult();
                     } catch (IOException e) {
                         getLogger().log(Level.WARNING,
                                 "Unable to handle SSL handshake", e);

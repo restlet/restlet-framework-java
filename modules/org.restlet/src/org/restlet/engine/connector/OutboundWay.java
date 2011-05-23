@@ -365,6 +365,13 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
+    protected void onPostProcessing() {
+        if ((getMessageState() != MessageState.IDLE) || getBuffer().canDrain()) {
+            super.onPostProcessing();
+        }
+    }
+
+    @Override
     public int processIoBuffer() throws IOException {
         int result = 0;
         result = super.processIoBuffer();
