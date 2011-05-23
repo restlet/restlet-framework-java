@@ -136,7 +136,8 @@ public class HttpClientInboundWay extends ClientInboundWay {
 
     @Override
     public void updateState() {
-        if ((getIoState() == IoState.IDLE) && !isEmpty()) {
+        if ((getIoState() == IoState.IDLE)
+                && (getMessageState() != MessageState.BODY) && !isEmpty()) {
             // Read the next response
             setIoState(IoState.INTEREST);
         }

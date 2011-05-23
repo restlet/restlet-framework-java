@@ -507,11 +507,16 @@ public class Buffer {
 
             if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
                 Context.getCurrentLogger().log(Level.FINEST,
-                        "Processing buffer " + this);
+                        "Beginning process of buffer " + this);
             }
 
             while (tryAgain && processor.canLoop(this, args)) {
                 if (isDraining()) {
+                    if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
+                        Context.getCurrentLogger().log(Level.FINEST,
+                                "Draining buffer " + this);
+                    }
+
                     drained = 0;
 
                     if (hasRemaining() || processor.couldDrain(this, args)) {
@@ -546,6 +551,11 @@ public class Buffer {
                         lastDrainFailed = true;
                     }
                 } else if (isFilling()) {
+                    if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
+                        Context.getCurrentLogger().log(Level.FINEST,
+                                "Filling buffer " + this);
+                    }
+
                     filled = 0;
 
                     if (hasRemaining() && processor.couldFill(this, args)) {
@@ -589,6 +599,15 @@ public class Buffer {
                     && (!processor.couldFill(this, args) || fillEnded)) {
                 // Nothing was drained and no hope to fill again
                 result = -1;
+            }
+
+            if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
+                Context.getCurrentLogger().log(
+                        Level.FINEST,
+                        "Ending process of buffer " + this + ". Result: "
+                                + result + ", try again: " + tryAgain
+                                + ", can loop: "
+                                + processor.canLoop(this, args));
             }
         }
 
@@ -635,7 +654,7 @@ public class Buffer {
 
     @Override
     public String toString() {
-        return getBytes().toString() + " | " + getState() + " | " + isEmpty();
+        return getBytes().toString() + ", " + getState() + ", " + isEmpty();
     }
 
 }
