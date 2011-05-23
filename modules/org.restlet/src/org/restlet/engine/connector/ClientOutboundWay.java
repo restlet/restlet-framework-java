@@ -114,13 +114,13 @@ public abstract class ClientOutboundWay extends OutboundWay {
     }
 
     @Override
-    protected Message getActualMessage() {
+    public Message getActualMessage() {
         return getMessage().getRequest();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Connection<Client> getConnection() {
+    public Connection<Client> getConnection() {
         return (Connection<Client>) super.getConnection();
     }
 

@@ -183,7 +183,7 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    protected int getInterestOperations() {
+    public int getInterestOperations() {
         int result = 0;
 
         if (getIoState() == IoState.INTEREST) {

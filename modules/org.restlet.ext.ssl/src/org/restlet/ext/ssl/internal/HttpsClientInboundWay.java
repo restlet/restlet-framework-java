@@ -56,7 +56,7 @@ public class HttpsClientInboundWay extends HttpClientInboundWay {
     }
 
     @Override
-    protected SslConnection<Client> getConnection() {
+    public SslConnection<Client> getConnection() {
         return (SslConnection<Client>) super.getConnection();
     }
 

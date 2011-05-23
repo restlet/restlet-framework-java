@@ -98,13 +98,13 @@ public abstract class ClientInboundWay extends InboundWay {
     }
 
     @Override
-    protected Message getActualMessage() {
+    public Message getActualMessage() {
         return getMessage();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Connection<Client> getConnection() {
+    public Connection<Client> getConnection() {
         return (Connection<Client>) super.getConnection();
     }
 
@@ -114,7 +114,7 @@ public abstract class ClientInboundWay extends InboundWay {
     }
 
     @Override
-    protected int getInterestOperations() {
+    public int getInterestOperations() {
         int result = 0;
 
         if (getConnection().getState() == ConnectionState.OPENING) {

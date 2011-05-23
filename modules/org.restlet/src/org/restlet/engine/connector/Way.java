@@ -171,7 +171,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * 
      * @return The actual message, request or response.
      */
-    protected abstract Message getActualMessage();
+    public abstract Message getActualMessage();
 
     /**
      * Returns the IO buffer.
@@ -187,7 +187,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * 
      * @return The parent connection.
      */
-    protected Connection<?> getConnection() {
+    public Connection<?> getConnection() {
         return connection;
     }
 
@@ -196,7 +196,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * 
      * @return The response headers to be written.
      */
-    protected Series<Parameter> getHeaders() {
+    public Series<Parameter> getHeaders() {
         return headers;
     }
 
@@ -205,7 +205,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * 
      * @return The parent connector helper.
      */
-    protected ConnectionHelper<?> getHelper() {
+    public ConnectionHelper<?> getHelper() {
         return getConnection().getHelper();
     }
 
@@ -214,7 +214,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * 
      * @return The operations of interest.
      */
-    protected abstract int getInterestOperations();
+    public abstract int getInterestOperations();
 
     /**
      * Returns the IO state.
@@ -230,7 +230,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * 
      * @return The line builder.
      */
-    protected StringBuilder getLineBuilder() {
+    public StringBuilder getLineBuilder() {
         return lineBuilder;
     }
 
@@ -239,7 +239,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * 
      * @return The line builder state.
      */
-    protected BufferState getLineBuilderState() {
+    public BufferState getLineBuilderState() {
         return lineBuilderState;
     }
 
@@ -276,7 +276,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * 
      * @return The message state.
      */
-    protected MessageState getMessageState() {
+    public MessageState getMessageState() {
         return messageState;
     }
 
@@ -287,7 +287,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * @return The socket's NIO registration holding the link between the
      *         channel and the connection.
      */
-    protected SelectionRegistration getRegistration() {
+    public SelectionRegistration getRegistration() {
         return registration;
     }
 
@@ -487,7 +487,13 @@ public abstract class Way implements SelectionListener, CompletionListener,
             this.messageState = messageState;
 
             if (getLogger().isLoggable(Level.FINEST)) {
-                getLogger().finest("New message state: " + messageState);
+                if (this instanceof OutboundWay) {
+                    Context.getCurrentLogger().log(Level.FINER,
+                            "OutboundWay#setMessageState: " + messageState);
+                } else {
+                    Context.getCurrentLogger().log(Level.FINER,
+                            "InboundWay#setMessageState: " + messageState);
+                }
             }
         }
     }

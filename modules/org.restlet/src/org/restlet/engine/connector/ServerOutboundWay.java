@@ -140,7 +140,7 @@ public abstract class ServerOutboundWay extends OutboundWay {
     }
 
     @Override
-    protected Message getActualMessage() {
+    public Message getActualMessage() {
         return getMessage();
     }
 

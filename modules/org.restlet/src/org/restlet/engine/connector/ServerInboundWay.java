@@ -69,7 +69,7 @@ public abstract class ServerInboundWay extends InboundWay {
     protected abstract Response createResponse(Request request);
 
     @Override
-    protected Message getActualMessage() {
+    public Message getActualMessage() {
         return getMessage().getRequest();
     }
 
