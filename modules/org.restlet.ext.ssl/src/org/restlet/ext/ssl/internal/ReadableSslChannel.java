@@ -34,8 +34,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import javax.net.ssl.SSLEngineResult;
-import javax.net.ssl.SSLEngineResult.HandshakeStatus;
-import javax.net.ssl.SSLEngineResult.Status;
 
 import org.restlet.engine.connector.MessageState;
 import org.restlet.engine.io.Buffer;
@@ -72,32 +70,6 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
         this.connection = connection;
     }
 
-    @Override
-    public boolean canLoop(Buffer buffer, Object... args) {
-        return getConnection().getInboundWay().canLoop(buffer, args)
-                && ((getConnection().getSslEngineStatus() == Status.OK) || (getConnection()
-                        .getSslEngineStatus() == Status.BUFFER_UNDERFLOW));
-    }
-
-    /**
-     * Indicates if draining can be retried.
-     * 
-     * @return True if draining can be retried.
-     */
-    public boolean canRetry(int lastRead, ByteBuffer targetBuffer) {
-        return ((lastRead > 0) || (getConnection().isSslHandshaking()
-                && (getConnection().getSslEngineStatus() == Status.OK) && (getConnection()
-                .getSslHandshakeStatus() == HandshakeStatus.NEED_UNWRAP)))
-                && targetBuffer.hasRemaining();
-    }
-
-    @Override
-    public boolean couldDrain(Buffer buffer, Object... args) {
-        return (getConnection().getSslEngineStatus() != Status.CLOSED)
-                && ((getConnection().getSslHandshakeStatus() == HandshakeStatus.NOT_HANDSHAKING) || (getConnection()
-                        .getSslHandshakeStatus() == HandshakeStatus.NEED_UNWRAP));
-    }
-
     /**
      * Returns the parent SSL connection.
      * 
@@ -130,11 +102,6 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
                 buffer.getBytes(), applicationBuffer);
         getConnection().setSslResult(sslResult);
         return initialSize - buffer.remaining();
-    }
-
-    @Override
-    public int read(ByteBuffer targetBuffer) throws IOException {
-        return super.read(targetBuffer);
     }
 
 }

@@ -389,7 +389,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
     public void onSelected() {
         try {
             // Adjust states
-            if (getIoState() == IoState.INTEREST) {
+            if (getIoState() != IoState.READY) {
                 setIoState(IoState.PROCESSING);
             }
 

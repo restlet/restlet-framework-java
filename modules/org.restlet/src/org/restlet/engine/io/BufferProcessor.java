@@ -52,17 +52,6 @@ public interface BufferProcessor {
     public boolean canLoop(Buffer buffer, Object... args);
 
     /**
-     * Indicates if the buffer could be drained again.
-     * 
-     * @param buffer
-     *            The IO buffer to drain.
-     * @param args
-     *            The optional arguments to pass back to the callbacks.
-     * @return True if the buffer could be drained again.
-     */
-    public boolean couldDrain(Buffer buffer, Object... args);
-
-    /**
      * Indicates if the buffer could be filled again.
      * 
      * @param buffer

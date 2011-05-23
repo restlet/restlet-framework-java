@@ -519,7 +519,7 @@ public class Buffer {
 
                     drained = 0;
 
-                    if (hasRemaining() || processor.couldDrain(this, args)) {
+                    if (hasRemaining()) {
                         if (maxDrained <= 0) {
                             drained = processor.onDrain(this, 0, args);
                         } else if (maxDrained - result > 0) {
@@ -573,9 +573,7 @@ public class Buffer {
                                     filled + " bytes filled into buffer");
                         }
                     } else {
-                        if (!lastDrainFailed
-                                && (couldDrain() || processor.couldDrain(this,
-                                        args))) {
+                        if (!lastDrainFailed && couldDrain()) {
                             // We may still be able to drain
                             beforeDrain();
                         } else {
