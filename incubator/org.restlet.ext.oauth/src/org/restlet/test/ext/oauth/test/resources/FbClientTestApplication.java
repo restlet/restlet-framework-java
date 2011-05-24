@@ -35,6 +35,7 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.example.ext.oauth.FacebookProxy;
 import org.restlet.ext.oauth.OAuthParameters;
+import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.routing.Router;
 
 public class FbClientTestApplication extends Application {
@@ -72,7 +73,7 @@ public class FbClientTestApplication extends Application {
         OAuthParameters params = new OAuthParameters("118328624855019",
                 "26e1ccb99f6135ebbf901b04508cba09",
                 "https://graph.facebook.com/oauth/",
-                "offline_access,publish_stream");
+                OAuthUtils.scopesToRole("offline_access,publish_stream"));
         return params;
     }
 }

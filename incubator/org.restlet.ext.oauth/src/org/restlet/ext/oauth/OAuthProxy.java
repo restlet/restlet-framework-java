@@ -221,7 +221,8 @@ public class OAuthProxy extends Authorizer {
                     OAuthServerResource.ResponseType.code.name());
             form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
             form.add(OAuthServerResource.REDIR_URI, redirectUri);
-            form.add(OAuthServerResource.SCOPE, params.getScope());
+            //OLD form.add(OAuthServerResource.SCOPE, params.getScope());
+            form.add(OAuthServerResource.SCOPE, OAuthUtils.rolesToScope(params.getRoles()));
 
             // if( params.getOwner() != null && params.getOwner().length() > 0 )
             // {

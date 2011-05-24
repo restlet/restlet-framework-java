@@ -30,11 +30,14 @@
 
 package org.restlet.ext.oauth.internal;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.restlet.ext.oauth.AuthenticatedUser;
 import org.restlet.ext.oauth.Client;
+import org.restlet.security.Role;
 
 /**
  * In memory implementation of the AuthenticatedUser interface.
@@ -49,7 +52,7 @@ public class AuthenticatedUserImpl extends AuthenticatedUser {
 
     private final String id;
 
-    private final Map<String, String> grantedScope;
+    private final Map<Role, String> grantedRoles;
 
     private volatile String code;
 
@@ -60,7 +63,7 @@ public class AuthenticatedUserImpl extends AuthenticatedUser {
     public AuthenticatedUserImpl(String userId, Client client) {
         id = userId;
         this.client = client;
-        this.grantedScope = new ConcurrentHashMap<String, String>();
+        this.grantedRoles = new ConcurrentHashMap<Role, String>();
     }
 
     // Timestamp can be encoded in the code value
@@ -89,25 +92,26 @@ public class AuthenticatedUserImpl extends AuthenticatedUser {
     }
 
     @Override
-    public void addScope(String scope, String owner) {
-        grantedScope.put(scope, owner);
+    public void addRole(Role role, String owner) {
+        grantedRoles.put(role, owner);
     }
 
     @Override
-    public boolean isGrantedScope(String scope, String owner) {
+    public boolean isGrantedRole(Role role, String owner) {
+        return grantedRoles.containsKey(role);
+    }
+
+    @Override
+    public void revokeRole(Role role, String owner) {
         // TODO implement owner
-        return grantedScope.containsKey(scope);
+        grantedRoles.remove(role);
     }
 
     @Override
-    public void revokeScope(String scope, String owner) {
-        // TODO implement owner
-        grantedScope.remove(scope);
-    }
-
-    @Override
-    public String[] getGrantedScopes() {
-        return grantedScope.keySet().toArray(new String[grantedScope.size()]);
+    public List <Role> getGrantedRoles() {
+        return new ArrayList <Role> (grantedRoles.keySet());
+        //return null;
+        //return grantedRoles.keySet()(new Role[grantedRoles.size()]);
     }
 
     @Override
@@ -121,8 +125,8 @@ public class AuthenticatedUserImpl extends AuthenticatedUser {
     }
 
     @Override
-    public void revokeScopes() {
-        grantedScope.clear();
+    public void revokeRoles() {
+        grantedRoles.clear();
     }
 
     @Override

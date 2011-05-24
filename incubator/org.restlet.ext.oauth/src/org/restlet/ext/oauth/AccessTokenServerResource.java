@@ -30,6 +30,7 @@
 
 package org.restlet.ext.oauth;
 
+import java.util.List;
 import java.util.logging.Level;
 
 import org.json.JSONException;
@@ -41,11 +42,13 @@ import org.restlet.data.Status;
 import org.restlet.engine.util.Base64;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.ExpireToken;
+import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
+import org.restlet.security.Role;
 
 /**
  * Server resource used to acquire an OAuth token. A code, or refresh token can
@@ -65,10 +68,9 @@ public class AccessTokenServerResource extends OAuthServerResource {
     private JSONObject createJsonToken(Token token, String scopes)
             throws ResourceException {
         JSONObject body = new JSONObject();
-
+        
         try {
             body.put(ACCESS_TOKEN, token.getToken());
-
             if (token instanceof ExpireToken) {
                 ExpireToken et = (ExpireToken) token;
                 body.put(EXPIRES_IN, et.getExpirePeriod());
@@ -153,12 +155,12 @@ public class AccessTokenServerResource extends OAuthServerResource {
         AuthenticatedUser user = client.findUser(AUTONOMOUS_USER);
 
         // Adding all scopes since super-user
-        String[] scopes = parseScope(params.getFirstValue(SCOPE));
-
-        for (String scope : scopes) {
-            getLogger().info("Requested scopes none flow = " + scope);
-            user.addScope(scope, "");
-            getLogger().info("Adding scope = " + scope + " to auto user");
+        //String[] scopes = parseScope(params.getFirstValue(SCOPE));
+        List <Role> roles = OAuthUtils.scopesToRole(params.getFirstValue(SCOPE));
+        for (Role r : roles) {
+            getLogger().info("Requested scopes none flow = " + roles);
+            user.addRole(r, "");
+            getLogger().info("Adding scope = " + r.getName() + " to auto user");
         }
 
         Token token = generator.generateToken(user, tokenTimeSec);

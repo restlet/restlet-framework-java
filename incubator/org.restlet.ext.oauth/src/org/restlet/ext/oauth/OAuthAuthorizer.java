@@ -31,6 +31,7 @@
 package org.restlet.ext.oauth;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.json.JSONArray;
@@ -50,6 +51,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
+import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
@@ -58,6 +60,7 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
 import org.restlet.security.Authorizer;
+import org.restlet.security.Role;
 import org.restlet.security.User;
 import org.restlet.util.Series;
 
@@ -260,14 +263,15 @@ public class OAuthAuthorizer extends Authorizer {
 
                     getLogger().info("Found owner = " + owner);
                     // More job here but easier for the developer to use []
-                    String[] scopes = scoped.getScope(uri, req.getMethod());
-                    getLogger().info("Found scopes = " + scopes);
+                    //OLD String[] scopes = scoped.getScope(uri, req.getMethod());
+                    List <Role> roles = scoped.getRoles(uri, req.getMethod());
+                    getLogger().info("Found scopes = " + roles);
 
-                    if (scopes != null && scopes.length > 0) {
+                    if (roles != null && roles.size() > 0) {
                         JSONArray jArray = new JSONArray();
 
-                        for (String scope : scopes)
-                            jArray.put(scope);
+                        for (Role r : roles)
+                            jArray.put(OAuthUtils.roleToScope(r));
 
                         request.put("scope", jArray);
                     }

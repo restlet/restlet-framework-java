@@ -30,6 +30,7 @@
 
 package org.restlet.ext.oauth;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
@@ -41,10 +42,12 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.internal.AuthSession;
+import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.routing.Redirector;
+import org.restlet.security.Role;
 
 /**
  * Restlet implementation class AuthorizationService Used for initiating an
@@ -311,10 +314,11 @@ public class AuthorizationServerResource extends OAuthServerResource {
         AuthenticatedUser user = client.findUser(session.getScopeOwner());
 
         if (user != null) { // null before first code generated
-            scopes = user.getGrantedScopes();
-            if (scopes != null && scopes.length > 0) {
-                for (String s : scopes)
-                    ref.addQueryParameter("grantedScope", s);
+            //scopes = OAuthUtils.roluser.getGrantedScopes();
+            List <Role> roles = user.getGrantedRoles();
+            if (roles != null && roles.size() > 0) {
+                for (Role r : roles)
+                    ref.addQueryParameter("grantedScope", OAuthUtils.roleToScope(r));
             }
         }
 

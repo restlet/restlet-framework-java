@@ -50,6 +50,7 @@ import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
+import org.restlet.security.Role;
 
 /**
  * EXPERIMENTAL, and not part of the OAuth specification Implementation might
@@ -180,10 +181,10 @@ public class DiscoverableFilter extends Filter {
         // Supported methods
         DiscoverableEndpointInfo result = new DiscoverableEndpointInfo(methods);
         // Required scopes
-        String[] scopes = scoped.getScope(request.getResourceRef(),
+        List <Role> roles = scoped.getRoles(request.getResourceRef(),
                 request.getMethod());
-        if (scopes != null)
-            result.setScopes(scopes);
+        if (roles != null)
+            result.setScopes(roles);
         // Resource owner
         String owner = scoped.getOwner(request.getResourceRef());
         if (owner != null)

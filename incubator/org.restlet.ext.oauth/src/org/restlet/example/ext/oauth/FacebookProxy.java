@@ -108,7 +108,7 @@ public class FacebookProxy extends OAuthProxy {
     public FacebookProxy(String clientId, String clientSecret, String scope,
             Map<String, String> accessTokens, Context ctx) {
         super(new OAuthParameters(clientId, clientSecret, FB_GRAPH + "oauth/",
-                scope), ctx);
+                OAuthUtils.scopesToRole(scope)), ctx);
         this.accessTokens = accessTokens;
     }
 

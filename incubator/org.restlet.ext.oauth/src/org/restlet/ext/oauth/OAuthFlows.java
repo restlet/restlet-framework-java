@@ -181,8 +181,8 @@ public class OAuthFlows {
         form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
         form.add(OAuthServerResource.REDIR_URI, callbackUri);
 
-        if (params.getScope() != null && params.getScope().length() > 0) {
-            form.add(OAuthServerResource.SCOPE, params.getScope());
+        if (params.getRoles() != null && params.getRoles().size() > 0) {
+            form.add(OAuthServerResource.SCOPE, OAuthUtils.rolesToScope(params.getRoles()));
         }
 
         if (state != null && state.length() > 0) {
@@ -279,8 +279,8 @@ public class OAuthFlows {
         form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
         form.add(OAuthServerResource.CLIENT_SECRET, params.getClientSecret());
 
-        if (params.getScope() != null && params.getScope().length() > 0) {
-            form.add(OAuthServerResource.SCOPE, params.getScope());
+        if (params.getRoles() != null && params.getRoles().size() > 0) {
+            form.add(OAuthServerResource.SCOPE, OAuthUtils.rolesToScope(params.getRoles()));
         }
 
         ClientResource tokenResource = new CookieCopyClientResource(

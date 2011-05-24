@@ -30,6 +30,9 @@
 
 package org.restlet.test.ext.oauth.test.resources;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -41,6 +44,7 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
+import org.restlet.security.Role;
 import org.restlet.test.ext.oauth.provider.AuthorizationServerTest;
 
 public class DiscoverableDummyResource extends WadlServerResource implements DiscoverableResource{
@@ -67,7 +71,7 @@ public class DiscoverableDummyResource extends WadlServerResource implements Dis
 		AuthorizationServerTest.serverPort+"/oauth/provider?id=foo";
 	}
 
-	public String[] getScope(Reference uri, Method method) {
-		return new String[]{"foo","bar"};
+	public List <Role> getRoles(Reference uri, Method method) {
+		return Arrays.asList(new Role[]{new Role("foo", null),new Role("bar", null)});
 	}
 }

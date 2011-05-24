@@ -35,11 +35,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.json.JSONObject;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -70,6 +72,7 @@ import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
+import org.restlet.security.Role;
 import org.restlet.test.ext.oauth.test.resources.OAuthClientTestApplication;
 import org.restlet.test.ext.oauth.test.resources.OAuthComboTestApplication;
 import org.restlet.test.ext.oauth.test.resources.OAuthProtectedTestApplication;
@@ -278,7 +281,7 @@ public class AuthorizationServerTest {
         String callbackUri = prot + "://localhost:" + serverPort + "/";
         String baseRef = prot + "://localhost:" + serverPort + "/combo/";
         OAuthParameters params = new OAuthParameters("1234567890",
-                "1234567890", baseRef, "foo bar");
+                "1234567890", baseRef, OAuthUtils.scopesToRole("foo bar"));
         OAuthUser user = OAuthFlows.doFlow(params, callbackUri, null, null, null, null, 
                 Flow.USERAGENT);
         assertNotNull(user);
@@ -296,6 +299,15 @@ public class AuthorizationServerTest {
                 MediaType.TEXT_HTML);
         cr.release();
     }
+    /*
+    @Test public void testRestletRoles(){
+        Role r1 = new Role("foo",null);
+        Role r2 = new Role("foo",null);
+
+        Assert.assertTrue( r1.equals(r2) );
+        Assert.assertTrue( r2.equals(r1) );
+    }
+    */
 
     @Test
     public void testScopedResource() throws IOException {
@@ -321,7 +333,7 @@ public class AuthorizationServerTest {
         OAuthParameters right = client.getOauthParameters();
         OAuthParameters wrong = new OAuthParameters(right.getClientId(),
                 right.getClientSecret(), right.getBaseRef().toString(),
-                "one two");
+                OAuthUtils.scopesToRole("one two"));
         OAuthUser user = OAuthFlows.doFlow(wrong, callbackUri, null, null, null, null, Flow.USERAGENT);
         assertNotNull(user);
 

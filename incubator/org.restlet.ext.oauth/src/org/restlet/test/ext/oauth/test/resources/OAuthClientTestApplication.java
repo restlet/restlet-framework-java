@@ -36,6 +36,7 @@ import org.restlet.Restlet;
 import org.restlet.ext.oauth.OAuthParameters;
 import org.restlet.ext.oauth.OAuthProxy;
 import org.restlet.ext.oauth.OAuthUser;
+import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.routing.Router;
 import org.restlet.test.ext.oauth.provider.AuthorizationServerTest;
 
@@ -55,7 +56,7 @@ public class OAuthClientTestApplication extends Application {
         params = new OAuthParameters("1234567890", "1234567890",
                 AuthorizationServerTest.prot + "://localhost:"
                         + AuthorizationServerTest.serverPort + "/oauth/",
-                "foo bar");
+                OAuthUtils.scopesToRole("foo bar"));
 
         local = new OAuthProxy(params, getContext(), true); // Use basic
         local.setNext(DummyResource.class);

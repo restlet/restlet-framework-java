@@ -30,7 +30,10 @@
 
 package org.restlet.ext.oauth;
 
+import java.util.List;
+
 import org.restlet.data.Reference;
+import org.restlet.security.Role;
 
 /**
  * Container for OAuth2 Parameters. It contains the following information
@@ -54,7 +57,7 @@ public class OAuthParameters {
 
     private final Reference baseRef;
 
-    private volatile String scope;
+    private volatile List <Role> roles;
 
     private volatile String authorizePath = "authorize";
 
@@ -87,9 +90,9 @@ public class OAuthParameters {
      * baseRef and scope
      */
     public OAuthParameters(String clientId, String clientSecret,
-            String baseRef, String scope) {
+            String baseRef, List <Role> roles) {
         this(clientId, clientSecret, baseRef);
-        this.scope = scope;
+        this.roles = roles;
     }
 
     public String getClientId() {
@@ -104,9 +107,15 @@ public class OAuthParameters {
         return baseRef;
     }
 
-    public String getScope() {
-        return scope;
+    public List <Role> getRoles() {
+        return roles;
     }
+    
+    public void setRoles(List <Role> roles){
+        this.roles = roles;
+    }
+    
+    
 
     public String getAuthorizePath() {
         return authorizePath;

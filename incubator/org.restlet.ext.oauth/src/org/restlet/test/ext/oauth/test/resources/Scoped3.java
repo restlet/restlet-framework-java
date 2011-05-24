@@ -30,6 +30,8 @@
 
 package org.restlet.test.ext.oauth.test.resources;
 
+import java.util.List;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -39,6 +41,7 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
+import org.restlet.security.Role;
 
 public class Scoped3 extends ServerResource implements ScopedResource{
 
@@ -58,7 +61,7 @@ public class Scoped3 extends ServerResource implements ScopedResource{
 		return "user3";
 	}
 
-	public String[] getScope(Reference uri, Method method) {
+	public List <Role> getRoles(Reference uri, Method method) {
 		return null;
 	}
 }

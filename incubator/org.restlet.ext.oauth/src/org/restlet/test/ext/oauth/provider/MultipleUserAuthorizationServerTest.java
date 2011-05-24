@@ -162,8 +162,8 @@ public class MultipleUserAuthorizationServerTest {
 
     @Test
     public void multipleRequestTest() throws Exception {
-        int numThreads = 10;
-        int numCalls = 10;
+        int numThreads = 1;
+        int numCalls = 1;
         int totRequests = (numThreads * numCalls) + numThreads;
         Thread[] clients = new Thread[numThreads];
         Context c = new Context();
@@ -221,7 +221,7 @@ public class MultipleUserAuthorizationServerTest {
                     AuthorizationServerTest.prot
                             + "://localhost:"
                             + MultipleUserAuthorizationServerTest.oauthServerPort
-                            + "/oauth/", "foo bar");
+                            + "/oauth/", OAuthUtils.scopesToRole("foo bar"));
         }
 
         @Override

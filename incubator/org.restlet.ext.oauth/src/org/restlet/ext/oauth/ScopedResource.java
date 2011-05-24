@@ -30,8 +30,11 @@
 
 package org.restlet.ext.oauth;
 
+import java.util.List;
+
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
+import org.restlet.security.Role;
 
 /**
  * Interface class that a Restlet protected resource should implement. By
@@ -92,7 +95,7 @@ public interface ScopedResource {
      * @return Array of string representing all the mandatory scopes in order to
      *         proceed.
      */
-    public String[] getScope(Reference uri, Method method);
+    public List <Role> getRoles(Reference uri, Method method);
 
     /**
      * Gets the URI that the requestor used to access this resource. An

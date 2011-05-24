@@ -30,13 +30,17 @@
 
 package org.restlet.ext.oauth.experimental;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Method;
+import org.restlet.ext.oauth.internal.OAuthUtils;
+import org.restlet.security.Role;
 
 /**
  * EXPERIMENTAL, and not part of the OAuth specification Implementation might
@@ -51,7 +55,7 @@ public class DiscoverableEndpointInfo {
         fixed, dynamic
     }
 
-    private String[] scopes = {};
+    private List<Role> roles = new ArrayList <Role> ();
 
     @SuppressWarnings("unchecked")
     private Set<Method> methods = Collections.EMPTY_SET;
@@ -66,8 +70,8 @@ public class DiscoverableEndpointInfo {
         this.methods = methods;
     }
 
-    public void setScopes(String[] scopes) {
-        this.scopes = scopes;
+    public void setScopes(List <Role> r) {
+        this.roles = r;
     }
 
     public void setOwner(String owner) {
@@ -86,8 +90,8 @@ public class DiscoverableEndpointInfo {
         JSONObject json = new JSONObject();
 
         JSONArray a = new JSONArray();
-        for (String scope : scopes) {
-            a.put(scope);
+        for (Role r : roles) {
+            a.put(OAuthUtils.roleToScope(r));
         }
         json.put("scopes", a);
 

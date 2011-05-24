@@ -30,7 +30,10 @@
 
 package org.restlet.ext.oauth;
 
+import java.util.List;
+
 import org.restlet.ext.oauth.internal.Token;
+import org.restlet.security.Role;
 
 /**
  * POJO for keeping a grant that a user has approved. User with a specific id
@@ -45,7 +48,10 @@ public abstract class AuthenticatedUser {
     /**
      * Add a scope for this user given a specified owner
      */
-    public abstract void addScope(String scope, String owner);
+    //@Deprecated
+    //public abstract void addScope(String scope, String owner);
+    
+    public abstract void addRole(Role r, String owner);
 
     /**
      * Remove a generated code that was used or revoked.
@@ -70,7 +76,7 @@ public abstract class AuthenticatedUser {
     /**
      * Get all scopes. Observe that no owner information is passed.
      */
-    public abstract String[] getGrantedScopes();
+    public abstract List <Role> getGrantedRoles();
 
     /**
      * @return user id of the user
@@ -102,7 +108,7 @@ public abstract class AuthenticatedUser {
     /**
      * Check if this user has a specific scope
      */
-    public abstract boolean isGrantedScope(String scope, String owner);
+    public abstract boolean isGrantedRole(Role role, String owner);
 
     /**
      * Helper method to indicate when to checkpoint the user data. If not
@@ -117,12 +123,12 @@ public abstract class AuthenticatedUser {
     /**
      * Remove a specific scope
      */
-    public abstract void revokeScope(String scope, String owner);
+    public abstract void revokeRole(Role role, String owner);
 
     /**
      * Revoke previously granted scopes.
      */
-    public abstract void revokeScopes();
+    public abstract void revokeRoles();
 
     /**
      * Set a generated code that was given out for this user

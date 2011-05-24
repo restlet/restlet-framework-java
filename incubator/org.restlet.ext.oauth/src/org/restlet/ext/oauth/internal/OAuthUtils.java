@@ -31,6 +31,9 @@
 package org.restlet.ext.oauth.internal;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,6 +52,7 @@ import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
+import org.restlet.security.Role;
 import org.restlet.security.User;
 import org.restlet.util.Series;
 
@@ -58,10 +62,53 @@ import org.restlet.util.Series;
  * 
  * 
  * @author Kristoffer Gronowski
- * @deprecated
  */
 public class OAuthUtils {
+    
+    public static String rolesToScope(List <Role> roles) throws IllegalArgumentException{
+        StringBuilder sb = new StringBuilder();
+        for(Role r : roles){
+            String scope = roleToScope(r);
+            sb.append(' ');
+            sb.append(scope);
+            
+        }
+        return sb.substring(1);
+    }
 
+    public static String roleToScope(Role r) throws IllegalArgumentException{
+        String rname = r.getName();
+        if(rname == null) throw new IllegalArgumentException("Role name cannot be null");
+        rname = rname.trim();
+        if(rname.length() < 1) throw new IllegalArgumentException("Role name cannot be empty");
+        else if(rname.contains(" ")) throw new IllegalArgumentException("Role name cannot contain space");
+        return rname;
+    }
+    
+    public static Role scopeToRole(String scope){
+        return new Role(scope, null);
+    }
+    
+    public static List <Role> scopesToRole(String scopes){
+        String[] tmp = parseScope(scopes);
+        List <Role> toRet = new ArrayList <Role> (tmp.length);
+        for(String scope : tmp){
+            toRet.add(new Role(scope, null));
+        }
+        return toRet;
+    }
+    
+    public static String[] parseScope(String scopes) {
+        if (scopes != null && scopes.length() > 0) {
+            StringTokenizer st = new StringTokenizer(scopes, " ");
+            String[] scope = new String[st.countTokens()];
+            for (int i = 0; st.hasMoreTokens(); i++)
+                scope[i] = st.nextToken();
+            return scope;
+        }
+        return new String[0];
+    }
+    
     /**
      * Fetch a new accessToken based on a refreshToken received in the initial
      * OAuth request.
@@ -74,7 +121,7 @@ public class OAuthUtils {
      *         expiration time.
      * @see OAuthParameters
      */
-
+    /*
     public static OAuthUser refreshToken(OAuthParameters params,
             String refreshToken) {
         OAuthUser result = null;
@@ -104,7 +151,8 @@ public class OAuthUtils {
 
         return result;
     }
-
+    */
+    
     /**
      * Fetch a new accessToken using the userAgent flow This flow is specified
      * as response_type = token
@@ -126,6 +174,7 @@ public class OAuthUtils {
      */
 
     // TODO add error Exception....
+    /*
     public static OAuthUser userAgent(OAuthParameters params,
             String callbackUri, String state) {
 
@@ -220,7 +269,7 @@ public class OAuthUtils {
 
         return result;
     }
-
+    */
     /**
      * Fetch a set of cookies based using the userAgent flow This flow is
      * specified as response_type = token
@@ -238,7 +287,7 @@ public class OAuthUtils {
      *      href="http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-1.4.2">User
      *      Agent Flow</a>
      */
-
+    
     public static Series<CookieSetting> fbUserAgent(OAuthParameters params,
             String callbackUri, String fbUser, String fbPass) {
 
@@ -249,8 +298,8 @@ public class OAuthUtils {
                 OAuthServerResource.ResponseType.code_and_token.name());
         form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
         form.add(OAuthServerResource.REDIR_URI, callbackUri);
-        if (params.getScope() != null && params.getScope().length() > 0) {
-            form.add(OAuthServerResource.SCOPE, params.getScope());
+        if (params.getRoles() != null && params.getRoles().size() > 0) {
+            form.add(OAuthServerResource.SCOPE, OAuthUtils.rolesToScope(params.getRoles()));
         }
         form.add("email", fbUser);
         form.add("pass", fbPass);
@@ -311,7 +360,7 @@ public class OAuthUtils {
 
         return result;
     }
-
+    
     /**
      * Fetch a new accessToken based using the autonomous none flow
      * 
@@ -322,7 +371,7 @@ public class OAuthUtils {
      *         href="http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-1.4.4"
      *         >Autonomous Flow</a>
      */
-
+    /*
     public static OAuthUser noneFlow(OAuthParameters params) {
         OAuthUser result = null;
 
@@ -352,13 +401,15 @@ public class OAuthUtils {
 
         return result;
     }
-
+    */
+    /*
     public static OAuthUser passwordFlow(OAuthParameters params,
             String username, String password) {
         return passwordFlow(params, username, password, new org.restlet.Client(
                 Protocol.HTTP));
     }
-
+    */
+    /*
     public static OAuthUser passwordFlow(OAuthParameters params,
             String username, String password, org.restlet.Client c) {
         OAuthUser result = null;
@@ -391,7 +442,7 @@ public class OAuthUtils {
 
         return result;
     }
-
+    */
     /**
      * Convert successful JSON token body responses to OAuthUser.
      * 
@@ -408,7 +459,7 @@ public class OAuthUtils {
             String text = body.getText();
             log.info("Debug JSON body = " + text);
             StringRepresentation sr = new StringRepresentation(text);
-
+            
             JsonRepresentation returned = new JsonRepresentation(sr);
             JSONObject answer = returned.getJsonObject();
 

@@ -42,6 +42,7 @@ import org.restlet.ext.freemarker.ContextTemplateLoader;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.internal.AuthSession;
+import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
@@ -234,14 +235,14 @@ public class AuthPageServerResource extends OAuthServerResource {
         }
 
         // clear scopes.... if user wants to downgrade
-        user.revokeScopes();
+        user.revokeRoles();
 
         // TODO compare scopes and add an error if some were not approved.
         // Scope parameter should be appended only if different.
 
         for (String s : scopes) {
             getLogger().info("Adding scope = " + s + " to user = " + id);
-            user.addScope(s, "");
+            user.addRole(OAuthUtils.scopeToRole(s), "");
         }
 
         String state = session.getState();
