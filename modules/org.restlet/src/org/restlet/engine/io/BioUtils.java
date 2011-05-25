@@ -467,6 +467,7 @@ public final class BioUtils {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns a writer to the given output stream, using the given character
      * set for encoding to bytes.
