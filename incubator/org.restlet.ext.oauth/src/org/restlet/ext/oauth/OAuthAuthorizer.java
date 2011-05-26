@@ -61,6 +61,7 @@ import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
 import org.restlet.security.Authorizer;
 import org.restlet.security.Role;
+import org.restlet.security.RoleAuthorizer;
 import org.restlet.security.User;
 import org.restlet.util.Series;
 
@@ -88,7 +89,7 @@ import org.restlet.util.Series;
  * 
  * @author Kristoffer Gronowski
  */
-public class OAuthAuthorizer extends Authorizer {
+public class OAuthAuthorizer extends RoleAuthorizer {
 
     // Resource authenticateURI;
     protected final Reference authorizeRef;
@@ -169,37 +170,117 @@ public class OAuthAuthorizer extends Authorizer {
         this.validateRef = null;
     } // For extending the class
 
-    @Override
-    protected boolean authorize(Request req, Response resp) {
-        getLogger().info("Checking for param access_token");
-        String accessToken = null;
 
-        if (req.getChallengeResponse() != null) {
-            // There is a Authorization header
+    private JSONObject createValidationRequest(String accessToken, Request req) throws JSONException{
+        JSONObject request = new JSONObject();
+        Reference uri = req.getOriginalRef();
+
+        request.put("access_token", accessToken);
+
+        //add any roles...
+        List <Role> roles = this.getAuthorizedRoles();
+        if (roles != null && roles.size() > 0) {
+            JSONArray jArray = new JSONArray();
+            for (Role r : roles)
+                jArray.put(OAuthUtils.roleToScope(r));
+            request.put("scope", jArray);
+            getLogger().info("Found scopes: "+jArray.toString());
+        }
+        String owner = (String) req.getAttributes().get("oauth-user");
+        if(owner != null && owner.length() > 0){
+            getLogger().info("Found Owner:"+owner);
+            request.put("owner", owner);
+        }
+        request.put("uri", uri.getHierarchicalPart());
+        return request;
+    }
+
+    // GET SIZE TO HANDLE BUG IN GLASSFISH
+    private JsonRepresentation createJsonRepresentation(JSONObject request){    
+        JsonRepresentation repr = new JsonRepresentation(request);
+        StringRepresentation sr = new StringRepresentation(
+                request.toString());
+        sr.setCharacterSet(repr.getCharacterSet());
+        repr.setSize(sr.getSize());
+        sr.release(); //OBS VERIFY!
+        return repr;
+    }
+
+    private void setUser(Request req, JSONObject response, String accessToken) throws JSONException{
+        String tokenOwner = response.getString("tokenOwner");
+        getLogger().info(
+                "User " + tokenOwner + " is accessing : "
+                + req.getOriginalRef());
+        User user = new User(tokenOwner, accessToken);
+
+        // Set the user so that the Resource knows who is executing
+        // Based on the person issuing the token in the first place.
+        req.getClientInfo().setUser(user);
+        req.getClientInfo().setAuthenticated(true);
+    }
+
+    private void handleError(String error, Response resp){
+        if (error != null && error.length() > 0) {
+            ChallengeRequest cr = new ChallengeRequest(
+                    ChallengeScheme.HTTP_OAUTH, "oauth"); // TODO set
+            // realm
+            Series<Parameter> parameters = new Form();
+            parameters.add("error", error);
+            OAuthError code = OAuthError.valueOf(error);
+
+            switch (code) {
+            case INVALID_REQUEST:
+                // TODO report bug in Restlet and verify, can not handle
+                // space char.
+                // parameters.add("error_description",
+                // "The request is missing a required parameter.");
+                resp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+                break;
+            case INVALID_TOKEN:
+            case EXPIRED_TOKEN:
+                // parameters.add("error_description",
+                // "The access token provided is invalid.");
+                resp.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+                break;
+            case INSUFFICIENT_SCOPE:
+                // parameters.add("error_description",
+                // "The request requires higher privileges than provided "
+                // +"by the access token.");
+                resp.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+                break;
+
+            }
+
+            // parameters.add("error_uri",authorizeRef.toString());
+            cr.setParameters(parameters);
+            resp.getChallengeRequests().add(cr);
+        }
+    }
+    
+    private String getAccessToken(Request req){
+        //Auth Header present
+        String accessToken = null;
+        if(req.getChallengeResponse() != null){
             accessToken = req.getChallengeResponse().getRawValue();
             getLogger().info("Found Authorization header" + accessToken);
-        } else if (accessToken == null || accessToken.length() == 0) {
-            // check the query for token
-            getLogger().info(
-                    "Didn't contain a Authorization header - checking query");
+        }
+        //Check query for token
+        else if(accessToken == null || accessToken.length() == 0){
+            getLogger().info("Didn't contain a Authorization header - checking query");
             accessToken = req.getOriginalRef().getQueryAsForm()
-                    .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
+            .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
 
-            // Last chance, checking body
-            if (accessToken == null || accessToken.length() == 0) {
-                if (req.getMethod() == Method.POST
+            //check body if all else fail:
+            if(accessToken == null || accessToken.length() == 0) {
+                if(req.getMethod() == Method.POST
                         || req.getMethod() == Method.PUT
                         || req.getMethod() == Method.DELETE) {
                     Representation r = req.getEntity();
-
-                    if (r != null
-                            && MediaType.APPLICATION_WWW_FORM.equals(r
-                                    .getMediaType())) {
+                    if(r != null && MediaType.APPLICATION_WWW_FORM.equals(r
+                            .getMediaType())) {
                         // Search for an OAuth Token
                         Form form = new Form(r);
-                        accessToken = form
-                                .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
-
+                        accessToken = form.getFirstValue(OAuthServerResource.OAUTH_TOKEN);
                         if (accessToken != null && accessToken.length() > 0) {
                             // restore the entity body
                             req.setEntity(form.getWebRepresentation());
@@ -208,6 +289,13 @@ public class OAuthAuthorizer extends Authorizer {
                 }
             }
         }
+        return accessToken;
+    }
+
+    @Override
+    public boolean authorize(Request req, Response resp){
+        getLogger().info("Checking for param access_token");
+        String accessToken = getAccessToken(req);
 
         if (accessToken == null || accessToken.length() == 0) {
             ChallengeRequest cr = new ChallengeRequest(
@@ -217,107 +305,37 @@ public class OAuthAuthorizer extends Authorizer {
             cr.setParameters(parameters);
             resp.getChallengeRequests().add(cr);
             resp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-        } else {
+        }
+        else {
             getLogger().info("Found Access Token " + accessToken);
             ClientResource authResource = new CookieCopyClientResource(
                     validateRef);
-            JSONObject request = new JSONObject();
 
+            JSONObject request;
             try {
-                Reference uri = req.getOriginalRef();
-                request.put("access_token", accessToken);
-
-                // TODO it would be better to do this once not on every request
-                ScopedResource scoped = null;
-                getLogger().info("Looking for a scoped resource");
-
-                for (Restlet next = getNext(); next != null;) {
-                    if (next instanceof Finder) {
-                        Finder f = (Finder) next;
-                        ServerResource sr = f.find(req, resp);
-
-                        if (sr instanceof ScopedResource) {
-                            scoped = (ScopedResource) sr;
-                        }
-                        break;
-                        // next = ((Filter)next).getNext();
-                    } else if (next instanceof Filter) {
-                        next = ((Filter) next).getNext();
-                    } else if (next instanceof Router) {
-                        next = ((Router) next).getNext(req, resp);
-                    } else {
-                        getLogger().warning(
-                                "Unsupported class found in loop : "
-                                        + next.getClass().getCanonicalName());
-                        break;
-                    }
-                }
-
-                getLogger().info("After scoped resource - " + scoped);
-
-                if (scoped != null) {
-                    String owner = scoped.getOwner(uri);
-
-                    if (owner != null && owner.length() > 0)
-                        request.put("owner", owner);
-
-                    getLogger().info("Found owner = " + owner);
-                    // More job here but easier for the developer to use []
-                    //OLD String[] scopes = scoped.getScope(uri, req.getMethod());
-                    List <Role> roles = scoped.getRoles(uri, req.getMethod());
-                    getLogger().info("Found scopes = " + roles);
-
-                    if (roles != null && roles.size() > 0) {
-                        JSONArray jArray = new JSONArray();
-
-                        for (Role r : roles)
-                            jArray.put(OAuthUtils.roleToScope(r));
-
-                        request.put("scope", jArray);
-                    }
-                }
-
-                request.put("uri", uri.getHierarchicalPart());
-                // GET SIZE TO HANDLE BUG IN GLASSFISH
-                JsonRepresentation repr = new JsonRepresentation(request);
-                StringRepresentation sr = new StringRepresentation(
-                        request.toString());
-                sr.setCharacterSet(repr.getCharacterSet());
-                repr.setSize(sr.getSize());
+                request = createValidationRequest(accessToken, req);
+                JsonRepresentation repr = this.createJsonRepresentation(request);
 
                 getLogger().info("Posting to validator... json = " + request);
                 // RETRIEVE JSON...WORKAROUND TO HANDLE ANDROID
                 Representation r = authResource.post(repr);
                 getLogger().info("After posting to validator...");
                 repr.release();
-                sr.release();
-
-                getLogger().info(
-                        "Got Respose from auth resource OK "
-                                + r.getClass().getCanonicalName());
+                getLogger().info("Got Respose from auth resource OK "
+                        + r.getClass().getCanonicalName());
                 JsonRepresentation returned = new JsonRepresentation(r);
 
                 // GET OBJECT
                 JSONObject response = returned.getJsonObject();
                 boolean authenticated = response.getBoolean("authenticated");
 
-                if (response.has("tokenOwner")) {
-                    String tokenOwner = response.getString("tokenOwner");
-                    getLogger().info(
-                            "User " + tokenOwner + " is accessing : "
-                                    + req.getOriginalRef());
-                    User user = new User(tokenOwner, accessToken);
-                    // Set the user so that the Resource knows who is executing
-                    // Based on the person issuing the token in the first place.
-                    req.getClientInfo().setUser(user);
-                    req.getClientInfo().setAuthenticated(true);
-                }
+                if (response.has("tokenOwner"))
+                    this.setUser(req, response, accessToken);
+
 
                 String error = null;
-
-                if (response.has("error")) {
+                if (response.has("error"))
                     error = response.getString("error");
-                }
 
                 getLogger().info("In Auth Filer -> " + authenticated);
 
@@ -326,43 +344,10 @@ public class OAuthAuthorizer extends Authorizer {
                 r.release();
                 authResource.release();
 
-                if (authenticated)
-                    return true;
-                else if (error != null && error.length() > 0) {
-                    ChallengeRequest cr = new ChallengeRequest(
-                            ChallengeScheme.HTTP_OAUTH, "oauth"); // TODO set
-                    // realm
-                    Series<Parameter> parameters = new Form();
-                    parameters.add("error", error);
-                    OAuthError code = OAuthError.valueOf(error);
+                if(authenticated) return true;
 
-                    switch (code) {
-                    case INVALID_REQUEST:
-                        // TODO report bug in Restlet and verify, can not handle
-                        // space char.
-                        // parameters.add("error_description",
-                        // "The request is missing a required parameter.");
-                        resp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-                        break;
-                    case INVALID_TOKEN:
-                    case EXPIRED_TOKEN:
-                        // parameters.add("error_description",
-                        // "The access token provided is invalid.");
-                        resp.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-                        break;
-                    case INSUFFICIENT_SCOPE:
-                        // parameters.add("error_description",
-                        // "The request requires higher privileges than provided "
-                        // +"by the access token.");
-                        resp.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-                        break;
-
-                    }
-
-                    // parameters.add("error_uri",authorizeRef.toString());
-                    cr.setParameters(parameters);
-                    resp.getChallengeRequests().add(cr);
-                }
+                //handle any errors:
+                handleError(error, resp);
 
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
@@ -379,6 +364,7 @@ public class OAuthAuthorizer extends Authorizer {
         }
 
         return false;
+
     }
 
     @Override

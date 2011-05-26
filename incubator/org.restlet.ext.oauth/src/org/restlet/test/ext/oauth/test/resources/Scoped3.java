@@ -35,7 +35,6 @@ import java.util.List;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
-import org.restlet.ext.oauth.ScopedResource;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
@@ -43,11 +42,11 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 import org.restlet.security.Role;
 
-public class Scoped3 extends ServerResource implements ScopedResource{
+public class Scoped3 extends ServerResource{
 
 	@Get
 	public Representation getDummy() {
-		return new StringRepresentation("TestSuccessful", MediaType.TEXT_HTML);
+		return new StringRepresentation(""+this.getRequest().getAttributes().get("oauth-user"), MediaType.TEXT_HTML);
 	}
 	
 	@Post("form")
@@ -55,13 +54,5 @@ public class Scoped3 extends ServerResource implements ScopedResource{
 		//return null;
 		//return new EmptyRepresentation();
 		return new StringRepresentation("ScopedDummy");
-	}
-
-	public String getOwner(Reference uri) {
-		return "user3";
-	}
-
-	public List <Role> getRoles(Reference uri, Method method) {
-		return null;
 	}
 }

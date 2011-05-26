@@ -254,7 +254,7 @@ public class MultipleUserAuthorizationServerTest {
                 }
                 try {
                     String text = r.getText();
-                    if (!text.equalsIgnoreCase("TestSuccessful")) {
+                    if (!text.equalsIgnoreCase("user"+u)) {
                         SingletonStore.I().addError();
                     }
                 } catch (Exception e) {

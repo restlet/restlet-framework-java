@@ -30,7 +30,11 @@
 
 package org.restlet.ext.oauth.experimental;
 
-import org.restlet.ext.oauth.ScopedResource;
+import java.util.List;
+
+import org.restlet.data.Method;
+import org.restlet.data.Reference;
+import org.restlet.security.Role;
 
 /**
  * EXPERIMENTAL, and not part of the OAuth specification Implementation might
@@ -43,5 +47,9 @@ import org.restlet.ext.oauth.ScopedResource;
  * 
  * @author Kristoffer Gronowski
  */
-public interface DiscoverableResource extends ScopedResource {
+public interface DiscoverableResource{
+    
+    public String getOwner(Reference uri);
+    public List <Role> getRoles(Reference uri, Method method);
+    
 }

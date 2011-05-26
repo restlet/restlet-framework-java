@@ -30,11 +30,15 @@
 
 package org.restlet.test.ext.oauth.test.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.ext.oauth.OAuthAuthorizer;
 import org.restlet.routing.Router;
+import org.restlet.security.Role;
 import org.restlet.test.ext.oauth.provider.AuthorizationServerTest;
 
 public class OAuthProtectedTestApplication extends Application {
@@ -60,6 +64,10 @@ public class OAuthProtectedTestApplication extends Application {
 			AuthorizationServerTest.prot+"://localhost:"+
 			AuthorizationServerTest.serverPort+"/oauth/authorize"
 			);
+		List <Role> roles = new ArrayList <Role> ();
+		roles.add(new Role("foo", null));
+		roles.add(new Role("bar", null));
+		auth2.setAuthorizedRoles(roles);
 		auth2.setNext(ScopedDummyResource.class);
 		router.attach("/scoped",auth2);
 		

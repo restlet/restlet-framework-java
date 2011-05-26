@@ -44,17 +44,6 @@ public class OAuthMultipleUserProtectedTestApplication extends Application {
 		Context ctx = getContext();
 		Router router = new Router(ctx);
 		
-		/*
-		OAuthAuthorizer auth = new OAuthAuthorizer(
-				AuthorizationServerTest.prot+"://localhost:"
-				+AuthorizationServerTest.serverPort+
-			"/oauth/validate",
-			AuthorizationServerTest.prot+"://localhost:"+
-			AuthorizationServerTest.serverPort+"/oauth/authorize"
-			);
-		auth.setNext(DummyResource.class);
-		router.attach("/protected",auth);
-		*/
 		
 		OAuthAuthorizer auth2 = new OAuthAuthorizer(
 				AuthorizationServerTest.prot+"://localhost:"
@@ -63,12 +52,9 @@ public class OAuthMultipleUserProtectedTestApplication extends Application {
 			AuthorizationServerTest.prot+"://localhost:"+
 			MultipleUserAuthorizationServerTest.oauthServerPort+"/oauth/authorize"
 			);
-		//auth2.setNext(ScopedDummyResource.class);
-		ScopedRouter sr = new ScopedRouter();
-		auth2.setNext(sr);
-		router.attach("/scoped", auth2);
-		sr.init();
-		
+		System.out.println("attaching resource");
+		auth2.setNext(Scoped3.class);
+		router.attach("/scoped/{oauth-user}", auth2);
 		return router;
 	}
 
