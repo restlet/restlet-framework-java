@@ -51,8 +51,7 @@ public class RangeReader {
      * @param representation
      *            Representation to update.
      */
-    public static void update(String value,
-            Representation representation) {
+    public static void update(String value, Representation representation) {
         String prefix = "bytes ";
         if (value != null && value.startsWith(prefix)) {
             value = value.substring(prefix.length());
@@ -61,7 +60,8 @@ public class RangeReader {
             int index1 = value.indexOf("/");
 
             if (index != -1) {
-                int startIndex = Integer.parseInt(value.substring(0, index));
+                int startIndex = (index == 0) ? 0 : Integer.parseInt(value
+                        .substring(0, index));
                 int endIndex = Integer.parseInt(value.substring(index + 1,
                         index1));
 

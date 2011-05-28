@@ -81,9 +81,17 @@ public class RangeWriter extends HeaderWriter<Range> {
         } else if (range.getIndex() == Range.INDEX_LAST) {
             if (range.getSize() != Range.SIZE_MAX) {
                 if (size != Representation.UNKNOWN_SIZE) {
-                    b.append(size - range.getSize());
-                    b.append("-");
-                    b.append(size - 1);
+                    if (range.getSize() <= size) {
+                        b.append(size - range.getSize());
+                        b.append("-");
+                        b.append(size - 1);
+                    } else {
+                        throw new IllegalArgumentException(
+                                "The size of the range ("
+                                        + range.getSize()
+                                        + ") is higher than the size of the entity ("
+                                        + size + ").");
+                    }
                 } else {
                     throw new IllegalArgumentException(
                             "The entity has an unknown size, can't determine the last byte position.");

@@ -184,23 +184,19 @@ public abstract class ClientCall extends Call {
                 result = getRepresentation(stream);
             } else if (channel != null) {
                 result = getRepresentation(channel);
-                // } else {
-                // result = new EmptyRepresentation();
             }
         }
 
-        result = HeaderUtils.extractEntityHeaders(responseHeaders, result);
         if (result != null) {
             result.setSize(size);
 
             // Informs that the size has not been specified in the header.
             if (size == Representation.UNKNOWN_SIZE) {
                 getLogger()
-                        .fine(
-                                "The length of the message body is unknown. The entity must be handled carefully and consumed entirely in order to surely release the connection.");
+                        .fine("The length of the message body is unknown. The entity must be handled carefully and consumed entirely in order to surely release the connection.");
             }
         }
-        // }
+        result = HeaderUtils.extractEntityHeaders(responseHeaders, result);
 
         return result;
     }
@@ -322,8 +318,7 @@ public abstract class ClientCall extends Call {
         } catch (IOException ioe) {
             getHelper()
                     .getLogger()
-                    .log(
-                            Level.FINE,
+                    .log(Level.FINE,
                             "An error occured during the communication with the remote HTTP server.",
                             ioe);
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);

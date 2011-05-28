@@ -159,7 +159,7 @@ public class InputStreamChannel implements ReadableByteChannel,
             byte[] byteArray = target.array();
 
             result = getInputStream().read(byteArray, target.position(),
-                    readLength);
+                    Math.min(readLength, target.remaining()));
 
             if (result > 0) {
                 target.position(target.position() + result);
