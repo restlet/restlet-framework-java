@@ -46,19 +46,22 @@ import org.restlet.routing.Filter;
 public abstract class CompositeHelper<T extends Restlet> extends
         RestletHelper<T> {
 
+    /** The first inbound filter. */
+    private volatile Filter firstInboundFilter;
+
     /** The first outbound Filter. */
     private volatile Filter firstOutboundFilter;
 
-    /** The first inbound Restlet. */
+    /** The next Restlet after the inbound chain. */
     private volatile Restlet inboundNext;
 
-    /** The last inbound Filter. */
+    /** The last inbound filter. */
     private volatile Filter lastInboundFilter;
 
-    /** The last outbound Filter. */
+    /** The last outbound filter. */
     private volatile Filter lastOutboundFilter;
 
-    /** The first outbound Restlet. */
+    /** The next Restlet after the outbound chain. */
     private volatile Restlet outboundNext;
 
     /**
@@ -70,6 +73,7 @@ public abstract class CompositeHelper<T extends Restlet> extends
     public CompositeHelper(T helped) {
         super(helped);
         this.inboundNext = null;
+        this.firstInboundFilter = null;
         this.firstOutboundFilter = null;
         this.lastInboundFilter = null;
         this.lastOutboundFilter = null;
@@ -85,7 +89,9 @@ public abstract class CompositeHelper<T extends Restlet> extends
     protected synchronized void addInboundFilter(Filter filter) {
         Restlet next = getInboundNext();
 
-        if (getLastInboundFilter() != null) {
+        if (getFirstInboundFilter() == null) {
+            setFirstInboundFilter(filter);
+        } else if (getLastInboundFilter() != null) {
             getLastInboundFilter().setNext(filter);
         }
 
@@ -123,6 +129,15 @@ public abstract class CompositeHelper<T extends Restlet> extends
     }
 
     /**
+     * Returns the first inbound filter.
+     * 
+     * @return The first inbound filter.
+     */
+    public Filter getFirstInboundFilter() {
+        return firstInboundFilter;
+    }
+
+    /**
      * Returns the first outbound filter.
      * 
      * @return The first outbound filter.
@@ -149,18 +164,18 @@ public abstract class CompositeHelper<T extends Restlet> extends
     }
 
     /**
-     * Returns the last inbound Filter.
+     * Returns the last inbound filter.
      * 
-     * @return the last inbound Filter.
+     * @return the last inbound filter.
      */
     protected Filter getLastInboundFilter() {
         return this.lastInboundFilter;
     }
 
     /**
-     * Returns the last outbound Filter.
+     * Returns the last outbound filter.
      * 
-     * @return the last outbound Filter.
+     * @return the last outbound filter.
      */
     protected Filter getLastOutboundFilter() {
         return this.lastOutboundFilter;
@@ -187,8 +202,8 @@ public abstract class CompositeHelper<T extends Restlet> extends
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
-        if (getInboundNext() != null) {
-            getInboundNext().handle(request, response);
+        if (getFirstInboundFilter() != null) {
+            getFirstInboundFilter().handle(request, response);
         } else {
             response.setStatus(Status.SERVER_ERROR_INTERNAL);
             getHelped()
@@ -198,6 +213,16 @@ public abstract class CompositeHelper<T extends Restlet> extends
                                     + getHelped().getClass().getName()
                                     + " class has no Restlet defined to process calls. Maybe it wasn't properly started.");
         }
+    }
+
+    /**
+     * Sets the first inbound filter.
+     * 
+     * @param firstInboundFilter
+     *            The first inbound filter.
+     */
+    protected void setFirstInboundFilter(Filter firstInboundFilter) {
+        this.firstInboundFilter = firstInboundFilter;
     }
 
     /**
@@ -225,20 +250,20 @@ public abstract class CompositeHelper<T extends Restlet> extends
     }
 
     /**
-     * Sets the last inbound Filter.
+     * Sets the last inbound filter.
      * 
      * @param last
-     *            The last inbound Filter.
+     *            The last inbound filter.
      */
     protected void setLastInboundFilter(Filter last) {
         this.lastInboundFilter = last;
     }
 
     /**
-     * Sets the last outbound Filter.
+     * Sets the last outbound filter.
      * 
      * @param last
-     *            The last outbound Filter.
+     *            The last outbound filter.
      */
     protected void setLastOutboundFilter(Filter last) {
         this.lastOutboundFilter = last;
