@@ -30,12 +30,13 @@
 
 package org.restlet.test.engine;
 
-import org.restlet.test.engine.connector.HttpInboundRequestTestCase;
-import org.restlet.test.engine.io.BioUtilsTestCase;
-import org.restlet.test.engine.io.ReaderInputStreamTestCase;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.restlet.test.engine.connector.HttpInboundRequestTestCase;
+import org.restlet.test.engine.io.BioUtilsTestCase;
+import org.restlet.test.engine.io.BufferTestCase;
+import org.restlet.test.engine.io.ReaderInputStreamTestCase;
 
 /**
  * Suite of unit tests for the Noelios Restlet Engine.
@@ -58,6 +59,7 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(AlphaNumericComparatorTestCase.class);
         addTestSuite(AnnotationUtilsTestCase.class);
         addTestSuite(Base64TestCase.class);
+        addTestSuite(BufferTestCase.class);
         addTestSuite(BioUtilsTestCase.class);
         addTestSuite(CookiesTestCase.class);
         addTestSuite(ContentTypeTestCase.class);

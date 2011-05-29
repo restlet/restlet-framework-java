@@ -67,11 +67,11 @@ public class Buffer {
         return result;
     }
 
-    /** The index of the buffer's beginning while filling. */
-    private volatile int fillBegin;
-
     /** The byte buffer. */
     private final ByteBuffer bytes;
+
+    /** The index of the buffer's beginning while filling. */
+    private volatile int fillBegin;
 
     /** The byte buffer IO state. */
     private volatile BufferState state;
@@ -390,6 +390,17 @@ public class Buffer {
         }
 
         return result;
+    }
+
+    /**
+     * Fills the byte buffer by copying as many bytes as possible from the
+     * source string, using the default platform encoding.
+     * 
+     * @param source
+     *            The source string.
+     */
+    public void fill(String source) {
+        fill(source.getBytes());
     }
 
     /**
