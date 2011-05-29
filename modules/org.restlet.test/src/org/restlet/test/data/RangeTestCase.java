@@ -50,6 +50,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Directory;
@@ -308,7 +309,7 @@ public class RangeTestCase extends RestletTestCase {
             Request request;
             Response response;
 
-            // BioUtils.delete(testDir, true);
+            BioUtils.delete(testDir, true);
             Client client = new Client(new Context(), Protocol.HTTP);
             client.getContext().getParameters().add("tracing", "true");
 
@@ -410,7 +411,7 @@ public class RangeTestCase extends RestletTestCase {
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
             assertEquals("20000998", response.getEntity().getText());
 
-            // BioUtils.delete(testDir, true);
+            BioUtils.delete(testDir, true);
             client.stop();
         }
     }
