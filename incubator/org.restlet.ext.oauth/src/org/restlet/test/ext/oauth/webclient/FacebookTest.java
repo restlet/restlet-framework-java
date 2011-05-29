@@ -20,7 +20,7 @@ import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.ext.oauth.OAuthHelper;
-import org.restlet.ext.oauth.internal.OAuthUtils;
+import org.restlet.ext.oauth.experimental.FB;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.test.ext.oauth.test.resources.FbClientTestApplication;
@@ -75,7 +75,7 @@ public class FacebookTest {
         // Same Uri as the web client
         String callbackUri = prot + "://localhost:" + serverPort
                 + "/webclient/";
-        Series<CookieSetting> cookies = OAuthUtils.fbUserAgent(
+        Series<CookieSetting> cookies = FB.fbUserAgent(
                 client.getOauthParameters(), callbackUri, "changeme",
                 "changeme");
         assertNotNull(cookies);

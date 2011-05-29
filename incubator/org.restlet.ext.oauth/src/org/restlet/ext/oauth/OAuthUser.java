@@ -30,6 +30,16 @@
 
 package org.restlet.ext.oauth;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.restlet.Context;
+import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.security.User;
 
 /**
@@ -92,5 +102,81 @@ public class OAuthUser extends User {
 
     public void setState(String state) {
         this.state = state;
+    }
+    
+    //TODO: This should eventually be removed...
+    /**
+     * Retrieve the access token from the user if and only if the user is of
+     * type OAuthUser
+     * 
+     * @param user
+     * @return access token
+     * @see org.restlet.ext.oauth.OAuthUser
+     */
+    @Deprecated
+    public static String getToken(User user) {
+        String token = null;
+        if (user != null) {
+            if (user instanceof OAuthUser) {
+                OAuthUser ou = (OAuthUser) user;
+                token = ou.getAccessToken();
+            } else { // Token is stored in secret field
+                token = new String(user.getSecret());
+            }
+        }
+        return token;
+    }
+    
+    /**
+     * Convert successful JSON token body responses to OAuthUser.
+     * 
+     * @param body
+     *            Representation containing a successful JSON body element.
+     * @return OAuthUser object containing accessToken, refreshToken and
+     *         expiration time.
+     */
+
+    public static OAuthUser createJson(Representation body) {
+        Logger log = Context.getCurrentLogger();
+        try {
+            // Debug test for tracing back error
+            String text = body.getText();
+            log.info("Debug JSON body = " + text);
+            StringRepresentation sr = new StringRepresentation(text);
+            
+            JsonRepresentation returned = new JsonRepresentation(sr);
+            JSONObject answer = returned.getJsonObject();
+
+            log.info("Got answer on JSON = " + answer.toString());
+
+            String accessToken = null;
+            if (answer.has(OAuthServerResource.ACCESS_TOKEN)) {
+                accessToken = answer
+                        .getString(OAuthServerResource.ACCESS_TOKEN);
+                log.info("AccessToken = " + accessToken);
+            }
+
+            String refreshToken = null;
+            if (answer.has(OAuthServerResource.REFRESH_TOKEN)) {
+                refreshToken = answer
+                        .getString(OAuthServerResource.REFRESH_TOKEN);
+                log.info("RefreshToken = " + refreshToken);
+            }
+
+            long expiresIn = 0;
+            if (answer.has(OAuthServerResource.EXPIRES_IN)) {
+                expiresIn = answer.getLong(OAuthServerResource.EXPIRES_IN);
+                log.info("ExpiresIn = " + expiresIn);
+            }
+
+            // Store away the user
+            return new OAuthUser(null, accessToken, refreshToken, expiresIn);
+
+        } catch (JSONException e) {
+            log.log(Level.WARNING, "Error parsing JSON", e);
+        } catch (IOException e) {
+            log.log(Level.WARNING, "Error creating representation JSON", e);
+        }
+        return null;
     }
 }

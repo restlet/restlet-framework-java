@@ -93,7 +93,7 @@ public class OauthProxyV2 extends Authorizer {
             // form.add("redirect_uri",
             // request.getReference().toUrl().toString());
             //form.add("scope", params.getScope());
-            form.add("scope", OAuthUtils.rolesToScope(params.getRoles()));
+            form.add("scope", Scopes.toScope(params.getRoles()));
             try {
                 form.encode();
             } catch (IOException ioe) {

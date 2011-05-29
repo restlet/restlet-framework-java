@@ -42,7 +42,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.internal.AuthSession;
-import org.restlet.ext.oauth.internal.OAuthUtils;
+import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -318,7 +318,7 @@ public class AuthorizationServerResource extends OAuthServerResource {
             List <Role> roles = user.getGrantedRoles();
             if (roles != null && roles.size() > 0) {
                 for (Role r : roles)
-                    ref.addQueryParameter("grantedScope", OAuthUtils.roleToScope(r));
+                    ref.addQueryParameter("grantedScope", Scopes.toScope(r));
             }
         }
 

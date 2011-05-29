@@ -39,7 +39,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.ExpireToken;
-import org.restlet.ext.oauth.internal.OAuthUtils;
+import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
@@ -147,7 +147,7 @@ public class ValidationServerResource extends OAuthServerResource {
                         if (scopes.isNull(i))
                             continue;
                         String scope = scopes.getString(i);
-                        boolean granted = user.isGrantedRole(OAuthUtils.scopeToRole(scope), owner);
+                        boolean granted = user.isGrantedRole(Scopes.toRole(scope), owner);
                         getLogger().info(
                                 "Granted permission : " + scope + " = "
                                         + granted);

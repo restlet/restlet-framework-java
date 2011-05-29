@@ -57,12 +57,11 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.security.AuthenticatorHelper;
-import org.restlet.ext.oauth.OAuthFlows;
+import org.restlet.ext.oauth.Flow;
 import org.restlet.ext.oauth.OAuthHelper;
 import org.restlet.ext.oauth.OAuthParameters;
 import org.restlet.ext.oauth.OAuthUser;
-import org.restlet.ext.oauth.OAuthFlows.Flow;
-import org.restlet.ext.oauth.internal.OAuthUtils;
+import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.test.ext.oauth.test.resources.OAuthClientTestApplication;
@@ -163,7 +162,7 @@ public class MultipleUserAuthorizationServerTest {
     @Test
     public void multipleRequestTest() throws Exception {
         int numThreads = 1;
-        int numCalls = 1;
+        int numCalls = 10;
         int totRequests = (numThreads * numCalls) + numThreads;
         Thread[] clients = new Thread[numThreads];
         Context c = new Context();
@@ -221,7 +220,7 @@ public class MultipleUserAuthorizationServerTest {
                     AuthorizationServerTest.prot
                             + "://localhost:"
                             + MultipleUserAuthorizationServerTest.oauthServerPort
-                            + "/oauth/", OAuthUtils.scopesToRole("foo bar"));
+                            + "/oauth/", Scopes.toRoles("foo bar"));
         }
 
         @Override
@@ -229,8 +228,8 @@ public class MultipleUserAuthorizationServerTest {
             for(int i = 0; i < numTimes; i++){
                 //System.out.println(this.getName()+" "+i);
                 int u = r.nextInt(5) + 1;
-                OAuthUser user = OAuthFlows.doFlow(params, null, null, 
-                        "user"+u, "pass"+u, null, myClient, Flow.PASSWORD);
+                OAuthUser user = Flow.PASSWORD.execute(params, null, null, 
+                        "user"+u, "pass"+u, null, myClient);
                 /*OAuthUser user = OAuthUtils.passwordFlow(params, "user" + u,
                         "pass" + u, myClient);*/
                 if (user == null) {

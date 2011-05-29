@@ -42,7 +42,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.util.Base64;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.ExpireToken;
-import org.restlet.ext.oauth.internal.OAuthUtils;
+import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
@@ -156,7 +156,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         // Adding all scopes since super-user
         //String[] scopes = parseScope(params.getFirstValue(SCOPE));
-        List <Role> roles = OAuthUtils.scopesToRole(params.getFirstValue(SCOPE));
+        List <Role> roles = Scopes.toRoles(params.getFirstValue(SCOPE));
         for (Role r : roles) {
             getLogger().info("Requested scopes none flow = " + roles);
             user.addRole(r, "");

@@ -1,33 +1,3 @@
-/**
- * Copyright 2005-2011 Noelios Technologies.
- * 
- * The contents of this file are subject to the terms of one of the following
- * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
- * "Licenses"). You can select the license that you prefer but you may not use
- * this file except in compliance with one of these Licenses.
- * 
- * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0.html
- * 
- * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1.php
- * 
- * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1.php
- * 
- * You can obtain a copy of the EPL 1.0 license at
- * http://www.opensource.org/licenses/eclipse-1.0.php
- * 
- * See the Licenses for the specific language governing permissions and
- * limitations under the Licenses.
- * 
- * Alternatively, you can obtain a royalty free commercial license with less
- * limitations, transferable or non-transferable, directly at
- * http://www.noelios.com/products/restlet-engine
- * 
- * Restlet is a registered trademark of Noelios Technologies.
- */
-
 package org.restlet.ext.oauth;
 
 import java.io.IOException;
@@ -38,18 +8,31 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
-import org.restlet.ext.oauth.internal.OAuthUtils;
+import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 /**
- * Class that lets clients retrieve tokens using different OAuth2 flows.
+ * Enum that lets clients retrieve tokens using different OAuth2 flows.
  * Currently this class enables use of the NONE (Autonomous) flow, the PASSWORD
  * flow and UserAgent flow. It also supports a client to refresh a token.
  * 
  * The class defines one function doFlow that wraps the above specified ways of
  * retrieving a token from an authorization server.
+ * 
+ * Example:
+ * <pre>
+ * {@code
+ * OAuthParameters params = new OAuthParameters("clientId", "clientSecret");
+ * Flow f = Flow.NONE;
+ * User u = f.execute(params, null, null, null, null, null);
+ *
+ * f = Flow.PASSWORD;
+ * u = f.execute(params, null, null, "username", "password", null);
+ * 
+ * }
+ * </pre>
  * 
  * @see <a
  *      href="http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-1.4.2">User
@@ -65,12 +48,9 @@ import org.restlet.resource.ClientResource;
  * @author Martin Svensson
  * @author Kristoffer Gronowski
  */
-public class OAuthFlows {
-
-    public enum Flow {
-        NONE, PASSWORD, USERAGENT, REFRESH
-    };
-
+public enum Flow {
+    NONE, PASSWORD, USERAGENT, REFRESH;
+    
     /**
      * Executes a specific OAuth Flow (including token refresh). Based on the
      * chosen flow some of the parameters need to be set (see description). Upon
@@ -90,17 +70,16 @@ public class OAuthFlows {
      *            used in the password flow
      * @param refreshToken
      *            the token to refresh, used in the refresh flow
-     * @param flow
-     *            the flow to execute
      * @return OAuthUser containing a token that can be used for access
      */
-    public static OAuthUser doFlow(OAuthParameters params, String callbackUri,
+    public OAuthUser execute(OAuthParameters params, String callbackUri,
             String state, String username, String password,
-            String refreshToken, Flow flow) {
-        return doFlow(params, callbackUri, state, username, password,
-                refreshToken, null, flow);
+            String refreshToken) {
+        
+        return execute(params, callbackUri, state, username, password,
+                refreshToken, null);
     }
-
+    
     /**
      * Executes a specific OAuth Flow (including token refresh). Based on the
      * chosen flow some of the parameters need to be set (see description). Upon
@@ -126,16 +105,16 @@ public class OAuthFlows {
      *            provided client
      * @return OAuthUser containing a token that can be used for access
      */
-    public static OAuthUser doFlow(OAuthParameters params, String callbackUri,
+    public OAuthUser execute(OAuthParameters params, String callbackUri,
             String state, String username, String password,
-            String refreshToken, org.restlet.Client c, Flow flow) {
-        if (flow == Flow.PASSWORD) {
+            String refreshToken, org.restlet.Client c) {
+        if (this == Flow.PASSWORD) {
             return passwordFlow(params, username, password, c);
-        } else if (flow == Flow.NONE) {
+        } else if (this == Flow.NONE) {
             return noneFlow(params, c);
-        } else if (flow == Flow.USERAGENT) {
+        } else if (this == Flow.USERAGENT) {
             return userAgent(params, callbackUri, state, c);
-        } else if (flow == Flow.REFRESH) {
+        } else if (this == Flow.REFRESH) {
             return refreshToken(params, refreshToken, c);
         }
         return null;
@@ -162,7 +141,7 @@ public class OAuthFlows {
         Representation body = tokenResource.post(form.getWebRepresentation());
 
         if (tokenResource.getStatus().isSuccess()) {
-            result = OAuthUtils.handleSuccessResponse(body);
+            result = OAuthUser.createJson(body);
         }
 
         body.release();
@@ -182,7 +161,7 @@ public class OAuthFlows {
         form.add(OAuthServerResource.REDIR_URI, callbackUri);
 
         if (params.getRoles() != null && params.getRoles().size() > 0) {
-            form.add(OAuthServerResource.SCOPE, OAuthUtils.rolesToScope(params.getRoles()));
+            form.add(OAuthServerResource.SCOPE, Scopes.toScope(params.getRoles()));
         }
 
         if (state != null && state.length() > 0) {
@@ -280,7 +259,7 @@ public class OAuthFlows {
         form.add(OAuthServerResource.CLIENT_SECRET, params.getClientSecret());
 
         if (params.getRoles() != null && params.getRoles().size() > 0) {
-            form.add(OAuthServerResource.SCOPE, OAuthUtils.rolesToScope(params.getRoles()));
+            form.add(OAuthServerResource.SCOPE, Scopes.toScope(params.getRoles()));
         }
 
         ClientResource tokenResource = new CookieCopyClientResource(
@@ -292,7 +271,7 @@ public class OAuthFlows {
         Representation body = tokenResource.post(form.getWebRepresentation());
 
         if (tokenResource.getStatus().isSuccess()) {
-            result = OAuthUtils.handleSuccessResponse(body);
+            result = OAuthUser.createJson(body);
         }
 
         body.release();
@@ -324,7 +303,7 @@ public class OAuthFlows {
             body = tokenResource.post(form.getWebRepresentation());
 
             if (tokenResource.getStatus().isSuccess()) {
-                result = OAuthUtils.handleSuccessResponse(body);
+                result = OAuthUser.createJson(body);
             }
         } finally {
             if (body != null)
@@ -334,5 +313,5 @@ public class OAuthFlows {
 
         return result;
     }
-
+    
 }

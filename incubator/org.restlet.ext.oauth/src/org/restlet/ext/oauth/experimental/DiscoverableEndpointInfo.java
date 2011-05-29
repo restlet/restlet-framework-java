@@ -39,7 +39,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Method;
-import org.restlet.ext.oauth.internal.OAuthUtils;
+import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.security.Role;
 
 /**
@@ -91,7 +91,7 @@ public class DiscoverableEndpointInfo {
 
         JSONArray a = new JSONArray();
         for (Role r : roles) {
-            a.put(OAuthUtils.roleToScope(r));
+            a.put(Scopes.toScope(r));
         }
         json.put("scopes", a);
 

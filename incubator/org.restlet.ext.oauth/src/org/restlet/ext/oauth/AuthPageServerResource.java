@@ -42,7 +42,7 @@ import org.restlet.ext.freemarker.ContextTemplateLoader;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.internal.AuthSession;
-import org.restlet.ext.oauth.internal.OAuthUtils;
+import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
@@ -242,7 +242,7 @@ public class AuthPageServerResource extends OAuthServerResource {
 
         for (String s : scopes) {
             getLogger().info("Adding scope = " + s + " to user = " + id);
-            user.addRole(OAuthUtils.scopeToRole(s), "");
+            user.addRole(Scopes.toRole(s), "");
         }
 
         String state = session.getState();

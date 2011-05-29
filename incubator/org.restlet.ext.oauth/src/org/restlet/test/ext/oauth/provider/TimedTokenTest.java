@@ -50,13 +50,11 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.security.AuthenticatorHelper;
-import org.restlet.ext.oauth.OAuthFlows;
-import org.restlet.ext.oauth.OAuthFlows.Flow;
+import org.restlet.ext.oauth.Flow;
 import org.restlet.ext.oauth.OAuthHelper;
 import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
-import org.restlet.ext.oauth.internal.OAuthUtils;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -179,15 +177,15 @@ public class TimedTokenTest {
     public void testRefresh() throws Exception {
         OAuthUser user = client.getUser();
         assertNotNull(user);
-        OAuthUser refreshed = OAuthFlows.doFlow(client.getOauthParameters(), 
-                null, null, null, null, client.getUser().getRefreshToken(), Flow.REFRESH);
+        OAuthUser refreshed = Flow.REFRESH.execute(client.getOauthParameters(), 
+                null, null, null, null, client.getUser().getRefreshToken());
         assertNotNull(user);
         String wrongToken = refreshed.getAccessToken();
         assertNotNull(wrongToken);
 
         // Back to back test
-        refreshed = OAuthFlows.doFlow(client.getOauthParameters(), 
-                null, null, null, null, client.getUser().getRefreshToken(), Flow.REFRESH);
+        refreshed = Flow.REFRESH.execute(client.getOauthParameters(), 
+                null, null, null, null, client.getUser().getRefreshToken());
         String newToken = refreshed.getAccessToken();
         assertNotNull(newToken);
 

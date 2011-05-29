@@ -39,7 +39,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.ext.oauth.internal.OAuthUtils;
+import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
@@ -53,7 +53,7 @@ public class FacebookFeedMe extends ServerResource {
     public Representation getMe() {
         Reference meRef = new Reference("https://graph.facebook.com/me");
         User u = getRequest().getClientInfo().getUser();
-        String token = OAuthUtils.getToken(u);
+        String token = OAuthUser.getToken(u);
         getLogger().info("Getting with token  = " + token);
 
         ClientResource meResource = new ClientResource(getContext(), meRef);
@@ -88,7 +88,7 @@ public class FacebookFeedMe extends ServerResource {
     public Representation postFeed(Representation input) {
         Reference feedRef = new Reference("https://graph.facebook.com/me/feed");
         User u = getRequest().getClientInfo().getUser();
-        String token = OAuthUtils.getToken(u);
+        String token = OAuthUser.getToken(u);
         getLogger().info("Publishing with token  = " + token);
 
         feedRef.addQueryParameter("access_token", token);

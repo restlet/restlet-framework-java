@@ -48,7 +48,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.util.Base64;
 import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
-import org.restlet.ext.oauth.internal.OAuthUtils;
+import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -222,7 +222,7 @@ public class OAuthProxy extends Authorizer {
             form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
             form.add(OAuthServerResource.REDIR_URI, redirectUri);
             //OLD form.add(OAuthServerResource.SCOPE, params.getScope());
-            form.add(OAuthServerResource.SCOPE, OAuthUtils.rolesToScope(params.getRoles()));
+            form.add(OAuthServerResource.SCOPE, Scopes.toScope(params.getRoles()));
 
             // if( params.getOwner() != null && params.getOwner().length() > 0 )
             // {
@@ -284,7 +284,7 @@ public class OAuthProxy extends Authorizer {
 
                 if (tokenResource.getStatus().isSuccess()) {
                     // Store away the user
-                    OAuthUser authUser = OAuthUtils.handleSuccessResponse(body);
+                    OAuthUser authUser = OAuthUser.createJson(body);
 
                     if (authUser != null) {
                         request.getClientInfo().setUser(authUser);

@@ -45,7 +45,8 @@ import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.OAuthParameters;
 import org.restlet.ext.oauth.OAuthProxy;
 import org.restlet.ext.oauth.OAuthServerResource;
-import org.restlet.ext.oauth.internal.OAuthUtils;
+import org.restlet.ext.oauth.OAuthUser;
+import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.resource.ClientResource;
 import org.restlet.security.User;
 
@@ -108,7 +109,7 @@ public class FacebookProxy extends OAuthProxy {
     public FacebookProxy(String clientId, String clientSecret, String scope,
             Map<String, String> accessTokens, Context ctx) {
         super(new OAuthParameters(clientId, clientSecret, FB_GRAPH + "oauth/",
-                OAuthUtils.scopesToRole(scope)), ctx);
+                Scopes.toRoles(scope)), ctx);
         this.accessTokens = accessTokens;
     }
 
@@ -132,7 +133,7 @@ public class FacebookProxy extends OAuthProxy {
                 getLogger().info("User from ClientInfo2 = " + user);
             }
 
-            String accessToken = OAuthUtils.getToken(user);
+            String accessToken = OAuthUser.getToken(user);
             getLogger().info("AccessToken from ClientInfo = " + accessToken);
 
             Reference meRef = new Reference("me");

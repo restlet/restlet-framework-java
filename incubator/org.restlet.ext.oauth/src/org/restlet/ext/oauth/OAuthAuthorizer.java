@@ -51,7 +51,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
-import org.restlet.ext.oauth.internal.OAuthUtils;
+import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
@@ -84,7 +84,6 @@ import org.restlet.util.Series;
  *   ...
  * }
  * }
- * @see ScopedResource
  * @see org.restlet.ext.oauth.ValidationServerResource
  * 
  * @author Kristoffer Gronowski
@@ -182,7 +181,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
         if (roles != null && roles.size() > 0) {
             JSONArray jArray = new JSONArray();
             for (Role r : roles)
-                jArray.put(OAuthUtils.roleToScope(r));
+                jArray.put(Scopes.toScope(r));
             request.put("scope", jArray);
             getLogger().info("Found scopes: "+jArray.toString());
         }
