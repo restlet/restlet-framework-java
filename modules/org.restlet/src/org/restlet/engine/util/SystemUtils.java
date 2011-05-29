@@ -51,8 +51,8 @@ public class SystemUtils {
         int result;
         final String javaVersion = System.getProperty("java.version");
         try {
-            result = Integer.parseInt(javaVersion.substring(0, javaVersion
-                    .indexOf(".")));
+            result = Integer.parseInt(javaVersion.substring(0,
+                    javaVersion.indexOf(".")));
         } catch (Exception e) {
             result = 0;
         }
@@ -131,6 +131,16 @@ public class SystemUtils {
      * i.e. it isn't instantiable and extensible.
      */
     private SystemUtils() {
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Indicates if the current operating system is in the Windows family.
+     * 
+     * @return True if the current operating system is in the Windows family.
+     */
+    public static boolean isWindows() {
+        return System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
     }
 
 }

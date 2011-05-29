@@ -551,6 +551,7 @@ public class FileClientHelper extends EntityClientHelper {
                             "Unable to delete the existing file");
                     response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
                             "Unable to delete the existing file"));
+
                     if (tmp.exists() && !isResumeUpload()) {
                         BioUtils.delete(tmp);
                     }
@@ -616,7 +617,7 @@ public class FileClientHelper extends EntityClientHelper {
                 } else {
                     // This is simple PUT of the full entity
                     FileOutputStream fos = null;
-                    
+
                     try {
                         if (file.createNewFile()) {
                             if (request.getEntity() == null) {
