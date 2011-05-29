@@ -18,6 +18,8 @@
 		</property>
 	</bean>
 
+	<util:property-path path="component.context" id="componentContext"/>
+
 	<bean id="server" class="org.restlet.ext.spring.SpringServer">
 		<constructor-arg value="http" />
 		<constructor-arg>
@@ -32,7 +34,7 @@
 			</props>
 		</property>
 	</bean>
-
+	
 	<bean id="virtualHost" class="org.restlet.ext.spring.SpringHost">
 		<constructor-arg ref="component" />
 		<property name="hostDomain" value="mydomain.com|www.mydomain.com" />
@@ -47,7 +49,7 @@
 
 	<!-- Create a child context of the component's one. -->
 	<bean id="componentChildContext" class="org.restlet.Context">
-		<lookup-method name="createChildContext" bean="component.context" />
+		<lookup-method name="createChildContext" bean="componentContext"/>
 	</bean>
 
 	<bean id="application" class="org.restlet.Application">
