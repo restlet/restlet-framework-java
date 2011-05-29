@@ -98,6 +98,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
                 .getSession().getApplicationBufferSize());
         this.sslEngine = sslEngine;
         this.sslEngineResult = null;
+        getSslEngine().setUseClientMode(isClientSide());
         initSslEngine();
     }
 
@@ -345,7 +346,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      * @throws SSLException
      */
     public void initSslEngine() throws SSLException {
-        getSslEngine().setUseClientMode(isClientSide());
         getSslEngine().beginHandshake();
     }
 
