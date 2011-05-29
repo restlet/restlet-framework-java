@@ -44,13 +44,13 @@ public class InputStreamChannel implements ReadableByteChannel,
         BlockableChannel {
 
     /** The underlying input stream. */
-    private InputStream inputStream;
+    private final InputStream inputStream;
 
     /** Indicates if the channel is blocking. */
-    private boolean blocking;
+    private final boolean blocking;
 
     /** Optional byte array buffer. */
-    private byte buffer[] = new byte[0];
+    private volatile byte buffer[] = new byte[0];
 
     /** Indicates if the underlying stream is still open. */
     private volatile boolean open;
@@ -61,15 +61,10 @@ public class InputStreamChannel implements ReadableByteChannel,
      * @param inputStream
      * @throws IOException
      */
-    public InputStreamChannel(InputStream inputStream) {
+    public InputStreamChannel(InputStream inputStream) throws IOException {
         this.inputStream = inputStream;
         this.open = true;
-
-        try {
-            this.blocking = (inputStream.available() <= 0);
-        } catch (IOException ioe) {
-            this.blocking = true;
-        }
+        this.blocking = (inputStream.available() <= 0);
     }
 
     /**
@@ -116,11 +111,13 @@ public class InputStreamChannel implements ReadableByteChannel,
      * @return The number of bytes read.
      */
     public int read(ByteBuffer target) throws IOException {
-        int result = 0;
+        int readLength = 0;
 
-        if (!isBlocking()) {
+        if (isBlocking()) {
+            // Potentially blocking read
+            readLength = IoUtils.BUFFER_SIZE;
+        } else {
             int available = getInputStream().available();
-            int readLength = 0;
 
             if (available > 0) {
                 // Attempt to read only the available byte to prevent blocking
@@ -130,15 +127,10 @@ public class InputStreamChannel implements ReadableByteChannel,
                 // occurs
                 readLength = target.remaining();
             }
-
-            // Create or reuse a specific byte array as buffer
-            result = read(target, readLength);
-        } else {
-            // Potentially blocking read
-            result = read(target, IoUtils.BUFFER_SIZE);
         }
 
-        return result;
+        // Create or reuse a specific byte array as buffer
+        return read(target, readLength);
     }
 
     /**
@@ -147,7 +139,7 @@ public class InputStreamChannel implements ReadableByteChannel,
      * @param target
      *            The target byte buffer.
      * @param readLength
-     *            The number of bytes to read.
+     *            The maximum number of bytes to read.
      * @return The number of bytes effectively read or -1 if end reached.
      * @throws IOException
      */

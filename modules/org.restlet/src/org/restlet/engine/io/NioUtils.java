@@ -155,7 +155,8 @@ public class NioUtils {
      *            The input stream to convert.
      * @return A readable byte channel.
      */
-    public static ReadableByteChannel getChannel(InputStream inputStream) {
+    public static ReadableByteChannel getChannel(InputStream inputStream)
+            throws IOException {
         ReadableByteChannel result = null;
 
         if (inputStream instanceof FileInputStream) {
