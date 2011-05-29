@@ -49,19 +49,19 @@ import org.restlet.test.RestletTestCase;
  */
 public abstract class BaseConnectorsTestCase extends RestletTestCase {
 
-    private final boolean apacheClientEnabled = true;
-
     private Component component;
 
-    private final boolean internalClientEnabled = true;
+    private final boolean enabledApacheClient = true;
 
-    private final boolean internalServerEnabled = true;
+    private final boolean enabledInternalClient = true;
 
-    private final boolean jdkNetClientEnabled = true;
+    private final boolean enabledInternalServer = true;
 
-    private final boolean jettyServerEnabled = true;
+    private final boolean enabledJdkNetClient = true;
 
-    private final boolean simpleServerEnabled = true;
+    private final boolean enabledJettyServer = true;
+
+    private final boolean enabledSimpleServer = true;
 
     protected abstract void call(String uri) throws Exception;
 
@@ -112,62 +112,62 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     }
 
     public void testInternalAndApache() throws Exception {
-        if (this.internalServerEnabled && this.apacheClientEnabled) {
+        if (this.enabledInternalServer && this.enabledApacheClient) {
             runTest(new HttpServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testInternalAndInternal() throws Exception {
-        if (this.internalServerEnabled && this.internalClientEnabled) {
+        if (this.enabledInternalServer && this.enabledInternalClient) {
             runTest(new HttpServerHelper(null), new HttpClientHelper(null));
         }
     }
 
     public void testInternalAndJdkNet() throws Exception {
-        if (this.internalServerEnabled && this.jdkNetClientEnabled) {
+        if (this.enabledInternalServer && this.enabledJdkNetClient) {
             runTest(new HttpServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
     }
 
     public void testJettyAndApache() throws Exception {
-        if (this.jettyServerEnabled && this.apacheClientEnabled) {
+        if (this.enabledJettyServer && this.enabledApacheClient) {
             runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testJettyAndInternal() throws Exception {
-        if (this.jettyServerEnabled && this.internalClientEnabled) {
+        if (this.enabledJettyServer && this.enabledInternalClient) {
             runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
                     new HttpClientHelper(null));
         }
     }
 
     public void testJettyAndJdkNet() throws Exception {
-        if (this.jettyServerEnabled && this.jdkNetClientEnabled) {
+        if (this.enabledJettyServer && this.enabledJdkNetClient) {
             runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
     }
 
     public void testSimpleAndApache() throws Exception {
-        if (this.simpleServerEnabled && this.apacheClientEnabled) {
+        if (this.enabledSimpleServer && this.enabledApacheClient) {
             runTest(new org.restlet.ext.simple.HttpServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testSimpleAndInternal() throws Exception {
-        if (this.simpleServerEnabled && this.internalClientEnabled) {
+        if (this.enabledSimpleServer && this.enabledInternalClient) {
             runTest(new org.restlet.ext.simple.HttpServerHelper(null),
                     new HttpClientHelper(null));
         }
     }
 
     public void testSimpleAndJdkNet() throws Exception {
-        if (this.simpleServerEnabled && this.jdkNetClientEnabled) {
+        if (this.enabledSimpleServer && this.enabledJdkNetClient) {
             runTest(new org.restlet.ext.simple.HttpServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
