@@ -36,7 +36,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import org.restlet.ext.oauth.Client;
-import org.restlet.ext.oauth.OAuthServerResource;
 import org.restlet.ext.oauth.OAuthServerResource.ResponseType;
 
 /**
@@ -54,7 +53,7 @@ public class AuthSession {
     private final ConcurrentMap<String, Object> attribs;
 
     //TODO: Remove?
-    private volatile long lastActivity  = System.currentTimeMillis();
+    // private volatile long lastActivity  = System.currentTimeMillis();
 
     private static final String ID = "id";
 
@@ -76,7 +75,7 @@ public class AuthSession {
     protected volatile long timeoutMin = 3600;
 
     //TODO: Most likely not needed!
-    private final ConcurrentMap<String, Object> sessions;
+    // private final ConcurrentMap<String, Object> sessions;
 
     /**
      * 
@@ -91,7 +90,7 @@ public class AuthSession {
         String sessionId = UUID.randomUUID().toString();
         //setId(sessionId); // Generate a new ID
         setAttribute(ID, sessionId);
-        this.sessions = sessions;
+        // this.sessions = sessions;
         sessions.put(sessionId, this);
         // TODO start a timer...
     }
@@ -311,6 +310,6 @@ public class AuthSession {
     private void handleActivity() {
         // long currentTime = System.currentTimeMillis();
         // long delta = currentTime - lastActivity;
-        lastActivity = System.currentTimeMillis();
+        // lastActivity = System.currentTimeMillis();
     }
 }

@@ -33,7 +33,6 @@ package org.restlet.ext.oauth;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.Request;
@@ -46,7 +45,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.util.Base64;
-import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.EmptyRepresentation;
