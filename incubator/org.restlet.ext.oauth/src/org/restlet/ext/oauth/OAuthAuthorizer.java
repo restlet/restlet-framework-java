@@ -48,6 +48,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
+import org.restlet.ext.oauth.internal.JsonStringRepresentation;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -187,15 +188,15 @@ public class OAuthAuthorizer extends RoleAuthorizer {
     }
 
     // GET SIZE TO HANDLE BUG IN GLASSFISH
-    private JsonRepresentation createJsonRepresentation(JSONObject request){    
+    /*private Representation createJsonRepresentation(JSONObject request){    
         JsonRepresentation repr = new JsonRepresentation(request);
         StringRepresentation sr = new StringRepresentation(
                 request.toString());
         sr.setCharacterSet(repr.getCharacterSet());
         repr.setSize(sr.getSize());
-        sr.release(); //OBS VERIFY!
+        sr.release();
         return repr;
-    }
+    }*/
 
     private void setUser(Request req, JSONObject response, String accessToken) throws JSONException{
         String tokenOwner = response.getString("tokenOwner");
@@ -305,8 +306,8 @@ public class OAuthAuthorizer extends RoleAuthorizer {
             JSONObject request;
             try {
                 request = createValidationRequest(accessToken, req);
-                JsonRepresentation repr = this.createJsonRepresentation(request);
-
+                //Representation repr = this.createJsonRepresentation(request);
+                Representation repr = new JsonStringRepresentation(request);
                 getLogger().info("Posting to validator... json = " + request);
                 // RETRIEVE JSON...WORKAROUND TO HANDLE ANDROID
                 Representation r = authResource.post(repr);

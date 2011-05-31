@@ -37,9 +37,7 @@ import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.Context;
-import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.security.User;
 
 /**
@@ -140,13 +138,8 @@ public class OAuthUser extends User {
         Logger log = Context.getCurrentLogger();
         try {
             // Debug test for tracing back error
-            String text = body.getText();
-            log.info("Debug JSON body = " + text);
-            StringRepresentation sr = new StringRepresentation(text);
+            JSONObject answer = new JSONObject(body.getText());
             
-            JsonRepresentation returned = new JsonRepresentation(sr);
-            JSONObject answer = returned.getJsonObject();
-
             log.info("Got answer on JSON = " + answer.toString());
 
             String accessToken = null;

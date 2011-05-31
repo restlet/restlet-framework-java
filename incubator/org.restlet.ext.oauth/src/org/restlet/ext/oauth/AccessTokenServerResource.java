@@ -30,6 +30,7 @@
 
 package org.restlet.ext.oauth;
 
+
 import java.util.List;
 import java.util.logging.Level;
 
@@ -38,13 +39,13 @@ import org.json.JSONObject;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
+
 import org.restlet.data.Status;
 import org.restlet.engine.util.Base64;
-import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.ExpireToken;
+import org.restlet.ext.oauth.internal.JsonStringRepresentation;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.ext.oauth.internal.Token;
-import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
@@ -85,39 +86,35 @@ public class AccessTokenServerResource extends OAuthServerResource {
         return body;
     }
 
-    private void doAuthCodeFlow(String clientId, String clientSecret,
+    private Representation doAuthCodeFlow(String clientId, String clientSecret,
             Form params) throws IllegalArgumentException {
         String redirUri = params.getFirstValue(REDIR_URI);
         if (redirUri == null || redirUri.length() == 0) {
-            sendError(OAuthError.INVALID_REQUEST,
-                    "Mandatory parameter redirect_uri is missing", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            return;
+            return sendError(OAuthError.INVALID_REQUEST,
+                    "Mandatory parameter redirect_uri is missing", null);
         }
 
         String code = params.getFirstValue(CODE);
         if (code == null || code.length() == 0) {
-            sendError(OAuthError.INVALID_REQUEST,
-                    "Mandatory parameter code is missing", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            return;
+            return sendError(OAuthError.INVALID_REQUEST,
+                    "Mandatory parameter code is missing", null);
         }
 
         Client client = validate(clientId, clientSecret);
         // null check on failed
         if (client == null) {
-            sendError(OAuthError.INVALID_CLIENT,
-                    "Client id verification failed.", null);
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-            return;
+            return sendError(OAuthError.INVALID_CLIENT,
+                    "Client id verification failed.", null);
         }
 
         // check the client secret
         if (!clientSecret.equals(client.getClientSecret())) {
-            sendError(OAuthError.INVALID_GRANT, "Client secret did not match",
-                    null);
             setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-            return;
+            return sendError(OAuthError.INVALID_GRANT, "Client secret did not match",
+                    null);
         }
 
         // TODO could add a cookie match on the owner but could fail if code is
@@ -134,19 +131,17 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
-
-        getResponse().setEntity(new JsonRepresentation(body));
+        return new JsonStringRepresentation(body);
     }
 
-    private void doNoneFlow(String clientId, String clientSecret, Form params) {
+    private Representation doNoneFlow(String clientId, String clientSecret, Form params) {
         Client client = validate(clientId, clientSecret);
 
         // null check on failed
         if (client == null) {
-            sendError(OAuthError.INVALID_CLIENT,
-                    "Client id verification failed.", null);
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-            return;
+            return sendError(OAuthError.INVALID_CLIENT,
+                    "Client id verification failed.", null);
         }
 
         if (!client.containsUser(AUTONOMOUS_USER))
@@ -168,44 +163,40 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
-        getResponse().setEntity(new JsonRepresentation(body));
+        return new JsonStringRepresentation(body);
     }
 
-    private void doPasswordFlow(String clientId, String clientSecret,
+    private Representation doPasswordFlow(String clientId, String clientSecret,
             Form params) {
         Client client = validate(clientId, clientSecret);
 
         // null check on failed
         if (client == null) {
-            sendError(OAuthError.INVALID_CLIENT,
-                    "Client id verification failed.", null);
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-            return;
+            return sendError(OAuthError.INVALID_CLIENT,
+                    "Client id verification failed.", null);
         }
 
         String username = params.getFirstValue(USERNAME);
         AuthenticatedUser user = null;
 
         if (username == null || (user = client.findUser(username)) == null) {
-            sendError(OAuthError.INVALID_REQUEST,
-                    "Mandatory parameter username missing.", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            return;
+            return sendError(OAuthError.INVALID_REQUEST,
+                    "Mandatory parameter username missing.", null);
         }
 
         String password = params.getFirstValue(PASSWORD);
 
         if (password == null) {
-            sendError(OAuthError.INVALID_REQUEST,
-                    "Mandatory parameter password missing.", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            return;
+            return sendError(OAuthError.INVALID_REQUEST,
+                    "Mandatory parameter password missing.", null);
         }
 
         if (!password.equals(user.getPassword())) {
-            sendError(OAuthError.INVALID_GRANT, "Password not correct.", null);
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-            return;
+            return sendError(OAuthError.INVALID_GRANT, "Password not correct.", null);
         }
 
         Token token = generator.generateToken(user, tokenTimeSec);
@@ -213,27 +204,25 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
-        getResponse().setEntity(new JsonRepresentation(body));
+        return new JsonStringRepresentation(body);
     }
 
-    private void doRefreshFlow(String clientId, String clientSecret, Form params) {
+    private Representation doRefreshFlow(String clientId, String clientSecret, Form params) {
         String rToken = params.getFirstValue(REFRESH_TOKEN);
 
         if (rToken == null || rToken.length() == 0) {
-            sendError(OAuthError.INVALID_REQUEST,
-                    "Mandatory parameter refresh_token is missing", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            return;
+            return sendError(OAuthError.INVALID_REQUEST,
+                    "Mandatory parameter refresh_token is missing", null);
         }
 
         Client client = validate(clientId, clientSecret);
 
         // null check on failed
         if (client == null) {
-            sendError(OAuthError.INVALID_CLIENT,
-                    "Client id verification failed.", null);
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-            return;
+            return sendError(OAuthError.INVALID_CLIENT,
+                    "Client id verification failed.", null);
         }
 
         Token token = generator.findToken(rToken);
@@ -250,16 +239,17 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
                 // Sets the no-store Cache-Control header
                 getResponse().setCacheDirectives(noStore);
-
-                getResponse().setEntity(new JsonRepresentation(body));
+                return new JsonStringRepresentation(body);
             } else { // error not owner
-                sendError(OAuthError.UNAUTHORIZED_CLIENT,
-                        "User does not match.", null);
                 setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+                return sendError(OAuthError.UNAUTHORIZED_CLIENT,
+                        "User does not match.", null);
+                
             }
         } else { // error no such token.
-            sendError(OAuthError.INVALID_GRANT, "Refresh token.", null);
             setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+            return sendError(OAuthError.INVALID_GRANT, "Refresh token.", null);
+            
         }
 
     }
@@ -307,24 +297,23 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         }
 
+        Representation toRet = null;
         if (clientId == null || clientId.length() == 0) {
-            sendError(OAuthError.INVALID_REQUEST,
-                    "Mandatory parameter client_id is missing", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            return new EmptyRepresentation();
+            return sendError(OAuthError.INVALID_REQUEST,
+                    "Mandatory parameter client_id is missing", null);
+            
+            //return new EmptyRepresentation();
         }
 
         if (clientSecret == null || clientSecret.length() == 0) {
-            sendError(OAuthError.INVALID_REQUEST,
-                    "Mandatory parameter client_secret is missing", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-            return new EmptyRepresentation();
+            return sendError(OAuthError.INVALID_REQUEST,
+                    "Mandatory parameter client_secret is missing", null);
+            //return new EmptyRepresentation();
         }
-
-        // String sessionId = getCookies().getFirstValue(CookieID);
-        // ConcurrentMap<String,Object> attribs = getContext().getAttributes();
-        // AuthSession session = (sessionId==null)?null:(AuthSession)
-        // attribs.get(sessionId);
+        
+        
 
         try {
             GrantType type = Enum.valueOf(GrantType.class, typeString);
@@ -334,10 +323,10 @@ public class AccessTokenServerResource extends OAuthServerResource {
                 switch (type) {
                 case authorization_code:
                     getLogger().info("doWebServerFlow() - flow");
-                    doAuthCodeFlow(clientId, clientSecret, params);
+                    toRet = doAuthCodeFlow(clientId, clientSecret, params);
                     break;
                 case password:
-                    doPasswordFlow(clientId, clientSecret, params);
+                    toRet = doPasswordFlow(clientId, clientSecret, params);
                     break;
                 case assertion:
                     sendError(OAuthError.UNSUPPORTED_GRANT_TYPE,
@@ -345,34 +334,33 @@ public class AccessTokenServerResource extends OAuthServerResource {
                     setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
                     break;
                 case refresh_token:
-                    doRefreshFlow(clientId, clientSecret, params);
+                    toRet = doRefreshFlow(clientId, clientSecret, params);
                     break;
                 case none:
-                    doNoneFlow(clientId, clientSecret, params);
+                    toRet = doNoneFlow(clientId, clientSecret, params);
                     break;
                 default:
-                    sendError(OAuthError.UNSUPPORTED_GRANT_TYPE,
+                    toRet = sendError(OAuthError.UNSUPPORTED_GRANT_TYPE,
                             "Flow not supported", null);
                     setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
                 }
             } catch (IllegalArgumentException e) { // can not exchange code.
-                sendError(OAuthError.INVALID_GRANT, e.getMessage(), null);
+                toRet = sendError(OAuthError.INVALID_GRANT, e.getMessage(), null);
                 setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
             }
         } catch (IllegalArgumentException iae) {
-            sendError(OAuthError.UNSUPPORTED_GRANT_TYPE, "Flow not supported",
+            toRet = sendError(OAuthError.UNSUPPORTED_GRANT_TYPE, "Flow not supported",
                     null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         } catch (NullPointerException npe) {
-            sendError(OAuthError.UNSUPPORTED_GRANT_TYPE, "Flow not supported",
+            toRet = sendError(OAuthError.UNSUPPORTED_GRANT_TYPE, "Flow not supported",
                     null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         }
-
-        return getResponseEntity();
+        return toRet;
     }
 
-    protected void sendError(OAuthError error, String description,
+    protected Representation sendError(OAuthError error, String description,
             String errorUri) {
         JSONObject result = new JSONObject();
 
@@ -386,13 +374,12 @@ public class AccessTokenServerResource extends OAuthServerResource {
             if (errorUri != null && errorUri.length() > 0) {
                 result.put(OAuthServerResource.ERROR_URI, errorUri);
             }
-
-            JsonRepresentation repr = new JsonRepresentation(result);
-            getResponse().setEntity(repr);
+            return new JsonStringRepresentation(result);
         } catch (JSONException e) {
             getLogger().log(Level.WARNING, "Error while sending OAuth error.",
                     e);
         }
+        return null;
     }
 
     private Client validate(String clientId, String clientSecret) {

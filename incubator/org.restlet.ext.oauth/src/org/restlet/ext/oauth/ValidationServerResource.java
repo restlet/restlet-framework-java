@@ -35,13 +35,16 @@ import java.io.IOException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.ExpireToken;
+import org.restlet.ext.oauth.internal.JsonStringRepresentation;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 
@@ -69,7 +72,7 @@ public class ValidationServerResource extends OAuthServerResource {
     public static final String LOCAL_ACCESS_ONLY = "localOnly";
 
     @Post("json")
-    public JsonRepresentation validate(Representation input)
+    public Representation validate(Representation input)
             throws ResourceException {
         getLogger().info("In Validator resource");
         JSONObject response = new JSONObject();
@@ -189,8 +192,7 @@ public class ValidationServerResource extends OAuthServerResource {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
                     "Failed parse JSON", e);
         }
-
-        return new JsonRepresentation(response);
+        return new JsonStringRepresentation(response);
     }
 
 }

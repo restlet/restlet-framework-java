@@ -107,8 +107,8 @@ public class MultipleUserAuthorizationServerTest {
 
         // protected resource server
         Server server = new Server(new Context(), Protocol.HTTP, serverPort);
-        // server.getContext().getParameters().add("maxQueued", "10");
-        // server.getContext().getParameters().add("maxThreads", "200");
+        //server.getContext().getParameters().add("maxQueued", "10");
+        //server.getContext().getParameters().add("maxThreads", "200");
         component = new Component();
         component.getServers().add(server);
         component.getClients().add(Protocol.HTTP);
@@ -120,8 +120,8 @@ public class MultipleUserAuthorizationServerTest {
         // oauth server
         Server oauthServer = new Server(new Context(), Protocol.HTTP,
                 oauthServerPort);
-        // oauthServer.getContext().getParameters().add("maxQueued", "-1");
-        // oauthServer.getContext().getParameters().add("maxThreads", "200");
+        //oauthServer.getContext().getParameters().add("maxQueued", "-1");
+        //oauthServer.getContext().getParameters().add("maxThreads", "200");
         Component oauthcomp = new Component();
         oauthcomp.getServers().add(oauthServer);
         oauthcomp.getClients().add(Protocol.HTTP);
@@ -161,8 +161,8 @@ public class MultipleUserAuthorizationServerTest {
 
     @Test
     public void multipleRequestTest() throws Exception {
-        int numThreads = 1;
-        int numCalls = 10;
+        int numThreads = 10;
+        int numCalls = 100;
         int totRequests = (numThreads * numCalls) + numThreads;
         Thread[] clients = new Thread[numThreads];
         Context c = new Context();
@@ -241,6 +241,7 @@ public class MultipleUserAuthorizationServerTest {
                 Reference ref = new Reference(prot + "://localhost:"
                         + serverPort + "/server/scoped/user" + u);
                 ref.addQueryParameter("oauth_token", user.getAccessToken());
+                //System.err.println(ref.toUri().toString());
                 // ClientResource cr = new ClientResource(ref);
                 ClientResource cr = new ClientResource(ref);
                 cr.setNext(myClient);
