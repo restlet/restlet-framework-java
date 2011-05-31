@@ -43,8 +43,6 @@ import org.restlet.data.Reference;
 import org.restlet.engine.Edition;
 import org.restlet.engine.adapter.ClientCall;
 import org.restlet.ext.net.internal.HttpUrlConnectionCall;
-import org.restlet.ext.ssl.DefaultSslContextFactory;
-import org.restlet.ext.ssl.SslContextFactory;
 
 /**
  * HTTP client connector using the {@link HttpUrlConnectionCall}. Here is the
@@ -96,13 +94,13 @@ import org.restlet.ext.ssl.SslContextFactory;
  * <td>sslContextFactory</td>
  * <td>String</td>
  * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
- * <td>Let you specify a {@link SslContextFactory} qualified class name as a
+ * <td>Let you specify a {@link org.restlet.ext.ssl.SslContextFactory} qualified class name as a
  * parameter, or an instance as an attribute for a more complete and flexible
  * SSL context setting.</td>
  * </tr>
  * </table>
  * For the default SSL parameters see the Javadocs of the
- * {@link DefaultSslContextFactory} class.
+ * {@link org.restlet.ext.ssl.DefaultSslContextFactory} class.
  * <p>
  * It is also possible to specify a hostname verifier for HTTPS connections. See
  * the {@link #getHostnameVerifier()} method for details.
