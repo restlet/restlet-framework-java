@@ -1,15 +1,14 @@
 <html>    
 	<head>
-    <title>Restlet JS Tests</title> 
+    <title>Restlet JS Tests - ClientResource with DOM</title> 
     
 
-<link rel="stylesheet" href="../lib/qunit/qunit.css" type="text/css" media="screen">
-<script type="text/javascript" src="../lib/qunit/qunit.js"></script> 
-<script type="text/javascript" src="../lib/jsclass/core.js"></script> 
-<script type="text/javascript" src="../lib/jsclass/console.js"></script> 
-<script type="text/javascript" src="../lib/jsonparser/json-minified.js"></script> 
-<script type="text/javascript" src="../restlet-common.js"></script> 
-<script type="text/javascript" src="../restlet-client.js"></script> 
+<link rel="stylesheet" href="../qunit/qunit.css" type="text/css" media="screen">
+<script type="text/javascript" src="../qunit/qunit.js"></script> 
+<script type="text/javascript" src="../jsclass/core.js"></script> 
+<script type="text/javascript" src="../jsclass/console.js"></script> 
+<script type="text/javascript" src="../restlet/json-minified.js"></script> 
+<script type="text/javascript" src="../restlet/restlet-client.js"></script> 
  
 <script language="JavaScript"> 
 module("Simple Restlet JS client tests");
@@ -18,6 +17,29 @@ asyncTest("Get with resource client (xml)", function() {
   var clientResource = new ClientResource("../resource/contact/1");
   clientResource.get(function(representation) {
 	  console.log("xml = "+representation.getXml());
+	  var domRepresentation = new DomRepresentation(representation);
+	  var xml = domRepresentation.getXml();
+	  var contactElement = xml.childNodes[0];
+	  var idElement = contactElement.childNodes[0];
+	  ok(idElement.childNodes[0], "1");
+	  var lastNameElement = contactElement.childNodes[1];
+	  ok(lastNameElement.childNodes[0], "lastName");
+	  var firstNameElement = contactElement.childNodes[2];
+	  ok(firstNameElement.childNodes[0], "firstName");
+	  start();
+  }, MediaType.APPLICATION_XML);
+});
+
+asyncTest("Put with resource client (xml)", function() {
+  var clientResource = new ClientResource("../resource/contact/1");
+  var contact = {
+	id: "1",
+	lastName: "lastName",
+	firstName: "firstName"
+  }
+  var domRepresentation = new DomRepresentation(contact);
+  clientResource.put(domRepresentation, function(representation) {
+	  console.log("representation.getText() = "+representation.getText());
 	  var domRepresentation = new DomRepresentation(representation);
 	  var xml = domRepresentation.getXml();
 	  var contactElement = xml.childNodes[0];

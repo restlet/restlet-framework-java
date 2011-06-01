@@ -289,16 +289,38 @@ var DomRepresentation = new JS.Class(Representation, {
 		} else if (content instanceof Representation) {
 			this.representation = content;
 		} else if (typeof content == "object") {
-			this.obj = content;
+			if (content instanceof Document) {
+				this.xml = content;
+			} else {
+				this.obj = content;
+			}
 		}
 		this.setMediaType(MediaType.APPLICATION_XML);
 	},
 	getText: function() {
-		
+		if (this.xml!=null) {
+			var document = this.xml.documentElement; 
+			if (document.xml==undefined){ 
+				return (new XMLSerializer()).serializeToString(this.xml); 
+			} else {
+				return document.xml; 
+			}
+		}
+		return "";
 	},
 	getXml: function() {
 		if (this.representation!=null) {
 			return this.representation.getXml();
+		} else if (this.text!=null) {
+			if (window.ActiveXObject) {
+				var doc = new ActiveXObject("Microsoft.XMLDOM"); 
+				document.async="false"; 
+				document.loadXML(this.text);
+				return document;
+			} else { 
+				var parser = new DOMParser(); 
+				return parser.parseFromString(this.text, "text/xml"); 
+			} 
 		} else {
 			return this.xml;
 		}
