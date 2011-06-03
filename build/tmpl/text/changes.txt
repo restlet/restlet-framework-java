@@ -32,6 +32,8 @@ Changes log
       - Fixed issue causing potential IndexOutOfBounds exceptions.
     - Misc
       - Updated Jetty to version 7.4.2.
+      - Added awaitility and hamcrest libraries required by the oauth 
+        extension.
 
 - 2.1 Milestone 4 (04/27/2011)
     - API changes
