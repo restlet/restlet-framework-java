@@ -31,7 +31,7 @@ Changes log
         when the response entity wasn't being consumed immediately.
       - Fixed issue causing potential IndexOutOfBounds exceptions.
     - Misc
-      - 
+      - Updated Jetty to version 7.4.2.
 
 - 2.1 Milestone 4 (04/27/2011)
     - API changes
