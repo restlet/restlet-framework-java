@@ -12,6 +12,8 @@ Changes log
        - Fixed regression introduced in 2.0.7 with WriterRepresentation, 
          OutputRepresentation and subclasses when sending long entities 
          (1024 and longer). Reported by Tim Peierls.
+       - Fixed Range issue when handling large files. Reported by Tom Moore.
+
     - Misc
 
 - 2.0.7 (2011-04-27)
