@@ -31,7 +31,6 @@
 package org.restlet.ext.oauth.internal;
 
 import org.json.JSONObject;
-import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.representation.StringRepresentation;
 

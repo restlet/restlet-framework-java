@@ -393,7 +393,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
         createPost(UNEFFECTED);
         tunnelFilter.getTunnelService().setMethodHeader(
                 HeaderConstants.HEADER_X_FORWARDED_FOR);
-        tunnelFilter.getTunnelService().setHeaderTunnel(false);
+        tunnelFilter.getTunnelService().setHeadersTunnel(false);
         this.request.setAttributes(attributesHeader);
         filter();
         assertMethod(Method.POST);
@@ -412,7 +412,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
 
     public void testMethodTunnelingViaUserAgent() {
         tunnelFilter.getTunnelService().setExtensionsTunnel(false);
-        tunnelFilter.getTunnelService().setHeaderTunnel(false);
+        tunnelFilter.getTunnelService().setHeadersTunnel(false);
         tunnelFilter.getTunnelService().setMethodTunnel(false);
         tunnelFilter.getTunnelService().setPreferencesTunnel(false);
         tunnelFilter.getTunnelService().setQueryTunnel(false);

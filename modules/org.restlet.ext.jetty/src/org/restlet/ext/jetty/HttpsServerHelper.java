@@ -30,17 +30,15 @@
 
 package org.restlet.ext.jetty;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLServerSocketFactory;
+import java.util.logging.Level;
 
+import org.eclipse.jetty.http.ssl.SslContextFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.ext.ssl.DefaultSslContextFactory;
-import org.restlet.ext.ssl.SslContextFactory;
-import org.restlet.ext.ssl.internal.SslUtils;
 
 /**
  * Jetty HTTPS server connector. Here is the list of additional parameters that
@@ -98,46 +96,27 @@ public class HttpsServerHelper extends JettyServerHelper {
     @Override
     protected AbstractConnector createConnector() {
         AbstractConnector result = null;
-        final SslContextFactory sslContextFactory = SslUtils
-                .getSslContextFactory(this);
-        final String[] excludedCipherSuites = SslUtils
-                .getDisabledCipherSuites(this);
+        SslContextFactory sslContextFactory = new SslContextFactory();
+
+        try {
+            org.restlet.ext.ssl.SslContextFactory restletSslContextFactory = org.restlet.ext.ssl.internal.SslUtils
+                    .getSslContextFactory(this);
+            sslContextFactory.setSslContext(restletSslContextFactory
+                    .createSslContext());
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING,
+                    "Unable to create the Jetty SSL context factory", e);
+        }
 
         // Create and configure the Jetty HTTP connector
         switch (getType()) {
         case 1:
             // Selecting NIO connector
-            SslSelectChannelConnector nioResult;
-            nioResult = new SslSelectChannelConnector() {
-                @Override
-                protected SSLContext createSSLContext() throws Exception {
-                    return sslContextFactory.createSslContext();
-                }
-            };
-
-            if (excludedCipherSuites != null) {
-                nioResult.setExcludeCipherSuites(excludedCipherSuites);
-            }
-
-            result = nioResult;
+            result = new SslSelectChannelConnector(sslContextFactory);
             break;
         case 2:
             // Blocking BIO connector
-            SslSocketConnector bioResult = new SslSocketConnector() {
-                @Override
-                protected SSLServerSocketFactory createFactory()
-                        throws Exception {
-                    final SSLContext sslContext = sslContextFactory
-                            .createSslContext();
-                    return sslContext.getServerSocketFactory();
-                }
-            };
-
-            if (excludedCipherSuites != null) {
-                bioResult.setExcludeCipherSuites(excludedCipherSuites);
-            }
-
-            result = bioResult;
+            result = new SslSocketConnector(sslContextFactory);
             break;
         }
 

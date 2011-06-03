@@ -51,7 +51,6 @@ import org.restlet.ext.oauth.internal.CookieCopyClientResource;
 import org.restlet.ext.oauth.internal.JsonStringRepresentation;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.security.Role;
 import org.restlet.security.RoleAuthorizer;

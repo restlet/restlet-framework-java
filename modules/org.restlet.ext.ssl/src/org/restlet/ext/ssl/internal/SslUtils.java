@@ -30,15 +30,12 @@
 
 package org.restlet.ext.ssl.internal;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-
 import org.restlet.engine.RestletHelper;
 import org.restlet.ext.ssl.DefaultSslContextFactory;
 import org.restlet.ext.ssl.SslContextFactory;
@@ -119,54 +116,6 @@ public class SslUtils {
         }
 
         return keySize;
-    }
-
-    /**
-     * Returns the list of disabled cipher suites.
-     * 
-     * @param helper
-     *            The helper to use.
-     * @return The list of disabled cipher suites.
-     */
-    public static String[] getDisabledCipherSuites(RestletHelper<?> helper) {
-        List<String> disabledCipherSuites = new ArrayList<String>();
-        String[] disabledCipherSuitesParams = helper.getHelpedParameters()
-                .getValuesArray("disabledCipherSuites");
-
-        for (String disabledCipherSuitesParam : disabledCipherSuitesParams) {
-            StringTokenizer st = new StringTokenizer(disabledCipherSuitesParam);
-
-            while (st.hasMoreElements()) {
-                disabledCipherSuites.add(st.nextToken());
-            }
-        }
-
-        return disabledCipherSuites.size() > 0 ? disabledCipherSuites
-                .toArray(new String[0]) : null;
-    }
-
-    /**
-     * Returns the list of enabled cipher suites.
-     * 
-     * @param helper
-     *            The helper to use.
-     * @return The list of enabled cipher suites.
-     */
-    public static String[] getEnabledCipherSuites(RestletHelper<?> helper) {
-        List<String> enabledCipherSuites = new ArrayList<String>();
-        String[] enabledCipherSuitesParams = helper.getHelpedParameters()
-                .getValuesArray("enabledCipherSuites");
-
-        for (String enabledCipherSuitesParam : enabledCipherSuitesParams) {
-            StringTokenizer st = new StringTokenizer(enabledCipherSuitesParam);
-
-            while (st.hasMoreElements()) {
-                enabledCipherSuites.add(st.nextToken());
-            }
-        }
-
-        return enabledCipherSuites.size() > 0 ? enabledCipherSuites
-                .toArray(new String[0]) : null;
     }
 
     // [ifndef gae] method

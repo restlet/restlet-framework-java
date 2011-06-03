@@ -566,7 +566,7 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
 
         assertEquals(LOG_ENABLED, ls.isEnabled());
         assertEquals(LOG_IDENTITY_CHECKED, ls.isIdentityCheck());
-        assertEquals(LOG_FORMAT, ls.getLogFormat());
+        assertEquals(LOG_FORMAT, ls.getResponseLogFormat());
         assertEquals(LOGGER_NAME, ls.getLoggerName());
     }
 

@@ -33,7 +33,6 @@ package org.restlet.test.ext.oauth.test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.restlet.test.ext.oauth.provider.AuthorizationServerTest;
-import org.restlet.test.ext.oauth.provider.MultipleUserAuthorizationServerTest;
 import org.restlet.test.ext.oauth.provider.TimedTokenTest;
 import org.restlet.test.ext.oauth.provider.TokenGeneratorTest;
 import org.restlet.test.ext.oauth.webclient.FacebookTest;
