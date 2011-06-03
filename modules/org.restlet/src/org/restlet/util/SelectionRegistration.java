@@ -400,8 +400,8 @@ public class SelectionRegistration {
 
     @Override
     public String toString() {
-        return getName(getInterestOperations()) + ", "
-                + getName(getReadyOperations()) + ", "
+        return "Interest= " + getName(getInterestOperations()) + ", Ready="
+                + getName(getReadyOperations()) + ", Canceling="
                 + Boolean.toString(isCanceling());
     }
 

@@ -6,7 +6,7 @@ import junit.framework.TestSuite;
 public class ResourceTestSuite {
 
     public static Test suite() {
-        TestSuite suite = new TestSuite("Test for org.restlet.test.resource");
+        TestSuite suite = new TestSuite("Resource package");
         // $JUnit-BEGIN$
         suite.addTestSuite(DirectoryTestCase.class);
 

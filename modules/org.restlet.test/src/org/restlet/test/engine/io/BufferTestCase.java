@@ -31,10 +31,7 @@
 package org.restlet.test.engine.io;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringWriter;
 
-import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.BufferState;
 import org.restlet.test.RestletTestCase;

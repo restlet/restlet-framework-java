@@ -41,12 +41,13 @@ import org.restlet.test.jaxrs.services.tests.AllServiceTests;
  * 
  * @author Stephan Koops
  */
-public class AllJaxRsTests extends TestCase {
+public class JaxRsTestSuite extends TestCase {
+
     public static Test suite() {
-        final TestSuite mySuite = new TestSuite();
-        mySuite.setName("all JaxRs tests");
+        TestSuite mySuite = new TestSuite("JAX-RS extension");
         mySuite.addTest(AllClassTests.suite());
         mySuite.addTest(AllServiceTests.suite());
         return mySuite;
     }
+
 }

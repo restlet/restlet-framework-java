@@ -95,4 +95,10 @@ public class WrapperSelectionChannel<T extends SelectionChannel> extends
         this.registration = registration;
     }
 
+    @Override
+    public String toString() {
+        return "WrapperSelectionChannel [toString()=" + super.toString()
+                + ", registration=" + registration + "]";
+    }
+
 }

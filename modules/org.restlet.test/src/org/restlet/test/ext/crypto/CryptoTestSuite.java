@@ -28,27 +28,26 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test.ext.sip;
+package org.restlet.test.ext.crypto;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * Suite with all SIP unit tests.
+ * Suite with all Crypto unit tests.
  * 
  * @author Jerome Louvel
  */
-public class AllSipTests extends TestCase {
+public class CryptoTestSuite extends TestCase {
 
     public static Test suite() {
-        final TestSuite suite = new TestSuite();
-        suite.setName("SIP extension");
-        suite.addTestSuite(AddressTestCase.class);
-        suite.addTestSuite(AvailabilityTestCase.class);
-        suite.addTestSuite(EventTypeTestCase.class);
-        suite.addTestSuite(SipRecipientInfoTestCase.class);
-        return suite;
+        TestSuite result = new TestSuite();
+        result.setName("Crypto extension");
+        result.addTestSuite(HttpAwsS3HostNameTestCase.class);
+        result.addTestSuite(HttpAwsS3SigningTestCase.class);
+        result.addTestSuite(HttpAwsS3VerifierTestCase.class);
+        return result;
     }
 
 }

@@ -46,12 +46,9 @@ public class ODataTestSuite extends TestSuite {
      * @return The unit test.
      */
     public static Test suite() {
-        return new ODataTestSuite();
-    }
-
-    /** Constructor. */
-    public ODataTestSuite() {
-        addTestSuite(ODataCafeTestCase.class);
-        addTestSuite(ODataCafeCustoFeedsTestCase.class);
+        TestSuite result = new TestSuite("OData extension");
+        result.addTestSuite(ODataCafeTestCase.class);
+        result.addTestSuite(ODataCafeCustoFeedsTestCase.class);
+        return result;
     }
 }

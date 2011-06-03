@@ -52,22 +52,20 @@ import org.restlet.test.data.ReferenceTestCase;
 import org.restlet.test.data.StatusTestCase;
 import org.restlet.test.engine.EngineTestSuite;
 import org.restlet.test.ext.atom.AtomTestCase;
-import org.restlet.test.ext.crypto.HttpAwsS3HostNameTestCase;
-import org.restlet.test.ext.crypto.HttpAwsS3SigningTestCase;
-import org.restlet.test.ext.crypto.HttpAwsS3VerifierTestCase;
+import org.restlet.test.ext.crypto.CryptoTestSuite;
 import org.restlet.test.ext.freemarker.FreeMarkerTestCase;
 import org.restlet.test.ext.gwt.GwtConverterTestCase;
 import org.restlet.test.ext.jaxb.JaxbBasicConverterTestCase;
 import org.restlet.test.ext.jaxb.JaxbIntegrationConverterTestCase;
 import org.restlet.test.ext.odata.ODataTestSuite;
 import org.restlet.test.ext.sip.AllSipTests;
-import org.restlet.test.ext.spring.AllSpringTests;
+import org.restlet.test.ext.spring.SpringTestSuite;
 import org.restlet.test.ext.velocity.VelocityTestCase;
 import org.restlet.test.ext.wadl.WadlTestCase;
 import org.restlet.test.ext.xml.ResolvingTransformerTestCase;
 import org.restlet.test.ext.xml.RestletXmlTestCase;
 import org.restlet.test.ext.xml.TransformerTestCase;
-import org.restlet.test.jaxrs.AllJaxRsTests;
+import org.restlet.test.jaxrs.JaxRsTestSuite;
 import org.restlet.test.representation.AppendableRepresentationTestCase;
 import org.restlet.test.representation.DigesterRepresentationTestCase;
 import org.restlet.test.representation.RangeRepresentationTestCase;
@@ -115,9 +113,6 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(FormTestCase.class);
         addTestSuite(FreeMarkerTestCase.class);
         addTestSuite(GwtConverterTestCase.class);
-        addTestSuite(HttpAwsS3HostNameTestCase.class);
-        addTestSuite(HttpAwsS3SigningTestCase.class);
-        addTestSuite(HttpAwsS3VerifierTestCase.class);
         addTestSuite(JaxbBasicConverterTestCase.class);
         addTestSuite(JaxbIntegrationConverterTestCase.class);
         addTestSuite(LanguageTestCase.class);
@@ -138,9 +133,9 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(ValidatorTestCase.class);
         addTestSuite(VelocityTestCase.class);
         addTestSuite(WadlTestCase.class);
+        addTest(CryptoTestSuite.suite());
         addTest(ODataTestSuite.suite());
 
-        
         // Tests based on extension only supported by the JEE edition.
         // [ifdef jee]
         addTestSuite(org.restlet.test.ext.xdb.ChunkedInputStreamTestCase.class);
@@ -166,9 +161,9 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(TemplateFilterTestCase.class);
 
         addTest(EngineTestSuite.suite());
-        addTest(AllJaxRsTests.suite());
+        addTest(JaxRsTestSuite.suite());
         addTest(AllSipTests.suite());
-        addTest(AllSpringTests.suite());
+        addTest(SpringTestSuite.suite());
         // [enddef]
     }
 

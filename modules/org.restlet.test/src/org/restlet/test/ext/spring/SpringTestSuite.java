@@ -39,15 +39,15 @@ import junit.framework.TestSuite;
  * 
  * @author Rhett Sutphin
  */
-public class AllSpringTests extends TestCase {
+public class SpringTestSuite extends TestCase {
 
     public static Test suite() {
-        final TestSuite suite = new TestSuite();
-        suite.setName("all spring-ext tests");
-        suite.addTestSuite(SpringBeanRouterTestCase.class);
-        suite.addTestSuite(SpringBeanFinderTestCase.class);
-        suite.addTestSuite(SpringTestCase.class);
-        return suite;
+        TestSuite result = new TestSuite();
+        result.setName("Spring extension");
+        result.addTestSuite(SpringBeanRouterTestCase.class);
+        result.addTestSuite(SpringBeanFinderTestCase.class);
+        result.addTestSuite(SpringTestCase.class);
+        return result;
     }
 
 }
