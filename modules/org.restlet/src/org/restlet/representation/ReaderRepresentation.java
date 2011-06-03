@@ -120,6 +120,7 @@ public class ReaderRepresentation extends CharacterRepresentation {
 
             this.reader = null;
         }
+
         super.release();
     }
 

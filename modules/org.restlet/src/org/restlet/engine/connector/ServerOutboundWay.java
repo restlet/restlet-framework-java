@@ -174,6 +174,10 @@ public abstract class ServerOutboundWay extends OutboundWay {
 
                 // Exhaust it to allow reuse of the connection
                 requestEntity.exhaust();
+
+                // Give a chance to the representation to release associated
+                // state and resources
+                requestEntity.release();
             } catch (IOException e) {
                 getLogger().log(Level.WARNING,
                         "Unable to automatically exhaust the request entity.",

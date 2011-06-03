@@ -44,6 +44,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.io.BlockableChannel;
@@ -53,6 +54,7 @@ import org.restlet.engine.io.ReadableChunkingChannel;
 import org.restlet.engine.io.ReadableSizedChannel;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.Representation;
+import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
 
 /**
@@ -267,6 +269,20 @@ public abstract class OutboundWay extends Way {
     public void onCompleted(boolean endReached) {
         super.onCompleted(endReached);
         setHeaderIndex(0);
+        Representation messageEntity = getActualMessage().getEntity();
+
+        // Release entity
+        if (messageEntity != null) {
+            messageEntity.release();
+        }
+
+        // Callback connector service after sending entity
+        ConnectorService connectorService = ConnectorHelper
+                .getConnectorService();
+
+        if (connectorService != null) {
+            connectorService.afterSend(messageEntity);
+        }
 
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Outbound message completed");
@@ -499,6 +515,15 @@ public abstract class OutboundWay extends Way {
 
                 // Prepare entity writing if available
                 if (getActualMessage().isEntityAvailable()) {
+                    // Callback connector service before sending entity
+                    ConnectorService connectorService = ConnectorHelper
+                            .getConnectorService();
+
+                    if (connectorService != null) {
+                        connectorService.afterSend(getActualMessage()
+                                .getEntity());
+                    }
+
                     setMessageState(MessageState.BODY);
                     ReadableByteChannel rbc = getActualMessage().getEntity()
                             .getChannel();

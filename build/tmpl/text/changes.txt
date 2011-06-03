@@ -37,6 +37,9 @@ Changes log
       - The internal server (HTTP and SIP) now automatically exhausts the 
         request entity if it hasn't been consumed after the writing of the 
         final response.
+      - The internal connector now calls back the ConnectorService methods.
+      - The internal server now calls back Representation#release() method
+        after sending an entity.
      - Misc
       - Updated Jetty to version 7.4.2.
       - Added awaitility and hamcrest libraries required by the oauth 

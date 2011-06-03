@@ -65,14 +65,6 @@ public abstract class WritableRepresentation extends ChannelRepresentation {
         return NioUtils.getReadableByteChannel(this);
     }
 
-    /**
-     * Calls parent's implementation.
-     */
-    @Override
-    public void release() {
-        super.release();
-    }
-
     @Override
     public abstract void write(WritableByteChannel writableChannel)
             throws IOException;

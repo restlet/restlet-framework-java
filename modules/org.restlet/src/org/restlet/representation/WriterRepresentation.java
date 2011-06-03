@@ -76,12 +76,4 @@ public abstract class WriterRepresentation extends CharacterRepresentation {
         return BioUtils.getReader(this);
     }
 
-    /**
-     * Calls parent's implementation.
-     */
-    @Override
-    public void release() {
-        super.release();
-    }
-
 }
