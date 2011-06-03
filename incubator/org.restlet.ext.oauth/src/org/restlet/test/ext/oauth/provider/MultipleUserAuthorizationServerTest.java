@@ -34,17 +34,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
-
-
 
 import junit.framework.Assert;
 
-
 import org.hamcrest.Matchers;
-import org.json.JSONObject;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -82,6 +76,7 @@ public class MultipleUserAuthorizationServerTest {
     public static int oauthServerPort = 8081;
 
     public static final String prot = "http";
+
     public static Logger log;
 
     // public static int serverPort = 8443;
@@ -92,8 +87,8 @@ public class MultipleUserAuthorizationServerTest {
     @BeforeClass
     public static void startServer() throws Exception {
 
-        //org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory i;
-        //LogManager.getLogManager().
+        // org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory i;
+        // LogManager.getLogManager().
         Engine.setLogLevel(Level.WARNING);
         log = Context.getCurrentLogger();
         log.info("Starting server test!");
@@ -107,8 +102,8 @@ public class MultipleUserAuthorizationServerTest {
 
         // protected resource server
         Server server = new Server(new Context(), Protocol.HTTP, serverPort);
-        //server.getContext().getParameters().add("maxQueued", "10");
-        //server.getContext().getParameters().add("maxThreads", "200");
+        // server.getContext().getParameters().add("maxQueued", "10");
+        // server.getContext().getParameters().add("maxThreads", "200");
         component = new Component();
         component.getServers().add(server);
         component.getClients().add(Protocol.HTTP);
@@ -120,8 +115,8 @@ public class MultipleUserAuthorizationServerTest {
         // oauth server
         Server oauthServer = new Server(new Context(), Protocol.HTTP,
                 oauthServerPort);
-        //oauthServer.getContext().getParameters().add("maxQueued", "-1");
-        //oauthServer.getContext().getParameters().add("maxThreads", "200");
+        // oauthServer.getContext().getParameters().add("maxQueued", "-1");
+        // oauthServer.getContext().getParameters().add("maxThreads", "200");
         Component oauthcomp = new Component();
         oauthcomp.getServers().add(oauthServer);
         oauthcomp.getClients().add(Protocol.HTTP);
@@ -151,7 +146,7 @@ public class MultipleUserAuthorizationServerTest {
         }
         authenticators.add(new OAuthHelper());
 
-        //System.out.println(Engine.getInstance().getRegisteredClients().get(0));
+        // System.out.println(Engine.getInstance().getRegisteredClients().get(0));
     }
 
     @AfterClass
@@ -167,32 +162,35 @@ public class MultipleUserAuthorizationServerTest {
         Thread[] clients = new Thread[numThreads];
         Context c = new Context();
 
-        //Client client = new Client(Protocol.HTTP);
+        // Client client = new Client(Protocol.HTTP);
         Client client = null;
-        log.warning("Starting long running test with "+numThreads+" threads doing "+numCalls+" requests each");
+        log.warning("Starting long running test with " + numThreads
+                + " threads doing " + numCalls + " requests each");
         long l = System.currentTimeMillis();
-        for(int i = 0; i <numThreads; i++){
-            if(i % 25 == 0)
+        for (int i = 0; i < numThreads; i++) {
+            if (i % 25 == 0)
                 client = new Client(Protocol.HTTP);
             clients[i] = new ClientCall(numCalls, c, client);
             clients[i].start();
         }
         Awaitility.setDefaultTimeout(Duration.FOREVER);
-        Awaitility.await().until(numCalls(), Matchers.equalTo(totRequests) );
+        Awaitility.await().until(numCalls(), Matchers.equalTo(totRequests));
         long tot = System.currentTimeMillis() - l;
-        log.warning("Executed "+(numThreads*numCalls)+" in "+tot+" millseconds, average time "+
-                (tot/(numThreads*numCalls))+" millis/request");
-        System.out.println(SingletonStore.I().getCallbacks()+" "+SingletonStore.I().getErrors());
+        log.warning("Executed " + (numThreads * numCalls) + " in " + tot
+                + " millseconds, average time "
+                + (tot / (numThreads * numCalls)) + " millis/request");
+        System.out.println(SingletonStore.I().getCallbacks() + " "
+                + SingletonStore.I().getErrors());
         Assert.assertEquals(0, SingletonStore.I().getErrors());
     }
 
     private Callable<Integer> numCalls() {
         return new Callable<Integer>() {
-                public Integer call() throws Exception {
-                    return SingletonStore.I().getCallbacks();
-                    //if(i % 100 == 0) log.warning("requests executed: "+i);
-                    //    return i; // The condition supplier part
-                }
+            public Integer call() throws Exception {
+                return SingletonStore.I().getCallbacks();
+                // if(i % 100 == 0) log.warning("requests executed: "+i);
+                // return i; // The condition supplier part
+            }
         };
     }
 
@@ -205,11 +203,13 @@ public class MultipleUserAuthorizationServerTest {
         OAuthParameters params;
 
         Context c;
+
         Client myClient;
-        public ClientCall(int numTimes, Context c, Client client){
+
+        public ClientCall(int numTimes, Context c, Client client) {
             this.numTimes = numTimes;
             this.c = c;
-            if(client != null)
+            if (client != null)
                 myClient = client;
             else
                 myClient = new Client(Protocol.HTTP);
@@ -225,13 +225,15 @@ public class MultipleUserAuthorizationServerTest {
 
         @Override
         public void run() {
-            for(int i = 0; i < numTimes; i++){
-                //System.out.println(this.getName()+" "+i);
+            for (int i = 0; i < numTimes; i++) {
+                // System.out.println(this.getName()+" "+i);
                 int u = r.nextInt(5) + 1;
-                OAuthUser user = Flow.PASSWORD.execute(params, null, null, 
-                        "user"+u, "pass"+u, null, myClient);
-                /*OAuthUser user = OAuthUtils.passwordFlow(params, "user" + u,
-                        "pass" + u, myClient);*/
+                OAuthUser user = Flow.PASSWORD.execute(params, null, null,
+                        "user" + u, "pass" + u, null, myClient);
+                /*
+                 * OAuthUser user = OAuthUtils.passwordFlow(params, "user" + u,
+                 * "pass" + u, myClient);
+                 */
                 if (user == null) {
                     SingletonStore.I().addError();
                     SingletonStore.I().addRequest();
@@ -241,7 +243,7 @@ public class MultipleUserAuthorizationServerTest {
                 Reference ref = new Reference(prot + "://localhost:"
                         + serverPort + "/server/scoped/user" + u);
                 ref.addQueryParameter("oauth_token", user.getAccessToken());
-                //System.err.println(ref.toUri().toString());
+                // System.err.println(ref.toUri().toString());
                 // ClientResource cr = new ClientResource(ref);
                 ClientResource cr = new ClientResource(ref);
                 cr.setNext(myClient);
@@ -254,7 +256,7 @@ public class MultipleUserAuthorizationServerTest {
                 }
                 try {
                     String text = r.getText();
-                    if (!text.equalsIgnoreCase("user"+u)) {
+                    if (!text.equalsIgnoreCase("user" + u)) {
                         SingletonStore.I().addError();
                     }
                 } catch (Exception e) {

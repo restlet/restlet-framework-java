@@ -221,8 +221,8 @@ public class AuthorizationServerTest {
     public void testUserAgentFlow() throws IOException {
         // Same Uri as the web client
         String callbackUri = prot + "://localhost:" + serverPort + "/";
-        OAuthUser user = Flow.USERAGENT.execute(client.getOauthParameters(), callbackUri, 
-                null, null, null, null);
+        OAuthUser user = Flow.USERAGENT.execute(client.getOauthParameters(),
+                callbackUri, null, null, null, null);
         assertNotNull(user);
 
         // Try to use the token...
@@ -241,8 +241,8 @@ public class AuthorizationServerTest {
 
     @Test
     public void testNoneFlow() throws IOException {
-        OAuthUser user = Flow.NONE.execute(client.getOauthParameters(), 
-                null, null, null, null, null);
+        OAuthUser user = Flow.NONE.execute(client.getOauthParameters(), null,
+                null, null, null, null);
         assertNotNull(user);
 
         // Try to use the token...
@@ -279,7 +279,8 @@ public class AuthorizationServerTest {
         String baseRef = prot + "://localhost:" + serverPort + "/combo/";
         OAuthParameters params = new OAuthParameters("1234567890",
                 "1234567890", baseRef, Scopes.toRoles("foo bar"));
-        OAuthUser user = Flow.USERAGENT.execute(params, callbackUri, null, null, null, null);
+        OAuthUser user = Flow.USERAGENT.execute(params, callbackUri, null,
+                null, null, null);
         assertNotNull(user);
 
         // Try to use the token...
@@ -295,15 +296,13 @@ public class AuthorizationServerTest {
                 MediaType.TEXT_HTML);
         cr.release();
     }
-    /*
-    @Test public void testRestletRoles(){
-        Role r1 = new Role("foo",null);
-        Role r2 = new Role("foo",null);
 
-        Assert.assertTrue( r1.equals(r2) );
-        Assert.assertTrue( r2.equals(r1) );
-    }
-    */
+    /*
+     * @Test public void testRestletRoles(){ Role r1 = new Role("foo",null);
+     * Role r2 = new Role("foo",null);
+     * 
+     * Assert.assertTrue( r1.equals(r2) ); Assert.assertTrue( r2.equals(r1) ); }
+     */
 
     @Test
     public void testScopedResource() throws IOException {
@@ -330,7 +329,8 @@ public class AuthorizationServerTest {
         OAuthParameters wrong = new OAuthParameters(right.getClientId(),
                 right.getClientSecret(), right.getBaseRef().toString(),
                 Scopes.toRoles("one two"));
-        OAuthUser user = Flow.USERAGENT.execute(wrong, callbackUri, null, null, null, null);
+        OAuthUser user = Flow.USERAGENT.execute(wrong, callbackUri, null, null,
+                null, null);
         assertNotNull(user);
 
         // Try to use the token...
@@ -353,9 +353,8 @@ public class AuthorizationServerTest {
 
     @Test
     public void testPasswordFlow() throws IOException {
-        OAuthUser user = Flow.PASSWORD.execute(
-                client.getOauthParameters(), null, null, 
-                OAuthTestApplication.TEST_USER,
+        OAuthUser user = Flow.PASSWORD.execute(client.getOauthParameters(),
+                null, null, OAuthTestApplication.TEST_USER,
                 OAuthTestApplication.TEST_PASS, null);
         assertNotNull(user);
 
@@ -374,19 +373,17 @@ public class AuthorizationServerTest {
 
         // Wrong username test
         try {
-            user = Flow.PASSWORD.execute(client.getOauthParameters(), 
-                    null, null, "somewrong", OAuthTestApplication.TEST_PASS,
-                    null);
+            user = Flow.PASSWORD.execute(client.getOauthParameters(), null,
+                    null, "somewrong", OAuthTestApplication.TEST_PASS, null);
         } catch (ResourceException re) { // Should be invalidated
             assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, re.getStatus());
         }
 
         // Wrong pasword test
         try {
-            user = Flow.PASSWORD.execute(client.getOauthParameters(), 
-                    null, null, OAuthTestApplication.TEST_USER, "somewrong",
-                    null);
-            
+            user = Flow.PASSWORD.execute(client.getOauthParameters(), null,
+                    null, OAuthTestApplication.TEST_USER, "somewrong", null);
+
         } catch (ResourceException re) { // Should be invalidated
             assertEquals(Status.CLIENT_ERROR_FORBIDDEN, re.getStatus());
         }
