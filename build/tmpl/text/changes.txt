@@ -10,6 +10,8 @@ Changes log
       - Renamed Status#getName() method to getReasonPhrase() for more clarity
         regarding the purpose of the additional "description" property used
         for lengthier explanations.
+      - Added Response#isFinal() and isProvisional() methods, based on
+        Status#isInformational().
     - Enhancements
       - Updated and consolidated the SSL/HTTPS configuration parameters
         for all HTTPS connectors.
@@ -30,7 +32,10 @@ Changes log
       - Fixed issue causing potential loop in internal HTTP/SIP client
         when the response entity wasn't being consumed immediately.
       - Fixed issue causing potential IndexOutOfBounds exceptions.
-    - Misc
+      - The internal server (HTTP and SIP) now automatically exhaust the 
+        request entity if it hasn't been consumed after the writing of the 
+        final response.
+     - Misc
       - Updated Jetty to version 7.4.2.
       - Added awaitility and hamcrest libraries required by the oauth 
         extension.

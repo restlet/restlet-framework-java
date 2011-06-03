@@ -411,6 +411,26 @@ public class Response extends Message {
     }
 
     /**
+     * Indicates if the response is final or provisional. It relies on the
+     * {@link Status#isInformational()} method.
+     * 
+     * @return True if the response is final.
+     */
+    public boolean isFinal() {
+        return !getStatus().isInformational();
+    }
+
+    /**
+     * Indicates if the response is provisional or final. It relies on the
+     * {@link Status#isInformational()} method.
+     * 
+     * @return True if the response is provisional.
+     */
+    public boolean isProvisional() {
+        return getStatus().isInformational();
+    }
+
+    /**
      * Permanently redirects the client to a target URI. The client is expected
      * to reuse the same method for the new request.
      * 

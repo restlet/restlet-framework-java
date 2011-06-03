@@ -31,6 +31,7 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 import org.restlet.Message;
 import org.restlet.Request;
@@ -40,6 +41,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.header.HeaderUtils;
+import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 /**
@@ -156,6 +158,27 @@ public abstract class ServerOutboundWay extends OutboundWay {
         if (!getConnection().isPersistent()
                 || HeaderUtils.isConnectionClose(getHeaders())) {
             getConnection().close(true);
+        }
+
+        // Ensure that the request entity has been fully read
+        Representation requestEntity = getMessage().getRequest().getEntity();
+
+        if (getMessage().isFinal() && (requestEntity != null)
+                && requestEntity.isAvailable()) {
+            try {
+                if (getLogger().isLoggable(Level.FINE)) {
+                    getLogger()
+                            .log(Level.FINE,
+                                    "Automatically exhausting the request entity as it is still available after writing the final response.");
+                }
+
+                // Exhaust it to allow reuse of the connection
+                requestEntity.exhaust();
+            } catch (IOException e) {
+                getLogger().log(Level.WARNING,
+                        "Unable to automatically exhaust the request entity.",
+                        e);
+            }
         }
 
         super.onCompleted(endDetected);
