@@ -855,10 +855,6 @@ public class ComponentXmlParser {
                         || "attachDefault".equals(childNode.getNodeName());
 
                 // Attaches a new route.
-                // save the old router context so new routes do not inherit it
-                Context oldContext = router.getContext();
-                router.setContext(new Context());
-
                 TemplateRoute route = null;
                 item = childNode.getAttributes().getNamedItem("targetClass");
 
@@ -902,9 +898,6 @@ public class ComponentXmlParser {
                         }
                     }
                 }
-
-                // Restore the router's old context
-                router.setContext(oldContext);
             }
         }
     }
