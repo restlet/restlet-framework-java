@@ -32,7 +32,7 @@ Changes log
       - Fixed issue causing potential loop in internal HTTP/SIP client
         when the response entity wasn't being consumed immediately.
       - Fixed issue causing potential IndexOutOfBounds exceptions.
-      - The internal server (HTTP and SIP) now automatically exhaust the 
+      - The internal server (HTTP and SIP) now automatically exhausts the 
         request entity if it hasn't been consumed after the writing of the 
         final response.
      - Misc
