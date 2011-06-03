@@ -17,7 +17,9 @@ Changes log
         for all HTTPS connectors.
       - Added a warning message to indicate that an application without a 
         parent component can't handle outbound calls by default.
-        Reported by John Logdson and Kristoffer Gronowski. 
+        Reported by John Logdson and Kristoffer Gronowski.
+      - Allowed change of the parent context of a VirtualHost via the
+        setContext() method.
     - Bug fixed
       - Fixed compatibility issue with GWT 2.3.
       - Fixed potential NPE in Restlet class when no context is available.

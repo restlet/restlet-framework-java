@@ -157,6 +157,9 @@ public class VirtualHost extends Router {
     /** The hostRef scheme pattern to match. */
     private volatile String hostScheme;
 
+    /** The parent component's context. */
+    private volatile Context parentContext;
+
     /** The resourceRef host domain pattern to match. */
     private volatile String resourceDomain;
 
@@ -172,13 +175,11 @@ public class VirtualHost extends Router {
     /** The listening server port pattern to match. */
     private volatile String serverPort;
 
-    /** The parent component's context. */
-    private volatile Context parentContext;
-
     /**
      * Constructor. Note that usage of this constructor is not recommended as
-     * the Router won't have a proper context set. In general you will prefer to
-     * use the other constructor and pass it the parent component's context.
+     * the virtual host won't have a proper context set. In general you will
+     * prefer to use the other constructor and pass it the parent component's
+     * context.
      */
     public VirtualHost() {
         this(null);
@@ -257,10 +258,7 @@ public class VirtualHost extends Router {
      */
     @Override
     public TemplateRoute attach(Restlet target) {
-        if ((target.getContext() == null) && (this.parentContext != null)) {
-            target.setContext(this.parentContext.createChildContext());
-        }
-
+        checkContext(target);
         return super.attach(target);
     }
 
@@ -282,10 +280,7 @@ public class VirtualHost extends Router {
      */
     @Override
     public TemplateRoute attach(String uriPattern, Restlet target) {
-        if ((target.getContext() == null) && (this.parentContext != null)) {
-            target.setContext(this.parentContext.createChildContext());
-        }
-
+        checkContext(target);
         return super.attach(uriPattern, target);
     }
 
@@ -304,12 +299,20 @@ public class VirtualHost extends Router {
      */
     @Override
     public TemplateRoute attachDefault(Restlet defaultTarget) {
-        if ((defaultTarget.getContext() == null)
-                && (this.parentContext != null)) {
-            defaultTarget.setContext(this.parentContext.createChildContext());
-        }
-
+        checkContext(defaultTarget);
         return super.attachDefault(defaultTarget);
+    }
+
+    /**
+     * Checks the context and sets it if necessary.
+     * 
+     * @param target
+     *            The target Restlet.
+     */
+    private void checkContext(Restlet target) {
+        if ((target.getContext() == null) && (this.parentContext != null)) {
+            target.setContext(this.parentContext.createChildContext());
+        }
     }
 
     /**
@@ -431,6 +434,13 @@ public class VirtualHost extends Router {
      */
     public String getServerPort() {
         return this.serverPort;
+    }
+
+    @Override
+    public void setContext(Context parentContext) {
+        this.parentContext = parentContext;
+        super.setContext((parentContext == null) ? null : parentContext
+                .createChildContext());
     }
 
     /**
