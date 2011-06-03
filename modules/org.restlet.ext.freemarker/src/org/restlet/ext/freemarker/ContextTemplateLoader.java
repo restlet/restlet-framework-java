@@ -105,13 +105,16 @@ public class ContextTemplateLoader implements TemplateLoader {
      */
     public Object findTemplateSource(String name) throws IOException {
         String fullUri;
+
         if (getBaseUri().endsWith("/")) {
             fullUri = getBaseUri() + name;
         } else {
             fullUri = getBaseUri() + "/" + name;
         }
-        return getContext().getClientDispatcher().handle(
-                new Request(Method.GET, fullUri)).getEntity();
+
+        return (getContext() == null) ? null : getContext()
+                .getClientDispatcher().handle(new Request(Method.GET, fullUri))
+                .getEntity();
     }
 
     /**

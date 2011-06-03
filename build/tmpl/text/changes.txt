@@ -13,7 +13,7 @@ Changes log
          OutputRepresentation and subclasses when sending long entities 
          (1024 and longer). Reported by Tim Peierls.
        - Fixed Range issue when handling large files. Reported by Tom Moore.
-
+       - Fixed potential NPE in FreeMarker ContextTemplateLoader.
     - Misc
 
 - 2.0.7 (2011-04-27)
