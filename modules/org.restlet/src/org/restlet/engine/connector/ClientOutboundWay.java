@@ -115,7 +115,7 @@ public abstract class ClientOutboundWay extends OutboundWay {
 
     @Override
     public Message getActualMessage() {
-        return getMessage().getRequest();
+        return (getMessage() == null) ? null : getMessage().getRequest();
     }
 
     @SuppressWarnings("unchecked")
