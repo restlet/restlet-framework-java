@@ -267,9 +267,6 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public void onCompleted(boolean endReached) {
-        super.onCompleted(endReached);
-        setHeaderIndex(0);
-
         if (getActualMessage() != null) {
             Representation messageEntity = getActualMessage().getEntity();
 
@@ -286,6 +283,9 @@ public abstract class OutboundWay extends Way {
                 connectorService.afterSend(messageEntity);
             }
         }
+
+        super.onCompleted(endReached);
+        setHeaderIndex(0);
 
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Outbound message completed");

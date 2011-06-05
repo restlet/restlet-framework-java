@@ -154,35 +154,39 @@ public abstract class ServerOutboundWay extends OutboundWay {
 
     @Override
     public void onCompleted(boolean endDetected) {
+        if (getMessage() != null) {
+            // Ensure that the request entity has been fully read
+            Representation requestEntity = getMessage().getRequest()
+                    .getEntity();
+
+            if (getMessage().isFinal() && (requestEntity != null)
+                    && requestEntity.isAvailable()) {
+                try {
+                    if (getLogger().isLoggable(Level.FINE)) {
+                        getLogger()
+                                .log(Level.FINE,
+                                        "Automatically exhausting the request entity as it is still available after writing the final response.");
+                    }
+
+                    // Exhaust it to allow reuse of the connection
+                    requestEntity.exhaust();
+
+                    // Give a chance to the representation to release associated
+                    // state and resources
+                    requestEntity.release();
+                } catch (IOException e) {
+                    getLogger()
+                            .log(Level.WARNING,
+                                    "Unable to automatically exhaust the request entity.",
+                                    e);
+                }
+            }
+        }
+
         // Check if we need to close the connection
         if (!getConnection().isPersistent()
                 || HeaderUtils.isConnectionClose(getHeaders())) {
             getConnection().close(true);
-        }
-
-        // Ensure that the request entity has been fully read
-        Representation requestEntity = getMessage().getRequest().getEntity();
-
-        if (getMessage().isFinal() && (requestEntity != null)
-                && requestEntity.isAvailable()) {
-            try {
-                if (getLogger().isLoggable(Level.FINE)) {
-                    getLogger()
-                            .log(Level.FINE,
-                                    "Automatically exhausting the request entity as it is still available after writing the final response.");
-                }
-
-                // Exhaust it to allow reuse of the connection
-                requestEntity.exhaust();
-
-                // Give a chance to the representation to release associated
-                // state and resources
-                requestEntity.release();
-            } catch (IOException e) {
-                getLogger().log(Level.WARNING,
-                        "Unable to automatically exhaust the request entity.",
-                        e);
-            }
         }
 
         super.onCompleted(endDetected);
