@@ -269,19 +269,22 @@ public abstract class OutboundWay extends Way {
     public void onCompleted(boolean endReached) {
         super.onCompleted(endReached);
         setHeaderIndex(0);
-        Representation messageEntity = getActualMessage().getEntity();
 
-        // Release entity
-        if (messageEntity != null) {
-            messageEntity.release();
-        }
+        if (getActualMessage() != null) {
+            Representation messageEntity = getActualMessage().getEntity();
 
-        // Callback connector service after sending entity
-        ConnectorService connectorService = ConnectorHelper
-                .getConnectorService();
+            // Release entity
+            if (messageEntity != null) {
+                messageEntity.release();
+            }
 
-        if (connectorService != null) {
-            connectorService.afterSend(messageEntity);
+            // Callback connector service after sending entity
+            ConnectorService connectorService = ConnectorHelper
+                    .getConnectorService();
+
+            if (connectorService != null) {
+                connectorService.afterSend(messageEntity);
+            }
         }
 
         if (getLogger().isLoggable(Level.FINER)) {
