@@ -89,7 +89,7 @@ public class MultiPartForm extends OutputRepresentation {
     public void write(OutputStream outputStream) throws IOException {
         for (MultiPartData data : getData()) {
             // Write the boundary line
-            outputStream.write(getBoundary().getBytes());
+            outputStream.write(("--" + getBoundary()).getBytes());
             HeaderUtils.writeCRLF(outputStream);
 
             // Write the optional content type header line
@@ -121,7 +121,7 @@ public class MultiPartForm extends OutputRepresentation {
         }
 
         // Write the final boundary line
-        outputStream.write((getBoundary() + "--").getBytes());
+        outputStream.write(("--" + getBoundary() + "--").getBytes());
         HeaderUtils.writeCRLF(outputStream);
     }
 
