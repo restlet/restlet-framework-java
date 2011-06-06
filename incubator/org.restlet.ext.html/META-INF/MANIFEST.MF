@@ -10,6 +10,7 @@ Import-Package: org.restlet,
  org.restlet.engine.application,
  org.restlet.engine.component,
  org.restlet.engine.converter,
+ org.restlet.engine.header,
  org.restlet.engine.local,
  org.restlet.engine.resource,
  org.restlet.engine.security,
@@ -17,6 +18,8 @@ Import-Package: org.restlet,
  org.restlet.representation,
  org.restlet.resource,
  org.restlet.service,
+ org.restlet.test,
  org.restlet.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.restlet.ext.html
+Require-Bundle: org.junit;bundle-version="3.8.2"
