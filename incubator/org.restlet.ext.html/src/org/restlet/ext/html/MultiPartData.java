@@ -30,6 +30,10 @@
 
 package org.restlet.ext.html;
 
+import java.io.IOException;
+import java.util.logging.Level;
+
+import org.restlet.Context;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
@@ -61,6 +65,18 @@ public class MultiPartData {
         this.value = value;
     }
 
+    public Disposition getDisposition() {
+        return getValue() == null ? null : getValue().getDisposition();
+    }
+
+    public String getFilename() {
+        return getDisposition() == null ? "" : getDisposition().getFilename();
+    }
+
+    public MediaType getMediaType() {
+        return getValue() == null ? null : getValue().getMediaType();
+    }
+
     public String getName() {
         return name;
     }
@@ -81,16 +97,20 @@ public class MultiPartData {
         this.value = value;
     }
 
-    public String getFilename() {
-        return getDisposition() == null ? "" : getDisposition().getFilename();
-    }
-
-    public Disposition getDisposition() {
-        return getValue() == null ? null : getValue().getDisposition();
-    }
-
-    public MediaType getMediaType() {
-        return getValue() == null ? null : getValue().getMediaType();
+    /**
+     * Converts the data to a {@link Parameter} instance. Note that large values
+     * will be converted into text stored in memory.
+     * 
+     * @return The parameter instance.
+     */
+    public Parameter toParameter() {
+        try {
+            return new Parameter(getName(), getValue().getText());
+        } catch (IOException e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to convert to a parameter", e);
+            return null;
+        }
     }
 
 }
