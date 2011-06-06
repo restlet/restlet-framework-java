@@ -30,7 +30,6 @@
 
 package org.restlet.ext.oauth;
 
-
 import java.util.List;
 import java.util.logging.Level;
 
@@ -69,7 +68,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
     private JSONObject createJsonToken(Token token, String scopes)
             throws ResourceException {
         JSONObject body = new JSONObject();
-        
+
         try {
             body.put(ACCESS_TOKEN, token.getToken());
             if (token instanceof ExpireToken) {
@@ -113,8 +112,8 @@ public class AccessTokenServerResource extends OAuthServerResource {
         // check the client secret
         if (!clientSecret.equals(client.getClientSecret())) {
             setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-            return sendError(OAuthError.INVALID_GRANT, "Client secret did not match",
-                    null);
+            return sendError(OAuthError.INVALID_GRANT,
+                    "Client secret did not match", null);
         }
 
         // TODO could add a cookie match on the owner but could fail if code is
@@ -134,7 +133,8 @@ public class AccessTokenServerResource extends OAuthServerResource {
         return new JsonStringRepresentation(body);
     }
 
-    private Representation doNoneFlow(String clientId, String clientSecret, Form params) {
+    private Representation doNoneFlow(String clientId, String clientSecret,
+            Form params) {
         Client client = validate(clientId, clientSecret);
 
         // null check on failed
@@ -150,8 +150,8 @@ public class AccessTokenServerResource extends OAuthServerResource {
         AuthenticatedUser user = client.findUser(AUTONOMOUS_USER);
 
         // Adding all scopes since super-user
-        //String[] scopes = parseScope(params.getFirstValue(SCOPE));
-        List <Role> roles = Scopes.toRoles(params.getFirstValue(SCOPE));
+        // String[] scopes = parseScope(params.getFirstValue(SCOPE));
+        List<Role> roles = Scopes.toRoles(params.getFirstValue(SCOPE));
         for (Role r : roles) {
             getLogger().info("Requested scopes none flow = " + roles);
             user.addRole(r, "");
@@ -196,7 +196,8 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         if (!password.equals(user.getPassword())) {
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-            return sendError(OAuthError.INVALID_GRANT, "Password not correct.", null);
+            return sendError(OAuthError.INVALID_GRANT, "Password not correct.",
+                    null);
         }
 
         Token token = generator.generateToken(user, tokenTimeSec);
@@ -207,7 +208,8 @@ public class AccessTokenServerResource extends OAuthServerResource {
         return new JsonStringRepresentation(body);
     }
 
-    private Representation doRefreshFlow(String clientId, String clientSecret, Form params) {
+    private Representation doRefreshFlow(String clientId, String clientSecret,
+            Form params) {
         String rToken = params.getFirstValue(REFRESH_TOKEN);
 
         if (rToken == null || rToken.length() == 0) {
@@ -244,12 +246,12 @@ public class AccessTokenServerResource extends OAuthServerResource {
                 setStatus(Status.CLIENT_ERROR_FORBIDDEN);
                 return sendError(OAuthError.UNAUTHORIZED_CLIENT,
                         "User does not match.", null);
-                
+
             }
         } else { // error no such token.
             setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
             return sendError(OAuthError.INVALID_GRANT, "Refresh token.", null);
-            
+
         }
 
     }
@@ -302,18 +304,16 @@ public class AccessTokenServerResource extends OAuthServerResource {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter client_id is missing", null);
-            
-            //return new EmptyRepresentation();
+
+            // return new EmptyRepresentation();
         }
 
         if (clientSecret == null || clientSecret.length() == 0) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter client_secret is missing", null);
-            //return new EmptyRepresentation();
+            // return new EmptyRepresentation();
         }
-        
-        
 
         try {
             GrantType type = Enum.valueOf(GrantType.class, typeString);
@@ -345,16 +345,17 @@ public class AccessTokenServerResource extends OAuthServerResource {
                     setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
                 }
             } catch (IllegalArgumentException e) { // can not exchange code.
-                toRet = sendError(OAuthError.INVALID_GRANT, e.getMessage(), null);
+                toRet = sendError(OAuthError.INVALID_GRANT, e.getMessage(),
+                        null);
                 setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
             }
         } catch (IllegalArgumentException iae) {
-            toRet = sendError(OAuthError.UNSUPPORTED_GRANT_TYPE, "Flow not supported",
-                    null);
+            toRet = sendError(OAuthError.UNSUPPORTED_GRANT_TYPE,
+                    "Flow not supported", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         } catch (NullPointerException npe) {
-            toRet = sendError(OAuthError.UNSUPPORTED_GRANT_TYPE, "Flow not supported",
-                    null);
+            toRet = sendError(OAuthError.UNSUPPORTED_GRANT_TYPE,
+                    "Flow not supported", null);
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         }
         return toRet;
