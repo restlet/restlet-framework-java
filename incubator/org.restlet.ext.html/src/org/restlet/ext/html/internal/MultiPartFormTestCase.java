@@ -23,6 +23,21 @@ public class MultiPartFormTestCase extends RestletTestCase {
         form.getData().add(new MultiPartData("upload_file", file));
         form.getData().add(new MultiPartData("tos", "agree"));
 
-        form.write(System.out);
+        String expected = "-----------------------------1294919323195\r\n"
+                + "Content-Disposition: form-data; name=\"number\"\r\n"
+                + "\r\n"
+                + "5555555555\r\n"
+                + "-----------------------------1294919323195\r\n"
+                + "Content-Disposition: form-data; name=\"clip\"\r\n"
+                + "\r\n"
+                + "rickroll\r\n"
+                + "-----------------------------1294919323195\r\n"
+                + "Content-Disposition: form-data; name=\"upload_file\"; filename=\"\"\r\n"
+                + "Content-Type: application/octet-stream\r\n" + "\r\n" + "\r\n"
+                + "-----------------------------1294919323195\r\n"
+                + "Content-Disposition: form-data; name=\"tos\"\r\n" + "\r\n"
+                + "agree\r\n" + "-----------------------------1294919323195--\r\n";
+
+        assertEquals("Value", expected, form.getText());
     }
 }

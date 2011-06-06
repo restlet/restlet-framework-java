@@ -92,6 +92,7 @@ public class MultiPartForm extends OutputRepresentation {
 
         // Write the final boundary line
         outputStream.write((getBoundary() + "--").getBytes());
-    }
+        HeaderUtils.writeCRLF(outputStream);
+   }
 
 }
