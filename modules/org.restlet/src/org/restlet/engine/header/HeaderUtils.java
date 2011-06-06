@@ -115,18 +115,8 @@ public class HeaderUtils {
             }
 
             if (entity.getMediaType() != null) {
-                String contentType = entity.getMediaType().toString();
-
-                // Specify the character set parameter if required
-                if ((entity.getMediaType().getParameters()
-                        .getFirstValue("charset") == null)
-                        && (entity.getCharacterSet() != null)) {
-                    contentType = contentType + "; charset="
-                            + entity.getCharacterSet().getName();
-                }
-
-                addHeader(HeaderConstants.HEADER_CONTENT_TYPE, contentType,
-                        headers);
+                addHeader(HeaderConstants.HEADER_CONTENT_TYPE,
+                        ContentType.writeHeader(entity), headers);
             }
 
             if (entity.getExpirationDate() != null) {
