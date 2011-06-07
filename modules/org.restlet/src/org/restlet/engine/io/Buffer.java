@@ -537,7 +537,7 @@ public class Buffer {
                     if (hasRemaining()) {
                         if (maxDrained <= 0) {
                             drained = processor.onDrain(this, 0, args);
-                        } else if (maxDrained - result > 0) {
+                        } else if (maxDrained > result) {
                             drained = processor.onDrain(this, maxDrained
                                     - result, args);
                         }
