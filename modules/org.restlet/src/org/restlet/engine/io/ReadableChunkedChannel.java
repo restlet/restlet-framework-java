@@ -234,8 +234,6 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
             }
             break;
         }
-
-        System.out.println(getRemainingChunkSize() + " : " + buffer.remaining() + " = " + result + " => " + new String(buffer.getBytes().array()));
         
         return result;
     }
