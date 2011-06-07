@@ -103,6 +103,13 @@ public class BufferingRepresentation extends WrapperRepresentation {
     }
 
     @Override
+    public java.nio.channels.ReadableByteChannel getChannel()
+            throws IOException {
+        InputStream is = getStream();
+        return (is != null) ? new InputStreamChannel(is) : null;
+    }
+
+    @Override
     public long getSize() {
         // Read the content, store it and compute the size.
         try {
@@ -120,7 +127,7 @@ public class BufferingRepresentation extends WrapperRepresentation {
         buffer();
         return (getBuffer() != null) ? new ByteArrayInputStream(getBuffer())
                 : null;
-    }
+    };
 
     @Override
     public String getText() throws IOException {
