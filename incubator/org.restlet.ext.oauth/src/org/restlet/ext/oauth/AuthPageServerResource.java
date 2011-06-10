@@ -54,7 +54,7 @@ import freemarker.template.Configuration;
  * default it will accept all scopes requested.
  * 
  * To intercept and allow a user to control a Context parameter
- * 'oauth_auth_page' should be set in the attributes. It should contain a static
+ * OAuthServerResource.AUTH_TEMPLATE_PARAM should be set in the attributes. It should contain a static
  * HTML page or a FreeMarker page that will be loaded with the CLAP protocol
  * straight from root.
  * 
@@ -131,6 +131,8 @@ import freemarker.template.Configuration;
  */
 
 public class AuthPageServerResource extends OAuthServerResource {
+    
+    
     /**
      * Entry point to the AuthPageResource. The AuthorizationResource dispatches
      * the call to this method. Should also be invoked by an eventual HTML page
@@ -152,14 +154,13 @@ public class AuthPageServerResource extends OAuthServerResource {
         }
 
         // Check if an auth page is set in the Context
-        String authPage = (String) getContext().getAttributes().get(
-                "oauth_auth_page");
+        String authPage = OAuthHelper.getAuthPageTemplate(getContext());
+        getLogger().info("this is auth page: "+authPage);
         if (authPage != null && authPage.length() > 0) {
 
             // Check if we should skip the page if already approved scopes
-            String sameScope = (String) getContext().getAttributes().get(
-                    "oauth_auth_skip_same_scope");
-            if (sameScope != null && Boolean.parseBoolean(sameScope)) {
+            boolean sameScope = OAuthHelper.getAuthSkipApproved(getContext());
+            if (sameScope) {
                 String[] scopesArray = getQuery().getValuesArray("scope");
 
                 List<String> scopes = Arrays.asList(scopesArray);
@@ -285,17 +286,18 @@ public class AuthPageServerResource extends OAuthServerResource {
         String[] previousScopes = getQuery().getValuesArray("grantedScope");
 
         Configuration config = new Configuration();
+        
         ContextTemplateLoader ctl = new ContextTemplateLoader(getContext(),
                 "clap:///");
         config.setTemplateLoader(ctl);
-
+        getLogger().info("loading: "+authPage);
         TemplateRepresentation result = new TemplateRepresentation(authPage,
                 config, MediaType.TEXT_HTML);
 
         // Build the model
         HashMap<String, Object> data = new HashMap<String, Object>();
 
-        data.put("target", getRootRef() + "/auth_page");
+        data.put("target", getRootRef() + "/"+OAuthHelper.getAuthPage(getContext()));
         // TODO check with Restlet lead
         data.put("clientId", clientId);
         data.put("clientDescription", client.toString());

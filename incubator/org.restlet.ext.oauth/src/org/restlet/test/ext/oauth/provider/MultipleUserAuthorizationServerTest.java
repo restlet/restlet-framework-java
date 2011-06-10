@@ -156,8 +156,8 @@ public class MultipleUserAuthorizationServerTest {
 
     @Test
     public void multipleRequestTest() throws Exception {
-        int numThreads = 10;
-        int numCalls = 100;
+        int numThreads = 1;
+        int numCalls = 10;
         int totRequests = (numThreads * numCalls) + numThreads;
         Thread[] clients = new Thread[numThreads];
         Context c = new Context();

@@ -49,6 +49,8 @@ import org.restlet.resource.ServerResource;
  * @author Kristoffer Gronowski
  */
 public abstract class OAuthServerResource extends ServerResource {
+    
+    
 
     public enum GrantType {
         assertion, authorization_code, none, password, refresh_token
@@ -148,9 +150,13 @@ public abstract class OAuthServerResource extends ServerResource {
         super.doInit();
         Context ctx = getContext();
         ConcurrentMap<String, Object> attribs = ctx.getAttributes();
-
+        clients = ClientStoreFactory.getInstance();
+        
+        //NOT NEEDED I THINK:
+        /*
         clients = (ClientStore<?>) attribs.get(ClientStore.class
                 .getCanonicalName());
+                */
         getLogger().info("Found client store = " + clients);
 
         generator = clients.getTokenGenerator();
@@ -212,6 +218,11 @@ public abstract class OAuthServerResource extends ServerResource {
         getLogger().info("Redirecting to -> " + location.toString());
         // TODO add state to request string
         return location.toString();
+    }
+    
+    protected String getParameter(String parameter, String defaultValue){
+        String val = (String) this.getContext().getAttributes().get(parameter);
+        return val != null ? val : defaultValue;
     }
 
     protected String[] parseScope(String scopes) {

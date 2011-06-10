@@ -33,6 +33,7 @@ package org.restlet.ext.oauth;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
+import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeScheme;
@@ -54,10 +55,94 @@ import org.restlet.util.Series;
  *     authenticators.add(new OAuthAuthenticationHelper());
  * }
  * </pre>
+ * Here is the list of parameters that are supported. They should be set in the
+ * before an OAuth2Server or Client is started:
+ * <table>
+ * <tr>
+ * <th>Parameter name</th>
+ * <th>Value type</th>
+ * <th>Default value</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>authPage</td>
+ * <td>String</td>
+ * <td>auth_page</td>
+ * <td>Specifies where an AuthorizationServerResource should redirect authorization
+ * requests for user interaction. This resource will be accessed using riap, 
+ * i.e. riap://application/+authPage</td>
+ * </tr>
+ * <tr>
+ * <td>authPageTemplate</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Specifies an html file or freemarker template for a GUI. If none is provided
+ * Roles (scopes) will automatically granted. Accessed using clap,
+ * i.e. clap:///+authPageTemplate</td>
+ * </tr>
+ * <td>authPageTemplate</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Specifies an html file or freemarker template for a GUI. If none is provided
+ * Roles (scopes) will automatically granted. Used by AuthPageServerResource</td>
+ * </tr>
+ * <tr>
+ * <td>authSkipApproved</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>If true no authorization page will be shown if
+ * the Roles (scopes) have been previously approved by the user</td>
+ * </tr>
+ * <tr>
+ * <td>loginPage</td>
+ * <td>String</td>
+ * <td>login</td>
+ * <td>Specifing a login resource location relative to the Application root.
+ * Defaults to "login". This resource will be accessed using riap, 
+ * i.e. riap://application/+loginPage</td>
+ * </tr>
+ * 
+ * </td>
+ * </table>
  * 
  * @author Kristoffer Gronowski
  */
 public class OAuthHelper extends AuthenticatorHelper {
+    
+    public static String getAuthPage(Context c){
+        return c.getParameters().getFirstValue("authPage", "auth_page");
+    }
+    
+    public static void setAuthPage(String authPage, Context c){
+        c.getParameters().set("authPage", authPage);
+    }
+    
+    public static String getAuthPageTemplate(Context c){
+        return c.getParameters().getFirstValue("authPageTemplate");
+    }
+    
+    public static void setAuthPageTemplate(String authPageTemplate, Context c){
+        c.getParameters().set("authPageTemplate", authPageTemplate);
+    }
+    
+    public static boolean getAuthSkipApproved(Context c){
+        c.getLogger().info("Trying to get auth page templat");
+        String skip = c.getParameters().getFirstValue("authSkipApproved");
+        if(skip == null) return false;
+        return Boolean.parseBoolean(skip);
+    }
+    
+    public static void setAuthSkipApproved(boolean skip, Context c){
+        c.getParameters().set("authSkipApproved", Boolean.toString(skip));
+    }
+    
+    public static String getLoginPage(Context c){
+        return c.getParameters().getFirstValue("loginPage", "login");
+    }
+    
+    public static void setLoginPage(String loginPage, Context c){
+        c.getParameters().set("loginPage", loginPage);
+    }
 
     public OAuthHelper() {
         super(ChallengeScheme.HTTP_OAUTH, true, true);

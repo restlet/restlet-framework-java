@@ -53,6 +53,10 @@ import org.restlet.security.Role;
  * Restlet implementation class AuthorizationService Used for initiating an
  * OAuth 2.0 authorization request.
  * 
+ * This Resource is controlled by to Context Attribute Parameters<br/>
+ * OAuthServerResource.AUTH_PARAM specifies the location of the AuthPageServerResource<br/>
+ * OAuthServerResource.LOGIN_PARAM specifies the location of a Login resource
+ * 
  * Implements OAuth 2.0 draft 10
  * 
  * @author Kristoffer Gronowski
@@ -63,6 +67,7 @@ import org.restlet.security.Role;
  */
 public class AuthorizationServerResource extends OAuthServerResource {
 
+    
     public static final String ID = "id";
 
     public static final String OPENID = "openid";
@@ -241,7 +246,10 @@ public class AuthorizationServerResource extends OAuthServerResource {
             }
         } else { // need to login
             getLogger().info("Base ref = " + getReference().getParentRef());
-            Reference ref = new Reference("riap://application/login");
+            //TODO: REMOVE HARD CODED VALUE
+            Reference ref = new Reference("riap://application/"+
+                    OAuthHelper.getLoginPage(getContext()));
+                    
             getLogger().info("OAuth2 session = " + session);
 
             if (session == null) {
@@ -297,9 +305,9 @@ public class AuthorizationServerResource extends OAuthServerResource {
 
     protected Representation doPostAuthenticate(AuthSession session,
             Client client) {
-        // Reference ref = new
-        // Reference(getReference().getParentRef(),"auth_page");
-        Reference ref = new Reference("riap://application/auth_page");
+        
+        Reference ref = new Reference("riap://application/"+
+                OAuthHelper.getAuthPage(getContext()));
         getLogger().info("Name = " + getApplication().getInboundRoot());
         ref.addQueryParameter("client", client.getClientId());
         // Requested
