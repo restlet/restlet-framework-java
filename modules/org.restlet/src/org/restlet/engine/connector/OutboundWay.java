@@ -392,8 +392,7 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public int processIoBuffer() throws IOException {
-        int result = 0;
-        result = super.processIoBuffer();
+        int result = super.processIoBuffer();
 
         if (getMessage() != null) {
             if (getMessageState() == MessageState.END) {

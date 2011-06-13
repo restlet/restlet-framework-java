@@ -33,7 +33,9 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.util.SelectionRegistration;
 
 // [excludes gwt]
@@ -55,6 +57,14 @@ public class ReadableSocketChannel extends WrapperSocketChannel implements
     public ReadableSocketChannel(SocketChannel wrappedChannel,
             SelectionRegistration registration) {
         super(wrappedChannel, registration);
+
+        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+            Context.getCurrentLogger().log(
+                    Level.FINER,
+                    "ReadableSocketChannel created from: " + wrappedChannel
+                            + "," + registration + ". Registration: "
+                            + getRegistration());
+        }
     }
 
     /**

@@ -68,6 +68,14 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
     public ReadableChunkedChannel(CompletionListener completionListener,
             Buffer buffer, ReadableSelectionChannel source) {
         super(completionListener, buffer, source);
+
+        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+            Context.getCurrentLogger().log(
+                    Level.FINER,
+                    "ReadableChunkedChannel created from: " + source
+                            + ". Registration: " + getRegistration());
+        }
+
         this.remainingChunkSize = 0;
         this.chunkState = ChunkState.SIZE;
         this.lineBuilder = new StringBuilder();

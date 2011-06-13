@@ -32,9 +32,11 @@ package org.restlet.ext.ssl.internal;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
 
 import javax.net.ssl.SSLEngineResult;
 
+import org.restlet.Context;
 import org.restlet.engine.connector.MessageState;
 import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
@@ -67,6 +69,14 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
             SslConnection<?> connection) {
         super(null, new Buffer(connection.getPacketBufferSize(), connection
                 .getHelper().isDirectBuffers()), source);
+
+        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+            Context.getCurrentLogger().log(
+                    Level.FINER,
+                    "ReadableSslChannel created from: " + source
+                            + ". Registration: " + getRegistration());
+        }
+
         this.connection = connection;
     }
 
