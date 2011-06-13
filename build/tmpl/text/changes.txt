@@ -14,6 +14,8 @@ Changes log
          (1024 and longer). Reported by Tim Peierls.
        - Fixed Range issue when handling large files. Reported by Tom Moore.
        - Fixed potential NPE in FreeMarker ContextTemplateLoader.
+       - The Content-Disposition header was never retrieved using external 
+         server connectors.
     - Misc
 
 - 2.0.7 (2011-04-27)
