@@ -129,117 +129,139 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
      *            The maximum number of bytes drained by this call.
      * @param args
      *            The optional arguments to pass back to the callbacks.
-     * @return The number of bytes drained.
+     * @return The number of "functional" bytes drained.
      * @throws IOException
      */
     public int onDrain(Buffer buffer, int maxDrained, Object... args)
             throws IOException {
         int result = 0;
         ByteBuffer targetBuffer = (ByteBuffer) args[0];
-        int before = buffer.remaining();
+        boolean doLoop = true;
 
-        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
-            Context.getCurrentLogger().log(Level.FINER,
-                    "Chunk state: " + getChunkState());
-        }
-
-        switch (getChunkState()) {
-        case SIZE:
-            // Some bytes are available, fill the line builder
-            setLineBuilderState(buffer.drain(getLineBuilder(),
-                    getLineBuilderState()));
-
-            if (getLineBuilderState() == BufferState.DRAINING) {
-                // The chunk size line was fully read into the line builder
-                int length = getLineBuilder().length();
-
-                if (length == 0) {
-                    throw new IOException(
-                            "An empty chunk size line was detected");
-                }
-
-                int index = getLineBuilder().indexOf(";");
-                index = (index == -1) ? getLineBuilder().length() : index;
-
-                try {
-                    setRemainingChunkSize(Integer.parseInt(getLineBuilder()
-                            .substring(0, index).trim(), 16));
-
-                    if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
-                        Context.getCurrentLogger().log(
-                                Level.FINER,
-                                "New chunk detected. Size: "
-                                        + this.remainingChunkSize);
-                    }
-                } catch (NumberFormatException ex) {
-                    throw new IOException("\"" + getLineBuilder()
-                            + "\" has an invalid chunk size");
-                } finally {
-                    clearLineBuilder();
-                }
-
-                if (getRemainingChunkSize() == 0) {
-                    setChunkState(ChunkState.TRAILER);
-                } else {
-                    setChunkState(ChunkState.DATA);
-                }
-                break;
+        while (doLoop) {
+            if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                Context.getCurrentLogger().log(Level.FINER,
+                        "Chunk state: " + getChunkState());
             }
 
-            break;
-
-        case DATA:
-            if (getRemainingChunkSize() > 0) {
-                result = super.onDrain(buffer, this.remainingChunkSize,
-                        targetBuffer);
-
-                if (result > 0) {
-                    setRemainingChunkSize(getRemainingChunkSize() - result);
-                } else {
-                    if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
-                        Context.getCurrentLogger().finer("No chunk data read");
-                    }
-                }
-            }
-
-            if (getRemainingChunkSize() == 0) {
+            System.out.println("onDrain " + getChunkState());
+            switch (getChunkState()) {
+            case SIZE:
                 // Some bytes are available, fill the line builder
                 setLineBuilderState(buffer.drain(getLineBuilder(),
                         getLineBuilderState()));
 
                 if (getLineBuilderState() == BufferState.DRAINING) {
-                    // Done, can read the next chunk
-                    setChunkState(ChunkState.SIZE);
-                    clearLineBuilder();
+                    // The chunk size line was fully read into the line builder
+                    int length = getLineBuilder().length();
+
+                    if (length == 0) {
+                        throw new IOException(
+                                "An empty chunk size line was detected");
+                    }
+
+                    int index = getLineBuilder().indexOf(";");
+                    index = (index == -1) ? getLineBuilder().length() : index;
+
+                    try {
+                        setRemainingChunkSize(Integer.parseInt(getLineBuilder()
+                                .substring(0, index).trim(), 16));
+
+                        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                            Context.getCurrentLogger().log(
+                                    Level.FINER,
+                                    "New chunk detected. Size: "
+                                            + this.remainingChunkSize);
+                        }
+                    } catch (NumberFormatException ex) {
+                        throw new IOException("\"" + getLineBuilder()
+                                + "\" has an invalid chunk size");
+                    } finally {
+                        clearLineBuilder();
+                    }
+
+                    if (getRemainingChunkSize() == 0) {
+                        setChunkState(ChunkState.TRAILER);
+                    } else {
+                        setChunkState(ChunkState.DATA);
+                    }
+                    break;
+                } else {
+                    // Need to fill more content into the buffer.
+                    doLoop = false;
                 }
-            }
-            break;
 
-        case TRAILER:
-            // TODO
-            setChunkState(ChunkState.END);
-            break;
+                break;
 
-        case END:
-            // Some bytes are available, fill the line builder
-            setLineBuilderState(buffer.drain(getLineBuilder(),
-                    getLineBuilderState()));
+            case DATA:
+                int read = 0;
+                if (getRemainingChunkSize() > 0) {
+                    read = super.onDrain(buffer, this.remainingChunkSize,
+                            targetBuffer);
+                    result += read;
 
-            if (getLineBuilderState() == BufferState.DRAINING) {
-                if (getLineBuilder().length() != 0) {
-                    Context.getCurrentLogger().log(Level.FINE,
-                            "The last chunk line had a non empty line");
+                    if (read > 0) {
+                        setRemainingChunkSize(getRemainingChunkSize() - read);
+                    } else {
+                        if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
+                            Context.getCurrentLogger().finer(
+                                    "No chunk data read");
+                        }
+                    }
                 }
 
-                setEndReached(true);
+                if (getRemainingChunkSize() == 0) {
+                    // Try to read the new line marking the end of the chunk.
+                    setLineBuilderState(buffer.drain(getLineBuilder(),
+                            getLineBuilderState()));
+
+                    if (getLineBuilderState() == BufferState.DRAINING) {
+                        // Done, can read the next chunk
+                        setChunkState(ChunkState.SIZE);
+                        clearLineBuilder();
+                    } else {
+                        // Need to fill more content into the buffer.
+                        doLoop = false;
+                    }
+                } else {
+                    // Need to fill more content into the buffer.
+                    doLoop = false;
+                }
+                System.out.println(result);
+                break;
+
+            case TRAILER:
+                // TODO
+                setChunkState(ChunkState.END);
+                break;
+
+            case END:
+                // Try to read the new line marking the end of the chunk.
+                setLineBuilderState(buffer.drain(getLineBuilder(),
+                        getLineBuilderState()));
+
+                if (getLineBuilderState() == BufferState.DRAINING) {
+                    if (getLineBuilder().length() != 0) {
+                        Context.getCurrentLogger().log(Level.FINE,
+                                "The last chunk line had a non empty line");
+                    }
+
+                    setEndReached(true);
+                    result = -1;
+                    doLoop = false;
+                } else {
+                    // Need to fill more content into the buffer.
+                    doLoop = false;
+                }
+
+                break;
             }
-            break;
+
+            System.out.println(doLoop);
         }
 
-        if (result != -1) {
-            result = before - buffer.remaining();
-        }
-        
+        System.out.println(result + " " + getChunkState());
+
         return result;
     }
 
