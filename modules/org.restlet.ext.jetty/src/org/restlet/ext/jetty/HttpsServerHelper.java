@@ -38,6 +38,7 @@ import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.ext.jetty.internal.RestletSslContextFactory;
 import org.restlet.ext.ssl.DefaultSslContextFactory;
 
 /**
@@ -96,28 +97,29 @@ public class HttpsServerHelper extends JettyServerHelper {
     @Override
     protected AbstractConnector createConnector() {
         AbstractConnector result = null;
-        SslContextFactory sslContextFactory = new SslContextFactory();
+        SslContextFactory sslContextFactory = null;
 
         try {
-            org.restlet.ext.ssl.SslContextFactory restletSslContextFactory = org.restlet.ext.ssl.internal.SslUtils
-                    .getSslContextFactory(this);
-            sslContextFactory.setSslContext(restletSslContextFactory
-                    .createSslContext());
+            sslContextFactory = new RestletSslContextFactory(
+                    org.restlet.ext.ssl.internal.SslUtils
+                            .getSslContextFactory(this));
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Unable to create the Jetty SSL context factory", e);
         }
 
-        // Create and configure the Jetty HTTP connector
-        switch (getType()) {
-        case 1:
-            // Selecting NIO connector
-            result = new SslSelectChannelConnector(sslContextFactory);
-            break;
-        case 2:
-            // Blocking BIO connector
-            result = new SslSocketConnector(sslContextFactory);
-            break;
+        if (sslContextFactory != null) {
+            // Create and configure the Jetty HTTP connector
+            switch (getType()) {
+            case 1:
+                // Selecting NIO connector
+                result = new SslSelectChannelConnector(sslContextFactory);
+                break;
+            case 2:
+                // Blocking BIO connector
+                result = new SslSocketConnector(sslContextFactory);
+                break;
+            }
         }
 
         return result;

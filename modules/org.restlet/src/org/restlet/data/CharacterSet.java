@@ -31,7 +31,7 @@
 package org.restlet.data;
 
 /**
- * Character set used to encode characters in textual representations.
+ * Metadata used to specify the character set of textual representations.
  * 
  * @author Jerome Louvel
  */

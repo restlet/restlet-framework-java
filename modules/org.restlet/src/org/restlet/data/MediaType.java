@@ -38,9 +38,9 @@ import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
 
 /**
- * Media type used in representations and preferences. The {@link #getName()}
- * method returns a full String representation of the media type including the
- * parameters.
+ * Metadata used to specify the format of representations. The
+ * {@link #getName()} method returns a full String representation of the media
+ * type including the parameters.
  * 
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
  * @author Jerome Louvel
@@ -542,6 +542,10 @@ public final class MediaType extends Metadata {
             "All messages");
 
     // [ifndef gwt] member
+    public static final MediaType MESSAGE_HTTP = register("message/http",
+            "HTTP message");
+
+    // [ifndef gwt] member
     public static final MediaType MODEL_ALL = register("model/*", "All models");
 
     // [ifndef gwt] member
@@ -948,8 +952,8 @@ public final class MediaType extends Metadata {
     }
 
     /**
-     * Returns the unmodifiable list of parameters. Creates a new instance if no
-     * one has been set.
+     * Returns the unmodifiable list of parameters corresponding to subtype
+     * modifiers. Creates a new instance if no one has been set.
      * 
      * @return The list of parameters.
      */

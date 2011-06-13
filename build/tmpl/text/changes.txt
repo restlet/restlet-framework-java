@@ -12,6 +12,7 @@ Changes log
         for lengthier explanations.
       - Added Response#isFinal() and isProvisional() methods, based on
         Status#isInformational().
+      - Added MediaType.MESSAGE_HTTP constant.        
     - Enhancements
       - Updated and consolidated the SSL/HTTPS configuration parameters
         for all HTTPS connectors.
