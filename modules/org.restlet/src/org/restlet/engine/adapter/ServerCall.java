@@ -38,12 +38,14 @@ import java.security.cert.Certificate;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.header.ContentType;
+import org.restlet.engine.header.DispositionReader;
 import org.restlet.engine.header.EncodingReader;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderReader;
@@ -216,6 +218,17 @@ public abstract class ServerCall extends Call {
                     HeaderConstants.HEADER_CONTENT_MD5)) {
                 result.setDigest(new Digest(Digest.ALGORITHM_MD5, Base64
                         .decode(header.getValue())));
+            } else if (header.getName().equalsIgnoreCase(
+                    HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
+                try {
+                    result.setDisposition(new DispositionReader(header
+                            .getValue()).readValue());
+                } catch (IOException ioe) {
+                    Context.getCurrentLogger().log(
+                            Level.WARNING,
+                            "Error during Content-Disposition header parsing. Header: "
+                                    + header.getValue(), ioe);
+                }
             }
         }
 
