@@ -76,9 +76,9 @@ import org.restlet.resource.ServerResource;
  */
 public class OpenIdConsumer extends ServerResource {
 
-    private static final String DESCRIPTOR_COOKIE = "openid-disc";
+    public static final String DESCRIPTOR_COOKIE = "openid-disc";
 
-    static final ConcurrentHashMap<String, String> ax = new ConcurrentHashMap<String, String>(
+    public static final ConcurrentHashMap<String, String> ax = new ConcurrentHashMap<String, String>(
             9);
     static {
         ax.put("nickname", "http://axschema.org/namePerson/friendly");

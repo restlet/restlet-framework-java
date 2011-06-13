@@ -53,6 +53,7 @@ import org.restlet.routing.Redirector;
  * 
  * @author Kristoffer Gronowski
  */
+//TODO: Check if this needs to be a filter and possibly rename!
 public class CallbackCacheFilter extends Filter implements CacheLookup {
 
     public static final String UserCookieID = "_uid";
