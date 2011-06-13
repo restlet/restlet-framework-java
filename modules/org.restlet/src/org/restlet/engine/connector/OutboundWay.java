@@ -391,6 +391,14 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
+    public void onTimeOut() {
+        if (getMessage() != null) {
+            getHelper().onOutboundError(Status.CONNECTOR_ERROR_COMMUNICATION,
+                    getMessage());
+        }
+    }
+
+    @Override
     public int processIoBuffer() throws IOException {
         int result = super.processIoBuffer();
 
@@ -569,7 +577,6 @@ public abstract class OutboundWay extends Way {
             break;
         }
     }
-
     /**
      * Writes the start line of the current outbound message.
      * 

@@ -39,10 +39,10 @@ import org.restlet.Message;
 import org.restlet.Response;
 import org.restlet.data.Parameter;
 import org.restlet.data.Status;
-import org.restlet.engine.io.BufferState;
-import org.restlet.engine.io.CompletionListener;
 import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.BufferProcessor;
+import org.restlet.engine.io.BufferState;
+import org.restlet.engine.io.CompletionListener;
 import org.restlet.engine.io.IoState;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
@@ -428,6 +428,11 @@ public abstract class Way implements SelectionListener, CompletionListener,
                     Status.CONNECTOR_ERROR_COMMUNICATION);
         }
     }
+
+    /**
+     * Called back by the controller when an IO time out has been detected.
+     */
+    public abstract void onTimeOut();
 
     /**
      * Processes the IO buffer by filling and draining it.

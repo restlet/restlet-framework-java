@@ -188,7 +188,7 @@ public class Connection<T extends Connector> implements SelectionListener {
                         ex);
             } finally {
                 getInboundWay().onClosed();
-                getInboundWay().onClosed();
+                getOutboundWay().onClosed();
                 setState(ConnectionState.CLOSED);
 
                 if (getLogger().isLoggable(Level.FINE)) {
@@ -599,6 +599,22 @@ public class Connection<T extends Connector> implements SelectionListener {
             onError("Unexpected error detected. Closing the connection.", t,
                     Status.CONNECTOR_ERROR_INTERNAL);
         }
+    }
+
+    /**
+     * Called back by the controller when an IO time out has been detected.
+     */
+    public void onTimeOut() {
+        if (getHelper().getLogger().isLoggable(Level.FINE)) {
+            getHelper().getLogger().fine(
+                    "Closing connection with \"" + getSocketAddress()
+                            + "\" due to lack of activity during "
+                            + getHelper().getMaxIoIdleTimeMs() + " ms");
+        }
+        
+        getInboundWay().onTimeOut();
+        getOutboundWay().onTimeOut();
+        close(false);
     }
 
     /**

@@ -103,9 +103,10 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
      *            The response to handle.
      * @return True if the connection can handle the given response at this
      *         point in time.
+     * @throws IOException
      */
     protected abstract boolean canHandle(Connection<Server> connection,
-            Response response);
+            Response response) throws IOException;
 
     @Override
     protected Connection<Server> createConnection(SocketChannel socketChannel,
@@ -202,12 +203,16 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
             Connection<Server> connection = request.getConnection();
 
             if (response.getRequest().isExpectingResponse()) {
-                if (canHandle(connection, response)) {
-                    // Add the response to the outbound queue
-                    connection.getOutboundWay().handle(response);
-                } else {
-                    // Put the response at the end of the queue
-                    getOutboundMessages().add(response);
+                try {
+                    if (canHandle(connection, response)) {
+                        // Add the response to the outbound queue
+                        connection.getOutboundWay().handle(response);
+                    } else {
+                        // Put the response at the end of the queue
+                        getOutboundMessages().add(response);
+                    }
+                } catch (IOException e) {
+                    getLogger().log(Level.FINE, "Unable to handle outbound message", e);
                 }
             } else {
                 // The request expects no response, the connection is free to

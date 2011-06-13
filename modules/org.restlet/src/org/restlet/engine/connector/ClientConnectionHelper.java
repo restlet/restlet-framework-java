@@ -37,7 +37,6 @@ import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.restlet.Client;
@@ -514,16 +513,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                 getOutboundMessages().add(response);
 
                 // Await on the latch
-                if (getMaxIoIdleTimeMs() <= 0) {
-                    latch.await();
-                } else {
-                    if (!latch.await(getMaxIoIdleTimeMs(),
-                            TimeUnit.MILLISECONDS)) {
-                        // Timeout detected
-                        response.setStatus(Status.CONNECTOR_ERROR_INTERNAL,
-                                "The calling thread timed out while waiting for a response to unblock it.");
-                    }
-                }
+                latch.await();
             } else {
                 // Add the message to the outbound queue for processing
                 getOutboundMessages().add(response);

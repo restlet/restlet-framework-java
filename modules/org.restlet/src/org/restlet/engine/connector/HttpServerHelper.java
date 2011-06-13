@@ -30,6 +30,9 @@
 
 package org.restlet.engine.connector;
 
+import java.io.IOException;
+import java.util.Iterator;
+
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -65,14 +68,39 @@ public class HttpServerHelper extends ServerConnectionHelper {
     }
 
     @Override
-    protected boolean canHandle(Connection<Server> connection, Response response) {
+    protected boolean canHandle(Connection<Server> connection, Response response)
+            throws IOException {
+        boolean result = false;
+
         // Check if the response is indeed the next one to be written
         // for this connection
         HttpServerInboundWay inboundWay = (HttpServerInboundWay) connection
                 .getInboundWay();
         Response nextResponse = inboundWay.getMessages().peek();
-        return (nextResponse != null)
-                && (nextResponse.getRequest() == response.getRequest());
+
+        if (nextResponse != null) {
+            if (nextResponse.getRequest() == response.getRequest()) {
+                result = true;
+            } else {
+                boolean found = false;
+
+                for (Iterator<Response> iterator = inboundWay.getMessages()
+                        .iterator(); iterator.hasNext() && !found;) {
+                    Response next = iterator.next();
+                    found = next.getRequest() == response.getRequest();
+                }
+
+                if (!found) {
+                    throw new IOException(
+                            "Can't find the parent request in the list of inbound messages.");
+                }
+            }
+        } else {
+            throw new IOException(
+                    "Can't find the parent request in the empty list of inbound messages.");
+        }
+
+        return result;
     }
 
     @Override

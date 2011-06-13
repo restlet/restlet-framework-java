@@ -37,8 +37,6 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Status;
-import org.restlet.engine.connector.Connection;
-import org.restlet.engine.connector.ServerInboundWay;
 import org.restlet.engine.io.IoState;
 
 /**
@@ -120,6 +118,19 @@ public class HttpServerInboundWay extends ServerInboundWay {
         }
 
         super.onReceived(message);
+    }
+
+    @Override
+    public void onTimeOut() {
+        for (Response rsp : getMessages()) {
+            if (rsp != getMessage()) {
+                getMessages().remove(rsp);
+                getHelper().onInboundError(
+                        Status.CONNECTOR_ERROR_COMMUNICATION, rsp);
+            }
+        }
+
+        super.onTimeOut();
     }
 
     @Override

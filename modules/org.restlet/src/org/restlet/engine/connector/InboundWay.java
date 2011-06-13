@@ -311,6 +311,14 @@ public abstract class InboundWay extends Way {
     protected abstract void onReceived(Response message);
 
     @Override
+    public void onTimeOut() {
+        if (getMessage() != null) {
+            getHelper().onInboundError(Status.CONNECTOR_ERROR_COMMUNICATION,
+                    getMessage());
+        }
+    }
+
+    @Override
     public int processIoBuffer() throws IOException {
         int result = 0;
 

@@ -135,6 +135,19 @@ public class HttpClientInboundWay extends ClientInboundWay {
     }
 
     @Override
+    public void onTimeOut() {
+        for (Response rsp : getMessages()) {
+            if (rsp != getMessage()) {
+                getMessages().remove(rsp);
+                getHelper().onInboundError(
+                        Status.CONNECTOR_ERROR_COMMUNICATION, rsp);
+            }
+        }
+        
+        super.onTimeOut();
+    }
+
+    @Override
     public void updateState() {
         if ((getIoState() == IoState.IDLE)
                 && (getMessageState() != MessageState.BODY) && !isEmpty()) {

@@ -90,15 +90,7 @@ public class ConnectionController extends Controller implements Runnable {
                     && conn.isEmpty()) {
                 conn.close(false);
             } else if (conn.hasTimedOut()) {
-                if (getHelper().getLogger().isLoggable(Level.FINE)) {
-                    getHelper().getLogger().fine(
-                            "Closing connection with \""
-                                    + conn.getSocketAddress()
-                                    + "\" due to lack of activity during "
-                                    + getHelper().getMaxIoIdleTimeMs() + " ms");
-                }
-
-                conn.close(false);
+                conn.onTimeOut();
             } else if (conn.updateState()) {
                 getUpdatedRegistrations().add(conn.getRegistration());
             } else if (conn.getInboundWay().getIoState() == IoState.READY) {

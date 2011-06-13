@@ -125,6 +125,19 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
     }
 
     @Override
+    public void onTimeOut() {
+        for (Response rsp : getMessages()) {
+            if (rsp != getMessage()) {
+                getMessages().remove(rsp);
+                getHelper().onOutboundError(
+                        Status.CONNECTOR_ERROR_COMMUNICATION, rsp);
+            }
+        }
+
+        super.onTimeOut();
+    }
+
+    @Override
     public void updateState() {
         // Update the IO state if necessary
         if (!getMessages().isEmpty() && (getMessage() == null)) {
