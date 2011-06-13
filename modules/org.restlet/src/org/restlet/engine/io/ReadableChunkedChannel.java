@@ -144,7 +144,6 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
                         "Chunk state: " + getChunkState());
             }
 
-            System.out.println("onDrain " + getChunkState());
             switch (getChunkState()) {
             case SIZE:
                 // Some bytes are available, fill the line builder
@@ -227,7 +226,6 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
                     // Need to fill more content into the buffer.
                     doLoop = false;
                 }
-                System.out.println(result);
                 break;
 
             case TRAILER:
@@ -256,11 +254,7 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
 
                 break;
             }
-
-            System.out.println(doLoop);
         }
-
-        System.out.println(result + " " + getChunkState());
 
         return result;
     }
