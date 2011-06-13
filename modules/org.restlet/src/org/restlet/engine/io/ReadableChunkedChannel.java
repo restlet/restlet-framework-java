@@ -253,7 +253,11 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
                     }
 
                     setEndReached(true);
-                    result = -1;
+
+                    if (result <= 0) {
+                        result = -1;
+                    }
+
                     doLoop = false;
                 } else {
                     // Need to fill more content into the buffer.

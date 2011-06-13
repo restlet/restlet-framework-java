@@ -80,9 +80,11 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
      */
     private static Representation createChunkedRepresentation(int size) {
         final StringBuilder builder = new StringBuilder();
+
         for (int i = 0; i < size; i++) {
             builder.append("a");
         }
+
         final Representation rep = new StringRepresentation(builder.toString(),
                 MediaType.TEXT_PLAIN);
         rep.setSize(Representation.UNKNOWN_SIZE);
@@ -99,7 +101,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
             sendPut(uri, 50000);
         }
 
-        sendPut(uri, 10);
+        sendPut(uri, 100000);
     }
 
     @Override
