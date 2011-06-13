@@ -1,4 +1,4 @@
-<module id="fileupload" excludes="android,gae,gwt" type="integration"
+<module id="fileupload" excludes="android,gwt" type="integration"
 	package="org.restlet.ext.fileupload">
 	<name>Restlet Extension - FileUpload</name>
 	<description>
