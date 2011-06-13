@@ -30,8 +30,6 @@
 
 package org.restlet.test.engine;
 
-import java.io.IOException;
-
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -69,13 +67,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
         @Override
         public Representation put(Representation entity) {
-            String str = null;
-            try {
-                str = entity.getText();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return new StringRepresentation(str, MediaType.TEXT_PLAIN);
+            return entity;
         }
     }
 
