@@ -62,17 +62,17 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private Component component;
 
-    private final boolean enableApacheClient = true;
+    private final boolean enabledClientApache = true;
 
-    private final boolean enableInternalClient = true;
+    private final boolean enabledClientInternal = true;
 
-    private final boolean enableInternalServer = false;
+    private final boolean enabledClientJdkNet = true;
 
-    private final boolean enableJdkNetClient = true;
+    private final boolean enabledServerInternal = false;
 
-    private final boolean enableJettyServer = true;
+    private final boolean enabledServerJetty = true;
 
-    private final boolean enableSimpleServer = true;
+    private final boolean enabledServerSimple = true;
 
     private final File testDir = new File(System.getProperty("java.io.tmpdir"),
             "SslBaseConnectorsTestCase");
@@ -176,63 +176,63 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     }
 
     public void testSslInternalAndApache() throws Exception {
-        if (this.enableInternalServer && this.enableApacheClient) {
+        if (this.enabledServerInternal && this.enabledClientApache) {
             runTest(new org.restlet.ext.ssl.HttpsServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testSslInternalAndInternal() throws Exception {
-        if (this.enableInternalServer && this.enableInternalClient) {
+        if (this.enabledServerInternal && this.enabledClientInternal) {
             runTest(new org.restlet.ext.ssl.HttpsServerHelper(null),
                     new org.restlet.ext.ssl.HttpsClientHelper(null));
         }
     }
 
     public void testSslInternalAndJdkNet() throws Exception {
-        if (this.enableInternalServer && this.enableJdkNetClient) {
+        if (this.enabledServerInternal && this.enabledClientJdkNet) {
             runTest(new org.restlet.ext.ssl.HttpsServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
     }
 
     public void testSslJettyAndApache() throws Exception {
-        if (this.enableJettyServer && this.enableApacheClient) {
+        if (this.enabledServerJetty && this.enabledClientApache) {
             runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testSslJettyAndInternal() throws Exception {
-        if (this.enableJettyServer && this.enableInternalClient) {
+        if (this.enabledServerJetty && this.enabledClientInternal) {
             runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
                     new org.restlet.ext.ssl.HttpsClientHelper(null));
         }
     }
 
     public void testSslJettyAndJdkNet() throws Exception {
-        if (this.enableJettyServer && this.enableJdkNetClient) {
+        if (this.enabledServerJetty && this.enabledClientJdkNet) {
             runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
     }
 
     public void testSslSimpleAndApache() throws Exception {
-        if (this.enableSimpleServer && this.enableApacheClient) {
+        if (this.enabledServerSimple && this.enabledClientApache) {
             runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testSslSimpleAndInternal() throws Exception {
-        if (this.enableSimpleServer && this.enableInternalClient) {
+        if (this.enabledServerSimple && this.enabledClientInternal) {
             runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
                     new org.restlet.ext.ssl.HttpsClientHelper(null));
         }
     }
 
     public void testSslSimpleAndJdkNet() throws Exception {
-        if (this.enableSimpleServer && this.enableJdkNetClient) {
+        if (this.enabledServerSimple && this.enabledClientJdkNet) {
             runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
