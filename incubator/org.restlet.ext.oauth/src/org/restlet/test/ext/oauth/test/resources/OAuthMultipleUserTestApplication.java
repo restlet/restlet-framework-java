@@ -40,7 +40,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.ext.oauth.AccessTokenServerResource;
 import org.restlet.ext.oauth.AuthPageServerResource;
 import org.restlet.ext.oauth.AuthenticatedUser;
-import org.restlet.ext.oauth.AuthorizationServerResource2;
+import org.restlet.ext.oauth.AuthorizationServerResource;
 import org.restlet.ext.oauth.Client;
 import org.restlet.ext.oauth.ClientStore;
 import org.restlet.ext.oauth.ClientStoreFactory;
@@ -100,7 +100,7 @@ public class OAuthMultipleUserTestApplication extends Application {
         // Oauth 2 resources
         ChallengeAuthenticator au = new ChallengeAuthenticator(getContext(),
                 ChallengeScheme.HTTP_BASIC, "OAuth Test Server");
-        au.setNext(AuthorizationServerResource2.class);
+        au.setNext(AuthorizationServerResource.class);
         router.attach("/authorize", au);
         router.attach("/access_token", AccessTokenServerResource.class);
         router.attach("/validate", ValidationServerResource.class);
