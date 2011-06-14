@@ -200,8 +200,11 @@ public class AuthPageServerResource extends OAuthServerResource {
      */
 
     protected void handleAction(String action, String[] scopes) {
-        //String sessionId = getCookies().getFirstValue(ClientCookieID);
+        //TODO: should maybe be removed
         String sessionId = (String) getRequest().getAttributes().get(ClientCookieID);
+        if(sessionId == null)
+            sessionId = getCookies().getFirstValue(ClientCookieID);
+        
         //getLogger().info("This is sessionId: "+sessionId);
         //getLogger().info("This is sessionId: "+getRequest().getAttributes().get(ClientCookieID));
         ConcurrentMap<String, Object> attribs = getContext().getAttributes();
