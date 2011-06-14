@@ -134,7 +134,9 @@ public abstract class OAuthServerResource extends ServerResource {
     }
 
     private void appendState(StringBuilder location) {
-        String sessionId = getCookies().getFirstValue(ClientCookieID);
+        String sessionId = (String) getRequest().getAttributes().get(ClientCookieID);
+        if(sessionId == null)
+            sessionId = getCookies().getFirstValue(ClientCookieID);
         ConcurrentMap<String, Object> attribs = getContext().getAttributes();
         AuthSession session = (AuthSession) attribs.get(sessionId);
         String state = session.getState();
@@ -144,6 +146,7 @@ public abstract class OAuthServerResource extends ServerResource {
         }
         session.reset();
     }
+    
 
     @Override
     protected void doInit() throws ResourceException {

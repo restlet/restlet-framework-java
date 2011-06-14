@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.oauth;
+package org.restlet.ext.oauth.internal;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
@@ -40,9 +40,12 @@ import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.ext.oauth.AuthenticatedUser;
+import org.restlet.ext.oauth.Client;
 import org.restlet.ext.oauth.OAuthError;
-import org.restlet.ext.oauth.internal.AuthSession;
-import org.restlet.ext.oauth.internal.Scopes;
+import org.restlet.ext.oauth.OAuthHelper;
+import org.restlet.ext.oauth.OAuthServerResource;
+import org.restlet.ext.oauth.OAuthServerResource.ResponseType;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -65,7 +68,8 @@ import org.restlet.security.Role;
  *      href="http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-3">OAuth
  *      2 draft 10</a>
  */
-public class AuthorizationServerResource extends OAuthServerResource {
+@Deprecated
+public class AuthorizationServerResourceOld extends OAuthServerResource {
 
     
     public static final String ID = "id";

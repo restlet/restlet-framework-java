@@ -43,6 +43,8 @@ import org.junit.Test;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Server;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
@@ -53,7 +55,6 @@ import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.ext.oauth.Flow;
 import org.restlet.ext.oauth.OAuthHelper;
 import org.restlet.ext.oauth.OAuthUser;
-import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -134,11 +135,12 @@ public class TimedTokenTest {
     public void testTimedTokens() throws Exception {
         client.clearUser();
         assertNull(client.getToken());
+        ChallengeResponse chresp = new ChallengeResponse(
+                ChallengeScheme.HTTP_BASIC, "bob", "alice");
         ClientResource cr = new CookieCopyClientResource(prot + "://localhost:"
                 + serverPort + "/client/webclient");
+        cr.setChallengeResponse(chresp);
         Representation r = cr.get();
-        assertNotNull(r);
-        r = OpenIdFormFrowarder.handleFormRedirect(r, cr);
         assertNotNull(r);
         String text = r.getText();
         assertEquals("Response text test", text, "TestSuccessful");

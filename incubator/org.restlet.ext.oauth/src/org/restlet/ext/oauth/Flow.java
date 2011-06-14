@@ -1,22 +1,17 @@
 package org.restlet.ext.oauth;
 
-import java.io.IOException;
-import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
-import org.restlet.data.Reference;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
 import org.restlet.ext.oauth.internal.Scopes;
-import org.restlet.ext.openid.OpenIdFormFrowarder;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 /**
  * Enum that lets clients retrieve tokens using different OAuth2 flows.
- * Currently this class enables use of the NONE (Autonomous) flow, the PASSWORD
- * flow and UserAgent flow. It also supports a client to refresh a token.
+ * Currently this class enables use of the NONE (Autonomous) flow and the PASSWORD
+ * flow. It also supports a client to refresh a token.
  * 
  * The class defines one function doFlow that wraps the above specified ways of
  * retrieving a token from an authorization server.
@@ -49,7 +44,7 @@ import org.restlet.resource.ClientResource;
  * @author Kristoffer Gronowski
  */
 public enum Flow {
-    NONE, PASSWORD, USERAGENT, REFRESH;
+    NONE, PASSWORD, REFRESH;
     
     /**
      * Executes a specific OAuth Flow (including token refresh). Based on the
@@ -112,8 +107,8 @@ public enum Flow {
             return passwordFlow(params, username, password, c);
         } else if (this == Flow.NONE) {
             return noneFlow(params, c);
-        } else if (this == Flow.USERAGENT) {
-            return userAgent(params, callbackUri, state, c);
+        //} else if (this == Flow.USERAGENT) {
+        //    return userAgent(params, callbackUri, state, c);
         } else if (this == Flow.REFRESH) {
             return refreshToken(params, refreshToken, c);
         }
@@ -150,6 +145,7 @@ public enum Flow {
         return result;
     }
 
+    /*
     public static OAuthUser userAgent(OAuthParameters params,
             String callbackUri, String state, org.restlet.Client c) {
         OAuthUser result = null;
@@ -233,7 +229,6 @@ public enum Flow {
 
             r = authResource.get();
             // Check if it is a OpenID form forward
-
             try {
                 r = OpenIdFormFrowarder.handleFormRedirect(r, authResource);
             } catch (IOException e) {
@@ -247,7 +242,7 @@ public enum Flow {
 
         return result;
     }
-
+    */
     private static OAuthUser noneFlow(OAuthParameters params,
             org.restlet.Client c) {
         OAuthUser result = null;

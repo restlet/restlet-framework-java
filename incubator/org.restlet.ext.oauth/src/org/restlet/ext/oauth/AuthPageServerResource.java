@@ -157,7 +157,7 @@ public class AuthPageServerResource extends OAuthServerResource {
         String authPage = OAuthHelper.getAuthPageTemplate(getContext());
         getLogger().info("this is auth page: "+authPage);
         if (authPage != null && authPage.length() > 0) {
-
+            getLogger().info("loading authPage: "+authPage);
             // Check if we should skip the page if already approved scopes
             boolean sameScope = OAuthHelper.getAuthSkipApproved(getContext());
             if (sameScope) {
@@ -180,9 +180,10 @@ public class AuthPageServerResource extends OAuthServerResource {
             getResponse().setCacheDirectives(noCache);
             return getPage(authPage);
         }
-
+        getLogger().info("accepting scopes since no authPage: "+authPage);
         // No page automatically accept all the scopes requested
         handleAction("Accept", getQuery().getValuesArray("scope"));
+        getLogger().info("action handled");
         return new EmptyRepresentation(); // Will redirect
     }
 
@@ -199,7 +200,10 @@ public class AuthPageServerResource extends OAuthServerResource {
      */
 
     protected void handleAction(String action, String[] scopes) {
-        String sessionId = getCookies().getFirstValue(ClientCookieID);
+        //String sessionId = getCookies().getFirstValue(ClientCookieID);
+        String sessionId = (String) getRequest().getAttributes().get(ClientCookieID);
+        //getLogger().info("This is sessionId: "+sessionId);
+        //getLogger().info("This is sessionId: "+getRequest().getAttributes().get(ClientCookieID));
         ConcurrentMap<String, Object> attribs = getContext().getAttributes();
         AuthSession session = (sessionId == null) ? null
                 : (AuthSession) attribs.get(sessionId);
@@ -211,7 +215,7 @@ public class AuthPageServerResource extends OAuthServerResource {
             getLogger().info("Rejected.");
             return;
         }
-
+        getLogger().info("Accepting scopes - in handleAction");
         Client client = session.getClient();
         String id = session.getScopeOwner();
 
@@ -227,7 +231,7 @@ public class AuthPageServerResource extends OAuthServerResource {
         } else if (flow.equals(ResponseType.code)) {
             location = generateCode(id, client, redirUrl);
         }
-
+       
         // Following scopes were approved
         AuthenticatedUser user = client.findUser(session.getScopeOwner());
         if (user == null) {

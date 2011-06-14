@@ -36,12 +36,14 @@
       <scope>compile</scope>
     </dependency>
     
+    <!-- 
     <dependency>
       <groupId>org.restlet.dev</groupId>
       <artifactId>org.restlet.ext.openid</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope> <!-- Should be test -->
+      <scope>provided</scope> 
     </dependency>
+    -->
     
     <dependency>
       <groupId>org.restlet.dev</groupId>
@@ -56,22 +58,24 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-        
+    
+    <!-- 
     <dependency>
       <groupId>org.restlet.dev</groupId>
       <artifactId>org.restlet.ext.httpclient</artifactId>
       <version>${project.version}</version>
     </dependency> 
+    -->
     
     <!-- Only for test, used for HTTPS suport in standalone mode -->
-    
+    <!-- 
     <dependency>
       <groupId>org.restlet.dev</groupId>
       <artifactId>org.restlet.ext.jetty</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    
+    -->
     
     <dependency>
       <groupId>junit</groupId>
@@ -79,6 +83,7 @@
       <version>4.4</version>
       <scope>compile</scope>
     </dependency>
+    
     
     <dependency>
       <groupId>com.jayway.awaitility</groupId> 
