@@ -108,10 +108,10 @@ public class AuthenticatedUserImpl extends AuthenticatedUser {
     }
 
     @Override
-    public List <Role> getGrantedRoles() {
-        return new ArrayList <Role> (grantedRoles.keySet());
-        //return null;
-        //return grantedRoles.keySet()(new Role[grantedRoles.size()]);
+    public List<Role> getGrantedRoles() {
+        return new ArrayList<Role>(grantedRoles.keySet());
+        // return null;
+        // return grantedRoles.keySet()(new Role[grantedRoles.size()]);
     }
 
     @Override

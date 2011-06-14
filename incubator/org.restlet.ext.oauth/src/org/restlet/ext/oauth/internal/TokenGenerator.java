@@ -28,7 +28,7 @@ public abstract class TokenGenerator {
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
-            
+
         }
 
     }

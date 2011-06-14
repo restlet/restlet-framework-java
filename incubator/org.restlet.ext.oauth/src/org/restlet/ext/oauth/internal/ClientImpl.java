@@ -46,40 +46,39 @@ import org.restlet.ext.oauth.Client;
  * @author Kristoffer Gronowski
  */
 public class ClientImpl extends Client {
-    
+
     private final String clientId;
 
     private final String clientSecret;
 
     private final String redirectUri;
-    
+
     private final Set<AuthenticatedUser> users;
 
     private final String applicationName;
-
-    
 
     // TODO maybe also check the codes and tokens / client level
 
     public ClientImpl(String clientId, String redirectUri) {
         this(clientId, null, redirectUri, null);
-        //this.clientId = clientId;
-        //this.redirectUri = redirectUri;
+        // this.clientId = clientId;
+        // this.redirectUri = redirectUri;
     }
 
     public ClientImpl(String clientId, String clientSecret, String redirectUri) {
         this(clientId, clientSecret, redirectUri, null);
-        //this.clientSecret = clientSecret;
+        // this.clientSecret = clientSecret;
     }
 
     public ClientImpl(String clientId, String clientSecret, String redirectUri,
             String name) {
-        //this(clientId, redirectUri);
+        // this(clientId, redirectUri);
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.redirectUri = redirectUri;
         this.applicationName = name;
-        this.users = Collections.synchronizedSet(new HashSet<AuthenticatedUser>());
+        this.users = Collections
+                .synchronizedSet(new HashSet<AuthenticatedUser>());
     }
 
     public boolean containsUser(String userId) {

@@ -101,8 +101,8 @@ public class OAuthUser extends User {
     public void setState(String state) {
         this.state = state;
     }
-    
-    //TODO: This should eventually be removed...
+
+    // TODO: This should eventually be removed...
     /**
      * Retrieve the access token from the user if and only if the user is of
      * type OAuthUser
@@ -124,7 +124,7 @@ public class OAuthUser extends User {
         }
         return token;
     }
-    
+
     /**
      * Convert successful JSON token body responses to OAuthUser.
      * 
@@ -139,7 +139,7 @@ public class OAuthUser extends User {
         try {
             // Debug test for tracing back error
             JSONObject answer = new JSONObject(body.getText());
-            
+
             log.info("Got answer on JSON = " + answer.toString());
 
             String accessToken = null;

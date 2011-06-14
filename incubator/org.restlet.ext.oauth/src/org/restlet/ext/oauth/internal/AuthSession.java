@@ -52,8 +52,8 @@ public class AuthSession {
 
     private final ConcurrentMap<String, Object> attribs;
 
-    //TODO: Remove?
-    // private volatile long lastActivity  = System.currentTimeMillis();
+    // TODO: Remove?
+    // private volatile long lastActivity = System.currentTimeMillis();
 
     private static final String ID = "id";
 
@@ -74,7 +74,7 @@ public class AuthSession {
 
     protected volatile long timeoutMin = 3600;
 
-    //TODO: Most likely not needed!
+    // TODO: Most likely not needed!
     // private final ConcurrentMap<String, Object> sessions;
 
     /**
@@ -88,7 +88,7 @@ public class AuthSession {
             ScheduledThreadPoolExecutor executor) {
         this.attribs = new ConcurrentHashMap<String, Object>();
         String sessionId = UUID.randomUUID().toString();
-        //setId(sessionId); // Generate a new ID
+        // setId(sessionId); // Generate a new ID
         setAttribute(ID, sessionId);
         // this.sessions = sessions;
         sessions.put(sessionId, this);
@@ -96,9 +96,9 @@ public class AuthSession {
     }
 
     // Only from constructor
-    /*private void setId(String id) {
-        setAttribute(ID, id);
-    }*/
+    /*
+     * private void setId(String id) { setAttribute(ID, id); }
+     */
 
     /**
      * @return the session id for this object.

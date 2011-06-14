@@ -49,8 +49,6 @@ import org.restlet.resource.ServerResource;
  * @author Kristoffer Gronowski
  */
 public abstract class OAuthServerResource extends ServerResource {
-    
-    
 
     public enum GrantType {
         assertion, authorization_code, none, password, refresh_token
@@ -134,8 +132,9 @@ public abstract class OAuthServerResource extends ServerResource {
     }
 
     private void appendState(StringBuilder location) {
-        String sessionId = (String) getRequest().getAttributes().get(ClientCookieID);
-        if(sessionId == null)
+        String sessionId = (String) getRequest().getAttributes().get(
+                ClientCookieID);
+        if (sessionId == null)
             sessionId = getCookies().getFirstValue(ClientCookieID);
         ConcurrentMap<String, Object> attribs = getContext().getAttributes();
         AuthSession session = (AuthSession) attribs.get(sessionId);
@@ -146,7 +145,6 @@ public abstract class OAuthServerResource extends ServerResource {
         }
         session.reset();
     }
-    
 
     @Override
     protected void doInit() throws ResourceException {
@@ -154,12 +152,12 @@ public abstract class OAuthServerResource extends ServerResource {
         Context ctx = getContext();
         ConcurrentMap<String, Object> attribs = ctx.getAttributes();
         clients = ClientStoreFactory.getInstance();
-        
-        //NOT NEEDED I THINK:
+
+        // NOT NEEDED I THINK:
         /*
-        clients = (ClientStore<?>) attribs.get(ClientStore.class
-                .getCanonicalName());
-                */
+         * clients = (ClientStore<?>) attribs.get(ClientStore.class
+         * .getCanonicalName());
+         */
         getLogger().info("Found client store = " + clients);
 
         generator = clients.getTokenGenerator();
@@ -222,8 +220,8 @@ public abstract class OAuthServerResource extends ServerResource {
         // TODO add state to request string
         return location.toString();
     }
-    
-    protected String getParameter(String parameter, String defaultValue){
+
+    protected String getParameter(String parameter, String defaultValue) {
         String val = (String) this.getContext().getAttributes().get(parameter);
         return val != null ? val : defaultValue;
     }

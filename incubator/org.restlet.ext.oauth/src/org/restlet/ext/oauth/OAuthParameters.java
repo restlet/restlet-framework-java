@@ -57,7 +57,7 @@ public class OAuthParameters {
 
     private final Reference baseRef;
 
-    private volatile List <Role> roles;
+    private volatile List<Role> roles;
 
     private volatile String authorizePath = "authorize";
 
@@ -90,7 +90,7 @@ public class OAuthParameters {
      * baseRef and scope
      */
     public OAuthParameters(String clientId, String clientSecret,
-            String baseRef, List <Role> roles) {
+            String baseRef, List<Role> roles) {
         this(clientId, clientSecret, baseRef);
         this.roles = roles;
     }
@@ -107,15 +107,13 @@ public class OAuthParameters {
         return baseRef;
     }
 
-    public List <Role> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
-    
-    public void setRoles(List <Role> roles){
+
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
-    
-    
 
     public String getAuthorizePath() {
         return authorizePath;

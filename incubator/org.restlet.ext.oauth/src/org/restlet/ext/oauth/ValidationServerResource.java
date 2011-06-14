@@ -148,7 +148,8 @@ public class ValidationServerResource extends OAuthServerResource {
                         if (scopes.isNull(i))
                             continue;
                         String scope = scopes.getString(i);
-                        boolean granted = user.isGrantedRole(Scopes.toRole(scope), owner);
+                        boolean granted = user.isGrantedRole(
+                                Scopes.toRole(scope), owner);
                         getLogger().info(
                                 "Granted permission : " + scope + " = "
                                         + granted);

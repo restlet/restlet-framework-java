@@ -45,7 +45,6 @@ import org.restlet.ext.oauth.Client;
 import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.OAuthHelper;
 import org.restlet.ext.oauth.OAuthServerResource;
-import org.restlet.ext.oauth.OAuthServerResource.ResponseType;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -57,7 +56,8 @@ import org.restlet.security.Role;
  * OAuth 2.0 authorization request.
  * 
  * This Resource is controlled by to Context Attribute Parameters<br/>
- * OAuthServerResource.AUTH_PARAM specifies the location of the AuthPageServerResource<br/>
+ * OAuthServerResource.AUTH_PARAM specifies the location of the
+ * AuthPageServerResource<br/>
  * OAuthServerResource.LOGIN_PARAM specifies the location of a Login resource
  * 
  * Implements OAuth 2.0 draft 10
@@ -71,7 +71,6 @@ import org.restlet.security.Role;
 @Deprecated
 public class AuthorizationServerResourceOld extends OAuthServerResource {
 
-    
     public static final String ID = "id";
 
     public static final String OPENID = "openid";
@@ -250,10 +249,10 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
             }
         } else { // need to login
             getLogger().info("Base ref = " + getReference().getParentRef());
-            //TODO: REMOVE HARD CODED VALUE
-            Reference ref = new Reference("riap://application/"+
-                    OAuthHelper.getLoginPage(getContext()));
-                    
+            // TODO: REMOVE HARD CODED VALUE
+            Reference ref = new Reference("riap://application/"
+                    + OAuthHelper.getLoginPage(getContext()));
+
             getLogger().info("OAuth2 session = " + session);
 
             if (session == null) {
@@ -309,9 +308,9 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
 
     protected Representation doPostAuthenticate(AuthSession session,
             Client client) {
-        
-        Reference ref = new Reference("riap://application/"+
-                OAuthHelper.getAuthPage(getContext()));
+
+        Reference ref = new Reference("riap://application/"
+                + OAuthHelper.getAuthPage(getContext()));
         getLogger().info("Name = " + getApplication().getInboundRoot());
         ref.addQueryParameter("client", client.getClientId());
         // Requested
@@ -326,8 +325,8 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
         AuthenticatedUser user = client.findUser(session.getScopeOwner());
 
         if (user != null) { // null before first code generated
-            //scopes = OAuthUtils.roluser.getGrantedScopes();
-            List <Role> roles = user.getGrantedRoles();
+            // scopes = OAuthUtils.roluser.getGrantedScopes();
+            List<Role> roles = user.getGrantedRoles();
             if (roles != null && roles.size() > 0) {
                 for (Role r : roles)
                     ref.addQueryParameter("grantedScope", Scopes.toScope(r));

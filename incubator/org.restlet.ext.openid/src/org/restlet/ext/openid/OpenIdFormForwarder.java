@@ -44,10 +44,10 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class OpenIdFormFrowarder {
+public class OpenIdFormForwarder {
 
     /**
-     * Helper class to programatically handle the OpenID 2.0 HTML Form
+     * Helper class to programmatically handle the OpenID 2.0 HTML Form
      * redirection. The class can be added and if needed it will intercept and
      * perform the post on behalf of the end user. In normal operation a browser
      * would automatically post the form.
@@ -81,6 +81,7 @@ public class OpenIdFormFrowarder {
             DomRepresentation htmlRep = new DomRepresentation(input);
 
             Node form = htmlRep.getNode("//form");
+
             if (form != null) { // Check for an on load....
                 Node body = htmlRep.getNode("//body");
                 NamedNodeMap nnm = body.getAttributes();

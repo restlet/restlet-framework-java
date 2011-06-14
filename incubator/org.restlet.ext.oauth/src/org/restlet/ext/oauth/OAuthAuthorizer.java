@@ -161,25 +161,25 @@ public class OAuthAuthorizer extends RoleAuthorizer {
         this.validateRef = null;
     } // For extending the class
 
-
-    private JSONObject createValidationRequest(String accessToken, Request req) throws JSONException{
+    private JSONObject createValidationRequest(String accessToken, Request req)
+            throws JSONException {
         JSONObject request = new JSONObject();
         Reference uri = req.getOriginalRef();
 
         request.put("access_token", accessToken);
 
-        //add any roles...
-        List <Role> roles = this.getAuthorizedRoles();
+        // add any roles...
+        List<Role> roles = this.getAuthorizedRoles();
         if (roles != null && roles.size() > 0) {
             JSONArray jArray = new JSONArray();
             for (Role r : roles)
                 jArray.put(Scopes.toScope(r));
             request.put("scope", jArray);
-            getLogger().info("Found scopes: "+jArray.toString());
+            getLogger().info("Found scopes: " + jArray.toString());
         }
         String owner = (String) req.getAttributes().get("oauth-user");
-        if(owner != null && owner.length() > 0){
-            getLogger().info("Found Owner:"+owner);
+        if (owner != null && owner.length() > 0) {
+            getLogger().info("Found Owner:" + owner);
             request.put("owner", owner);
         }
         request.put("uri", uri.getHierarchicalPart());
@@ -187,21 +187,20 @@ public class OAuthAuthorizer extends RoleAuthorizer {
     }
 
     // GET SIZE TO HANDLE BUG IN GLASSFISH
-    /*private Representation createJsonRepresentation(JSONObject request){    
-        JsonRepresentation repr = new JsonRepresentation(request);
-        StringRepresentation sr = new StringRepresentation(
-                request.toString());
-        sr.setCharacterSet(repr.getCharacterSet());
-        repr.setSize(sr.getSize());
-        sr.release();
-        return repr;
-    }*/
+    /*
+     * private Representation createJsonRepresentation(JSONObject request){
+     * JsonRepresentation repr = new JsonRepresentation(request);
+     * StringRepresentation sr = new StringRepresentation( request.toString());
+     * sr.setCharacterSet(repr.getCharacterSet()); repr.setSize(sr.getSize());
+     * sr.release(); return repr; }
+     */
 
-    private void setUser(Request req, JSONObject response, String accessToken) throws JSONException{
+    private void setUser(Request req, JSONObject response, String accessToken)
+            throws JSONException {
         String tokenOwner = response.getString("tokenOwner");
         getLogger().info(
                 "User " + tokenOwner + " is accessing : "
-                + req.getOriginalRef());
+                        + req.getOriginalRef());
         User user = new User(tokenOwner, accessToken);
 
         // Set the user so that the Resource knows who is executing
@@ -210,7 +209,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
         req.getClientInfo().setAuthenticated(true);
     }
 
-    private void handleError(String error, Response resp){
+    private void handleError(String error, Response resp) {
         if (error != null && error.length() > 0) {
             ChallengeRequest cr = new ChallengeRequest(
                     ChallengeScheme.HTTP_OAUTH, "oauth"); // TODO set
@@ -247,31 +246,34 @@ public class OAuthAuthorizer extends RoleAuthorizer {
             resp.getChallengeRequests().add(cr);
         }
     }
-    
-    private String getAccessToken(Request req){
-        //Auth Header present
+
+    private String getAccessToken(Request req) {
+        // Auth Header present
         String accessToken = null;
-        if(req.getChallengeResponse() != null){
+        if (req.getChallengeResponse() != null) {
             accessToken = req.getChallengeResponse().getRawValue();
             getLogger().info("Found Authorization header" + accessToken);
         }
-        //Check query for token
-        else if(accessToken == null || accessToken.length() == 0){
-            getLogger().info("Didn't contain a Authorization header - checking query");
+        // Check query for token
+        else if (accessToken == null || accessToken.length() == 0) {
+            getLogger().info(
+                    "Didn't contain a Authorization header - checking query");
             accessToken = req.getOriginalRef().getQueryAsForm()
-            .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
+                    .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
 
-            //check body if all else fail:
-            if(accessToken == null || accessToken.length() == 0) {
-                if(req.getMethod() == Method.POST
+            // check body if all else fail:
+            if (accessToken == null || accessToken.length() == 0) {
+                if (req.getMethod() == Method.POST
                         || req.getMethod() == Method.PUT
                         || req.getMethod() == Method.DELETE) {
                     Representation r = req.getEntity();
-                    if(r != null && MediaType.APPLICATION_WWW_FORM.equals(r
-                            .getMediaType())) {
+                    if (r != null
+                            && MediaType.APPLICATION_WWW_FORM.equals(r
+                                    .getMediaType())) {
                         // Search for an OAuth Token
                         Form form = new Form(r);
-                        accessToken = form.getFirstValue(OAuthServerResource.OAUTH_TOKEN);
+                        accessToken = form
+                                .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
                         if (accessToken != null && accessToken.length() > 0) {
                             // restore the entity body
                             req.setEntity(form.getWebRepresentation());
@@ -284,7 +286,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
     }
 
     @Override
-    public boolean authorize(Request req, Response resp){
+    public boolean authorize(Request req, Response resp) {
         getLogger().info("Checking for param access_token");
         String accessToken = getAccessToken(req);
 
@@ -296,8 +298,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
             cr.setParameters(parameters);
             resp.getChallengeRequests().add(cr);
             resp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-        }
-        else {
+        } else {
             getLogger().info("Found Access Token " + accessToken);
             ClientResource authResource = new CookieCopyClientResource(
                     validateRef);
@@ -305,15 +306,16 @@ public class OAuthAuthorizer extends RoleAuthorizer {
             JSONObject request;
             try {
                 request = createValidationRequest(accessToken, req);
-                //Representation repr = this.createJsonRepresentation(request);
+                // Representation repr = this.createJsonRepresentation(request);
                 Representation repr = new JsonStringRepresentation(request);
                 getLogger().info("Posting to validator... json = " + request);
                 // RETRIEVE JSON...WORKAROUND TO HANDLE ANDROID
                 Representation r = authResource.post(repr);
                 getLogger().info("After posting to validator...");
                 repr.release();
-                getLogger().info("Got Respose from auth resource OK "
-                        + r.getClass().getCanonicalName());
+                getLogger().info(
+                        "Got Respose from auth resource OK "
+                                + r.getClass().getCanonicalName());
                 JsonRepresentation returned = new JsonRepresentation(r);
 
                 // GET OBJECT
@@ -322,7 +324,6 @@ public class OAuthAuthorizer extends RoleAuthorizer {
 
                 if (response.has("tokenOwner"))
                     this.setUser(req, response, accessToken);
-
 
                 String error = null;
                 if (response.has("error"))
@@ -335,9 +336,10 @@ public class OAuthAuthorizer extends RoleAuthorizer {
                 r.release();
                 authResource.release();
 
-                if(authenticated) return true;
+                if (authenticated)
+                    return true;
 
-                //handle any errors:
+                // handle any errors:
                 handleError(error, resp);
 
             } catch (JSONException e) {

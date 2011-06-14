@@ -38,44 +38,48 @@ import org.restlet.security.Role;
 
 /**
  * Utility methods for converting between OAuth Scopes and Restlet Roles
+ * 
  * @author Martin Svensson
- *
  */
 public class Scopes {
 
-    public static String toScope(List <Role> roles) throws IllegalArgumentException{
+    public static String toScope(List<Role> roles)
+            throws IllegalArgumentException {
         StringBuilder sb = new StringBuilder();
-        for(Role r : roles){
+        for (Role r : roles) {
             String scope = toScope(r);
             sb.append(' ');
             sb.append(scope);
-            
+
         }
         return sb.substring(1);
     }
 
-    public static String toScope(Role r) throws IllegalArgumentException{
+    public static String toScope(Role r) throws IllegalArgumentException {
         String rname = r.getName();
-        if(rname == null) throw new IllegalArgumentException("Role name cannot be null");
+        if (rname == null)
+            throw new IllegalArgumentException("Role name cannot be null");
         rname = rname.trim();
-        if(rname.length() < 1) throw new IllegalArgumentException("Role name cannot be empty");
-        else if(rname.contains(" ")) throw new IllegalArgumentException("Role name cannot contain space");
+        if (rname.length() < 1)
+            throw new IllegalArgumentException("Role name cannot be empty");
+        else if (rname.contains(" "))
+            throw new IllegalArgumentException("Role name cannot contain space");
         return rname;
     }
-    
-    public static Role toRole(String scope){
+
+    public static Role toRole(String scope) {
         return new Role(scope, null);
     }
-    
-    public static List <Role> toRoles(String scopes){
+
+    public static List<Role> toRoles(String scopes) {
         String[] tmp = parseScope(scopes);
-        List <Role> toRet = new ArrayList <Role> (tmp.length);
-        for(String scope : tmp){
+        List<Role> toRet = new ArrayList<Role>(tmp.length);
+        for (String scope : tmp) {
             toRet.add(new Role(scope, null));
         }
         return toRet;
     }
-    
+
     public static String[] parseScope(String scopes) {
         if (scopes != null && scopes.length() > 0) {
             StringTokenizer st = new StringTokenizer(scopes, " ");
