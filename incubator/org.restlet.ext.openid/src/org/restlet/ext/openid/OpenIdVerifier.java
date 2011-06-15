@@ -96,7 +96,7 @@ import org.restlet.security.Verifier;
  * @author Martin Svensson
  *
  */
-public class OpenIdVerifierOld implements Verifier {
+public class OpenIdVerifier implements Verifier {
 
     public enum AX{
         friendly, email, fullname, first, last, dob, gender, postcode, country, language, timezone;
@@ -136,7 +136,7 @@ public class OpenIdVerifierOld implements Verifier {
     /**
      * Default constructor
      */
-    public OpenIdVerifierOld(){
+    public OpenIdVerifier(){
         optionalAttributes = new HashSet <AX> ();
         requiredAttributes = new HashSet <AX> ();
     }
@@ -145,7 +145,7 @@ public class OpenIdVerifierOld implements Verifier {
      * Construct with a default OpenIdProvider/Identifier
      * @param defaultProvider
      */
-    public OpenIdVerifierOld(String defaultProvider){
+    public OpenIdVerifier(String defaultProvider){
         this();
         setDefaultProvider(defaultProvider);
     }
