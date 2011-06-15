@@ -67,6 +67,7 @@ public class RedirectAuthenticator extends Authenticator {
     //private final String
     public final static String DefaultIdentifierCookie= "session_id";
     public final static String DefaultOrigRefCookie = "original_ref";
+    public final static String OriginalRefAttribute = "origRef";
     
     private final Verifier verifier;
     private final String identifierCookie;
@@ -111,13 +112,18 @@ public class RedirectAuthenticator extends Authenticator {
         Form f = request.getResourceRef().getQueryAsForm();
         User u = request.getClientInfo().getUser();
         String identifier = request.getCookies().getFirstValue(identifierCookie);
+        String origRef;
         if(identifier != null){
             u = new User(identifier);
            request.getClientInfo().setUser(u);
            return true;
         }
         if(!request.getCookies().contains(origRefCookie)){
+            origRef = request.getResourceRef().toString();
             response.getCookieSettings().add(origRefCookie, request.getResourceRef().toString());
+        }
+        else{
+            origRef = request.getCookies().getFirstValue(origRefCookie);
         }
         
         int verified = verifier.verify(request, response);
@@ -127,7 +133,7 @@ public class RedirectAuthenticator extends Authenticator {
             response.getCookieSettings().removeAll(identifierCookie);
             response.getCookieSettings().add(identifierCookie, request.getClientInfo().getUser().getIdentifier());
             handleUser(request.getClientInfo().getUser());
-            String origRef = request.getCookies().getFirstValue(origRefCookie);
+            //String origRef = request.getCookies().getFirstValue(origRefCookie);
             request.getCookies().removeAll(origRefCookie);
             response.getCookieSettings().removeAll(origRefCookie);
             if(origRef != null){
@@ -139,7 +145,7 @@ public class RedirectAuthenticator extends Authenticator {
         response.getCookieSettings().removeAll(identifierCookie);    
         if(verified == Verifier.RESULT_UNKNOWN || verified == Verifier.RESULT_INVALID){
             
-            String origRef = request.getCookies().getFirstValue(origRefCookie);
+            //String origRef = request.getCookies().getFirstValue(origRefCookie);
             request.getCookies().removeAll(origRefCookie);
             response.getCookieSettings().removeAll(origRefCookie);
             forbid(origRef, request, response);
@@ -176,8 +182,10 @@ public class RedirectAuthenticator extends Authenticator {
         else{
             getLogger().info("sending to error resource");
             Reference ref = new Reference(errorResource);
-            if(origRef != null)
-                ref.addQueryParameter("origRef", origRef);
+            /*if(origRef != null)
+                ref.addQueryParameter(OriginalRefAttribute, origRef);*/
+            
+            request.getAttributes().put(OriginalRefAttribute, origRef);
             Redirector r = new Redirector(getContext(), ref.toString(), Redirector.MODE_SERVER_OUTBOUND);
             r.handle(request, response);
         }
