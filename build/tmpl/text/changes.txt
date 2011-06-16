@@ -45,6 +45,8 @@ Changes log
       - Updated Jetty to version 7.4.2.
       - Added awaitility and hamcrest libraries required by the oauth 
         extension.
+      - Added the oauth and openid extensions.
+        Contributed by Kristoffer Gronowski and Martin Svensson.
 
 - 2.1 Milestone 4 (04/27/2011)
     - API changes

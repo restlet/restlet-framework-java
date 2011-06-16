@@ -57,39 +57,39 @@ public class EngineTestSuite extends TestSuite {
     /** Constructor. */
     public EngineTestSuite() {
         super("Engine package");
-        addTestSuite(AlphaNumericComparatorTestCase.class);
-        addTestSuite(AnnotationUtilsTestCase.class);
-        addTestSuite(Base64TestCase.class);
-        addTestSuite(BufferTestCase.class);
-        addTestSuite(BioUtilsTestCase.class);
-        addTestSuite(CookiesTestCase.class);
-        addTestSuite(ContentTypeTestCase.class);
-        addTestSuite(HeaderTestCase.class);
-        addTestSuite(HttpCallTestCase.class);
-        addTestSuite(HttpInboundRequestTestCase.class);
-        addTestSuite(ImmutableDateTestCase.class);
-        addTestSuite(UnclosableInputStreamTestCase.class);
-        addTestSuite(UnclosableOutputStreamTestCase.class);
-        addTestSuite(PreferencesTestCase.class);
-        addTestSuite(ReaderInputStreamTestCase.class);
-
-        // Tests based on HTTP client connectors are not supported by the GAE
-        // edition.
-        // [ifndef gae]
-        addTestSuite(AuthenticationTestCase.class);
-        addTestSuite(TunnelFilterTestCase.class);
-        addTestSuite(UserAgentTunnelFilterTestCase.class);
-        // [enddef]
-
-        // [ifndef gae,jee]
+//        addTestSuite(AlphaNumericComparatorTestCase.class);
+//        addTestSuite(AnnotationUtilsTestCase.class);
+//        addTestSuite(Base64TestCase.class);
+//        addTestSuite(BufferTestCase.class);
+//        addTestSuite(BioUtilsTestCase.class);
+//        addTestSuite(CookiesTestCase.class);
+//        addTestSuite(ContentTypeTestCase.class);
+//        addTestSuite(HeaderTestCase.class);
+//        addTestSuite(HttpCallTestCase.class);
+//        addTestSuite(HttpInboundRequestTestCase.class);
+//        addTestSuite(ImmutableDateTestCase.class);
+//        addTestSuite(UnclosableInputStreamTestCase.class);
+//        addTestSuite(UnclosableOutputStreamTestCase.class);
+//        addTestSuite(PreferencesTestCase.class);
+//        addTestSuite(ReaderInputStreamTestCase.class);
+//
+//        // Tests based on HTTP client connectors are not supported by the GAE
+//        // edition.
+//        // [ifndef gae]
+//        addTestSuite(AuthenticationTestCase.class);
+//        addTestSuite(TunnelFilterTestCase.class);
+//        addTestSuite(UserAgentTunnelFilterTestCase.class);
+//        // [enddef]
+//
+//        // [ifndef gae,jee]
         addTestSuite(ChunkedEncodingPutTestCase.class);
-        addTestSuite(ChunkedEncodingTestCase.class);
-        addTestSuite(GetTestCase.class);
-        addTestSuite(GetChunkedTestCase.class);
-        addTestSuite(PostPutTestCase.class);
-        addTestSuite(RemoteClientAddressTestCase.class);
-        addTestSuite(org.restlet.test.ext.ssl.SslGetTestCase.class);
-        addTestSuite(org.restlet.test.ext.ssl.SslClientContextGetTestCase.class);
+//        addTestSuite(ChunkedEncodingTestCase.class);
+//        addTestSuite(GetTestCase.class);
+//        addTestSuite(GetChunkedTestCase.class);
+//        addTestSuite(PostPutTestCase.class);
+//        addTestSuite(RemoteClientAddressTestCase.class);
+//        addTestSuite(org.restlet.test.ext.ssl.SslGetTestCase.class);
+//        addTestSuite(org.restlet.test.ext.ssl.SslClientContextGetTestCase.class);
         // [enddef]
     }
 }

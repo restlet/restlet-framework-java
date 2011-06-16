@@ -30,5 +30,7 @@
       <dependency type="module" id="crypto" />
       <dependency type="module" id="jaas" />
       <dependency type="module" id="sdc" />
+      <dependency type="module" id="openid" />
+      <dependency type="module" id="oauth" />
    </dependencies>
 </module>

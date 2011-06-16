@@ -57,6 +57,7 @@
 		<lib-lucene-version>2.9.2</lib-lucene-version>
 		<lib-mime4j-version>0.6</lib-mime4j-version>
 		<lib-oauth-version>20090617</lib-oauth-version>
+		<lib-openid4java-version>0.9.5</lib-openid4java-version>
 		<lib-osgi-version>4.0.0</lib-osgi-version>
 		<lib-pool-version>1.5</lib-pool-version>
 		<lib-protobuf-version>2.2.0</lib-protobuf-version>
@@ -155,7 +156,9 @@
 		<module>org.restlet.ext.json</module>
 		<module>org.restlet.ext.lucene</module>
 		<module>org.restlet.ext.net</module>
+		<module>org.restlet.ext.oauth</module>
 		<module>org.restlet.ext.odata</module>
+		<module>org.restlet.ext.openid</module>
 		<module>org.restlet.ext.rdf</module>
 		<module>org.restlet.ext.rome</module>
 		<module>org.restlet.ext.sdc</module>
