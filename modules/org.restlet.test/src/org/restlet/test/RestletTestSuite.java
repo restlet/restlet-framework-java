@@ -99,71 +99,71 @@ public class RestletTestSuite extends TestSuite {
 
     /** Constructor. */
     public RestletTestSuite() {
-//        addTest(ResourceTestSuite.suite());
-//        addTestSuite(AppendableRepresentationTestCase.class);
-//        addTestSuite(AtomTestCase.class);
-//        addTestSuite(AuthenticationInfoTestCase.class);
-//        addTestSuite(CallTestCase.class);
-//        addTestSuite(ComponentXmlConfigTestCase.class);
-//        addTestSuite(CookieTestCase.class);
-//        addTestSuite(ClientInfoTestCase.class);
-//        addTestSuite(FileClientTestCase.class);
-//        addTestSuite(FileReferenceTestCase.class);
-//        addTestSuite(FilterTestCase.class);
-//        addTestSuite(FormTestCase.class);
-//        addTestSuite(FreeMarkerTestCase.class);
-//        addTestSuite(GwtConverterTestCase.class);
-//        addTestSuite(JaxbBasicConverterTestCase.class);
-//        addTestSuite(JaxbIntegrationConverterTestCase.class);
-//        addTestSuite(LanguageTestCase.class);
-//        addTestSuite(MediaTypeTestCase.class);
-//        addTestSuite(ProductTokenTestCase.class);
-//        addTestSuite(ReferenceTestCase.class);
-//        addTestSuite(ResolvingTransformerTestCase.class);
-//        addTestSuite(RestartTestCase.class);
-//        addTestSuite(RestletXmlTestCase.class);
-//        addTestSuite(RiapTestCase.class);
-//        addTestSuite(RouteListTestCase.class);
-//        addTestSuite(DigestVerifierTestCase.class);
-//        addTestSuite(RecipientInfoTestCase.class);
-//        addTestSuite(RoleTestCase.class);
-//        addTestSuite(StatusTestCase.class);
-//        addTestSuite(TemplateTestCase.class);
-//        addTestSuite(TransformerTestCase.class);
-//        addTestSuite(ValidatorTestCase.class);
-//        addTestSuite(VelocityTestCase.class);
-//        addTestSuite(WadlTestCase.class);
-//        addTest(CryptoTestSuite.suite());
-//        addTest(ODataTestSuite.suite());
-//
-//        // Tests based on extension only supported by the JEE edition.
-//        // [ifdef jee]
-//        addTestSuite(org.restlet.test.ext.xdb.ChunkedInputStreamTestCase.class);
-//        addTestSuite(org.restlet.test.ext.xdb.ChunkedOutputStreamTestCase.class);
-//        addTestSuite(org.restlet.test.ext.xdb.InputEntityStreamTestCase.class);
-//        // [enddef]
-//
-//        // TODO Fix Zip client test case
-//        // addTestSuite(ZipClientTestCase.class);
-//
-//        // Tests based on HTTP client connectors are not supported by the GAE
-//        // edition.
-//        // [ifndef gae]
-//        addTestSuite(ComponentXmlTestCase.class);
-//        addTestSuite(DigesterRepresentationTestCase.class);
-//        addTestSuite(HeaderTestCase.class);
-//        addTestSuite(HttpBasicTestCase.class);
-//        addTestSuite(HttpDigestTestCase.class);
-//        addTestSuite(RangeTestCase.class);
-//        addTestSuite(RangeRepresentationTestCase.class);
-//        addTestSuite(RedirectTestCase.class);
-//        addTestSuite(SecurityTestCase.class);
-//        addTestSuite(TemplateFilterTestCase.class);
-//
+        addTest(ResourceTestSuite.suite());
+        addTestSuite(AppendableRepresentationTestCase.class);
+        addTestSuite(AtomTestCase.class);
+        addTestSuite(AuthenticationInfoTestCase.class);
+        addTestSuite(CallTestCase.class);
+        addTestSuite(ComponentXmlConfigTestCase.class);
+        addTestSuite(CookieTestCase.class);
+        addTestSuite(ClientInfoTestCase.class);
+        addTestSuite(FileClientTestCase.class);
+        addTestSuite(FileReferenceTestCase.class);
+        addTestSuite(FilterTestCase.class);
+        addTestSuite(FormTestCase.class);
+        addTestSuite(FreeMarkerTestCase.class);
+        addTestSuite(GwtConverterTestCase.class);
+        addTestSuite(JaxbBasicConverterTestCase.class);
+        addTestSuite(JaxbIntegrationConverterTestCase.class);
+        addTestSuite(LanguageTestCase.class);
+        addTestSuite(MediaTypeTestCase.class);
+        addTestSuite(ProductTokenTestCase.class);
+        addTestSuite(ReferenceTestCase.class);
+        addTestSuite(ResolvingTransformerTestCase.class);
+        addTestSuite(RestartTestCase.class);
+        addTestSuite(RestletXmlTestCase.class);
+        addTestSuite(RiapTestCase.class);
+        addTestSuite(RouteListTestCase.class);
+        addTestSuite(DigestVerifierTestCase.class);
+        addTestSuite(RecipientInfoTestCase.class);
+        addTestSuite(RoleTestCase.class);
+        addTestSuite(StatusTestCase.class);
+        addTestSuite(TemplateTestCase.class);
+        addTestSuite(TransformerTestCase.class);
+        addTestSuite(ValidatorTestCase.class);
+        addTestSuite(VelocityTestCase.class);
+        addTestSuite(WadlTestCase.class);
+        addTest(CryptoTestSuite.suite());
+        addTest(ODataTestSuite.suite());
+
+        // Tests based on extension only supported by the JEE edition.
+        // [ifdef jee]
+        addTestSuite(org.restlet.test.ext.xdb.ChunkedInputStreamTestCase.class);
+        addTestSuite(org.restlet.test.ext.xdb.ChunkedOutputStreamTestCase.class);
+        addTestSuite(org.restlet.test.ext.xdb.InputEntityStreamTestCase.class);
+        // [enddef]
+
+        // TODO Fix Zip client test case
+        // addTestSuite(ZipClientTestCase.class);
+
+        // Tests based on HTTP client connectors are not supported by the GAE
+        // edition.
+        // [ifndef gae]
+        addTestSuite(ComponentXmlTestCase.class);
+        addTestSuite(DigesterRepresentationTestCase.class);
+        addTestSuite(HeaderTestCase.class);
+        addTestSuite(HttpBasicTestCase.class);
+        addTestSuite(HttpDigestTestCase.class);
+        addTestSuite(RangeTestCase.class);
+        addTestSuite(RangeRepresentationTestCase.class);
+        addTestSuite(RedirectTestCase.class);
+        addTestSuite(SecurityTestCase.class);
+        addTestSuite(TemplateFilterTestCase.class);
+
         addTest(EngineTestSuite.suite());
-//        addTest(JaxRsTestSuite.suite());
-//        addTest(AllSipTests.suite());
-//        addTest(SpringTestSuite.suite());
+        addTest(JaxRsTestSuite.suite());
+        addTest(AllSipTests.suite());
+        addTest(SpringTestSuite.suite());
         // [enddef]
     }
 

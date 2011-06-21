@@ -1,4 +1,4 @@
-<module includes="jse, jee" id="core-test" package="org.restlet.test">
+<module includes="jse,jee" id="core-test" package="org.restlet.test">
 	<name>Restlet Unit Tests</name>
 	<description>
 		All Restlet unit tests.
@@ -33,7 +33,7 @@
 		<dependency type="module" id="rdf" />
 		<dependency type="module" id="wadl" />
 		<dependency type="module" id="example" />
-                <dependency type="module" id="ssl" includes="jse" />
+		<dependency type="module" id="ssl" includes="jse" />
 		<dependency type="module" id="xdb" includes="jee" />
 	</dependencies>
 	<source edition="android">
