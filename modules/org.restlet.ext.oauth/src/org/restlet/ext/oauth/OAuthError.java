@@ -41,7 +41,7 @@ import org.restlet.data.Form;
  * 
  * @author Kristoffer Gronowski
  * @see <a
- *      href="http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-3.2">Authorizatoin
+ *      href="http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-3.2">Authorization
  *      Error Responses</a>
  * @see <a
  *      href="http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-4.3">Access
@@ -69,13 +69,15 @@ public enum OAuthError {
     // 5.2.1
 
     /**
-     * Used for formatting error according to chapter 4.3.1
-     * 
+     * Used for formatting error according to chapter 4.3.1.
      * 
      * @param error
+     *            The oAuth error.
      * @param description
+     *            The description.
      * @param errorUri
-     * @return
+     *            The error URI.
+     * @return An instance of {@link JSONObject} that describes the error.
      * @throws JSONException
      */
     static JSONObject getErrorMessage(OAuthError error, String description,
@@ -93,14 +95,17 @@ public enum OAuthError {
     }
 
     /**
-     * Used for formatting error according to chapter 3.2.1
-     * 
+     * Used for formatting error according to chapter 3.2.1.
      * 
      * @param error
+     *            The oAuth error.
      * @param description
+     *            The description.
      * @param errorUri
+     *            The error URI.
      * @param state
-     * @return
+     *            the current state.
+     * @return An instance of {@link Form} that describes the error.
      */
     static Form getErrorMessage(OAuthError error, String description,
             String errorUri, String state) {
@@ -120,15 +125,19 @@ public enum OAuthError {
     }
 
     /**
-     * Used for formatting error according to chapter 5.2.1
-     * 
+     * Used for formatting error according to chapter 5.2.1.
      * 
      * @param realm
+     *            The authentication realm.
      * @param error
+     *            The oAuth error.
      * @param description
+     *            The description.
      * @param errorUri
+     *            The error URI.
      * @param scopes
-     * @return
+     *            The array os OAuth scopes.
+     * @return an instance of {@link ChallengeRequest}.
      */
     static ChallengeRequest getErrorMessage(String realm, OAuthError error,
             String description, String errorUri, String[] scopes) {

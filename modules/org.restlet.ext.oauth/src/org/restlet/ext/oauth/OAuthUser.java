@@ -46,94 +46,14 @@ import org.restlet.security.User;
  * @author Kristoffer Gronowski
  */
 public class OAuthUser extends User {
-
-    private final String accessToken;
-
-    private final String refreshToken;
-
-    private final long expiresIn;
-
-    private volatile String state;
-
     /**
-     * Constructor used for unlimited tokens
-     * 
-     * @param accessToken
-     */
-    public OAuthUser(String user, String accessToken) {
-        this(user, accessToken, null, 0);
-    }
-
-    /**
-     * Constructor used for tokens with a expiration time
-     * 
-     * @param accessToken
-     */
-
-    public OAuthUser(String user, String accessToken, String refreshToken,
-            long expiresIn) {
-        super(user, accessToken);
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
-        this.expiresIn = expiresIn;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public long getExpiresIn() {
-        return expiresIn;
-    }
-
-    public boolean isExpireToken() {
-        return refreshToken != null;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    // TODO: This should eventually be removed...
-    /**
-     * Retrieve the access token from the user if and only if the user is of
-     * type OAuthUser
-     * 
-     * @param user
-     * @return access token
-     * @see org.restlet.ext.oauth.OAuthUser
-     */
-    @Deprecated
-    public static String getToken(User user) {
-        String token = null;
-        if (user != null) {
-            if (user instanceof OAuthUser) {
-                OAuthUser ou = (OAuthUser) user;
-                token = ou.getAccessToken();
-            } else { // Token is stored in secret field
-                token = new String(user.getSecret());
-            }
-        }
-        return token;
-    }
-
-    /**
-     * Convert successful JSON token body responses to OAuthUser.
+     * Converts successful JSON token body responses to OAuthUser.
      * 
      * @param body
      *            Representation containing a successful JSON body element.
      * @return OAuthUser object containing accessToken, refreshToken and
      *         expiration time.
      */
-
     public static OAuthUser createJson(Representation body) {
         Logger log = Context.getCurrentLogger();
         try {
@@ -171,5 +91,128 @@ public class OAuthUser extends User {
             log.log(Level.WARNING, "Error creating representation JSON", e);
         }
         return null;
+    }
+
+    // TODO: This should eventually be removed...
+    /**
+     * Retrieves the access token from the user if and only if the user is of
+     * type {@link OAuthUser}.
+     * 
+     * @param user
+     *            The user.
+     * @return The access token.
+     * @see org.restlet.ext.oauth.OAuthUser
+     */
+    @Deprecated
+    public static String getToken(User user) {
+        String token = null;
+        if (user != null) {
+            if (user instanceof OAuthUser) {
+                OAuthUser ou = (OAuthUser) user;
+                token = ou.getAccessToken();
+            } else { // Token is stored in secret field
+                token = new String(user.getSecret());
+            }
+        }
+        return token;
+    }
+
+    /** The access token. */
+    private final String accessToken;
+
+    /** The validity delay of the authentication. */
+    private final long expiresIn;
+
+    /** The refresh token. */
+    private final String refreshToken;
+
+    /** The current state. */
+    private volatile String state;
+
+    /**
+     * Constructor used for unlimited tokens.
+     * 
+     * @param user
+     *            The user identifier.
+     * @param accessToken
+     *            The access token.
+     */
+    public OAuthUser(String user, String accessToken) {
+        this(user, accessToken, null, 0);
+    }
+
+    /**
+     * Constructor used for tokens with a expiration time.
+     * 
+     * @param user
+     *            The user identifier.
+     * @param accessToken
+     *            The access token.
+     * @param refreshToken
+     *            The refresh token.
+     * @param expiresIn
+     *            The expiration time.
+     */
+    public OAuthUser(String user, String accessToken, String refreshToken,
+            long expiresIn) {
+        super(user, accessToken);
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.expiresIn = expiresIn;
+    }
+
+    /**
+     * Returns the access token.
+     * 
+     * @return The access token.
+     */
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    /**
+     * The expiration delay.
+     * 
+     * @return The expiration delay.
+     */
+    public long getExpiresIn() {
+        return expiresIn;
+    }
+
+    /**
+     * Returns the refresh token.
+     * 
+     * @return The refresh token.
+     */
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    /**
+     * Returns the current state.
+     * 
+     * @return The current state.
+     */
+    public String getState() {
+        return state;
+    }
+
+    /**
+     * Indicates if the current user has a refresh token, or not.
+     * 
+     * @return True if there is a refresh token.
+     */
+    public boolean isExpireToken() {
+        return refreshToken != null;
+    }
+
+    /**
+     * Sets the current state.
+     * 
+     * @param state
+     *            The current state.
+     */
+    public void setState(String state) {
+        this.state = state;
     }
 }

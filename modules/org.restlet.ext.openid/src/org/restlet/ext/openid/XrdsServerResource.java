@@ -52,43 +52,29 @@ import org.w3c.dom.Element;
  * @author Kristoffer Gronowski
  */
 public class XrdsServerResource extends ServerResource {
-
+    /** The identifier of the "return to" type. */
     public static final String TYPE_RETURN_TO = "http://specs.openid.net/auth/2.0/return_to";
 
-    public static final String TYPE_SIGNON = "http://specs.openid.net/auth/2.0/signon";
-
+    /** The identifier of the "server" type. */
     public static final String TYPE_SERVER = "http://specs.openid.net/auth/2.0/server";
 
-    @Get("form")
-    public Representation represent() throws ParserConfigurationException {
-        Document response = null;
+    /** The identifier of the "signon" type. */
+    public static final String TYPE_SIGNON = "http://specs.openid.net/auth/2.0/signon";
 
-        ConcurrentMap<String, Object> attribs = getContext().getAttributes();
-        ServerManager manager = (ServerManager) attribs.get("openid_manager");
-        String opEndpoint = manager.getOPEndpointUrl();
-
-        Form query = getQuery();
-        String returnTo = query.getFirstValue("returnTo");
-        if (returnTo != null && returnTo.length() > 0) { // OP Server lookup
-            response = createDocument(TYPE_RETURN_TO, returnTo, null);
-        } else {
-            String id = query.getFirstValue("id");
-            if (id == null || id.length() == 0) { // OP Server lookup
-                response = createDocument(TYPE_SERVER, opEndpoint, null);
-            } else { // claimed ID lookup
-                StringBuilder localId = new StringBuilder();
-                localId.append(opEndpoint);
-                localId.append("?id=");
-                localId.append(id);
-                response = createDocument(TYPE_SIGNON, opEndpoint,
-                        localId.toString());
-            }
-        }
-
-        MediaType xrds = new MediaType("application/xrds+xml");
-        return new DomRepresentation(xrds, response);
-    }
-
+    /**
+     * Returns a XRDS service descriptor according to its type, uri and
+     * identifier.
+     * 
+     * @param type
+     *            The type of the service.
+     * @param uri
+     *            The uri of the service.
+     * @param localId
+     *            The identifier (if any) of the service.
+     * @return An instance of {@link Document} that represents the XRDS
+     *         descriptor.
+     * @throws ParserConfigurationException
+     */
     private Document createDocument(String type, String uri, String localId)
             throws ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -120,6 +106,36 @@ public class XrdsServerResource extends ServerResource {
             service.appendChild(localIdElement);
         }
         return doc;
+    }
+
+    @Get("form")
+    public Representation represent() throws ParserConfigurationException {
+        Document response = null;
+
+        ConcurrentMap<String, Object> attribs = getContext().getAttributes();
+        ServerManager manager = (ServerManager) attribs.get("openid_manager");
+        String opEndpoint = manager.getOPEndpointUrl();
+
+        Form query = getQuery();
+        String returnTo = query.getFirstValue("returnTo");
+        if (returnTo != null && returnTo.length() > 0) { // OP Server lookup
+            response = createDocument(TYPE_RETURN_TO, returnTo, null);
+        } else {
+            String id = query.getFirstValue("id");
+            if (id == null || id.length() == 0) { // OP Server lookup
+                response = createDocument(TYPE_SERVER, opEndpoint, null);
+            } else { // claimed ID lookup
+                StringBuilder localId = new StringBuilder();
+                localId.append(opEndpoint);
+                localId.append("?id=");
+                localId.append(id);
+                response = createDocument(TYPE_SIGNON, opEndpoint,
+                        localId.toString());
+            }
+        }
+
+        MediaType xrds = new MediaType("application/xrds+xml");
+        return new DomRepresentation(xrds, response);
     }
 
 }

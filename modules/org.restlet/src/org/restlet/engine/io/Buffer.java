@@ -340,7 +340,6 @@ public class Buffer {
      * 
      * @param sourceBuffer
      *            The source buffer.
-     * @return The number of bytes added from the source buffer.
      */
     public void fill(byte[] sourceBuffer) {
         getBytes().put(sourceBuffer);

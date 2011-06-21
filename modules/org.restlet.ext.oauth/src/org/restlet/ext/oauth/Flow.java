@@ -47,104 +47,6 @@ import org.restlet.resource.ClientResource;
 public enum Flow {
     NONE, PASSWORD, REFRESH;
 
-    /**
-     * Executes a specific OAuth Flow (including token refresh). Based on the
-     * chosen flow some of the parameters need to be set (see description). Upon
-     * successful authorization returns a new OAuthUser containing an access
-     * token that can be used for getting protected resources.
-     * 
-     * @param params
-     *            parameters specifying (clientId, clientSecret, scope etc).
-     *            Used for all flows
-     * @param callbackUri
-     *            callbackUri used for the userAgent flow. The server
-     * @param state
-     *            used in the userAgent flow
-     * @param username
-     *            used in the password flow
-     * @param password
-     *            used in the password flow
-     * @param refreshToken
-     *            the token to refresh, used in the refresh flow
-     * @return OAuthUser containing a token that can be used for access
-     */
-    public OAuthUser execute(OAuthParameters params, String callbackUri,
-            String state, String username, String password, String refreshToken) {
-
-        return execute(params, callbackUri, state, username, password,
-                refreshToken, null);
-    }
-
-    /**
-     * Executes a specific OAuth Flow (including token refresh). Based on the
-     * chosen flow some of the parameters need to be set (see description). Upon
-     * successful authorization returns a new OAuthUser containing an access
-     * token that can be used for getting protected resources.
-     * 
-     * @param params
-     *            parameters specifying OAuth end point. Used for all flows
-     * @param callbackUri
-     *            callbackUri used for the userAgent flow
-     * @param state
-     *            state that should be returned by the Authorization server.
-     *            Used in UserAgent flow
-     * @param username
-     *            used in the password flow
-     * @param password
-     *            used in the password flow
-     * @param refreshToken
-     *            the token to refresh, used in the refresh flow
-     * @param flow
-     *            the flow to execute
-     * @param client
-     *            provided client
-     * @return OAuthUser containing a token that can be used for access
-     */
-    public OAuthUser execute(OAuthParameters params, String callbackUri,
-            String state, String username, String password,
-            String refreshToken, org.restlet.Client c) {
-        if (this == Flow.PASSWORD) {
-            return passwordFlow(params, username, password, c);
-        } else if (this == Flow.NONE) {
-            return noneFlow(params, c);
-            // } else if (this == Flow.USERAGENT) {
-            // return userAgent(params, callbackUri, state, c);
-        } else if (this == Flow.REFRESH) {
-            return refreshToken(params, refreshToken, c);
-        }
-        return null;
-    }
-
-    private static OAuthUser refreshToken(OAuthParameters params,
-            String refreshToken, org.restlet.Client c) {
-
-        OAuthUser result = null;
-
-        ClientResource tokenResource = new CookieCopyClientResource(
-                params.getBaseRef() + params.getAccessTokenPath());
-        tokenResource.setNext(c);
-        Form form = new Form();
-        form.add(OAuthServerResource.GRANT_TYPE,
-                OAuthServerResource.GrantType.refresh_token.name());
-        form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
-        form.add(OAuthServerResource.CLIENT_SECRET, params.getClientSecret());
-        form.add(OAuthServerResource.REFRESH_TOKEN, refreshToken);
-
-        Context.getCurrentLogger().info(
-                "Sending refresh form : " + form.getQueryString());
-
-        Representation body = tokenResource.post(form.getWebRepresentation());
-
-        if (tokenResource.getStatus().isSuccess()) {
-            result = OAuthUser.createJson(body);
-        }
-
-        body.release();
-        tokenResource.release();
-
-        return result;
-    }
-
     /*
      * public static OAuthUser userAgent(OAuthParameters params, String
      * callbackUri, String state, org.restlet.Client c) { OAuthUser result =
@@ -247,6 +149,20 @@ public enum Flow {
         return result;
     }
 
+    /**
+     * Checks the credentials and returns a completed OAuth user.
+     * 
+     * @param params
+     *            The authentication parameters.
+     * @param username
+     *            The username to check.
+     * @param password
+     *            The password to check.
+     * @param c
+     *            The client connector.
+     * @return A completed OAuth user.
+     */
+    // TODO password should be passed as a char[]
     private static OAuthUser passwordFlow(OAuthParameters params,
             String username, String password, org.restlet.Client c) {
         OAuthUser result = null;
@@ -279,6 +195,114 @@ public enum Flow {
         }
 
         return result;
+    }
+
+    /**
+     * Checks the credentials, refresh the current OAuth token and returns a
+     * completed OAuth user.
+     * 
+     * @param params
+     *            The authentication parameters.
+     * @param refreshToken
+     *            The token to refresh.
+     * @param c
+     *            The client connector.
+     * @return A completed OAuth user.
+     */
+    private static OAuthUser refreshToken(OAuthParameters params,
+            String refreshToken, org.restlet.Client c) {
+
+        OAuthUser result = null;
+
+        ClientResource tokenResource = new CookieCopyClientResource(
+                params.getBaseRef() + params.getAccessTokenPath());
+        tokenResource.setNext(c);
+        Form form = new Form();
+        form.add(OAuthServerResource.GRANT_TYPE,
+                OAuthServerResource.GrantType.refresh_token.name());
+        form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
+        form.add(OAuthServerResource.CLIENT_SECRET, params.getClientSecret());
+        form.add(OAuthServerResource.REFRESH_TOKEN, refreshToken);
+
+        Context.getCurrentLogger().info(
+                "Sending refresh form : " + form.getQueryString());
+
+        Representation body = tokenResource.post(form.getWebRepresentation());
+
+        if (tokenResource.getStatus().isSuccess()) {
+            result = OAuthUser.createJson(body);
+        }
+
+        body.release();
+        tokenResource.release();
+
+        return result;
+    }
+
+    /**
+     * Executes a specific OAuth Flow (including token refresh). Based on the
+     * chosen flow some of the parameters need to be set (see description). Upon
+     * successful authorization returns a new OAuthUser containing an access
+     * token that can be used for getting protected resources.
+     * 
+     * @param params
+     *            parameters specifying (clientId, clientSecret, scope etc).
+     *            Used for all flows
+     * @param callbackUri
+     *            callbackUri used for the userAgent flow. The server
+     * @param state
+     *            used in the userAgent flow
+     * @param username
+     *            used in the password flow
+     * @param password
+     *            used in the password flow
+     * @param refreshToken
+     *            the token to refresh, used in the refresh flow
+     * @return OAuthUser containing a token that can be used for access
+     */
+    public OAuthUser execute(OAuthParameters params, String callbackUri,
+            String state, String username, String password, String refreshToken) {
+
+        return execute(params, callbackUri, state, username, password,
+                refreshToken, null);
+    }
+
+    /**
+     * Executes a specific OAuth Flow (including token refresh). Based on the
+     * chosen flow some of the parameters need to be set (see description). Upon
+     * successful authorization returns a new OAuthUser containing an access
+     * token that can be used for getting protected resources.
+     * 
+     * @param params
+     *            parameters specifying OAuth end point. Used for all flows.
+     * @param callbackUri
+     *            callbackUri used for the userAgent flow.
+     * @param state
+     *            state that should be returned by the Authorization server.
+     *            Used in UserAgent flow.
+     * @param username
+     *            used in the password flow.
+     * @param password
+     *            used in the password flow.
+     * @param refreshToken
+     *            the token to refresh, used in the refresh flow
+     * @param client
+     *            provided client
+     * @return OAuthUser containing a token that can be used for access.
+     */
+    public OAuthUser execute(OAuthParameters params, String callbackUri,
+            String state, String username, String password,
+            String refreshToken, org.restlet.Client client) {
+        if (this == Flow.PASSWORD) {
+            return passwordFlow(params, username, password, client);
+        } else if (this == Flow.NONE) {
+            return noneFlow(params, client);
+            // } else if (this == Flow.USERAGENT) {
+            // return userAgent(params, callbackUri, state, c);
+        } else if (this == Flow.REFRESH) {
+            return refreshToken(params, refreshToken, client);
+        }
+        return null;
     }
 
 }

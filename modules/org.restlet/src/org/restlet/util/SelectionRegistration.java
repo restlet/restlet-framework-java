@@ -246,7 +246,7 @@ public class SelectionRegistration {
     /**
      * Indicates if the operations of interest are ready.
      * 
-     * @return
+     * @return True if the operations of interest are ready.
      */
     public boolean isInterestReady() {
         return ((getReadyOperations() & getInterestOperations()) > 0);

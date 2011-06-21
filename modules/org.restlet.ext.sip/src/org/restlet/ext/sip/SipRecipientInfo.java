@@ -75,7 +75,7 @@ public class SipRecipientInfo extends RecipientInfo {
      * 
      * @param protocol
      *            The protocol used to communicate with the recipient.
-     * @param param
+     * @param transport
      *            The transport protocol name.
      * @param name
      *            The host name and port number or a pseudonym.

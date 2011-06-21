@@ -50,23 +50,30 @@ import org.restlet.security.Role;
  * @author Kristoffer Gronowski
  */
 public class OAuthParameters {
-
-    private final String clientId;
-
-    private final String clientSecret;
-
-    private final Reference baseRef;
-
-    private volatile List<Role> roles;
+    private volatile String accessTokenPath = "access_token";
 
     private volatile String authorizePath = "authorize";
 
-    private volatile String accessTokenPath = "access_token";
+    private final Reference baseRef;
+
+    /** The client identifier. */
+    private final String clientId;
+
+    /** The client password. */
+    // TODO should be an array of chars. char[]
+    private final String clientSecret;
 
     private volatile String owner = null;
 
+    private volatile List<Role> roles;
+
     /**
-     * Create a new OAuthParameters object with specified clientId and secret
+     * Constructor.
+     * 
+     * @param clientId
+     *            The client identifier.
+     * @param clientSecret
+     *            The client password.
      */
     public OAuthParameters(String clientId, String clientSecret) {
         this.clientId = clientId;
@@ -75,8 +82,14 @@ public class OAuthParameters {
     }
 
     /**
-     * Create a new OAuthParameters object with specified clientId, secret, and
-     * baseRef
+     * Constructor.
+     * 
+     * @param clientId
+     *            The client identifier.
+     * @param clientSecret
+     *            The client password.
+     * @param baseRef
+     *            The base reference.
      */
     public OAuthParameters(String clientId, String clientSecret, String baseRef) {
         // this(clientId, clientSecret);
@@ -86,8 +99,16 @@ public class OAuthParameters {
     }
 
     /**
-     * Create a new OAuthParameters object with specified clientId, secret,
-     * baseRef and scope
+     * Constructor.
+     * 
+     * @param clientId
+     *            The client identifier.
+     * @param clientSecret
+     *            The client password.
+     * @param baseRef
+     *            The base reference.
+     * @param roles
+     *            The list of user roles.
      */
     public OAuthParameters(String clientId, String clientSecret,
             String baseRef, List<Role> roles) {
@@ -95,47 +116,106 @@ public class OAuthParameters {
         this.roles = roles;
     }
 
-    public String getClientId() {
-        return clientId;
-    }
-
-    public String getClientSecret() {
-        return clientSecret;
-    }
-
-    public Reference getBaseRef() {
-        return baseRef;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
-
-    public String getAuthorizePath() {
-        return authorizePath;
-    }
-
+    /**
+     * Returns the access token path.
+     * 
+     * @return The access token path.
+     */
     public String getAccessTokenPath() {
         return accessTokenPath;
     }
 
-    public void setAuthorizePath(String authorizePath) {
-        this.authorizePath = authorizePath;
+    /**
+     * Returns the authorize path.
+     * 
+     * @return The authorize path.
+     */
+    public String getAuthorizePath() {
+        return authorizePath;
     }
 
+    /**
+     * Returns the base reference.
+     * 
+     * @return The base reference.
+     */
+    public Reference getBaseRef() {
+        return baseRef;
+    }
+
+    /**
+     * Returns the client identifier.
+     * 
+     * @return The client identifier.
+     */
+    public String getClientId() {
+        return clientId;
+    }
+
+    /**
+     * Returns the client secret.
+     * 
+     * @return The client secret.
+     */
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    /**
+     * Returns the owner.
+     * 
+     * @return The owner.
+     */
+    public String getOwner() {
+        return owner;
+    }
+
+    /**
+     * Returns the list of roles.
+     * 
+     * @return The list of roles.
+     */
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    /**
+     * Sets the access token path.
+     * 
+     * @param accessTokenPath
+     *            The access token path.
+     */
     public void setAccessTokenPath(String accessTokenPath) {
         this.accessTokenPath = accessTokenPath;
     }
 
+    /**
+     * Sets the authorize path.
+     * 
+     * @param authorize
+     *            The authorize path.
+     */
+    public void setAuthorizePath(String authorizePath) {
+        this.authorizePath = authorizePath;
+    }
+
+    /**
+     * Sets the owner.
+     * 
+     * @param owner
+     *            The owner.
+     */
     public void setOwner(String owner) {
         this.owner = owner;
     }
 
-    public String getOwner() {
-        return owner;
+    /**
+     * Sets the list of roles.
+     * 
+     * @param roles
+     *            The list of roles.
+     */
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }

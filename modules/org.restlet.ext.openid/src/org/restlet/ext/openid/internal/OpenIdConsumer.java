@@ -76,10 +76,17 @@ import org.restlet.resource.ServerResource;
  */
 public class OpenIdConsumer extends ServerResource {
 
-    public static final String DESCRIPTOR_COOKIE = "openid-disc";
-
     public static final ConcurrentHashMap<String, String> ax = new ConcurrentHashMap<String, String>(
             9);
+
+    public static final String DESCRIPTOR_COOKIE = "openid-disc";
+
+    private static Discovery discovery = new Discovery();
+
+    private static ConcurrentHashMap<String, ConsumerManager> managers = new ConcurrentHashMap<String, ConsumerManager>();
+
+    private static ConcurrentHashMap<String, Object> session = new ConcurrentHashMap<String, Object>();
+
     static {
         ax.put("nickname", "http://axschema.org/namePerson/friendly");
         ax.put("email", "http://axschema.org/contact/email"); // "http://schema.openid.net/contact/email"
@@ -95,12 +102,6 @@ public class OpenIdConsumer extends ServerResource {
     // public ConsumerManager manager;
     private Logger log;
 
-    private static ConcurrentHashMap<String, ConsumerManager> managers = new ConcurrentHashMap<String, ConsumerManager>();
-
-    private static ConcurrentHashMap<String, Object> session = new ConcurrentHashMap<String, Object>();
-
-    private static Discovery discovery = new Discovery();
-
     @Override
     protected void doInit() throws ResourceException {
         super.doInit();
@@ -108,6 +109,67 @@ public class OpenIdConsumer extends ServerResource {
 
         // ConcurrentMap<String,Object> attribs = getContext().getAttributes();
         // manager = (ConsumerManager) attribs.get("consumer_manager");
+    }
+
+    /**
+     * Returns the representation of an authentication form, in this case, a
+     * simple HTML form.
+     * 
+     * @param authReq
+     *            The authentication request.
+     * @return The representation of an authentication form.
+     */
+    private Representation generateForm(AuthRequest authReq) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html>");
+        sb.append("<head>");
+        sb.append("<title>OpenID HTML FORM Redirection</title>");
+        sb.append("</head>");
+        sb.append("<body onload=\"document.forms['openid-form-redirection'].submit();\">");
+        sb.append("<form name=\"openid-form-redirection\" action=\"");
+        sb.append(authReq.getOPEndpoint());
+        sb.append("\" method=\"post\" accept-charset=\"utf-8\">");
+        for (Object key : authReq.getParameterMap().keySet()) {
+            sb.append(" <input type=\"hidden\" name=\"");
+            sb.append(key.toString());
+            // ${parameter.key}
+            sb.append("\" value=\"");
+            sb.append(authReq.getParameterMap().get(key));
+            sb.append("\"/>");
+        }
+        sb.append("</form>");
+        sb.append("</body>");
+        sb.append("</html>");
+        return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
+    }
+
+    /**
+     * Returns the {@link ConsumerManager} corresponding to the given URI.
+     * 
+     * @param OPUri
+     *            The OP endpoint URI.
+     * @return The {@link ConsumerManager} corresponding to the given URI.
+     */
+    private ConsumerManager getManager(String OPUri) {
+        log.info("Getting consumer manager for - " + OPUri);
+        if (!managers.containsKey(OPUri)) {
+            // create a new manager
+            log.info("Creating new consumer manager for - " + OPUri);
+            try {
+                ConsumerManager cm = new ConsumerManager();
+                cm.setConnectTimeout(30000);
+                cm.setSocketTimeout(30000);
+                cm.setFailedAssocExpire(0); // sec 0 = disabled
+                // cm.setMaxAssocAttempts(4); //default
+                managers.put(OPUri, cm);
+                return cm;
+            } catch (ConsumerException e) {
+                log.warning("Failed to create ConsumerManager for - " + OPUri);
+            }
+            return null;
+        } else {
+            return managers.get(OPUri);
+        }
     }
 
     // Used for RP discovery
@@ -304,6 +366,37 @@ public class OpenIdConsumer extends ServerResource {
         return getResponse().getEntity();
     }
 
+    /**
+     * Update the requests headers with OPENID dedicated HTTP headers. Returns
+     * the capability document associated with the identity URI.
+     * 
+     * @return The capability document associated with the identity URI.
+     */
+    private String setXRDSHeader() {
+        ConcurrentMap<String, Object> attribs = getContext().getAttributes();
+        Reference xrds = new Reference(attribs.get("xrds").toString());
+        if ("localhost".equals(xrds.getHostDomain())) {
+            // make sure to use the same NIC as original request
+            xrds.setHostDomain(getReference().getBaseRef().getHostDomain());
+            xrds.setHostPort(getReference().getBaseRef().getHostPort());
+        }
+        String returnTo = getReference().getBaseRef().toString();
+        String location = (returnTo != null) ? xrds.toString() + "?returnTo="
+                + returnTo : xrds.toString();
+        getLogger().info("XRDS endpoint = " + xrds);
+        Form headers = (Form) getResponse().getAttributes().get(
+                "org.restlet.http.headers");
+        if (headers == null) {
+            headers = new Form();
+            headers.add("X-XRDS-Location", location);
+            getResponse().getAttributes().put("org.restlet.http.headers",
+                    headers);
+        } else {
+            headers.add("X-XRDS-Location", location);
+        }
+        return location;
+    }
+
     // --- processing the authentication response ---
     @SuppressWarnings("unchecked")
     public Identifier verifyResponse(Map<String, String> axRequired,
@@ -399,77 +492,6 @@ public class OpenIdConsumer extends ServerResource {
         }
         log.setLevel(Level.INFO);
         return null;
-    }
-
-    private ConsumerManager getManager(String OPUri) {
-        log.info("Getting consumer manager for - " + OPUri);
-        if (!managers.containsKey(OPUri)) {
-            // create a new manager
-            log.info("Creating new consumer manager for - " + OPUri);
-            try {
-                ConsumerManager cm = new ConsumerManager();
-                cm.setConnectTimeout(30000);
-                cm.setSocketTimeout(30000);
-                cm.setFailedAssocExpire(0); // sec 0 = disabled
-                // cm.setMaxAssocAttempts(4); //default
-                managers.put(OPUri, cm);
-                return cm;
-            } catch (ConsumerException e) {
-                log.warning("Failed to create ConsumerManager for - " + OPUri);
-            }
-            return null;
-        } else {
-            return managers.get(OPUri);
-        }
-    }
-
-    private String setXRDSHeader() {
-        ConcurrentMap<String, Object> attribs = getContext().getAttributes();
-        Reference xrds = new Reference(attribs.get("xrds").toString());
-        if ("localhost".equals(xrds.getHostDomain())) {
-            // make sure to use the same NIC as original request
-            xrds.setHostDomain(getReference().getBaseRef().getHostDomain());
-            xrds.setHostPort(getReference().getBaseRef().getHostPort());
-        }
-        String returnTo = getReference().getBaseRef().toString();
-        String location = (returnTo != null) ? xrds.toString() + "?returnTo="
-                + returnTo : xrds.toString();
-        getLogger().info("XRDS endpoint = " + xrds);
-        Form headers = (Form) getResponse().getAttributes().get(
-                "org.restlet.http.headers");
-        if (headers == null) {
-            headers = new Form();
-            headers.add("X-XRDS-Location", location);
-            getResponse().getAttributes().put("org.restlet.http.headers",
-                    headers);
-        } else {
-            headers.add("X-XRDS-Location", location);
-        }
-        return location;
-    }
-
-    private Representation generateForm(AuthRequest authReq) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        sb.append("<head>");
-        sb.append("<title>OpenID HTML FORM Redirection</title>");
-        sb.append("</head>");
-        sb.append("<body onload=\"document.forms['openid-form-redirection'].submit();\">");
-        sb.append("<form name=\"openid-form-redirection\" action=\"");
-        sb.append(authReq.getOPEndpoint());
-        sb.append("\" method=\"post\" accept-charset=\"utf-8\">");
-        for (Object key : authReq.getParameterMap().keySet()) {
-            sb.append(" <input type=\"hidden\" name=\"");
-            sb.append(key.toString());
-            // ${parameter.key}
-            sb.append("\" value=\"");
-            sb.append(authReq.getParameterMap().get(key));
-            sb.append("\"/>");
-        }
-        sb.append("</form>");
-        sb.append("</body>");
-        sb.append("</html>");
-        return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
     }
 
 }

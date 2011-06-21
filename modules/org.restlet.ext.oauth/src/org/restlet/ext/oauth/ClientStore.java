@@ -56,9 +56,15 @@ import org.restlet.ext.oauth.internal.TokenGenerator;
 public abstract class ClientStore<G extends TokenGenerator> {
 
     // private final Context context;
-
+    /** The token generator. */
     private final G generator;
 
+    /**
+     * Constructor.
+     * 
+     * @param generator
+     *            The token generator.
+     */
     protected ClientStore(G generator) {
         this.generator = generator;
         // this(generator, Context.getCurrent());
@@ -132,9 +138,10 @@ public abstract class ClientStore<G extends TokenGenerator> {
     // }
 
     /**
+     * Returns the token generator.
+     * 
      * @return an instance of the TokenGenerator
      */
-
     public G getTokenGenerator() {
         return generator;
     }

@@ -127,10 +127,20 @@ public abstract class OAuthServerResource extends ServerResource {
 
     protected volatile long tokenTimeSec = Token.UNLIMITED;
 
+    /**
+     * Default constructor.
+     */
     public OAuthServerResource() {
         super();
     }
 
+    /**
+     * Completes the given {@link StringBuilder} with the authentication
+     * attributes.
+     * 
+     * @param location
+     *            The {@link StringBuilder} to complete.
+     */
     private void appendState(StringBuilder location) {
         String sessionId = (String) getRequest().getAttributes().get(
                 ClientCookieID);
@@ -173,6 +183,17 @@ public abstract class OAuthServerResource extends ServerResource {
         generator.setMaxTokenTime(tokenMaxTimeSec);
     }
 
+    /**
+     * Returns the agent token for the given user, client and redirection URI.
+     * 
+     * @param userId
+     *            The identifier of the user.
+     * @param client
+     *            The oAuth client.
+     * @param redirURL
+     *            The redirection URI.
+     * @return The agent token for the given user, client and redirection URI.
+     */
     protected String generateAgentToken(String userId, Client client,
             String redirURL) {
         AuthenticatedUser user = null;
@@ -198,6 +219,17 @@ public abstract class OAuthServerResource extends ServerResource {
         return location.toString();
     }
 
+    /**
+     * Returns the code for the given user, client and redirection URI.
+     * 
+     * @param userId
+     *            The identifier of the user.
+     * @param client
+     *            The oAuth client.
+     * @param redirURL
+     *            The redirection URI.
+     * @return The code for the given user, client and redirection URI.
+     */
     protected String generateCode(String userId, Client client, String redirURL) {
         AuthenticatedUser user = null;
         if (client.containsUser(userId)) {
@@ -221,11 +253,29 @@ public abstract class OAuthServerResource extends ServerResource {
         return location.toString();
     }
 
+    /**
+     * Returns the value of the first parameter found with the given name.
+     * 
+     * @param parameter
+     *            The parameter name.
+     * @param defaultValue
+     *            The default value to return if no matching parameter found or
+     *            if the parameter has a null value.
+     * @return The value of the first parameter found with the given name or the
+     *         default value.
+     */
     protected String getParameter(String parameter, String defaultValue) {
         String val = (String) this.getContext().getAttributes().get(parameter);
         return val != null ? val : defaultValue;
     }
 
+    /**
+     * Parses a " " separated list of scopes into an array.
+     * 
+     * @param scopes
+     *            The " " separated list of scopes.
+     * @return The corresponding list of string of characters.
+     */
     protected String[] parseScope(String scopes) {
         if (scopes != null && scopes.length() > 0) {
             StringTokenizer st = new StringTokenizer(scopes, " ");

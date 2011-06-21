@@ -43,7 +43,7 @@ import org.restlet.routing.Filter;
  * @author Kristoffer Gronowski
  */
 public class SetCallbackFilter extends Filter {
-
+    /** Internal cache. */
     private CacheLookup cache = null;
 
     public SetCallbackFilter() {
@@ -52,18 +52,6 @@ public class SetCallbackFilter extends Filter {
     // Check for cached id before invoking
     public SetCallbackFilter(CacheLookup cache) {
         this.cache = cache;
-    }
-
-    @Override
-    protected int doHandle(Request request, Response response) {
-        if (cache != null) { // Let's try to find it
-            boolean found = cache.handleCached(request, response);
-
-            if (found)
-                return Filter.STOP;
-        }
-
-        return super.doHandle(request, response);
     }
 
     @Override
@@ -93,5 +81,17 @@ public class SetCallbackFilter extends Filter {
         }
 
         return super.beforeHandle(request, response);
+    }
+
+    @Override
+    protected int doHandle(Request request, Response response) {
+        if (cache != null) { // Let's try to find it
+            boolean found = cache.handleCached(request, response);
+
+            if (found)
+                return Filter.STOP;
+        }
+
+        return super.doHandle(request, response);
     }
 }

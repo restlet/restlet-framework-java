@@ -327,8 +327,6 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * 
      * @param endDetected
      *            Indicates if the end of the socket channel was detected.
-     * @param bufferState
-     *            The new buffer state.
      */
     public void onCompleted(boolean endDetected) {
         setIoState(IoState.IDLE);

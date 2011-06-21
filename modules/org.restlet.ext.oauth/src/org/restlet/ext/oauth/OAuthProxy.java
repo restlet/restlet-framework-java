@@ -89,14 +89,15 @@ public class OAuthProxy extends Authorizer {
     private final boolean basicSecret;
 
     /**
-     * Set up an OAuthProxy.
+     * Sets up an OAuthProxy.
      * 
      * @param params
-     *            OAuth parameters
+     *            The OAuth parameters.
      * @param useBasicSecret
-     *            If true use http basic authentication otherwise use form based
+     *            If true use http basic authentication otherwise use form
+     *            based.
      * @param ctx
-     *            Restlet context
+     *            The Restlet context.
      */
     public OAuthProxy(OAuthParameters params, Context ctx,
             boolean useBasicSecret) {
@@ -107,13 +108,13 @@ public class OAuthProxy extends Authorizer {
     }
 
     /**
-     * Set up a an OauthProxy. Defaults to form based authentication and not
-     * http basic
+     * Sets up an OauthProxy. Defaults to form based authentication and not http
+     * basic.
      * 
      * @param params
-     *            The parameters
+     *            The OAuth parameters.
      * @param ctx
-     *            Restlet Context
+     *            The Restlet context.
      */
     public OAuthProxy(OAuthParameters params, Context ctx) {
         this(params, ctx, false);
@@ -316,6 +317,11 @@ public class OAuthProxy extends Authorizer {
         return STOP;
     }
 
+    /**
+     * Returns the current proxy's version.
+     * 
+     * @return The current proxy's version.
+     */
     public static String getVersion() {
         return VERSION;
     }

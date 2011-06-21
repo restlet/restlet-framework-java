@@ -69,19 +69,21 @@ import org.restlet.security.User;
 import org.restlet.security.Verifier;
 
 /**
- * Verifier that will do remote verification of using a provided openid_identifier. 
- * The verifier will search for the openid_identifer in the following three ways
+ * Verifier that will do remote verification of using a provided
+ * openid_identifier. The verifier will search for the openid_identifier in the
+ * following three ways
  * <ol>
- * <li>Check the query for an openid_identifer
- * <li>Check the request attribute map for an openid_identifer
+ * <li>Check the query for an openid_identifier
+ * <li>Check the request attribute map for an openid_identifier
  * <li>Use the default openid_identifier if possible
  * </ol>
- * If an openid_identifier is found it will do a temporary redirect (or return a form) to the identifier 
- * to continue the authentication process.
- * Upon successful authentication the verifier will set the User.
+ * If an openid_identifier is found, it will do a temporary redirect (or return
+ * a form) to the identifier to continue the authentication process. Upon
+ * successful authentication the verifier will set the User.
  * <p>
- * The verififer can also try to request the following attributes to be returned by the
- * OpenIdProvider - setOptionalAttribute and setRequiredAttribute
+ * The verifier can also try to request the following attributes to be returned
+ * by the OpenIdProvider - setOptionalAttribute and setRequiredAttribute.
+ * </p>
  * <ul>
  * <li>nickname
  * <li>email
@@ -93,32 +95,35 @@ import org.restlet.security.Verifier;
  * <li>language
  * <li>timezone
  * </ul>
+ * 
  * @author Martin Svensson
- *
+ * 
  */
 public class OpenIdVerifier implements Verifier {
 
-    public enum AX{
-        friendly, email, fullname, first, last, dob, gender, postcode, country, language, timezone;
+    public enum AX {
+        country, dob, email, first, friendly, fullname, gender, language, last, postcode, timezone;
     }
-
-    public static final String PROVIDER_GOOGLE = "https://www.google.com/accounts/o8/id";
-    public static final String PROVIDER_YAHOO = "http://me.yahoo.com";
-    public static final String PROVIDER_FLICKR = "http://flickr.com";
-    public static final String PROVIDER_MYSPACE = "http://api.myspace.com/openid";
-    public static final String PROVIDER_MYOPENID = "https://www.myopenid.com/";
-
-    private static final ConcurrentHashMap<String, ConsumerManager> managers = new ConcurrentHashMap<String, ConsumerManager>();
-    private static final ConcurrentHashMap<String, Object> session = new ConcurrentHashMap<String, Object>();
-    private static final Discovery discovery = new Discovery();
-
-    private volatile String defaultProvider;
-    private volatile boolean useDefault = false;
-    private final Set <AX> optionalAttributes;
-    private final Set <AX> requiredAttributes; 
 
     public static final ConcurrentHashMap<AX, String> ax = new ConcurrentHashMap<AX, String>(
             9);
+
+    private static final Discovery discovery = new Discovery();
+
+    private static final ConcurrentHashMap<String, ConsumerManager> managers = new ConcurrentHashMap<String, ConsumerManager>();
+
+    public static final String PROVIDER_FLICKR = "http://flickr.com";
+
+    public static final String PROVIDER_GOOGLE = "https://www.google.com/accounts/o8/id";
+
+    public static final String PROVIDER_MYOPENID = "https://www.myopenid.com/";
+
+    public static final String PROVIDER_MYSPACE = "http://api.myspace.com/openid";
+
+    public static final String PROVIDER_YAHOO = "http://me.yahoo.com";
+
+    private static final ConcurrentHashMap<String, Object> session = new ConcurrentHashMap<String, Object>();
+
     static {
         ax.put(AX.friendly, "http://axschema.org/namePerson/friendly");
         ax.put(AX.email, "http://axschema.org/contact/email"); // "http://schema.openid.net/contact/email"
@@ -133,190 +138,173 @@ public class OpenIdVerifier implements Verifier {
         ax.put(AX.timezone, "http://axschema.org/pref/timezone");
     }
 
+    private volatile String defaultProvider;
+
+    private final Set<AX> optionalAttributes;
+
+    private final Set<AX> requiredAttributes;
+
+    private volatile boolean useDefault = false;
+
     /**
-     * Default constructor
+     * Default constructor.
      */
-    public OpenIdVerifier(){
-        optionalAttributes = new HashSet <AX> ();
-        requiredAttributes = new HashSet <AX> ();
+    public OpenIdVerifier() {
+        optionalAttributes = new HashSet<AX>();
+        requiredAttributes = new HashSet<AX>();
     }
 
     /**
-     * Construct with a default OpenIdProvider/Identifier
+     * Constructor with a default OpenIdProvider/Identifier.
+     * 
      * @param defaultProvider
+     *            The default OpenIdProvider/Identifier.
      */
-    public OpenIdVerifier(String defaultProvider){
+    public OpenIdVerifier(String defaultProvider) {
         this();
         setDefaultProvider(defaultProvider);
     }
 
     /**
-     * Add required User attribute to retrieve during 
-     * authentication
+     * Adds required User attribute to retrieve during authentication.
+     * 
      * @param attributeName
-     *          see valid attributes
+     *            The name of the attribute. See valid attributes.
      */
-    public void addOptionalAttribute(AX attributeName){
+    public void addOptionalAttribute(AX attributeName) {
         this.optionalAttributes.add(attributeName);
     }
 
     /**
-     * Clear the set of optional attributes to retrieve
-     */
-    public void clearOptionalAttributes(){
-        this.optionalAttributes.clear();
-    }
-
-    /**
-     * Add an optional User attribute to retrieve 
-     * during authentication
+     * Adds an optional User attribute to retrieve during authentication
+     * 
      * @param attributeName
-     *          see valid attributes
+     *            The name of the attribute. See valid attributes.
      */
-    public void addRequiredAttribute(AX attributeName){
+    public void addRequiredAttribute(AX attributeName) {
         this.requiredAttributes.add(attributeName);
     }
 
     /**
-     * Clear the set of required attributes to retrieve
+     * Clears the set of optional attributes to retrieve.
      */
-    public void clearRequiredAttributes(){
+    public void clearOptionalAttributes() {
+        this.optionalAttributes.clear();
+    }
+
+    /**
+     * Clears the set of required attributes to retrieve.
+     */
+    public void clearRequiredAttributes() {
         this.requiredAttributes.clear();
     }
 
-
-
     /**
-     * Set the default provider. Will also set useDefaultProvider to
-     * true
+     * Returns the representation of an authentication form, in this case, a
+     * simple HTML form.
+     * 
+     * @param authReq
+     *            The authentication request.
+     * @return The representation of an authentication form.
      */
-    public void setDefaultProvider(String provider){
-        this.defaultProvider = provider;
-        this.useDefault = true;
-    }
-
-    /**
-     * Use a defaultProvider if none is provided in the
-     * request 
-     */
-    public void setUseDefaultProvider(boolean useDefault){
-        this.useDefault = useDefault;
-    }
-
-    /**
-     * Verify a request. The verifier will be called twice to
-     * to verify a request since verification is done remotely using
-     * callbacks. Also sets the user object
-     * @return
-     *        Verify.RESULT_INVALID if it fails
-     *        Verify.RESULT_VALID if success
-     *        Vefify.RESULT_MISSING while waiting for a callback response
-     */
-    public int verify(Request request, Response response) {
-        Form params = request.getResourceRef().getQueryAsForm();
-        if(this.isResponse(params)){
-            JSONObject obj = this.handleReturn(params, request, response);
-            if(obj == null){
-                return Verifier.RESULT_INVALID;
-            }
-            else{
-                if(!obj.isNull("id")){
-                    try {   
-                        Context.getCurrentLogger().info(obj.toString(2));
-                        String id = obj.getString("id");
-                        User u = new User();
-                        u.setIdentifier(id);
-                        request.getClientInfo().setUser(u);
-                        //set any attributes
-                        setAttributes(optionalAttributes, obj, u);
-                        setAttributes(requiredAttributes, obj, u);
-                        return Verifier.RESULT_VALID;
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Context.getCurrentLogger().info("Could not find identifier");
-                return Verifier.RESULT_INVALID;
-
-            }
+    private Representation generateForm(AuthRequest authReq) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html>");
+        sb.append("<head>");
+        sb.append("<title>OpenID HTML FORM Redirection</title>");
+        sb.append("</head>");
+        sb.append("<body onload=\"document.forms['openid-form-redirection'].submit();\">");
+        sb.append("<form name=\"openid-form-redirection\" action=\"");
+        sb.append(authReq.getOPEndpoint());
+        sb.append("\" method=\"post\" accept-charset=\"utf-8\">");
+        for (Object key : authReq.getParameterMap().keySet()) {
+            sb.append(" <input type=\"hidden\" name=\"");
+            sb.append(key.toString());
+            // ${parameter.key}
+            sb.append("\" value=\"");
+            sb.append(authReq.getParameterMap().get(key));
+            sb.append("\"/>");
         }
-        String target = this.getTarget(params, request);
-        if(target != null){
+        sb.append("</form>");
+        sb.append("</body>");
+        sb.append("</html>");
+        return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
+    }
+
+    /**
+     * Returns the {@link ConsumerManager} corresponding to the given URI.
+     * 
+     * @param OPUri
+     *            The OP endpoint URI.
+     * @return The {@link ConsumerManager} corresponding to the given URI.
+     */
+    private ConsumerManager getManager(String OPUri) {
+        Logger l = Context.getCurrentLogger();
+        l.info("Getting consumer manager for - " + OPUri);
+        if (!managers.containsKey(OPUri)) {
+            // create a new manager
+            l.info("Creating new consumer manager for - " + OPUri);
             try {
-                this.handleTarget(target, params, request, response);
-                return Verifier.RESULT_MISSING;
-            } catch (Exception e) {
-                e.printStackTrace();
+                ConsumerManager cm = new ConsumerManager();
+                cm.setConnectTimeout(30000);
+                cm.setSocketTimeout(30000);
+                cm.setFailedAssocExpire(0); // sec 0 = disabled
+                // cm.setMaxAssocAttempts(4); //default
+                managers.put(OPUri, cm);
+                return cm;
+            } catch (ConsumerException e) {
+                l.warning("Failed to create ConsumerManager for - " + OPUri);
             }
+            return null;
+        } else {
+            return managers.get(OPUri);
         }
-        Context.getCurrentLogger().info("No Target or Return - reporting error");
-        return Verifier.RESULT_INVALID;
-    }
-
-    private void setAttributes(Set <AX> attributeSet, JSONObject ret, User u){
-        if(attributeSet.size() < 1) return;
-        try{
-            if(attributeSet.contains(AX.email) && !ret.isNull(AX.email.toString())){
-                u.setEmail(ret.getString(AX.email.toString()));
-            }
-            if(attributeSet.contains(AX.first) && !ret.isNull(AX.first.toString())){
-                u.setEmail(ret.getString(AX.first.toString()));
-            }
-            if(attributeSet.contains(AX.last) && !ret.isNull(AX.last.toString())){
-                u.setEmail(ret.getString(AX.last.toString()));
-            }
-        }
-        catch(Exception e){e.printStackTrace();}
     }
 
     /**
-     * Check if it looks like a response to a OpenID authentiction request
-     * @param params
-     * @return
-     */
-    private boolean isResponse(Form params){
-        String rc = params.getFirstValue("return");
-        Context.getCurrentLogger().info("isReturn - "+rc);
-        if(rc != null)
-            return true;
-        return false;
-    }
-
-    /**
-     * Extract the Target (openid identifier/provider). First by looking
-     * at the query string, then in the request attributes and finally if
-     * a default provider has been set
-     * @param params
+     * Extracts the Target (openid identifier/provider) from a set of
+     * parameters. First by looking at the query string, then in the request
+     * attributes and finally if a default provider has been set
+     * 
+     * @param queryParams
+     *            The set of parameters taken from the query string.
      * @param request
-     * @return
+     *            The request.
+     * @return The target (openid identifier/provider).
      */
-    private  String getTarget(Form params, Request request){
-        String target = params.getFirstValue("openid_identifier");
-        if(target == null)
+    private String getTarget(Form queryParams, Request request) {
+        String target = queryParams.getFirstValue("openid_identifier");
+        if (target == null)
             target = (String) request.getAttributes().get("openid_identifier");
-        if(target == null && useDefault)
+        if (target == null && useDefault)
             target = defaultProvider;
-        if(target == null){
+        if (target == null) {
             Context.getCurrentLogger().info("no target or return specified");
         }
         return target;
     }
 
     /**
-     * Handle the return of an OpenID authentication request. Basically extract
-     * verifiying the response and extracting the user identifier
-     * @param params
+     * Handles the return of an OpenID authentication request. Basically, it
+     * extracts the user identifier, and the attributes to be exchanged from the
+     * response.
+     * 
+     * @param queryParams
+     *            The query's parameters.
      * @param request
+     *            The authentication request.
      * @param response
-     * @return
+     *            The authentication response.
+     * @return An instance of {@link JSONObject} that contains the user
+     *         identifier, and the attributes to be exchanged.
      */
-    private JSONObject handleReturn(Form params, Request request, Response response){
+    private JSONObject handleReturn(Form queryParams, Request request,
+            Response response) {
         JSONObject obj = null;
         Logger l = Context.getCurrentLogger();
-        //Map<String, String> axRequired = new HashMap<String, String>();
+        // Map<String, String> axRequired = new HashMap<String, String>();
         Map<AX, String> axResp = new HashMap<AX, String>();
-        Identifier i = verifyResponse(params, axResp, request, response);
+        Identifier i = verifyResponse(queryParams, axResp, request, response);
         if (i == null) {
             l.info("Authentication Failed");
             return obj;
@@ -341,26 +329,33 @@ public class OpenIdVerifier implements Verifier {
         }
         // cleanup of cookie
         response.getCookieSettings().remove(OpenIdConsumer.DESCRIPTOR_COOKIE);
-        CookieSetting disc = new CookieSetting(OpenIdConsumer.DESCRIPTOR_COOKIE, "");
+        CookieSetting disc = new CookieSetting(
+                OpenIdConsumer.DESCRIPTOR_COOKIE, "");
         disc.setMaxAge(0);
         response.getCookieSettings().add(disc);
         return obj;
     }
 
     /**
-     * Create and send an authentication request
+     * Creates and sends an authentication request.
+     * 
      * @param target
+     *            The target.
      * @param params
+     *            The set of params (not used yet).
      * @param request
+     *            The original authenticated request.
      * @param response
+     *            The response to complete.
      * @throws Exception
      */
-    private void handleTarget(String target, Form params, Request request, Response response) throws Exception{
+    private void handleTarget(String target, Form params, Request request,
+            Response response) throws Exception {
         Logger l = Context.getCurrentLogger();
 
-        //create return to url
+        // create return to url
         String redir = request.getResourceRef().getHostIdentifier()
-        + request.getResourceRef().getPath() + "?return=true";
+                + request.getResourceRef().getPath() + "?return=true";
 
         List<?> discoveries = null;
         discoveries = discovery.discover(target);
@@ -377,8 +372,7 @@ public class OpenIdVerifier implements Verifier {
 
         // store the discovery information in the user's session
         // getContext().getAttributes().put("openid-disc", discovered);
-        String sessionId = String.valueOf(System
-                .identityHashCode(discovered));
+        String sessionId = String.valueOf(System.identityHashCode(discovered));
         session.put(sessionId, discovered);
 
         response.getCookieSettings().add(
@@ -386,21 +380,24 @@ public class OpenIdVerifier implements Verifier {
         l.info("Setting DESCRIPTOR COOKIE");
 
         // obtain a AuthRequest message to be sent to the OpenID provider
-        AuthRequest authReq = manager.authenticate(discovered, redir); // TODO maybe add TIMESTAMP?;
+        AuthRequest authReq = manager.authenticate(discovered, redir); // TODO
+                                                                       // maybe
+                                                                       // add
+                                                                       // TIMESTAMP?;
         String ref = request.getResourceRef().getBaseRef().toString();
         l.info("OpenID - REALM = " + ref);
         authReq.setRealm(ref);
 
         // Attribute Exchange - getting optional and required
         FetchRequest fetch = null;
-        //String[] optional = params.getValuesArray("ax_optional", true);
+        // String[] optional = params.getValuesArray("ax_optional", true);
         for (AX o : this.optionalAttributes) {
             if (fetch == null)
                 fetch = FetchRequest.createFetchRequest();
             fetch.addAttribute(o.toString(), ax.get(o), false);
         }
 
-        //String[] required = params.getValuesArray("ax_required", true);
+        // String[] required = params.getValuesArray("ax_required", true);
         for (AX r : this.requiredAttributes) {
             if (fetch == null)
                 fetch = FetchRequest.createFetchRequest();
@@ -421,20 +418,138 @@ public class OpenIdVerifier implements Verifier {
             for (Object key : authReq.getParameterMap().keySet()) {
                 msg.add(key.toString(),
                         authReq.getParameterValue(key.toString()));
-                l.info("Adding to form - key " + key.toString()
-                        + " : value"
+                l.info("Adding to form - key " + key.toString() + " : value"
                         + authReq.getParameterValue(key.toString()));
             }
             response.setEntity(generateForm(authReq));
-            //response.redirectTemporary(authReq.getDestinationUrl(true));
+            // response.redirectTemporary(authReq.getDestinationUrl(true));
         }
 
     }
 
+    /**
+     * Checks if it looks like a response to an OpenID authentication request.
+     * 
+     * @param queryParams
+     *            The list of parameters.
+     * @return True if the parameters ensure that it looks like a response to an
+     *         OpenID authentication request.
+     */
+    private boolean isResponse(Form queryParams) {
+        String rc = queryParams.getFirstValue("return");
+        Context.getCurrentLogger().info("isReturn - " + rc);
+        if (rc != null)
+            return true;
+        return false;
+    }
+
+    /**
+     * Updates the given user with the values of the specified list of
+     * attributes taken from the given {@link JSONObject}.
+     * 
+     * @param attributeSet
+     *            The set of attributes.
+     * @param object
+     *            The source object.
+     * @param user
+     *            The User instance to update.
+     */
+    private void setAttributes(Set<AX> attributeSet, JSONObject object,
+            User user) {
+        if (attributeSet.size() < 1)
+            return;
+        try {
+            if (attributeSet.contains(AX.email)
+                    && !object.isNull(AX.email.toString())) {
+                user.setEmail(object.getString(AX.email.toString()));
+            }
+            if (attributeSet.contains(AX.first)
+                    && !object.isNull(AX.first.toString())) {
+                user.setEmail(object.getString(AX.first.toString()));
+            }
+            if (attributeSet.contains(AX.last)
+                    && !object.isNull(AX.last.toString())) {
+                user.setEmail(object.getString(AX.last.toString()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Sets the default provider. Will also set useDefaultProvider to true.
+     */
+    public void setDefaultProvider(String provider) {
+        this.defaultProvider = provider;
+        this.useDefault = true;
+    }
+
+    /**
+     * Indicates if the defaultProvider must be used in case none is provided in
+     * the request.
+     * 
+     * @param useDefault
+     *            True if the defaultProvider must be used.
+     */
+    public void setUseDefaultProvider(boolean useDefault) {
+        this.useDefault = useDefault;
+    }
+
+    /**
+     * Verifies a request. The verifier will be called twice to verify a request
+     * since verification is done remotely using callbacks. Also sets the user
+     * object.
+     * 
+     * @return {@link Verifier#RESULT_INVALID} if it fails,
+     *         {@link Verifier#RESULT_VALID} if success,
+     *         {@link Verifier#RESULT_MISSING} while waiting for a callback
+     *         response.
+     */
+    public int verify(Request request, Response response) {
+        Form params = request.getResourceRef().getQueryAsForm();
+        if (this.isResponse(params)) {
+            JSONObject obj = this.handleReturn(params, request, response);
+            if (obj == null) {
+                return Verifier.RESULT_INVALID;
+            } else {
+                if (!obj.isNull("id")) {
+                    try {
+                        Context.getCurrentLogger().info(obj.toString(2));
+                        String id = obj.getString("id");
+                        User u = new User();
+                        u.setIdentifier(id);
+                        request.getClientInfo().setUser(u);
+                        // set any attributes
+                        setAttributes(optionalAttributes, obj, u);
+                        setAttributes(requiredAttributes, obj, u);
+                        return Verifier.RESULT_VALID;
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Context.getCurrentLogger().info("Could not find identifier");
+
+                return Verifier.RESULT_INVALID;
+            }
+        }
+        String target = this.getTarget(params, request);
+        if (target != null) {
+            try {
+                this.handleTarget(target, params, request, response);
+                return Verifier.RESULT_MISSING;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Context.getCurrentLogger()
+                .info("No Target or Return - reporting error");
+        return Verifier.RESULT_INVALID;
+    }
 
     // --- processing the authentication response ---
     @SuppressWarnings("unchecked")
-    public Identifier verifyResponse(Form params, Map<AX, String> axResp, 
+    public Identifier verifyResponse(Form params, Map<AX, String> axResp,
             Request request, Response resp) {
         Logger l = Context.getCurrentLogger();
         try {
@@ -445,11 +560,13 @@ public class OpenIdVerifier implements Verifier {
 
             // retrieve the previously stored discovery information
             l.info("GET COOKIES");
-            String openidDisc = request.getCookies().getFirstValue(OpenIdConsumer.DESCRIPTOR_COOKIE);
+            String openidDisc = request.getCookies().getFirstValue(
+                    OpenIdConsumer.DESCRIPTOR_COOKIE);
             // String openidDisc =
             // getCookieSettings().getFirstValue(DESCRIPTOR_COOKIE);
             l.info("openIdDiscServer - "
-                    + resp.getCookieSettings().getFirstValue("DESCRIPTOR_COOKIE"));
+                    + resp.getCookieSettings().getFirstValue(
+                            "DESCRIPTOR_COOKIE"));
             l.info("openIdDiscServerLength -" + resp.getCookieSettings().size());
             l.info("openIdDiscClient - " + openidDisc);
             l.info("openIdDiscClientLength -" + request.getCookies().size());
@@ -462,13 +579,12 @@ public class OpenIdVerifier implements Verifier {
             }
             if (request.getCookies().size() > 0) {
                 for (Cookie setting : request.getCookies()) {
-                    l.info("Cookie: " + setting.getName()
-                            + setting.getFirst());
+                    l.info("Cookie: " + setting.getName() + setting.getFirst());
                 }
             }
 
             DiscoveryInformation discovered = (DiscoveryInformation) session
-            .get(openidDisc); // TODO cleanup
+                    .get(openidDisc); // TODO cleanup
 
             l.info("discovered = " + discovered);
 
@@ -479,9 +595,10 @@ public class OpenIdVerifier implements Verifier {
             ConsumerManager manager = getManager(discovered.getOPEndpoint()
                     .toString());
             String redir = request.getResourceRef().getHostIdentifier()
-            + request.getResourceRef().getPath()+"?return=true";
+                    + request.getResourceRef().getPath() + "?return=true";
 
-            VerificationResult verification = manager.verify(redir, response, discovered);
+            VerificationResult verification = manager.verify(redir, response,
+                    discovered);
 
             // examine the verification result and extract the verified
             // identifier
@@ -489,17 +606,17 @@ public class OpenIdVerifier implements Verifier {
             l.info("verified = " + verified);
             if (verified != null) {
                 AuthSuccess authSuccess = (AuthSuccess) verification
-                .getAuthResponse();
+                        .getAuthResponse();
 
                 if (authSuccess.hasExtension(AxMessage.OPENID_NS_AX)) {
                     FetchResponse fetchResp = (FetchResponse) authSuccess
-                    .getExtension(AxMessage.OPENID_NS_AX);
+                            .getExtension(AxMessage.OPENID_NS_AX);
 
                     MessageExtension ext = authSuccess
-                    .getExtension(AxMessage.OPENID_NS_AX);
+                            .getExtension(AxMessage.OPENID_NS_AX);
                     if (ext instanceof FetchResponse) {
-                        List <String> aliases = fetchResp.getAttributeAliases();
-                        for(String alias : aliases){
+                        List<String> aliases = fetchResp.getAttributeAliases();
+                        for (String alias : aliases) {
                             String value = fetchResp.getAttributeValue(alias);
                             axResp.put(AX.valueOf(alias), value);
                         }
@@ -512,53 +629,6 @@ public class OpenIdVerifier implements Verifier {
             l.log(Level.INFO, "", e);
         }
         return null;
-    }
-
-    private ConsumerManager getManager(String OPUri) {
-        Logger l = Context.getCurrentLogger();
-        l.info("Getting consumer manager for - " + OPUri);
-        if (!managers.containsKey(OPUri)) {
-            // create a new manager
-            l.info("Creating new consumer manager for - " + OPUri);
-            try {
-                ConsumerManager cm = new ConsumerManager();
-                cm.setConnectTimeout(30000);
-                cm.setSocketTimeout(30000);
-                cm.setFailedAssocExpire(0); // sec 0 = disabled
-                // cm.setMaxAssocAttempts(4); //default
-                managers.put(OPUri, cm);
-                return cm;
-            } catch (ConsumerException e) {
-                l.warning("Failed to create ConsumerManager for - " + OPUri);
-            }
-            return null;
-        } else {
-            return managers.get(OPUri);
-        }
-    }
-
-    private Representation generateForm(AuthRequest authReq) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        sb.append("<head>");
-        sb.append("<title>OpenID HTML FORM Redirection</title>");
-        sb.append("</head>");
-        sb.append("<body onload=\"document.forms['openid-form-redirection'].submit();\">");
-        sb.append("<form name=\"openid-form-redirection\" action=\"");
-        sb.append(authReq.getOPEndpoint());
-        sb.append("\" method=\"post\" accept-charset=\"utf-8\">");
-        for (Object key : authReq.getParameterMap().keySet()) {
-            sb.append(" <input type=\"hidden\" name=\"");
-            sb.append(key.toString());
-            // ${parameter.key}
-            sb.append("\" value=\"");
-            sb.append(authReq.getParameterMap().get(key));
-            sb.append("\"/>");
-        }
-        sb.append("</form>");
-        sb.append("</body>");
-        sb.append("</html>");
-        return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
     }
 
 }

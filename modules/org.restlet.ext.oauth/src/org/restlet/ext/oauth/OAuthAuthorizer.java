@@ -88,6 +88,40 @@ public class OAuthAuthorizer extends RoleAuthorizer {
     protected final Reference validateRef;
 
     /**
+     * Default constructor.
+     */
+    protected OAuthAuthorizer() {
+        this.authorizeRef = null;
+        this.validateRef = null;
+    } // For extending the class
+
+    /**
+     * Constructor.
+     * 
+     * @param validationRef
+     *            The validation URI referencing the auth server validation
+     *            resource.
+     */
+    public OAuthAuthorizer(Reference validationRef) {
+        this(validationRef, null); // Nothing on errors
+    }
+
+    /**
+     * Sets up a RemoteAuthorizer.
+     * 
+     * @param validationRef
+     *            The validation URI referencing the auth server validation
+     *            resource.
+     * @param authorizationRef
+     *            The authorization URI referencing that should be invoked on
+     *            errors.
+     */
+    public OAuthAuthorizer(Reference validationRef, Reference authorizationRef) {
+        authorizeRef = authorizationRef;
+        validateRef = validationRef;
+    }
+
+    /**
      * Constructor.
      * 
      * @param validationRef
@@ -102,7 +136,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
     }
 
     /**
-     * Set up a Remote or Local Authorizer. Can only be deployed together with
+     * Sets up a Remote or Local Authorizer. Can only be deployed together with
      * the Authorization Server Restlet application. A Validation resource must
      * be started and mapped in the auth server.
      * 
@@ -125,164 +159,6 @@ public class OAuthAuthorizer extends RoleAuthorizer {
             authorizeRef = new Reference(authorizationRef);
             validateRef = new Reference(validationRef);
         }
-    }
-
-    /**
-     * Set up a RemoteAuthorizer
-     * 
-     * @param validationRef
-     *            The validation URI referencing the auth server validation
-     *            resource.
-     * @param authorizationRef
-     *            The authorization URI referencing that should be invoked on
-     *            errors.
-     */
-    public OAuthAuthorizer(Reference validationRef, Reference authorizationRef) {
-        authorizeRef = authorizationRef;
-        validateRef = validationRef;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param validationRef
-     *            The validation URI referencing the auth server validation
-     *            resource.
-     */
-    public OAuthAuthorizer(Reference validationRef) {
-        this(validationRef, null); // Nothing on errors
-    }
-
-    /**
-     * Default constructor.
-     */
-    protected OAuthAuthorizer() {
-        this.authorizeRef = null;
-        this.validateRef = null;
-    } // For extending the class
-
-    private JSONObject createValidationRequest(String accessToken, Request req)
-            throws JSONException {
-        JSONObject request = new JSONObject();
-        Reference uri = req.getOriginalRef();
-
-        request.put("access_token", accessToken);
-
-        // add any roles...
-        List<Role> roles = this.getAuthorizedRoles();
-        if (roles != null && roles.size() > 0) {
-            JSONArray jArray = new JSONArray();
-            for (Role r : roles)
-                jArray.put(Scopes.toScope(r));
-            request.put("scope", jArray);
-            getLogger().info("Found scopes: " + jArray.toString());
-        }
-        String owner = (String) req.getAttributes().get("oauth-user");
-        if (owner != null && owner.length() > 0) {
-            getLogger().info("Found Owner:" + owner);
-            request.put("owner", owner);
-        }
-        request.put("uri", uri.getHierarchicalPart());
-        return request;
-    }
-
-    // GET SIZE TO HANDLE BUG IN GLASSFISH
-    /*
-     * private Representation createJsonRepresentation(JSONObject request){
-     * JsonRepresentation repr = new JsonRepresentation(request);
-     * StringRepresentation sr = new StringRepresentation( request.toString());
-     * sr.setCharacterSet(repr.getCharacterSet()); repr.setSize(sr.getSize());
-     * sr.release(); return repr; }
-     */
-
-    private void setUser(Request req, JSONObject response, String accessToken)
-            throws JSONException {
-        String tokenOwner = response.getString("tokenOwner");
-        getLogger().info(
-                "User " + tokenOwner + " is accessing : "
-                        + req.getOriginalRef());
-        User user = new User(tokenOwner, accessToken);
-
-        // Set the user so that the Resource knows who is executing
-        // Based on the person issuing the token in the first place.
-        req.getClientInfo().setUser(user);
-        req.getClientInfo().setAuthenticated(true);
-    }
-
-    private void handleError(String error, Response resp) {
-        if (error != null && error.length() > 0) {
-            ChallengeRequest cr = new ChallengeRequest(
-                    ChallengeScheme.HTTP_OAUTH, "oauth"); // TODO set
-            // realm
-            Series<Parameter> parameters = new Form();
-            parameters.add("error", error);
-            OAuthError code = OAuthError.valueOf(error);
-
-            switch (code) {
-            case INVALID_REQUEST:
-                // TODO report bug in Restlet and verify, can not handle
-                // space char.
-                // parameters.add("error_description",
-                // "The request is missing a required parameter.");
-                resp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-                break;
-            case INVALID_TOKEN:
-            case EXPIRED_TOKEN:
-                // parameters.add("error_description",
-                // "The access token provided is invalid.");
-                resp.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-                break;
-            case INSUFFICIENT_SCOPE:
-                // parameters.add("error_description",
-                // "The request requires higher privileges than provided "
-                // +"by the access token.");
-                resp.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-                break;
-
-            }
-
-            // parameters.add("error_uri",authorizeRef.toString());
-            cr.setParameters(parameters);
-            resp.getChallengeRequests().add(cr);
-        }
-    }
-
-    private String getAccessToken(Request req) {
-        // Auth Header present
-        String accessToken = null;
-        if (req.getChallengeResponse() != null) {
-            accessToken = req.getChallengeResponse().getRawValue();
-            getLogger().info("Found Authorization header" + accessToken);
-        }
-        // Check query for token
-        else if (accessToken == null || accessToken.length() == 0) {
-            getLogger().info(
-                    "Didn't contain a Authorization header - checking query");
-            accessToken = req.getOriginalRef().getQueryAsForm()
-                    .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
-
-            // check body if all else fail:
-            if (accessToken == null || accessToken.length() == 0) {
-                if (req.getMethod() == Method.POST
-                        || req.getMethod() == Method.PUT
-                        || req.getMethod() == Method.DELETE) {
-                    Representation r = req.getEntity();
-                    if (r != null
-                            && MediaType.APPLICATION_WWW_FORM.equals(r
-                                    .getMediaType())) {
-                        // Search for an OAuth Token
-                        Form form = new Form(r);
-                        accessToken = form
-                                .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
-                        if (accessToken != null && accessToken.length() > 0) {
-                            // restore the entity body
-                            req.setEntity(form.getWebRepresentation());
-                        }
-                    }
-                }
-            }
-        }
-        return accessToken;
     }
 
     @Override
@@ -358,6 +234,169 @@ public class OAuthAuthorizer extends RoleAuthorizer {
 
         return false;
 
+    }
+
+    // GET SIZE TO HANDLE BUG IN GLASSFISH
+    /*
+     * private Representation createJsonRepresentation(JSONObject request){
+     * JsonRepresentation repr = new JsonRepresentation(request);
+     * StringRepresentation sr = new StringRepresentation( request.toString());
+     * sr.setCharacterSet(repr.getCharacterSet()); repr.setSize(sr.getSize());
+     * sr.release(); return repr; }
+     */
+
+    /**
+     * Returns an instance of {@link JSONObject} that represents the validation
+     * request.
+     * 
+     * @param accessToken
+     *            The access token.
+     * @param req
+     *            The current request.
+     * @return An instance of {@link JSONObject} that represents the validation
+     *         request.
+     * @throws JSONException
+     */
+    private JSONObject createValidationRequest(String accessToken, Request req)
+            throws JSONException {
+        JSONObject request = new JSONObject();
+        Reference uri = req.getOriginalRef();
+
+        request.put("access_token", accessToken);
+
+        // add any roles...
+        List<Role> roles = this.getAuthorizedRoles();
+        if (roles != null && roles.size() > 0) {
+            JSONArray jArray = new JSONArray();
+            for (Role r : roles)
+                jArray.put(Scopes.toScope(r));
+            request.put("scope", jArray);
+            getLogger().info("Found scopes: " + jArray.toString());
+        }
+        String owner = (String) req.getAttributes().get("oauth-user");
+        if (owner != null && owner.length() > 0) {
+            getLogger().info("Found Owner:" + owner);
+            request.put("owner", owner);
+        }
+        request.put("uri", uri.getHierarchicalPart());
+        return request;
+    }
+
+    /**
+     * Returns the access token taken from a given request.
+     * 
+     * @param request
+     *            The request.
+     * @return The access token taken from a given request.
+     */
+    private String getAccessToken(Request request) {
+        // Auth Header present
+        String accessToken = null;
+        if (request.getChallengeResponse() != null) {
+            accessToken = request.getChallengeResponse().getRawValue();
+            getLogger().info("Found Authorization header" + accessToken);
+        }
+        // Check query for token
+        else if (accessToken == null || accessToken.length() == 0) {
+            getLogger().info(
+                    "Didn't contain a Authorization header - checking query");
+            accessToken = request.getOriginalRef().getQueryAsForm()
+                    .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
+
+            // check body if all else fail:
+            if (accessToken == null || accessToken.length() == 0) {
+                if (request.getMethod() == Method.POST
+                        || request.getMethod() == Method.PUT
+                        || request.getMethod() == Method.DELETE) {
+                    Representation r = request.getEntity();
+                    if (r != null
+                            && MediaType.APPLICATION_WWW_FORM.equals(r
+                                    .getMediaType())) {
+                        // Search for an OAuth Token
+                        Form form = new Form(r);
+                        accessToken = form
+                                .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
+                        if (accessToken != null && accessToken.length() > 0) {
+                            // restore the entity body
+                            request.setEntity(form.getWebRepresentation());
+                        }
+                    }
+                }
+            }
+        }
+        return accessToken;
+    }
+
+    /**
+     * Completes the given {@link Response} according to the given error.
+     * 
+     * @param error
+     *            The error.
+     * @param resp
+     *            The response to complete.
+     */
+    private void handleError(String error, Response resp) {
+        if (error != null && error.length() > 0) {
+            ChallengeRequest cr = new ChallengeRequest(
+                    ChallengeScheme.HTTP_OAUTH, "oauth"); // TODO set
+            // realm
+            Series<Parameter> parameters = new Form();
+            parameters.add("error", error);
+            OAuthError code = OAuthError.valueOf(error);
+
+            switch (code) {
+            case INVALID_REQUEST:
+                // TODO report bug in Restlet and verify, can not handle
+                // space char.
+                // parameters.add("error_description",
+                // "The request is missing a required parameter.");
+                resp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+                break;
+            case INVALID_TOKEN:
+            case EXPIRED_TOKEN:
+                // parameters.add("error_description",
+                // "The access token provided is invalid.");
+                resp.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+                break;
+            case INSUFFICIENT_SCOPE:
+                // parameters.add("error_description",
+                // "The request requires higher privileges than provided "
+                // +"by the access token.");
+                resp.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+                break;
+
+            }
+
+            // parameters.add("error_uri",authorizeRef.toString());
+            cr.setParameters(parameters);
+            resp.getChallengeRequests().add(cr);
+        }
+    }
+
+    /**
+     * Instantiates the {@link User} according to the given credentials and
+     * update the given {@link Request}.
+     * 
+     * @param req
+     *            The request.
+     * @param response
+     *            The {@link JSONObject} that represents the response.
+     * @param accessToken
+     *            The access token.
+     * @throws JSONException
+     */
+    private void setUser(Request req, JSONObject response, String accessToken)
+            throws JSONException {
+        String tokenOwner = response.getString("tokenOwner");
+        getLogger().info(
+                "User " + tokenOwner + " is accessing : "
+                        + req.getOriginalRef());
+        User user = new User(tokenOwner, accessToken);
+
+        // Set the user so that the Resource knows who is executing
+        // Based on the person issuing the token in the first place.
+        req.getClientInfo().setUser(user);
+        req.getClientInfo().setAuthenticated(true);
     }
 
     @Override

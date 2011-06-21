@@ -39,7 +39,16 @@ import org.restlet.Response;
  * @author Kristoffer Gronowski
  */
 public interface CacheLookup {
-
+    /**
+     * Handles the pair of request/response, by completing the given request
+     * with possibly cached identity.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The corresponding response.
+     * @return True if the identity was cached.
+     */
     public boolean handleCached(Request request, Response response);
 
 }

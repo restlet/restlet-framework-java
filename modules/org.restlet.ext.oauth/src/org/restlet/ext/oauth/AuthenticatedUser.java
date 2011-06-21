@@ -46,15 +46,15 @@ import org.restlet.security.Role;
 public abstract class AuthenticatedUser {
 
     /**
-     * Add a scope for this user given a specified owner
+     * Adds a scope for this user given a specified owner.
      */
-    //@Deprecated
-    //public abstract void addScope(String scope, String owner);
-    
+    // @Deprecated
+    // public abstract void addScope(String scope, String owner);
+
     public abstract void addRole(Role r, String owner);
 
     /**
-     * Remove a generated code that was used or revoked.
+     * Removes a generated code that was used or revoked.
      */
     public abstract void clearCode();
 
@@ -63,50 +63,61 @@ public abstract class AuthenticatedUser {
      * corresponds to a service provider that acts on behalf of a Authenticated
      * user.
      * 
-     * @return parent client instance
+     * @return The parent client instance.
      */
     public abstract Client getClient();
 
     /**
+     * Returns the current oauth code if any available for exchange for a token.
      * 
-     * @return the current oauth code if any available for exchange for a token
+     * @return the current oauth code if any available for exchange for a token.
      */
     public abstract String getCode();
 
     /**
-     * Get all scopes. Observe that no owner information is passed.
+     * Gets all scopes. Observe that no owner information is passed.
      */
-    public abstract List <Role> getGrantedRoles();
+    public abstract List<Role> getGrantedRoles();
 
     /**
-     * @return user id of the user
+     * Returns the identifier of the user.
+     * 
+     * @return The identifier of the user.
      */
     public abstract String getId();
 
     /**
-     * Password field for the username and password oauth flow
+     * Password field for the username and password oauth flow.
      * 
      * @return password or null if not present
      */
-
+    // TODO should be a char[]
+    // cf http://restlet.tigris.org/issues/show_bug.cgi?id=276
     public abstract String getPassword();
 
     /**
+     * Returns the currently issued token for this user.
      * 
-     * @return the currently issued token for this user
+     * @return The currently issued token for this user.
      */
-
     public abstract Token getToken();
 
     /**
+     * Returns the default token expire time for this user.
      * 
-     * @return the default token expire time for this user
+     * @return The default token expire time for this user.
      */
 
     public abstract long getTokenExpire();
 
     /**
-     * Check if this user has a specific scope
+     * Checks if this user has a specific scope.
+     * 
+     * @param role
+     *            The scope to check.
+     * @param owner
+     *            The owner.
+     * @return True if this user has the scope.
      */
     public abstract boolean isGrantedRole(Role role, String owner);
 
@@ -121,42 +132,52 @@ public abstract class AuthenticatedUser {
     }
 
     /**
-     * Remove a specific scope
+     * Removes a specific scope.
+     * 
+     * @param role
+     *            The scope to be removed.
+     * @param owner
+     *            The scope owner.
      */
     public abstract void revokeRole(Role role, String owner);
 
     /**
-     * Revoke previously granted scopes.
+     * Revokes previously granted scopes.
      */
     public abstract void revokeRoles();
 
     /**
-     * Set a generated code that was given out for this user
+     * Sets a generated code that was given out for this user.
+     * 
+     * @param code
+     *            The generated code.
      */
     public abstract void setCode(String code);
 
     /**
-     * Set the user password
+     * Sets the user password
      * 
      * @param password
+     *            The user password.
      */
-
+    // TODO should be a char[]
+    // cf http://restlet.tigris.org/issues/show_bug.cgi?id=276
     public abstract void setPassword(String password);
 
     /**
+     * Sets the current issued token.
      * 
      * @param token
-     *            sets the current issued token
+     *            The current issued token.
      */
-
     public abstract void setToken(Token token);
 
     /**
+     * Sets the time for all token expire time for this user.
      * 
      * @param deltaTimeSec
-     *            time for all token expire time for this user
+     *            The time for all token expire time for this user.
      */
-
     public abstract void setTokenExpire(long deltaTimeSec);
 
 }

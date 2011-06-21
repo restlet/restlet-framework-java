@@ -970,8 +970,8 @@ public class ClientResource extends UniformResource {
 
     /**
      * Handles the call by invoking the next handler. Then a new response is
-     * created and the {@link #handle(Request, Response)} method is invoked and
-     * the response set as the latest response with
+     * created and the {@link #handle(Request, Response, List, int, Uniform)}
+     * method is invoked and the response set as the latest response with
      * {@link #setResponse(Response)}.
      * 
      * @param request

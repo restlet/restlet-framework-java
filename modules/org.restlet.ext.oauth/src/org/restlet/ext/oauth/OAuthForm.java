@@ -45,47 +45,129 @@ import org.restlet.representation.Representation;
  * @author Kristoffer Gronowski
  */
 public class OAuthForm extends Form {
-
+    /**
+     * Constructor.
+     * 
+     * @param token
+     *            The value of the {@link OAuthServerResource#OAUTH_TOKEN}
+     *            token.
+     */
     public OAuthForm(String token) {
         add(OAuthServerResource.OAUTH_TOKEN, token);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param token
+     *            The value of the {@link OAuthServerResource#OAUTH_TOKEN}
+     *            token.
+     * @param initialCapacity
+     *            The initial list capacity.
+     */
     public OAuthForm(String token, int initialCapacity) {
         super(initialCapacity);
         add(OAuthServerResource.OAUTH_TOKEN, token);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param token
+     *            The value of the {@link OAuthServerResource#OAUTH_TOKEN}
+     *            token.
+     * @param delegate
+     *            The delegate list.
+     */
     public OAuthForm(String token, List<Parameter> delegate) {
         super(delegate);
         add(OAuthServerResource.OAUTH_TOKEN, token);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param token
+     *            The value of the {@link OAuthServerResource#OAUTH_TOKEN}
+     *            token.
+     * @param webForm
+     *            The URL encoded Web form.
+     */
     public OAuthForm(String token, Representation webForm) {
         super(webForm);
         add(OAuthServerResource.OAUTH_TOKEN, token);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param token
+     *            The value of the {@link OAuthServerResource#OAUTH_TOKEN}
+     *            token.
+     * @param queryString
+     *            The Web form parameters as a string.
+     */
     public OAuthForm(String token, String queryString) {
         super(queryString);
         add(OAuthServerResource.OAUTH_TOKEN, token);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param token
+     *            The value of the {@link OAuthServerResource#OAUTH_TOKEN}
+     *            token.
+     * @param parametersString
+     *            The parameters string to parse.
+     * @param separator
+     *            The separator character to append between parameters.
+     */
     public OAuthForm(String token, String parametersString, char separator) {
         super(parametersString, separator);
         add(OAuthServerResource.OAUTH_TOKEN, token);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param token
+     *            The value of the {@link OAuthServerResource#OAUTH_TOKEN}
+     *            token.
+     * @param queryString
+     *            The Web form parameters as a string.
+     * @param characterSet
+     *            The supported character encoding.
+     */
     public OAuthForm(String token, String queryString, CharacterSet characterSet) {
         super(queryString, characterSet);
         add(OAuthServerResource.OAUTH_TOKEN, token);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param token
+     *            The value of the {@link OAuthServerResource#OAUTH_TOKEN}
+     *            token.
+     * @param parametersString
+     *            The parameters string to parse.
+     * @param characterSet
+     *            The supported character encoding.
+     * @param separator
+     *            The separator character to append between parameters.
+     */
     public OAuthForm(String token, String parametersString,
             CharacterSet characterSet, char separator) {
         super(parametersString, characterSet, separator);
         add(OAuthServerResource.OAUTH_TOKEN, token);
     }
 
+    /**
+     * Returns the value of the {@link OAuthServerResource#OAUTH_TOKEN} token.
+     * 
+     * @return The value of the {@link OAuthServerResource#OAUTH_TOKEN} token.
+     */
     public String getOAuthToken() {
         return this.getFirstValue(OAuthServerResource.OAUTH_TOKEN);
     }

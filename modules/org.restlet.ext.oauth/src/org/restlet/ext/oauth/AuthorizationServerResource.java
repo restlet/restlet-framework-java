@@ -40,7 +40,6 @@ import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.internal.AuthSession;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.Representation;
@@ -50,11 +49,11 @@ import org.restlet.routing.Redirector;
 import org.restlet.security.Role;
 
 /**
- * Restlet implementation class AuthorizationService Used for initiating an
+ * Restlet implementation class AuthorizationService. Used for initiating an
  * OAuth 2.0 authorization request.
  * 
  * This Resource is controlled by to Context Attribute Parameters<br/>
- * OAuthServerResource.LOGIN_PARAM specifies the location of a Login resource
+ * OAuthServerResource.LOGIN_PARAM specifies the location of a Login resource.
  * 
  * Implements OAuth 2.0 draft 10
  * 
@@ -67,7 +66,7 @@ import org.restlet.security.Role;
 public class AuthorizationServerResource extends OAuthServerResource {
 
     /**
-     * Checks that all incoming requests have a type parameter Requires
+     * Checks that all incoming requests have a type parameter. Requires
      * response_type, client_id and redirect_uri parameters. For the code flow
      * client_secret is also mandatory.
      */
@@ -179,6 +178,20 @@ public class AuthorizationServerResource extends OAuthServerResource {
         return doPostAuthenticate(session, client);
     }
 
+    /**
+     * Sets up a session.
+     * 
+     * @param in
+     *            The OAuth session.
+     * @param client
+     *            The OAuth client.
+     * @param flow
+     *            The glow.
+     * @param redirUri
+     *            The redirection URI.
+     * @param params
+     *            The authentication parameters.
+     */
     protected void setupSession(AuthSession in, Client client,
             ResponseType flow, String redirUri, Form params) {
         getLogger().info("Base ref = " + getReference().getParentRef());
@@ -217,6 +230,15 @@ public class AuthorizationServerResource extends OAuthServerResource {
         session.setRequestedScope(scopes);
     }
 
+    /**
+     * Handle the authentication request.
+     * 
+     * @param session
+     *            The OAuth session.
+     * @param client
+     *            The OAuth client.
+     * @return The result as a {@link Representation}.
+     */
     protected Representation doPostAuthenticate(AuthSession session,
             Client client) {
 
@@ -255,6 +277,17 @@ public class AuthorizationServerResource extends OAuthServerResource {
 
     }
 
+    /**
+     * 
+     * Helper method to format error responses according to OAuth2 spec.
+     * 
+     * @param sessionId
+     *            local server session object
+     * @param error
+     *            code, one of the valid from spec
+     * @param state
+     *            state parameter as presented in the initial auth request
+     */
     public void sendError(String sessionId, OAuthError error, String state) {
         sendError(sessionId, error, state, null, null);
     }
@@ -274,7 +307,6 @@ public class AuthorizationServerResource extends OAuthServerResource {
      * @param errorUri
      *            uri to a page with more description about the error
      */
-
     public void sendError(String sessionId, OAuthError error, String state,
             String description, String errorUri) {
         Form params = getQuery();

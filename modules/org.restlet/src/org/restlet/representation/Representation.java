@@ -44,6 +44,7 @@ import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
 import org.restlet.data.Tag;
+import org.restlet.engine.connector.ConnectionController;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.util.DateUtils;
 
@@ -415,12 +416,12 @@ public abstract class Representation extends RepresentationInfo {
     /**
      * Indicates if the representation content supports NIO selection. In this
      * case, the
-     * {@link org.restlet.engine.connector.ConnectionController#register(java.nio.channels.SelectableChannel, int, org.restlet.util.SelectionListener)}
+     * {@link ConnectionController#register(java.nio.channels.SelectableChannel, int, org.restlet.util.SelectionListener)}
      * method can be called to be notified when new content is ready for
      * reading.
      * 
      * @return True if the representation content supports NIO selection.
-     * @see #register(org.restlet.util.SelectionListener)
+     * @see org.restlet.engine.connector.ConnectionController
      */
     public boolean isSelectable() {
         try {

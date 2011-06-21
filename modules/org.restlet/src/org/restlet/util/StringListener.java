@@ -90,8 +90,8 @@ public abstract class StringListener extends ReaderListener {
     /**
      * Callback invoked when new content is available.
      * 
-     * @param reader
-     *            The reader allowing to retrieve the new content.
+     * @param content
+     *            The new content.
      */
     protected abstract void onContent(String content);
 

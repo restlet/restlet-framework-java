@@ -110,23 +110,35 @@ import org.restlet.util.Series;
  * @author Kristoffer Gronowski
  */
 public class OAuthHelper extends AuthenticatorHelper {
-
+    /**
+     * Returns the value of the "authPage" parameter.
+     * 
+     * @param c
+     *            The context where to find the parameter.
+     * @return The value of the "authPage" parameter.
+     */
     public static String getAuthPage(Context c) {
         return c.getParameters().getFirstValue("authPage", "/auth_page");
     }
 
-    public static void setAuthPage(String authPage, Context c) {
-        c.getParameters().set("authPage", authPage);
-    }
-
+    /**
+     * Returns the value of the "authPageTemplate" parameter.
+     * 
+     * @param c
+     *            The context where to find the parameter.
+     * @return The value of the "authPageTemplate" parameter.
+     */
     public static String getAuthPageTemplate(Context c) {
         return c.getParameters().getFirstValue("authPageTemplate");
     }
 
-    public static void setAuthPageTemplate(String authPageTemplate, Context c) {
-        c.getParameters().set("authPageTemplate", authPageTemplate);
-    }
-
+    /**
+     * Returns the value of the "authSkipApproved" parameter.
+     * 
+     * @param c
+     *            The context where to find the parameter.
+     * @return The value of the "authSkipApproved" parameter.
+     */
     public static boolean getAuthSkipApproved(Context c) {
         c.getLogger().info("Trying to get auth page templat");
         String skip = c.getParameters().getFirstValue("authSkipApproved");
@@ -135,10 +147,36 @@ public class OAuthHelper extends AuthenticatorHelper {
         return Boolean.parseBoolean(skip);
     }
 
+    /**
+     * Sets the value of the "authpage" parameter.
+     * @param authPage The value of the "authpage" parameter.
+     * @param c The context to update.
+     */
+    public static void setAuthPage(String authPage, Context c) {
+        c.getParameters().set("authPage", authPage);
+    }
+
+    /**
+     * Sets the value of the "authPageTemplate" parameter.
+     * @param authPageTemplate The value of the "authPageTemplate" parameter.
+     * @param c The context to update.
+     */
+    public static void setAuthPageTemplate(String authPageTemplate, Context c) {
+        c.getParameters().set("authPageTemplate", authPageTemplate);
+    }
+
+    /**
+     * Sets the value of the "authSkipApproved" parameter.
+     * @param skip The value of the "authSkipApproved" parameter.
+     * @param c The context to update.
+     */
     public static void setAuthSkipApproved(boolean skip, Context c) {
         c.getParameters().set("authSkipApproved", Boolean.toString(skip));
     }
 
+    /**
+     * Constructor. Use the {@link ChallengeScheme#HTTP_OAUTH} authentication scheme.
+     */
     public OAuthHelper() {
         super(ChallengeScheme.HTTP_OAUTH, true, true);
     }

@@ -38,7 +38,6 @@ import org.json.JSONObject;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
-
 import org.restlet.data.Status;
 import org.restlet.engine.util.Base64;
 import org.restlet.ext.oauth.internal.ExpireToken;
@@ -65,6 +64,16 @@ import org.restlet.security.Role;
  */
 public class AccessTokenServerResource extends OAuthServerResource {
 
+    /**
+     * Converts a {@link Token} to its equivalent as a {@link JSONObject}.
+     * 
+     * @param token
+     *            The token.
+     * @param scopes
+     *            The list of scopes.
+     * @return An instance of {@link Token} equivalent to the given token.
+     * @throws ResourceException
+     */
     private JSONObject createJsonToken(Token token, String scopes)
             throws ResourceException {
         JSONObject body = new JSONObject();
@@ -85,6 +94,19 @@ public class AccessTokenServerResource extends OAuthServerResource {
         return body;
     }
 
+    /**
+     * Executes the authentication flow.
+     * 
+     * @param clientId
+     *            The client identifier.
+     * @param clientSecret
+     *            The client's secret.
+     * @param params
+     *            The authentication parameters.
+     * @return The result of the flow.
+     * @throws IllegalArgumentException
+     */
+    // TODO The secret should be a char[].
     private Representation doAuthCodeFlow(String clientId, String clientSecret,
             Form params) throws IllegalArgumentException {
         String redirUri = params.getFirstValue(REDIR_URI);
@@ -133,6 +155,18 @@ public class AccessTokenServerResource extends OAuthServerResource {
         return new JsonStringRepresentation(body);
     }
 
+    /**
+     * Executes the "none" flow.
+     * 
+     * @param clientId
+     *            The client identifier.
+     * @param clientSecret
+     *            The client's secret.
+     * @param params
+     *            The authentication parameters.
+     * @return The result of the flow.
+     */
+    // TODO The secret should be a char[].
     private Representation doNoneFlow(String clientId, String clientSecret,
             Form params) {
         Client client = validate(clientId, clientSecret);
@@ -166,6 +200,18 @@ public class AccessTokenServerResource extends OAuthServerResource {
         return new JsonStringRepresentation(body);
     }
 
+    /**
+     * Executes the "password" flow.
+     * 
+     * @param clientId
+     *            The client identifier.
+     * @param clientSecret
+     *            The client's secret.
+     * @param params
+     *            The authentication parameters.
+     * @return The result of the flow.
+     */
+    // TODO The secret should be a char[].
     private Representation doPasswordFlow(String clientId, String clientSecret,
             Form params) {
         Client client = validate(clientId, clientSecret);
@@ -208,6 +254,18 @@ public class AccessTokenServerResource extends OAuthServerResource {
         return new JsonStringRepresentation(body);
     }
 
+    /**
+     * Executes the "refresh token" flow.
+     * 
+     * @param clientId
+     *            The client identifier.
+     * @param clientSecret
+     *            The client's secret.
+     * @param params
+     *            The authentication parameters.
+     * @return The result of the flow.
+     */
+    // TODO The secret should be a char[].
     private Representation doRefreshFlow(String clientId, String clientSecret,
             Form params) {
         String rToken = params.getFirstValue(REFRESH_TOKEN);
@@ -257,6 +315,8 @@ public class AccessTokenServerResource extends OAuthServerResource {
     }
 
     /**
+     * Handles the {@link Post} request.
+     * 
      * @param input
      *            HTML form formated token request per oauth-v2 spec.
      * @return JSON response with token or error.
@@ -361,6 +421,17 @@ public class AccessTokenServerResource extends OAuthServerResource {
         return toRet;
     }
 
+    /**
+     * Returns the representation of the given error.
+     * 
+     * @param error
+     *            The OAuth error.
+     * @param description
+     *            The error description.
+     * @param errorUri
+     *            the error URI.
+     * @return The representation of the given error.
+     */
     protected Representation sendError(OAuthError error, String description,
             String errorUri) {
         JSONObject result = new JSONObject();
@@ -383,6 +454,16 @@ public class AccessTokenServerResource extends OAuthServerResource {
         return null;
     }
 
+    /**
+     * Validates the id/password pair.
+     * 
+     * @param clientId
+     *            The client identifier.
+     * @param clientSecret
+     *            The client's secret.
+     * @return The OAuth client that corresponds to the given id..
+     */
+    // TODO The secret should be a char[].
     private Client validate(String clientId, String clientSecret) {
         Client client = clients.findById(clientId);
         getLogger().info("Client = " + client);

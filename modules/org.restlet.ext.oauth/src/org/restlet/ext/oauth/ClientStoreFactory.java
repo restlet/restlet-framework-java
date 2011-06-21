@@ -77,7 +77,6 @@ public abstract class ClientStoreFactory {
      * 
      * @return an implementation of a ClientStore
      */
-
     public synchronized static ClientStore<?> getInstance() {
         if (log == null) {
             log = Context.getCurrentLogger();
@@ -128,7 +127,6 @@ public abstract class ClientStoreFactory {
      * @param impl
      *            class reference of a class implementing ClientStore
      */
-
     public static void setClientStoreImpl(Class<? extends ClientStore<?>> impl) {
         defaultImpl = impl;
         Object[] dummy = null;
@@ -141,7 +139,6 @@ public abstract class ClientStoreFactory {
      * @param constructorParams
      *            array of constructor arguments.
      */
-
     public static void setClientStoreImpl(Class<? extends ClientStore<?>> impl,
             Object... constructorParams) {
         if (store != null && !store.getClass().equals(impl)) {

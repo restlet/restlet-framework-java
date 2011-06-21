@@ -447,8 +447,8 @@ public class SipResponse extends Response {
      * @param commandSequence
      *            The identifier of the command.
      */
-    public void setCommandSequence(String callCommand) {
-        this.commandSequence = callCommand;
+    public void setCommandSequence(String commandSequence) {
+        this.commandSequence = commandSequence;
     }
 
     /**

@@ -193,11 +193,10 @@ public class AuthPageServerResource extends OAuthServerResource {
      * included.
      * 
      * @param action
-     *            as interacted by the user
+     *            as interacted by the user.
      * @param scopes
-     *            the scopes that was approved
+     *            the scopes that was approved.
      */
-
     protected void handleAction(String action, String[] scopes) {
         // TODO: should maybe be removed
         String sessionId = (String) getRequest().getAttributes().get(

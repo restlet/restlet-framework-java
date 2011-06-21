@@ -42,7 +42,7 @@ import org.restlet.security.Verifier;
 
 /**
  * An Authenticator that redirects the authentication to some external resource.
- * After successfull authentication the Authenticator will do a redirect to the
+ * After successfull authentication, the Authenticator will do a redirect to the
  * original request resourceRef. The RedirectAuthenticator keeps track of state
  * using a session cookie which is not automatically cleaned.
  * 
@@ -71,20 +71,34 @@ import org.restlet.security.Verifier;
  * 
  */
 public class RedirectAuthenticator extends Authenticator {
-
+    /** The default name of the cookie that contains the identifier. */
     public final static String DefaultIdentifierCookie = "session_id";
 
+    /**
+     * The default name of the cookie that contains the original request's
+     * reference.
+     */
     public final static String DefaultOrigRefCookie = "original_ref";
 
     public final static String OriginalRefAttribute = "origRef";
 
+    /** The verifier of the credentials. */
     private final Verifier verifier;
 
+    /** The current name of the cookie that contains the identifier. */
     private final String identifierCookie;
 
+    /**
+     * The current name of the cookie that contains the original request's
+     * reference.
+     */
     private final String origRefCookie;
 
     // private final String errorResource;
+    /**
+     * The restlet in charge of handling authentication or authorization
+     * failure.
+     */
     private Restlet forbiddenResource;
 
     /**
@@ -105,14 +119,20 @@ public class RedirectAuthenticator extends Authenticator {
     }
 
     /**
-     * Initialize a RedirectAuthenticator with a Verifier.
+     * Initializes a RedirectAuthenticator with a Verifier.
      * 
      * @param context
-     *            - Context
-     * @param sessionId
-     *            - Name of the sessionID
+     *            The context.
      * @param verifier
-     *            - A Verifier that sets user identifier upon completion
+     *            The verifier that sets user identifier upon completion.
+     * @param identifierCookie
+     *            The name of the cookie that contains the identifier.
+     * @param origRefCookie
+     *            The name of the cookie that contains the original request's
+     *            reference.
+     * @param forbiddenResource
+     *            The Restlet that will handle the call in case of
+     *            authentication or authorization failure.
      */
     public RedirectAuthenticator(Context context, Verifier verifier,
             String identifierCookie, String origRefCookie,
@@ -180,11 +200,14 @@ public class RedirectAuthenticator extends Authenticator {
     }
 
     /**
-     * Override to handle the retrieved user from the verifier. The only thing
-     * that will be stored is the user identifier (in a cookie). Does nothing by
-     * default
+     * Handles the retrieved user from the verifier. The only thing that will be
+     * stored is the user identifier (in a cookie). Should be overriden as it
+     * does nothing by default.
+     * 
+     * @param user
+     *            The user.
      */
-    protected void handleUser(User u) {
+    protected void handleUser(User user) {
         ;
     }
 
@@ -197,6 +220,8 @@ public class RedirectAuthenticator extends Authenticator {
      * 
      * @param origRef
      *            The original ref stored by the RedirectAuthenticator
+     * @param request
+     *            The rejected request.
      * @param response
      *            The reject response.
      */
@@ -218,7 +243,6 @@ public class RedirectAuthenticator extends Authenticator {
 
     @Override
     protected int unauthenticated(Request request, Response response) {
-        // TODO Auto-generated method stub
         int ret = super.unauthenticated(request, response);
         getLogger().info("UNAUTHENTICATED REQUEST!!!");
         return ret;

@@ -53,25 +53,31 @@ import org.restlet.routing.Redirector;
  * 
  * @author Kristoffer Gronowski
  */
-//TODO: Check if this needs to be a filter and possibly rename!
+// TODO: Check if this needs to be a filter and possibly rename!
 public class CallbackCacheFilter extends Filter implements CacheLookup {
-
-    public static final String UserCookieID = "_uid";
+    public static final String EXTERNAL_SERVER_COOKIE = "callback";
 
     public static final String INTERNAL_SERVER_COOKIE = "auth-callback";
 
-    public static final String EXTERNAL_SERVER_COOKIE = "callback";
+    public static final String UserCookieID = "_uid";
 
+    /** The random number generator used to generate random tokens. */
     private SecureRandom random;
 
+    /** The map that stores cached data. */
     private ConcurrentHashMap<String, String> userCache;
 
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context.
+     */
     public CallbackCacheFilter(Context context) {
         super(context);
         userCache = new ConcurrentHashMap<String, String>();
         try {
             random = SecureRandom.getInstance("SHA1PRNG");
-
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -101,33 +107,39 @@ public class CallbackCacheFilter extends Filter implements CacheLookup {
         }
     }
 
-    @Override
-    protected int doHandle(Request request, Response response) {
-        Cookie c = request.getCookies().getFirst(UserCookieID);
-        if (c == null) {
-            String key = generate(40);
-            CookieSetting cs = new CookieSetting(UserCookieID, key);
-            response.getCookieSettings().add(cs);
-            userCache.put(key, "");
-        }
-        return super.doHandle(request, response);
+    /**
+     * Clears the identification cookies from the response.
+     * 
+     * @param response
+     *            The response to cleanup.
+     */
+    private void clearCookies(Response response) {
+        // Remove if someone before has set them
+        response.getCookieSettings().removeAll("callback");
+        response.getCookieSettings().removeAll("auth-callback");
+
+        // Set a cookie that expires right away
+        CookieSetting clear = new CookieSetting("callback", "");
+        clear.setMaxAge(0);
+        response.getCookieSettings().add(clear);
+        CookieSetting clear2 = new CookieSetting("auth-callback", "");
+        clear2.setMaxAge(0);
+        response.getCookieSettings().add(clear2);
+
     }
 
-    public boolean handleCached(Request request, Response response) {
-        Cookie c = request.getCookies().getFirst(UserCookieID);
-        if (c != null) { // might be in cache
-            String key = c.getValue();
-            if (key != null && key.length() > 0 && userCache.containsKey(key)) {
-                createResponse(userCache.get(key), request, response);
-                clearCookies(response);
-                return true;
-            }
-        }
-        return false;
-    }
-
+    /**
+     * Completes the request/response with identification data before handling
+     * it.
+     * 
+     * @param id
+     *            The identifier.
+     * @param request
+     *            The request to complete.
+     * @param response
+     *            The response to complete.
+     */
     private void createResponse(String id, Request request, Response response) {
-
         // Check response cookies, might be the firs time
         String callback = response.getCookieSettings().getFirstValue(
                 INTERNAL_SERVER_COOKIE);
@@ -170,13 +182,31 @@ public class CallbackCacheFilter extends Filter implements CacheLookup {
                 request.setMethod(Method.POST);
                 dispatcher.handle(request, response);
                 response.getCookieSettings().remove(EXTERNAL_SERVER_COOKIE);
-
             } else {
                 response.setEntity(new JsonRepresentation(obj));
             }
         }
     }
 
+    @Override
+    protected int doHandle(Request request, Response response) {
+        Cookie c = request.getCookies().getFirst(UserCookieID);
+        if (c == null) {
+            String key = generate(40);
+            CookieSetting cs = new CookieSetting(UserCookieID, key);
+            response.getCookieSettings().add(cs);
+            userCache.put(key, "");
+        }
+        return super.doHandle(request, response);
+    }
+
+    /**
+     * Generates a random token having the specified length.
+     * 
+     * @param len
+     *            The length of the random token.
+     * @return The random token.
+     */
     private String generate(int len) {
         // if( count++ > tokens ) {
         // count = 0;
@@ -187,6 +217,26 @@ public class CallbackCacheFilter extends Filter implements CacheLookup {
         return toHex(token);
     }
 
+    public boolean handleCached(Request request, Response response) {
+        Cookie c = request.getCookies().getFirst(UserCookieID);
+        if (c != null) { // might be in cache
+            String key = c.getValue();
+            if (key != null && key.length() > 0 && userCache.containsKey(key)) {
+                createResponse(userCache.get(key), request, response);
+                clearCookies(response);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Converts the given array of bytes to its hexadecimal representation.
+     * 
+     * @param input
+     *            The given array of bytes.
+     * @return The converter value as a string of characters.
+     */
     private String toHex(byte[] input) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < input.length; i++) {
@@ -197,21 +247,6 @@ public class CallbackCacheFilter extends Filter implements CacheLookup {
             sb.append(d);
         }
         return sb.toString();
-    }
-
-    private void clearCookies(Response response) {
-        // Remove if someone before has set them
-        response.getCookieSettings().removeAll("callback");
-        response.getCookieSettings().removeAll("auth-callback");
-
-        // Set a cookie that expires right away
-        CookieSetting clear = new CookieSetting("callback", "");
-        clear.setMaxAge(0);
-        response.getCookieSettings().add(clear);
-        CookieSetting clear2 = new CookieSetting("auth-callback", "");
-        clear2.setMaxAge(0);
-        response.getCookieSettings().add(clear2);
-
     }
 
 }

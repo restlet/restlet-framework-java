@@ -156,7 +156,7 @@ public class Priority {
     /**
      * Sets the priority value.
      * 
-     * @param priority
+     * @param value
      *            The priority value.
      */
     public void setValue(String value) {

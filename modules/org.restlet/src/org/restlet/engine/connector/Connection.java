@@ -538,7 +538,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * Callback method invoked when the connection has been selected for IO
      * operations it registered interest in. By default it updates the timestamp
      * that allows the detection of expired connections and calls
-     * {@link Way#onSelected(SelectionRegistration)} on the inbound or outbound
+     * {@link SelectionRegistration#onSelected(int)} on the inbound or outbound
      * way.
      */
     public void onSelected() {
@@ -611,7 +611,7 @@ public class Connection<T extends Connector> implements SelectionListener {
                             + "\" due to lack of activity during "
                             + getHelper().getMaxIoIdleTimeMs() + " ms");
         }
-        
+
         getInboundWay().onTimeOut();
         getOutboundWay().onTimeOut();
         close(false);

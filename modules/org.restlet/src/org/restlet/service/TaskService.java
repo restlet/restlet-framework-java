@@ -65,8 +65,8 @@ import org.restlet.routing.VirtualHost;
  * Also, note that this executor service will be shared among all Restlets and
  * Resources that are part of your context. In general this context corresponds
  * to a parent Application's context. If you want to have your own service
- * instance, you can use the {@link #wrap(ExecutorService)} method to ensure
- * that thread local variables are correctly set.
+ * instance, you can use the {@link TaskService#wrap(ScheduledExecutorService)}
+ * method to ensure that thread local variables are correctly set.
  * 
  * @author Jerome Louvel
  * @author Doug Lea (docs of ExecutorService in public domain)
@@ -75,7 +75,7 @@ import org.restlet.routing.VirtualHost;
 public class TaskService extends Service implements ScheduledExecutorService {
 
     /**
-     * The default thread factory
+     * The default thread factory.
      * 
      * @author Jerome Louvel
      * @author Tim Peierls

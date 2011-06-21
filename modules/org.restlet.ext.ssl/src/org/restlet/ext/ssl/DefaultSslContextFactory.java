@@ -34,6 +34,8 @@ import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 
+import javax.net.ssl.SSLContext;
+
 import org.restlet.data.Parameter;
 import org.restlet.ext.ssl.internal.DefaultSslContext;
 import org.restlet.util.Series;
@@ -146,8 +148,8 @@ import org.restlet.util.Series;
  * </p>
  * 
  * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
- * @see SSLContext
- * @see KeyStore
+ * @see javax.net.ssl.SSLContext
+ * @see java.security.KeyStore
  */
 public class DefaultSslContextFactory extends SslContextFactory {
 
