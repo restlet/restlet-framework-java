@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.1 Milestone 5 (06/21/2011)
     - API changes
       - Moved SslContextFactory and DefaultSslContextFactory classes from 
         internal to public org.restlet.ext.ssl package.
