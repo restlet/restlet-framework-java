@@ -1,0 +1,12 @@
+<module id="rome" type="integration" excludes="android,gwt" package="org.restlet.ext.rome">
+   <name>Restlet Extension - ROME</name>
+   <description>
+      Support for syndicated representations via the ROME library.
+	</description>
+
+   <dependencies>
+      <dependency type="library" id="rome" primary="true" />
+      <dependency type="library" id="jdom" />
+      <dependency type="module" id="core" />
+   </dependencies>
+</module>

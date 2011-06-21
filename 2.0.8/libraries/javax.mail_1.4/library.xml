@@ -1,0 +1,21 @@
+<library id="javamail">
+	<package id="javamail" name="javax.mail">
+		<maven>
+			<artifactId>mail</artifactId>
+		</maven>
+	</package>
+	<version>1.4</version>
+	<release>2</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://java.sun.com/products/javamail/
+	</homeUri>
+	<downloadUri>
+		http://java.sun.com/products/javamail/downloads/index.html
+	</downloadUri>
+	<javadocs>
+		<link href="http://java.sun.com/products/javamail/javadocs/" />
+	</javadocs>
+</library>

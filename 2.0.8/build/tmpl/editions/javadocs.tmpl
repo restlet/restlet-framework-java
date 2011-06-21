@@ -1,0 +1,109 @@
+JAVADOC target -->
+<#noparse>
+		<delete includeEmptyDirs="true" verbose="false" quiet="true">
+			<fileset dir="${docs-api}" excludes="**/.svn" />
+			<fileset dir="${docs-engine}" excludes="**/.svn" />
+			<fileset dir="${docs-ext}" excludes="**/.svn" />
+		</delete>
+
+		<javadoc sourcepathref="core-source-path"
+                 packagenames="</#noparse>${edition.packageCore}.*<#noparse>"
+                 excludepackagenames="${exclude-packages}, </#noparse>${edition.packageEngine}.*<#noparse>"
+                 destdir="${docs-api}"
+                 classpathref="path-all"
+                 author="true"
+                 version="true"
+                 use="true"
+                 windowtitle="Restlet API ${version-full} - ${edition-short-label}"
+                 doctitle="Restlet API ${version-full} - ${edition-medium-label}"
+                 overview="${temp}/javadocs/overview-api.html"
+                 stylesheetfile="${tmpl}/javadocs/stylesheet.css"
+                 verbose="${verbose}">
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+			</bottom>
+
+			<group title="Restlet API">
+				<package name="</#noparse>${edition.packageCore}*<#noparse>" />
+			</group>
+</#noparse>
+<#list edition.javadocsLinks as link>
+			${link}
+</#list>
+<#noparse>
+		</javadoc>
+
+		<javadoc sourcepathref="core-source-path"
+		         packagenames="</#noparse>${edition.packageEngine}.*<#noparse>"
+                 excludepackagenames="${exclude-packages}"
+                 destdir="${docs-engine}"
+                 classpathref="path-all"
+                 author="true"
+                 version="true"
+                 use="true"
+                 windowtitle="Restlet Engine ${version-full} - ${edition-short-label}"
+                 doctitle="Restlet Engine ${version-full} - ${edition-medium-label}"
+                 overview="${temp}/javadocs/overview-engine.html"
+                 stylesheetfile="${tmpl}/javadocs/stylesheet.css"
+                 verbose="${verbose}">
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+			</bottom>
+
+			<group title="Restlet Engine">
+				<package name="</#noparse>${edition.packageEngine}*<#noparse>" />
+			</group>
+</#noparse>
+<#list edition.javadocsLinks as link>
+			${link}
+</#list>
+<#noparse>
+		    <link href="http://www.restlet.org/documentation/${version-minor}/${edition.id}/api/" packagelistLoc="${docs-api}" offline="true" />
+		</javadoc>
+</#noparse>
+
+<#list edition.modules?sort_by("id") as module>
+<#if ((module.type!"") = "connector") || ((module.type!"") = "integration") || ((module.type!"") = "standard")>
+      <#assign extension>true</#assign>
+</#if>
+</#list>
+
+<#if extension??>
+<#noparse>
+		<javadoc sourcepathref="extensions-source-path"
+                 packagenames="</#noparse>${edition.packageExtension}.*<#noparse>"
+                 excludepackagenames="${exclude-packages}"
+                 destdir="${docs-ext}"
+                 classpathref="path-all"
+                 author="true"
+                 version="true"
+                 use="true"
+                 windowtitle="Restlet Extensions ${version-full} - ${edition-short-label}"
+                 doctitle="Restlet Extensions ${version-full} - ${edition-medium-label}"
+                 overview="${temp}/javadocs/overview-ext.html"
+                 stylesheetfile="${tmpl}/javadocs/stylesheet.css"
+                 verbose="${verbose}">
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+			</bottom>
+</#noparse>
+			<group title="Standards support" packages="<#list edition.modules?sort_by("id") as module><#if ((module.type!"") = "standard")>${module.package?replace("org.restlet.ext",edition.packageExtension)}*:</#if></#list>" />
+			<group title="Pluggable connectors" packages="<#list edition.modules?sort_by("id") as module><#if ((module.type!"") = "connector")>${module.package?replace("org.restlet.ext",edition.packageExtension)}*:</#if></#list>" />
+			<group title="Third-party integrations" packages="<#list edition.modules?sort_by("id") as module><#if ((module.type!"") = "integration")>${module.package?replace("org.restlet.ext",edition.packageExtension)}*:</#if></#list>" />
+<#list edition.javadocsLinks as link>
+			${link}
+</#list>
+<#list edition.modules?sort_by("id") as module>
+   <#list module.neededLibraries as library>
+      <#list library.library.javadocsLinks as link>
+			${link}
+      </#list>
+   </#list>
+</#list>
+<#noparse>
+		    <link href="http://www.restlet.org/documentation/${version-minor}/${edition.id}/api/" packagelistLoc="${docs-api}" offline="true" />
+		    <link href="http://www.restlet.org/documentation/${version-minor}/${edition.id}/engine/" packagelistLoc="${docs-engine}" offline="true" />
+		</javadoc>
+</#noparse>
+</#if>
+<!--

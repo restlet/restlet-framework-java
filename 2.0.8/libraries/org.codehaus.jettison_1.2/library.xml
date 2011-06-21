@@ -1,0 +1,17 @@
+<library id="jettison">
+	<package name="org.codehaus.jettison">
+		<maven>
+			<artifactId>jettison</artifactId>
+		</maven>
+	</package>
+	<version>1.2</version>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://jettison.codehaus.org/
+	</homeUri>
+	<downloadUri>
+		http://jettison.codehaus.org/Download
+	</downloadUri>
+</library>
