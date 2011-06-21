@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.0.8 (2011-06-21)
     - Bugs fixed
        - AbstractJaxbProvider, JaxbRepresentation and JibxRepresentation 
          used TreeMap which required Comparable implementation and isn't
@@ -16,7 +16,6 @@ Changes log
        - Fixed potential NPE in FreeMarker ContextTemplateLoader.
        - The Content-Disposition header was never retrieved using external 
          server connectors.
-    - Misc
 
 - 2.0.7 (2011-04-27)
     - Bugs fixed
