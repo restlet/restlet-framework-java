@@ -9,6 +9,7 @@
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
+        <dependency type="library" id="httpclient" />
 	<homeUri>
 		http://code.google.com/p/openid4java/
 	</homeUri>
