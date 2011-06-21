@@ -1,0 +1,70 @@
+<!-- see http://blogs.bytecode.com.au/glen/ -->
+
+<html>    
+	<head>
+    <title>Restlet JS Tests - XML representation</title> 
+    
+
+<link rel="stylesheet" href="../lib/qunit/qunit.css" type="text/css" media="screen">
+<script type="text/javascript" src="../lib/qunit/qunit.js"></script> 
+<script type="text/javascript" src="../lib/jsclass/core.js"></script> 
+<script type="text/javascript" src="../lib/jsclass/console.js"></script> 
+<script type="text/javascript" src="../lib/jsonparser/json-minified.js"></script> 
+<script type="text/javascript" src="../restlet-common.js"></script> 
+<script type="text/javascript" src="../restlet-client.js"></script> 
+
+<script type="text/javascript"> 
+module("XML representation tests");
+
+test("XmlRepresentation - Object to XML text (1)", function() {
+  var contact = {
+    id: "1",
+    lastName: "last name",
+    firstName: "first name",
+  }
+  var representation = new XmlRepresentation(contact, "contact");
+  ok(representation.getText(), "<contact><id>1</id><lastName>last name</lastName><firstName>first name</firstName></contact>");
+});
+
+test("XmlRepresentation - Object to XML text (2)", function() {
+  var contact = {
+    id: "1",
+    names: {
+      lastName: "last name",
+      firstName: "first name",
+    }
+  }
+  var representation = new XmlRepresentation(contact, "contact");
+  ok(representation.getText(), "<contact><id>1</id><names><lastName>last name</lastName><firstName>first name</firstName></names></contact>");
+});
+
+test("XmlRepresentation - XML text to object (1)", function() {
+  var xmlString = "<contact><id>1</id><lastName>last name</lastName><firstName>first name</firstName></contact>";
+  var representation = new XmlRepresentation(xmlString);
+  var obj = representation.getObject();
+  ok(obj.id, "1");
+  ok(obj.lastName, "last name");
+  ok(obj.firstName, "first name");
+});
+
+test("XmlRepresentation - XML text to object (2)", function() {
+  var xmlString = "<contact><id>1</id><names><lastName>last name</lastName><firstName>first name</firstName></names></contact>";
+  var representation = new XmlRepresentation(xmlString);
+  var obj = representation.getObject();
+  ok(obj.id, "1");
+  ok(obj.names.lastName, "last name");
+  ok(obj.names.firstName, "first name");
+});
+</script> 
+ </head>
+ 
+ <body>
+<!-- QUnit will fill in the contents of these elements for you (except for qunit-header) --> 
+ 
+    <h1 id="qunit-header">Basic QUnit Demo</h1>
+    <h2 id="qunit-banner"></h2>
+    <div id="qunit-testrunner-toolbar"></div>
+    <h2 id="qunit-userAgent"></h2>
+    <ol id="qunit-tests"></ol>
+    <div id="qunit-fixture">test markup</div>
+</body></html>

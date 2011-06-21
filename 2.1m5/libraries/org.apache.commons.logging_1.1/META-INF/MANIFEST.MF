@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Apache Commons Logging
+Bundle-SymbolicName: org.apache.commons.logging
+Bundle-Version: 1.1
+Bundle-ClassPath: org.apache.commons.logging.jar
+Bundle-Vendor: Apache Software Foundation
+Export-Package: org.apache.commons.logging,
+ org.apache.commons.logging.impl;uses:="org.apache.commons.logging"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

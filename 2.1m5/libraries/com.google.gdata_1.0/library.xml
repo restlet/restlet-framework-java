@@ -1,0 +1,25 @@
+<library id="gdata" dir="com.google.gdata">
+	<name>Google GData</name>
+	<description>Google GData.</description>
+	<package id="gdata" name="com.google.gdata">
+		<maven>
+			<groupId>com.google.gdata</groupId>
+		</maven>
+	</package>
+	<package id="gdata-client" name="com.google.gdata.client">
+		<maven>
+			<groupId>com.google.gdata</groupId>
+		</maven>
+	</package>
+	<version>1.0</version>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+	<homeUri>
+		http://code.google.com/apis/gdata/
+	</homeUri>
+	<downloadUri>
+		http://code.google.com/apis/gdata/docs/client-libraries.html
+	</downloadUri>
+</library>

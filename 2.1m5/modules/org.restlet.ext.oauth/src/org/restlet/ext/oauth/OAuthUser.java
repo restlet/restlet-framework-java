@@ -1,0 +1,218 @@
+/**
+ * Copyright 2005-2011 Noelios Technologies.
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
+ * "Licenses"). You can select the license that you prefer but you may not use
+ * this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0.html
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1.php
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1.php
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0.php
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
+ */
+
+package org.restlet.ext.oauth;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.restlet.Context;
+import org.restlet.representation.Representation;
+import org.restlet.security.User;
+
+/**
+ * Used for storing the OAuth access token in the OAuth security framework.
+ * 
+ * @author Kristoffer Gronowski
+ */
+public class OAuthUser extends User {
+    /**
+     * Converts successful JSON token body responses to OAuthUser.
+     * 
+     * @param body
+     *            Representation containing a successful JSON body element.
+     * @return OAuthUser object containing accessToken, refreshToken and
+     *         expiration time.
+     */
+    public static OAuthUser createJson(Representation body) {
+        Logger log = Context.getCurrentLogger();
+        try {
+            // Debug test for tracing back error
+            JSONObject answer = new JSONObject(body.getText());
+
+            log.info("Got answer on JSON = " + answer.toString());
+
+            String accessToken = null;
+            if (answer.has(OAuthServerResource.ACCESS_TOKEN)) {
+                accessToken = answer
+                        .getString(OAuthServerResource.ACCESS_TOKEN);
+                log.info("AccessToken = " + accessToken);
+            }
+
+            String refreshToken = null;
+            if (answer.has(OAuthServerResource.REFRESH_TOKEN)) {
+                refreshToken = answer
+                        .getString(OAuthServerResource.REFRESH_TOKEN);
+                log.info("RefreshToken = " + refreshToken);
+            }
+
+            long expiresIn = 0;
+            if (answer.has(OAuthServerResource.EXPIRES_IN)) {
+                expiresIn = answer.getLong(OAuthServerResource.EXPIRES_IN);
+                log.info("ExpiresIn = " + expiresIn);
+            }
+
+            // Store away the user
+            return new OAuthUser(null, accessToken, refreshToken, expiresIn);
+
+        } catch (JSONException e) {
+            log.log(Level.WARNING, "Error parsing JSON", e);
+        } catch (IOException e) {
+            log.log(Level.WARNING, "Error creating representation JSON", e);
+        }
+        return null;
+    }
+
+    // TODO: This should eventually be removed...
+    /**
+     * Retrieves the access token from the user if and only if the user is of
+     * type {@link OAuthUser}.
+     * 
+     * @param user
+     *            The user.
+     * @return The access token.
+     * @see org.restlet.ext.oauth.OAuthUser
+     */
+    @Deprecated
+    public static String getToken(User user) {
+        String token = null;
+        if (user != null) {
+            if (user instanceof OAuthUser) {
+                OAuthUser ou = (OAuthUser) user;
+                token = ou.getAccessToken();
+            } else { // Token is stored in secret field
+                token = new String(user.getSecret());
+            }
+        }
+        return token;
+    }
+
+    /** The access token. */
+    private final String accessToken;
+
+    /** The validity delay of the authentication. */
+    private final long expiresIn;
+
+    /** The refresh token. */
+    private final String refreshToken;
+
+    /** The current state. */
+    private volatile String state;
+
+    /**
+     * Constructor used for unlimited tokens.
+     * 
+     * @param user
+     *            The user identifier.
+     * @param accessToken
+     *            The access token.
+     */
+    public OAuthUser(String user, String accessToken) {
+        this(user, accessToken, null, 0);
+    }
+
+    /**
+     * Constructor used for tokens with a expiration time.
+     * 
+     * @param user
+     *            The user identifier.
+     * @param accessToken
+     *            The access token.
+     * @param refreshToken
+     *            The refresh token.
+     * @param expiresIn
+     *            The expiration time.
+     */
+    public OAuthUser(String user, String accessToken, String refreshToken,
+            long expiresIn) {
+        super(user, accessToken);
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.expiresIn = expiresIn;
+    }
+
+    /**
+     * Returns the access token.
+     * 
+     * @return The access token.
+     */
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    /**
+     * The expiration delay.
+     * 
+     * @return The expiration delay.
+     */
+    public long getExpiresIn() {
+        return expiresIn;
+    }
+
+    /**
+     * Returns the refresh token.
+     * 
+     * @return The refresh token.
+     */
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    /**
+     * Returns the current state.
+     * 
+     * @return The current state.
+     */
+    public String getState() {
+        return state;
+    }
+
+    /**
+     * Indicates if the current user has a refresh token, or not.
+     * 
+     * @return True if there is a refresh token.
+     */
+    public boolean isExpireToken() {
+        return refreshToken != null;
+    }
+
+    /**
+     * Sets the current state.
+     * 
+     * @param state
+     *            The current state.
+     */
+    public void setState(String state) {
+        this.state = state;
+    }
+}

@@ -1,0 +1,15 @@
+<library id="slf4j">
+	<package name="org.slf4j">
+		<maven>
+			<artifactId>slf4j-api</artifactId>
+		</maven>
+	</package>
+	<version>1.5</version>
+    <release>8</release>
+	<homeUri>
+		http://www.slf4j.org/
+	</homeUri>
+	<downloadUri>
+		http://www.slf4j.org/download.html
+	</downloadUri>
+</library>

@@ -1,0 +1,16 @@
+<module id="openid" excludes="android,gwt" type="standard" package="org.restlet.ext.openid">
+	<name>Restlet Extension - OpenID</name>
+	<description>
+		Support for OpenID authentication.
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+	<dependencies>
+		<dependency type="library" id="openid4java" />
+		<dependency type="module" id="core" />
+		<dependency type="module" id="xml" />
+		<dependency type="module" id="json" />
+	</dependencies>
+</module>

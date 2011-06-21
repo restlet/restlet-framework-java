@@ -1,0 +1,15 @@
+<library id="rome">
+	<package name="com.sun.syndication">
+		<maven>
+			<groupId>rome</groupId>
+			<artifactId>rome</artifactId>
+		</maven>
+	</package>
+	<version>1.0</version>
+	<homeUri>
+		http://java.net/projects/rome/
+	</homeUri>
+	<downloadUri>
+		http://java.net/projects/rome/downloads
+	</downloadUri>
+</library>

@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Openid for Java
+Bundle-SymbolicName: org.openid4java
+Bundle-Version: 0.9.5
+Bundle-ClassPath: org.openid4java.jar
+Bundle-Vendor: openid4java
+Export-Package: org.openid4java,
+ org.openid4java.association,
+ org.openid4java.consumer,
+ org.openid4java.discovery,
+ org.openid4java.discovery.html,
+ org.openid4java.discovery.xrds,
+ org.openid4java.discovery.xri,
+ org.openid4java.discovery.yadis,
+ org.openid4java.infocard,
+ org.openid4java.infocard.rp,
+ org.openid4java.infocard.sts,
+ org.openid4java.message,
+ org.openid4java.message.ax,
+ org.openid4java.message.pape,
+ org.openid4java.message.sreg,
+ org.openid4java.server,
+ org.openid4java.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

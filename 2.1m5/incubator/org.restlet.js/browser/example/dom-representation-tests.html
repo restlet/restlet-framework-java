@@ -1,0 +1,132 @@
+<html>    
+	<head>
+    <title>Restlet JS Tests - DOM representation</title> 
+    
+
+<link rel="stylesheet" href="../lib/qunit/qunit.css" type="text/css" media="screen">
+<script type="text/javascript" src="../lib/qunit/qunit.js"></script> 
+<script type="text/javascript" src="../lib/jsclass/core.js"></script> 
+<script type="text/javascript" src="../lib/jsclass/console.js"></script> 
+<script type="text/javascript" src="../lib/jsonparser/json-minified.js"></script> 
+<script type="text/javascript" src="../restlet-common.js"></script> 
+<script type="text/javascript" src="../restlet-client.js"></script> 
+
+<script type="text/javascript"> 
+function createNewDocument(namespaceURL, rootTagName) {
+  if (document.implementation && document.implementation.createDocument) { 
+    return document.implementation.createDocument(namespaceURL, rootTagName, null); 
+  } else { // This is the IE way to do it 
+	// Create an empty document as an ActiveX object 
+    // If there is no root element, this is all we have to do 
+	var doc = new ActiveXObject("MSXML2.DOMDocument"); 
+	// If there is a root tag, initialize the document 
+    if (rootTagName) { 
+      // Look for a namespace prefix 
+      var prefix = ""; 
+      var tagname = rootTagName; 
+      var p = rootTagName.indexOf(':'); 
+      if (p != -1) { 
+        prefix = rootTagName.substring(0, p); 
+        tagname = rootTagName.substring(p+1); 
+      }
+      // If we have a namespace, we must have a namespace prefix 
+      // If we don't have a namespace, we discard any prefix 
+      if (namespaceURL) { 
+        if (!prefix) prefix = "a0"; // What Firefox uses 
+      } else prefix = ""; 
+      // Create the root element (with optional namespace) as a 
+      // string of text 
+      var text = "<" + (prefix?(prefix+":"):"") +  tagname + 
+             (namespaceURL 
+             ?(" xmlns:" + prefix + '="' + namespaceURL +'"') 
+             :"") + 
+             "/>"; 
+      // And parse that text into the empty document 
+      doc.loadXML(text); 
+    }
+    return doc; 
+  } 
+}
+
+module("DOM representation tests");
+
+test("JsonRepresentation - DOM to text", function() {
+  var document = createNewDocument("", "contact");
+  var contactElement = document.childNodes[0];
+  //id
+  var idElement = document.createElement("id");
+  var idTextElement = document.createTextNode("1");
+  idElement.appendChild(idTextElement);
+  contactElement.appendChild(idElement);
+  //lastName
+  var lastNameElement = document.createElement("lastName");
+  var lastNameTextElement = document.createTextNode("1");
+  lastNameElement.appendChild(lastNameTextElement);
+  contactElement.appendChild(lastNameElement);
+  //firstName
+  var firstNameElement = document.createElement("id");
+  var firstNameTextElement = document.createTextNode("1");
+  firstNameElement.appendChild(firstNameTextElement);
+  contactElement.appendChild(firstNameElement);
+
+  var representation = new DomRepresentation(document);
+  ok(representation.getText(), "<contact><id>1</id><lastName>last name</lastName><firstName>first name</firstName></contact>");
+});
+
+test("JsonRepresentation - Text to DOM", function() {
+  var xmlString = "<contact><id>1</id><lastName>last name</lastName><firstName>first name</firstName></contact>";
+
+  var representation = new DomRepresentation(xmlString);
+  var xml = representation.getXml();
+  var contactElement = xml.childNodes[0];
+  var idElement = contactElement.childNodes[0];
+  ok(idElement.childNodes[0], "1");
+  var lastNameElement = contactElement.childNodes[1];
+  ok(lastNameElement.childNodes[0], "last name");
+  var firstNameElement = contactElement.childNodes[2];
+  ok(firstNameElement.childNodes[0], "first name");
+});
+
+test("JsonRepresentation - DOM to DOM", function() {
+  var document = createNewDocument("", "contact");
+  var contactElement = document.childNodes[0];
+  //id
+  var idElement = document.createElement("id");
+  var idTextElement = document.createTextNode("1");
+  idElement.appendChild(idTextElement);
+  contactElement.appendChild(idElement);
+  //lastName
+  var lastNameElement = document.createElement("lastName");
+  var lastNameTextElement = document.createTextNode("1");
+  lastNameElement.appendChild(lastNameTextElement);
+  contactElement.appendChild(lastNameElement);
+  //firstName
+  var firstNameElement = document.createElement("id");
+  var firstNameTextElement = document.createTextNode("1");
+  firstNameElement.appendChild(firstNameTextElement);
+  contactElement.appendChild(firstNameElement);
+
+  var representation = new DomRepresentation(document);
+  var xml = representation.getXml();
+  var contactElement = xml.childNodes[0];
+  var idElement = contactElement.childNodes[0];
+  ok(idElement.childNodes[0], "1");
+  var lastNameElement = contactElement.childNodes[1];
+  ok(lastNameElement.childNodes[0], "last name");
+  var firstNameElement = contactElement.childNodes[2];
+  ok(firstNameElement.childNodes[0], "first name");
+});
+
+</script> 
+ </head>
+ 
+ <body>
+<!-- QUnit will fill in the contents of these elements for you (except for qunit-header) --> 
+ 
+    <h1 id="qunit-header">Basic QUnit Demo</h1>
+    <h2 id="qunit-banner"></h2>
+    <div id="qunit-testrunner-toolbar"></div>
+    <h2 id="qunit-userAgent"></h2>
+    <ol id="qunit-tests"></ol>
+    <div id="qunit-fixture">test markup</div>
+</body></html>

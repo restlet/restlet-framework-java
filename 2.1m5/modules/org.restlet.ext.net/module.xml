@@ -1,0 +1,41 @@
+<module id="net" includes="android, gae, jee, jse" type="connector" package="org.restlet.ext.net">
+   <name>Restlet Extension - Net</name>
+   <description>
+      Integration with java.net.HttpURLConnection class.
+	</description>
+   <distributions>
+      <distribution id="classic" />
+      <distribution id="maven" />
+   </distributions>
+
+   <dependencies>
+      <dependency type="module" id="core" />
+      <dependency type="module" id="ssl" excludes="gae" />
+   </dependencies>
+   <source edition="android">
+      <files-mappers>
+<![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".android" to="" />
+]]>
+      </files-mappers>
+      <files-sets>
+<![CDATA[
+         <exclude name="src/META-INF/services/org.restlet.engine.ClientHelper" />
+         <exclude name="src/org/restlet/ext/net/FtpClientHelper.java" />
+]]>
+      </files-sets>
+   </source>
+   <source edition="gae">
+      <files-mappers>
+<![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".gae" to="" />
+]]>
+      </files-mappers>
+      <files-sets>
+<![CDATA[
+         <exclude name="src/META-INF/services/org.restlet.engine.ClientHelper" />
+         <exclude name="src/org/restlet/ext/net/FtpClientHelper.java" />
+]]>
+      </files-sets>
+   </source>
+</module>

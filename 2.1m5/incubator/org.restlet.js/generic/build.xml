@@ -1,0 +1,45 @@
+<project name="RestletJS" basedir=".">
+
+	<property name="browser.dir" value="." />
+	<property name="nodejs.client.dir" value="." />
+	<property name="target.browser.client.dir" value="${basedir}/target/browser" />
+	<property name="target.nodejs.client.dir" value="${basedir}/target/node.js/client" />
+	
+	<path id="forge-path">
+		<fileset dir="${basedir}/forge" includes="**/*.jar" />
+	</path>
+
+	<target name="generate-nodejs-client" description="Generate the client sources for node.js.">
+		<mkdir dir="${target.nodejs.client.dir}"/>
+		<copy todir="${target.nodejs.client.dir}" overwrite="true" includeEmptyDirs="false">
+			<fileset dir="${basedir}/" excludes="forge/**">
+				<custom classname="selector.EditionFileSelector" classpathref="forge-path">
+					<param name="edition" value="nodejs"/>
+				</custom>
+	        	<include name="**/*.js" />
+			</fileset>
+			<filterchain>
+				<filterreader classname="filter.EditionFilterReader" classpathref="forge-path">
+					<param name="edition" value="nodejs" />
+				</filterreader>
+			</filterchain>
+	      </copy>
+	</target>
+
+	<target name="generate-browser" description="Generate the client sources for browser.">
+		<mkdir dir="${target.browser.client.dir}"/>
+		<copy todir="${target.browser.client.dir}" overwrite="true" includeEmptyDirs="false">
+			<fileset dir="${basedir}/" excludes="forge/**">
+				<custom classname="selector.EditionFileSelector" classpathref="forge-path">
+					<param name="edition" value="browser"/>
+				</custom>
+	        	<include name="**/*.js" />
+			</fileset>
+			<filterchain>
+				<filterreader classname="filter.EditionFilterReader" classpathref="forge-path">
+					<param name="edition" value="browser" />
+				</filterreader>
+			</filterchain>
+	      </copy>
+	</target>
+</project>

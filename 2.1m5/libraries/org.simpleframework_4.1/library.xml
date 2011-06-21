@@ -1,0 +1,23 @@
+<library id="simple">
+	<package name="org.simpleframework">
+		<maven>
+			<artifactId>simple</artifactId>
+		</maven>
+	</package>
+	<name>Simple framework</name>
+	<description>Simple framework.</description>
+	<version>4.1</version>
+	<release>21</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://simpleweb.sourceforge.net/
+	</homeUri>
+	<downloadUri>
+		http://www.simpleframework.org/download/
+	</downloadUri>
+	<javadocs>
+		<link href="http://www.simpleframework.org/doc/javadoc/" />
+	</javadocs>
+</library>

@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Velocity Template Engine
+Bundle-SymbolicName: org.apache.velocity
+Bundle-Version: 1.6
+Bundle-ClassPath: org.apache.velocity.jar
+Bundle-Vendor: Apache Software Foundation
+Export-Package: org.apache.velocity,
+ org.apache.velocity.anakia,
+ org.apache.velocity.app,
+ org.apache.velocity.app.event,
+ org.apache.velocity.app.event.implement,
+ org.apache.velocity.app.tools,
+ org.apache.velocity.context,
+ org.apache.velocity.convert,
+ org.apache.velocity.exception,
+ org.apache.velocity.io,
+ org.apache.velocity.runtime,
+ org.apache.velocity.runtime.directive,
+ org.apache.velocity.runtime.log,
+ org.apache.velocity.runtime.parser,
+ org.apache.velocity.runtime.parser.node,
+ org.apache.velocity.runtime.resource,
+ org.apache.velocity.runtime.resource.loader,
+ org.apache.velocity.runtime.resource.util,
+ org.apache.velocity.runtime.visitor,
+ org.apache.velocity.servlet,
+ org.apache.velocity.texen,
+ org.apache.velocity.texen.ant,
+ org.apache.velocity.texen.util,
+ org.apache.velocity.util,
+ org.apache.velocity.util.introspection
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
