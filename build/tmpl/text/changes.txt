@@ -13,7 +13,12 @@ Changes log
       - Added Response#isFinal() and isProvisional() methods, based on
         Status#isInformational().
       - Added MediaType.MESSAGE_HTTP constant.        
+      - Added org.restlet.data.Modifier class, extending Metadata to specify 
+        expected or supported media subtype parameters.
     - Enhancements
+      - Added OAuth 2.0 and OpenID 2.0 extensions that have been maturing
+        in the incubator for a while after a contribution by Ericsson Labs.
+        Contributed by Kristoffer Gronowski and Martin Svensson.
       - Updated and consolidated the SSL/HTTPS configuration parameters
         for all HTTPS connectors.
       - Added a warning message to indicate that an application without a 
@@ -43,10 +48,6 @@ Changes log
         after sending an entity.
      - Misc
       - Updated Jetty to version 7.4.2.
-      - Added awaitility and hamcrest libraries required by the oauth 
-        extension.
-      - Added the oauth and openid extensions.
-        Contributed by Kristoffer Gronowski and Martin Svensson.
 
 - 2.1 Milestone 4 (04/27/2011)
     - API changes

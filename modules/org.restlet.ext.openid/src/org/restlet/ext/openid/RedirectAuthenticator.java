@@ -34,7 +34,6 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.data.Form;
 import org.restlet.data.Status;
 import org.restlet.security.Authenticator;
 import org.restlet.security.User;
@@ -148,7 +147,7 @@ public class RedirectAuthenticator extends Authenticator {
 
     @Override
     protected boolean authenticate(Request request, Response response) {
-        Form f = request.getResourceRef().getQueryAsForm();
+        // Form f = request.getResourceRef().getQueryAsForm();
         User u = request.getClientInfo().getUser();
         String identifier = request.getCookies()
                 .getFirstValue(identifierCookie);

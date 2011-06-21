@@ -240,7 +240,8 @@ import org.restlet.routing.VirtualHost;
  * computed offset path used to attach applications when (and only when) the
  * auto-wiring feature is set, is added to the component's context.
  * 
- * @see <a href="http://www.oracle.com/technetwork/java/javaee/">J2EE home page</a>
+ * @see <a href="http://www.oracle.com/technetwork/java/javaee/">J2EE home
+ *      page</a>
  * @author Jerome Louvel
  */
 public class ServerServlet extends HttpServlet {
@@ -1004,6 +1005,7 @@ public class ServerServlet extends HttpServlet {
             // Copy all the Servlet container initialization parameters
             String initParam;
             javax.servlet.ServletConfig servletConfig = getServletConfig();
+
             for (Enumeration<String> enum1 = servletConfig
                     .getInitParameterNames(); enum1.hasMoreElements();) {
                 initParam = enum1.nextElement();
