@@ -112,7 +112,7 @@ import org.restlet.util.Series;
 public class OAuthHelper extends AuthenticatorHelper {
 
     public static String getAuthPage(Context c) {
-        return c.getParameters().getFirstValue("authPage", "auth_page");
+        return c.getParameters().getFirstValue("authPage", "/auth_page");
     }
 
     public static void setAuthPage(String authPage, Context c) {
@@ -137,14 +137,6 @@ public class OAuthHelper extends AuthenticatorHelper {
 
     public static void setAuthSkipApproved(boolean skip, Context c) {
         c.getParameters().set("authSkipApproved", Boolean.toString(skip));
-    }
-
-    public static String getLoginPage(Context c) {
-        return c.getParameters().getFirstValue("loginPage", "login");
-    }
-
-    public static void setLoginPage(String loginPage, Context c) {
-        c.getParameters().set("loginPage", loginPage);
     }
 
     public OAuthHelper() {

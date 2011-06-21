@@ -32,10 +32,8 @@ package org.restlet.ext.oauth.internal;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 
-import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -248,61 +246,8 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
                 return;
             }
         } else { // need to login
-            getLogger().info("Base ref = " + getReference().getParentRef());
-            // TODO: REMOVE HARD CODED VALUE
-            Reference ref = new Reference("riap://application/"
-                    + OAuthHelper.getLoginPage(getContext()));
-
-            getLogger().info("OAuth2 session = " + session);
-
-            if (session == null) {
-                session = new AuthSession(getContext().getAttributes(),
-                        new ScheduledThreadPoolExecutor(5));
-                CookieSetting cs = new CookieSetting(ClientCookieID,
-                        session.getId());
-                // TODO create a secure mode setting, update all cookies
-                // cs.setAccessRestricted(true);
-                // cs.setSecure(true);
-                getCookieSettings().add(cs);
-                getLogger().info("Setting cookie - " + session.getId());
-            }
-
-            session.setClient(client);
-            session.setAuthFlow(flow);
-
-            if (!redirUri.equals(client.getRedirectUri())) {
-                session.setDynamicCallbackURI(redirUri);
-                getLogger().info("OAuth2 set dynamic callback = " + redirUri);
-            }
-
-            // Save away the state
-            String state = getCookies().getFirstValue(STATE);
-            if (state != null && state.length() > 0)
-                session.setState(state);
-
-            // Get scope and scope owner
-            String[] scopes = parseScope(params.getFirstValue(SCOPE));
-            session.setRequestedScope(scopes);
-
-            // String owner = params.getFirstValue(OWNER);
-            // if( owner != null && owner.length() > 0) {
-            // session.setScopeOwner(owner);
-            // }
-
-            getLogger().info(
-                    "Setting callback url after Authentication = "
-                            + getReference().getBaseRef());
-            Reference cb = new Reference(getReference().getBaseRef());
-            cb.addQueryParameter("internal", null); // set the internal flag
-                                                    // optimization
-            // Append the callback to the request URL to be picked up by the
-            // CallbackFilter
-            ref.addQueryParameter("callback", cb.toString(true, false));
-            getResponse().setCacheDirectives(noStore);
-
-            Redirector dispatcher = new Redirector(getContext(),
-                    ref.toString(), Redirector.MODE_SERVER_OUTBOUND);
-            dispatcher.handle(getRequest(), getResponse());
+            // TODO maybe an error message too?
+            setStatus(Status.CLIENT_ERROR_FORBIDDEN);
         }
     }
 

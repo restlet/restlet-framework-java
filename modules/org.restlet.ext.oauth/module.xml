@@ -18,6 +18,7 @@
 		<dependency type="module" id="core" />
 		<dependency type="module" id="freemarker" />
 		<dependency type="module" id="json" />
+		<dependency type="module" id="wadl" />
 	</dependencies>
 	<maven-misc>
 <![CDATA[

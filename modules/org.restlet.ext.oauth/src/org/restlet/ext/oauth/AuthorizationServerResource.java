@@ -66,7 +66,6 @@ import org.restlet.security.Role;
  */
 public class AuthorizationServerResource extends OAuthServerResource {
 
-
     /**
      * Checks that all incoming requests have a type parameter Requires
      * response_type, client_id and redirect_uri parameters. For the code flow
@@ -76,7 +75,7 @@ public class AuthorizationServerResource extends OAuthServerResource {
     @Post("html")
     public Representation represent() {
 
-        //Get some basic information
+        // Get some basic information
         Form params = getQuery();
         String sessionId = getCookies().getFirstValue(ClientCookieID);
         getLogger().info("sessionId = " + sessionId);
@@ -84,23 +83,23 @@ public class AuthorizationServerResource extends OAuthServerResource {
         ConcurrentMap<String, Object> attribs = getContext().getAttributes();
         AuthSession session = (sessionId == null) ? null
                 : (AuthSession) attribs.get(sessionId);
-        
-        //check owner:
+
+        // check owner:
         String scopeOwner = null;
-        if(getRequest().getClientInfo().getUser() != null)
+        if (getRequest().getClientInfo().getUser() != null)
             scopeOwner = getRequest().getClientInfo().getUser().getIdentifier();
-        if(scopeOwner == null && session != null)
+        if (scopeOwner == null && session != null)
             scopeOwner = session.getScopeOwner();
-        getLogger().info("OWNER - "+scopeOwner);
-        if(scopeOwner == null){
+        getLogger().info("OWNER - " + scopeOwner);
+        if (scopeOwner == null) {
             sendError(sessionId, OAuthError.INVALID_REQUEST,
                     params.getFirstValue(STATE), "No Scope Owner", null);
             return getResponseEntity();
         }
-        
-        //check clientId:
+
+        // check clientId:
         String clientId = params.getFirstValue(CLIENT_ID);
-        if(clientId == null || clientId.length() < 1){
+        if (clientId == null || clientId.length() < 1) {
             sendError(sessionId, OAuthError.INVALID_REQUEST,
                     params.getFirstValue(STATE),
                     "No client_id parameter found.", null);
@@ -117,9 +116,9 @@ public class AuthorizationServerResource extends OAuthServerResource {
             getLogger().info("Need to register the client : " + clientId);
             return getResponseEntity();
         }
-        getLogger().info("CLIENT ID - "+clientId);
-        
-        //check redir:
+        getLogger().info("CLIENT ID - " + clientId);
+
+        // check redir:
         String redirUri = params.getFirstValue(REDIR_URI);
         if (redirUri == null || redirUri.length() == 0) {
             sendError(sessionId, OAuthError.INVALID_REQUEST,
@@ -135,9 +134,9 @@ public class AuthorizationServerResource extends OAuthServerResource {
             getLogger().info("Callback URI does not match.");
             return getResponseEntity();
         }
-        getLogger().info("CLIENT ID - "+clientId);
-        
-        //check response type:
+        getLogger().info("CLIENT ID - " + clientId);
+
+        // check response type:
         String typeString = params.getFirstValue(RESPONSE_TYPE);
         ResponseType type = null;
         try {
@@ -154,15 +153,15 @@ public class AuthorizationServerResource extends OAuthServerResource {
                     params.getFirstValue(STATE),
                     "No response_type parameter found.", null);
         }
-        getLogger().info("RESPONSE TYPE - "+type);
-        
-        //setup session if needed:
+        getLogger().info("RESPONSE TYPE - " + type);
+
+        // setup session if needed:
         if (session != null)
             getLogger().info("client = " + session.getClient());
         else { // cleanup old cookie...and setup session
             getCookieSettings().removeAll(ClientCookieID);
         }
-        if(session == null){
+        if (session == null) {
             getLogger().info("Setting ClientCookieID");
             session = new AuthSession(getContext().getAttributes(),
                     new ScheduledThreadPoolExecutor(5));
@@ -176,17 +175,17 @@ public class AuthorizationServerResource extends OAuthServerResource {
         }
         setupSession(session, client, type, redirUri, params);
         session.setScopeOwner(scopeOwner);
-        
+
         return doPostAuthenticate(session, client);
     }
-    
-    protected void setupSession(AuthSession in, Client client, ResponseType flow,
-            String redirUri, Form params){
+
+    protected void setupSession(AuthSession in, Client client,
+            ResponseType flow, String redirUri, Form params) {
         getLogger().info("Base ref = " + getReference().getParentRef());
-                
+
         getLogger().info("OAuth2 session = " + in);
         AuthSession session = in;
-        
+
         if (session == null) {
             session = new AuthSession(getContext().getAttributes(),
                     new ScheduledThreadPoolExecutor(5));
@@ -196,7 +195,8 @@ public class AuthorizationServerResource extends OAuthServerResource {
             // cs.setAccessRestricted(true);
             // cs.setSecure(true);
             getCookieSettings().add(cs);
-            getLogger().info("Setting cookie in SetupSession - " + session.getId());
+            getLogger().info(
+                    "Setting cookie in SetupSession - " + session.getId());
         }
 
         session.setClient(client);
@@ -219,9 +219,9 @@ public class AuthorizationServerResource extends OAuthServerResource {
 
     protected Representation doPostAuthenticate(AuthSession session,
             Client client) {
-        
-        Reference ref = new Reference("riap://application/"+
-                OAuthHelper.getAuthPage(getContext()));
+
+        Reference ref = new Reference("riap://application"
+                + OAuthHelper.getAuthPage(getContext()));
         getLogger().info("Name = " + getApplication().getInboundRoot());
         ref.addQueryParameter("client", client.getClientId());
         // Requested
@@ -236,8 +236,8 @@ public class AuthorizationServerResource extends OAuthServerResource {
         AuthenticatedUser user = client.findUser(session.getScopeOwner());
 
         if (user != null) { // null before first code generated
-            //scopes = OAuthUtils.roluser.getGrantedScopes();
-            List <Role> roles = user.getGrantedRoles();
+            // scopes = OAuthUtils.roluser.getGrantedScopes();
+            List<Role> roles = user.getGrantedRoles();
             if (roles != null && roles.size() > 0) {
                 for (Role r : roles)
                     ref.addQueryParameter("grantedScope", Scopes.toScope(r));
@@ -247,8 +247,8 @@ public class AuthorizationServerResource extends OAuthServerResource {
         getLogger().info("Redir = " + ref);
         Redirector dispatcher = new Redirector(getContext(), ref.toString(),
                 Redirector.MODE_SERVER_OUTBOUND);
-        //getRequest().setCookies(getResponse().getCookieSettings().get
-        //getRequest().setCookies(cookies)
+        // getRequest().setCookies(getResponse().getCookieSettings().get
+        // getRequest().setCookies(cookies)
         getRequest().getAttributes().put(ClientCookieID, session.getId());
         dispatcher.handle(getRequest(), getResponse());
         return getResponseEntity();
