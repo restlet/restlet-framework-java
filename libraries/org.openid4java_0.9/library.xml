@@ -1,7 +1,7 @@
 <library id="openid4java">
 	<package id="openid4java" name="org.openid4java">
 		<maven>
-			<artifactId>openid4java-consumer</artifactId>
+			<artifactId>openid4java-nodeps</artifactId>
 		</maven>
 	</package>
 	<version>0.9</version>
@@ -9,7 +9,7 @@
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
-	<dependency type="library" id="httpclient" />
+        <dependency type="library" id="httpclient" />
 	<homeUri>
 		http://code.google.com/p/openid4java/
 	</homeUri>
