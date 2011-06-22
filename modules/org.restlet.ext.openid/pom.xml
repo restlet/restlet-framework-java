@@ -15,10 +15,14 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.openid4java</groupId>
-			<artifactId>openid4java-nodeps</artifactId>
+			<artifactId>openid4java-consumer</artifactId>
 			<version>0.9.5</version>
 		</dependency>
-	
+               <dependency>
+                       <groupId>commons-httpclient</groupId>
+                       <artifactId>commons-httpclient</artifactId>
+                       <version>[3.0,)</version>
+               </dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>
