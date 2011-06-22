@@ -1,7 +1,7 @@
 <library id="openid4java">
 	<package id="openid4java" name="org.openid4java">
 		<maven>
-			<artifactId>openid4java-nodeps</artifactId>
+			<artifactId>openid4java-consumer</artifactId>
 		</maven>
 	</package>
 	<version>0.9</version>
