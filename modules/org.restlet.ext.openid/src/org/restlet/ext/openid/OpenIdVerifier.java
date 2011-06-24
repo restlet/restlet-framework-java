@@ -465,11 +465,11 @@ public class OpenIdVerifier implements Verifier {
             }
             if (attributeSet.contains(AX.first)
                     && !object.isNull(AX.first.toString())) {
-                user.setEmail(object.getString(AX.first.toString()));
+                user.setFirstName(object.getString(AX.first.toString()));
             }
             if (attributeSet.contains(AX.last)
                     && !object.isNull(AX.last.toString())) {
-                user.setEmail(object.getString(AX.last.toString()));
+                user.setLastName(object.getString(AX.last.toString()));
             }
         } catch (Exception e) {
             e.printStackTrace();
