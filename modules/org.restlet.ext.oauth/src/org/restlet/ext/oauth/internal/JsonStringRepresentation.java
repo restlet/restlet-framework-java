@@ -36,7 +36,9 @@ import org.restlet.representation.StringRepresentation;
 
 /**
  * @author esvmart
- *
+ * 
+ * Temporary fix due to problems in the implementation of the
+ * Json Extension, removed once the bug is fixed.
  */
 public class JsonStringRepresentation extends StringRepresentation{
     
