@@ -114,9 +114,13 @@
 
 	<condition property="ant-old">
 		<not>
-			<contains string="${ant.version}" substring="Ant version 1.7" />
+			<or>
+				<contains string="${ant.version}" substring="Ant version 1.7" />
+				<contains string="${ant.version}" substring="Ant version 1.8" />
+			</or>
 		</not>
 	</condition>
+
 
 	<!-- Set the property that will enable the Weave target -->
 	<condition property="do-backport">
@@ -615,7 +619,7 @@
 	<target name="verify" if="do-verify" depends="verify-ant, verify-tests, verify-findbugs, verify-checkstyle" description="Verify build." />
 
 	<target name="verify-ant" if="ant-old" description="Check the Ant version for potential issues with JUnit.">
-		<echo message="For easier integration with JUnit, we recommand usage of Ant 1.7." />
+		<echo message="For easier integration with JUnit, we recommand usage of Ant 1.7 or higher." />
 		<echo message="Otherwise, make sure that you have JUnit's JAR into you Ant's lib directory." />
 		<echo message="Current version: ${ant.version}" />
 	</target>
@@ -623,7 +627,8 @@
 	<target name="verify-tests" if="do-verify" depends="verify-ant" description="Execute the tests suites.">
 		<mkdir dir="${temp}/test" />
 
-		<junit printsummary="true" fork="true" haltonfailure="true" filtertrace="true" showoutput="${verbose}">
+		<echo>See the JUnit log file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.</echo>
+		<junit printsummary="true" fork="true" timeout="60000" haltonfailure="false" haltonerror="false" filtertrace="true" showoutput="${verbose}" errorproperty="errorprop" failureproperty="failprop">
 			<classpath>
 				<path location="${mod}/${mod-core-test-id}/src" />
 				<path refid="mod-core-test-path" />
@@ -631,9 +636,9 @@
 			<formatter type="plain" />
 			<test name="org.restlet.test.RestletTestSuite" todir="${temp}/test" />
 		</junit>
-		<echo>
-		See the JUnit log file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.
-	</echo>
+
+		<fail if="failprop" message="At least one failure during junit tests." taskname="verify-tests" />
+		<fail if="errorprop" message="At least one error during junit tests." taskname="verify-tests" />
 	</target>
 
 	<target name="verify-findbugs" if="do-findbugs" description="Attempts to find bugs.">
