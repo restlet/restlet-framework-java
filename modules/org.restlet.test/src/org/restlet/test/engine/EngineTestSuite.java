@@ -81,7 +81,7 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(UserAgentTunnelFilterTestCase.class);
         // [enddef]
 
-        // [ifndef gae,jee]
+        // [ifdef jse]
         addTestSuite(ChunkedEncodingPutTestCase.class);
         addTestSuite(ChunkedEncodingTestCase.class);
         addTestSuite(GetTestCase.class);
