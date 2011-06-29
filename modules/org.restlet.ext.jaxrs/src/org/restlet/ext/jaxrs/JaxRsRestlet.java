@@ -263,8 +263,7 @@ public class JaxRsRestlet extends Restlet {
         // @see Application#getClasses()
         // @see Application#getSingletons()
         if (!used) {
-            final String warning = ("The class " + jaxRsClass + " is neither a povider nor a root resource class");
-            getLogger().warning(warning);
+            getLogger().warning("The class " + jaxRsClass + " is neither a provider nor a root resource class");
         }
         return used;
     }

@@ -31,7 +31,7 @@
 package org.restlet.ext.jaxrs.internal.exceptions;
 
 /**
- * Indicates, that a povider could not be used. The reason exception is already
+ * Indicates that a provider could not be used. The reason exception is already
  * logged or whatever.
  * 
  * @author Stephan Koops
