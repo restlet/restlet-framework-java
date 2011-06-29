@@ -309,7 +309,7 @@ public class VirtualHost extends Router {
      * @param target
      *            The target Restlet.
      */
-    private void checkContext(Restlet target) {
+    protected void checkContext(Restlet target) {
         if ((target.getContext() == null) && (this.parentContext != null)) {
             target.setContext(this.parentContext.createChildContext());
         }

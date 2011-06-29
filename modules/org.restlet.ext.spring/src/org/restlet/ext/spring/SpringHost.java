@@ -34,6 +34,7 @@ import java.util.Map;
 
 import org.restlet.Component;
 import org.restlet.Context;
+import org.restlet.Restlet;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.VirtualHost;
 
@@ -94,7 +95,26 @@ public class SpringHost extends VirtualHost {
      *            The map of routes to attach.
      */
     public void setAttachments(Map<String, Object> routes) {
-        SpringRouter.setAttachments(this, routes);
+        for (String key : routes.keySet()) {
+            setAttachment(key, routes.get(key));
+        }
+    }
+
+    /**
+     * Sets a route to attach. The keys is the URI template and the value can be
+     * either Restlet instance, {@link ServerResource} subclasse (as
+     * {@link Class} instances or as qualified class names).
+     * 
+     * @param path
+     *            The attachment URI path.
+     * @param route
+     *            The route object to attach.
+     */
+    public void setAttachment(String path, Object route) {
+        if (route instanceof Restlet) {
+            checkContext((Restlet) route);
+        }
+        SpringRouter.setAttachment(this, path, route);
     }
 
     /**
@@ -106,7 +126,7 @@ public class SpringHost extends VirtualHost {
      *            The default route to attach.
      */
     public void setDefaultAttachment(Object route) {
-        SpringRouter.setAttachment(this, "", route);
+        setAttachment("", route);
     }
 
 }
