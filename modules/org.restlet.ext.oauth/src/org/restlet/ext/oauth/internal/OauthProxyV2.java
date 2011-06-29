@@ -40,11 +40,13 @@ import org.restlet.Response;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
+import org.restlet.data.Status;
 import org.restlet.ext.oauth.OAuthParameters;
+import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+import org.restlet.routing.Filter;
 import org.restlet.security.Authorizer;
-import org.restlet.security.User;
 
 /**
  * Used for OAuth 2 draft 00 support. Will be removed once major players like
@@ -53,7 +55,7 @@ import org.restlet.security.User;
  * @author Kristoffer Gronowski
  */
 @Deprecated
-public class OauthProxyV2 extends Authorizer {
+public class OauthProxyV2 extends Filter {
 
     public static final String VERSION = "DRAFT-2";
 
@@ -72,7 +74,7 @@ public class OauthProxyV2 extends Authorizer {
     }
 
     @Override
-    protected boolean authorize(Request request, Response response) {
+    protected int beforeHandle(Request request, Response response) {
         // StringBuilder response = new StringBuilder();
         Boolean auth = false;
         // Sets the no-store Cache-Control header
@@ -145,7 +147,7 @@ public class OauthProxyV2 extends Authorizer {
                         .info("AccessToken in changed OldOauthProxy = "
                                 + accessToken);
                 request.getClientInfo().setUser(
-                        new User(accessToken, accessToken.toCharArray()));
+                        new OAuthUser(null, accessToken));
                 request.getClientInfo().setAuthenticated(true);
                 auth = true;
             }
@@ -154,16 +156,27 @@ public class OauthProxyV2 extends Authorizer {
             tokenResource.release();
             graphResource.release();
         }
-        return auth;
+        if(auth){
+            return CONTINUE;
+        }
+        else{
+            if (response.getStatus().isSuccess()
+                    || response.getStatus().isServerError()) {
+                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+            }
+            return STOP;
+        }
     }
 
+    /*
     @Override
     protected int unauthorized(Request request, Response response) {
         if (response.getStatus().isRedirection())
             return STOP;
         return super.unauthorized(request, response);
     }
-
+    */
+    
     public String getAccessToken() {
         return accessToken;
     }
