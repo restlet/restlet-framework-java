@@ -122,7 +122,7 @@ public enum Flow {
 
         Form form = new Form();
         form.add(OAuthServerResource.GRANT_TYPE,
-                OAuthServerResource.GrantType.none.name());
+                GrantType.NONE.name());
         form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
         form.add(OAuthServerResource.CLIENT_SECRET, params.getClientSecret());
 
@@ -168,7 +168,7 @@ public enum Flow {
         OAuthUser result = null;
         Form form = new Form();
         form.add(OAuthServerResource.GRANT_TYPE,
-                OAuthServerResource.GrantType.password.name());
+                GrantType.PASSWORD.name());
         form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
         form.add(OAuthServerResource.CLIENT_SECRET, params.getClientSecret());
         form.add(OAuthServerResource.USERNAME, username);
@@ -219,7 +219,7 @@ public enum Flow {
         tokenResource.setNext(c);
         Form form = new Form();
         form.add(OAuthServerResource.GRANT_TYPE,
-                OAuthServerResource.GrantType.refresh_token.name());
+                GrantType.REFRESH_TOKEN.name());
         form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
         form.add(OAuthServerResource.CLIENT_SECRET, params.getClientSecret());
         form.add(OAuthServerResource.REFRESH_TOKEN, refreshToken);

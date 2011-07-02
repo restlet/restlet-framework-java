@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import org.restlet.ext.oauth.Client;
-import org.restlet.ext.oauth.OAuthServerResource.ResponseType;
+import org.restlet.ext.oauth.ResponseType;
 
 /**
  * Helper class to establish an authentication session. The session is created

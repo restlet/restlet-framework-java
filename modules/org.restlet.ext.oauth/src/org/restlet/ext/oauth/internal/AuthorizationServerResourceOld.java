@@ -43,6 +43,7 @@ import org.restlet.ext.oauth.Client;
 import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.OAuthHelper;
 import org.restlet.ext.oauth.OAuthServerResource;
+import org.restlet.ext.oauth.ResponseType;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -210,8 +211,8 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
         // Cookie or OpenID
         if (session != null && session.getScopeOwner() != null) {
 
-            if (flow.equals(ResponseType.token)
-                    || flow.equals(ResponseType.code)) {
+            if (flow.equals(ResponseType.TOKEN)
+                    || flow.equals(ResponseType.CODE)) {
 
                 String[] requestedScopes = parseScope(params
                         .getFirstValue(SCOPE));

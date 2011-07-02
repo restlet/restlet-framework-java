@@ -217,7 +217,7 @@ public class OAuthProxy extends Authorizer {
         if (code == null) {
             Form form = new Form();
             form.add(OAuthServerResource.RESPONSE_TYPE,
-                    OAuthServerResource.ResponseType.code.name());
+                    ResponseType.CODE.name());
             form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
             form.add(OAuthServerResource.REDIR_URI, redirectUri);
             // OLD form.add(OAuthServerResource.SCOPE, params.getScope());
@@ -253,7 +253,7 @@ public class OAuthProxy extends Authorizer {
 
             Form form = new Form();
             form.add(OAuthServerResource.GRANT_TYPE,
-                    OAuthServerResource.GrantType.authorization_code.name());
+                    GrantType.AUTHORIZATION_CODE.name());
             String redir = request.getResourceRef().getHostIdentifier()
                     + request.getResourceRef().getPath();
             form.add(OAuthServerResource.REDIR_URI, redir);

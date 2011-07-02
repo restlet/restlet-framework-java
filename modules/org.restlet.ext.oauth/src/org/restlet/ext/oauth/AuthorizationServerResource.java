@@ -138,6 +138,7 @@ public class AuthorizationServerResource extends OAuthServerResource {
         // check response type:
         String typeString = params.getFirstValue(RESPONSE_TYPE);
         ResponseType type = null;
+
         try {
             type = Enum.valueOf(ResponseType.class, typeString);
             getLogger().info("Found flow - " + type);
@@ -152,6 +153,7 @@ public class AuthorizationServerResource extends OAuthServerResource {
                     params.getFirstValue(STATE),
                     "No response_type parameter found.", null);
         }
+
         getLogger().info("RESPONSE TYPE - " + type);
 
         // setup session if needed:
@@ -195,8 +197,8 @@ public class AuthorizationServerResource extends OAuthServerResource {
     protected void setupSession(AuthSession in, Client client,
             ResponseType flow, String redirUri, Form params) {
         getLogger().info("Base ref = " + getReference().getParentRef());
-
         getLogger().info("OAuth2 session = " + in);
+
         AuthSession session = in;
 
         if (session == null) {

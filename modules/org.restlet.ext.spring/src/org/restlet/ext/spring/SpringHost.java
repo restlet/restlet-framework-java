@@ -114,6 +114,7 @@ public class SpringHost extends VirtualHost {
         if (route instanceof Restlet) {
             checkContext((Restlet) route);
         }
+
         SpringRouter.setAttachment(this, path, route);
     }
 

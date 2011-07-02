@@ -46,7 +46,6 @@ import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.routing.Filter;
-import org.restlet.security.Authorizer;
 
 /**
  * Used for OAuth 2 draft 00 support. Will be removed once major players like

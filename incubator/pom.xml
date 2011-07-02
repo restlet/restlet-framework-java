@@ -55,8 +55,6 @@
 		<module>org.restlet.ext.foaf</module>
 		<module>org.restlet.ext.guice</module>
 		<module>org.restlet.ext.jmx</module>
-		<module>org.restlet.ext.oauth</module>
-		<module>org.restlet.ext.openid</module>
 		<module>org.restlet.ext.webdav</module>
 	</modules>
 

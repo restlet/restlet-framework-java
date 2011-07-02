@@ -50,14 +50,6 @@ import org.restlet.resource.ServerResource;
  */
 public abstract class OAuthServerResource extends ServerResource {
 
-    public enum GrantType {
-        assertion, authorization_code, none, password, refresh_token
-    }
-
-    public enum ResponseType {
-        code, code_and_token, token
-    }
-
     public static final String ACCESS_TOKEN = "access_token";
 
     public static final String ASSERTION = "assertion";

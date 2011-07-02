@@ -83,6 +83,7 @@ public class ClientRouter extends Router {
     @Override
     public Restlet getNext(Request request, Response response) {
         Restlet result = super.getNext(request, response);
+
         if (result == null) {
             getLogger()
                     .warning(

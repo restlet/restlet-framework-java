@@ -45,7 +45,6 @@ import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.OAuthParameters;
 import org.restlet.ext.oauth.OAuthProxy;
 import org.restlet.ext.oauth.OAuthServerResource;
-import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.resource.ClientResource;
 import org.restlet.security.User;
@@ -118,6 +117,7 @@ public class FacebookProxy extends OAuthProxy {
         String myId = request.getCookies().getFirstValue(CookieID);
         Logger log = getLogger();
         log.info("In Authorize");
+
         if (myId != null && myId.length() > 0) { // Already know what user
             log.info("User known");
             return true;
@@ -125,15 +125,18 @@ public class FacebookProxy extends OAuthProxy {
             User user = request.getClientInfo().getUser();
             getLogger().info("User from ClientInfo = " + user);
             boolean cont;
+
             if (user == null) {
                 cont = super.authorize(request, response);
+
                 if (!cont)
                     return cont;
+
                 user = request.getClientInfo().getUser();
                 getLogger().info("User from ClientInfo2 = " + user);
             }
 
-            String accessToken = OAuthUser.getToken(user);
+            String accessToken = new String(user.getSecret());
             getLogger().info("AccessToken from ClientInfo = " + accessToken);
 
             Reference meRef = new Reference("me");

@@ -36,6 +36,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.ext.oauth.OAuthParameters;
 import org.restlet.ext.oauth.OAuthServerResource;
+import org.restlet.ext.oauth.ResponseType;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.Representation;
@@ -74,7 +75,7 @@ public class FB {
 
         Form form = new Form();
         form.add(OAuthServerResource.RESPONSE_TYPE,
-                OAuthServerResource.ResponseType.code_and_token.name());
+                ResponseType.CODE_AND_TOKEN.name());
         form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
         form.add(OAuthServerResource.REDIR_URI, callbackUri);
         if (params.getRoles() != null && params.getRoles().size() > 0) {

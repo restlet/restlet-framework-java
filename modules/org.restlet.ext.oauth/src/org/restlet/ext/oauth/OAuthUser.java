@@ -93,30 +93,6 @@ public class OAuthUser extends User {
         return null;
     }
 
-    // TODO: This should eventually be removed...
-    /**
-     * Retrieves the access token from the user if and only if the user is of
-     * type {@link OAuthUser}.
-     * 
-     * @param user
-     *            The user.
-     * @return The access token.
-     * @see org.restlet.ext.oauth.OAuthUser
-     */
-    @Deprecated
-    public static String getToken(User user) {
-        String token = null;
-        if (user != null) {
-            if (user instanceof OAuthUser) {
-                OAuthUser ou = (OAuthUser) user;
-                token = ou.getAccessToken();
-            } else { // Token is stored in secret field
-                token = new String(user.getSecret());
-            }
-        }
-        return token;
-    }
-
     /** The access token. */
     private final String accessToken;
 

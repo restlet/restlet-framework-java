@@ -381,22 +381,22 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
             try {
                 switch (type) {
-                case authorization_code:
+                case AUTHORIZATION_CODE:
                     getLogger().info("doWebServerFlow() - flow");
                     toRet = doAuthCodeFlow(clientId, clientSecret, params);
                     break;
-                case password:
+                case PASSWORD:
                     toRet = doPasswordFlow(clientId, clientSecret, params);
                     break;
-                case assertion:
+                case ASSERTION:
                     sendError(OAuthError.UNSUPPORTED_GRANT_TYPE,
                             "Assertion flow not supported", null);
                     setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
                     break;
-                case refresh_token:
+                case REFRESH_TOKEN:
                     toRet = doRefreshFlow(clientId, clientSecret, params);
                     break;
-                case none:
+                case NONE:
                     toRet = doNoneFlow(clientId, clientSecret, params);
                     break;
                 default:

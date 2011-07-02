@@ -43,6 +43,7 @@ import org.restlet.representation.Representation;
  * @author Jerome Louvel
  */
 public class RepresentationContext implements RequestContext {
+
     /** The representation to adapt. */
     private volatile Representation multipartForm;
 
