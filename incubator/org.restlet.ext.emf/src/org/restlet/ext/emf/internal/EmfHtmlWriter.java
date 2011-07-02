@@ -39,6 +39,16 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
+/**
+ * Offers a generic HTML representation of an EMF object. It lists all its
+ * properties and can even generate HTML links when the proper EMF eAnnotation
+ * is detected.
+ * 
+ * This is useful to be able to automatically navigate a web API whose resource
+ * representations are defined using EMF.
+ * 
+ * @author Jerome Louvel
+ */
 public class EmfHtmlWriter {
 
     public static final String ANNOTATION_URI = "http://www.restlet.org/emf/2.0/html";
@@ -119,8 +129,9 @@ public class EmfHtmlWriter {
                         writeRow(writer, label, item.toString(), hyperlink);
                     }
                 } else {
-                    writeRow(writer, label, (value == null) ? "null" : value
-                            .toString(), hyperlink);
+                    writeRow(writer, label,
+                            (value == null) ? "null" : value.toString(),
+                            hyperlink);
                 }
             }
         }
