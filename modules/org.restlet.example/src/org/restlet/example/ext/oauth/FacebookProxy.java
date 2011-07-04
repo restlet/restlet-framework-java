@@ -30,13 +30,9 @@
 
 package org.restlet.example.ext.oauth;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -44,17 +40,18 @@ import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.OAuthParameters;
 import org.restlet.ext.oauth.OAuthProxy;
-import org.restlet.ext.oauth.OAuthServerResource;
+import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.ext.oauth.internal.Scopes;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
-import org.restlet.security.User;
 
 /**
  * Helper client class for accessing Facebook Graph API. It can request for
  * specific scopes for a developer key and secret.
  * 
  * <pre>
- * {@code
+ * {
+ * &#064;code
  * FacebookProxy proxy = new FacebookProxy(facebookClientId, facebookClientSecret 
  *                                          scope, getContext());
  * proxy.setNext(DummyResource.class);
@@ -67,11 +64,10 @@ import org.restlet.security.User;
  */
 public class FacebookProxy extends OAuthProxy {
 
-    public static final String CookieID = "_fbid";
-
     public static final String FB_GRAPH = "https://graph.facebook.com/";
 
-    Map<String, String> accessTokens;
+
+    
 
     /**
      * Create Proxy to facebook authentication
@@ -85,96 +81,48 @@ public class FacebookProxy extends OAuthProxy {
      * @param ctx
      *            Restlet scope
      */
-    public FacebookProxy(String clientId, String clientSecret, String scope,
-            Context ctx) {
-        this(clientId, clientSecret, scope,
-                new ConcurrentHashMap<String, String>(), ctx);
-    }
-
-    /**
-     * Create Proxy to facebook authentication
-     * 
-     * @param clientId
-     *            facebook clientID
-     * @param clientSecret
-     *            facebook clientSecret
-     * @param scope
-     *            requested scope
-     * @param accessTokens
-     *            map to store access tokens
-     * @param ctx
-     *            Restlet scope
-     */
-    public FacebookProxy(String clientId, String clientSecret, String scope,
-            Map<String, String> accessTokens, Context ctx) {
+    public FacebookProxy(String clientId, String clientSecret, String scope, Context ctx) {
         super(new OAuthParameters(clientId, clientSecret, FB_GRAPH + "oauth/",
                 Scopes.toRoles(scope)), ctx);
-        this.accessTokens = accessTokens;
     }
-
+    
     @Override
-    protected boolean authorize(Request request, Response response) {
-        String myId = request.getCookies().getFirstValue(CookieID);
-        Logger log = getLogger();
-        log.info("In Authorize");
-
-        if (myId != null && myId.length() > 0) { // Already know what user
-            log.info("User known");
-            return true;
-        } else {
-            User user = request.getClientInfo().getUser();
-            getLogger().info("User from ClientInfo = " + user);
-            boolean cont;
-
-            if (user == null) {
-                cont = super.authorize(request, response);
-
-                if (!cont)
-                    return cont;
-
-                user = request.getClientInfo().getUser();
-                getLogger().info("User from ClientInfo2 = " + user);
-            }
-
-            String accessToken = new String(user.getSecret());
-            getLogger().info("AccessToken from ClientInfo = " + accessToken);
-
-            Reference meRef = new Reference("me");
-            meRef.addQueryParameter(OAuthServerResource.ACCESS_TOKEN,
-                    accessToken);
-
-            ClientResource graphResource = new ClientResource(FB_GRAPH);
-            ClientResource meResource = graphResource.getChild(meRef);
-            JsonRepresentation meRepr = meResource
-                    .get(JsonRepresentation.class);
-            if (meResource.getResponse().getStatus().isSuccess()) {
-                JSONObject me;
-                try {
-                    me = meRepr.getJsonObject();
-                    String id = me.get("id").toString();
-                    log.info("Your ID = " + id);
-                    accessTokens.put(id, accessToken);
-                    // TODO Set Cookie
-                    return true;
-                } catch (JSONException e) {
-                    log.log(Level.WARNING, "Failed in parsing the me object.",
-                            e);
-                }
-            }
-            meRepr.release();
-            meResource.release();
-            graphResource.release();
+    protected int beforeHandle(Request request, Response response) {
+        int cont = super.beforeHandle(request, response);
+        if(cont == CONTINUE){ //successfull...just set the fb user id
+            FBUser fbu = null;
+            getLogger().info("FBProxy retrieving FACEBOOK ID");
+          try {
+              fbu = getMe(getToken(request));
+          } catch (Exception e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+          }
+            request.getClientInfo().getUser().setIdentifier(fbu.getId());
         }
-
-        return false;
+        return cont;
     }
+    
+    public static String getToken(Request r) throws Exception{
+        org.restlet.security.User u = r.getClientInfo().getUser();
+        return ((OAuthUser) u).getAccessToken();
+      }
+    
+    public static FBUser getMe(String accessToken) throws Exception{
+        Logger.getLogger(FacebookProxy.class.getName()).info("Retrieving me object");
+        Reference feedRef = new Reference("https://graph.facebook.com/me");
+        feedRef.addQueryParameter("access_token", accessToken);
+        
+        ClientResource cr = new ClientResource(feedRef);
+        Representation rep = cr.get();
+        if(cr.getStatus().isSuccess()){
+          JsonRepresentation jrep = new JsonRepresentation(rep);
+          FBUser fbu = new FBUser(jrep.getJsonObject());
+          cr.release();
+          return fbu;
+        }
+        cr.release();
+        return null;
+      }
 
-    /**
-     * @return map with all the authenticated FB users that has used this
-     *         endpoint.
-     */
-
-    public Map<String, String> getAccessTokens() {
-        return accessTokens;
-    }
 }

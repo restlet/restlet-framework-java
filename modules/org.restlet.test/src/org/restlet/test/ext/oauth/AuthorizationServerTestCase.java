@@ -127,7 +127,7 @@ public class AuthorizationServerTestCase extends RestletTestCase{
         r = cr.get();
         assertNotNull(r);
         text = r.getText();
-        assertTrue(text.startsWith("TestSuccessfull"));
+        assertTrue(text.startsWith("TestSuccessful"));
         assertEquals("Response content type test", r.getMediaType(),
                 MediaType.TEXT_HTML);
         cr.release();

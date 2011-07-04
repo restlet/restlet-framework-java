@@ -52,7 +52,7 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
-import org.restlet.security.Authorizer;
+import org.restlet.routing.Filter;
 
 /**
  * A restlet filter for initiating a web server flow or comparable to OAuth 2.0
@@ -78,7 +78,7 @@ import org.restlet.security.Authorizer;
  * @author Kristoffer Gronowski
  * @see org.restlet.ext.oauth.OAuthParameters
  */
-public class OAuthProxy extends Authorizer {
+public class OAuthProxy extends Filter {
 
     private final static List<CacheDirective> no = new ArrayList<CacheDirective>();
 
@@ -134,7 +134,7 @@ public class OAuthProxy extends Authorizer {
     }
 
     @Override
-    protected boolean authorize(Request request, Response response) {
+    protected int beforeHandle(Request request, Response response) {
         // StringBuilder response = new StringBuilder();
         Boolean auth = false;
         // Sets the no-store Cache-Control header
@@ -207,8 +207,8 @@ public class OAuthProxy extends Authorizer {
                 getLogger().warning(
                         "Unhandled error response type. " + ec.name());
             }
-
-            return false;
+            return STOP;
+            //return false;
         }
 
         String code = query.getFirstValue(OAuthServerResource.CODE);
@@ -303,9 +303,19 @@ public class OAuthProxy extends Authorizer {
             }
             tokenResource.release();
         }
-        return auth;
+        if(auth){
+            return CONTINUE;
+        }
+        else{
+            if (response.getStatus().isSuccess()
+                    || response.getStatus().isServerError()) {
+                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+            }
+            return STOP;
+        }
     }
 
+    /*
     @Override
     protected int unauthorized(Request request, Response response) {
         if (response.getStatus().isSuccess()
@@ -316,7 +326,8 @@ public class OAuthProxy extends Authorizer {
         // If redirect or a specific client error just propaget it on
         return STOP;
     }
-
+    */
+    
     /**
      * Returns the current proxy's version.
      * 
@@ -325,18 +336,5 @@ public class OAuthProxy extends Authorizer {
     public static String getVersion() {
         return VERSION;
     }
-
-    /*
-     * public String getAccessToken() { if (authUser == null) return null;
-     * return authUser.getAccessToken(); }
-     * 
-     * public String getRefreshToken() { if (authUser == null) return null;
-     * return authUser.getRefreshToken(); }
-     * 
-     * public long getExpiresIn() { if (authUser == null) return 0; return
-     * authUser.getExpiresIn(); }
-     * 
-     * public OAuthUser getAuthUser() { return authUser; }
-     */
 
 }
