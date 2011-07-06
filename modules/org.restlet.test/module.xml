@@ -10,6 +10,7 @@
 
 	<dependencies>
 		<dependency type="library" id="junit" />
+        <dependency type="library" id="awaitility" />
 		<dependency type="module" id="core" />
 		<dependency type="module" id="jackson" />
 		<dependency type="module" id="crypto" />
