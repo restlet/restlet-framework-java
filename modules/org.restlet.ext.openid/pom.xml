@@ -15,14 +15,20 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.openid4java</groupId>
-			<artifactId>openid4java-consumer</artifactId>
+			<artifactId>openid4java-nodeps</artifactId>
 			<version>0.9.5</version>
 		</dependency>
-               <dependency>
-                       <groupId>commons-httpclient</groupId>
-                       <artifactId>commons-httpclient</artifactId>
-                       <version>[3.0,)</version>
-               </dependency>
+		<dependency>
+			<groupId>net.sourceforge.nekohtml</groupId>
+			<artifactId>net.sourceforge.nekohtml</artifactId>
+			<version>1.9.14</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.0.1</version>
+		</dependency>
+	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet</artifactId>

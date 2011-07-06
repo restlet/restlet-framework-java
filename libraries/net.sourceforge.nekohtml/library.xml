@@ -1,0 +1,14 @@
+<library id="nekohtml">
+	<package name="net.sourceforge.nekohtml" />
+	<version>1.9</version>
+	<release>14</release>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<homeUri>
+		http://nekohtml.sourceforge.net/
+	</homeUri>
+	<downloadUri>
+		http://sourceforge.net/projects/nekohtml/files/nekohtml/
+	</downloadUri>
+</library>
