@@ -65,7 +65,7 @@ public class OAuthMultipleUserProtectedTestApplication extends Application {
                 protocol+"://localhost:"+
                 oauthServerPort+"/oauth/authorize"
         );
-        System.out.println("attaching resource");
+        //System.out.println("attaching resource");
         auth2.setNext(ScopedDummyResource.class);
         router.attach("/scoped/{oauth-user}", auth2);
         return router;

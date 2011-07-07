@@ -35,7 +35,6 @@ import org.restlet.ext.oauth.OAuthAuthorizer;
 import org.restlet.ext.oauth.ValidationServerResource;
 import org.restlet.routing.Router;
 import org.restlet.security.Authorizer;
-import org.restlet.test.ext.oauth.AuthorizationServerTestCase;
 
 /**
  * Test for a protected resource embedded with an authorization server
@@ -47,25 +46,29 @@ import org.restlet.test.ext.oauth.AuthorizationServerTestCase;
 
 public class OAuthComboTestApplication extends OAuthTestApplication {
 
-	public OAuthComboTestApplication(long timeout) {
-		super(timeout);
-	}
-	
-	@Override
-	public synchronized Restlet createInboundRoot() {
-		//Set context param to only allow local token validation.
-		getContext().getAttributes().put(ValidationServerResource.LOCAL_ACCESS_ONLY, "true");
-		Restlet r = super.createInboundRoot();
-		Router router = (Router)r;
-		
-		Authorizer auth = new OAuthAuthorizer(
-			"/validate",
-			AuthorizationServerTestCase.prot+"://localhost:"+
-			AuthorizationServerTestCase.serverPort+"/combo/authorize",true);
-		auth.setNext(DummyResource.class);
-		router.attach("/protected",auth);
-		
-		return router;
-	}
+    public OAuthComboTestApplication(long timeout) {
+        super(timeout, "http", 8080);
+    }
+
+    public OAuthComboTestApplication(String protocol, int port, long timeout){
+        super(timeout, protocol, port);
+    }
+
+    @Override
+    public synchronized Restlet createInboundRoot() {
+        //Set context param to only allow local token validation.
+        getContext().getAttributes().put(ValidationServerResource.LOCAL_ACCESS_ONLY, "true");
+        Restlet r = super.createInboundRoot();
+        Router router = (Router)r;
+
+        Authorizer auth = new OAuthAuthorizer(
+                "/validate",
+                protocol+"://localhost:"+
+                port+"/combo/authorize",true);
+        auth.setNext(DummyResource.class);
+        router.attach("/protected",auth);
+
+        return router;
+    }
 
 }

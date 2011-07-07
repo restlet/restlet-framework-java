@@ -42,6 +42,7 @@ public class OAuthTestSuite extends TestSuite{
         result.addTestSuite(AuthorizationServerTestCase.class);
         result.addTestSuite(TimedTokenTestCase.class);
         result.addTestSuite(TokenGeneratorTestCase.class);
+        result.addTestSuite(TimedTokenSSLTestCase.class);
         //result.addTestSuite(MultipleUserAuthorizationServerTestCase.class);
         return result;
     }

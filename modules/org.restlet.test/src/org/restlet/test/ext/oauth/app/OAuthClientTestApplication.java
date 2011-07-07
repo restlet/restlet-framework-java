@@ -38,14 +38,23 @@ import org.restlet.ext.oauth.OAuthProxy;
 import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.routing.Router;
-import org.restlet.test.ext.oauth.AuthorizationServerTestCase;
 
 public class OAuthClientTestApplication extends Application {
     private OAuthProxy local;
 
     private OAuthParameters params;
-    
+    private String protocol;
+    private int port;
     protected static OAuthUser user;
+    
+    public OAuthClientTestApplication(){
+        this("http", 8080);
+    }
+    
+    public OAuthClientTestApplication(String protocol, int port){
+        this.protocol = protocol;
+        this.port = port;
+    }
 
     @Override
     public synchronized Restlet createInboundRoot() {
@@ -54,8 +63,8 @@ public class OAuthClientTestApplication extends Application {
         Router router = new Router(ctx);
 
         params = new OAuthParameters("1234567890", "1234567890",
-                AuthorizationServerTestCase.prot + "://localhost:"
-                        + AuthorizationServerTestCase.serverPort + "/oauth/",
+                protocol + "://localhost:"
+                        + port + "/oauth/",
                 Scopes.toRoles("foo bar"));
 
         local = new OAuthProxy(params, getContext(), true); // Use basic

@@ -58,47 +58,7 @@ import org.restlet.test.ext.oauth.app.OAuthComboTestApplication;
 import org.restlet.test.ext.oauth.app.OAuthProtectedTestApplication;
 import org.restlet.test.ext.oauth.app.OAuthTestApplication;
 
-public class AuthorizationServerTestCase extends RestletTestCase{
-    private Component component;
-
-    // Use for http test when debugging
-    public static int serverPort = 8080;
-    public static final String prot = "http";
-
-
-    private OAuthClientTestApplication client;
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        client = new OAuthClientTestApplication();
-        
-        Server server = new Server(new Context(), Protocol.HTTP, serverPort);
-        component = new Component();
-        component.getServers().add(server);
-        component.getClients().add(Protocol.HTTP);
-        component.getClients().add(Protocol.RIAP);
-        component.getDefaultHost().attach("/oauth", 
-                new OAuthTestApplication(0));                                                 
-        component.getDefaultHost().attach("/client", client);
-        component.getDefaultHost().attach("/server",
-                new OAuthProtectedTestApplication());
-        component.getDefaultHost().attach("/combo",
-                new OAuthComboTestApplication(0)); // unlimited token life
-
-        List<AuthenticatorHelper> authenticators = Engine.getInstance()
-        .getRegisteredAuthenticators();
-        authenticators.add(new OAuthHelper());
-        component.start();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        component.stop();
-        component = null;
-        super.tearDown();
-    }
-
+public class AuthorizationServerTestCase extends OAuthHttpTestBase{
     
     public void testWebServerFlow() throws Exception {
         assertNull(client.getToken());

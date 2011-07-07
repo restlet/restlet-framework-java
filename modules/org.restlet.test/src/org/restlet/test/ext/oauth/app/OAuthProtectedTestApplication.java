@@ -39,30 +39,43 @@ import org.restlet.Restlet;
 import org.restlet.ext.oauth.OAuthAuthorizer;
 import org.restlet.routing.Router;
 import org.restlet.security.Role;
-import org.restlet.test.ext.oauth.AuthorizationServerTestCase;
+
 
 public class OAuthProtectedTestApplication extends Application {
+    
+    private final String protocol;
+    private final int port;
+    
+    public OAuthProtectedTestApplication(){
+        this("http", 8080);
+    }
+    
+    public OAuthProtectedTestApplication(String protocol, int port){
+        this.port = port;
+        this.protocol = protocol;
+    }
+    
 	@Override
 	public synchronized Restlet createInboundRoot() {
 		Context ctx = getContext();
 		Router router = new Router(ctx);
 		
 		OAuthAuthorizer auth = new OAuthAuthorizer(
-				AuthorizationServerTestCase.prot+"://localhost:"
-				+AuthorizationServerTestCase.serverPort+
+				protocol+"://localhost:"
+				+port+
 			"/oauth/validate",
-			AuthorizationServerTestCase.prot+"://localhost:"+
-			AuthorizationServerTestCase.serverPort+"/oauth/authorize"
+			protocol+"://localhost:"+
+			port+"/oauth/authorize"
 			);
 		auth.setNext(DummyResource.class);
 		router.attach("/protected",auth);
 		
 		OAuthAuthorizer auth2 = new OAuthAuthorizer(
-				AuthorizationServerTestCase.prot+"://localhost:"
-				+AuthorizationServerTestCase.serverPort+
+				protocol+"://localhost:"
+				+port+
 			"/oauth/validate",
-			AuthorizationServerTestCase.prot+"://localhost:"+
-			AuthorizationServerTestCase.serverPort+"/oauth/authorize"
+			protocol+"://localhost:"+
+			port+"/oauth/authorize"
 			);
 		List <Role> roles = new ArrayList <Role> ();
 		roles.add(new Role("foo", null));

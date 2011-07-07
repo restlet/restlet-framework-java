@@ -50,7 +50,6 @@ import org.restlet.ext.oauth.internal.MemClientStore;
 import org.restlet.resource.Finder;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
-import org.restlet.test.ext.oauth.AuthorizationServerTestCase;
 
 
 public class OAuthTestApplication extends Application {
@@ -58,10 +57,18 @@ public class OAuthTestApplication extends Application {
     public static final String TEST_USER = "bob";
     public static final String TEST_PASS = "alice";
 	
-    private long timeout = 0; // unlimited
+    protected long timeout = 0; // unlimited
+    protected String protocol;
+    protected int port;
+    
+    public OAuthTestApplication(long timeout){
+        this(timeout, "http", 8080);
+    }
 
-    public OAuthTestApplication(long timeout) {
+    public OAuthTestApplication(long timeout, String protocol, int port) {
         this.timeout = timeout;
+        this.protocol = protocol;
+        this.port = port;
     }
 
     @Override
@@ -82,8 +89,7 @@ public class OAuthTestApplication extends Application {
 
         ClientStore<?> clientStore = ClientStoreFactory.getInstance();
         Client client = clientStore.createClient("1234567890", "1234567890",
-                AuthorizationServerTestCase.prot + "://localhost:"
-                        + AuthorizationServerTestCase.serverPort + "/");
+                protocol + "://localhost:" + port + "/");
         
         //Bootstrap for password flow test...
         AuthenticatedUser user = client.createUser(TEST_USER);
