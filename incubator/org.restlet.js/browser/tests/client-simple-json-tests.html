@@ -1,6 +1,6 @@
 <html>    
 	<head>
-    <title>Restlet JS Tests - ClientResource with JSON</title> 
+    <title>Restlet JS Tests - Simple client</title> 
     
 
 <link rel="stylesheet" href="../lib/qunit/qunit.css" type="text/css" media="screen">
@@ -8,21 +8,21 @@
 <script type="text/javascript" src="../lib/jsclass/core.js"></script> 
 <script type="text/javascript" src="../lib/jsclass/console.js"></script> 
 <script type="text/javascript" src="../lib/jsonparser/json-minified.js"></script> 
-<script type="text/javascript" src="../restlet-common.js"></script> 
 <script type="text/javascript" src="../restlet-client.js"></script> 
 
 <script type="text/javascript"> 
 module("Simple Restlet JS client tests");
 
 asyncTest("Get with resource client", function() {
-  var clientResource = new ClientResource("../resource/contact/1");
-  clientResource.get(function(representation) {
-	  console.log("representation = "+representation);
+	var request = new Request(Method.GET, "../resource/contact/1");
+	var client = new Client(new Context(), [Protocol.HTTP]);
+	client.handle(request, function(response) {
+	  console.log("callback");
+	  var representation = response.getEntity();
 	  var content = representation.getText();
-	  console.log("content = "+content);
 	  ok(content, "{\"id\":\"1\",\"lastName\":\"lastName1\",\"firstName\":\"firstName1\",\"email\":null}");
 	  start();
-  }, MediaType.APPLICATION_JSON);
+	});
 });
 
 /*asyncTest("Get with resource client (json)", function() {
@@ -37,7 +37,7 @@ asyncTest("Get with resource client", function() {
   }, MediaType.APPLICATION_JSON);
 });*/
 
-asyncTest("Put with resource client (json)", function() {
+/*asyncTest("Put with resource client (json)", function() {
   var clientResource = new ClientResource("../resource/contact/1");
   var contact = {
 	id: "1",
@@ -54,14 +54,7 @@ asyncTest("Put with resource client (json)", function() {
 	  ok(obj.firstName, "firstName");
 	  start();
   }, MediaType.APPLICATION_JSON);
-});
-
-asyncTest("Delete with resource client (json)", function() {
-  var clientResource = new ClientResource("../resource/contact/1");
-  clientResource.delete(function(representation) {
-	  start();
-  }, MediaType.APPLICATION_JSON);
-});
+});*/
 </script> 
  </head>
  
