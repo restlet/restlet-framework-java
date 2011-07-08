@@ -5,6 +5,15 @@
 //var libxmljs = require("libxmljs");
 // [enddef]
 
+String.prototype.equalsIgnoreCase = function(arg) {               
+    return (new String(this.toLowerCase())
+             ==(new String(arg)).toLowerCase());
+};
+String.prototype.equals = function(arg) {
+	return (this.toString()==arg.toString());
+};
+
+
 var Context = new JS.Class({
 	initialize: function() {
 		this.clientDispatcher = null;
@@ -62,7 +71,7 @@ var ClientInfo = new JS.Class({
 
 var Message = new JS.Class({
 	initialize: function() {
-    	this.attributes = null;
+    	this.attributes = {};
     	this.cacheDirectives = null;
     	this.date = null;
     	this.entity = null;
@@ -74,22 +83,60 @@ var Message = new JS.Class({
 	},
 	setEntity: function(entity) {
 		this.entity = entity;
-	}
+	},
+	getAttributes: function() {
+		return this.attributes;
+	}, 
+	setAttributes: function(attributes) {
+		this.attributes = attributes;
+	} 
 });
 
 var Reference = new JS.Class({
 	initialize: function(url) {
 		this.url = url;
+		var tmp = this.url;
+		var index = tmp.indexOf("://");
+		if (index!=-1) {
+			this.protocol = tmp.substring(index);
+			tmp = tmp.substring(index+3);
+		}
+		index = tmp.indexOf(":");
+		if (index!=-1) {
+			this.host = tmp.substring(0, index);
+			tmp = tmp.substring(index+1);
+		}
+		index = tmp.indexOf("/");
+		if (index!=-1) {
+			this.port = parseInt(tmp.substring(0, index));
+			tmp = tmp.substring(index);
+		} else if (this.protocol=="http") {
+			this.port = 80;
+		} else if (this.protocol=="https") {
+			this.port = 443;
+		}
+		this.path = tmp;
 	},
 	getUrl: function() {
 		return this.url;
+	},
+	getScheme: function() {
+		return this.scheme;
+	},
+	getPort: function() {
+		return this.port;
+	},
+	getHost: function() {
+		return this.host;
+	},
+	getPath: function() {
+		return this.path;
 	}
 });
 
 var Request = new JS.Class(Message, {
 	initialize: function(method, url) {
 		this.callSuper();
-		
 		this.method = method;
 		this.clientInfo = new ClientInfo();
 		if (typeof url == "string") {
@@ -132,6 +179,49 @@ var Request = new JS.Class(Message, {
 });
 
 var Response = new JS.Class(Message, {
+	initialize: function(request) {
+		this.callSuper();
+        this.age = 0;
+        this.allowedMethods = null;
+        this.autoCommitting = true;
+        this.challengeRequests = null;
+        this.cookieSettings = null;
+        this.committed = false;
+        this.dimensions = null;
+        this.locationRef = null;
+        this.proxyChallengeRequests = null;
+        this.request = request;
+        this.retryAfter = null;
+        this.serverInfo = null;
+        this.status = Status.SUCCESS_OK;
+	},
+    /*this.age = 0;
+    this.allowedMethods = null;
+    this.autoCommitting = true;
+    this.challengeRequests = null;
+    this.cookieSettings = null;
+    this.committed = false;
+    this.dimensions = null;
+    this.locationRef = null;
+    this.proxyChallengeRequests = null;*/
+	getRequest: function() {
+		return this.request;
+	},
+	setRequest: function(request) {
+		this.request = request;
+	},
+	getRetryAfter: function() {
+	    return this.retryAfter;
+	},
+	setRetryAfter: function(retryAfter) {
+	    this.retryAfter = retryAfter;
+	},
+	getServerInfo: function() {
+	    return this.serverInfo;
+	},
+	setServerInfo: function(serverInfo) {
+	    this.serverInfo = serverInfo;
+	},
 	getStatus: function() {
 		return this.status;
 	},
@@ -263,10 +353,537 @@ HeaderConstants.extend({
 	ATTRIBUTE_HTTPS_SSL_SESSION_ID: "org.restlet.https.sslSessionId"
 });
 
+var CharacterSet = new JS.Class({
+	initialize: function(name) {
+		this.name = name;
+	},
+	getName: function() {
+		return this.name;
+	}
+});
+
+var ContentType = new JS.Class({
+	initialize: function(value) {
+		var index = -1;
+		if ((index = value.indexOf(";"))!=-1) {
+			this.mediaType = new MediaType(value.substring(0,index));
+			this.characterSet = new CharacterSet(value.substring(index+1));
+		} else {
+			this.mediaType = new MediaType(value);
+		}
+	},
+	getMediaType: function() {
+		return this.mediaType;
+	},
+	getCharacterSet: function() {
+		return this.characterSet;
+	} 
+});
+
+var Parameter = new JS.Class({
+	initialize: function(name, value) {
+		this.name = name;
+		this.value = value;
+	},
+	getName: function() {
+		return this.name;
+	},
+	getValue: function() {
+		return this.value;
+	}
+});
+
+var HeaderReaderUtils = new JS.Class({});
+
+HeaderReaderUtils.extend({
+	
+});
+
+var HeaderWriterUtils = new JS.Class({});
+
+HeaderWriterUtils.extend({
+	
+});
+
 var HeaderUtils = new JS.Class({});
 
 HeaderUtils.extend({
-	/*extractEntityHeaders: function(headers, representation) {
+	addEntityHeaders: function(entity, headers) {
+        if (entity == null || !entity.isAvailable()) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_CONTENT_LENGTH, "0", headers);
+        } else if (entity.getAvailableSize() != Representation.UNKNOWN_SIZE) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_CONTENT_LENGTH,
+                    Long.toString(entity.getAvailableSize()), headers);
+        }
+
+        if (entity != null) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_CONTENT_ENCODING,
+                    EncodingWriter.write(entity.getEncodings()), headers);
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_CONTENT_LANGUAGE,
+                    LanguageWriter.write(entity.getLanguages()), headers);
+
+            if (entity.getLocationRef() != null) {
+            	HeaderUtils.addHeader(HeaderConstants.HEADER_CONTENT_LOCATION, entity
+                        .getLocationRef().getTargetRef().toString(), headers);
+            }
+
+            if (entity.getRange() != null) {
+            	HeaderUtils.HeaderUtils.addHeader(HeaderConstants.HEADER_CONTENT_RANGE,
+                        RangeWriter.write(entity.getRange(), entity.getSize()),
+                        headers);
+            }
+
+            if (entity.getMediaType() != null) {
+                var contentType = entity.getMediaType().toString();
+
+                // Specify the character set parameter if required
+                if ((entity.getMediaType().getParameters()
+                        .getFirstValue("charset") == null)
+                        && (entity.getCharacterSet() != null)) {
+                    contentType = contentType + "; charset="
+                            + entity.getCharacterSet().getName();
+                }
+
+                HeaderUtils.addHeader(HeaderConstants.HEADER_CONTENT_TYPE, contentType,
+                        headers);
+            }
+
+            if (entity.getExpirationDate() != null) {
+            	HeaderUtils.addHeader(HeaderConstants.HEADER_EXPIRES,
+                        DateWriter.write(entity.getExpirationDate()), headers);
+            }
+
+            if (entity.getModificationDate() != null) {
+            	HeaderUtils.addHeader(HeaderConstants.HEADER_LAST_MODIFIED,
+                        DateWriter.write(entity.getModificationDate()), headers);
+            }
+
+            if (entity.getTag() != null) {
+            	HeaderUtils.addHeader(HeaderConstants.HEADER_ETAG,
+                        TagWriter.write(entity.getTag()), headers);
+            }
+
+            if (entity.getDisposition() != null
+                    && !Disposition.TYPE_NONE.equals(entity.getDisposition()
+                            .getType())) {
+            	HeaderUtils.addHeader(HeaderConstants.HEADER_CONTENT_DISPOSITION,
+                        DispositionWriter.write(entity.getDisposition()),
+                        headers);
+            }
+        }
+	},
+	addExtensionHeaders: function(existingHeaders, additionalHeaders) {
+        if (additionalHeaders != null) {
+            for (var cpt=0;cpt<additionalHeaders.length;cpt++) {
+            	var param = additionalHeaders[cpt];
+                if (param.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_ACCEPT)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_ACCEPT_CHARSET)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_ACCEPT_ENCODING)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_ACCEPT_LANGUAGE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_ACCEPT_RANGES)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_AGE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_ALLOW)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_AUTHENTICATION_INFO)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_AUTHORIZATION)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CACHE_CONTROL)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONNECTION)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_DISPOSITION)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_ENCODING)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_LANGUAGE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_LENGTH)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_LOCATION)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_MD5)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_RANGE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_CONTENT_TYPE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_COOKIE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_DATE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_ETAG)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_EXPECT)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_EXPIRES)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_FROM)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_HOST)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_IF_MATCH)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_IF_MODIFIED_SINCE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_IF_NONE_MATCH)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_IF_RANGE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_IF_UNMODIFIED_SINCE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_LAST_MODIFIED)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_LOCATION)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_MAX_FORWARDS)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_PROXY_AUTHENTICATE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_PROXY_AUTHORIZATION)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_RANGE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_REFERRER)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_RETRY_AFTER)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_SERVER)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_SET_COOKIE)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_SET_COOKIE2)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_USER_AGENT)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_VARY)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_VIA)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_WARNING)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_WWW_AUTHENTICATE)) {
+                    // Standard headers that can't be overridden
+                    /*Context.getCurrentLogger()
+                            .warning(
+                                    "Addition of the standard header \""
+                                            + param.getName()
+                                            + "\" is not allowed. Please use the equivalent property in the Restlet API.");*/
+                } else if (param.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_PRAGMA)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_TRAILER)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_TRANSFER_ENCODING)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_TRANSFER_EXTENSION)
+                        || param.getName().equalsIgnoreCase(
+                                HeaderConstants.HEADER_UPGRADE)) {
+                    // Standard headers that shouldn't be overridden
+                    /*Context.getCurrentLogger()
+                            .info("Addition of the standard header \""
+                                    + param.getName()
+                                    + "\" is discouraged as a future version of the Restlet API will directly support it.");*/
+                    existingHeaders.add(param);
+                } else {
+                    existingHeaders.add(param);
+                }
+            }
+        }
+	},
+	addGeneralHeaders: function(message, headers) {
+		/*HeaderUtils.addHeader(HeaderConstants.HEADER_CACHE_CONTROL,
+                CacheDirectiveWriter.write(message.getCacheDirectives()),
+                headers);
+        if (message.getDate() == null) {
+            message.setDate(new Date());
+        }
+        HeaderUtils.addHeader(HeaderConstants.HEADER_DATE,
+                DateWriter.write(message.getDate()), headers);
+        HeaderUtils.addHeader(HeaderConstants.HEADER_VIA,
+                RecipientInfoWriter.write(message.getRecipientsInfo()), headers);
+        HeaderUtils.addHeader(HeaderConstants.HEADER_WARNING,
+                WarningWriter.write(message.getWarnings()), headers);*/
+	},
+	addHeader: function(headerName, headerValue, headers) {
+        if ((headerName != null) && (headerValue != null)
+                && (headerValue.length() > 0)) {
+            try {
+                headers.push(new Parameter(headerName, headerValue));
+            } catch (err) {
+            	console.log(err);
+                /*Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to format the " + headerName + " header", t);*/
+            }
+        }
+	},
+	addNotModifiedEntityHeaders: function(entity, headers) {
+        if (entity != null) {
+            if (entity.getTag() != null) {
+                HeaderUtils.addHeader(HeaderConstants.HEADER_ETAG,
+                        TagWriter.write(entity.getTag()), headers);
+            }
+
+            if (entity.getLocationRef() != null) {
+                HeaderUtils.addHeader(HeaderConstants.HEADER_CONTENT_LOCATION,
+                        entity.getLocationRef().getTargetRef().toString(),
+                        headers);
+            }
+        }
+	},
+	addRequestHeaders: function(request, headers) {
+        var clientInfo = request.getClientInfo();
+
+        /*if (!clientInfo.getAcceptedMediaTypes().isEmpty()) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_ACCEPT,
+                    PreferenceWriter.write(clientInfo.getAcceptedMediaTypes()),
+                    headers);
+        } else {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_ACCEPT, MediaType.ALL.getName(),
+                    headers);
+        }
+
+        if (!clientInfo.getAcceptedCharacterSets().isEmpty()) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_ACCEPT_CHARSET,
+                    PreferenceWriter.write(clientInfo
+                            .getAcceptedCharacterSets()), headers);
+        }
+
+        if (!clientInfo.getAcceptedEncodings().isEmpty()) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_ACCEPT_ENCODING,
+                    PreferenceWriter.write(clientInfo.getAcceptedEncodings()),
+                    headers);
+        }
+
+        if (!clientInfo.getAcceptedLanguages().isEmpty()) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_ACCEPT_LANGUAGE,
+                    PreferenceWriter.write(clientInfo.getAcceptedLanguages()),
+                    headers);
+        }
+
+        if (clientInfo.getFrom() != null) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_FROM, request.getClientInfo()
+                    .getFrom(), headers);
+        }
+
+        // Manually add the host name and port when it is potentially
+        // different from the one specified in the target resource reference.
+        var hostRef = (request.getResourceRef().getBaseRef() != null) ? request
+                .getResourceRef().getBaseRef() : request.getResourceRef();
+
+        if (hostRef.getHostDomain() != null) {
+            var host = hostRef.getHostDomain();
+            var hostRefPortValue = hostRef.getHostPort();
+
+            if ((hostRefPortValue != -1)
+                    && (hostRefPortValue != request.getProtocol()
+                            .getDefaultPort())) {
+                host = host + ':' + hostRefPortValue;
+            }
+
+            HeaderUtils.addHeader(HeaderConstants.HEADER_HOST, host, headers);
+        }
+
+        var conditions = request.getConditions();
+        HeaderUtils.addHeader(HeaderConstants.HEADER_IF_MATCH,
+                TagWriter.write(conditions.getMatch()), headers);
+        HeaderUtils.addHeader(HeaderConstants.HEADER_IF_NONE_MATCH,
+                TagWriter.write(conditions.getNoneMatch()), headers);
+
+        if (conditions.getModifiedSince() != null) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_IF_MODIFIED_SINCE,
+                    DateWriter.write(conditions.getModifiedSince()), headers);
+        }
+
+        if (conditions.getRangeTag() != null
+                && conditions.getRangeDate() != null) {
+            //Context.getCurrentLogger()
+            //        .log(Level.WARNING,
+            //                "Unable to format the HTTP If-Range header due to the presence of both entity tag and modification date.");
+        } else if (conditions.getRangeTag() != null) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_IF_RANGE,
+                    TagWriter.write(conditions.getRangeTag()), headers);
+        } else if (conditions.getRangeDate() != null) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_IF_RANGE,
+                    DateWriter.write(conditions.getRangeDate()), headers);
+        }
+
+        if (conditions.getUnmodifiedSince() != null) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_IF_UNMODIFIED_SINCE,
+                    DateWriter.write(conditions.getUnmodifiedSince()), headers);
+        }
+
+        if (request.getMaxForwards() > -1) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_MAX_FORWARDS,
+                    Integer.toString(request.getMaxForwards()), headers);
+        }
+
+        if (!request.getRanges().isEmpty()) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_RANGE,
+                    RangeWriter.write(request.getRanges()), headers);
+        }
+
+        if (request.getReferrerRef() != null) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_REFERRER, request.getReferrerRef()
+                    .toString(), headers);
+        }
+
+        if (request.getClientInfo().getAgent() != null) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_USER_AGENT, request
+                    .getClientInfo().getAgent(), headers);
+        } else {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_USER_AGENT, Engine.VERSION_HEADER,
+                    headers);
+        }
+
+        // ----------------------------------
+        // 3) Add supported extension headers
+        // ----------------------------------
+
+        if (request.getCookies().size() > 0) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_COOKIE,
+                    CookieWriter.write(request.getCookies()), headers);
+        }
+
+        // -------------------------------------
+        // 4) Add user-defined extension headers
+        // -------------------------------------
+        var additionalHeaders = request
+                .getAttributes()[HeaderConstants.ATTRIBUTE_HEADERS];
+        HeaderUtils.addExtensionHeaders(headers, additionalHeaders);
+
+        // ---------------------------------------
+        // 5) Add authorization headers at the end
+        // ---------------------------------------
+
+        // [ifndef gwt]
+        // Add the security headers. NOTE: This must stay at the end because
+        // the AWS challenge scheme requires access to all HTTP headers
+        //TODO:
+        /*ChallengeResponse challengeResponse = request.getChallengeResponse();
+        if (challengeResponse != null) {
+            addHeader(
+                    HeaderConstants.HEADER_AUTHORIZATION,
+                    org.restlet.engine.security.AuthenticatorUtils
+                            .formatResponse(challengeResponse, request, headers),
+                    headers);
+        }
+
+        ChallengeResponse proxyChallengeResponse = request
+                .getProxyChallengeResponse();
+        if (proxyChallengeResponse != null) {
+            addHeader(HeaderConstants.HEADER_PROXY_AUTHORIZATION,
+                    org.restlet.engine.security.AuthenticatorUtils
+                            .formatResponse(proxyChallengeResponse, request,
+                                    headers), headers);
+        }*/
+        // [enddef]
+	},
+	addResponseHeaders: function(response, headers) {
+        if (response.getServerInfo().isAcceptingRanges()) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_ACCEPT_RANGES, "bytes", headers);
+        }
+
+        if (response.getAge() > 0) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_AGE,
+                    Integer.toString(response.getAge()), headers);
+        }
+
+        if (response.getStatus().equals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)
+                || Method.OPTIONS.equals(response.getRequest().getMethod())) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_ALLOW,
+                    MethodWriter.write(response.getAllowedMethods()), headers);
+        }
+
+        if (response.getLocationRef() != null) {
+            // The location header must contain an absolute URI.
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_LOCATION, response
+                    .getLocationRef().getTargetRef().toString(), headers);
+        }
+
+        //TODO:
+        /*if (response.getProxyChallengeRequests() != null) {
+            for (ChallengeRequest challengeRequest : response
+                    .getProxyChallengeRequests()) {
+                addHeader(HeaderConstants.HEADER_PROXY_AUTHENTICATE,
+                        org.restlet.engine.security.AuthenticatorUtils
+                                .formatRequest(challengeRequest, response,
+                                        headers), headers);
+            }
+        }*/
+
+        if (response.getRetryAfter() != null) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_RETRY_AFTER,
+                    DateWriter.write(response.getRetryAfter()), headers);
+        }
+
+        if ((response.getServerInfo() != null)
+                && (response.getServerInfo().getAgent() != null)) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_SERVER, response.getServerInfo()
+                    .getAgent(), headers);
+        } else {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_SERVER, Engine.VERSION_HEADER,
+                    headers);
+        }
+
+        // Send the Vary header only to none-MSIE user agents as MSIE seems
+        // to support partially and badly this header (cf issue 261).
+        if (!((response.getRequest().getClientInfo().getAgent() != null) && response
+                .getRequest().getClientInfo().getAgent().contains("MSIE"))) {
+            // Add the Vary header if content negotiation was used
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_VARY,
+                    DimensionWriter.write(response.getDimensions()), headers);
+        }
+
+        // Set the security data
+        //TODO:
+        /*if (response.getChallengeRequests() != null) {
+            for (ChallengeRequest challengeRequest : response
+                    .getChallengeRequests()) {
+                addHeader(HeaderConstants.HEADER_WWW_AUTHENTICATE,
+                        org.restlet.engine.security.AuthenticatorUtils
+                                .formatRequest(challengeRequest, response,
+                                        headers), headers);
+            }
+        }*/
+
+        // ----------------------------------
+        // 3) Add supported extension headers
+        // ----------------------------------
+
+        // Add the Authentication-Info header
+        if (response.getAuthenticationInfo() != null) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_AUTHENTICATION_INFO,
+                    org.restlet.engine.security.AuthenticatorUtils
+                            .formatAuthenticationInfo(response
+                                    .getAuthenticationInfo()), headers);
+        }
+
+        // Cookies settings should be written in a single header, but Web
+        // browsers does not seem to support it.
+        //TODO:
+        /*for (CookieSetting cookieSetting : response.getCookieSettings()) {
+        	HeaderUtils.addHeader(HeaderConstants.HEADER_SET_COOKIE,
+                    CookieSettingWriter.write(cookieSetting), headers);
+        }*/
+
+        // -------------------------------------
+        // 4) Add user-defined extension headers
+        // -------------------------------------
+
+        var additionalHeaders = response
+                .getAttributes()[HeaderConstants.ATTRIBUTE_HEADERS];
+        HeaderUtils.addExtensionHeaders(headers, additionalHeaders);
+	},
+	extractEntityHeaders: function(headers, representation) {
+		console.log("### extractEntityHeaders - representation = "+representation);
 	    var result = (representation == null) ? new EmptyRepresentation()
 	            : representation;
 	    var entityHeaderFound = false;
@@ -274,9 +891,11 @@ HeaderUtils.extend({
 	    if (headers != null) {
 	        for (var cpt = 0; cpt<headers.length; cpt++) {
 	        	var header = headers[cpt];
+	        	console.log("- header : "+header.getName()+" - "+header.getValue());
 	            if (header.getName().equalsIgnoreCase(
 	                    HeaderConstants.HEADER_CONTENT_TYPE)) {
-	                ContentType contentType = new ContentType(header.getValue());
+	            	console.log("contenttype");
+	                var contentType = new ContentType(header.getValue());
 	                result.setMediaType(contentType.getMediaType());
 	
 	                if ((result.getCharacterSet() == null)
@@ -290,27 +909,27 @@ HeaderUtils.extend({
 	                entityHeaderFound = true;
 	            } else if (header.getName().equalsIgnoreCase(
 	                    HeaderConstants.HEADER_EXPIRES)) {
-	                result.setExpirationDate(HeaderReader.readDate(
-	                        header.getValue(), false));
+	                /*result.setExpirationDate(HeaderReader.readDate(
+	                        header.getValue(), false));*/
 	                entityHeaderFound = true;
 	            } else if (header.getName().equalsIgnoreCase(
 	                    HeaderConstants.HEADER_CONTENT_ENCODING)) {
-	                new EncodingReader(header.getValue()).addValues(result
-	                        .getEncodings());
+	                /*new EncodingReader(header.getValue()).addValues(result
+	                        .getEncodings());*/
 	                entityHeaderFound = true;
 	            } else if (header.getName().equalsIgnoreCase(
 	                    HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-	                new LanguageReader(header.getValue()).addValues(result
-	                        .getLanguages());
+	                /*new LanguageReader(header.getValue()).addValues(result
+	                        .getLanguages());*/
 	                entityHeaderFound = true;
 	            } else if (header.getName().equalsIgnoreCase(
 	                    HeaderConstants.HEADER_LAST_MODIFIED)) {
-	                result.setModificationDate(HeaderReader.readDate(
-	                        header.getValue(), false));
+	                /*result.setModificationDate(HeaderReader.readDate(
+	                        header.getValue(), false));*/
 	                entityHeaderFound = true;
 	            } else if (header.getName().equalsIgnoreCase(
 	                    HeaderConstants.HEADER_ETAG)) {
-	                result.setTag(Tag.parse(header.getValue()));
+	                /*result.setTag(Tag.parse(header.getValue()));*/
 	                entityHeaderFound = true;
 	            } else if (header.getName().equalsIgnoreCase(
 	                    HeaderConstants.HEADER_CONTENT_LOCATION)) {
@@ -318,7 +937,7 @@ HeaderUtils.extend({
 	                entityHeaderFound = true;
 	            } else if (header.getName().equalsIgnoreCase(
 	                    HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
-	                try {
+	                /*try {
 	                    result.setDisposition(new DispositionReader(header
 	                            .getValue()).readValue());
 	                    entityHeaderFound = true;
@@ -327,21 +946,21 @@ HeaderUtils.extend({
 	                            Level.WARNING,
 	                            "Error during Content-Disposition header parsing. Header: "
 	                                    + header.getValue(), ioe);
-	                }
+	                }*/
 	            } else if (header.getName().equalsIgnoreCase(
 	                    HeaderConstants.HEADER_CONTENT_RANGE)) {
 	                // [ifndef gwt]
-	                org.restlet.engine.header.RangeReader.update(
-	                        header.getValue(), result);
+	                /*org.restlet.engine.header.RangeReader.update(
+	                        header.getValue(), result);*/
 	                entityHeaderFound = true;
 	                // [enddef]
 	            } else if (header.getName().equalsIgnoreCase(
 	                    HeaderConstants.HEADER_CONTENT_MD5)) {
 	                // [ifndef gwt]
-	                result.setDigest(new org.restlet.data.Digest(
+	                /*result.setDigest(new org.restlet.data.Digest(
 	                        org.restlet.data.Digest.ALGORITHM_MD5,
 	                        org.restlet.engine.util.Base64.decode(header
-	                                .getValue())));
+	                                .getValue())));*/
 	                entityHeaderFound = true;
 	                // [enddef]
 	            }
@@ -355,7 +974,11 @@ HeaderUtils.extend({
 	    }
 	
 	    return result;
-	}*/
+	},
+	copyResponseTransportHeaders: function(headers, response) {
+	},
+	getContentLength: function(headers) {
+	}
 });
 
 var Status = new JS.Class({
@@ -924,19 +1547,19 @@ var Status = new JS.Class({
         return result;
     },
     isClientError: function() {
-        return Status.isClientError(getCode());
+        return Status.isClientError(this.getCode());
     },
     isConnectorError: function() {
-        return Status.isConnectorError(getCode());
+        return Status.isConnectorError(this.getCode());
     },
     isError: function() {
-        return Status.isError(getCode());
+        return Status.isError(this.getCode());
     },
     isGlobalError: function() {
-        return Status.isGlobalError(getCode());
+        return Status.isGlobalError(this.getCode());
     },
     isInformational: function() {
-        return Status.isInformational(getCode());
+        return Status.isInformational(this.getCode());
     },
     isRecoverableError: function() {
         return Status.isConnectorError()
@@ -945,13 +1568,13 @@ var Status = new JS.Class({
                 || equals(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
     },
     isRedirection: function() {
-        return Status.isRedirection(getCode());
+        return Status.isRedirection(this.getCode());
     },
     isServerError: function() {
-        return Status.isServerError(getCode());
+        return Status.isServerError(this.getCode());
     },
     isSuccess: function() {
-        return Status.isSuccess(getCode());
+        return Status.isSuccess(this.getCode());
     },
     toString: function() {
         return this.getReasonPhrase() + " (" + this.code + ")"
@@ -1301,12 +1924,11 @@ var Connector = new JS.Class(Restlet, {
 
 var Engine = new JS.Class({
 	createHelper: function(restlet) {
-		//TODO: to be generic
 		// [ifndef nodejs]
 		return new XhrHttpClientHelper();
 		// [enddef]
 		// [ifdef nodejs] uncomment
-		//return new NodejsHttpClientHelper();
+		//return new NodeJsHttpClientHelper();
 		// [enddef]
 	}
 });
@@ -1320,8 +1942,109 @@ Engine.extend({
 	}
 });
 
+var Call = new JS.Class({
+    /*private volatile String clientAddress;
+    private volatile int clientPort;
+    private volatile boolean confidential;
+    private volatile String hostDomain;
+    private volatile int hostPort;
+    private volatile String method;
+    private volatile Protocol protocol;
+    $$ private volatile String reasonPhrase;
+    $$ private final Series<Parameter> requestHeaders;
+    private volatile String requestUri;
+    $$ private final Series<Parameter> responseHeaders;
+    private volatile String serverAddress;
+    private volatile int serverPort;
+    $$ private volatile int statusCode;
+    private volatile String version;*/
+	getReasonPhrase: function() {
+		return this.reasonPhrase;
+	},
+	setReasonPhrase: function(reasonPhrase) {
+		this.reasonPhrase = reasonPhrase;
+	},
+	getRequestHeaders: function() {
+		return this.requestHeaders;
+	},
+	setRequestHeaders: function(requestHeaders) {
+		this.requestHeaders = requestHeaders;
+	},
+	getResponseHeaders: function() {
+		console.log("call - getResponseHeaders - "+this.responseHeaders.length);
+		return this.responseHeaders;
+	},
+	setResponseHeaders: function(responseHeaders) {
+		console.log("call - setResponseHeaders - "+this.responseHeaders+" | "+responseHeaders.length);
+		this.responseHeaders = responseHeaders;
+	},
+	getStatusCode: function() {
+		return this.statusCode;
+	},
+	setStatusCode: function(statusCode) {
+		this.statusCode = statusCode;
+	}
+});
+
+var ClientCall = new JS.Class(Call, {
+	getResponseEntity: function(response) {
+		console.log("> getResponseEntity");
+        var result = response.getEntity();
+        //TODO:
+        // boolean available = false;
+        var size = Representation.UNKNOWN_SIZE;
+
+        // Compute the content length
+        var responseHeaders = this.getResponseHeaders();
+        console.log("responseHeaders = "+responseHeaders);
+        /*var transferEncoding = responseHeaders.getFirstValue(
+                HeaderConstants.HEADER_TRANSFER_ENCODING, true);
+        if ((transferEncoding != null)
+                && !"identity".equalsIgnoreCase(transferEncoding)) {
+            size = Representation.UNKNOWN_SIZE;
+        } else {
+            size = getContentLength();
+        }*/
+
+        /*if (!getMethod().equals(Method.HEAD.getName())
+                && !response.getStatus().isInformational()
+                && !response.getStatus()
+                        .equals(Status.REDIRECTION_NOT_MODIFIED)
+                && !response.getStatus().equals(Status.SUCCESS_NO_CONTENT)
+                && !response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)) {
+            // Make sure that an InputRepresentation will not be instantiated
+            // while the stream is closed.
+            InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
+            // [ifndef gwt] line
+            java.nio.channels.ReadableByteChannel channel = getResponseEntityChannel(size);
+            // [ifdef gwt] line uncomment
+            // InputStream channel = null;
+
+            if (stream != null) {
+                result = getRepresentation(stream);
+            } else if (channel != null) {
+                result = getRepresentation(channel);
+            }
+        }*/
+
+        if (result != null) {
+            result.setSize(size);
+
+            // Informs that the size has not been specified in the header.
+            if (size == Representation.UNKNOWN_SIZE) {
+                /*getLogger()
+                        .fine("The length of the message body is unknown. The entity must be handled carefully and consumed entirely in order to surely release the connection.");*/
+            }
+        }
+        console.log("responseHeaders = "+responseHeaders.length);
+        result = HeaderUtils.extractEntityHeaders(responseHeaders, result);
+
+        return result;
+    }
+});
+
 // [ifndef nodejs]
-var XhrHttpClientCall = new JS.Class({
+var XhrHttpClientCall = new JS.Class(ClientCall, {
 	initialize: function() {
 		this.xhr = this.createXhrObject();
 	},
@@ -1368,14 +2091,39 @@ var XhrHttpClientCall = new JS.Class({
 			data = request.getEntity().getText();
 		}
 		this.lowLevelSendRequest(url, method, headers, data, function(xhr) {
+			currentThis.extractResponseHeaders(xhr);
+
 			var representation = new Representation();
+			/*representation = HeaderUtils.extractEntityHeaders(
+								currentThis.getResponseHeaders(xhr), representation);*/
 			representation.write(xhr);
 			var status = new Status(xhr.status);
 			response.setStatus(status);
 			response.setEntity(representation);
 			callback(response);
 		});
-	},	
+	},
+	extractResponseHeaders: function(xhr) {
+		console.log("> extractResponseHeaders");
+		var headersString = xhr.getAllResponseHeaders();
+		var headers = [];
+		var headerEntries = headersString.split("\n");
+		for (var cpt=0;cpt<headerEntries.length;cpt++) {
+			var headerEntry = headerEntries[cpt];
+			var index = headerEntry.indexOf(":");
+			if (headerEntry!="" && index!=-1) {
+				var header = new Parameter(
+						headerEntry.substring(0, index),
+						headerEntry.substring(index+1));
+				headers.push(header);
+			}
+		}
+		//this.responseHeaders = headers;
+		console.log("> this.responseHeaders = "+headers.length);
+		console.log("b1");
+		this.setResponseHeaders(headers);
+		console.log("a1");
+	},
 	lowLevelSendRequest: function(url,httpMethod,headers,data,onResponseCallback) {
 		var currentThis = this;
 		currentThis.xhr.open(httpMethod, url);
@@ -1426,6 +2174,7 @@ var XhrHttpClientCall = new JS.Class({
 //		if (acceptHeader!="") {
 //			headers["accept"] = acceptHeader;
 //		}
+//			headers["accept"] = "application/json";
 //headers["host"] = "localhost:8080";
 //console.log("http://"+host+":"+port+path);
 //		var data = "";
@@ -1438,51 +2187,175 @@ var XhrHttpClientCall = new JS.Class({
 //			path, headers);
 //		clientRequest.end();
 //
-//		clientRequest.on("response", function (clientResponse) {
+//		clientRequest.on('response', function (clientResponse) {
+//			console.log("on response");
+//console.log('STATUS: ' + clientResponse.statusCode);
+//  console.log('HEADERS: ' + JSON.stringify(clientResponse.headers));
 //			var representation = new Representation();
+//			//representation.write(xhr);
 //			response.setEntity(representation);
-//			var status = new Status(clientResponse.statusCode);
-//			response.setStatus(status);
-//			var chunks = [];
-//			clientResponse.on("data", function (chunk) {
-//				chunks.push(chunk.toString());
-//			});
-//			clientResponse.on("end", function () {
-//				representation.write(chunks.join(""));
-//				callback(response);
+//			callback(response);
+//			clientResponse.on('data', function (chunk) {
+//				console.log("on data");
+//				console.log("chunk = "+chunk);
+//				representation.write({responseText: chunk, responseXML: null});
 //			});
 //		});
 //	}
 //});
 // [enddef]
 
-var HttpClientHelper = new JS.Class(HttpClientHelper, {
+var ClientAdapter = new JS.Class({
+	initialize: function(context) {
+		
+	},
+    readResponseHeaders: function(httpCall, response) {
+    	console.log("readResponseHeaders");
+        try {
+            var responseHeaders = httpCall.getResponseHeaders();
+        	console.log("responseHeaders = "+responseHeaders.length);
+
+            // Put the response headers in the call's attributes map
+        	console.log("response = "+response);
+        	console.log("response = "+response.getAttributes);
+        	console.log("response = "+response.getAttributes());
+            response.getAttributes()[HeaderConstants.ATTRIBUTE_HEADERS] = responseHeaders;
+
+            HeaderUtils.copyResponseTransportHeaders(responseHeaders, response);
+        } catch (err) {
+        	console.log(err);
+            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, err);
+        }
+    },
+    toSpecific: function(client, request) {
+        // Create the low-level HTTP client call
+        var result = client.create(request);
+
+        // Add the headers
+        if (result != null) {
+            HeaderUtils.addGeneralHeaders(request, result.getRequestHeaders());
+
+            if (request.getEntity() != null) {
+                HeaderUtils.addEntityHeaders(request.getEntity(),
+                        result.getRequestHeaders());
+            }
+
+            // NOTE: This must stay at the end because the AWS challenge
+            // scheme requires access to all HTTP headers
+            HeaderUtils.addRequestHeaders(request, result.getRequestHeaders());
+        }
+
+        return result;
+    },
+    updateResponse: function(response, status, httpCall) {
+    	console.log("updateResponse");
+        // Send the request to the client
+        response.setStatus(status);
+
+        // Get the server address
+        //TODO:
+        //response.getServerInfo().setAddress(httpCall.getServerAddress());
+        //response.getServerInfo().setPort(httpCall.getServerPort());
+
+        // Read the response headers
+        this.readResponseHeaders(httpCall, response);
+
+        // Set the entity
+        response.setEntity(httpCall.getResponseEntity(response));
+
+        // Release the representation's content for some obvious cases
+        if (response.getEntity() != null) {
+            if (response.getEntity().getSize() == 0) {
+                response.getEntity().release();
+            } else if (response.getRequest().getMethod().equals(Method.HEAD)) {
+                response.getEntity().release();
+            } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
+                response.getEntity().release();
+            } else if (response.getStatus()
+                    .equals(Status.SUCCESS_RESET_CONTENT)) {
+                response.getEntity().release();
+                response.setEntity(null);
+            } else if (response.getStatus().equals(
+                    Status.REDIRECTION_NOT_MODIFIED)) {
+                response.getEntity().release();
+            } else if (response.getStatus().isInformational()) {
+                response.getEntity().release();
+                response.setEntity(null);
+            }
+        }
+    },
+    commit: function(httpCall, request, callback) {
+        if (httpCall != null) {
+            // Send the request to the client
+        	var currentThis = this;
+            httpCall.sendRequest(request, function(response) {
+                try {
+                	currentThis.updateResponse(response,
+                            new Status(httpCall.getStatusCode(), null,
+                                    httpCall.getReasonPhrase(), null),
+                            httpCall);
+                    callback(response);
+                } catch (err) {
+                	console.log(err);
+                    // Unexpected exception occurred
+                    if ((response.getStatus() == null)
+                            || !response.getStatus().isError()) {
+                        response.setStatus(
+                                Status.CONNECTOR_ERROR_INTERNAL, err);
+                        callback(response);
+                    }
+                }
+            });
+        }
+    }
+});
+
+var HttpClientHelper = new JS.Class({
+    //public abstract ClientCall create(Request request);
+	getAdapter: function() {
+        if (this.adapter == null) {
+            this.adapter = new ClientAdapter(/*this.getContext()*/);
+        }
+
+        return this.adapter;
+	},
+    handle: function(request, callback) {
+        try {
+            var clientCall = this.getAdapter().toSpecific(this, request);
+            this.getAdapter().commit(clientCall, request, callback);
+        } catch (err) {
+            /*getLogger().log(Level.INFO,
+                    "Error while handling an HTTP client call", e);*/
+        	var response = new Response(request);
+        	console.log(err);
+            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, err);
+            response.setEntity(new Representation());
+            callback(response);
+        }
+    }
 });
 
 // [ifndef nodejs]
 var XhrHttpClientHelper = new JS.Class(HttpClientHelper, {
-// [enddef]
-// [ifdef nodejs] uncomment
-//var NodejsHttpClientHelper = new JS.Class(HttpClientHelper, {
-// [enddef]
 	initialize: function(client) {
 		this.client = client;
 	},
-	createClientCall: function(request) {
-        // [ifndef nodejs]
+	create: function(request) {
 		return new XhrHttpClientCall();
-		// [enddef]
-		// [ifdef nodejs] uncomment
-		//return new NodeJsHttpClientCall();
-		// [enddef]
-	},
-	handle: function (request, callback) {
-		if (this.clientCall==null) {
-			this.clientCall = this.createClientCall(request);
-		}
-		this.clientCall.sendRequest(request, callback);
 	}
 });
+// [enddef]
+
+// [ifdef nodejs] uncomment
+//var NodeJsHttpClientHelper = new JS.Class(HttpClientHelper, {
+//	initialize: function(client) {
+//		this.client = client;
+//	},
+//	create: function(request) {
+//		return new NodeJsHttpClientCall();
+//	}
+//});
+// [enddef]
 
 var Client = new JS.Class(Connector, {
 	initialize: function(context, protocols, helper) {
@@ -1543,6 +2416,18 @@ MediaType.extend({
 });
 
 var Variant = new JS.Class({
+	setMediaType: function(mediaType) {
+		this.mediaType = mediaType;
+	},
+	getMediaType: function() {
+		return this.mediaType;
+	},
+	getCharacterSet: function() {
+		return this.characterSet;
+	},
+	setCharacterSet: function(characterSet) {
+		this.characterSet = characterSet;
+	}
     /*private volatile CharacterSet characterSet;
     private volatile List<Encoding> encodings;
     private volatile Reference locationRef;
@@ -1568,13 +2453,43 @@ var RepresentationInfo = new JS.Class(Variant, {
 var Representation = new JS.Class(RepresentationInfo, {
 	initialize: function() {
 	},
-	setMediaType: function(mediaType) {
-		this.mediaType = mediaType;
-	},
-	getMediaType: function() {
-		return this.mediaType;
-	},
-	getText: function() {
+    getAvailable: function() {
+    	return this.available;
+    },
+    setAvailable: function(available) {
+    	this.available = available;
+    },
+    getDisposition: function() {
+    	return this.disposition;
+    },
+    setDisposition: function(disposition) {
+    	this.disposition = disposition;
+    },
+    getExpirationDate: function() {
+    	return this.expirationDate;
+    },
+    setExpirationDate: function(expirationDate) {
+    	this.expirationDate = expirationDate;
+    },
+    getIsTransient: function() {
+    	return this.isTransient;
+    },
+    setIsTransient: function(isTransient) {
+    	this.isTransient = isTransient;
+    },
+    getRange: function() {
+    	return this.range;
+    },
+    setRange: function(range) {
+    	this.range = range;
+    },
+    getSize: function() {
+    	return this.size;
+    },
+    setSize: function(size) {
+    	this.size = size;
+    },
+    getText: function() {
 		return this.text;
 	},
 	getXml: function() {
@@ -1936,9 +2851,9 @@ var ClientResource = new JS.Class({
 	}
 });
 
-// [ifdef nodejs] uncomment
+//[ifdef nodejs] uncomment
 //exports = {
 //	ClientResource: ClientResource,
 //	MediaType: MediaType
 //};
-// [enddef]
+//[enddef]

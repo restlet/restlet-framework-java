@@ -1,18 +1,28 @@
 <project name="RestletJS" basedir=".">
 
-	<property name="browser.dir" value="." />
-	<property name="nodejs.client.dir" value="." />
+	<property name="browser.dir" value="../browser" />
+	<property name="nodejs.client.dir" value="../nodejs/client" />
 	<property name="target.browser.client.dir" value="${basedir}/target/browser" />
 	<property name="target.nodejs.client.dir" value="${basedir}/target/node.js/client" />
 	
 	<path id="forge-path">
-		<fileset dir="${basedir}/forge" includes="**/*.jar" />
+		<fileset dir="${basedir}/lib/forge" includes="**/*.jar" />
 	</path>
 
-	<target name="generate-nodejs-client" description="Generate the client sources for node.js.">
+	<path id="jsmin-path">
+		<fileset dir="${basedir}/lib/jsmin" includes="**/*.jar" />
+	</path>
+
+	<taskdef name="jsmin"
+	        classname="net.matthaynes.jsmin.JSMin_Task"
+			classpathref="jsmin-path"/>
+
+	<target name="generate-nodejs-client"
+			description="Generate the client source for node.js.">
+		<delete dir="${target.nodejs.client.dir}"/>
 		<mkdir dir="${target.nodejs.client.dir}"/>
 		<copy todir="${target.nodejs.client.dir}" overwrite="true" includeEmptyDirs="false">
-			<fileset dir="${basedir}/" excludes="forge/**">
+			<fileset dir="${basedir}" excludes="forge/**,target/**">
 				<custom classname="selector.EditionFileSelector" classpathref="forge-path">
 					<param name="edition" value="nodejs"/>
 				</custom>
@@ -23,13 +33,27 @@
 					<param name="edition" value="nodejs" />
 				</filterreader>
 			</filterchain>
-	      </copy>
+	    </copy>
+		<jsmin suffix="true" destdir="${target.nodejs.client.dir}">
+		       <fileset dir="${target.nodejs.client.dir}" includes="**/*.js"/>
+		</jsmin>
+	</target>
+	
+	<target name="install-nodejs-client" depends="generate-nodejs-client"
+			description="Install the generated client source for node.js">
+		<copy todir="${nodejs.client.dir}" overwrite="true" includeEmptyDirs="false">
+			<fileset dir="${target.nodejs.client.dir}">
+	        	<include name="**/*.js" />
+			</fileset>
+		</copy>
 	</target>
 
-	<target name="generate-browser" description="Generate the client sources for browser.">
+	<target name="generate-browser-client"
+			description="Generate the client source for browser.">
+		<delete dir="${target.browser.client.dir}"/>
 		<mkdir dir="${target.browser.client.dir}"/>
 		<copy todir="${target.browser.client.dir}" overwrite="true" includeEmptyDirs="false">
-			<fileset dir="${basedir}/" excludes="forge/**">
+			<fileset dir="${basedir}" excludes="forge/**">
 				<custom classname="selector.EditionFileSelector" classpathref="forge-path">
 					<param name="edition" value="browser"/>
 				</custom>
@@ -40,6 +64,19 @@
 					<param name="edition" value="browser" />
 				</filterreader>
 			</filterchain>
-	      </copy>
+	    </copy>
+		<jsmin suffix="true" destdir="${target.browser.client.dir}">
+		       <fileset dir="${target.browser.client.dir}" includes="**/*.js"/>
+		</jsmin>
 	</target>
+
+	<target name="install-browser-client" depends="generate-browser-client"
+			description="Install the generated client source for browser">
+		<copy todir="${browser.dir}" overwrite="true" includeEmptyDirs="false">
+			<fileset dir="${target.browser.client.dir}">
+	        	<include name="**/*.js" />
+			</fileset>
+		</copy>
+	</target>
+
 </project>
