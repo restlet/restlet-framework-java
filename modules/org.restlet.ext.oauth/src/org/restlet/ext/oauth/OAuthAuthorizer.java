@@ -163,7 +163,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
 
     @Override
     public boolean authorize(Request req, Response resp) {
-        getLogger().info("Checking for param access_token");
+        getLogger().fine("Checking for param access_token");
         String accessToken = getAccessToken(req);
 
         if (accessToken == null || accessToken.length() == 0) {
@@ -175,7 +175,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
             resp.getChallengeRequests().add(cr);
             resp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         } else {
-            getLogger().info("Found Access Token " + accessToken);
+            getLogger().fine("Found Access Token " + accessToken);
             ClientResource authResource = new CookieCopyClientResource(
                     validateRef);
 
@@ -184,12 +184,12 @@ public class OAuthAuthorizer extends RoleAuthorizer {
                 request = createValidationRequest(accessToken, req);
                 // Representation repr = this.createJsonRepresentation(request);
                 Representation repr = new JsonStringRepresentation(request);
-                getLogger().info("Posting to validator... json = " + request);
+                getLogger().fine("Posting to validator... json = " + request);
                 // RETRIEVE JSON...WORKAROUND TO HANDLE ANDROID
                 Representation r = authResource.post(repr);
-                getLogger().info("After posting to validator...");
+                getLogger().fine("After posting to validator...");
                 repr.release();
-                getLogger().info(
+                getLogger().fine(
                         "Got Respose from auth resource OK "
                                 + r.getClass().getCanonicalName());
                 JsonRepresentation returned = new JsonRepresentation(r);
@@ -205,7 +205,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
                 if (response.has("error"))
                     error = response.getString("error");
 
-                getLogger().info("In Auth Filer -> " + authenticated);
+                getLogger().fine("In Auth Filer -> " + authenticated);
 
                 // Clean-up
                 returned.release();
@@ -271,11 +271,11 @@ public class OAuthAuthorizer extends RoleAuthorizer {
             for (Role r : roles)
                 jArray.put(Scopes.toScope(r));
             request.put("scope", jArray);
-            getLogger().info("Found scopes: " + jArray.toString());
+            getLogger().fine("Found scopes: " + jArray.toString());
         }
         String owner = (String) req.getAttributes().get("oauth-user");
         if (owner != null && owner.length() > 0) {
-            getLogger().info("Found Owner:" + owner);
+            getLogger().fine("Found Owner:" + owner);
             request.put("owner", owner);
         }
         request.put("uri", uri.getHierarchicalPart());
@@ -294,11 +294,11 @@ public class OAuthAuthorizer extends RoleAuthorizer {
         String accessToken = null;
         if (request.getChallengeResponse() != null) {
             accessToken = request.getChallengeResponse().getRawValue();
-            getLogger().info("Found Authorization header" + accessToken);
+            getLogger().fine("Found Authorization header" + accessToken);
         }
         // Check query for token
         else if (accessToken == null || accessToken.length() == 0) {
-            getLogger().info(
+            getLogger().fine(
                     "Didn't contain a Authorization header - checking query");
             accessToken = request.getOriginalRef().getQueryAsForm()
                     .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
@@ -388,7 +388,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
     private void setUser(Request req, JSONObject response, String accessToken)
             throws JSONException {
         String tokenOwner = response.getString("tokenOwner");
-        getLogger().info(
+        getLogger().fine(
                 "User " + tokenOwner + " is accessing : "
                         + req.getOriginalRef());
         User user = new User(tokenOwner, accessToken);

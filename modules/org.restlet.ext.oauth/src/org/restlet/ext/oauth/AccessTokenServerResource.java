@@ -187,9 +187,9 @@ public class AccessTokenServerResource extends OAuthServerResource {
         // String[] scopes = parseScope(params.getFirstValue(SCOPE));
         List<Role> roles = Scopes.toRoles(params.getFirstValue(SCOPE));
         for (Role r : roles) {
-            getLogger().info("Requested scopes none flow = " + roles);
+            getLogger().fine("Requested scopes none flow = " + roles);
             user.addRole(r, "");
-            getLogger().info("Adding scope = " + r.getName() + " to auto user");
+            getLogger().fine("Adding scope = " + r.getName() + " to auto user");
         }
 
         Token token = generator.generateToken(user, tokenTimeSec);
@@ -323,12 +323,12 @@ public class AccessTokenServerResource extends OAuthServerResource {
      */
     @Post("form:json")
     public Representation represent(Representation input) {
-        getLogger().info("Method = " + getMethod().getName());
-        getLogger().info("In request : " + getOriginalRef().toString());
+        getLogger().fine("Method = " + getMethod().getName());
+        getLogger().fine("In request : " + getOriginalRef().toString());
 
         Form params = new Form(input);
         String typeString = params.getFirstValue(GRANT_TYPE);
-        getLogger().info("Token Service - In service type = " + typeString);
+        getLogger().fine("Token Service - In service type = " + typeString);
 
         String clientId = params.getFirstValue(CLIENT_ID);
         String clientSecret = params.getFirstValue(CLIENT_SECRET);
@@ -343,14 +343,14 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
                 if (colon > -1) {
                     clientSecret = basic.substring(colon + 1);
-                    getLogger().info(
+                    getLogger().fine(
                             "Found secret in BASIC Authentication : "
                                     + clientSecret);
 
                     // Also allow for client ID to be transfered in user part
                     if (colon > 0) { // There is a user part
                         clientId = basic.substring(0, colon);
-                        getLogger().info(
+                        getLogger().fine(
                                 "Found id in BASIC Authentication : "
                                         + clientId);
                     }
@@ -377,12 +377,11 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         try {
             GrantType type = Enum.valueOf(GrantType.class, typeString);
-            getLogger().info("Found flow - " + type);
+            getLogger().fine("Found flow - " + type);
 
             try {
                 switch (type) {
                 case AUTHORIZATION_CODE:
-                    getLogger().info("doWebServerFlow() - flow");
                     toRet = doAuthCodeFlow(clientId, clientSecret, params);
                     break;
                 case PASSWORD:
@@ -466,7 +465,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
     // TODO The secret should be a char[].
     private Client validate(String clientId, String clientSecret) {
         Client client = clients.findById(clientId);
-        getLogger().info("Client = " + client);
+        getLogger().fine("Client = " + client);
 
         if (client == null) {
             sendError(OAuthError.INVALID_CLIENT,
@@ -481,7 +480,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
             sendError(OAuthError.INVALID_GRANT, "Client secret did not match",
                     null);
             setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-            getLogger().info(
+            getLogger().warning(
                     "Could not find or match client secret " + clientSecret
                             + " : " + client.getClientSecret());
         }

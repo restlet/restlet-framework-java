@@ -154,9 +154,9 @@ public class AuthPageServerResource extends OAuthServerResource {
 
         // Check if an auth page is set in the Context
         String authPage = OAuthHelper.getAuthPageTemplate(getContext());
-        getLogger().info("this is auth page: " + authPage);
+        getLogger().fine("this is auth page: " + authPage);
         if (authPage != null && authPage.length() > 0) {
-            getLogger().info("loading authPage: " + authPage);
+            getLogger().fine("loading authPage: " + authPage);
             // Check if we should skip the page if already approved scopes
             boolean sameScope = OAuthHelper.getAuthSkipApproved(getContext());
             if (sameScope) {
@@ -179,10 +179,10 @@ public class AuthPageServerResource extends OAuthServerResource {
             getResponse().setCacheDirectives(noCache);
             return getPage(authPage);
         }
-        getLogger().info("accepting scopes since no authPage: " + authPage);
+        getLogger().fine("accepting scopes since no authPage: " + authPage);
         // No page automatically accept all the scopes requested
         handleAction("Accept", getQuery().getValuesArray("scope"));
-        getLogger().info("action handled");
+        getLogger().fine("action handled");
         return new EmptyRepresentation(); // Will redirect
     }
 
@@ -204,8 +204,6 @@ public class AuthPageServerResource extends OAuthServerResource {
         if (sessionId == null)
             sessionId = getCookies().getFirstValue(ClientCookieID);
 
-        // getLogger().info("This is sessionId: "+sessionId);
-        // getLogger().info("This is sessionId: "+getRequest().getAttributes().get(ClientCookieID));
         ConcurrentMap<String, Object> attribs = getContext().getAttributes();
         AuthSession session = (sessionId == null) ? null
                 : (AuthSession) attribs.get(sessionId);
@@ -214,15 +212,15 @@ public class AuthPageServerResource extends OAuthServerResource {
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             sendError(session, OAuthError.ACCESS_DENIED, session.getState(),
                     "Rejected.", null);
-            getLogger().info("Rejected.");
+            getLogger().fine("Rejected.");
             return;
         }
-        getLogger().info("Accepting scopes - in handleAction");
+        getLogger().fine("Accepting scopes - in handleAction");
         Client client = session.getClient();
         String id = session.getScopeOwner();
 
         String redirUrl = session.getDynamicCallbackURI();
-        getLogger().info("OAuth2 get dynamic callback = " + redirUrl);
+        getLogger().fine("OAuth2 get dynamic callback = " + redirUrl);
         if (redirUrl == null || redirUrl.length() == 0)
             redirUrl = client.getRedirectUri();
 
@@ -249,7 +247,7 @@ public class AuthPageServerResource extends OAuthServerResource {
         // Scope parameter should be appended only if different.
 
         for (String s : scopes) {
-            getLogger().info("Adding scope = " + s + " to user = " + id);
+            getLogger().fine("Adding scope = " + s + " to user = " + id);
             user.addRole(Scopes.toRole(s), "");
         }
 
@@ -297,7 +295,7 @@ public class AuthPageServerResource extends OAuthServerResource {
         ContextTemplateLoader ctl = new ContextTemplateLoader(getContext(),
                 "clap:///");
         config.setTemplateLoader(ctl);
-        getLogger().info("loading: " + authPage);
+        getLogger().fine("loading: " + authPage);
         TemplateRepresentation result = new TemplateRepresentation(authPage,
                 config, MediaType.TEXT_HTML);
 

@@ -212,7 +212,7 @@ public class OAuthProxy extends Filter {
         }
 
         String code = query.getFirstValue(OAuthServerResource.CODE);
-        getLogger().info("Incomming request query = " + query);
+        getLogger().fine("Incomming request query = " + query);
 
         if (code == null) {
             Form form = new Form();
@@ -238,16 +238,16 @@ public class OAuthProxy extends Filter {
 
             Reference redirRef = new Reference(params.getBaseRef(),
                     params.getAuthorizePath(), q, null);
-            getLogger().info("Redirecting to : " + redirRef.toUri());
+            getLogger().fine("Redirecting to : " + redirRef.toUri());
             // response.redirectSeeOther(redirRef);
             response.setCacheDirectives(no);
             response.redirectTemporary(redirRef);
             // response.commit();
-            getLogger().info("After Redirecting to : " + redirRef.toUri());
+            getLogger().fine("After Redirecting to : " + redirRef.toUri());
             // return true;
             // return null;
         } else {
-            getLogger().info("Came back after SNS code = " + code);
+            getLogger().fine("Came back after SNS code = " + code);
             ClientResource tokenResource = new CookieCopyClientResource(
                     params.getBaseRef() + params.getAccessTokenPath());
 
@@ -274,7 +274,7 @@ public class OAuthProxy extends Filter {
             }
 
             form.add(OAuthServerResource.CODE, code);
-            getLogger().info(
+            getLogger().fine(
                     "Sending access form : " + form.getQueryString() + " to : "
                             + tokenResource.getReference());
 
@@ -289,14 +289,13 @@ public class OAuthProxy extends Filter {
                     if (authUser != null) {
                         request.getClientInfo().setUser(authUser);
                         request.getClientInfo().setAuthenticated(true);
-                        getLogger().info(
+                        getLogger().fine(
                                 "storing to context = : " + getContext());
                         // continue in the filter chain
                         auth = true;
                     }
                 }
-
-                getLogger().info("Before sns release");
+                getLogger().fine("Before sns release");
                 body.release();
             } catch (ResourceException re) {
                 getLogger().warning("Could not find token resource.");

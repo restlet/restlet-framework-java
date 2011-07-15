@@ -72,7 +72,7 @@ public class ValidationServerResource extends OAuthServerResource {
     @Post("json")
     public Representation validate(Representation input)
             throws ResourceException {
-        getLogger().info("In Validator resource");
+        getLogger().fine("In Validator resource");
         JSONObject response = new JSONObject();
         boolean authenticated = false;
         String lo = (String) getContext().getAttributes()
@@ -108,7 +108,7 @@ public class ValidationServerResource extends OAuthServerResource {
             if (call.has("owner"))
                 owner = call.getString("owner");
 
-            getLogger().info(
+            getLogger().fine(
                     "In Validator resource - searching for token = " + token);
             Token t = generator.findToken(token);
 
@@ -117,7 +117,7 @@ public class ValidationServerResource extends OAuthServerResource {
                 error = OAuthError.INVALID_TOKEN.name();
                 // setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             } else {
-                getLogger().info("In Validator resource - got token = " + t);
+                getLogger().fine("In Validator resource - got token = " + t);
 
                 if (t instanceof ExpireToken) {
                     // check that the right token was used
@@ -131,9 +131,9 @@ public class ValidationServerResource extends OAuthServerResource {
                 }
 
                 // Todo do more fine grained scope comparison.
-                getLogger().info("Received uri = " + uri);
-                getLogger().info("Received scope = " + scopes);
-                getLogger().info("Received owner = " + owner);
+                getLogger().fine("Received uri = " + uri);
+                getLogger().fine("Received scope = " + scopes);
+                getLogger().fine("Received owner = " + owner);
 
                 AuthenticatedUser user = t.getUser();
                 authenticated = (user == null) ? false : true;
@@ -150,7 +150,7 @@ public class ValidationServerResource extends OAuthServerResource {
                         String scope = scopes.getString(i);
                         boolean granted = user.isGrantedRole(
                                 Scopes.toRole(scope), owner);
-                        getLogger().info(
+                        getLogger().fine(
                                 "Granted permission : " + scope + " = "
                                         + granted);
                         if (!granted) {

@@ -160,10 +160,10 @@ public abstract class OAuthServerResource extends ServerResource {
          * clients = (ClientStore<?>) attribs.get(ClientStore.class
          * .getCanonicalName());
          */
-        getLogger().info("Found client store = " + clients);
+        getLogger().fine("Found client store = " + clients);
 
         generator = clients.getTokenGenerator();
-        getLogger().info("Found token generator = " + generator);
+        getLogger().fine("Found token generator = " + generator);
 
         if (attribs.containsKey(TOKEN_SERVER_TIME_SEC)) {
             tokenTimeSec = (Long) attribs.get(TOKEN_SERVER_TIME_SEC);
@@ -206,7 +206,7 @@ public abstract class OAuthServerResource extends ServerResource {
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
 
-        getLogger().info("Redirecting to -> " + location.toString());
+        getLogger().fine("Redirecting to -> " + location.toString());
         // TODO add state to request string
         return location.toString();
     }
@@ -240,7 +240,7 @@ public abstract class OAuthServerResource extends ServerResource {
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
 
-        getLogger().info("Redirecting to -> " + location.toString());
+        getLogger().fine("Redirecting to -> " + location.toString());
         // TODO add state to request string
         return location.toString();
     }

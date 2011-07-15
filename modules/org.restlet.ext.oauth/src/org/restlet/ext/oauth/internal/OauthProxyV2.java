@@ -84,7 +84,7 @@ public class OauthProxyV2 extends Filter {
         Form query = new Form(request.getOriginalRef().getQuery());
 
         String code = query.getFirstValue("code");
-        getLogger().info("Incomming request query = " + query);
+        getLogger().fine("Incomming request query = " + query);
 
         if (code == null) {
             Form form = new Form();
@@ -101,20 +101,20 @@ public class OauthProxyV2 extends Filter {
                 getLogger().warning(ioe.getMessage());
             }
             String q = form.getQueryString();
-            getLogger().info("TEST query = " + q);
+            getLogger().fine("TEST query = " + q);
 
             Reference redirRef = new Reference(params.getBaseRef(),
                     params.getAuthorizePath(), q, null);
             // Reference redirRef = new
             // Reference(baseRef,"OAuth2Provider/authorize",q,null);
-            getLogger().info("Redirecting to : " + redirRef.toUri());
+            getLogger().fine("Redirecting to : " + redirRef.toUri());
             response.redirectSeeOther(redirRef);
             // response.commit();
-            getLogger().info("After Redirecting to : " + redirRef.toUri());
+            getLogger().fine("After Redirecting to : " + redirRef.toUri());
             // return true;
             // return null;
         } else {
-            getLogger().info("Came back after SNS code = " + code);
+            getLogger().fine("Came back after SNS code = " + code);
 
             ClientResource graphResource = new ClientResource(
                     params.getBaseRef());
@@ -139,18 +139,18 @@ public class OauthProxyV2 extends Filter {
                     .getWebRepresentation());
             if (tokenResource.getStatus().isSuccess()) {
                 Form answer = new Form(body);
-                getLogger().info(
+                getLogger().fine(
                         "Got answer on AccessToken = " + answer.toString());
                 accessToken = answer.getFirstValue("access_token");
                 getLogger()
-                        .info("AccessToken in changed OldOauthProxy = "
+                        .fine("AccessToken in changed OldOauthProxy = "
                                 + accessToken);
                 request.getClientInfo().setUser(
                         new OAuthUser(null, accessToken));
                 request.getClientInfo().setAuthenticated(true);
                 auth = true;
             }
-            getLogger().info("Before graph release");
+            getLogger().fine("Before graph release");
             body.release();
             tokenResource.release();
             graphResource.release();

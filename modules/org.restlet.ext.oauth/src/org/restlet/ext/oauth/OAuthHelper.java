@@ -140,7 +140,7 @@ public class OAuthHelper extends AuthenticatorHelper {
      * @return The value of the "authSkipApproved" parameter.
      */
     public static boolean getAuthSkipApproved(Context c) {
-        c.getLogger().info("Trying to get auth page templat");
+        c.getLogger().fine("Trying to get auth page template");
         String skip = c.getParameters().getFirstValue("authSkipApproved");
         if (skip == null)
             return false;

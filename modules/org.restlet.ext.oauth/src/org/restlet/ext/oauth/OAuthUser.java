@@ -60,26 +60,26 @@ public class OAuthUser extends User {
             // Debug test for tracing back error
             JSONObject answer = new JSONObject(body.getText());
 
-            log.info("Got answer on JSON = " + answer.toString());
+            log.fine("Got answer on JSON = " + answer.toString());
 
             String accessToken = null;
             if (answer.has(OAuthServerResource.ACCESS_TOKEN)) {
                 accessToken = answer
                         .getString(OAuthServerResource.ACCESS_TOKEN);
-                log.info("AccessToken = " + accessToken);
+                log.fine("AccessToken = " + accessToken);
             }
 
             String refreshToken = null;
             if (answer.has(OAuthServerResource.REFRESH_TOKEN)) {
                 refreshToken = answer
                         .getString(OAuthServerResource.REFRESH_TOKEN);
-                log.info("RefreshToken = " + refreshToken);
+                log.fine("RefreshToken = " + refreshToken);
             }
 
             long expiresIn = 0;
             if (answer.has(OAuthServerResource.EXPIRES_IN)) {
                 expiresIn = answer.getLong(OAuthServerResource.EXPIRES_IN);
-                log.info("ExpiresIn = " + expiresIn);
+                log.fine("ExpiresIn = " + expiresIn);
             }
 
             // Store away the user

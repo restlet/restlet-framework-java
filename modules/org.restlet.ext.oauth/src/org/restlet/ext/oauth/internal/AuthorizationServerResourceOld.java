@@ -89,37 +89,37 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
         // if( sessionId == null )
         // sessionId =
         // getResponse().getCookieSettings().getFirstValue(ClientCookieID);
-        getLogger().info("sessionId = " + sessionId);
+        getLogger().fine("sessionId = " + sessionId);
 
         ConcurrentMap<String, Object> attribs = getContext().getAttributes();
         AuthSession session = (sessionId == null) ? null
                 : (AuthSession) attribs.get(sessionId);
 
         String id = (String) getContext().getAttributes().get(ID);
-        getLogger().info("id = " + id);
-        getLogger().info("session = " + session);
+        getLogger().fine("id = " + id);
+        getLogger().fine("session = " + session);
 
         if (session != null)
-            getLogger().info("client = " + session.getClient());
+            getLogger().fine("client = " + session.getClient());
         else { // cleanup old cookie
             getCookieSettings().removeAll(ClientCookieID);
         }
 
         if (id != null && session != null && session.getClient() != null) {
-            getLogger().info("After Authentication - cleanup");
+            getLogger().fine("After Authentication - cleanup");
             params.removeFirst(OPENID);
             Client client = (Client) session.getClient();
-            getLogger().info("Found client = " + client);
+            getLogger().fine("Found client = " + client);
             session.setScopeOwner(id);
             return doPostAuthenticate(session, client);
         }
 
         String typeString = params.getFirstValue(RESPONSE_TYPE);
-        getLogger().info("In service type = " + typeString);
+        getLogger().fine("In service type = " + typeString);
 
         try {
             ResponseType type = Enum.valueOf(ResponseType.class, typeString);
-            getLogger().info("Found flow - " + type);
+            getLogger().fine("Found flow - " + type);
             if (Method.GET.equals(getMethod())) {
                 doGet(type, session);
             } else
@@ -138,7 +138,7 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
     }
 
     protected void doGet(ResponseType flow, AuthSession session) {
-        getLogger().info("doGet()");
+        getLogger().fine("doGet()");
         // Form requestHeaders = (Form)
         // getRequest().getAttributes().get("org.restlet.http.headers");
         Form params = getQuery();
@@ -160,7 +160,7 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
             sendError(sessionId, OAuthError.INVALID_REQUEST,
                     params.getFirstValue(STATE),
                     "No client_id parameter found.", null);
-            getLogger().info("Could not find client ID");
+            getLogger().warning("Could not find client ID");
         }
     }
 
@@ -177,24 +177,24 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
             sendError(sessionId, OAuthError.INVALID_REQUEST,
                     params.getFirstValue(STATE),
                     "No redirect_uri parameter found.", null);
-            getLogger().info("No mandatory redirect URI provided");
+            getLogger().warning("No mandatory redirect URI provided");
             return;
         }
 
         // Check that clientID and redirURI match
         Client client = clients.findById(clientId);
-        getLogger().info("Client = " + client);
+        getLogger().fine("Client = " + client);
 
         if (client == null) {
             // client = clients.createClient(clientId, redirUri);
             sendError(sessionId, OAuthError.INVALID_CLIENT,
                     params.getFirstValue(STATE),
                     "Need to register the client : " + clientId, null);
-            getLogger().info("Need to register the client : " + clientId);
+            getLogger().warning("Need to register the client : " + clientId);
             return;
         }
 
-        getLogger().info(
+        getLogger().fine(
                 "Compare client redir:provided redir = "
                         + client.getRedirectUri() + ":" + redirUri);
 
@@ -202,7 +202,7 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
             sendError(sessionId, OAuthError.REDIRECT_URI_MISMATCH,
                     params.getFirstValue(STATE),
                     "Callback URI does not match.", null);
-            getLogger().info("Callback URI does not match.");
+            getLogger().warning("Callback URI does not match.");
             return;
         }
 
@@ -217,7 +217,7 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
                 String[] requestedScopes = parseScope(params
                         .getFirstValue(SCOPE));
                 for (String scope : requestedScopes) {
-                    getLogger().info("Requested scopes = " + scope);
+                    getLogger().fine("Requested scopes = " + scope);
                 }
 
                 session.setClient(client);
@@ -228,7 +228,7 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
                 // Might be used to allow more fine grained path or query params
                 if (!redirUri.equals(client.getRedirectUri())) {
                     session.setDynamicCallbackURI(redirUri);
-                    getLogger().info(
+                    getLogger().fine(
                             "OAuth2 set dynamic callback = " + redirUri);
                 }
 
@@ -257,7 +257,7 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
 
         Reference ref = new Reference("riap://application/"
                 + OAuthHelper.getAuthPage(getContext()));
-        getLogger().info("Name = " + getApplication().getInboundRoot());
+        getLogger().fine("Name = " + getApplication().getInboundRoot());
         ref.addQueryParameter("client", client.getClientId());
         // Requested
         String[] scopes = session.getRequestedScope();
@@ -279,7 +279,7 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
             }
         }
 
-        getLogger().info("Redir = " + ref);
+        getLogger().fine("Redir = " + ref);
         Redirector dispatcher = new Redirector(getContext(), ref.toString(),
                 Redirector.MODE_SERVER_OUTBOUND);
         dispatcher.handle(getRequest(), getResponse());

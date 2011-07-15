@@ -134,7 +134,7 @@ public enum Flow {
         ClientResource tokenResource = new CookieCopyClientResource(
                 params.getBaseRef() + params.getAccessTokenPath());
         tokenResource.setNext(c);
-        Context.getCurrentLogger().info(
+        Context.getCurrentLogger().fine(
                 "Sending NoneFlow form : " + form.getQueryString());
 
         Representation body = tokenResource.post(form.getWebRepresentation());
@@ -178,7 +178,7 @@ public enum Flow {
                 params.getBaseRef() + params.getAccessTokenPath());
         tokenResource.setNext(c);
 
-        Context.getCurrentLogger().info(
+        Context.getCurrentLogger().fine(
                 "Sending PasswordFlow form : " + form.getQueryString());
         Representation body = null;
 
@@ -224,7 +224,7 @@ public enum Flow {
         form.add(OAuthServerResource.CLIENT_SECRET, params.getClientSecret());
         form.add(OAuthServerResource.REFRESH_TOKEN, refreshToken);
 
-        Context.getCurrentLogger().info(
+        Context.getCurrentLogger().fine(
                 "Sending refresh form : " + form.getQueryString());
 
         Representation body = tokenResource.post(form.getWebRepresentation());
