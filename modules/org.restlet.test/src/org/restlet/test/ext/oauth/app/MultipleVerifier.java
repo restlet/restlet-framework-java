@@ -30,18 +30,29 @@
 
 package org.restlet.test.ext.oauth.app;
 
+import java.util.Map;
+
 import org.restlet.security.SecretVerifier;
 
 /**
  * @author esvmart
  *
  */
-public class MyVerifier extends SecretVerifier {
+public class MultipleVerifier extends SecretVerifier {
+    
+    private final Map <String, String> users;
+    
+    public MultipleVerifier(Map <String, String> users){
+        this.users = users;
+    }
 
     @Override
     public boolean verify(String identifier, char[] secret) {
-        return (("bob".equals(identifier)) && compare("alice".toCharArray(),
-                secret));
+        if(users == null) return false;
+        if(identifier == null || secret == null) return false;
+        String pass = users.get(identifier);
+        if(pass == null) return false;
+        return compare(pass.toCharArray(), secret);
     }
 
 }

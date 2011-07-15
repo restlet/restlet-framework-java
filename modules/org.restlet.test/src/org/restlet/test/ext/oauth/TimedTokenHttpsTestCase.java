@@ -28,49 +28,16 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test.ext.oauth.app;
-
-import org.restlet.engine.Engine;
+package org.restlet.test.ext.oauth;
 
 /**
  * @author esvmart
  *
  */
-public class SingletonStore {
+public class TimedTokenHttpsTestCase extends TimedTokenTestCase {
     
-    
-    //private SingletonStore store = null;
-    private int numRequests = 0;
-    private int numErrors = 0;
-    
-    private static class SingletonHolder { 
-      private final static SingletonStore singletonStore = new SingletonStore();
-      
-    }
-
-    public static SingletonStore getInstance() {
-      return SingletonHolder.singletonStore;
-    }
-    
-    public static SingletonStore I() {
-      return SingletonHolder.singletonStore;
-    }
-    
-    public synchronized void addRequest(){
-      numRequests++;
-      if(numRequests % 100 == 0)
-          Engine.getAnonymousLogger().warning("executed: "+numRequests);
-    }
-    
-    public synchronized int getCallbacks(){return numRequests;}
-    
-    public synchronized void addError(){numErrors++;}
-    
-    public synchronized int getErrors(){return numErrors;}
-    
-    public synchronized void clear(){
-      this.numErrors = 0;
-      this.numErrors = 0;
+    public TimedTokenHttpsTestCase(){
+        super(true);
     }
 
 }

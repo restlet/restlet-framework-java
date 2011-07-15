@@ -40,10 +40,15 @@ public class OAuthTestSuite extends TestSuite{
     public static Test suite(){
         TestSuite result = new TestSuite("OAuth Extension");
         result.addTestSuite(AuthorizationServerTestCase.class);
+        result.addTestSuite(AuthorizationServerHttpsTestCase.class);
         result.addTestSuite(TimedTokenTestCase.class);
+        result.addTestSuite(TimedTokenHttpsTestCase.class);
         result.addTestSuite(TokenGeneratorTestCase.class);
-        result.addTestSuite(TimedTokenSSLTestCase.class);
         //result.addTestSuite(MultipleUserAuthorizationServerTestCase.class);
+        result.addTestSuite(MultipleUserAuthorizationServerHttpsTestCase.class);
+        //
+        
+        //
         return result;
     }
 

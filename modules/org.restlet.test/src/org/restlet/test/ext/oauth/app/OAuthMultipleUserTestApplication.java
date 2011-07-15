@@ -30,6 +30,8 @@
 
 package org.restlet.test.ext.oauth.app;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -49,16 +51,23 @@ import org.restlet.ext.oauth.ValidationServerResource;
 import org.restlet.ext.oauth.internal.MemClientStore;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
-import org.restlet.test.ext.oauth.AuthorizationServerTestCase;
 
 public class OAuthMultipleUserTestApplication extends Application {
 	public static final String TEST_USER = "dummyUser";
 	public static final String TEST_PASS = "dummyPassword";
 	
     private long timeout = 0; // unlimited
+    private String protocol = null;
+    private int port;
 
     public OAuthMultipleUserTestApplication(long timeout) {
+        this(timeout, "http", 8080);
+    }
+    
+    public OAuthMultipleUserTestApplication(long timeout, String protocol, int port) {
         this.timeout = timeout;
+        this.protocol = protocol;
+        this.port = port;
     }
 
     @Override
@@ -80,14 +89,15 @@ public class OAuthMultipleUserTestApplication extends Application {
         ClientStore<?> clientStore = ClientStoreFactory.getInstance();
         
         Client client = clientStore.createClient("client1234", "secret1234",
-                AuthorizationServerTestCase.prot + "://localhost:"
-                + AuthorizationServerTestCase.serverPort + "/");
+                protocol + "://localhost:" + port + "/");
         
         //Create 10 users:
-        for(int i = 1; i < 6; i++){
+        Map <String, String> verifierUsers = new HashMap <String, String> ();
+        for(int i = 1; i < 10; i++){
             //Bootstrap for password flow test...
             AuthenticatedUser user = client.createUser("user"+i);
             user.setPassword("pass"+i);
+            verifierUsers.put("user"+i, "pass"+i);
         }
         
         attribs.put(ClientStore.class.getCanonicalName(), clientStore);
@@ -97,6 +107,7 @@ public class OAuthMultipleUserTestApplication extends Application {
         // Oauth 2 resources
         ChallengeAuthenticator au = new ChallengeAuthenticator(getContext(),
                 ChallengeScheme.HTTP_BASIC, "OAuth Test Server");
+        au.setVerifier(new MultipleVerifier(verifierUsers));
         au.setNext(AuthorizationServerResource.class);
         router.attach("/authorize", au);
         router.attach("/access_token", AccessTokenServerResource.class);

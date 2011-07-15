@@ -45,7 +45,7 @@ public class OAuthClientTestApplication extends Application {
     private OAuthParameters params;
     private String protocol;
     private int port;
-    protected static OAuthUser user;
+    //protected OAuthUser user;
     
     public OAuthClientTestApplication(){
         this("http", 8080);
@@ -78,21 +78,26 @@ public class OAuthClientTestApplication extends Application {
 
     
     public String getToken() {
-        if (user != null) {
+        OAuthUser u = getUser();
+        if(u != null) return u.getAccessToken();
+        /*if (user != null) {
             return user.getAccessToken();
-        }
+        }*/
         return null;
     }
 
     public OAuthUser getUser() {
-        if (user != null) {
+        OAuthUser u = (OAuthUser) getContext().getAttributes().get("testuser");
+        return u;
+        /*if (user != null) {
             return user;
-        }
-        return null;
+        }*/
+        //return null;
     }
     
     public void clearUser(){
-        user = null;
+        getContext().getAttributes().remove("testuser");
+        //user = null;
     }
     
     

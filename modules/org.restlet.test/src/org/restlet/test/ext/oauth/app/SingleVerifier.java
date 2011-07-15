@@ -30,47 +30,18 @@
 
 package org.restlet.test.ext.oauth.app;
 
-import org.restlet.engine.Engine;
+import org.restlet.security.SecretVerifier;
 
 /**
  * @author esvmart
  *
  */
-public class SingletonStore {
-    
-    
-    //private SingletonStore store = null;
-    private int numRequests = 0;
-    private int numErrors = 0;
-    
-    private static class SingletonHolder { 
-      private final static SingletonStore singletonStore = new SingletonStore();
-      
-    }
+public class SingleVerifier extends SecretVerifier {
 
-    public static SingletonStore getInstance() {
-      return SingletonHolder.singletonStore;
-    }
-    
-    public static SingletonStore I() {
-      return SingletonHolder.singletonStore;
-    }
-    
-    public synchronized void addRequest(){
-      numRequests++;
-      if(numRequests % 100 == 0)
-          Engine.getAnonymousLogger().warning("executed: "+numRequests);
-    }
-    
-    public synchronized int getCallbacks(){return numRequests;}
-    
-    public synchronized void addError(){numErrors++;}
-    
-    public synchronized int getErrors(){return numErrors;}
-    
-    public synchronized void clear(){
-      this.numErrors = 0;
-      this.numErrors = 0;
+    @Override
+    public boolean verify(String identifier, char[] secret) {
+        return (("bob".equals(identifier)) && compare("alice".toCharArray(),
+                secret));
     }
 
 }

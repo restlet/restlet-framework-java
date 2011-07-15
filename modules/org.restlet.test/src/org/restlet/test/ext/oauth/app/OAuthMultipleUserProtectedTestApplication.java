@@ -39,16 +39,16 @@ import org.restlet.routing.Router;
 public class OAuthMultipleUserProtectedTestApplication extends Application {
 
     private String protocol;
-    private String oauthServerPort;
+    private int oauthServerPort;
     
     
     public OAuthMultipleUserProtectedTestApplication(){
         this.protocol = "http";
-        this.oauthServerPort = "8081";
+        this.oauthServerPort = 8081;
     }
     
     public OAuthMultipleUserProtectedTestApplication(String protocol,
-            String oauthServerPort){
+            int oauthServerPort){
         this.protocol = protocol;
         this.oauthServerPort = oauthServerPort;
     }

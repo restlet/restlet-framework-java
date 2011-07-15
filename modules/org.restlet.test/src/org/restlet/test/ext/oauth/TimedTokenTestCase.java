@@ -65,6 +65,11 @@ public class TimedTokenTestCase extends OAuthHttpTestBase{
     public TimedTokenTestCase(){
         OAuthHttpTestBase.tokenTimeout = 5;
     }
+    
+    public TimedTokenTestCase(boolean https){
+        super(false, true);
+        OAuthHttpTestBase.tokenTimeout = 5;
+    }
 
 
     /**
@@ -76,7 +81,7 @@ public class TimedTokenTestCase extends OAuthHttpTestBase{
         assertNull(client.getToken());
         ChallengeResponse chresp = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "bob", "alice");
-        ClientResource cr = new CookieCopyClientResource(prot + "://localhost:"
+        ClientResource cr = new CookieCopyClientResource(getProt() + "://localhost:"
                 + serverPort + "/client/webclient");
         cr.setChallengeResponse(chresp);
         Representation r = cr.get();
@@ -90,7 +95,7 @@ public class TimedTokenTestCase extends OAuthHttpTestBase{
         cr.release();
         // Query test
         assertNotNull(client.getToken());
-        Reference ref = new Reference(prot + "://localhost:" + serverPort
+        Reference ref = new Reference(getProt() + "://localhost:" + serverPort
                 + "/server/protected");
         ref.addQueryParameter("oauth_token", client.getToken());
         cr = new ClientResource(ref);
@@ -135,7 +140,7 @@ public class TimedTokenTestCase extends OAuthHttpTestBase{
         assertNotNull(newToken);
 
         // Query test
-        Reference ref = new Reference(prot + "://localhost:" + serverPort
+        Reference ref = new Reference(getProt() + "://localhost:" + serverPort
                 + "/server/protected");
         ref.addQueryParameter("oauth_token", newToken);
         ClientResource cr = new ClientResource(ref);
@@ -147,7 +152,7 @@ public class TimedTokenTestCase extends OAuthHttpTestBase{
                 MediaType.TEXT_HTML);
         cr.release();
         // Check the token we got before
-        ref = new Reference(prot + "://localhost:" + serverPort
+        ref = new Reference(getProt() + "://localhost:" + serverPort
                 + "/server/protected");
         ref.addQueryParameter("oauth_token", wrongToken);
         cr = new ClientResource(ref);

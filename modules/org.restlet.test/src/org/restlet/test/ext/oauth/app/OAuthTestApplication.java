@@ -101,7 +101,7 @@ public class OAuthTestApplication extends Application {
         //Challenge Authenticator
         ChallengeAuthenticator au = new ChallengeAuthenticator(getContext(),
                 ChallengeScheme.HTTP_BASIC, "OAuth Test Server");
-        au.setVerifier(new MyVerifier());
+        au.setVerifier(new SingleVerifier());
         au.setNext(AuthorizationServerResource.class);
         
         // Oauth 2 resources

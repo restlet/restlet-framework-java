@@ -31,38 +31,41 @@
 package org.restlet.test.ext.oauth;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.junit.Test;
-import org.restlet.Component;
-import org.restlet.Context;
-import org.restlet.Server;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
-import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.Engine;
-import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.ext.oauth.Flow;
 import org.restlet.ext.oauth.OAuthForm;
-import org.restlet.ext.oauth.OAuthHelper;
 import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
-import org.restlet.test.RestletTestCase;
-import org.restlet.test.ext.oauth.app.OAuthClientTestApplication;
-import org.restlet.test.ext.oauth.app.OAuthComboTestApplication;
-import org.restlet.test.ext.oauth.app.OAuthProtectedTestApplication;
 import org.restlet.test.ext.oauth.app.OAuthTestApplication;
 
 public class AuthorizationServerTestCase extends OAuthHttpTestBase{
     
-    public void testWebServerFlow() throws Exception {
+    public AuthorizationServerTestCase(){
+        super();
+    }
+    
+    public AuthorizationServerTestCase(boolean https){
+        super(false, true);
+    }
+    
+    public void testAuthorizationServer() throws Exception{
+        webFlow();
+        noneFlow();
+        passwordFlow();
+        scopedResource();
+    }
+    
+    public void webFlow() throws Exception {
         assertNull(client.getToken());
-        ClientResource cr = new ClientResource(prot + "://localhost:"
+        ClientResource cr = new ClientResource(getProt() + "://localhost:"
                 + serverPort + "/client/webclient");
         ChallengeResponse chresp = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "bob", "alice");
@@ -77,7 +80,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
         
         //reuse token
         // Testing Authorization header
-        Reference ref = new Reference(prot + "://localhost:" + serverPort
+        Reference ref = new Reference(getProt() + "://localhost:" + serverPort
                 + "/server/protected");
         cr = new ClientResource(ref);
         ChallengeResponse challengeResponse = new ChallengeResponse(
@@ -93,7 +96,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
         cr.release();
 
         // Testing form
-        ref = new Reference(prot + "://localhost:" + serverPort
+        ref = new Reference(getProt() + "://localhost:" + serverPort
                 + "/server/protected");
         cr = new ClientResource(ref);
         OAuthForm form = new OAuthForm(client.getToken());
@@ -107,7 +110,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
         cr.release();
         
         //Query
-        ref = new Reference(prot + "://localhost:" + serverPort
+        ref = new Reference(getProt() + "://localhost:" + serverPort
                 + "/server/protected");
         ref.addQueryParameter("oauth_token", client.getToken());
         cr = new ClientResource(ref);
@@ -121,13 +124,13 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
         
     }
 
-    public void testNoneFlow() throws IOException {
+    public void noneFlow() throws IOException {
         OAuthUser user = Flow.NONE.execute(client.getOauthParameters(), null,
                 null, null, null, null);
         assertNotNull(user);
 
         // Try to use the token...
-        Reference ref = new Reference(prot + "://localhost:" + serverPort
+        Reference ref = new Reference(getProt() + "://localhost:" + serverPort
                 + "/server/protected");
         ref.addQueryParameter("oauth_token", user.getAccessToken());
         ClientResource cr = new ClientResource(ref);
@@ -140,9 +143,9 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
         cr.release();
 
         // None flow scoped test
-        ref = new Reference(prot + "://localhost:" + serverPort
+        ref = new Reference(getProt() + "://localhost:" + serverPort
                 + "/server/scoped");
-        ref.addQueryParameter("oauth_token", client.getToken());
+        ref.addQueryParameter("oauth_token", user.getAccessToken());
         cr = new ClientResource(ref);
         r = cr.get();
         assertNotNull(r);
@@ -160,11 +163,11 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
      * Assert.assertTrue( r1.equals(r2) ); Assert.assertTrue( r2.equals(r1) ); }
      */
 
-    @Test
-    public void testScopedResource() throws IOException {
+    
+    public void scopedResource() throws IOException {
         // Query test
         assertNotNull(client.getToken());
-        Reference ref = new Reference(prot + "://localhost:" + serverPort
+        Reference ref = new Reference(getProt() + "://localhost:" + serverPort
                 + "/server/scoped");
         ref.addQueryParameter("oauth_token", client.getToken());
         ClientResource cr = new ClientResource(ref);
@@ -177,15 +180,15 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
         cr.release();
     }
 
-    @Test
-    public void testPasswordFlow() throws IOException {
+    
+    public void passwordFlow() throws IOException {
         OAuthUser user = Flow.PASSWORD.execute(client.getOauthParameters(),
                 null, null, OAuthTestApplication.TEST_USER,
                 OAuthTestApplication.TEST_PASS, null);
         assertNotNull(user);
 
         // Try to use the token...
-        Reference ref = new Reference(prot + "://localhost:" + serverPort
+        Reference ref = new Reference(getProt() + "://localhost:" + serverPort
                 + "/server/protected");
         ref.addQueryParameter("oauth_token", user.getAccessToken());
         ClientResource cr = new ClientResource(ref);
