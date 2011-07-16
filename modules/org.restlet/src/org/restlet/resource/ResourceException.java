@@ -108,7 +108,7 @@ public class ResourceException extends RuntimeException {
      * @param status
      *            The status to associate.
      */
-    public ResourceException(final Status status) {
+    public ResourceException(Status status) {
         this(status, (Throwable) null);
     }
 

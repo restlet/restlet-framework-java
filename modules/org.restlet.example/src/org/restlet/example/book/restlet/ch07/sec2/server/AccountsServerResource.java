@@ -54,6 +54,7 @@ public class AccountsServerResource extends WadlServerResource implements
 
     @Override
     protected void describe(ApplicationInfo applicationInfo) {
+        super.describe(applicationInfo);
         RepresentationInfo rep = new RepresentationInfo(MediaType.TEXT_PLAIN);
         rep.setIdentifier("account");
         applicationInfo.getRepresentations().add(rep);
@@ -67,7 +68,8 @@ public class AccountsServerResource extends WadlServerResource implements
     @Override
     protected RepresentationInfo describe(MethodInfo methodInfo,
             Class<?> representationClass, Variant variant) {
-        RepresentationInfo result = new RepresentationInfo(variant);
+        RepresentationInfo result = super.describe(methodInfo,
+                representationClass, variant);
         result.setReference("account");
         return result;
     }

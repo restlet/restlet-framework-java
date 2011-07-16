@@ -5,6 +5,11 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
+       - Fixed severe log messages produced by the Component class due to 
+         lack of child context usage.
+
+- 2.0.8 (2011-06-21)
+    - Bugs fixed
        - AbstractJaxbProvider, JaxbRepresentation and JibxRepresentation 
          used TreeMap which required Comparable implementation and isn't
          synchronized. Replaced with ConcurrentHashMap. 

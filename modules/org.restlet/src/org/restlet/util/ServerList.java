@@ -123,7 +123,7 @@ public final class ServerList extends WrapperList<Server> {
     public boolean add(Server server) {
         // Set the server's context, if the server does not have already one.
         if (server.getContext() == null) {
-            server.setContext(getContext().createChildContext());
+            server.setContext(getContext());
         }
 
         server.setNext(getTarget());

@@ -32,6 +32,7 @@ package org.restlet.example.book.restlet.ch04.sec3.server;
 
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
@@ -65,7 +66,7 @@ public class MailServerComponent extends Component {
 
         // Add connectors
         getClients().add(new Client(Protocol.CLAP));
-        Server server = new Server(Protocol.HTTP, 8111);
+        Server server = new Server(new Context(), Protocol.HTTP, 8111);
         server.getContext().getParameters().set("tracing", "true");
         getServers().add(server);
 

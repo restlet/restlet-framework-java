@@ -22,6 +22,6 @@
 	</defaultHost>
 
 	<logService loggerName="MailServer.AccessLog"
-		lopPropertiesRef="clap://system/org/restlet/example/book/restlet/ch04/sec3/server/log.properties" />
+		logPropertiesRef="clap://system/org/restlet/example/book/restlet/ch04/sec3/server/log.properties" />
 
 </component>

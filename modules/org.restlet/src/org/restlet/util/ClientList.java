@@ -61,7 +61,7 @@ public final class ClientList extends WrapperList<Client> {
     public boolean add(Client client) {
         // Set the client's context, if the client does not have already one.
         if (client.getContext() == null) {
-            client.setContext(getContext().createChildContext());
+            client.setContext(getContext());
         }
 
         return super.add(client);
@@ -76,7 +76,7 @@ public final class ClientList extends WrapperList<Client> {
      */
     public Client add(Protocol protocol) {
         final Client result = new Client(protocol);
-        result.setContext(getContext().createChildContext());
+        result.setContext(getContext());
         add(result);
         return result;
     }

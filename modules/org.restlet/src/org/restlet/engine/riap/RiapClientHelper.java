@@ -71,6 +71,7 @@ public class RiapClientHelper extends ClientHelper {
         if (Protocol.RIAP.getSchemeName().equalsIgnoreCase(scheme)) {
             // Support only the "component" authority
             LocalReference ref = new LocalReference(request.getResourceRef());
+
             if (ref.getRiapAuthorityType() == LocalReference.RIAP_COMPONENT) {
                 if (RiapServerHelper.instance != null
                         && RiapServerHelper.instance.getContext() != null

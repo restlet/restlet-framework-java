@@ -48,13 +48,14 @@ public class RootServerResource extends WadlServerResource implements
     @Override
     protected RepresentationInfo describe(MethodInfo methodInfo,
             Class<?> representationClass, Variant variant) {
-        RepresentationInfo result = new RepresentationInfo(MediaType.TEXT_PLAIN);
+        RepresentationInfo result = super.describe(methodInfo,
+                representationClass, variant);
+        result.setMediaType(MediaType.TEXT_PLAIN);
         result.setIdentifier("root");
 
         DocumentationInfo doc = new DocumentationInfo();
         doc.setTitle("Mail application");
-        doc
-                .setTextContent("Simple string welcoming the user to the mail application");
+        doc.setTextContent("Simple string welcoming the user to the mail application");
         result.getDocumentations().add(doc);
         return result;
     }
