@@ -63,7 +63,7 @@ public class SetCallbackFilter extends Filter {
             Reference ref = new Reference(cb);
 
             if (ref.getQueryAsForm().removeFirst("internal")) {
-                getLogger().info("OpenID - setting internal cb cookie = " + cb);
+                getLogger().fine("OpenID - setting internal cb cookie = " + cb);
                 CookieSetting cs = new CookieSetting(
                         CallbackCacheFilter.INTERNAL_SERVER_COOKIE, cb);
                 // cs.setAccessRestricted(true);
@@ -71,7 +71,7 @@ public class SetCallbackFilter extends Filter {
                 response.getCookieSettings().add(cs);
 
             } else {
-                getLogger().info("OpenID - setting external cb cookie = " + cb);
+                getLogger().fine("OpenID - setting external cb cookie = " + cb);
                 CookieSetting cs = new CookieSetting(
                         CallbackCacheFilter.EXTERNAL_SERVER_COOKIE, cb);
                 // cs.setAccessRestricted(true);

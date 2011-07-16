@@ -95,7 +95,7 @@ public class CallbackCacheFilter extends Filter implements CacheLookup {
                     JSONObject o = jr.getJsonObject();
                     if (o != null && o.has("id")) {
                         String id = o.getString("id");
-                        getLogger().info("Caching JSON id = " + id);
+                        getLogger().fine("Caching JSON id = " + id);
 
                         userCache.put(c.getValue(), id);
                         createResponse(id, request, response);

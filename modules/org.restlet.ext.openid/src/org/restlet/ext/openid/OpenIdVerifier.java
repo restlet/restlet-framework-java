@@ -240,11 +240,11 @@ public class OpenIdVerifier implements Verifier {
      */
     private ConsumerManager getManager(String OPUri) {
         Logger l = Context.getCurrentLogger();
-        l.info("Getting consumer manager for - " + OPUri);
+        l.fine("Getting consumer manager for - " + OPUri);
         if (!managers.containsKey(OPUri)) {
             // create a new manager
-            l.info("Creating new consumer manager for - " + OPUri);
-            try {
+            l.fine("Creating new consumer manager for - " + OPUri);
+            //try {
                 ConsumerManager cm = new ConsumerManager();
                 cm.setConnectTimeout(30000);
                 cm.setSocketTimeout(30000);
@@ -252,10 +252,10 @@ public class OpenIdVerifier implements Verifier {
                 // cm.setMaxAssocAttempts(4); //default
                 managers.put(OPUri, cm);
                 return cm;
-            } catch (ConsumerException e) {
+            /*} catch (ConsumerException e) {
                 l.warning("Failed to create ConsumerManager for - " + OPUri);
-            }
-            return null;
+            }*/
+            //return null;
         } else {
             return managers.get(OPUri);
         }
@@ -279,7 +279,7 @@ public class OpenIdVerifier implements Verifier {
         if (target == null && useDefault)
             target = defaultProvider;
         if (target == null) {
-            Context.getCurrentLogger().info("no target or return specified");
+            Context.getCurrentLogger().fine("no target or return specified");
         }
         return target;
     }
@@ -306,10 +306,10 @@ public class OpenIdVerifier implements Verifier {
         Map<AX, String> axResp = new HashMap<AX, String>();
         Identifier i = verifyResponse(queryParams, axResp, request, response);
         if (i == null) {
-            l.info("Authentication Failed");
+            l.warning("Authentication Failed");
             return obj;
         }
-        l.info("Identifier = " + i.getIdentifier());
+        l.fine("Identifier = " + i.getIdentifier());
         String id = i.getIdentifier();
 
         if (id != null) {
@@ -362,7 +362,7 @@ public class OpenIdVerifier implements Verifier {
         for (Object o : discoveries) {
             if (o instanceof DiscoveryInformation) {
                 DiscoveryInformation di = (DiscoveryInformation) o;
-                l.info("Found - " + di.getOPEndpoint());
+                l.fine("Found - " + di.getOPEndpoint());
                 target = di.getOPEndpoint().toString();
             }
         }
@@ -377,15 +377,14 @@ public class OpenIdVerifier implements Verifier {
 
         response.getCookieSettings().add(
                 new CookieSetting(OpenIdConsumer.DESCRIPTOR_COOKIE, sessionId));
-        l.info("Setting DESCRIPTOR COOKIE");
-
+        
         // obtain a AuthRequest message to be sent to the OpenID provider
         AuthRequest authReq = manager.authenticate(discovered, redir); // TODO
                                                                        // maybe
                                                                        // add
                                                                        // TIMESTAMP?;
         String ref = request.getResourceRef().getBaseRef().toString();
-        l.info("OpenID - REALM = " + ref);
+        l.fine("OpenID - REALM = " + ref);
         authReq.setRealm(ref);
 
         // Attribute Exchange - getting optional and required
@@ -409,16 +408,16 @@ public class OpenIdVerifier implements Verifier {
         }
 
         if (!discovered.isVersion2()) {
-            l.info("OpenId - Http Redirect");
+            l.fine("OpenId - Http Redirect");
             response.redirectTemporary(authReq.getDestinationUrl(true));
 
         } else {
-            l.info("OpenId - HTML Form Redirect");
+            l.fine("OpenId - HTML Form Redirect");
             Form msg = new Form();
             for (Object key : authReq.getParameterMap().keySet()) {
                 msg.add(key.toString(),
                         authReq.getParameterValue(key.toString()));
-                l.info("Adding to form - key " + key.toString() + " : value"
+                l.fine("Adding to form - key " + key.toString() + " : value"
                         + authReq.getParameterValue(key.toString()));
             }
             response.setEntity(generateForm(authReq));
@@ -437,7 +436,7 @@ public class OpenIdVerifier implements Verifier {
      */
     private boolean isResponse(Form queryParams) {
         String rc = queryParams.getFirstValue("return");
-        Context.getCurrentLogger().info("isReturn - " + rc);
+        Context.getCurrentLogger().fine("isReturn - " + rc);
         if (rc != null)
             return true;
         return false;
@@ -516,7 +515,7 @@ public class OpenIdVerifier implements Verifier {
             } else {
                 if (!obj.isNull("id")) {
                     try {
-                        Context.getCurrentLogger().info(obj.toString(2));
+                        Context.getCurrentLogger().fine(obj.toString(2));
                         String id = obj.getString("id");
                         User u = new User();
                         u.setIdentifier(id);
@@ -530,8 +529,7 @@ public class OpenIdVerifier implements Verifier {
                         e.printStackTrace();
                     }
                 }
-
-                Context.getCurrentLogger().info("Could not find identifier");
+                Context.getCurrentLogger().warning("Could not find identifier");
                 return Verifier.RESULT_INVALID;
             }
         }
@@ -548,7 +546,7 @@ public class OpenIdVerifier implements Verifier {
         }
 
         Context.getCurrentLogger()
-                .info("No Target or Return - reporting error");
+                .warning("No Target or Return - reporting error");
         return Verifier.RESULT_INVALID;
     }
 
@@ -562,42 +560,41 @@ public class OpenIdVerifier implements Verifier {
             // extract the parameters from the authentication response
             // (which comes in as a HTTP request from the OpenID provider)
             ParameterList response = new ParameterList(params.getValuesMap());
-            l.info("response = " + response);
+            l.fine("response = " + response);
 
             // retrieve the previously stored discovery information
-            l.info("GET COOKIES");
             String openidDisc = request.getCookies().getFirstValue(
                     OpenIdConsumer.DESCRIPTOR_COOKIE);
             // String openidDisc =
             // getCookieSettings().getFirstValue(DESCRIPTOR_COOKIE);
-            l.info("openIdDiscServer - "
+            l.fine("openIdDiscServer - "
                     + resp.getCookieSettings().getFirstValue(
                             "DESCRIPTOR_COOKIE"));
-            l.info("openIdDiscServerLength -" + resp.getCookieSettings().size());
-            l.info("openIdDiscClient - " + openidDisc);
-            l.info("openIdDiscClientLength -" + request.getCookies().size());
+            l.fine("openIdDiscServerLength -" + resp.getCookieSettings().size());
+            l.fine("openIdDiscClient - " + openidDisc);
+            l.fine("openIdDiscClientLength -" + request.getCookies().size());
 
             if (resp.getCookieSettings().size() > 0) {
                 for (CookieSetting setting : resp.getCookieSettings()) {
-                    l.info("CookieSetting: " + setting.getName()
+                    l.fine("CookieSetting: " + setting.getName()
                             + setting.getFirst());
                 }
             }
 
             if (request.getCookies().size() > 0) {
                 for (Cookie setting : request.getCookies()) {
-                    l.info("Cookie: " + setting.getName() + setting.getFirst());
+                    l.fine("Cookie: " + setting.getName() + setting.getFirst());
                 }
             }
 
             DiscoveryInformation discovered = (DiscoveryInformation) session
                     .get(openidDisc); // TODO cleanup
 
-            l.info("discovered = " + discovered);
+            l.fine("discovered = " + discovered);
 
             // extract the receiving URL from the HTTP request
 
-            l.info("getOriginalRef = " + request.getOriginalRef());
+            l.fine("getOriginalRef = " + request.getOriginalRef());
 
             ConsumerManager manager = getManager(discovered.getOPEndpoint()
                     .toString());
@@ -610,7 +607,7 @@ public class OpenIdVerifier implements Verifier {
             // examine the verification result and extract the verified
             // identifier
             Identifier verified = verification.getVerifiedId();
-            l.info("verified = " + verified);
+            l.fine("verified = " + verified);
 
             if (verified != null) {
                 AuthSuccess authSuccess = (AuthSuccess) verification
@@ -635,7 +632,7 @@ public class OpenIdVerifier implements Verifier {
                 return verified; // success
             }
         } catch (OpenIDException e) {
-            l.log(Level.INFO, "", e);
+            l.log(Level.WARNING, "could not verify response", e);
         }
         return null;
     }

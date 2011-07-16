@@ -97,7 +97,7 @@ public class OpenIdFormForwarder {
                     String name = nnm2.getNamedItem("name").getNodeValue();
                     String action = nnm2.getNamedItem("action").getNodeValue();
                     String method = nnm2.getNamedItem("method").getNodeValue();
-                    Context.getCurrentLogger().info(
+                    Context.getCurrentLogger().fine(
                             "name = " + name + " action = " + action
                                     + " method = " + method);
                     if (name != null && name.length() > 0 && action != null
@@ -120,7 +120,7 @@ public class OpenIdFormForwarder {
                             }
                         }
                         // The form is ready to send...
-                        Context.getCurrentLogger().info(
+                        Context.getCurrentLogger().fine(
                                 " Form size to send = " + f.size());
                         if (resource == null) {
                             resource = new ClientResource(action);

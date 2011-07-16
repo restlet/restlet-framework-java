@@ -167,7 +167,7 @@ public class RedirectAuthenticator extends Authenticator {
         }
 
         int verified = verifier.verify(request, response);
-        getLogger().info("VERIFIED: " + verified);
+        getLogger().fine("VERIFIED: " + verified);
 
         if (verified == Verifier.RESULT_VALID) {
             response.getCookieSettings().removeAll(identifierCookie);
@@ -208,8 +208,8 @@ public class RedirectAuthenticator extends Authenticator {
     /**
      * Rejects the call due to a failed authentication or authorization. This
      * can be overridden to change the default behavior, for example to display
-     * an error page. By default, forbid does a Server Redirect to the
-     * errorResource (if provided) otherwise it will set the response status to
+     * an error page. By default, calls errorResource.handle
+     * (if provided) otherwise it will set the response status to
      * ClIENT_ERROR_FORBIDDEN
      * 
      * @param origRef
@@ -223,19 +223,19 @@ public class RedirectAuthenticator extends Authenticator {
         if (forbiddenResource == null)
             response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
         else {
-            getLogger().info("sending to error resource");
+            getLogger().fine("sending to error resource");
             forbiddenResource.handle(request, response);
-            // Reference ref = new Reference(errorResource);
-            // if(origRef != null)
-            // ref.addQueryParameter("origRef", origRef);
-            // Redirector r = new Redirector(getContext(), ref.toString(),
-            // Redirector.MODE_SERVER_OUTBOUND);
-            // r.handle(request, response);
         }
 
     }
 
-    /**
+    @Override
+    protected int unauthenticated(Request request, Response response) {
+        int ret = super.unauthenticated(request, response);
+        return ret;
+    }
+
+        /**
      * Handles the retrieved user from the verifier. The only thing that will be
      * stored is the user identifier (in a cookie). Should be overridden as it
      * does nothing by default.

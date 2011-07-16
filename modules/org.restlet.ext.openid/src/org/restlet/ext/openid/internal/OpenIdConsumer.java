@@ -151,11 +151,11 @@ public class OpenIdConsumer extends ServerResource {
      * @return The {@link ConsumerManager} corresponding to the given URI.
      */
     private ConsumerManager getManager(String OPUri) {
-        log.info("Getting consumer manager for - " + OPUri);
+        log.fine("Getting consumer manager for - " + OPUri);
         if (!managers.containsKey(OPUri)) {
             // create a new manager
-            log.info("Creating new consumer manager for - " + OPUri);
-            try {
+            log.fine("Creating new consumer manager for - " + OPUri);
+            //try {
                 ConsumerManager cm = new ConsumerManager();
                 cm.setConnectTimeout(30000);
                 cm.setSocketTimeout(30000);
@@ -163,10 +163,10 @@ public class OpenIdConsumer extends ServerResource {
                 // cm.setMaxAssocAttempts(4); //default
                 managers.put(OPUri, cm);
                 return cm;
-            } catch (ConsumerException e) {
+            /*} catch (ConsumerException e) {
                 log.warning("Failed to create ConsumerManager for - " + OPUri);
             }
-            return null;
+            return null;*/
         } else {
             return managers.get(OPUri);
         }
@@ -175,16 +175,16 @@ public class OpenIdConsumer extends ServerResource {
     // Used for RP discovery
     @Override
     protected Representation head() throws ResourceException {
-        getLogger().info("IN head() OpenIDResource");
+        getLogger().fine("IN head() OpenIDResource");
         setXRDSHeader();
-        getLogger().info("Sending empty representation.");
+        getLogger().fine("Sending empty representation.");
         return new EmptyRepresentation();
     }
 
     @Get("html")
     public Representation represent() {
         Form params = getQuery();
-        log.info("OpenIDResource : " + params);
+        log.fine("OpenIDResource : " + params);
 
         String rc = params.getFirstValue("return");
         if (rc != null && rc.length() > 0) {
@@ -192,11 +192,11 @@ public class OpenIdConsumer extends ServerResource {
             Map<String, String> axOptional = new HashMap<String, String>();
             Identifier i = verifyResponse(axRequired, axOptional);
             if (i == null) {
-                log.info("Authentication Failed");
+                log.warning("Authentication Failed");
                 getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 return new StringRepresentation("Authentication Failed");
             }
-            log.info("Identifier = " + i.getIdentifier());
+            log.fine("Identifier = " + i.getIdentifier());
             String id = i.getIdentifier();
             if (id != null) {
                 // New Code, always return JSON and let filter handle any
@@ -256,7 +256,7 @@ public class OpenIdConsumer extends ServerResource {
             for (Object o : discoveries) {
                 if (o instanceof DiscoveryInformation) {
                     DiscoveryInformation di = (DiscoveryInformation) o;
-                    log.info("Found - " + di.getOPEndpoint());
+                    log.fine("Found - " + di.getOPEndpoint());
                     target = di.getOPEndpoint().toString();
                 }
             }
@@ -282,7 +282,7 @@ public class OpenIdConsumer extends ServerResource {
 
             getResponse().getCookieSettings().add(
                     new CookieSetting(DESCRIPTOR_COOKIE, sessionId));
-            log.info("Setting DESCRIPTOR COOKIE");
+            log.fine("Setting DESCRIPTOR COOKIE");
 
             // obtain a AuthRequest message to be sent to the OpenID provider
             AuthRequest authReq = manager.authenticate(discovered,
@@ -292,7 +292,7 @@ public class OpenIdConsumer extends ServerResource {
             // log.info("OpenID - REALM = " +
             // getReference().getHostIdentifier());
             // authReq.setRealm(getReference().getHostIdentifier().toString());
-            log.info("OpenID - REALM = " + getReference().getBaseRef());
+            log.fine("OpenID - REALM = " + getReference().getBaseRef());
             authReq.setRealm(getReference().getBaseRef().toString());
 
             // Attribute Exchange - getting optional and required
@@ -324,7 +324,7 @@ public class OpenIdConsumer extends ServerResource {
             }
 
             if (!discovered.isVersion2()) {
-                log.info("REDIRECTING TEMPORARY");
+                log.fine("REDIRECTING TEMPORARY");
                 // Option 1: GET HTTP-redirect to the OpenID Provider endpoint
                 // The only method supported in OpenID 1.x
                 // redirect-URL usually limited ~2048 bytes
@@ -337,7 +337,7 @@ public class OpenIdConsumer extends ServerResource {
                 for (Object key : authReq.getParameterMap().keySet()) {
                     msg.add(key.toString(),
                             authReq.getParameterValue(key.toString()));
-                    log.info("Adding to form - key " + key.toString()
+                    log.fine("Adding to form - key " + key.toString()
                             + " : value"
                             + authReq.getParameterValue(key.toString()));
                 }
@@ -383,7 +383,7 @@ public class OpenIdConsumer extends ServerResource {
         String returnTo = getReference().getBaseRef().toString();
         String location = (returnTo != null) ? xrds.toString() + "?returnTo="
                 + returnTo : xrds.toString();
-        getLogger().info("XRDS endpoint = " + xrds);
+        getLogger().fine("XRDS endpoint = " + xrds);
         Form headers = (Form) getResponse().getAttributes().get(
                 "org.restlet.http.headers");
         if (headers == null) {
@@ -402,34 +402,33 @@ public class OpenIdConsumer extends ServerResource {
     public Identifier verifyResponse(Map<String, String> axRequired,
             Map<String, String> axOptional) {
         try {
-            log.setLevel(Level.FINEST);
             Logger.getLogger("").setLevel(Level.FINEST);
             // extract the parameters from the authentication response
             // (which comes in as a HTTP request from the OpenID provider)
             ParameterList response = new ParameterList(getQuery()
                     .getValuesMap());
-            log.info("response = " + response);
+            log.fine("response = " + response);
 
             // retrieve the previously stored discovery information
-            log.info("GET COOKIES");
+            log.fine("GET COOKIES");
             String openidDisc = getCookies().getFirstValue(DESCRIPTOR_COOKIE);
             // String openidDisc =
             // getCookieSettings().getFirstValue(DESCRIPTOR_COOKIE);
-            log.info("openIdDiscServer - "
+            log.fine("openIdDiscServer - "
                     + getCookieSettings().getFirstValue("DESCRIPTOR_COOKIE"));
-            log.info("openIdDiscServerLength -" + getCookieSettings().size());
-            log.info("openIdDiscClient - " + openidDisc);
-            log.info("openIdDiscClientLength -" + getCookies().size());
+            log.fine("openIdDiscServerLength -" + getCookieSettings().size());
+            log.fine("openIdDiscClient - " + openidDisc);
+            log.fine("openIdDiscClientLength -" + getCookies().size());
 
             if (getCookieSettings().size() > 0) {
                 for (CookieSetting setting : getCookieSettings()) {
-                    log.info("CookieSetting: " + setting.getName()
+                    log.fine("CookieSetting: " + setting.getName()
                             + setting.getFirst());
                 }
             }
             if (getCookies().size() > 0) {
                 for (Cookie setting : getCookies()) {
-                    log.info("Cookie: " + setting.getName()
+                    log.fine("Cookie: " + setting.getName()
                             + setting.getFirst());
                 }
             }
@@ -437,11 +436,11 @@ public class OpenIdConsumer extends ServerResource {
             DiscoveryInformation discovered = (DiscoveryInformation) session
                     .get(openidDisc); // TODO cleanup
 
-            log.info("discovered = " + discovered);
+            log.fine("discovered = " + discovered);
 
             // extract the receiving URL from the HTTP request
 
-            log.info("getOriginalRef = " + getOriginalRef());
+            log.fine("getOriginalRef = " + getOriginalRef());
 
             // verify the response; ConsumerManager needs to be the same
             // (static) instance used to place the authentication request
@@ -451,19 +450,19 @@ public class OpenIdConsumer extends ServerResource {
             // receivingURL.append(getOriginalRef().getSchemeSpecificPart(true));
             // log.info("receivingURL = "+receivingURL);
 
-            log.info("OpenID disc : " + discovered.getOPEndpoint());
-            log.info("OpenID orig ref : " + getOriginalRef());
+            log.fine("OpenID disc : " + discovered.getOPEndpoint());
+            log.fine("OpenID orig ref : " + getOriginalRef());
             ConsumerManager manager = getManager(discovered.getOPEndpoint()
                     .toString());
 
             VerificationResult verification = manager.verify(getOriginalRef()
                     .toString(), response, discovered);
-            log.info("verification = " + verification);
+            log.fine("verification = " + verification);
 
             // examine the verification result and extract the verified
             // identifier
             Identifier verified = verification.getVerifiedId();
-            log.info("verified = " + verified);
+            log.fine("verified = " + verified);
             if (verified != null) {
                 AuthSuccess authSuccess = (AuthSuccess) verification
                         .getAuthResponse();
