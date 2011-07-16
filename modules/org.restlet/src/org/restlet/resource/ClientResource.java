@@ -500,7 +500,8 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * By default, it throws a new resource exception.
+     * By default, it throws a new resource exception. This can be overridden to
+     * provide a different behavior.
      */
     @Override
     public void doError(Status errorStatus) {

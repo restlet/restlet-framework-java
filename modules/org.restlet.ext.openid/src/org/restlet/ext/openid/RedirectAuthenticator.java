@@ -40,15 +40,15 @@ import org.restlet.security.User;
 import org.restlet.security.Verifier;
 
 /**
- * An Authenticator that redirects the authentication to some external resource.
- * After successfull authentication, the Authenticator will do a redirect to the
- * original request resourceRef. The RedirectAuthenticator keeps track of state
- * using a session cookie which is not automatically cleaned.
+ * An authenticator that redirects the authentication to some external resource.
+ * After successful authentication, it will do a redirect to the original
+ * request resourceRef. The RedirectAuthenticator keeps track of state using a
+ * session cookie which is not automatically cleaned.
  * 
  * The typical use case for this {@link Authenticator} is to do remote
- * authentication using OpenId.
+ * authentication using OpenID.
  * 
- * The RedirectAuthenticator have the following logic base on {@link Verifier}
+ * The RedirectAuthenticator has the following logic based on {@link Verifier}
  * returns:
  * <ol>
  * <li>If the verifier returns {@link Verifier#RESULT_VALID} it will clean up
@@ -56,7 +56,7 @@ import org.restlet.security.Verifier;
  * {@link Response#redirectPermanent(org.restlet.data.Reference)} to the
  * original resource
  * <li>If the result is {@link Verifier#RESULT_INVALID} or
- * {@link Verifier#RESULT_UNKNOWN} it will clean upp all cookies and call forbid
+ * {@link Verifier#RESULT_UNKNOWN} it will clean up all cookies and call forbid
  * (default behavior to set {@link Status#CLIENT_ERROR_FORBIDDEN} if no
  * errorResource has been set)
  * <li>If the result is any other it will clean up the identifierCookie.
@@ -67,22 +67,26 @@ import org.restlet.security.Verifier;
  * </pre>
  * 
  * @author Martin Svensson
- * 
  */
 public class RedirectAuthenticator extends Authenticator {
+
     /** The default name of the cookie that contains the identifier. */
-    public final static String DefaultIdentifierCookie = "session_id";
+    public final static String DEFAULT_IDENTIFIER_COOKIE = "session_id";
 
     /**
      * The default name of the cookie that contains the original request's
      * reference.
      */
-    public final static String DefaultOrigRefCookie = "original_ref";
+    public final static String DEFAULT_ORIGINAL_REF_COOKIE = "original_ref";
 
-    public final static String OriginalRefAttribute = "origRef";
+    public final static String ORIGINAL_REF_ATTRIBUTE = "origRef";
 
-    /** The verifier of the credentials. */
-    private final Verifier verifier;
+    // private final String errorResource;
+    /**
+     * The restlet in charge of handling authentication or authorization
+     * failure.
+     */
+    private Restlet forbiddenResource;
 
     /** The current name of the cookie that contains the identifier. */
     private final String identifierCookie;
@@ -93,12 +97,8 @@ public class RedirectAuthenticator extends Authenticator {
      */
     private final String origRefCookie;
 
-    // private final String errorResource;
-    /**
-     * The restlet in charge of handling authentication or authorization
-     * failure.
-     */
-    private Restlet forbiddenResource;
+    /** The verifier of the credentials. */
+    private final Verifier verifier;
 
     /**
      * Initialize a RedirectAuthenticator with a Verifier.
@@ -113,8 +113,8 @@ public class RedirectAuthenticator extends Authenticator {
         super(context);
         this.forbiddenResource = forbiddenResource;
         this.verifier = verifier;
-        this.origRefCookie = DefaultOrigRefCookie;
-        this.identifierCookie = DefaultIdentifierCookie;
+        this.origRefCookie = DEFAULT_ORIGINAL_REF_COOKIE;
+        this.identifierCookie = DEFAULT_IDENTIFIER_COOKIE;
     }
 
     /**
@@ -140,23 +140,24 @@ public class RedirectAuthenticator extends Authenticator {
         this.forbiddenResource = forbiddenResource;
         this.verifier = verifier;
         this.identifierCookie = identifierCookie != null ? identifierCookie
-                : DefaultIdentifierCookie;
+                : DEFAULT_IDENTIFIER_COOKIE;
         this.origRefCookie = origRefCookie != null ? origRefCookie
-                : DefaultOrigRefCookie;
+                : DEFAULT_ORIGINAL_REF_COOKIE;
     }
 
     @Override
     protected boolean authenticate(Request request, Response response) {
-        // Form f = request.getResourceRef().getQueryAsForm();
         User u = request.getClientInfo().getUser();
         String identifier = request.getCookies()
                 .getFirstValue(identifierCookie);
         String origRef;
+
         if (identifier != null) {
             u = new User(identifier);
             request.getClientInfo().setUser(u);
             return true;
         }
+
         if (request.getCookies().getFirstValue(origRefCookie) == null) {
             origRef = request.getResourceRef().toString();
             response.getCookieSettings().add(origRefCookie,
@@ -177,37 +178,31 @@ public class RedirectAuthenticator extends Authenticator {
             // request.getCookies().getFirstValue(origRefCookie);
             request.getCookies().removeAll(origRefCookie);
             response.getCookieSettings().removeAll(origRefCookie);
+
             if (origRef != null) {
                 response.redirectPermanent(origRef);
 
             }
+
             return true;
         }
+
         response.getCookieSettings().removeAll(identifierCookie);
+
         if (verified == Verifier.RESULT_UNKNOWN
                 || verified == Verifier.RESULT_INVALID) {
 
             origRef = response.getCookieSettings().getFirstValue(origRefCookie);
+
             if (origRef == null)
                 origRef = request.getCookies().getFirstValue(origRefCookie);
+
             // request.getCookies().removeAll(origRefCookie);
             // response.getCookieSettings().removeAll(origRefCookie);
             forbid(origRef, request, response);
         }
 
         return false;
-    }
-
-    /**
-     * Handles the retrieved user from the verifier. The only thing that will be
-     * stored is the user identifier (in a cookie). Should be overriden as it
-     * does nothing by default.
-     * 
-     * @param user
-     *            The user.
-     */
-    protected void handleUser(User user) {
-        ;
     }
 
     /**
@@ -240,11 +235,16 @@ public class RedirectAuthenticator extends Authenticator {
 
     }
 
-    @Override
-    protected int unauthenticated(Request request, Response response) {
-        int ret = super.unauthenticated(request, response);
-        getLogger().info("UNAUTHENTICATED REQUEST!!!");
-        return ret;
+    /**
+     * Handles the retrieved user from the verifier. The only thing that will be
+     * stored is the user identifier (in a cookie). Should be overridden as it
+     * does nothing by default.
+     * 
+     * @param user
+     *            The user.
+     */
+    protected void handleUser(User user) {
+        ;
     }
 
 }

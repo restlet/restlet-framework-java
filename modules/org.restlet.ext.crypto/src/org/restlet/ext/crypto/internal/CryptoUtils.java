@@ -42,26 +42,27 @@ import org.restlet.ext.crypto.DigestUtils;
  * Simple usage of standard cipher features from JRE.
  * 
  * @author Remi Dewitte <remi@gide.net>
+ * @author Jerome Louvel
  */
 public final class CryptoUtils {
 
     /**
      * Creates a cipher for a given algorithm and secret.
      * 
-     * @param algo
+     * @param algorithm
      *            The cryptographic algorithm.
-     * @param base64Secret
-     *            The cryptographic secret, encoded as a Base64 string.
+     * @param secretKey
+     *            The cryptographic secret.
      * @param mode
      *            The cipher mode, either {@link Cipher#ENCRYPT_MODE} or
      *            {@link Cipher#DECRYPT_MODE}.
      * @return The new cipher.
      * @throws GeneralSecurityException
      */
-    private static Cipher createCipher(String algo, String base64Secret,
+    private static Cipher createCipher(String algorithm, byte[] secretKey,
             int mode) throws GeneralSecurityException {
-        Cipher cipher = Cipher.getInstance(algo);
-        cipher.init(mode, new SecretKeySpec(Base64.decode(base64Secret), algo));
+        Cipher cipher = Cipher.getInstance(algorithm);
+        cipher.init(mode, new SecretKeySpec(secretKey, algorithm));
         return cipher;
     }
 
@@ -70,8 +71,27 @@ public final class CryptoUtils {
      * 
      * @param algo
      *            The cryptographic algorithm.
+     * @param secretKey
+     *            The cryptographic secret key.
+     * @param encrypted
+     *            The encrypted bytes.
+     * @return The decrypted content string.
+     * @throws GeneralSecurityException
+     */
+    public static String decrypt(String algo, byte[] secretKey, byte[] encrypted)
+            throws GeneralSecurityException {
+        byte[] original = doFinal(algo, secretKey, Cipher.DECRYPT_MODE,
+                encrypted);
+        return new String(original);
+    }
+
+    /**
+     * Decrypts a bytes array.
+     * 
+     * @param algo
+     *            The cryptographic algorithm.
      * @param base64Secret
-     *            The cryptographic secret, encoded as a Base64 string.
+     *            The cryptographic secret key, encoded as a Base64 string.
      * @param encrypted
      *            The encrypted bytes.
      * @return The decrypted content string.
@@ -79,9 +99,7 @@ public final class CryptoUtils {
      */
     public static String decrypt(String algo, String base64Secret,
             byte[] encrypted) throws GeneralSecurityException {
-        byte[] original = doFinal(algo, base64Secret, Cipher.DECRYPT_MODE,
-                encrypted);
-        return new String(original);
+        return decrypt(algo, Base64.decode(base64Secret), encrypted);
     }
 
     /**
@@ -89,8 +107,8 @@ public final class CryptoUtils {
      * 
      * @param algo
      *            The cryptographic algorithm.
-     * @param base64Secret
-     *            The cryptographic secret, encoded as a Base64 string.
+     * @param secretKey
+     *            The cryptographic secret key.
      * @param mode
      *            The processing mode, either {@link Cipher#DECRYPT_MODE} or
      *            {@link Cipher#ENCRYPT_MODE}.
@@ -99,9 +117,26 @@ public final class CryptoUtils {
      * @return The processed byte array.
      * @throws GeneralSecurityException
      */
-    private static byte[] doFinal(String algo, String base64Secret, int mode,
+    private static byte[] doFinal(String algo, byte[] secretKey, int mode,
             byte[] what) throws GeneralSecurityException {
-        return createCipher(algo, base64Secret, mode).doFinal(what);
+        return createCipher(algo, secretKey, mode).doFinal(what);
+    }
+
+    /**
+     * Encrypts a content string.
+     * 
+     * @param algo
+     *            The cryptographic algorithm.
+     * @param secretKey
+     *            The cryptographic secret key.
+     * @param content
+     *            The content string to encrypt.
+     * @return The encrypted bytes.
+     * @throws GeneralSecurityException
+     */
+    public static byte[] encrypt(String algo, byte[] secretKey, String content)
+            throws GeneralSecurityException {
+        return doFinal(algo, secretKey, Cipher.ENCRYPT_MODE, content.getBytes());
     }
 
     /**
@@ -118,8 +153,7 @@ public final class CryptoUtils {
      */
     public static byte[] encrypt(String algo, String base64Secret,
             String content) throws GeneralSecurityException {
-        return doFinal(algo, base64Secret, Cipher.ENCRYPT_MODE, content
-                .getBytes());
+        return encrypt(algo, Base64.decode(base64Secret), content);
     }
 
     /**
@@ -136,8 +170,9 @@ public final class CryptoUtils {
      */
     public static String makeNonce(String secretKey) {
         final long currentTimeMS = System.currentTimeMillis();
-        return Base64.encode((currentTimeMS + ":" + DigestUtils
-                .toMd5(currentTimeMS + ":" + secretKey)).getBytes(), true);
+        return Base64.encode(
+                (currentTimeMS + ":" + DigestUtils.toMd5(currentTimeMS + ":"
+                        + secretKey)).getBytes(), true);
     }
 
     /**

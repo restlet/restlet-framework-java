@@ -507,8 +507,10 @@ public class OpenIdVerifier implements Verifier {
      */
     public int verify(Request request, Response response) {
         Form params = request.getResourceRef().getQueryAsForm();
+
         if (this.isResponse(params)) {
             JSONObject obj = this.handleReturn(params, request, response);
+
             if (obj == null) {
                 return Verifier.RESULT_INVALID;
             } else {
@@ -528,12 +530,14 @@ public class OpenIdVerifier implements Verifier {
                         e.printStackTrace();
                     }
                 }
-                Context.getCurrentLogger().info("Could not find identifier");
 
+                Context.getCurrentLogger().info("Could not find identifier");
                 return Verifier.RESULT_INVALID;
             }
         }
+
         String target = this.getTarget(params, request);
+
         if (target != null) {
             try {
                 this.handleTarget(target, params, request, response);
@@ -542,6 +546,7 @@ public class OpenIdVerifier implements Verifier {
                 e.printStackTrace();
             }
         }
+
         Context.getCurrentLogger()
                 .info("No Target or Return - reporting error");
         return Verifier.RESULT_INVALID;
@@ -552,6 +557,7 @@ public class OpenIdVerifier implements Verifier {
     public Identifier verifyResponse(Form params, Map<AX, String> axResp,
             Request request, Response resp) {
         Logger l = Context.getCurrentLogger();
+
         try {
             // extract the parameters from the authentication response
             // (which comes in as a HTTP request from the OpenID provider)
@@ -577,6 +583,7 @@ public class OpenIdVerifier implements Verifier {
                             + setting.getFirst());
                 }
             }
+
             if (request.getCookies().size() > 0) {
                 for (Cookie setting : request.getCookies()) {
                     l.info("Cookie: " + setting.getName() + setting.getFirst());
@@ -604,6 +611,7 @@ public class OpenIdVerifier implements Verifier {
             // identifier
             Identifier verified = verification.getVerifiedId();
             l.info("verified = " + verified);
+
             if (verified != null) {
                 AuthSuccess authSuccess = (AuthSuccess) verification
                         .getAuthResponse();
@@ -614,6 +622,7 @@ public class OpenIdVerifier implements Verifier {
 
                     MessageExtension ext = authSuccess
                             .getExtension(AxMessage.OPENID_NS_AX);
+
                     if (ext instanceof FetchResponse) {
                         List<String> aliases = fetchResp.getAttributeAliases();
                         for (String alias : aliases) {

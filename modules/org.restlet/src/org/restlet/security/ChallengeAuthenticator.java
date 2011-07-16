@@ -243,6 +243,14 @@ public class ChallengeAuthenticator extends Authenticator {
      *            Indicates if the new challenge is due to a stale response.
      */
     public void challenge(Response response, boolean stale) {
+        boolean loggable = response.getRequest().isLoggable()
+                && getLogger().isLoggable(Level.FINE);
+
+        if (loggable) {
+            getLogger().log(Level.FINE,
+                    "An authentication challenge was requested.");
+        }
+
         response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
         response.getChallengeRequests().add(createChallengeRequest(stale));
     }
@@ -269,6 +277,16 @@ public class ChallengeAuthenticator extends Authenticator {
      *            The reject response.
      */
     public void forbid(Response response) {
+        boolean loggable = response.getRequest().isLoggable()
+                && getLogger().isLoggable(Level.FINE);
+
+        if (loggable) {
+            getLogger().log(
+                    Level.FINE,
+                    "Authentication or authorization failed for this URI: "
+                            + response.getRequest().getResourceRef());
+        }
+
         response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
     }
 

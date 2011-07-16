@@ -30,6 +30,8 @@
 
 package org.restlet.security;
 
+import java.util.logging.Level;
+
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -47,16 +49,16 @@ import org.restlet.routing.Filter;
 public abstract class Authenticator extends Filter {
 
     /**
-     * Indicates if the authenticator is not required to succeed. In those
-     * cases, the attached Restlet is invoked.
-     */
-    private volatile boolean optional;
-
-    /**
      * Invoked upon successful authentication to update the subject with new
      * principals.
      */
     private volatile Enroler enroler;
+
+    /**
+     * Indicates if the authenticator is not required to succeed. In those
+     * cases, the attached Restlet is invoked.
+     */
+    private volatile boolean optional;
 
     /**
      * Constructor setting the mode to "required".
@@ -111,25 +113,6 @@ public abstract class Authenticator extends Filter {
     protected abstract boolean authenticate(Request request, Response response);
 
     /**
-     * Handles the authentication by first invoking the
-     * {@link #authenticate(Request, Response)} method. Then, depending on the
-     * result and the mode set, it invokes the
-     * {@link #authenticated(Request, Response)} or the
-     * {@link #unauthenticated(Request, Response)} method.
-     */
-    @Override
-    protected int beforeHandle(Request request, Response response) {
-        if (authenticate(request, response)) {
-            return authenticated(request, response);
-        } else if (isOptional()) {
-            response.setStatus(Status.SUCCESS_OK);
-            return CONTINUE;
-        } else {
-            return unauthenticated(request, response);
-        }
-    }
-
-    /**
      * Invoked upon successful authentication. By default, it updates the
      * request's clientInfo and challengeResponse "authenticated" properties,
      * clears the existing challenge requests on the response, calls the enroler
@@ -142,6 +125,19 @@ public abstract class Authenticator extends Filter {
      * @return The filter continuation code.
      */
     protected int authenticated(Request request, Response response) {
+        boolean loggable = request.isLoggable()
+                && getLogger().isLoggable(Level.FINE);
+
+        if (loggable) {
+            getLogger().log(
+                    Level.FINE,
+                    "The authentication succeeded for the identifer \""
+                            + request.getChallengeResponse().getIdentifier()
+                            + "\" using the "
+                            + request.getChallengeResponse().getScheme()
+                            + " scheme.");
+        }
+
         // Update the client info accordingly
         if (request.getClientInfo() != null) {
             request.getClientInfo().setAuthenticated(true);
@@ -159,29 +155,22 @@ public abstract class Authenticator extends Filter {
     }
 
     /**
-     * Invoked upon failed authentication. By default, it updates the request's
-     * clientInfo and challengeResponse "authenticated" properties, and returns
-     * {@link Filter#STOP}.
-     * 
-     * @param request
-     *            The request sent.
-     * @param response
-     *            The response to update.
-     * @return The filter continuation code.
+     * Handles the authentication by first invoking the
+     * {@link #authenticate(Request, Response)} method. Then, depending on the
+     * result and the mode set, it invokes the
+     * {@link #authenticated(Request, Response)} or the
+     * {@link #unauthenticated(Request, Response)} method.
      */
-    protected int unauthenticated(Request request, Response response) {
-        if (isOptional()) {
+    @Override
+    protected int beforeHandle(Request request, Response response) {
+        if (authenticate(request, response)) {
+            return authenticated(request, response);
+        } else if (isOptional()) {
             response.setStatus(Status.SUCCESS_OK);
             return CONTINUE;
+        } else {
+            return unauthenticated(request, response);
         }
-
-        // Update the client info accordingly
-        if (request.getClientInfo() != null) {
-            request.getClientInfo().setAuthenticated(false);
-        }
-
-        // Stop the filtering chain
-        return STOP;
     }
 
     /**
@@ -224,6 +213,40 @@ public abstract class Authenticator extends Filter {
      */
     public void setOptional(boolean optional) {
         this.optional = optional;
+    }
+
+    /**
+     * Invoked upon failed authentication. By default, it updates the request's
+     * clientInfo and challengeResponse "authenticated" properties, and returns
+     * {@link Filter#STOP}.
+     * 
+     * @param request
+     *            The request sent.
+     * @param response
+     *            The response to update.
+     * @return The filter continuation code.
+     */
+    protected int unauthenticated(Request request, Response response) {
+        boolean loggable = request.isLoggable()
+                && getLogger().isLoggable(Level.FINE);
+
+        if (loggable) {
+            getLogger().log(
+                    Level.FINE,
+                    "The authentication failed for the identifer \""
+                            + request.getChallengeResponse().getIdentifier()
+                            + "\" using the "
+                            + request.getChallengeResponse().getScheme()
+                            + " scheme.");
+        }
+
+        // Update the client info accordingly
+        if (request.getClientInfo() != null) {
+            request.getClientInfo().setAuthenticated(false);
+        }
+
+        // Stop the filtering chain
+        return STOP;
     }
 
 }
