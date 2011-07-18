@@ -31,6 +31,7 @@
 package org.restlet.test.ext.oauth;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 import org.junit.Test;
 import org.restlet.data.ChallengeResponse;
@@ -38,6 +39,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.ext.oauth.Flow;
 import org.restlet.ext.oauth.OAuthForm;
 import org.restlet.ext.oauth.OAuthUser;
@@ -46,14 +48,16 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.test.ext.oauth.app.OAuthTestApplication;
 
+
 public class AuthorizationServerTestCase extends OAuthHttpTestBase{
     
     public AuthorizationServerTestCase(){
-        super();
+        this(false);
     }
     
     public AuthorizationServerTestCase(boolean https){
-        super(false, true);
+        super(false, https);
+        //Engine.setLogLevel(Level.FINE);
     }
     
     public void testAuthorizationServer() throws Exception{
@@ -67,6 +71,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
         assertNull(client.getToken());
         ClientResource cr = new ClientResource(getProt() + "://localhost:"
                 + serverPort + "/client/webclient");
+        cr.setNext(this.reqClient);
         ChallengeResponse chresp = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "bob", "alice");
         cr.setChallengeResponse(chresp);
@@ -83,6 +88,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
         Reference ref = new Reference(getProt() + "://localhost:" + serverPort
                 + "/server/protected");
         cr = new ClientResource(ref);
+        cr.setNext(this.reqClient);
         ChallengeResponse challengeResponse = new ChallengeResponse(
                 ChallengeScheme.HTTP_OAUTH);
         challengeResponse.setRawValue(client.getToken());
@@ -99,6 +105,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
         ref = new Reference(getProt() + "://localhost:" + serverPort
                 + "/server/protected");
         cr = new ClientResource(ref);
+        cr.setNext(this.reqClient);
         OAuthForm form = new OAuthForm(client.getToken());
         form.add("foo", "bar");
         r = cr.post(form.getWebRepresentation());
@@ -114,6 +121,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
                 + "/server/protected");
         ref.addQueryParameter("oauth_token", client.getToken());
         cr = new ClientResource(ref);
+        cr.setNext(this.reqClient);
         r = cr.get();
         assertNotNull(r);
         text = r.getText();
@@ -126,7 +134,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
 
     public void noneFlow() throws IOException {
         OAuthUser user = Flow.NONE.execute(client.getOauthParameters(), null,
-                null, null, null, null);
+                null, null, null, null, this.reqClient);
         assertNotNull(user);
 
         // Try to use the token...
@@ -134,6 +142,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
                 + "/server/protected");
         ref.addQueryParameter("oauth_token", user.getAccessToken());
         ClientResource cr = new ClientResource(ref);
+        cr.setNext(this.reqClient);
         Representation r = cr.get();
         assertNotNull(r);
         String text = r.getText();
@@ -147,6 +156,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
                 + "/server/scoped");
         ref.addQueryParameter("oauth_token", user.getAccessToken());
         cr = new ClientResource(ref);
+        cr.setNext(this.reqClient);
         r = cr.get();
         assertNotNull(r);
         text = r.getText();
@@ -171,6 +181,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
                 + "/server/scoped");
         ref.addQueryParameter("oauth_token", client.getToken());
         ClientResource cr = new ClientResource(ref);
+        cr.setNext(this.reqClient);
         Representation r = cr.get();
         assertNotNull(r);
         String text = r.getText();
@@ -184,7 +195,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
     public void passwordFlow() throws IOException {
         OAuthUser user = Flow.PASSWORD.execute(client.getOauthParameters(),
                 null, null, OAuthTestApplication.TEST_USER,
-                OAuthTestApplication.TEST_PASS, null);
+                OAuthTestApplication.TEST_PASS, null, this.reqClient);
         assertNotNull(user);
 
         // Try to use the token...
@@ -192,6 +203,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
                 + "/server/protected");
         ref.addQueryParameter("oauth_token", user.getAccessToken());
         ClientResource cr = new ClientResource(ref);
+        cr.setNext(this.reqClient);
         Representation r = cr.get();
         assertNotNull(r);
         String text = r.getText();
@@ -203,7 +215,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
         // Wrong username test
         try {
             user = Flow.PASSWORD.execute(client.getOauthParameters(), null,
-                    null, "somewrong", OAuthTestApplication.TEST_PASS, null);
+                    null, "somewrong", OAuthTestApplication.TEST_PASS, null, this.reqClient);
         } catch (ResourceException re) { // Should be invalidated
             assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, re.getStatus());
         }
@@ -211,7 +223,7 @@ public class AuthorizationServerTestCase extends OAuthHttpTestBase{
         // Wrong pasword test
         try {
             user = Flow.PASSWORD.execute(client.getOauthParameters(), null,
-                    null, OAuthTestApplication.TEST_USER, "somewrong", null);
+                    null, OAuthTestApplication.TEST_USER, "somewrong", null, this.reqClient);
 
         } catch (ResourceException re) { // Should be invalidated
             assertEquals(Status.CLIENT_ERROR_FORBIDDEN, re.getStatus());

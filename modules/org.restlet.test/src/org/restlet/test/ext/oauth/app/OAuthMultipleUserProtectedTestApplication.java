@@ -31,26 +31,33 @@
 package org.restlet.test.ext.oauth.app;
 
 import org.restlet.Application;
+import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.data.Parameter;
 import org.restlet.ext.oauth.OAuthAuthorizer;
 import org.restlet.routing.Router;
+import org.restlet.util.Series;
 
 public class OAuthMultipleUserProtectedTestApplication extends Application {
 
     private String protocol;
     private int oauthServerPort;
-    
+    private Client c;
     
     public OAuthMultipleUserProtectedTestApplication(){
-        this.protocol = "http";
-        this.oauthServerPort = 8081;
+        this("http", 8081, null);
     }
     
     public OAuthMultipleUserProtectedTestApplication(String protocol,
-            int oauthServerPort){
+            int oauthServerPort, Series <Parameter> params){
         this.protocol = protocol;
         this.oauthServerPort = oauthServerPort;
+        if(params != null){
+            this.c = new Client(protocol);
+            this.c.setContext(new Context());
+            this.c.getContext().getParameters().addAll(params);
+        }
     }
     @Override
     public synchronized Restlet createInboundRoot() {
@@ -59,12 +66,7 @@ public class OAuthMultipleUserProtectedTestApplication extends Application {
 
 
         OAuthAuthorizer auth2 = new OAuthAuthorizer(
-                    protocol+"://localhost:"
-                +oauthServerPort+
-                "/oauth/validate",
-                protocol+"://localhost:"+
-                oauthServerPort+"/oauth/authorize"
-        );
+                    protocol+"://localhost:"+oauthServerPort+"/oauth/validate", false, c);
         //System.out.println("attaching resource");
         auth2.setNext(ScopedDummyResource.class);
         router.attach("/scoped/{oauth-user}", auth2);

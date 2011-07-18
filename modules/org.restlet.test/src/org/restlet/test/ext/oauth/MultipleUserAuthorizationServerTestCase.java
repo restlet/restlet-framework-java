@@ -75,15 +75,15 @@ public class MultipleUserAuthorizationServerTestCase
         int numCalls = 50;
         int totRequests = (numThreads * numCalls) + numThreads;
         Thread[] clients = new Thread[numThreads];
-        Context c = new Context();
+        //Context c = new Context();
 
         Client client = null;
 
         long l = System.currentTimeMillis();
         for (int i = 0; i < numThreads; i++) {
             if (i % 25 == 0)
-                client = new Client(Protocol.HTTP);
-            clients[i] = new ClientCall(numCalls, c, client);
+                client = this.createClient();
+            clients[i] = new ClientCall(numCalls, client);
             clients[i].start();
         }
         Awaitility.setDefaultTimeout(Duration.FOREVER);
@@ -116,13 +116,13 @@ public class MultipleUserAuthorizationServerTestCase
 
         Client myClient;
 
-        public ClientCall(int numTimes, Context c, Client client) {
+        public ClientCall(int numTimes, Client client) {
             this.numTimes = numTimes;
-            this.c = c;
+            //this.c = c;
             if (client != null)
                 myClient = client;
             else
-                myClient = new Client(Protocol.HTTP);
+                myClient = createClient();
             r = new Random(System.nanoTime());
             params = new OAuthParameters(
                     "client1234",

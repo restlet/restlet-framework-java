@@ -43,9 +43,12 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.engine.ClientHelper;
+import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.security.AuthenticatorHelper;
@@ -84,6 +87,7 @@ public abstract class OAuthHttpTestBase extends RestletTestCase{
 
 
     protected OAuthClientTestApplication client;
+    protected Client reqClient;
 
     protected OAuthHttpTestBase(){
         this(false, false);
@@ -113,12 +117,25 @@ public abstract class OAuthHttpTestBase extends RestletTestCase{
     protected String getProt(){
         return https ? "https" : "http";
     }
+    
+    protected Client createClient(){
+        Client c;
+        if(https){
+            c = new Client(getProt());
+            c.setContext(this.getSslClientContext());
+        }
+        else{
+            c = new Client(getProt());
+        }
+        return c;
+    }
 
     @Override
     protected void setUp() throws Exception{
         super.setUp();
         setupConnectors(cc, sc);
         if(https) setupHttps();
+        this.reqClient = this.createClient();
         List<AuthenticatorHelper> authenticators = Engine.getInstance()
         .getRegisteredAuthenticators();
         authenticators.add(new OAuthHelper());
@@ -133,20 +150,34 @@ public abstract class OAuthHttpTestBase extends RestletTestCase{
         parameters.add("truststorePath", testKeystoreFile.getPath());
         parameters.add("truststorePassword", "testtest");
     }
+    
+    protected Series <Parameter> getSslClientParameters() {
+        Series<Parameter> parameters = new Form();
+        parameters.add("truststorePath", testKeystoreFile.getPath());
+        parameters.add("truststorePassword", "testtest");
+        return parameters;
+    }
+    
+    protected Context getSslClientContext(){
+        Context c = new Context();
+        configureSslClientParameters(c);
+        return c;
+    }
 
     protected void configureSslServerParameters(Context context) {
         Series<Parameter> parameters = context.getParameters();
-        parameters.add("keystorePath", testKeystoreFile.getPath());
-        parameters.add("keystorePassword", "testtest");
+        parameters.add("keyStorePath", testKeystoreFile.getPath());
+        parameters.add("keyStorePassword", "testtest");
         parameters.add("keyPassword", "testtest");
-        parameters.add("truststorePath", testKeystoreFile.getPath());
-        parameters.add("truststorePassword", "testtest");
+        parameters.add("trustStorePath", testKeystoreFile.getPath());
+        parameters.add("trustStorePassword", "testtest");
     }
     
     protected void setupHttps(){
-        System.setProperty("javax.net.ssl.trustStore", testKeystoreFile.getPath());
-        System.setProperty("javax.net.ssl.trustStoreType", "JKS");
-        System.setProperty("javax.net.ssl.trustStorePassword", "testtest");
+        
+        //System.setProperty("javax.net.ssl.trustStore", testKeystoreFile.getPath());
+        //System.setProperty("javax.net.ssl.trustStoreType", "JKS");
+        //System.setProperty("javax.net.ssl.trustStorePassword", "testtest");
         try {
             if (!testKeystoreFile.exists()) {
                 // Prepare a temporary directory for the tests
@@ -176,10 +207,12 @@ public abstract class OAuthHttpTestBase extends RestletTestCase{
 
     protected void setupConnectors(ClientConnector cc, ServerConnector sc){
         Engine engine = Engine.getInstance();
+        //engine.get
         switch(cc){
         case INTERNAL:
-            engine.getRegisteredClients().add(0, 
-                    new org.restlet.engine.connector.HttpClientHelper(null));
+            //engine.getRegisteredClients().add(0, new org.restlet.ext.ssl.HttpsClientHelper(null));
+            //engine.getRegisteredClients().add(0, 
+            //        new org.restlet.engine.connector.HttpClientHelper(null));
             break;
         case HTTP_CLIENT:
             engine.getRegisteredClients().add(0, new org.restlet.ext.httpclient.HttpClientHelper(null));
@@ -188,6 +221,7 @@ public abstract class OAuthHttpTestBase extends RestletTestCase{
             engine.getRegisteredClients().add(0, new org.restlet.ext.net.HttpClientHelper(null));
             break;
         }
+        //set https
         switch(sc){
         case INTERNAL:
             engine.getRegisteredServers().add(0,
@@ -206,16 +240,24 @@ public abstract class OAuthHttpTestBase extends RestletTestCase{
     }
 
     protected void setupSingle() throws Exception {
-        client = new OAuthClientTestApplication(getProt(), serverPort);
+            
         component = new Component();
         if(https){
             Context c = component.getServers().add(Protocol.HTTPS, serverPort).getContext();
             configureSslServerParameters(c);
-            component.getClients().add(Protocol.HTTPS);
+            client = new OAuthClientTestApplication(getProt(), serverPort, this.getSslClientParameters());
+            component.getDefaultHost().attach("/combo",
+                    new OAuthComboTestApplication(getProt(), serverPort, 0, this.getSslClientParameters())); // unlimited token life
+            component.getDefaultHost().attach("/server",
+                    new OAuthProtectedTestApplication(getProt(), serverPort, this.getSslClientParameters()));
         }
         else{
+            client = new OAuthClientTestApplication(getProt(), serverPort, null);
             component.getServers().add(Protocol.HTTP, serverPort);
-            //server = new Server(new Context(), Protocol.HTTP, serverPort);
+            component.getDefaultHost().attach("/combo",
+                    new OAuthComboTestApplication(getProt(), serverPort, 0, null)); // unlimited token life
+            component.getDefaultHost().attach("/server",
+                    new OAuthProtectedTestApplication(getProt(), serverPort, null));
         }
         component.getClients().add(Protocol.HTTP);
         component.getClients().add(Protocol.RIAP);
@@ -223,10 +265,6 @@ public abstract class OAuthHttpTestBase extends RestletTestCase{
         component.getDefaultHost().attach("/oauth", 
                 new OAuthTestApplication(tokenTimeout, getProt(), serverPort));                                                 
         component.getDefaultHost().attach("/client", client);
-        component.getDefaultHost().attach("/server",
-                new OAuthProtectedTestApplication(getProt(), serverPort));
-        component.getDefaultHost().attach("/combo",
-                new OAuthComboTestApplication(getProt(), serverPort, 0)); // unlimited token life
 
         component.start();
     }
@@ -244,22 +282,29 @@ public abstract class OAuthHttpTestBase extends RestletTestCase{
             BioUtils.delete(this.testDir, true);
             org.restlet.engine.Engine.register();
         }
-        
+        this.reqClient.stop();
         super.tearDown();
     }
 
     private void setupMultiple() throws Exception{
-        client = new OAuthClientTestApplication(getProt(), serverPort);
+        
         
         component = new Component();
         if(https){
+            client = new OAuthClientTestApplication(getProt(), serverPort, this.getSslClientParameters());
             Context c = component.getServers().add(Protocol.HTTPS, serverPort).getContext();
             configureSslServerParameters(c);
             component.getClients().add(Protocol.HTTPS);
+            component.getDefaultHost().attach("/server",
+                    new OAuthMultipleUserProtectedTestApplication(getProt(), oauthServerPort,
+                            this.getSslClientParameters()));
         }
         else{
+            client = new OAuthClientTestApplication(getProt(), serverPort, null);
             //component.getServers().add
             component.getServers().add(Protocol.HTTP, serverPort);
+            component.getDefaultHost().attach("/server",
+                    new OAuthMultipleUserProtectedTestApplication(getProt(), oauthServerPort, null));
             //new Server(new Context(), Protocol.HTTP, serverPort);
         }
         // protected resource server
@@ -267,8 +312,6 @@ public abstract class OAuthHttpTestBase extends RestletTestCase{
         //component.getServers().add(server);
         component.getClients().add(Protocol.HTTP);
         component.getClients().add(Protocol.RIAP);
-        component.getDefaultHost().attach("/server",
-                new OAuthMultipleUserProtectedTestApplication(getProt(), oauthServerPort));
 
         // oauth server
         oauthcomp = new Component();

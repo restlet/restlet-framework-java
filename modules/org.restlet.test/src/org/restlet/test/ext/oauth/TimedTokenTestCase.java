@@ -45,11 +45,12 @@ import org.restlet.resource.ResourceException;
 public class TimedTokenTestCase extends OAuthHttpTestBase {
 
     public TimedTokenTestCase() {
-        OAuthHttpTestBase.tokenTimeout = 5;
+        this(false);
+        //OAuthHttpTestBase.tokenTimeout = 5;
     }
     
     public TimedTokenTestCase(boolean https){
-        super(false, true);
+        super(false, https);
         OAuthHttpTestBase.tokenTimeout = 5;
     }
 
@@ -65,6 +66,7 @@ public class TimedTokenTestCase extends OAuthHttpTestBase {
                 ChallengeScheme.HTTP_BASIC, "bob", "alice");
         ClientResource cr = new CookieCopyClientResource(getProt() + "://localhost:"
                 + serverPort + "/client/webclient");
+        cr.setNext(this.reqClient);
         cr.setChallengeResponse(chresp);
         Representation r = cr.get();
         assertNotNull(r);
@@ -81,6 +83,7 @@ public class TimedTokenTestCase extends OAuthHttpTestBase {
                 + "/server/protected");
         ref.addQueryParameter("oauth_token", client.getToken());
         cr = new ClientResource(ref);
+        cr.setNext(this.reqClient);
         r = cr.get();
         assertNotNull(r);
         text = r.getText();
@@ -94,6 +97,7 @@ public class TimedTokenTestCase extends OAuthHttpTestBase {
         assertNotNull(client.getToken());
         ref.addQueryParameter("oauth_token", client.getToken());
         cr = new ClientResource(ref);
+        cr.setNext(this.reqClient);
         try {
             r = cr.get();
         } catch (ResourceException re) {
@@ -110,14 +114,14 @@ public class TimedTokenTestCase extends OAuthHttpTestBase {
         OAuthUser user = client.getUser();
         assertNotNull(user);
         OAuthUser refreshed = Flow.REFRESH.execute(client.getOauthParameters(),
-                null, null, null, null, client.getUser().getRefreshToken());
+                null, null, null, null, client.getUser().getRefreshToken(), this.reqClient);
         assertNotNull(user);
         String wrongToken = refreshed.getAccessToken();
         assertNotNull(wrongToken);
 
         // Back to back test
         refreshed = Flow.REFRESH.execute(client.getOauthParameters(), null,
-                null, null, null, client.getUser().getRefreshToken());
+                null, null, null, client.getUser().getRefreshToken(), this.reqClient);
         String newToken = refreshed.getAccessToken();
         assertNotNull(newToken);
 
@@ -126,6 +130,7 @@ public class TimedTokenTestCase extends OAuthHttpTestBase {
                 + "/server/protected");
         ref.addQueryParameter("oauth_token", newToken);
         ClientResource cr = new ClientResource(ref);
+        cr.setNext(this.reqClient);
         Representation r = cr.get();
         assertNotNull(r);
         String text = r.getText();
@@ -138,6 +143,7 @@ public class TimedTokenTestCase extends OAuthHttpTestBase {
                 + "/server/protected");
         ref.addQueryParameter("oauth_token", wrongToken);
         cr = new ClientResource(ref);
+        cr.setNext(this.reqClient);
         try {
             r = cr.get();
         } catch (ResourceException re) { // Should be invalidated

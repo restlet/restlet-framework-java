@@ -34,25 +34,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.Application;
+import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.data.Parameter;
 import org.restlet.ext.oauth.OAuthAuthorizer;
 import org.restlet.routing.Router;
 import org.restlet.security.Role;
+import org.restlet.util.Series;
 
 
 public class OAuthProtectedTestApplication extends Application {
     
     private final String protocol;
     private final int port;
+    private final Client client;
     
     public OAuthProtectedTestApplication(){
-        this("http", 8080);
+        this("http", 8080, null);
     }
     
-    public OAuthProtectedTestApplication(String protocol, int port){
+    public OAuthProtectedTestApplication(String protocol, int port, Series <Parameter> params){
         this.port = port;
         this.protocol = protocol;
+        if(params != null){
+            client = new Client(protocol);
+            client.setContext(new Context());
+            client.getContext().getParameters().addAll(params);   
+        }
+        else
+            client = null;
     }
     
 	@Override
@@ -62,21 +73,13 @@ public class OAuthProtectedTestApplication extends Application {
 		
 		OAuthAuthorizer auth = new OAuthAuthorizer(
 				protocol+"://localhost:"
-				+port+
-			"/oauth/validate",
-			protocol+"://localhost:"+
-			port+"/oauth/authorize"
-			);
+				+port+"/oauth/validate", false, client);
 		auth.setNext(DummyResource.class);
 		router.attach("/protected",auth);
 		
 		OAuthAuthorizer auth2 = new OAuthAuthorizer(
-				protocol+"://localhost:"
-				+port+
-			"/oauth/validate",
-			protocol+"://localhost:"+
-			port+"/oauth/authorize"
-			);
+				protocol+"://localhost:"+port+"/oauth/validate",
+				false, client);
 		List <Role> roles = new ArrayList <Role> ();
 		roles.add(new Role("foo", null));
 		roles.add(new Role("bar", null));

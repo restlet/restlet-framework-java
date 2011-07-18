@@ -31,13 +31,17 @@
 package org.restlet.test.ext.oauth.app;
 
 import org.restlet.Application;
+import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
 import org.restlet.ext.oauth.OAuthParameters;
 import org.restlet.ext.oauth.OAuthProxy;
 import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.routing.Router;
+import org.restlet.util.Series;
 
 public class OAuthClientTestApplication extends Application {
     private OAuthProxy local;
@@ -46,14 +50,21 @@ public class OAuthClientTestApplication extends Application {
     private String protocol;
     private int port;
     //protected OAuthUser user;
+    private Client client;
     
     public OAuthClientTestApplication(){
-        this("http", 8080);
+        this("http", 8080, null);
     }
     
-    public OAuthClientTestApplication(String protocol, int port){
+    public OAuthClientTestApplication(String protocol, int port, Series <Parameter> params){
         this.protocol = protocol;
         this.port = port;
+        Protocol p = Protocol.valueOf(protocol);
+        if(params != null){
+            this.client = new Client(p);
+            this.client.setContext(new Context());
+            this.client.getContext().getParameters().addAll(params);
+        }
     }
 
     @Override
@@ -67,7 +78,7 @@ public class OAuthClientTestApplication extends Application {
                         + port + "/oauth/",
                 Scopes.toRoles("foo bar"));
 
-        local = new OAuthProxy(params, getContext(), true); // Use basic
+        local = new OAuthProxy(params, getContext(), true, client); // Use basic
         local.setNext(DummyResource.class);
         router.attach("/webclient", local);
 
