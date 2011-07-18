@@ -65,16 +65,29 @@ import org.restlet.util.Series;
  * Example invocation:
  * 
  * <pre>
- * {@code
- * public Restlet createInboundRoot(){
- *   ...
- *   OAuthAuthorizer auth = new OAuthAuthorizer(
- *              "http://localhost:8080/OAuth2Provider/validate",
- *              "http://localhost:8080/OAuth2Provider/authorize");
- *   auth.setNext(ProtectedResource.class);
- *   router.attach("/me", auth);
- *   ...
- * }
+ * {
+ *      &#064;code
+ *      public Restlet createInboundRoot(){
+ *              ...
+ *              OAuthAuthorizer auth = new OAuthAuthorizer(
+ *              &quot;http://localhost:8080/OAuth2Provider/validate&quot;);
+ *              auth.setNext(ProtectedResource.class);
+ *              router.attach(&quot;/me&quot;, auth);
+ *              ...
+ *      }
+ *      
+ *      //Set up an OAuthAuthorizer for SSL (can be set using global properties as well)
+ *      public Restlet createInboundRoot(){
+ *              ...
+ *              Client client = new Client(Protocol.HTTPS);
+ *              Context c = new Context();
+ *              client.setContext(c);
+ *              c.getParameters().add(&quot;truststorePath&quot;, &quot;pathToKeyStoreFile&quot;);
+ *                 c.getParameters(0.add(&quot;truststorePassword&quot;, &quot;password&quot;);
+ *              OAuthAuthorizer auth = new OAuthAuthorizer(
+ *                      &quot;https://path/to/validate&quot;, client);
+ *              ...
+ *      }
  * }
  * @see org.restlet.ext.oauth.ValidationServerResource
  * 
@@ -83,20 +96,23 @@ import org.restlet.util.Series;
 public class OAuthAuthorizer extends RoleAuthorizer {
 
     // Resource authenticateURI;
-    protected final Reference authorizeRef;
+    // protected final Reference authorizeRef;
 
     protected final Reference validateRef;
+
+    protected final org.restlet.Client client;
 
     /**
      * Default constructor.
      */
     protected OAuthAuthorizer() {
-        this.authorizeRef = null;
+        // this.authorizeRef = null;
         this.validateRef = null;
+        this.client = null;
     } // For extending the class
 
     /**
-     * Constructor.
+     * Sets up an OAuthAuthorizer
      * 
      * @param validationRef
      *            The validation URI referencing the auth server validation
@@ -107,58 +123,72 @@ public class OAuthAuthorizer extends RoleAuthorizer {
     }
 
     /**
-     * Sets up a RemoteAuthorizer.
+     * Sets up a OAuthAuthorizer.
      * 
      * @param validationRef
      *            The validation URI referencing the auth server validation
      *            resource.
-     * @param authorizationRef
-     *            The authorization URI referencing that should be invoked on
-     *            errors.
+     * @param requestClient
+     *            A predefined client that will be used for remote client
+     *            request. Useful when you need to set e.g. SSL initialization
+     *            parameters
      */
-    public OAuthAuthorizer(Reference validationRef, Reference authorizationRef) {
-        authorizeRef = authorizationRef;
-        validateRef = validationRef;
+    public OAuthAuthorizer(Reference validationRef,
+            org.restlet.Client requestClient) {
+        this.validateRef = validationRef;
+        this.client = requestClient;
     }
 
     /**
-     * Constructor.
+     * Sets up an OAuthAuthorizer
      * 
      * @param validationRef
      *            The validation URI referencing the auth server validation
      *            resource.
-     * @param authorizationRef
-     *            The authorization URI referencing that should be invoked on
-     *            errors.
      */
-    public OAuthAuthorizer(String validationRef, String authorizationRef) {
-        this(validationRef, authorizationRef, false);
+    public OAuthAuthorizer(String validationRef) {
+        this(new Reference(validationRef));
     }
 
     /**
-     * Sets up a Remote or Local Authorizer. Can only be deployed together with
-     * the Authorization Server Restlet application. A Validation resource must
-     * be started and mapped in the auth server.
-     * 
+     * Set up an OAuthAuthorizer.
      * 
      * @param validationRef
      *            The validation URI referencing the auth server validation
      *            resource.
-     * @param authorizationRef
-     *            The authorization URI referencing that should be invoked on
-     *            errors.
      * @param local
-     *            if true a local authorizer will be created
+     *            If local is set to true "riap://application" will appended to
+     *            the validationRef
+     * @param requestClient
+     *            A predefined client that will be used for remote client
+     *            request. Useful when you need to set e.g. SSL initialization
+     *            parameters (not needed for e.g. local)
      */
-    public OAuthAuthorizer(String validationRef, String authorizationRef,
-            boolean local) {
+    public OAuthAuthorizer(String validationRef, boolean local,
+            org.restlet.Client requestClient) {
+        this.client = requestClient;
         if (local) {
-            authorizeRef = new Reference(authorizationRef);
-            validateRef = new Reference("riap://application" + validationRef);
+            this.validateRef = new Reference("riap://application"
+                    + validationRef);
         } else {
-            authorizeRef = new Reference(authorizationRef);
-            validateRef = new Reference(validationRef);
+            this.validateRef = new Reference(validationRef);
         }
+    }
+
+    /**
+     * Set up an OAuthAuthorizer.
+     * 
+     * @param validationRef
+     *            The validation URI referencing the auth server validation
+     *            resource.
+     * @param requestClient
+     *            A predefined client that will be used for remote client
+     *            request. Useful when you need to set e.g. SSL initialization
+     *            parameters (not needed for e.g. local)
+     */
+    public OAuthAuthorizer(String validationRef,
+            org.restlet.Client requestClient) {
+        this(validationRef, false, requestClient);
     }
 
     @Override
@@ -166,7 +196,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
         getLogger().fine("Checking for param access_token");
         String accessToken = getAccessToken(req);
 
-        if (accessToken == null || accessToken.length() == 0) {
+        if ((accessToken == null) || (accessToken.length() == 0)) {
             ChallengeRequest cr = new ChallengeRequest(
                     ChallengeScheme.HTTP_OAUTH, "oauth"); // TODO set realm
             Series<Parameter> parameters = new Form();
@@ -177,12 +207,15 @@ public class OAuthAuthorizer extends RoleAuthorizer {
         } else {
             getLogger().fine("Found Access Token " + accessToken);
             ClientResource authResource = new CookieCopyClientResource(
-                    validateRef);
+                    this.validateRef);
+            if (this.client != null) {
+                authResource.setNext(this.client);
+            }
 
             JSONObject request;
             try {
                 request = createValidationRequest(accessToken, req);
-                // Representation repr = this.createJsonRepresentation(request);
+                // Representation repr = new JsonRepresentation(request);
                 Representation repr = new JsonStringRepresentation(request);
                 getLogger().fine("Posting to validator... json = " + request);
                 // RETRIEVE JSON...WORKAROUND TO HANDLE ANDROID
@@ -198,12 +231,14 @@ public class OAuthAuthorizer extends RoleAuthorizer {
                 JSONObject response = returned.getJsonObject();
                 boolean authenticated = response.getBoolean("authenticated");
 
-                if (response.has("tokenOwner"))
-                    this.setUser(req, response, accessToken);
+                if (response.has("tokenOwner")) {
+                    setUser(req, response, accessToken);
+                }
 
                 String error = null;
-                if (response.has("error"))
+                if (response.has("error")) {
                     error = response.getString("error");
+                }
 
                 getLogger().fine("In Auth Filer -> " + authenticated);
 
@@ -212,8 +247,9 @@ public class OAuthAuthorizer extends RoleAuthorizer {
                 r.release();
                 authResource.release();
 
-                if (authenticated)
+                if (authenticated) {
                     return true;
+                }
 
                 // handle any errors:
                 handleError(error, resp);
@@ -265,16 +301,17 @@ public class OAuthAuthorizer extends RoleAuthorizer {
         request.put("access_token", accessToken);
 
         // add any roles...
-        List<Role> roles = this.getAuthorizedRoles();
-        if (roles != null && roles.size() > 0) {
+        List<Role> roles = getAuthorizedRoles();
+        if ((roles != null) && (roles.size() > 0)) {
             JSONArray jArray = new JSONArray();
-            for (Role r : roles)
+            for (Role r : roles) {
                 jArray.put(Scopes.toScope(r));
+            }
             request.put("scope", jArray);
             getLogger().fine("Found scopes: " + jArray.toString());
         }
         String owner = (String) req.getAttributes().get("oauth-user");
-        if (owner != null && owner.length() > 0) {
+        if ((owner != null) && (owner.length() > 0)) {
             getLogger().fine("Found Owner:" + owner);
             request.put("owner", owner);
         }
@@ -297,26 +334,26 @@ public class OAuthAuthorizer extends RoleAuthorizer {
             getLogger().fine("Found Authorization header" + accessToken);
         }
         // Check query for token
-        else if (accessToken == null || accessToken.length() == 0) {
+        else if ((accessToken == null) || (accessToken.length() == 0)) {
             getLogger().fine(
                     "Didn't contain a Authorization header - checking query");
             accessToken = request.getOriginalRef().getQueryAsForm()
                     .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
 
             // check body if all else fail:
-            if (accessToken == null || accessToken.length() == 0) {
-                if (request.getMethod() == Method.POST
-                        || request.getMethod() == Method.PUT
-                        || request.getMethod() == Method.DELETE) {
+            if ((accessToken == null) || (accessToken.length() == 0)) {
+                if ((request.getMethod() == Method.POST)
+                        || (request.getMethod() == Method.PUT)
+                        || (request.getMethod() == Method.DELETE)) {
                     Representation r = request.getEntity();
-                    if (r != null
+                    if ((r != null)
                             && MediaType.APPLICATION_WWW_FORM.equals(r
                                     .getMediaType())) {
                         // Search for an OAuth Token
                         Form form = new Form(r);
                         accessToken = form
                                 .getFirstValue(OAuthServerResource.OAUTH_TOKEN);
-                        if (accessToken != null && accessToken.length() > 0) {
+                        if ((accessToken != null) && (accessToken.length() > 0)) {
                             // restore the entity body
                             request.setEntity(form.getWebRepresentation());
                         }
@@ -336,7 +373,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
      *            The response to complete.
      */
     private void handleError(String error, Response resp) {
-        if (error != null && error.length() > 0) {
+        if ((error != null) && (error.length() > 0)) {
             ChallengeRequest cr = new ChallengeRequest(
                     ChallengeScheme.HTTP_OAUTH, "oauth"); // TODO set
             // realm
@@ -401,9 +438,15 @@ public class OAuthAuthorizer extends RoleAuthorizer {
 
     @Override
     protected int unauthorized(Request request, Response response) {
+        // TODO Implement this:
+        /*
+         * if (response.getStatus().isSuccess() ||
+         * response.getStatus().isServerError()) { return
+         * super.unauthorized(request, response); }
+         * 
+         * // If redirect or a specific client error just propaget it on return
+         * STOP;
+         */
         return STOP;
-        // TODO propose to add if statement to Authenticator.
-        // if( response.getStatus().isRedirection()) return STOP;
-        // return super.unauthorized(request, response);
     }
 }

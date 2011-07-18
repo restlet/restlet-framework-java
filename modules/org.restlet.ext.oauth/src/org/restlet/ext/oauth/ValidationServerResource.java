@@ -78,7 +78,7 @@ public class ValidationServerResource extends OAuthServerResource {
         String lo = (String) getContext().getAttributes()
                 .get(LOCAL_ACCESS_ONLY);
 
-        if (lo != null && lo.length() > 0) {
+        if ((lo != null) && (lo.length() > 0)) {
             boolean localOnly = Boolean.parseBoolean(lo);
 
             if (localOnly) { // Check that protocol = RIAP
@@ -100,17 +100,19 @@ public class ValidationServerResource extends OAuthServerResource {
             String uri = call.get("uri").toString();
             JSONArray scopes = null;
 
-            if (call.has("scope"))
+            if (call.has("scope")) {
                 scopes = call.getJSONArray("scope");
+            }
 
             String owner = null;
 
-            if (call.has("owner"))
+            if (call.has("owner")) {
                 owner = call.getString("owner");
+            }
 
             getLogger().fine(
                     "In Validator resource - searching for token = " + token);
-            Token t = generator.findToken(token);
+            Token t = this.generator.findToken(token);
 
             if (t == null) {
                 response.put("authenticated", authenticated);
@@ -142,11 +144,12 @@ public class ValidationServerResource extends OAuthServerResource {
                     error = OAuthError.INVALID_REQUEST.name();
                 }
 
-                if (authenticated && scopes != null && scopes.length() > 0) {
+                if (authenticated && (scopes != null) && (scopes.length() > 0)) {
                     // All scopes must match if there are any listed
                     for (int i = 0; i < scopes.length(); i++) {
-                        if (scopes.isNull(i))
+                        if (scopes.isNull(i)) {
                             continue;
+                        }
                         String scope = scopes.getString(i);
                         boolean granted = user.isGrantedRole(
                                 Scopes.toRole(scope), owner);
@@ -163,7 +166,7 @@ public class ValidationServerResource extends OAuthServerResource {
 
                 // Matching on the owner if there is one and scope checke out
                 if (authenticated) {
-                    if (owner != null && owner.length() > 0
+                    if ((owner != null) && (owner.length() > 0)
                             && !AUTONOMOUS_USER.equals(user.getId())
                             && !owner.equals(user.getId())) {
                         authenticated = false;
@@ -191,6 +194,7 @@ public class ValidationServerResource extends OAuthServerResource {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
                     "Failed parse JSON", e);
         }
+        // return new JsonRepresentation(response);
         return new JsonStringRepresentation(response);
     }
 

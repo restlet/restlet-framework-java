@@ -110,14 +110,14 @@ public class AccessTokenServerResource extends OAuthServerResource {
     private Representation doAuthCodeFlow(String clientId, String clientSecret,
             Form params) throws IllegalArgumentException {
         String redirUri = params.getFirstValue(REDIR_URI);
-        if (redirUri == null || redirUri.length() == 0) {
+        if ((redirUri == null) || (redirUri.length() == 0)) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter redirect_uri is missing", null);
         }
 
         String code = params.getFirstValue(CODE);
-        if (code == null || code.length() == 0) {
+        if ((code == null) || (code.length() == 0)) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter code is missing", null);
@@ -144,7 +144,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
         // ScopedResource getOwner returns the user
 
         // 5 min timeout on tokens, 0 for unlimited
-        Token token = generator.exchangeForToken(code, tokenTimeSec);
+        Token token = this.generator.exchangeForToken(code, this.tokenTimeSec);
 
         // TODO send back scopes if limited
 
@@ -152,6 +152,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
+        // return new JsonRepresentation(body);
         return new JsonStringRepresentation(body);
     }
 
@@ -178,8 +179,9 @@ public class AccessTokenServerResource extends OAuthServerResource {
                     "Client id verification failed.", null);
         }
 
-        if (!client.containsUser(AUTONOMOUS_USER))
+        if (!client.containsUser(AUTONOMOUS_USER)) {
             client.createUser(AUTONOMOUS_USER);
+        }
 
         AuthenticatedUser user = client.findUser(AUTONOMOUS_USER);
 
@@ -192,11 +194,13 @@ public class AccessTokenServerResource extends OAuthServerResource {
             getLogger().fine("Adding scope = " + r.getName() + " to auto user");
         }
 
-        Token token = generator.generateToken(user, tokenTimeSec);
+        Token token = this.generator.generateToken(user, this.tokenTimeSec);
         JSONObject body = createJsonToken(token, null); // Scopes N/A
 
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
+        // getLogger().warning("SENDING JsonRepresentation");
+        // return new JsonRepresentation(body);
         return new JsonStringRepresentation(body);
     }
 
@@ -226,7 +230,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
         String username = params.getFirstValue(USERNAME);
         AuthenticatedUser user = null;
 
-        if (username == null || (user = client.findUser(username)) == null) {
+        if ((username == null) || ((user = client.findUser(username)) == null)) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter username missing.", null);
@@ -246,11 +250,12 @@ public class AccessTokenServerResource extends OAuthServerResource {
                     null);
         }
 
-        Token token = generator.generateToken(user, tokenTimeSec);
+        Token token = this.generator.generateToken(user, this.tokenTimeSec);
         JSONObject body = createJsonToken(token, null); // Scopes N/A
 
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
+        // return new JsonRepresentation(body);
         return new JsonStringRepresentation(body);
     }
 
@@ -270,7 +275,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
             Form params) {
         String rToken = params.getFirstValue(REFRESH_TOKEN);
 
-        if (rToken == null || rToken.length() == 0) {
+        if ((rToken == null) || (rToken.length() == 0)) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter refresh_token is missing", null);
@@ -285,20 +290,21 @@ public class AccessTokenServerResource extends OAuthServerResource {
                     "Client id verification failed.", null);
         }
 
-        Token token = generator.findToken(rToken);
+        Token token = this.generator.findToken(rToken);
 
-        if (token != null && (token instanceof ExpireToken)) {
+        if ((token != null) && (token instanceof ExpireToken)) {
             AuthenticatedUser user = token.getUser();
 
             // Make sure that the user owning the token is owned by this client
             if (client.containsUser(user.getId())) {
                 // refresh the token
-                generator.refreshToken((ExpireToken) token);
+                this.generator.refreshToken((ExpireToken) token);
 
                 JSONObject body = createJsonToken(token, null); // Scopes N/A
 
                 // Sets the no-store Cache-Control header
                 getResponse().setCacheDirectives(noStore);
+                // return new JsonRepresentation(body);
                 return new JsonStringRepresentation(body);
             } else { // error not owner
                 setStatus(Status.CLIENT_ERROR_FORBIDDEN);
@@ -333,7 +339,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
         String clientId = params.getFirstValue(CLIENT_ID);
         String clientSecret = params.getFirstValue(CLIENT_SECRET);
 
-        if (clientSecret == null || clientSecret.length() == 0) {
+        if ((clientSecret == null) || (clientSecret.length() == 0)) {
             // Check for a basic HTTP auth
             ChallengeResponse cr = getChallengeResponse();
 
@@ -360,7 +366,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
         }
 
         Representation toRet = null;
-        if (clientId == null || clientId.length() == 0) {
+        if ((clientId == null) || (clientId.length() == 0)) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter client_id is missing", null);
@@ -368,7 +374,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
             // return new EmptyRepresentation();
         }
 
-        if (clientSecret == null || clientSecret.length() == 0) {
+        if ((clientSecret == null) || (clientSecret.length() == 0)) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return sendError(OAuthError.INVALID_REQUEST,
                     "Mandatory parameter client_secret is missing", null);
@@ -438,13 +444,14 @@ public class AccessTokenServerResource extends OAuthServerResource {
         try {
             result.put(OAuthServerResource.ERROR, error.name());
 
-            if (description != null && description.length() > 0) {
+            if ((description != null) && (description.length() > 0)) {
                 result.put(OAuthServerResource.ERROR_DESC, description);
             }
 
-            if (errorUri != null && errorUri.length() > 0) {
+            if ((errorUri != null) && (errorUri.length() > 0)) {
                 result.put(OAuthServerResource.ERROR_URI, errorUri);
             }
+            // return new JsonRepresentation(result);
             return new JsonStringRepresentation(result);
         } catch (JSONException e) {
             getLogger().log(Level.WARNING, "Error while sending OAuth error.",
@@ -464,7 +471,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
      */
     // TODO The secret should be a char[].
     private Client validate(String clientId, String clientSecret) {
-        Client client = clients.findById(clientId);
+        Client client = this.clients.findById(clientId);
         getLogger().fine("Client = " + client);
 
         if (client == null) {
@@ -475,7 +482,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
             return null;
         }
 
-        if (clientSecret == null
+        if ((clientSecret == null)
                 || !clientSecret.equals(client.getClientSecret())) {
             sendError(OAuthError.INVALID_GRANT, "Client secret did not match",
                     null);

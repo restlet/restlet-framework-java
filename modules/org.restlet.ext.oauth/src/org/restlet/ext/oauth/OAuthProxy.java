@@ -62,7 +62,8 @@ import org.restlet.routing.Filter;
  * recommended to put a ServerResource after this filter to display to the end
  * user on successful service setup.
  * 
- * The following example shows how to protect "DummyResource" using OAuth.
+ * The following example shows how to gain an accesstoken that will be available
+ * for "DummyResource" to use to access some remote protected resource
  * 
  * <pre>
  * {
@@ -72,6 +73,20 @@ import org.restlet.routing.Filter;
  *     OAuthProxy proxy = new OauthProxy(params, getContext(), true);
  *     proxy.setNext(DummyResource.class);
  *     router.attach(&quot;/write&quot;, write);
+ *     
+ *     //A Slightly more advanced example that also sets some SSL client parameters
+ *     Client client = new Client(Protocol.HTTPS);
+ *     Context c = new Context();
+ *     client.setContext(c);
+ *     c.getParameters().add(&quot;truststorePath&quot;, &quot;pathToKeyStoreFile&quot;);
+ *        c.getParameters(0.add(&quot;truststorePassword&quot;, &quot;password&quot;);
+ *     OAuthParameter params = new OAuthParameters(&quot;clientId&quot;, &quot;clientSecret&quot;,
+ *             oauthURL, &quot;scope1 scope2&quot;);
+ *     OAuthProxy proxy = new OauthProxy(params, getContext(), true, client);
+ *     proxy.setNext(DummyResource.class);
+ *     router.attach(&quot;/write&quot;, write);
+ *     
+ *     
  * }
  * </pre>
  * 
@@ -84,28 +99,20 @@ public class OAuthProxy extends Filter {
 
     private final static String VERSION = "DRAFT-10";
 
+    /**
+     * Returns the current proxy's version.
+     * 
+     * @return The current proxy's version.
+     */
+    public static String getVersion() {
+        return VERSION;
+    }
+
     private final OAuthParameters params;
 
     private final boolean basicSecret;
 
-    /**
-     * Sets up an OAuthProxy.
-     * 
-     * @param params
-     *            The OAuth parameters.
-     * @param useBasicSecret
-     *            If true use http basic authentication otherwise use form
-     *            based.
-     * @param ctx
-     *            The Restlet context.
-     */
-    public OAuthProxy(OAuthParameters params, Context ctx,
-            boolean useBasicSecret) {
-        this.basicSecret = useBasicSecret;
-        setContext(ctx);
-        this.params = params;
-        no.add(CacheDirective.noStore());
-    }
+    private final org.restlet.Client cc;
 
     /**
      * Sets up an OauthProxy. Defaults to form based authentication and not http
@@ -120,17 +127,44 @@ public class OAuthProxy extends Filter {
         this(params, ctx, false);
     }
 
-    @Override
-    public synchronized void start() throws Exception {
-        super.start();
-        // tokenResource = new CookieCopyClientResource(params.getBaseRef()
-        // + params.getAccessTokenPath());
+    /**
+     * Sets up an OAuthProxy.
+     * 
+     * @param params
+     *            The OAuth parameters.
+     * @param useBasicSecret
+     *            If true use http basic authentication otherwise use form
+     *            based.
+     * @param ctx
+     *            The Restlet context.
+     */
+    public OAuthProxy(OAuthParameters params, Context ctx,
+            boolean useBasicSecret) {
+        this(params, ctx, useBasicSecret, null);
     }
 
-    @Override
-    public synchronized void stop() throws Exception {
-        super.stop();
-        // tokenResource.release();
+    /**
+     * Sets up an OAuthProxy.
+     * 
+     * @param params
+     *            The OAuth parameters.
+     * @param useBasicSecret
+     *            If true use http basic authentication otherwise use form
+     *            based.
+     * @param ctx
+     *            The Restlet context.
+     * @param requestClient
+     *            A predefined client that will be used for remote client
+     *            request. Useful when you need to set e.g. SSL initialization
+     *            parameters
+     */
+    public OAuthProxy(OAuthParameters params, Context ctx,
+            boolean useBasicSecret, org.restlet.Client requestClient) {
+        this.basicSecret = useBasicSecret;
+        setContext(ctx);
+        this.params = params;
+        no.add(CacheDirective.noStore());
+        this.cc = requestClient;
     }
 
     @Override
@@ -145,13 +179,13 @@ public class OAuthProxy extends Filter {
 
         String error = query.getFirstValue(OAuthServerResource.ERROR);
 
-        if (error != null && error.length() > 0) {
+        if ((error != null) && (error.length() > 0)) {
             // Failed in initial auth resource request
             Representation repr = new EmptyRepresentation();
             String desc = query.getFirstValue(OAuthServerResource.ERROR_DESC);
             String uri = query.getFirstValue(OAuthServerResource.ERROR_URI);
 
-            if (desc != null || uri != null) {
+            if ((desc != null) || (uri != null)) {
                 StringBuilder sb = new StringBuilder();
                 sb.append("<html><body><pre>");
                 sb.append("OAuth2 error detected.\n");
@@ -208,7 +242,7 @@ public class OAuthProxy extends Filter {
                         "Unhandled error response type. " + ec.name());
             }
             return STOP;
-            //return false;
+            // return false;
         }
 
         String code = query.getFirstValue(OAuthServerResource.CODE);
@@ -218,11 +252,11 @@ public class OAuthProxy extends Filter {
             Form form = new Form();
             form.add(OAuthServerResource.RESPONSE_TYPE,
                     ResponseType.CODE.name());
-            form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
+            form.add(OAuthServerResource.CLIENT_ID, this.params.getClientId());
             form.add(OAuthServerResource.REDIR_URI, redirectUri);
             // OLD form.add(OAuthServerResource.SCOPE, params.getScope());
             form.add(OAuthServerResource.SCOPE,
-                    Scopes.toScope(params.getRoles()));
+                    Scopes.toScope(this.params.getRoles()));
 
             // if( params.getOwner() != null && params.getOwner().length() > 0 )
             // {
@@ -236,21 +270,19 @@ public class OAuthProxy extends Filter {
 
             String q = form.getQueryString();
 
-            Reference redirRef = new Reference(params.getBaseRef(),
-                    params.getAuthorizePath(), q, null);
+            Reference redirRef = new Reference(this.params.getBaseRef(),
+                    this.params.getAuthorizePath(), q, null);
             getLogger().fine("Redirecting to : " + redirRef.toUri());
-            // response.redirectSeeOther(redirRef);
             response.setCacheDirectives(no);
             response.redirectTemporary(redirRef);
-            // response.commit();
             getLogger().fine("After Redirecting to : " + redirRef.toUri());
-            // return true;
-            // return null;
         } else {
             getLogger().fine("Came back after SNS code = " + code);
             ClientResource tokenResource = new CookieCopyClientResource(
-                    params.getBaseRef() + params.getAccessTokenPath());
-
+                    this.params.getBaseRef() + this.params.getAccessTokenPath());
+            if (this.cc != null) {
+                tokenResource.setNext(this.cc);
+            }
             Form form = new Form();
             form.add(OAuthServerResource.GRANT_TYPE,
                     GrantType.AUTHORIZATION_CODE.name());
@@ -258,19 +290,20 @@ public class OAuthProxy extends Filter {
                     + request.getResourceRef().getPath();
             form.add(OAuthServerResource.REDIR_URI, redir);
 
-            if (basicSecret) {
+            if (this.basicSecret) {
                 ChallengeResponse authentication = new ChallengeResponse(
                         ChallengeScheme.HTTP_BASIC);
                 authentication.setDigestAlgorithm("NONE");
-                String basic = params.getClientId() + ':'
-                        + params.getClientSecret();
+                String basic = this.params.getClientId() + ':'
+                        + this.params.getClientSecret();
                 authentication.setRawValue(Base64.encode(basic.getBytes(),
                         false));
                 tokenResource.setChallengeResponse(authentication);
             } else {
-                form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
+                form.add(OAuthServerResource.CLIENT_ID,
+                        this.params.getClientId());
                 form.add(OAuthServerResource.CLIENT_SECRET,
-                        params.getClientSecret());
+                        this.params.getClientSecret());
             }
 
             form.add(OAuthServerResource.CODE, code);
@@ -302,10 +335,9 @@ public class OAuthProxy extends Filter {
             }
             tokenResource.release();
         }
-        if(auth){
+        if (auth) {
             return CONTINUE;
-        }
-        else{
+        } else {
             if (response.getStatus().isSuccess()
                     || response.getStatus().isServerError()) {
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
@@ -314,26 +346,27 @@ public class OAuthProxy extends Filter {
         }
     }
 
-    /*
     @Override
-    protected int unauthorized(Request request, Response response) {
-        if (response.getStatus().isSuccess()
-                || response.getStatus().isServerError()) {
-            return super.unauthorized(request, response);
-        }
-
-        // If redirect or a specific client error just propaget it on
-        return STOP;
+    public synchronized void start() throws Exception {
+        super.start();
+        // tokenResource = new CookieCopyClientResource(params.getBaseRef()
+        // + params.getAccessTokenPath());
     }
-    */
-    
-    /**
-     * Returns the current proxy's version.
+
+    /*
+     * @Override protected int unauthorized(Request request, Response response)
+     * { if (response.getStatus().isSuccess() ||
+     * response.getStatus().isServerError()) { return
+     * super.unauthorized(request, response); }
      * 
-     * @return The current proxy's version.
+     * // If redirect or a specific client error just propaget it on return
+     * STOP; }
      */
-    public static String getVersion() {
-        return VERSION;
+
+    @Override
+    public synchronized void stop() throws Exception {
+        super.stop();
+        // tokenResource.release();
     }
 
 }
