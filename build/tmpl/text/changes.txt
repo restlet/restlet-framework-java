@@ -15,6 +15,7 @@ Changes log
       - Added MediaType.MESSAGE_HTTP constant.        
       - Added org.restlet.data.Modifier class, extending Metadata to specify 
         expected or supported media subtype parameters.
+      - Renamed UniformResource into Resource with proper deprecation.
     - Enhancements
       - Added OAuth 2.0 and OpenID 2.0 extensions that have been maturing
         in the incubator for a while after a contribution by Ericsson Labs.
@@ -26,6 +27,13 @@ Changes log
         Reported by John Logdson and Kristoffer Gronowski.
       - Allowed change of the parent context of a VirtualHost via the
         setContext() method.
+      - Added a CookieAuthenticator class in the org.restlet.ext.crypto
+        extension to provide customizable and secure authentication via
+        cookies, in a way that is as compatible as possible with HTTP
+        challenge based authentication.
+        Based on an initial contribution by Remi Dewitte.
+      - Added "timeIssues" property to ChallengeResponse, in order to 
+        support cookie based authentication.
     - Bug fixed
       - Fixed compatibility issue with GWT 2.3.
       - Fixed potential NPE in Restlet class when no context is available.

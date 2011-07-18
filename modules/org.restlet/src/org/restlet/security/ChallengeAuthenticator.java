@@ -228,6 +228,8 @@ public class ChallengeAuthenticator extends Authenticator {
             }
         } else {
             getLogger().warning("Authentication failed. No verifier provided.");
+            response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                    "Authentication failed. No verifier provided.");
         }
 
         return result;

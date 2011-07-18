@@ -71,6 +71,12 @@ public final class ChallengeResponse extends ChallengeMessage {
     /** The server nonce count. */
     private volatile int serverNounceCount;
 
+    /**
+     * The time when the response was issued, as returned by
+     * {@link System#currentTimeMillis()}.
+     */
+    private volatile long timeIssued;
+
     // [ifndef gwt] method
     /**
      * Constructor. It leverages the latest server response and challenge
@@ -103,12 +109,19 @@ public final class ChallengeResponse extends ChallengeMessage {
      * @param identifier
      *            The user identifier, such as a login name or an access key.
      * @param baseSecret
-     *            The user secret, such as a password or a secret key.
+     *            The base secret used to compute the secret.
+     * @param baseSecretAlgorithm
+     *            The digest algorithm of the base secret (see {@link Digest}
+     *            class).
      */
     public ChallengeResponse(final ChallengeRequest challengeRequest,
-            final Response response, final String identifier, String baseSecret) {
-        this(challengeRequest, response, identifier, baseSecret.toCharArray(),
-                Digest.ALGORITHM_NONE);
+            final Response response, final String identifier,
+            char[] baseSecret, String baseSecretAlgorithm) {
+        super(challengeRequest.getScheme());
+        this.identifier = identifier;
+        org.restlet.engine.security.AuthenticatorUtils.update(this,
+                response.getRequest(), response, identifier, baseSecret,
+                baseSecretAlgorithm);
     }
 
     // [ifndef gwt] method
@@ -123,19 +136,12 @@ public final class ChallengeResponse extends ChallengeMessage {
      * @param identifier
      *            The user identifier, such as a login name or an access key.
      * @param baseSecret
-     *            The base secret used to compute the secret.
-     * @param baseSecretAlgorithm
-     *            The digest algorithm of the base secret (see {@link Digest}
-     *            class).
+     *            The user secret, such as a password or a secret key.
      */
     public ChallengeResponse(final ChallengeRequest challengeRequest,
-            final Response response, final String identifier,
-            char[] baseSecret, String baseSecretAlgorithm) {
-        super(challengeRequest.getScheme());
-        this.identifier = identifier;
-        org.restlet.engine.security.AuthenticatorUtils.update(this,
-                response.getRequest(), response, identifier, baseSecret,
-                baseSecretAlgorithm);
+            final Response response, final String identifier, String baseSecret) {
+        this(challengeRequest, response, identifier, baseSecret.toCharArray(),
+                Digest.ALGORITHM_NONE);
     }
 
     /**
@@ -346,6 +352,16 @@ public final class ChallengeResponse extends ChallengeMessage {
                 .formatNonceCount(getServerNounceCount());
     }
 
+    /**
+     * Returns the time when the response was issued, as returned by
+     * {@link System#currentTimeMillis()}.
+     * 
+     * @return The time when the response was issued.
+     */
+    public long getTimeIssued() {
+        return timeIssued;
+    }
+
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
@@ -423,5 +439,16 @@ public final class ChallengeResponse extends ChallengeMessage {
      */
     public void setServerNounceCount(int serverNounceCount) {
         this.serverNounceCount = serverNounceCount;
+    }
+
+    /**
+     * Sets the time when the response was issued, as returned by
+     * {@link System#currentTimeMillis()}.
+     * 
+     * @param timeIssued
+     *            The time when the response was issued.
+     */
+    public void setTimeIssued(long timeIssued) {
+        this.timeIssued = timeIssued;
     }
 }

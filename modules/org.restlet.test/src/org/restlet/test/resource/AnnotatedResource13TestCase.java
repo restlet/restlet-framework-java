@@ -28,27 +28,49 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test.ext.crypto;
+package org.restlet.test.resource;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.Finder;
+import org.restlet.test.RestletTestCase;
 
 /**
- * Suite with all Crypto unit tests.
+ * Test the annotated resources, client and server sides.
  * 
  * @author Jerome Louvel
  */
-public class CryptoTestSuite extends TestCase {
+public class AnnotatedResource13TestCase extends RestletTestCase {
 
-    public static Test suite() {
-        TestSuite result = new TestSuite();
-        result.setName("Crypto extension");
-        result.addTestSuite(CookieAuthenticatorTestCase.class);
-        result.addTestSuite(HttpAwsS3HostNameTestCase.class);
-        result.addTestSuite(HttpAwsS3SigningTestCase.class);
-        result.addTestSuite(HttpAwsS3VerifierTestCase.class);
-        return result;
+    private ClientResource clientResource;
+
+    private MyResource13 myResource;
+
+    protected void setUp() throws Exception {
+        super.setUp();
+        Finder finder = new Finder();
+        finder.setTargetClass(MyServerResource13.class);
+
+        this.clientResource = new ClientResource("http://local");
+        this.clientResource.setNext(finder);
+        this.myResource = clientResource.wrap(MyResource13.class);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        clientResource = null;
+        myResource = null;
+        super.tearDown();
+    }
+
+    public void testModifiers() {
+        Contact contact = myResource.retrieve();
+        assertNotNull(contact);
+
+        LightContact lightContact = myResource.retrieveLight();
+        assertNotNull(lightContact);
+
+        FullContact fullContact = myResource.retrieveFull();
+        assertNotNull(fullContact);
     }
 
 }

@@ -28,27 +28,32 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test.ext.crypto;
+package org.restlet.test.resource;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import java.util.Date;
+
+import org.restlet.resource.ServerResource;
 
 /**
- * Suite with all Crypto unit tests.
+ * Sample server resource for modifier testing.
  * 
  * @author Jerome Louvel
  */
-public class CryptoTestSuite extends TestCase {
+public class MyServerResource13 extends ServerResource implements MyResource13 {
 
-    public static Test suite() {
-        TestSuite result = new TestSuite();
-        result.setName("Crypto extension");
-        result.addTestSuite(CookieAuthenticatorTestCase.class);
-        result.addTestSuite(HttpAwsS3HostNameTestCase.class);
-        result.addTestSuite(HttpAwsS3SigningTestCase.class);
-        result.addTestSuite(HttpAwsS3VerifierTestCase.class);
-        return result;
+    public LightContact retrieveLight() {
+        return new LightContact("test@domain.com", "Scott", "Tiger");
+    }
+
+    public Contact retrieve() {
+        return new Contact("test@domain.com", "Scott", "Tiger", new Date(),
+                "test@perso.fr");
+    }
+
+    public FullContact retrieveFull() {
+        return new FullContact("test@domain.com", "Scott", "Tiger", new Date(),
+                "test@perso.fr", "1 Main Street", "Restlet city, 0102",
+                "RESTland", "+123.456", "+789012");
     }
 
 }
