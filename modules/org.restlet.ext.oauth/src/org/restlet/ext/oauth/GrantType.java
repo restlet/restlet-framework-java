@@ -40,25 +40,25 @@ public enum GrantType {
     /**
      * 
      */
-    ASSERTION,
+    assertion,
 
     /**
      * 
      */
-    AUTHORIZATION_CODE,
+    authorization_code,
 
     /**
      * 
      */
-    NONE,
+    none,
 
     /**
      * 
      */
-    PASSWORD,
+    password,
 
     /**
      * 
      */
-    REFRESH_TOKEN
+    refresh_token
 }

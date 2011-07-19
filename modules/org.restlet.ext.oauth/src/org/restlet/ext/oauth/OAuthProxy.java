@@ -251,7 +251,7 @@ public class OAuthProxy extends Filter {
         if (code == null) {
             Form form = new Form();
             form.add(OAuthServerResource.RESPONSE_TYPE,
-                    ResponseType.CODE.name());
+                    ResponseType.code.name());
             form.add(OAuthServerResource.CLIENT_ID, this.params.getClientId());
             form.add(OAuthServerResource.REDIR_URI, redirectUri);
             // OLD form.add(OAuthServerResource.SCOPE, params.getScope());
@@ -285,7 +285,7 @@ public class OAuthProxy extends Filter {
             }
             Form form = new Form();
             form.add(OAuthServerResource.GRANT_TYPE,
-                    GrantType.AUTHORIZATION_CODE.name());
+                    GrantType.authorization_code.name());
             String redir = request.getResourceRef().getHostIdentifier()
                     + request.getResourceRef().getPath();
             form.add(OAuthServerResource.REDIR_URI, redir);

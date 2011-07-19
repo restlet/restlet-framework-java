@@ -211,8 +211,8 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
         // Cookie or OpenID
         if (session != null && session.getScopeOwner() != null) {
 
-            if (flow.equals(ResponseType.TOKEN)
-                    || flow.equals(ResponseType.CODE)) {
+            if (flow.equals(ResponseType.token)
+                    || flow.equals(ResponseType.code)) {
 
                 String[] requestedScopes = parseScope(params
                         .getFirstValue(SCOPE));

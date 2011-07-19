@@ -227,9 +227,9 @@ public class AuthPageServerResource extends OAuthServerResource {
         String location = null;
         ResponseType flow = session.getAuthFlow();
 
-        if (flow.equals(ResponseType.TOKEN)) {
+        if (flow.equals(ResponseType.token)) {
             location = generateAgentToken(id, client, redirUrl);
-        } else if (flow.equals(ResponseType.CODE)) {
+        } else if (flow.equals(ResponseType.code)) {
             location = generateCode(id, client, redirUrl);
         }
 

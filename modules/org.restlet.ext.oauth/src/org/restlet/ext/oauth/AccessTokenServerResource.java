@@ -387,21 +387,21 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
             try {
                 switch (type) {
-                case AUTHORIZATION_CODE:
+                case authorization_code:
                     toRet = doAuthCodeFlow(clientId, clientSecret, params);
                     break;
-                case PASSWORD:
+                case password:
                     toRet = doPasswordFlow(clientId, clientSecret, params);
                     break;
-                case ASSERTION:
+                case assertion:
                     sendError(OAuthError.UNSUPPORTED_GRANT_TYPE,
                             "Assertion flow not supported", null);
                     setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
                     break;
-                case REFRESH_TOKEN:
+                case refresh_token:
                     toRet = doRefreshFlow(clientId, clientSecret, params);
                     break;
-                case NONE:
+                case none:
                     toRet = doNoneFlow(clientId, clientSecret, params);
                     break;
                 default:

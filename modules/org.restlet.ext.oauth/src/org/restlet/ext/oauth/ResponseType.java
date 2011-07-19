@@ -39,15 +39,10 @@ public enum ResponseType {
     /**
      * 
      */
-    CODE,
+    code,
 
     /**
      * 
      */
-    CODE_AND_TOKEN,
-
-    /**
-     * 
-     */
-    TOKEN
+    token
 }
