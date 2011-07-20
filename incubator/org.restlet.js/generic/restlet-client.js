@@ -1,5 +1,5 @@
 // [ifdef nodejs] uncomment
-//var jsclass = require("./jsclass/core");
+//var jsclass = require("jsclass");
 //var util = require("util");
 //var http = require("http");
 //var libxmljs = require("libxmljs");
@@ -1005,6 +1005,7 @@ var Status = new JS.Class({
     },
     getDescription: function() {
         var result = this.description;
+        // [ifndef browserlight]
 
         if (result == null) {
             switch (this.code) {
@@ -1183,6 +1184,7 @@ var Status = new JS.Class({
                 break;
             }
         }
+        // [enddef]
 
         return result;
     },
@@ -1191,6 +1193,7 @@ var Status = new JS.Class({
     },
     getReasonPhrase: function() {
         var result = this.reasonPhrase;
+        // [ifndef browserlight]
 
         if (result == null) {
             switch (this.code) {
@@ -1369,11 +1372,13 @@ var Status = new JS.Class({
                 break;
             }
         }
+        // [enddef]
 
         return result;
     },
     getUri: function() {
         var result = this.uri;
+        // [ifndef browserlight]
 
         if (result == null) {
             switch (this.code) {
@@ -1544,6 +1549,7 @@ var Status = new JS.Class({
             }
         }
 
+        // [enddef]
         return result;
     },
     isClientError: function() {

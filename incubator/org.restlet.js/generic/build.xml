@@ -41,7 +41,8 @@
 	
 	<target name="install-nodejs-client" depends="generate-nodejs-client"
 			description="Install the generated client source for node.js">
-		<copy todir="${nodejs.client.dir}" overwrite="true" includeEmptyDirs="false">
+		<mkdir dir="${nodejs.client.dir}/lib"/>
+		<copy todir="${nodejs.client.dir}/lib" overwrite="true" includeEmptyDirs="false">
 			<fileset dir="${target.nodejs.client.dir}">
 	        	<include name="**/*.js" />
 			</fileset>
@@ -71,6 +72,37 @@
 	</target>
 
 	<target name="install-browser-client" depends="generate-browser-client"
+			description="Install the generated client source for browser">
+		<copy todir="${browser.dir}" overwrite="true" includeEmptyDirs="false">
+			<fileset dir="${target.browser.client.dir}">
+	        	<include name="**/*.js" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="generate-browserlight-client"
+			description="Generate the client source for browser.">
+		<delete dir="${target.browser.client.dir}"/>
+		<mkdir dir="${target.browser.client.dir}"/>
+		<copy todir="${target.browser.client.dir}" overwrite="true" includeEmptyDirs="false">
+			<fileset dir="${basedir}" excludes="forge/**">
+				<custom classname="selector.EditionFileSelector" classpathref="forge-path">
+					<param name="edition" value="browserlight"/>
+				</custom>
+	        	<include name="**/*.js" />
+			</fileset>
+			<filterchain>
+				<filterreader classname="filter.EditionFilterReader" classpathref="forge-path">
+					<param name="edition" value="browserlight" />
+				</filterreader>
+			</filterchain>
+	    </copy>
+		<jsmin suffix="true" destdir="${target.browser.client.dir}">
+		       <fileset dir="${target.browser.client.dir}" includes="**/*.js"/>
+		</jsmin>
+	</target>
+
+	<target name="install-browserlight-client" depends="generate-browserlight-client"
 			description="Install the generated client source for browser">
 		<copy todir="${browser.dir}" overwrite="true" includeEmptyDirs="false">
 			<fileset dir="${target.browser.client.dir}">
