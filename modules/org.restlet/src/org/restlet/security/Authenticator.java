@@ -128,7 +128,7 @@ public abstract class Authenticator extends Filter {
         boolean loggable = request.isLoggable()
                 && getLogger().isLoggable(Level.FINE);
 
-        if (loggable) {
+        if (loggable && request.getChallengeResponse() != null) {
             getLogger().log(
                     Level.FINE,
                     "The authentication succeeded for the identifer \""
@@ -230,7 +230,7 @@ public abstract class Authenticator extends Filter {
         boolean loggable = request.isLoggable()
                 && getLogger().isLoggable(Level.FINE);
 
-        if (loggable) {
+        if (request.getChallengeResponse() != null && loggable) {
             getLogger().log(
                     Level.FINE,
                     "The authentication failed for the identifer \""

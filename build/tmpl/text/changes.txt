@@ -4,6 +4,11 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bug fixed
+      - Fixed potential NPE in the Authenticator when logging authentication 
+        failure. Reported by Martin Svensson.
+      
+- 2.1 Milestone 5 (06/21/2011)
     - API changes
       - Moved SslContextFactory and DefaultSslContextFactory classes from 
         internal to public org.restlet.ext.ssl package.
