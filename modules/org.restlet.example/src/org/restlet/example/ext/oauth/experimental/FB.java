@@ -75,7 +75,7 @@ public class FB {
 
         Form form = new Form();
         form.add(OAuthServerResource.RESPONSE_TYPE,
-                ResponseType.CODE_AND_TOKEN.name());
+                "code_and_token");
         form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
         form.add(OAuthServerResource.REDIR_URI, callbackUri);
         if (params.getRoles() != null && params.getRoles().size() > 0) {
