@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Openid for Java
 Bundle-SymbolicName: org.openid4java
-Bundle-Version: 0.9.5
+Bundle-Version: 0.9.6
 Bundle-ClassPath: org.openid4java.jar
 Bundle-Vendor: openid4java
 Export-Package: org.openid4java,
