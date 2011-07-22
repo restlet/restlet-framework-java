@@ -116,7 +116,7 @@ public class ValidationServerResource extends OAuthServerResource {
 
             if (t == null) {
                 response.put("authenticated", authenticated);
-                error = OAuthError.INVALID_TOKEN.name();
+                error = OAuthError.invalid_token.name();
                 // setStatus(Status.CLIENT_ERROR_FORBIDDEN);
             } else {
                 getLogger().fine("In Validator resource - got token = " + t);
@@ -126,7 +126,7 @@ public class ValidationServerResource extends OAuthServerResource {
                     ExpireToken et = (ExpireToken) t;
 
                     if (!token.equals(et.getToken())) {
-                        error = OAuthError.INVALID_TOKEN.name();
+                        error = OAuthError.invalid_token.name();
                         getLogger().warning(
                                 "Should not use the refresh_token to sign!");
                     }
@@ -141,7 +141,7 @@ public class ValidationServerResource extends OAuthServerResource {
                 authenticated = (user == null) ? false : true;
 
                 if (!authenticated) {
-                    error = OAuthError.INVALID_REQUEST.name();
+                    error = OAuthError.invalid_request.name();
                 }
 
                 if (authenticated && (scopes != null) && (scopes.length() > 0)) {
@@ -157,7 +157,7 @@ public class ValidationServerResource extends OAuthServerResource {
                                 "Granted permission : " + scope + " = "
                                         + granted);
                         if (!granted) {
-                            error = OAuthError.INSUFFICIENT_SCOPE.name();
+                            error = OAuthError.insufficient_scope.name();
                             authenticated = false;
                             break;
                         }
@@ -170,7 +170,7 @@ public class ValidationServerResource extends OAuthServerResource {
                             && !AUTONOMOUS_USER.equals(user.getId())
                             && !owner.equals(user.getId())) {
                         authenticated = false;
-                        error = OAuthError.INVALID_REQUEST.name();
+                        error = OAuthError.invalid_request.name();
                     } else {
                         response.put("tokenOwner", user.getId());
                     }

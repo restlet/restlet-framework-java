@@ -52,20 +52,20 @@ import org.restlet.data.Form;
  */
 public enum OAuthError {
 
-    ACCESS_DENIED, // 3.2.1 & 4.3.1 & 5.2.1
-    EXPIRED_TOKEN, // 3.2.1 & 4.3.1
-    INSUFFICIENT_SCOPE, // 3.2.1 & 4.3.1
-    INVALID_CLIENT, // 3.2.1
-    INVALID_GRANT, // 3.2.1
-    INVALID_REQUEST, // 3.2.1
-    INVALID_SCOPE, // 3.2.1 & 4.3.1
+    access_denied, // 3.2.1 & 4.3.1 & 5.2.1
+    expired_token, // 3.2.1 & 4.3.1
+    insufficient_scope, // 3.2.1 & 4.3.1
+    invalid_client, // 3.2.1
+    invalid_grant, // 3.2.1
+    invalid_request, // 3.2.1
+    invalid_scope, // 3.2.1 & 4.3.1
 
-    INVALID_TOKEN, // 4.3.1
-    REDIRECT_URI_MISMATCH, // 4.3.1
+    invalid_token, // 4.3.1
+    redirect_uri_mismatch, // 4.3.1
 
-    UNAUTHORIZED_CLIENT, // 5.2.1
-    UNSUPPORTED_GRANT_TYPE, // 5.2.1
-    UNSUPPORTED_RESPONSE_TYPE;
+    unauthorized_client, // 5.2.1
+    unsupported_grant_type, // 5.2.1
+    unsupported_response_type;
     // 5.2.1
 
     /**

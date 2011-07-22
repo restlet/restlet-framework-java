@@ -200,7 +200,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
             ChallengeRequest cr = new ChallengeRequest(
                     ChallengeScheme.HTTP_OAUTH, "oauth"); // TODO set realm
             Series<Parameter> parameters = new Form();
-            parameters.add("error", OAuthError.INVALID_REQUEST.name());
+            parameters.add("error", OAuthError.invalid_request.name());
             cr.setParameters(parameters);
             resp.getChallengeRequests().add(cr);
             resp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
@@ -382,20 +382,20 @@ public class OAuthAuthorizer extends RoleAuthorizer {
             OAuthError code = OAuthError.valueOf(error);
 
             switch (code) {
-            case INVALID_REQUEST:
+            case invalid_request:
                 // TODO report bug in Restlet and verify, can not handle
                 // space char.
                 // parameters.add("error_description",
                 // "The request is missing a required parameter.");
                 resp.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
                 break;
-            case INVALID_TOKEN:
-            case EXPIRED_TOKEN:
+            case invalid_token:
+            case expired_token:
                 // parameters.add("error_description",
                 // "The access token provided is invalid.");
                 resp.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
                 break;
-            case INSUFFICIENT_SCOPE:
+            case insufficient_scope:
                 // parameters.add("error_description",
                 // "The request requires higher privileges than provided "
                 // +"by the access token.");

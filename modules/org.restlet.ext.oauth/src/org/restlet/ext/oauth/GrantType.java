@@ -60,5 +60,6 @@ public enum GrantType {
     /**
      * 
      */
-    refresh_token
+    refresh_token;
+    
 }

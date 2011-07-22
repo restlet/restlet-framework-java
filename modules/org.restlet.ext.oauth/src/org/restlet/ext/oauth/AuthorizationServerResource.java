@@ -91,7 +91,7 @@ public class AuthorizationServerResource extends OAuthServerResource {
             scopeOwner = session.getScopeOwner();
         getLogger().fine("OWNER - " + scopeOwner);
         if (scopeOwner == null) {
-            sendError(sessionId, OAuthError.INVALID_REQUEST,
+            sendError(sessionId, OAuthError.invalid_request,
                     params.getFirstValue(STATE), "No Scope Owner", null);
             return getResponseEntity();
         }
@@ -99,7 +99,7 @@ public class AuthorizationServerResource extends OAuthServerResource {
         // check clientId:
         String clientId = params.getFirstValue(CLIENT_ID);
         if (clientId == null || clientId.length() < 1) {
-            sendError(sessionId, OAuthError.INVALID_REQUEST,
+            sendError(sessionId, OAuthError.invalid_request,
                     params.getFirstValue(STATE),
                     "No client_id parameter found.", null);
             getLogger().warning("Could not find client ID");
@@ -109,7 +109,7 @@ public class AuthorizationServerResource extends OAuthServerResource {
         getLogger().fine("Client = " + client);
         if (client == null) {
             // client = clients.createClient(clientId, redirUri);
-            sendError(sessionId, OAuthError.INVALID_CLIENT,
+            sendError(sessionId, OAuthError.invalid_client,
                     params.getFirstValue(STATE),
                     "Need to register the client : " + clientId, null);
             getLogger().warning("Need to register the client : " + clientId);
@@ -120,14 +120,14 @@ public class AuthorizationServerResource extends OAuthServerResource {
         // check redir:
         String redirUri = params.getFirstValue(REDIR_URI);
         if (redirUri == null || redirUri.length() == 0) {
-            sendError(sessionId, OAuthError.INVALID_REQUEST,
+            sendError(sessionId, OAuthError.invalid_request,
                     params.getFirstValue(STATE),
                     "No redirect_uri parameter found.", null);
             getLogger().warning("No mandatory redirect URI provided");
             return getResponseEntity();
         }
         if (!redirUri.startsWith(client.getRedirectUri())) {
-            sendError(sessionId, OAuthError.REDIRECT_URI_MISMATCH,
+            sendError(sessionId, OAuthError.redirect_uri_mismatch,
                     params.getFirstValue(STATE),
                     "Callback URI does not match.", null);
             getLogger().warning("Callback URI does not match.");
@@ -145,11 +145,11 @@ public class AuthorizationServerResource extends OAuthServerResource {
             if (!Method.GET.equals(getMethod()))
                 setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         } catch (IllegalArgumentException iae) {
-            sendError(sessionId, OAuthError.UNSUPPORTED_RESPONSE_TYPE,
+            sendError(sessionId, OAuthError.unsupported_response_type,
                     params.getFirstValue(STATE), "Unsupported flow", null);
             getLogger().log(Level.WARNING, "Error in execution.", iae);
         } catch (NullPointerException npe) {
-            sendError(sessionId, OAuthError.INVALID_REQUEST,
+            sendError(sessionId, OAuthError.invalid_request,
                     params.getFirstValue(STATE),
                     "No response_type parameter found.", null);
         }

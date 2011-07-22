@@ -39,11 +39,16 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.OAuthParameters;
+import org.restlet.ext.oauth.OAuthServerResource;
 import org.restlet.ext.oauth.OAuthUser;
+import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.routing.Filter;
 
@@ -82,7 +87,10 @@ public class OauthProxyV2 extends Filter {
 
         redirectUri = request.getResourceRef().toUrl().toString();
         Form query = new Form(request.getOriginalRef().getQuery());
-
+        if(handleError(query, response))
+            return STOP;
+        
+        
         String code = query.getFirstValue("code");
         getLogger().fine("Incomming request query = " + query);
 
@@ -176,8 +184,75 @@ public class OauthProxyV2 extends Filter {
     }
     */
     
-    public String getAccessToken() {
-        return accessToken;
+    private boolean handleError(Form query, Response response){
+        String error = query.getFirstValue(OAuthServerResource.ERROR);
+
+        if ((error != null) && (error.length() > 0)) {
+            // Failed in initial auth resource request
+            Representation repr = new EmptyRepresentation();
+            String desc = query.getFirstValue(OAuthServerResource.ERROR_DESC);
+            String uri = query.getFirstValue(OAuthServerResource.ERROR_URI);
+
+            if ((desc != null) || (uri != null)) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("<html><body><pre>");
+                sb.append("OAuth2 error detected.\n");
+
+                if (desc != null) {
+                    sb.append("Error description : ").append(desc);
+                }
+
+                if (uri != null) {
+                    sb.append("<a href=\"");
+                    sb.append(uri);
+                    sb.append("\">Error Description</a>");
+                }
+
+                sb.append("</pre></body></html>");
+
+                repr = new StringRepresentation(sb.toString(),
+                        MediaType.TEXT_HTML);
+            }
+
+            OAuthError ec = OAuthError.valueOf(error);
+
+            switch (ec) {
+            case invalid_request:
+                response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, error);
+                response.setEntity(repr);
+                break;
+            case invalid_client:
+                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND, error);
+                response.setEntity(repr);
+                break;
+            case unauthorized_client:
+                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
+                response.setEntity(repr);
+                break;
+            case redirect_uri_mismatch:
+                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
+                response.setEntity(repr);
+                break;
+            case access_denied:
+                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
+                response.setEntity(repr);
+                break;
+            case unsupported_response_type:
+                response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, error);
+                response.setEntity(repr);
+                break;
+            case invalid_scope:
+                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
+                response.setEntity(repr);
+                break;
+            default:
+                getLogger().warning(
+                        "Unhandled error response type. " + ec.name());
+            }
+            return true;
+            // return false;
+        }
+        return false;
     }
 
 }

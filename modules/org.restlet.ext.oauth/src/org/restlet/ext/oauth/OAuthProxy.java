@@ -209,31 +209,31 @@ public class OAuthProxy extends Filter {
             OAuthError ec = OAuthError.valueOf(error);
 
             switch (ec) {
-            case INVALID_REQUEST:
+            case invalid_request:
                 response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, error);
                 response.setEntity(repr);
                 break;
-            case INVALID_CLIENT:
+            case invalid_client:
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND, error);
                 response.setEntity(repr);
                 break;
-            case UNAUTHORIZED_CLIENT:
+            case unauthorized_client:
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
                 response.setEntity(repr);
                 break;
-            case REDIRECT_URI_MISMATCH:
+            case redirect_uri_mismatch:
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
                 response.setEntity(repr);
                 break;
-            case ACCESS_DENIED:
+            case access_denied:
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
                 response.setEntity(repr);
                 break;
-            case UNSUPPORTED_RESPONSE_TYPE:
+            case unsupported_response_type:
                 response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, error);
                 response.setEntity(repr);
                 break;
-            case INVALID_SCOPE:
+            case invalid_scope:
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
                 response.setEntity(repr);
                 break;

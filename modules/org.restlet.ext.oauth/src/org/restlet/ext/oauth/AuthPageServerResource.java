@@ -210,7 +210,7 @@ public class AuthPageServerResource extends OAuthServerResource {
 
         if ("Reject".equals(action)) {
             setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-            sendError(session, OAuthError.ACCESS_DENIED, session.getState(),
+            sendError(session, OAuthError.access_denied, session.getState(),
                     "Rejected.", null);
             getLogger().fine("Rejected.");
             return;
