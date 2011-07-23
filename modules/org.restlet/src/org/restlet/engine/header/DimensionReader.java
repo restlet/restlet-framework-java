@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.restlet.data.Dimension;
-import org.restlet.data.Parameter;
 
 /**
  * Dimension header reader.
@@ -50,8 +49,7 @@ public class DimensionReader extends HeaderReader<Dimension> {
      * @param collection
      *            The collection to update.
      */
-    public static void addValues(Parameter header,
-            Collection<Dimension> collection) {
+    public static void addValues(Header header, Collection<Dimension> collection) {
         new DimensionReader(header.getValue()).addValues(collection);
     }
 

@@ -36,9 +36,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.engine.Engine;
+import org.restlet.engine.util.ChildContext;
 import org.restlet.util.Series;
 
 /**
@@ -67,7 +67,7 @@ public class Context {
      * Warning: this method should only be used under duress. You should by
      * default prefer obtaining the current context using methods such as
      * {@link org.restlet.Restlet#getContext()} or
-     * {@link org.restlet.resource.UniformResource#getContext()}.<br>
+     * {@link org.restlet.resource.Resource#getContext()}.<br>
      * <br>
      * This variable is stored internally as a thread local variable and updated
      * each time a request is handled by a {@link Restlet} via the
@@ -153,7 +153,8 @@ public class Context {
     public Context(Logger logger) {
         this.attributes = new ConcurrentHashMap<String, Object>();
         this.logger = logger;
-        this.parameters = new Form(new CopyOnWriteArrayList<Parameter>());
+        this.parameters = new Series<Parameter>(Parameter.class,
+                new CopyOnWriteArrayList<Parameter>());
         this.clientDispatcher = null;
 
         // [ifndef gwt]
@@ -176,13 +177,14 @@ public class Context {
     /**
      * Creates a protected child context. This is especially useful for new
      * application attached to their parent component, to ensure their isolation
-     * from the other applications. By default it just creates a new context
-     * instance.
+     * from the other applications. By default it creates a new context instance
+     * with empty or null properties, except the client and server dispatchers
+     * that are wrapped for isolation purpose.
      * 
      * @return The child context.
      */
     public Context createChildContext() {
-        return new Context();
+        return new ChildContext(this);
     }
 
     /**

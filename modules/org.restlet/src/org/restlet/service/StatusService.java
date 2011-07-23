@@ -37,7 +37,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.UniformResource;
+import org.restlet.resource.Resource;
 
 /**
  * Service to handle error statuses. If an exception is thrown within your
@@ -185,7 +185,7 @@ public class StatusService extends Service {
      *            The parent resource.
      * @return The representation of the given status.
      */
-    public Status getStatus(Throwable throwable, UniformResource resource) {
+    public Status getStatus(Throwable throwable, Resource resource) {
         return getStatus(throwable,
                 (resource == null) ? null : resource.getRequest(),
                 (resource == null) ? null : resource.getResponse());

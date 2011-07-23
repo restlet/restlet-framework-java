@@ -62,11 +62,12 @@ public class AnnotatedResource13TestCase extends RestletTestCase {
         super.tearDown();
     }
 
-    public void testModifiers() {
+    public void testQuery() {
         Contact contact = myResource.retrieve();
         assertNotNull(contact);
 
         LightContact lightContact = myResource.retrieveLight();
+        assertFalse(lightContact.getClass().equals(Contact.class));
         assertNotNull(lightContact);
 
         FullContact fullContact = myResource.retrieveFull();

@@ -52,6 +52,7 @@ import org.restlet.data.Status;
  * @see Pattern
  */
 public class Validator extends Filter {
+
     /** Internal class holding validation information. */
     private static final class ValidateInfo {
         /** Name of the attribute to look for. */
@@ -132,27 +133,25 @@ public class Validator extends Filter {
                 if (validate.required
                         && !request.getAttributes().containsKey(
                                 validate.attribute)) {
-                    response
-                            .setStatus(
-                                    Status.CLIENT_ERROR_BAD_REQUEST,
-                                    "Unable to find the \""
-                                            + validate.attribute
-                                            + "\" attribute in the request. Please check your request.");
+                    response.setStatus(
+                            Status.CLIENT_ERROR_BAD_REQUEST,
+                            "Unable to find the \""
+                                    + validate.attribute
+                                    + "\" attribute in the request. Please check your request.");
                 } else if (validate.format != null) {
                     Object value = request.getAttributes().get(
                             validate.attribute);
 
                     if ((value != null)
-                            && !Pattern.matches(validate.format, value
-                                    .toString())) {
-                        response
-                                .setStatus(
-                                        Status.CLIENT_ERROR_BAD_REQUEST,
-                                        "Unable to validate the value of the \""
-                                                + validate.attribute
-                                                + "\" attribute. The expected format is: "
-                                                + validate.format
-                                                + " (Java Regex). Please check your request.");
+                            && !Pattern.matches(validate.format,
+                                    value.toString())) {
+                        response.setStatus(
+                                Status.CLIENT_ERROR_BAD_REQUEST,
+                                "Unable to validate the value of the \""
+                                        + validate.attribute
+                                        + "\" attribute. The expected format is: "
+                                        + validate.format
+                                        + " (Java Regex). Please check your request.");
                     }
                 }
             }

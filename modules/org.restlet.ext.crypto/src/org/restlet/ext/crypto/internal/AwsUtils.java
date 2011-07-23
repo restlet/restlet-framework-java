@@ -31,17 +31,16 @@
 package org.restlet.ext.crypto.internal;
 
 import java.util.Date;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.restlet.Request;
-import org.restlet.data.Form;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.util.Base64;
@@ -69,7 +68,7 @@ public class AwsUtils {
      * @return The canonicalized AMZ headers.
      */
     public static String getCanonicalizedAmzHeaders(
-            Series<Parameter> requestHeaders) {
+            Series<Header> requestHeaders) {
         StringBuilder sb = new StringBuilder();
         Pattern spacePattern = Pattern.compile("\\s+");
 
@@ -77,7 +76,7 @@ public class AwsUtils {
         SortedMap<String, String> amzHeaders = new TreeMap<String, String>();
 
         if (requestHeaders != null) {
-            for (Parameter header : requestHeaders) {
+            for (Header header : requestHeaders) {
                 String name = header.getName().toLowerCase();
 
                 if (name.startsWith("x-amz-")) {
@@ -173,8 +172,9 @@ public class AwsUtils {
      * @return The AWS S3 compatible signature
      */
     public static String getSignature(Request request, char[] secret) {
-        Form headers = (Form) request.getAttributes().get(
-                "org.restlet.http.headers");
+        @SuppressWarnings("unchecked")
+        Series<Header> headers = (Series<Header>) request.getAttributes().get(
+                HeaderConstants.ATTRIBUTE_HEADERS);
         return getSignature(request, headers, secret);
     }
 
@@ -190,8 +190,8 @@ public class AwsUtils {
      *            The user secret to sign with
      * @return The AWS S3 compatible signature
      */
-    public static String getSignature(Request request,
-            Series<Parameter> headers, char[] secret) {
+    public static String getSignature(Request request, Series<Header> headers,
+            char[] secret) {
         String stringToSign = getStringToSign(request, headers);
         String sig = Base64.encode(
                 DigestUtils.toHMac(stringToSign, BioUtils.toByteArray(secret)),
@@ -207,7 +207,8 @@ public class AwsUtils {
      * @return The string to sign
      */
     public static String getStringToSign(Request request) {
-        Form headers = (Form) request.getAttributes().get(
+        @SuppressWarnings("unchecked")
+        Series<Header> headers = (Series<Header>) request.getAttributes().get(
                 "org.restlet.http.headers");
         return getStringToSign(request, headers);
     }
@@ -221,8 +222,7 @@ public class AwsUtils {
      *            The HTTP headers associated with the request
      * @return The string to sign
      */
-    public static String getStringToSign(Request request,
-            Series<Parameter> headers) {
+    public static String getStringToSign(Request request, Series<Header> headers) {
         String canonicalizedAmzHeaders = getCanonicalizedAmzHeaders(headers);
         String canonicalizedResource = getCanonicalizedResourceName(request
                 .getResourceRef());

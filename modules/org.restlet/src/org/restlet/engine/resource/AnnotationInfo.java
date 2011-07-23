@@ -36,10 +36,17 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.restlet.Context;
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Form;
+import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Metadata;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
@@ -145,17 +152,23 @@ public class AnnotationInfo {
         return result;
     }
 
+    /** The input part of the annotation value. */
+    private final String input;
+
     /** The annotated Java method. */
     private final java.lang.reflect.Method javaMethod;
+
+    /** The output part of the annotation value. */
+    private final String output;
+
+    /** The optional query part of the annotation value. */
+    private final String query;
 
     /** The class that hosts the annotated Java method. */
     private final Class<?> resourceClass;
 
     /** The matching Restlet method. */
     private final Method restletMethod;
-
-    /** The annotation value. */
-    private final String value;
 
     /**
      * Constructor.
@@ -175,7 +188,33 @@ public class AnnotationInfo {
         this.resourceClass = resourceClass;
         this.restletMethod = restletMethod;
         this.javaMethod = javaMethod;
-        this.value = value;
+
+        // Parse the main components of the annotation value
+        if ((value != null) && !value.equals("")) {
+            int queryIndex = value.indexOf('?');
+
+            if (queryIndex != -1) {
+                this.query = value.substring(queryIndex + 1);
+                value = value.substring(0, queryIndex);
+            } else {
+                this.query = null;
+            }
+
+            int ioSeparatorIndex = value.indexOf(':');
+
+            if (ioSeparatorIndex != -1) {
+                this.input = value.substring(0, ioSeparatorIndex);
+                this.output = value.substring(ioSeparatorIndex + 1);
+            } else {
+                this.input = value;
+                this.output = value;
+            }
+
+        } else {
+            this.query = null;
+            this.input = null;
+            this.output = null;
+        }
     }
 
     /**
@@ -216,11 +255,25 @@ public class AnnotationInfo {
                                 otherAnnotation.getRestletMethod()));
             }
 
-            // Compare the value
+            // Compare the input annotation value
             if (result) {
-                result = ((getValue() == null)
-                        && (otherAnnotation.getValue() == null) || (getValue() != null)
-                        && getValue().equals(otherAnnotation.getValue()));
+                result = ((getInput() == null)
+                        && (otherAnnotation.getInput() == null) || (getInput() != null)
+                        && getInput().equals(otherAnnotation.getInput()));
+            }
+
+            // Compare the output annotation value
+            if (result) {
+                result = ((getOutput() == null)
+                        && (otherAnnotation.getOutput() == null) || (getOutput() != null)
+                        && getOutput().equals(otherAnnotation.getOutput()));
+            }
+
+            // Compare the query annotation value
+            if (result) {
+                result = ((getQuery() == null)
+                        && (otherAnnotation.getQuery() == null) || (getQuery() != null)
+                        && getQuery().equals(otherAnnotation.getQuery()));
             }
         }
 
@@ -232,18 +285,8 @@ public class AnnotationInfo {
      * 
      * @return The input part of the annotation value.
      */
-    public String getInputValue() {
-        String result = getValue();
-
-        if (result != null) {
-            int colonIndex = result.indexOf(':');
-
-            if (colonIndex != -1) {
-                result = result.substring(0, colonIndex);
-            }
-        }
-
-        return result;
+    public String getInput() {
+        return input;
     }
 
     /**
@@ -324,18 +367,17 @@ public class AnnotationInfo {
      * 
      * @return The output part of the annotation value.
      */
-    public String getOutputValue() {
-        String result = getValue();
+    public String getOutput() {
+        return output;
+    }
 
-        if (result != null) {
-            int colonIndex = result.indexOf(':');
-
-            if (colonIndex != -1) {
-                result = result.substring(colonIndex + 1);
-            }
-        }
-
-        return result;
+    /**
+     * Returns the optional query part of the annotation value.
+     * 
+     * @return The optional query part of the annotation value.
+     */
+    public String getQuery() {
+        return query;
     }
 
     // [ifndef gwt] method
@@ -353,28 +395,7 @@ public class AnnotationInfo {
         Class<?>[] classes = getJavaInputTypes();
 
         if (classes != null && classes.length >= 1) {
-            String value = getInputValue();
-
-            if (value != null) {
-                String[] extensions = value.split("\\|");
-
-                if (extensions != null) {
-                    for (String extension : extensions) {
-                        List<MediaType> mediaTypes = metadataService
-                                .getAllMediaTypes(extension);
-
-                        if (mediaTypes != null) {
-                            if (result == null) {
-                                result = new ArrayList<Variant>();
-                            }
-
-                            for (MediaType mediaType : mediaTypes) {
-                                result.add(new Variant(mediaType));
-                            }
-                        }
-                    }
-                }
-            }
+            result = getVariants(metadataService, getInput());
 
             if (result == null) {
                 Class<?> inputClass = classes[0];
@@ -413,28 +434,7 @@ public class AnnotationInfo {
         if ((getJavaOutputType() != null)
                 && (getJavaOutputType() != void.class)
                 && (getJavaOutputType() != Void.class)) {
-            String value = getOutputValue();
-
-            if (value != null) {
-                String[] extensions = value.split("\\|");
-                for (String extension : extensions) {
-                    List<MediaType> mediaTypes = metadataService
-                            .getAllMediaTypes(extension);
-
-                    if (mediaTypes != null) {
-                        for (MediaType mediaType : mediaTypes) {
-                            if ((result == null)
-                                    || (!result.contains(mediaType))) {
-                                if (result == null) {
-                                    result = new ArrayList<Variant>();
-                                }
-
-                                result.add(new Variant(mediaType));
-                            }
-                        }
-                    }
-                }
-            }
+            result = getVariants(metadataService, getOutput());
 
             if (result == null) {
                 result = (List<Variant>) converterService.getVariants(
@@ -454,13 +454,90 @@ public class AnnotationInfo {
         return restletMethod;
     }
 
+    // [ifndef gwt] method
     /**
-     * Returns the annotation value.
+     * Returns the list of representation variants associated to a given
+     * annotation value, corresponding to either an input or output entity.
      * 
-     * @return The annotation value.
+     * @param metadataService
+     *            The metadata service to use.
+     * @param annotationValue
+     *            The entity annotation value.
+     * @return A list of variants.
      */
-    public String getValue() {
-        return value;
+    private List<Variant> getVariants(MetadataService metadataService,
+            String annotationValue) {
+        List<Variant> result = null;
+
+        if (annotationValue != null) {
+            String[] variants = annotationValue.split("\\|");
+
+            for (String variantValue : variants) {
+                Variant variant = null;
+                String[] extensions = variantValue.split("\\+");
+                List<MediaType> mediaTypes = null;
+                List<Language> languages = null;
+                CharacterSet characterSet = null;
+
+                for (String extension : extensions) {
+                    if (extension != null) {
+                        List<Metadata> metadataList = metadataService
+                                .getAllMetadata(extension);
+
+                        if (metadataList != null) {
+                            for (Metadata metadata : metadataList) {
+                                if (metadata instanceof MediaType) {
+                                    if (mediaTypes == null) {
+                                        mediaTypes = new ArrayList<MediaType>();
+                                    }
+
+                                    mediaTypes.add((MediaType) metadata);
+                                } else if (metadata instanceof Language) {
+                                    if (languages == null) {
+                                        languages = new ArrayList<Language>();
+                                    }
+
+                                    languages.add((Language) metadata);
+                                } else if (metadata instanceof CharacterSet) {
+                                    if (characterSet == null) {
+                                        characterSet = (CharacterSet) metadata;
+                                    } else {
+                                        Context.getCurrentLogger()
+                                                .warning(
+                                                        "A representation variant can have only one character set. Please check your annotation value.");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Now build the representation variants
+                if (mediaTypes != null) {
+                    for (MediaType mediaType : mediaTypes) {
+                        if ((result == null) || (!result.contains(mediaType))) {
+                            if (result == null) {
+                                result = new ArrayList<Variant>();
+                            }
+
+                            variant = new Variant(mediaType);
+
+                            if (languages != null) {
+                                variant.getLanguages().addAll(languages);
+                            }
+
+                            if (characterSet != null) {
+                                variant.setCharacterSet(characterSet);
+                            }
+
+                            result.add(variant);
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -477,12 +554,34 @@ public class AnnotationInfo {
      *            The converter service to use.
      * @return True if the annotated method is compatible.
      */
-    public boolean isCompatible(Method restletMethod,
+    public boolean isCompatible(Method restletMethod, Form queryParams,
             Representation requestEntity, MetadataService metadataService,
             org.restlet.service.ConverterService converterService) {
-        return getRestletMethod().equals(restletMethod)
-                && isCompatibleRequestEntity(requestEntity, metadataService,
-                        converterService);
+        boolean result = true;
+
+        // Verify query parameters
+        if (getQuery() != null) {
+            Form requiredParams = new Form(getQuery());
+
+            for (Iterator<Parameter> iter = requiredParams.iterator(); iter
+                    .hasNext() && result;) {
+                result = queryParams.contains(iter.next());
+            }
+        }
+
+        // Verify HTTP method
+        if (result) {
+            result = getRestletMethod().equals(restletMethod);
+        }
+
+        // Verify request entity
+        if (result) {
+            result = isCompatibleRequestEntity(requestEntity, metadataService,
+                    converterService);
+
+        }
+
+        return result;
     }
 
     /**
@@ -525,9 +624,10 @@ public class AnnotationInfo {
 
     @Override
     public String toString() {
-        return "AnnotationInfo [javaMethod=" + javaMethod
-                + ", resourceInterface=" + resourceClass + ", restletMethod="
-                + restletMethod + ", value=" + value + "]";
+        return "AnnotationInfo [javaMethod: " + javaMethod
+                + ", resourceInterface: " + resourceClass + ", restletMethod: "
+                + restletMethod + ", input: " + getInput() + ", output: "
+                + getOutput() + ", query: " + getQuery() + "]";
     }
 
 }

@@ -50,7 +50,6 @@ import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.data.Warning;
-import org.restlet.engine.util.CookieSeries;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -73,7 +72,7 @@ public class Request extends Message {
      * <br>
      * Warning: this method should only be used under duress. You should by
      * default prefer obtaining the current context using methods such as
-     * {@link org.restlet.resource.UniformResource#getRequest()}.
+     * {@link org.restlet.resource.Resource#getRequest()}.
      * 
      * @return The thread's request.
      */
@@ -411,7 +410,7 @@ public class Request extends Message {
             synchronized (this) {
                 c = this.cookies;
                 if (c == null) {
-                    this.cookies = c = new CookieSeries();
+                    this.cookies = c = new Series<Cookie>(Cookie.class);
                 }
             }
         }

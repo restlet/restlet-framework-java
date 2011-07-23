@@ -43,6 +43,7 @@ import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.header.ChallengeWriter;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.security.AuthenticatorHelper;
@@ -105,7 +106,7 @@ public class DigestHelper extends AuthenticatorHelper {
     @Override
     public void formatRawRequest(ChallengeWriter cw,
             ChallengeRequest challenge, Response response,
-            Series<Parameter> httpHeaders) throws IOException {
+            Series<Header> httpHeaders) throws IOException {
 
         if (challenge.getRealm() != null) {
             cw.appendQuotedChallengeParameter("realm", challenge.getRealm());
@@ -169,7 +170,7 @@ public class DigestHelper extends AuthenticatorHelper {
     @Override
     public void formatRawResponse(ChallengeWriter cw,
             ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
+            Series<Header> httpHeaders) {
 
         if (challenge.getIdentifier() != null) {
             cw.appendQuotedChallengeParameter("username",
@@ -273,7 +274,7 @@ public class DigestHelper extends AuthenticatorHelper {
 
     @Override
     public void parseRequest(ChallengeRequest challenge, Response response,
-            Series<Parameter> httpHeaders) {
+            Series<Header> httpHeaders) {
         if (challenge.getRawValue() != null) {
             HeaderReader<Object> hr = new HeaderReader<Object>(
                     challenge.getRawValue());
@@ -326,7 +327,7 @@ public class DigestHelper extends AuthenticatorHelper {
 
     @Override
     public void parseResponse(ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
+            Series<Header> httpHeaders) {
         if (challenge.getRawValue() != null) {
             HeaderReader<Object> hr = new HeaderReader<Object>(
                     challenge.getRawValue());

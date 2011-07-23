@@ -700,6 +700,18 @@ public class Reference {
      * Adds a parameter to the query component. The name and value are
      * automatically encoded if necessary.
      * 
+     * @param parameter
+     *            The parameter to add.
+     * @return The updated reference.
+     */
+    public Reference addQueryParameter(Parameter parameter) {
+        return addQueryParameter(parameter.getName(), parameter.getValue());
+    }
+
+    /**
+     * Adds a parameter to the query component. The name and value are
+     * automatically encoded if necessary.
+     * 
      * @param name
      *            The parameter name.
      * @param value
@@ -721,6 +733,22 @@ public class Reference {
             } else {
                 setQuery(query + '&' + encode(name) + '=' + encode(value));
             }
+        }
+
+        return this;
+    }
+
+    /**
+     * Adds several parameters to the query component. The name and value are
+     * automatically encoded if necessary.
+     * 
+     * @param parameters
+     *            The parameters to add.
+     * @return The updated reference.
+     */
+    public Reference addQueryParameters(Iterable<Parameter> parameters) {
+        for (Parameter param : parameters) {
+            addQueryParameter(param);
         }
 
         return this;

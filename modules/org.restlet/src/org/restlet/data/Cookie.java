@@ -32,6 +32,7 @@ package org.restlet.data;
 
 import org.restlet.Request;
 import org.restlet.engine.util.SystemUtils;
+import org.restlet.util.NamedValue;
 
 /**
  * Cookie provided by a client. To get the list of all cookies sent by a client,
@@ -48,12 +49,19 @@ import org.restlet.engine.util.SystemUtils;
  *      Getting parameter values</a>
  * @author Jerome Louvel
  */
-public class Cookie extends Parameter {
+public class Cookie implements NamedValue {
+
     /** The domain name. */
     private volatile String domain;
 
+    /** The name. */
+    private volatile String name;
+
     /** The validity path. */
     private volatile String path;
+
+    /** The value. */
+    private volatile String value;
 
     /** The version number. */
     private volatile int version;
@@ -95,8 +103,9 @@ public class Cookie extends Parameter {
      */
     public Cookie(int version, String name, String value, String path,
             String domain) {
-        super(name, value);
         this.version = version;
+        this.name = name;
+        this.value = value;
         this.path = path;
         this.domain = domain;
     }
@@ -116,34 +125,37 @@ public class Cookie extends Parameter {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
+        // if obj == this no need to go further
         boolean result = (obj == this);
 
-        // if obj == this no need to go further
         if (!result) {
-            // test for equality at Parameter level i.e. name and value.
-            if (super.equals(obj)) {
-                // if obj isn't a cookie or is null don't evaluate further
-                if (obj instanceof Cookie) {
-                    final Cookie that = (Cookie) obj;
-                    result = (this.version == that.version);
-                    if (result) // if versions are equal test domains
-                    {
-                        if (!(this.domain == null)) // compare domains
-                        // taking care of nulls
-                        {
-                            result = (this.domain.equals(that.domain));
-                        } else {
-                            result = (that.domain == null);
-                        }
+            result = obj instanceof Cookie;
 
-                        if (result) // if domains are equal test the paths
-                        {
-                            if (!(this.path == null)) // compare paths taking
-                            // care of nulls
-                            {
-                                result = (this.path.equals(that.path));
-                            } else {
-                                result = (that.path == null);
+            // if obj isn't a cookie or is null don't evaluate further
+            if (result) {
+                Cookie that = (Cookie) obj;
+                result = (((that.getName() == null) && (getName() == null)) || ((getName() != null) && getName()
+                        .equals(that.getName())));
+
+                // if names are both null or equal continue
+                if (result) {
+                    result = (((that.getValue() == null) && (getValue() == null)) || ((getValue() != null) && getValue()
+                            .equals(that.getValue())));
+
+                    // if values are both null or equal continue
+                    if (result) {
+                        result = (this.version == that.version);
+
+                        // if versions are equal continue
+                        if (result) {
+                            result = (((that.getDomain() == null) && (getDomain() == null)) || ((getDomain() != null) && getDomain()
+                                    .equals(that.getDomain())));
+
+                            // if domains are equal continue
+                            if (result) {
+                                // compare paths taking
+                                result = (((that.getPath() == null) && (getPath() == null)) || ((getPath() != null) && getPath()
+                                        .equals(that.getPath())));
                             }
                         }
                     }
@@ -164,12 +176,30 @@ public class Cookie extends Parameter {
     }
 
     /**
+     * Returns the name.
+     * 
+     * @return The name.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
      * Returns the validity path.
      * 
      * @return The validity path.
      */
     public String getPath() {
         return this.path;
+    }
+
+    /**
+     * Returns the value.
+     * 
+     * @return The value.
+     */
+    public String getValue() {
+        return value;
     }
 
     /**
@@ -184,8 +214,8 @@ public class Cookie extends Parameter {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return SystemUtils.hashCode(super.hashCode(), getVersion(), getPath(),
-                getDomain());
+        return SystemUtils.hashCode(getName(), getValue(), getVersion(),
+                getPath(), getDomain());
     }
 
     /**
@@ -199,6 +229,16 @@ public class Cookie extends Parameter {
     }
 
     /**
+     * Sets the name.
+     * 
+     * @param name
+     *            The name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * Sets the validity path.
      * 
      * @param path
@@ -206,6 +246,16 @@ public class Cookie extends Parameter {
      */
     public void setPath(String path) {
         this.path = path;
+    }
+
+    /**
+     * Sets the value.
+     * 
+     * @param value
+     *            The value.
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
     /**

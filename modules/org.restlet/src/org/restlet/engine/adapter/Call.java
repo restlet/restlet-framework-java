@@ -35,9 +35,8 @@ import java.io.InputStream;
 import java.util.logging.Logger;
 
 import org.restlet.Context;
-import org.restlet.data.Form;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
@@ -96,13 +95,13 @@ public abstract class Call {
     private volatile String reasonPhrase;
 
     /** The request headers. */
-    private final Series<Parameter> requestHeaders;
+    private final Series<Header> requestHeaders;
 
     /** The request URI. */
     private volatile String requestUri;
 
     /** The response headers. */
-    private final Series<Parameter> responseHeaders;
+    private final Series<Header> responseHeaders;
 
     /** The server IP address. */
     private volatile String serverAddress;
@@ -132,9 +131,9 @@ public abstract class Call {
         this.method = null;
         this.protocol = null;
         this.reasonPhrase = "";
-        this.requestHeaders = new Form();
+        this.requestHeaders = new Series<Header>(Header.class);
         this.requestUri = null;
-        this.responseHeaders = new Form();
+        this.responseHeaders = new Series<Header>(Header.class);
         this.serverAddress = null;
         this.serverPort = -1;
         this.statusCode = 200;
@@ -250,7 +249,7 @@ public abstract class Call {
      * 
      * @return The modifiable list of request headers.
      */
-    public Series<Parameter> getRequestHeaders() {
+    public Series<Header> getRequestHeaders() {
         return this.requestHeaders;
     }
 
@@ -269,7 +268,7 @@ public abstract class Call {
      * 
      * @return The modifiable list of server headers.
      */
-    public Series<Parameter> getResponseHeaders() {
+    public Series<Header> getResponseHeaders() {
         return this.responseHeaders;
     }
 

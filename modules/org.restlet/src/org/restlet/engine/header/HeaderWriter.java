@@ -35,8 +35,8 @@ import java.util.Collection;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
-import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.util.NamedValue;
 
 /**
  * HTTP-style header writer.
@@ -167,7 +167,7 @@ public abstract class HeaderWriter<V> extends StringWriter {
      *            The parameter to format as an extension.
      * @return This writer.
      */
-    public HeaderWriter<V> appendExtension(Parameter extension) {
+    public HeaderWriter<V> appendExtension(NamedValue extension) {
         if (extension != null) {
             return appendExtension(extension.getName(), extension.getValue());
         } else {

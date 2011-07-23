@@ -35,9 +35,8 @@ import java.nio.channels.SelectionKey;
 import java.util.logging.Level;
 
 import org.restlet.Response;
-import org.restlet.data.Form;
-import org.restlet.data.Parameter;
 import org.restlet.data.Status;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.io.Buffer;
@@ -93,7 +92,7 @@ public abstract class InboundWay extends Way {
      *            The headers to use.
      * @return The inbound message if available.
      */
-    protected Representation createEntity(Series<Parameter> headers) {
+    protected Representation createEntity(Series<Header> headers) {
         Representation result = null;
         long contentLength = HeaderUtils.getContentLength(headers);
         boolean chunkedEncoding = HeaderUtils.isChunkedEncoding(headers);
@@ -241,11 +240,11 @@ public abstract class InboundWay extends Way {
                     readStartLine();
                 }
             } else if (getMessageState() == MessageState.HEADERS) {
-                Parameter header = readHeader();
+                Header header = readHeader();
 
                 if (header != null) {
                     if (getHeaders() == null) {
-                        setHeaders(new Form());
+                        setHeaders(new Series<Header>(Header.class));
                     }
 
                     getHeaders().add(header);
@@ -352,8 +351,8 @@ public abstract class InboundWay extends Way {
      * @return The new message header or null.
      * @throws IOException
      */
-    protected Parameter readHeader() throws IOException {
-        Parameter header = HeaderReader.readHeader(getLineBuilder());
+    protected Header readHeader() throws IOException {
+        Header header = HeaderReader.readHeader(getLineBuilder());
         clearLineBuilder();
         return header;
     }

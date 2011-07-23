@@ -42,12 +42,15 @@ import org.openid4java.message.ParameterList;
 import org.openid4java.server.ServerManager;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
+import org.restlet.engine.header.Header;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
+import org.restlet.util.Series;
 
 /**
  * OpenID provider representation implementing an open identity IdP. At the
@@ -161,16 +164,20 @@ public class OpenIdProvider extends ServerResource {
         String xrds = attribs.get("xrds").toString();
         String location = (id != null) ? xrds + "?id=" + id : xrds;
         getLogger().info("XRDS endpoint = " + xrds);
-        Form headers = (Form) getResponse().getAttributes().get(
-                "org.restlet.http.headers");
+
+        @SuppressWarnings("unchecked")
+        Series<Header> headers = (Series<Header>) getResponse().getAttributes()
+                .get(HeaderConstants.ATTRIBUTE_HEADERS);
+
         if (headers == null) {
-            headers = new Form();
+            headers = new Series<Header>(Header.class);
             headers.add("X-XRDS-Location", location);
-            getResponse().getAttributes().put("org.restlet.http.headers",
-                    headers);
+            getResponse().getAttributes().put(
+                    HeaderConstants.ATTRIBUTE_HEADERS, headers);
         } else {
             headers.add("X-XRDS-Location", location);
         }
+
         getLogger().info("Sending empty representation.");
     }
 

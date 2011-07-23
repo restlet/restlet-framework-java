@@ -55,7 +55,9 @@ public class AvailabilityTestCase extends TestCase {
         assertEquals(3600, a.getDuration());
         assertNull(a.getComment());
         assertEquals(1, a.getParameters().size());
+
         Parameter parameter = a.getParameters().get(0);
+
         assertEquals("tag", parameter.getName());
         assertEquals("hyh8", parameter.getValue());
 

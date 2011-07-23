@@ -35,11 +35,12 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.engine.header.ContentType;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.OutputRepresentation;
+import org.restlet.util.Series;
 
 /**
  * Multi-part HTML form that can mix textual data and binary data such as a file
@@ -52,7 +53,7 @@ public class MultiPartForm extends OutputRepresentation {
     private final static String DEFAULT_BOUNDARY = "---Aa1Bb2Cc3---";
 
     public static MediaType getFormMediaType(String boundary) {
-        Form params = new Form();
+        Series<Parameter> params = new Series<Parameter>(Parameter.class);
         params.add("boundary", boundary);
         MediaType result = new MediaType(
                 MediaType.MULTIPART_FORM_DATA.getName(), params);

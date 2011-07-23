@@ -37,8 +37,8 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Status;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.Representation;
@@ -69,7 +69,7 @@ public class ServerAdapter extends Adapter {
      *            The response returned.
      */
     protected void addEntityHeaders(HttpResponse response) {
-        Series<Parameter> responseHeaders = response.getHttpCall()
+        Series<Header> responseHeaders = response.getHttpCall()
                 .getResponseHeaders();
         Representation entity = response.getEntity();
         HeaderUtils.addEntityHeaders(entity, responseHeaders);

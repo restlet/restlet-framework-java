@@ -34,14 +34,11 @@ import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
-
 import junit.framework.Assert;
 
 import org.hamcrest.Matchers;
 import org.restlet.Client;
 import org.restlet.Context;
-
-import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.ext.oauth.Flow;
@@ -50,27 +47,24 @@ import org.restlet.ext.oauth.OAuthUser;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
-
 import org.restlet.test.ext.oauth.app.SingletonStore;
-
 
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.Duration;
 
-public class MultipleUserAuthorizationServerTestCase
-    extends OAuthHttpTestBase{
-    
-    public MultipleUserAuthorizationServerTestCase(){
+public class MultipleUserAuthorizationServerTestCase extends OAuthHttpTestBase {
+
+    public MultipleUserAuthorizationServerTestCase() {
         this(false);
     }
-    
-    public MultipleUserAuthorizationServerTestCase(boolean https){
+
+    public MultipleUserAuthorizationServerTestCase(boolean https) {
         super(true, https, ClientConnector.HTTP_CLIENT, ServerConnector.JETTY);
         Engine.setLogLevel(Level.WARNING);
     }
 
     public void testMultipleServerRequests() throws Exception {
-        //Just test something:
+        // Just test something:
         int numThreads = 5;
         int numCalls = 50;
         int totRequests = (numThreads * numCalls) + numThreads;
@@ -89,7 +83,9 @@ public class MultipleUserAuthorizationServerTestCase
         Awaitility.setDefaultTimeout(Duration.FOREVER);
         Awaitility.await().until(numCalls(), Matchers.equalTo(totRequests));
         long tot = System.currentTimeMillis() - l;
-        Engine.getAnonymousLogger().warning("executed in "+tot+" milliseconds"+" "+(tot/(numThreads*numCalls)));
+        Engine.getAnonymousLogger().warning(
+                "executed in " + tot + " milliseconds" + " "
+                        + (tot / (numThreads * numCalls)));
         int errors = SingletonStore.I().getErrors();
         SingletonStore.I().clear();
         Assert.assertEquals(0, errors);
@@ -99,7 +95,7 @@ public class MultipleUserAuthorizationServerTestCase
         return new Callable<Integer>() {
             public Integer call() throws Exception {
                 return SingletonStore.I().getCallbacks();
-                //return i;
+                // return i;
             }
         };
     }
@@ -124,13 +120,9 @@ public class MultipleUserAuthorizationServerTestCase
             else
                 myClient = createClient();
             r = new Random(System.nanoTime());
-            params = new OAuthParameters(
-                    "client1234",
-                    "secret1234",
-                    getProt()
-                            + "://localhost:"
-                            + oauthServerPort
-                            + "/oauth/", Scopes.toRoles("foo bar"));
+            params = new OAuthParameters("client1234", "secret1234", getProt()
+                    + "://localhost:" + oauthServerPort + "/oauth/",
+                    Scopes.toRoles("foo bar"));
         }
 
         @Override
@@ -140,7 +132,7 @@ public class MultipleUserAuthorizationServerTestCase
                 int u = r.nextInt(5) + 1;
                 OAuthUser user = Flow.PASSWORD.execute(params, null, null,
                         "user" + u, "pass" + u, null, myClient);
-                
+
                 /*
                  * OAuthUser user = OAuthUtils.passwordFlow(params, "user" + u,
                  * "pass" + u, myClient);
@@ -165,7 +157,7 @@ public class MultipleUserAuthorizationServerTestCase
                 }
                 try {
                     String text = r.getText();
-                    //System.out.println("this is response text: "+text);
+                    // System.out.println("this is response text: "+text);
                     if (!text.endsWith("user" + u)) {
                         SingletonStore.I().addError();
                     }

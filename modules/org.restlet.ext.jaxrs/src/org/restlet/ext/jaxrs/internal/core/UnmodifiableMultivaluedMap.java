@@ -38,8 +38,8 @@ import java.util.Set;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.restlet.data.Form;
-import org.restlet.data.Parameter;
+import org.restlet.util.NamedValue;
+import org.restlet.util.Series;
 
 /**
  * An unmodifiable {@link MultivaluedMap}.
@@ -54,19 +54,22 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
     /**
      * Creates a MultiValuedMap of unmodifiable Lists.
      */
-    private static MultivaluedMapImpl<String, String> copyForm(Form form,
-            boolean caseInsensitive) {
-        final MultivaluedMapImpl<String, String> mmap = new MultivaluedMapImpl<String, String>();
-        for (final Parameter param : form) {
-            final String key = caseInsensitive ? param.getName().toLowerCase()
-                    : param.getName();
-            mmap.add(key, param.getValue());
+    private static MultivaluedMapImpl<String, String> copySeries(
+            Series<?> series, boolean caseInsensitive) {
+        MultivaluedMapImpl<String, String> mmap = new MultivaluedMapImpl<String, String>();
+
+        for (NamedValue namedValue : series) {
+            String key = caseInsensitive ? namedValue.getName().toLowerCase()
+                    : namedValue.getName();
+            mmap.add(key, namedValue.getValue());
         }
-        for (final Map.Entry<String, List<String>> entry : mmap.entrySet()) {
-            final List<String> unmodifiable = Collections
-                    .unmodifiableList(entry.getValue());
+
+        for (Map.Entry<String, List<String>> entry : mmap.entrySet()) {
+            List<String> unmodifiable = Collections.unmodifiableList(entry
+                    .getValue());
             mmap.put(entry.getKey(), unmodifiable);
         }
+
         return mmap;
     }
 
@@ -105,16 +108,16 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
 
     /**
      * Creates an UnmodifiableMultivaluedMap&lt;String, String;&gt; from the
-     * given Form.
+     * given {@link Series}.
      * 
-     * @param form
+     * @param series
      * @param caseSensitive
      * @return the created unmodifiable map
      */
-    public static UnmodifiableMultivaluedMap<String, String> getFromForm(
-            Form form, boolean caseSensitive) {
-        return new UnmodifiableMultivaluedMap<String, String>(copyForm(form,
-                !caseSensitive), caseSensitive);
+    public static UnmodifiableMultivaluedMap<String, String> getFromSeries(
+            Series<?> series, boolean caseSensitive) {
+        return new UnmodifiableMultivaluedMap<String, String>(copySeries(
+                series, !caseSensitive), caseSensitive);
     }
 
     private final MultivaluedMapImpl<K, V> mmap;

@@ -57,7 +57,9 @@ public class SipRecipientInfoTestCase extends TestCase {
         assertEquals("192.0.2.1:5060", s.getName());
 
         assertEquals(2, s.getParameters().size());
+        
         Parameter parameter = s.getParameters().get(0);
+        
         assertEquals("received", parameter.getName());
         assertEquals("192.0.2.207", parameter.getValue());
         parameter = s.getParameters().get(1);

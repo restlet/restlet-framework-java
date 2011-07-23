@@ -54,11 +54,11 @@ import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.header.Header;
 import org.restlet.ext.jaxrs.JaxRsApplication;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
@@ -523,7 +523,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * Sends a request to the given sub path of the first root resource class
      * with the given headers.
      */
-    public Response getWithHeaders(String subPath, Collection<Parameter> headers) {
+    public Response getWithHeaders(String subPath, Collection<Header> headers) {
         return accessServer(Method.GET,
                 createReference(getRootResourceClassFromAppConf(), subPath),
                 null, null, null, null, null, headers);

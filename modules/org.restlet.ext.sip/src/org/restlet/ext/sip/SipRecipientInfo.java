@@ -30,7 +30,6 @@
 
 package org.restlet.ext.sip;
 
-import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.RecipientInfo;
@@ -95,7 +94,7 @@ public class SipRecipientInfo extends RecipientInfo {
      */
     public Series<Parameter> getParameters() {
         if (parameters == null) {
-            parameters = new Form();
+            parameters = new Series<Parameter>(Parameter.class);
         }
         return parameters;
     }

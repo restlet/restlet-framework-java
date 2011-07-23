@@ -33,6 +33,8 @@ package org.restlet.data;
 import java.util.List;
 
 import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.util.SystemUtils;
+import org.restlet.util.NamedValue;
 
 /**
  * Directive for caching mechanisms along the call chain. This overrides the
@@ -43,7 +45,7 @@ import org.restlet.engine.header.HeaderConstants;
  * 
  * @author Jerome Louvel
  */
-public final class CacheDirective extends Parameter {
+public final class CacheDirective implements NamedValue {
 
     /**
      * Creates a "max-age" directive. Indicates that the client is willing to
@@ -64,8 +66,8 @@ public final class CacheDirective extends Parameter {
      *      1.1 - Cache Revalidation and Reload Controls</a>
      */
     public static CacheDirective maxAge(int maxAge) {
-        return new CacheDirective(HeaderConstants.CACHE_MAX_AGE, Integer
-                .toString(maxAge), true);
+        return new CacheDirective(HeaderConstants.CACHE_MAX_AGE,
+                Integer.toString(maxAge), true);
     }
 
     /**
@@ -99,8 +101,8 @@ public final class CacheDirective extends Parameter {
      *      1.1 - Modifications of the Basic Expiration Mechanism</a>
      */
     public static CacheDirective maxStale(int maxStale) {
-        return new CacheDirective(HeaderConstants.CACHE_MAX_STALE, Integer
-                .toString(maxStale), true);
+        return new CacheDirective(HeaderConstants.CACHE_MAX_STALE,
+                Integer.toString(maxStale), true);
     }
 
     /**
@@ -120,8 +122,8 @@ public final class CacheDirective extends Parameter {
      *      1.1 - Modifications of the Basic Expiration Mechanism</a>
      */
     public static CacheDirective minFresh(int minFresh) {
-        return new CacheDirective(HeaderConstants.CACHE_MIN_FRESH, Integer
-                .toString(minFresh), true);
+        return new CacheDirective(HeaderConstants.CACHE_MIN_FRESH,
+                Integer.toString(minFresh), true);
     }
 
     /**
@@ -314,8 +316,8 @@ public final class CacheDirective extends Parameter {
      *      1.1 - What is Cacheable</a>
      */
     public static CacheDirective privateInfo(String fieldName) {
-        return new CacheDirective(HeaderConstants.CACHE_PRIVATE, "\"" + fieldName
-                + "\"");
+        return new CacheDirective(HeaderConstants.CACHE_PRIVATE, "\""
+                + fieldName + "\"");
     }
 
     /**
@@ -365,12 +367,18 @@ public final class CacheDirective extends Parameter {
      *      1.1 - Modifications of the Basic Expiration Mechanism</a>
      */
     public static CacheDirective sharedMaxAge(int sharedMaxAge) {
-        return new CacheDirective(HeaderConstants.CACHE_SHARED_MAX_AGE, Integer
-                .toString(sharedMaxAge), true);
+        return new CacheDirective(HeaderConstants.CACHE_SHARED_MAX_AGE,
+                Integer.toString(sharedMaxAge), true);
     }
 
     /** Indicates if the directive is a digit value. */
     private boolean digit;
+
+    /** The name. */
+    private volatile String name;
+
+    /** The value. */
+    private volatile String value;
 
     /**
      * Constructor for directives with no value.
@@ -405,8 +413,64 @@ public final class CacheDirective extends Parameter {
      *            The kind of value (true for a digit value, false otherwise).
      */
     public CacheDirective(String name, String value, boolean digit) {
-        super(name, value);
+        this.name = name;
+        this.value = value;
         this.digit = digit;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        // if obj == this no need to go further
+        boolean result = (obj == this);
+
+        if (!result) {
+            result = obj instanceof CacheDirective;
+
+            // if obj isn't a cache directive or is null don't evaluate further
+            if (result) {
+                CacheDirective that = (CacheDirective) obj;
+                result = (((that.getName() == null) && (getName() == null)) || ((getName() != null) && getName()
+                        .equals(that.getName())));
+
+                // if names are both null or equal continue
+                if (result) {
+                    result = (((that.getValue() == null) && (getValue() == null)) || ((getValue() != null) && getValue()
+                            .equals(that.getValue())));
+
+                    // if values are both null or equal continue
+                    if (result) {
+                        result = (this.digit == that.digit);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the name.
+     * 
+     * @return The name.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Returns the value.
+     * 
+     * @return The value.
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return SystemUtils.hashCode(getName(), getValue(), isDigit());
     }
 
     /**
@@ -426,5 +490,25 @@ public final class CacheDirective extends Parameter {
      */
     public void setDigit(boolean digit) {
         this.digit = digit;
+    }
+
+    /**
+     * Sets the name.
+     * 
+     * @param name
+     *            The name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Sets the value.
+     * 
+     * @param value
+     *            The value.
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 }

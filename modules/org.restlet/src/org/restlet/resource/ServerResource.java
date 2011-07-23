@@ -47,6 +47,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
+import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
@@ -59,7 +60,6 @@ import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.Variant;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
-import org.restlet.service.MetadataService;
 import org.restlet.util.Series;
 
 /**
@@ -95,6 +95,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public abstract class ServerResource extends UniformResource {
     /** Indicates if annotations are supported. */
     private volatile boolean annotated;
@@ -234,7 +235,7 @@ public abstract class ServerResource extends UniformResource {
      * Invoked when an error or an exception is caught during initialization,
      * handling or releasing. By default, updates the responses's status with
      * the result of
-     * {@link org.restlet.service.StatusService#getStatus(Throwable, UniformResource)}
+     * {@link org.restlet.service.StatusService#getStatus(Throwable, Resource)}
      * .
      * 
      * @param throwable
@@ -430,7 +431,7 @@ public abstract class ServerResource extends UniformResource {
                 } else if (method.equals(Method.OPTIONS)) {
                     result = options();
                 } else {
-                    result = doHandle(method, getRequestEntity());
+                    result = doHandle(method, getQuery(), getRequestEntity());
                 }
             } else {
                 doError(Status.CLIENT_ERROR_NOT_FOUND);
@@ -521,17 +522,20 @@ public abstract class ServerResource extends UniformResource {
      * 
      * @param method
      *            The request method.
+     * @param query
+     *            The query parameters.
      * @param entity
      *            The request entity (can be null, or unavailable).
      * @return The response entity.
      * @throws ResourceException
      */
-    private Representation doHandle(Method method, Representation entity) {
+    private Representation doHandle(Method method, Form query,
+            Representation entity) {
         Representation result = null;
 
         if (getAnnotation(method) != null) {
             // We know the method is supported, let's check the entity.
-            AnnotationInfo annotationInfo = getAnnotation(method, entity);
+            AnnotationInfo annotationInfo = getAnnotation(method, query, entity);
 
             if (annotationInfo != null) {
                 result = doHandle(annotationInfo, null);
@@ -622,8 +626,7 @@ public abstract class ServerResource extends UniformResource {
         Representation result = null;
 
         if ((getVariants() != null) && (!getVariants().isEmpty())) {
-            Variant preferredVariant = getClientInfo().getPreferredVariant(
-                    getVariants(), getMetadataService());
+            Variant preferredVariant = getPreferredVariant(getVariants());
 
             if (preferredVariant == null) {
                 // No variant was found matching the client preferences
@@ -707,7 +710,7 @@ public abstract class ServerResource extends UniformResource {
      * @return The annotation descriptor.
      */
     private AnnotationInfo getAnnotation(Method method) {
-        return getAnnotation(method, null);
+        return getAnnotation(method, getQuery(), null);
     }
 
     /**
@@ -715,14 +718,17 @@ public abstract class ServerResource extends UniformResource {
      * 
      * @param method
      *            The method to match.
+     * @param query
+     *            The query parameters.
      * @param entity
      *            The request entity or null.
      * @return The annotation descriptor.
      */
-    private AnnotationInfo getAnnotation(Method method, Representation entity) {
+    private AnnotationInfo getAnnotation(Method method, Form query,
+            Representation entity) {
         if (isAnnotated()) {
             return AnnotationUtils.getAnnotation(getAnnotations(), method,
-                    entity, getMetadataService(), getConverterService());
+                    query, entity, getMetadataService(), getConverterService());
         }
 
         return null;
@@ -790,7 +796,8 @@ public abstract class ServerResource extends UniformResource {
     /**
      * Returns the preferred variant among a list of available variants. The
      * selection is based on the client preferences using the
-     * {@link ClientInfo#getPreferredVariant(List, MetadataService)} method.
+     * {@link org.restlet.service.ConnegService#getPreferredVariant(List, ClientInfo, org.restlet.service.MetadataService)}
+     * method.
      * 
      * @param variants
      *            The available variants.
@@ -801,10 +808,8 @@ public abstract class ServerResource extends UniformResource {
 
         // If variants were found, select the best matching one
         if ((variants != null) && (!variants.isEmpty())) {
-            result = getClientInfo().getPreferredVariant(
-                    variants,
-                    (getApplication() == null) ? null : getApplication()
-                            .getMetadataService());
+            result = getConnegService().getPreferredVariant(variants,
+                    getClientInfo(), getMetadataService());
         }
 
         return result;
@@ -844,8 +849,9 @@ public abstract class ServerResource extends UniformResource {
                 method = (Method.HEAD.equals(method)) ? Method.GET : method;
 
                 for (AnnotationInfo annotationInfo : getAnnotations()) {
-                    if (annotationInfo.isCompatible(method, getRequestEntity(),
-                            getMetadataService(), getConverterService())) {
+                    if (annotationInfo.isCompatible(method, getQuery(),
+                            getRequestEntity(), getMetadataService(),
+                            getConverterService())) {
                         annoVariants = annotationInfo.getResponseVariants(
                                 getMetadataService(), getConverterService());
 
@@ -1125,7 +1131,7 @@ public abstract class ServerResource extends UniformResource {
      */
     protected Representation post(Representation entity)
             throws ResourceException {
-        return doHandle(Method.POST, entity);
+        return doHandle(Method.POST, getQuery(), entity);
     }
 
     /**
@@ -1183,7 +1189,7 @@ public abstract class ServerResource extends UniformResource {
      */
     protected Representation put(Representation entity)
             throws ResourceException {
-        return doHandle(Method.PUT, entity);
+        return doHandle(Method.PUT, getQuery(), entity);
     }
 
     /**

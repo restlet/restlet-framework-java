@@ -41,7 +41,7 @@ import org.restlet.engine.Helper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.UniformResource;
+import org.restlet.resource.Resource;
 
 /**
  * Converter between Representations and regular Java objects.
@@ -123,7 +123,7 @@ public abstract class ConverterHelper extends Helper {
      * @return The affinity score of this helper.
      */
     public abstract float score(Object source, Variant target,
-            UniformResource resource);
+            Resource resource);
 
     /**
      * Scores the affinity of this helper with the source class.
@@ -137,7 +137,7 @@ public abstract class ConverterHelper extends Helper {
      * @return The affinity score of this helper.
      */
     public abstract <T> float score(Representation source, Class<T> target,
-            UniformResource resource);
+            Resource resource);
 
     /**
      * Converts a Representation into a regular Java object.
@@ -153,7 +153,7 @@ public abstract class ConverterHelper extends Helper {
      * @return The converted Java object.
      */
     public abstract <T> T toObject(Representation source, Class<T> target,
-            UniformResource resource) throws IOException;
+            Resource resource) throws IOException;
 
     /**
      * Converts a regular Java object into a Representation.
@@ -167,7 +167,7 @@ public abstract class ConverterHelper extends Helper {
      * @return The converted representation.
      */
     public abstract Representation toRepresentation(Object source,
-            Variant target, UniformResource resource) throws IOException;
+            Variant target, Resource resource) throws IOException;
 
     /**
      * Updates the preferences of the given {@link ClientInfo} object with

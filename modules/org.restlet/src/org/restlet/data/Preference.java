@@ -114,7 +114,7 @@ public final class Preference<T extends Metadata> {
             synchronized (this) {
                 p = this.parameters;
                 if (p == null) {
-                    this.parameters = p = new Form();
+                    this.parameters = p = new Series<Parameter>(Parameter.class);
                 }
             }
         }

@@ -965,7 +965,7 @@ public final class MediaType extends Metadata {
             synchronized (this) {
                 p = this.parameters;
                 if (p == null) {
-                    Form params = null;
+                    Series<Parameter> params = null;
 
                     if (getName() != null) {
                         int index = getName().indexOf(';');
@@ -977,7 +977,7 @@ public final class MediaType extends Metadata {
                     }
 
                     if (params == null) {
-                        params = new Form();
+                        params = new Series<Parameter>(Parameter.class);
                     }
 
                     this.parameters = p = (Series<Parameter>) Series
@@ -1064,6 +1064,7 @@ public final class MediaType extends Metadata {
      * @return True if the given media type is included in the current one.
      * @see #isCompatible(Metadata)
      */
+    @Override
     public boolean includes(Metadata included) {
         boolean result = equals(ALL) || (included == null) || equals(included);
 
@@ -1097,8 +1098,4 @@ public final class MediaType extends Metadata {
         return !getName().contains("*");
     }
 
-    @Override
-    public String toString() {
-        return getName();
-    }
 }

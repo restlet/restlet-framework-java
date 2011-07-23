@@ -47,10 +47,10 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.adapter.ClientCall;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.ext.sdc.SdcClientHelper;
@@ -209,8 +209,8 @@ public class SdcClientCall extends ClientCall {
      * @return The modifiable list of response headers.
      */
     @Override
-    public Series<Parameter> getResponseHeaders() {
-        Series<Parameter> result = super.getResponseHeaders();
+    public Series<Header> getResponseHeaders() {
+        Series<Header> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
             for (MessageHeader mh : getFetchReply().getHeadersList()) {
@@ -272,7 +272,7 @@ public class SdcClientCall extends ClientCall {
                 // Set the request headers
                 List<MessageHeader> headers = new CopyOnWriteArrayList<SdcFrame.MessageHeader>();
 
-                for (Parameter header : getRequestHeaders()) {
+                for (Header header : getRequestHeaders()) {
                     if (!header.getName().equals(
                             HeaderConstants.HEADER_CONTENT_LENGTH)
                             && !header.getName().equals(

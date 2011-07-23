@@ -60,6 +60,7 @@ public class EventWriter extends HeaderWriter<Event> {
             appendParameterSeparator();
             appendExtension("id", value.getId());
         }
+
         for (Parameter param : value.getParameters()) {
             appendParameterSeparator();
             appendExtension(param);

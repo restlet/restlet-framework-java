@@ -38,6 +38,7 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.representation.Variant;
+import org.restlet.service.ConnegService;
 import org.restlet.service.MetadataService;
 import org.restlet.test.RestletTestCase;
 
@@ -66,6 +67,7 @@ public class ClientInfoTestCase extends RestletTestCase {
      * Conneg tests.
      */
     public void testConneg() throws Exception {
+        ConnegService connegService = new ConnegService();
         ClientInfo ci = new ClientInfo();
         ci.getAcceptedLanguages().add(
                 new Preference<Language>(Language.ENGLISH_US, 1.0F));
@@ -77,7 +79,7 @@ public class ClientInfoTestCase extends RestletTestCase {
         List<Variant> variants = new ArrayList<Variant>();
         variants.add(new Variant(MediaType.TEXT_XML, Language.ENGLISH_US));
         variants.add(new Variant(MediaType.TEXT_XML, Language.FRENCH_FRANCE));
-        Variant pv = ci.getPreferredVariant(variants, ms);
+        Variant pv = connegService.getPreferredVariant(variants, ci, ms);
 
         assertEquals(MediaType.TEXT_XML, pv.getMediaType());
         assertEquals(Language.ENGLISH_US, pv.getLanguages().get(0));
@@ -86,7 +88,7 @@ public class ClientInfoTestCase extends RestletTestCase {
         variants.clear();
         variants.add(new Variant(MediaType.TEXT_XML, Language.ENGLISH));
         variants.add(new Variant(MediaType.TEXT_XML, Language.FRENCH));
-        pv = ci.getPreferredVariant(variants, ms);
+        pv = connegService.getPreferredVariant(variants, ci, ms);
 
         assertEquals(MediaType.TEXT_XML, pv.getMediaType());
         assertEquals(Language.ENGLISH, pv.getLanguages().get(0));
@@ -95,7 +97,7 @@ public class ClientInfoTestCase extends RestletTestCase {
         variants.clear();
         variants.add(new Variant(MediaType.TEXT_PLAIN, Language.ENGLISH));
         variants.add(new Variant(MediaType.TEXT_XML, Language.FRENCH_FRANCE));
-        pv = ci.getPreferredVariant(variants, ms);
+        pv = connegService.getPreferredVariant(variants, ci, ms);
 
         assertEquals(MediaType.TEXT_XML, pv.getMediaType());
         assertEquals(Language.FRENCH_FRANCE, pv.getLanguages().get(0));
@@ -104,7 +106,7 @@ public class ClientInfoTestCase extends RestletTestCase {
         variants.clear();
         variants.add(new Variant(MediaType.APPLICATION_XML, Language.ENGLISH_US));
         variants.add(new Variant(MediaType.TEXT_XML, Language.FRENCH_FRANCE));
-        pv = ci.getPreferredVariant(variants, ms);
+        pv = connegService.getPreferredVariant(variants, ci, ms);
 
         assertEquals(MediaType.TEXT_XML, pv.getMediaType());
         assertEquals(Language.FRENCH_FRANCE, pv.getLanguages().get(0));
@@ -114,7 +116,7 @@ public class ClientInfoTestCase extends RestletTestCase {
         variants.add(new Variant(MediaType.APPLICATION_XML, Language.ENGLISH_US));
         variants.add(new Variant(MediaType.APPLICATION_XML,
                 Language.FRENCH_FRANCE));
-        pv = ci.getPreferredVariant(variants, ms);
+        pv = connegService.getPreferredVariant(variants, ci, ms);
 
         assertEquals(MediaType.APPLICATION_XML, pv.getMediaType());
         assertEquals(Language.ENGLISH_US, pv.getLanguages().get(0));

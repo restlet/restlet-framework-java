@@ -106,6 +106,6 @@ public class WwwFormMmapProvider extends
             MultivaluedMap<String, String> httpResponseHeaders,
             InputStream entityStream) throws IOException {
         Form form = WwwFormFormProvider.getForm(mediaType, entityStream);
-        return UnmodifiableMultivaluedMap.getFromForm(form, false);
+        return UnmodifiableMultivaluedMap.getFromSeries(form, false);
     }
 }

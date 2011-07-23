@@ -32,10 +32,10 @@ package org.restlet.engine.adapter;
 
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.Parameter;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.util.Series;
 
@@ -91,8 +91,8 @@ public class HttpResponse extends Response {
      * @return The HTTP headers.
      */
     @SuppressWarnings("unchecked")
-    public Series<Parameter> getHeaders() {
-        return (Series<Parameter>) getAttributes().get(
+    public Series<Header> getHeaders() {
+        return (Series<Header>) getAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
     }
 

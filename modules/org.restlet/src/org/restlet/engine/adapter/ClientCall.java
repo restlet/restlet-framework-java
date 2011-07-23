@@ -39,9 +39,9 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.ConnectorHelper;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.Representation;
@@ -156,7 +156,7 @@ public abstract class ClientCall extends Call {
         long size = Representation.UNKNOWN_SIZE;
 
         // Compute the content length
-        Series<Parameter> responseHeaders = getResponseHeaders();
+        Series<Header> responseHeaders = getResponseHeaders();
         String transferEncoding = responseHeaders.getFirstValue(
                 HeaderConstants.HEADER_TRANSFER_ENCODING, true);
         if ((transferEncoding != null)

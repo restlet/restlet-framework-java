@@ -39,7 +39,7 @@ import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.UniformResource;
+import org.restlet.resource.Resource;
 
 /**
  * Converter between the XML/JSON and Representation classes based on XStream.
@@ -117,7 +117,7 @@ public class XstreamConverter extends ConverterHelper {
     }
 
     @Override
-    public float score(Object source, Variant target, UniformResource resource) {
+    public float score(Object source, Variant target, Resource resource) {
         float result = -1.0F;
 
         if (source instanceof XstreamRepresentation<?>) {
@@ -141,7 +141,7 @@ public class XstreamConverter extends ConverterHelper {
 
     @Override
     public <T> float score(Representation source, Class<T> target,
-            UniformResource resource) {
+            Resource resource) {
         float result = -1.0F;
 
         if (target != null) {
@@ -166,7 +166,7 @@ public class XstreamConverter extends ConverterHelper {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T toObject(Representation source, Class<T> target,
-            UniformResource resource) throws IOException {
+            Resource resource) throws IOException {
         Object result = null;
 
         // The source for the XStream conversion
@@ -200,7 +200,7 @@ public class XstreamConverter extends ConverterHelper {
 
     @Override
     public Representation toRepresentation(Object source, Variant target,
-            UniformResource resource) {
+            Resource resource) {
         Representation result = null;
 
         if (source instanceof XstreamRepresentation) {

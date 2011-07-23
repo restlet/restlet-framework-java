@@ -33,9 +33,9 @@ package org.restlet.ext.sip.internal;
 import java.util.logging.Level;
 
 import org.restlet.Response;
-import org.restlet.data.Parameter;
 import org.restlet.engine.connector.ClientOutboundWay;
 import org.restlet.engine.connector.Connection;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.TagWriter;
 import org.restlet.engine.io.IoState;
@@ -64,7 +64,7 @@ public class SipClientOutboundWay extends ClientOutboundWay {
     }
 
     @Override
-    protected void addGeneralHeaders(Series<Parameter> headers) {
+    protected void addGeneralHeaders(Series<Header> headers) {
         if (getMessage().getRequest() instanceof SipRequest) {
             // Put the VIA header at the top most level.
             SipRequest sipRequest = (SipRequest) getMessage().getRequest();
@@ -83,7 +83,7 @@ public class SipClientOutboundWay extends ClientOutboundWay {
     }
 
     @Override
-    protected void addRequestHeaders(Series<Parameter> headers) {
+    protected void addRequestHeaders(Series<Header> headers) {
         SipRequest sipRequest = null;
 
         if (getMessage().getRequest() instanceof SipRequest) {

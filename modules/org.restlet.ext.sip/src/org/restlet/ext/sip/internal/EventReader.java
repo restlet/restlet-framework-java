@@ -96,14 +96,17 @@ public class EventReader extends HeaderReader<Event> {
         if (peek() != -1) {
             EventType eventType = null;
             String str = readSegment();
+
             if (str != null) {
                 eventType = new EventType(str);
+
                 while ((str = readSegment()) != null) {
                     eventType.getEventTemplates().add(str);
                 }
 
                 result = new Event();
                 result.setType(eventType);
+
                 // Read event parameters.
                 if (skipParameterSeparator()) {
                     Parameter param = readParameter();

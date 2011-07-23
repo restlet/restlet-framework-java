@@ -43,7 +43,6 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Range;
 import org.restlet.data.RecipientInfo;
 import org.restlet.data.Reference;
@@ -52,6 +51,7 @@ import org.restlet.data.Warning;
 import org.restlet.engine.header.CacheDirectiveReader;
 import org.restlet.engine.header.CookieReader;
 import org.restlet.engine.header.ExpectationReader;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.PreferenceReader;
@@ -82,7 +82,8 @@ public class HttpRequest extends Request {
     public static void addHeader(Request request, String headerName,
             String headerValue) {
         if (request instanceof HttpRequest) {
-            ((HttpRequest) request).getHeaders().add(headerName, headerValue);
+            ((HttpRequest) request).getHeaders().add(
+                    new Header(headerName, headerValue));
         }
     }
 
@@ -203,7 +204,7 @@ public class HttpRequest extends Request {
         List<CacheDirective> result = super.getCacheDirectives();
 
         if (!cacheDirectivesAdded) {
-            for (Parameter header : getHttpCall().getRequestHeaders().subList(
+            for (Header header : getHttpCall().getRequestHeaders().subList(
                     HeaderConstants.HEADER_CACHE_CONTROL)) {
                 CacheDirectiveReader.addValues(header, result);
             }
@@ -349,7 +350,7 @@ public class HttpRequest extends Request {
             String ifRangeHeader = getHttpCall().getRequestHeaders()
                     .getFirstValue(HeaderConstants.HEADER_IF_RANGE);
 
-            for (Parameter header : getHttpCall().getRequestHeaders()) {
+            for (Header header : getHttpCall().getRequestHeaders()) {
                 if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_IF_MODIFIED_SINCE)) {
                     ifModifiedSince = HeaderReader.readDate(header.getValue(),
@@ -458,7 +459,7 @@ public class HttpRequest extends Request {
      */
     @Override
     public Series<Cookie> getCookies() {
-        final Series<Cookie> result = super.getCookies();
+        Series<Cookie> result = super.getCookies();
 
         if (!this.cookiesAdded) {
             String cookieValues = getHttpCall().getRequestHeaders().getValues(
@@ -495,8 +496,8 @@ public class HttpRequest extends Request {
      * @return The HTTP headers.
      */
     @SuppressWarnings("unchecked")
-    public Series<Parameter> getHeaders() {
-        return (Series<Parameter>) getAttributes().get(
+    public Series<Header> getHeaders() {
+        return (Series<Header>) getAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
     }
 

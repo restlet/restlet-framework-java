@@ -41,7 +41,7 @@ import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.UniformResource;
+import org.restlet.resource.Resource;
 
 /**
  * A JAXB Converter Helper to convert from JAXB objects to JaxbRepresentations
@@ -99,7 +99,7 @@ public class JaxbConverter extends ConverterHelper {
     }
 
     @Override
-    public float score(Object source, Variant target, UniformResource resource) {
+    public float score(Object source, Variant target, Resource resource) {
         float result = -1.0F;
 
         if (source != null
@@ -127,7 +127,7 @@ public class JaxbConverter extends ConverterHelper {
 
     @Override
     public <T> float score(Representation source, Class<T> target,
-            UniformResource resource) {
+            Resource resource) {
         float result = -1.0F;
 
         if (source != null) {
@@ -146,7 +146,7 @@ public class JaxbConverter extends ConverterHelper {
 
     @Override
     public <T> T toObject(Representation source, Class<T> target,
-            UniformResource resource) throws IOException {
+            Resource resource) throws IOException {
         Object result = null;
 
         if (JaxbRepresentation.class.isAssignableFrom(target)) {
@@ -164,7 +164,7 @@ public class JaxbConverter extends ConverterHelper {
 
     @Override
     public Representation toRepresentation(Object source, Variant target,
-            UniformResource resource) {
+            Resource resource) {
         Representation result = null;
 
         if (isJaxbRootElementClass(source.getClass())) {

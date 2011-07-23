@@ -45,8 +45,8 @@ import javax.net.ssl.SSLSession;
 
 import org.restlet.Server;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.engine.adapter.ServerCall;
+import org.restlet.engine.header.Header;
 import org.restlet.ext.ssl.internal.SslUtils;
 import org.restlet.util.Series;
 import org.simpleframework.http.Request;
@@ -170,15 +170,15 @@ public class SimpleCall extends ServerCall {
      * @return The list of request headers.
      */
     @Override
-    public Series<Parameter> getRequestHeaders() {
-        final Series<Parameter> result = super.getRequestHeaders();
+    public Series<Header> getRequestHeaders() {
+        final Series<Header> result = super.getRequestHeaders();
 
         if (!this.requestHeadersAdded) {
             final List<String> names = this.request.getNames();
 
             for (String name : names) {
                 for (String value : this.request.getValues(name)) {
-                    result.add(new Parameter(name, value));
+                    result.add(name, value);
                 }
             }
             this.requestHeadersAdded = true;
@@ -314,7 +314,7 @@ public class SimpleCall extends ServerCall {
     public void writeResponseHead(org.restlet.Response restletResponse)
             throws IOException {
         // this.response.clear();
-        for (final Parameter header : getResponseHeaders()) {
+        for (Header header : getResponseHeaders()) {
             this.response.add(header.getName(), header.getValue());
         }
 

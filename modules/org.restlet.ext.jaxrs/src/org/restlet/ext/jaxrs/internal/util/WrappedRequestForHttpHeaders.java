@@ -39,7 +39,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.restlet.Response;
-import org.restlet.data.Parameter;
+import org.restlet.engine.header.Header;
 import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
 import org.restlet.util.Series;
 
@@ -58,7 +58,7 @@ public class WrappedRequestForHttpHeaders implements
      * may be null, f content was not already copied from the
      * {@link #restletResponse}.
      */
-    private Series<Parameter> headers;
+    private Series<Header> headers;
 
     /** may be null */
     private MultivaluedMap<String, Object> jaxRsRespHeaders;
@@ -89,21 +89,24 @@ public class WrappedRequestForHttpHeaders implements
      * @return
      */
     private MultivaluedMap<String, Object> allToJaxRsHeaders() {
-        final MultivaluedMap<String, Object> jaxRsRespHeaders = getJaxRsRespHeaders();
-        final Series<Parameter> headers = getHeaders();
+        MultivaluedMap<String, Object> jaxRsRespHeaders = getJaxRsRespHeaders();
+        Series<Header> headers = getHeaders();
+
         if (headers != null) {
-            for (final Parameter p : headers) {
-                final String name = p.getName();
-                final String value = p.getValue();
-                final List<Object> values = jaxRsRespHeaders.get(name);
+            for (Header p : headers) {
+                String name = p.getName();
+                String value = p.getValue();
+                List<Object> values = jaxRsRespHeaders.get(name);
                 boolean contained = false;
+
                 if (values != null) {
-                    for (final Object v : values) {
+                    for (Object v : values) {
                         if ((v != null) && v.toString().equals(value)) {
                             contained = true;
                         }
                     }
                 }
+
                 if (!contained) {
                     jaxRsRespHeaders.add(name, value);
                 }
@@ -121,19 +124,23 @@ public class WrappedRequestForHttpHeaders implements
         if (headerName == null) {
             return false;
         }
+
         if (this.jaxRsRespHeaders != null) {
             if (this.jaxRsRespHeaders.containsKey(headerName)) {
                 return true;
             }
         }
-        final Series<Parameter> headers = getHeaders();
+
+        Series<Header> headers = getHeaders();
+
         if (headers != null) {
-            for (final Parameter p : headers) {
+            for (Header p : headers) {
                 if (headerName.equals(p.getName())) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 
@@ -143,14 +150,17 @@ public class WrappedRequestForHttpHeaders implements
                 return true;
             }
         }
-        final Series<Parameter> headers = getHeaders();
+
+        Series<Header> headers = getHeaders();
+
         if (headers != null) {
-            for (final Parameter p : headers) {
+            for (Header p : headers) {
                 if (headerValue.equals(p.getValue())) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 
@@ -165,17 +175,22 @@ public class WrappedRequestForHttpHeaders implements
 
     public Object getFirst(String headerName) {
         if (this.jaxRsRespHeaders != null) {
-            final Object rt = this.jaxRsRespHeaders.getFirst(headerName);
+            Object rt = this.jaxRsRespHeaders.getFirst(headerName);
+
             if (rt != null) {
                 return rt;
             }
         }
-        final Series<Parameter> headers = getHeaders();
+
+        Series<Header> headers = getHeaders();
+
         if (headers != null) {
-            final Parameter first = headers.getFirst(headerName);
+            Header first = headers.getFirst(headerName);
+
             if (first == null) {
                 return null;
             }
+
             return first.getValue();
         }
         return null;
@@ -188,7 +203,7 @@ public class WrappedRequestForHttpHeaders implements
      * 
      * @return
      */
-    private Series<Parameter> getHeaders() {
+    private Series<Header> getHeaders() {
         if ((this.headers == null) && (this.restletResponse != null)) {
             this.headers = Util.copyResponseHeaders(this.restletResponse);
             this.restletResponse = null;
@@ -207,7 +222,7 @@ public class WrappedRequestForHttpHeaders implements
         if ((this.jaxRsRespHeaders != null) && !this.jaxRsRespHeaders.isEmpty()) {
             return false;
         }
-        final Series<Parameter> headers = getHeaders();
+        final Series<Header> headers = getHeaders();
         if (headers != null) {
             return headers.isEmpty();
         }
@@ -239,7 +254,7 @@ public class WrappedRequestForHttpHeaders implements
         if (this.jaxRsRespHeaders != null) {
             size = this.jaxRsRespHeaders.size();
         }
-        final Series<Parameter> headers = getHeaders();
+        final Series<Header> headers = getHeaders();
         if (headers != null) {
             size += headers.size();
         }

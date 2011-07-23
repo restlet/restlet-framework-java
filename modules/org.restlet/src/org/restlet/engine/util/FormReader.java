@@ -97,7 +97,8 @@ public class FormReader {
         // [ifndef gwt] line
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
         // [ifdef gwt] line uncomment
-        // this.stream = new org.restlet.engine.io.StringInputStream(parametersString);
+        // this.stream = new
+        // org.restlet.engine.io.StringInputStream(parametersString);
         this.characterSet = null;
         this.separator = separator;
     }
@@ -117,18 +118,19 @@ public class FormReader {
         // [ifndef gwt] line
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
         // [ifdef gwt] line uncomment
-        // this.stream = new org.restlet.engine.io.StringInputStream(parametersString);
+        // this.stream = new
+        // org.restlet.engine.io.StringInputStream(parametersString);
         this.characterSet = characterSet;
         this.separator = separator;
     }
 
     /**
-     * Adds the parameters into a given form.
+     * Adds the parameters into a given series.
      * 
-     * @param form
-     *            The target form.
+     * @param parameters
+     *            The target parameter series.
      */
-    public void addParameters(Form form) {
+    public void addParameters(Series<Parameter> parameters) {
         boolean readNext = true;
         Parameter param = null;
 
@@ -140,7 +142,7 @@ public class FormReader {
 
                     if (param != null) {
                         // Add parsed parameter to the form
-                        form.add(param);
+                        parameters.add(param);
                     } else {
                         // Last parameter parsed
                         readNext = false;

@@ -44,57 +44,12 @@ package org.restlet.data;
  * @author Jerome Louvel
  */
 public abstract class Metadata {
-    /** The metadata name like "text/html" or "compress" or "iso-8851-1". */
-    private final String name;
 
     /** The description of this metadata. */
     private final String description;
 
-    /**
-     * Returns the parent metadata if available or null.
-     * 
-     * @return The parent metadata.
-     */
-    public abstract Metadata getParent();
-
-    /**
-     * Indicates if a given metadata is included in the current one. The test is
-     * true if both metadata are equal or if the given metadata is within the
-     * range of the current one. For example, {@link MediaType#ALL} includes all
-     * media types.
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>TEXT_ALL.includes(TEXT_PLAIN) -> true</li>
-     * <li>TEXT_PLAIN.includes(TEXT_ALL) -> false</li>
-     * </ul>
-     * 
-     * @param included
-     *            The metadata to test for inclusion.
-     * @return True if the given metadata is included in the current one.
-     * @see #isCompatible(Metadata)
-     */
-    public abstract boolean includes(Metadata included);
-
-    /**
-     * Checks if this metadata is compatible with the given metadata.
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>TEXT_ALL.isCompatible(TEXT_PLAIN) -> true</li>
-     * <li>TEXT_PLAIN.isCompatible(TEXT_ALL) -> true</li>
-     * <li>TEXT_PLAIN.isCompatible(APPLICATION_ALL) -> false</li>
-     * </ul>
-     * 
-     * @param otherMetadata
-     *            The other metadata to compare.
-     * @return True if the metadata are compatible.
-     * @see #includes(Metadata)
-     */
-    public boolean isCompatible(Metadata otherMetadata) {
-        return (otherMetadata != null)
-                && (includes(otherMetadata) || otherMetadata.includes(this));
-    }
+    /** The metadata name like "text/html" or "compress" or "iso-8851-1". */
+    private final String name;
 
     /**
      * Constructor.
@@ -144,10 +99,56 @@ public abstract class Metadata {
         return this.name;
     }
 
+    /**
+     * Returns the parent metadata if available or null.
+     * 
+     * @return The parent metadata.
+     */
+    public abstract Metadata getParent();
+
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return (getName() == null) ? 0 : getName().hashCode();
+    }
+
+    /**
+     * Indicates if a given metadata is included in the current one. The test is
+     * true if both metadata are equal or if the given metadata is within the
+     * range of the current one. For example, {@link MediaType#ALL} includes all
+     * media types.
+     * <p>
+     * Examples:
+     * <ul>
+     * <li>TEXT_ALL.includes(TEXT_PLAIN) -> true</li>
+     * <li>TEXT_PLAIN.includes(TEXT_ALL) -> false</li>
+     * </ul>
+     * 
+     * @param included
+     *            The metadata to test for inclusion.
+     * @return True if the given metadata is included in the current one.
+     * @see #isCompatible(Metadata)
+     */
+    public abstract boolean includes(Metadata included);
+
+    /**
+     * Checks if this metadata is compatible with the given metadata.
+     * <p>
+     * Examples:
+     * <ul>
+     * <li>TEXT_ALL.isCompatible(TEXT_PLAIN) -> true</li>
+     * <li>TEXT_PLAIN.isCompatible(TEXT_ALL) -> true</li>
+     * <li>TEXT_PLAIN.isCompatible(APPLICATION_ALL) -> false</li>
+     * </ul>
+     * 
+     * @param otherMetadata
+     *            The other metadata to compare.
+     * @return True if the metadata are compatible.
+     * @see #includes(Metadata)
+     */
+    public boolean isCompatible(Metadata otherMetadata) {
+        return (otherMetadata != null)
+                && (includes(otherMetadata) || otherMetadata.includes(this));
     }
 
     /**

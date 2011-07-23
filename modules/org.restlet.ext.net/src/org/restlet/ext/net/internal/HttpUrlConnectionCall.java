@@ -45,11 +45,11 @@ import java.util.logging.Level;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.Edition;
 import org.restlet.engine.adapter.ClientCall;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.net.HttpClientHelper;
@@ -241,17 +241,19 @@ public class HttpUrlConnectionCall extends ClientCall {
      * @return The modifiable list of response headers.
      */
     @Override
-    public Series<Parameter> getResponseHeaders() {
-        Series<Parameter> result = super.getResponseHeaders();
+    public Series<Header> getResponseHeaders() {
+        Series<Header> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
             // Read the response headers
             int i = 1;
             String headerName = getConnection().getHeaderFieldKey(i);
             String headerValue = getConnection().getHeaderField(i);
+
             while (headerName != null) {
                 result.add(headerName, headerValue);
                 i++;
+
                 if (Edition.CURRENT != Edition.GAE) {
                     headerName = getConnection().getHeaderFieldKey(i);
                     headerValue = getConnection().getHeaderField(i);
@@ -339,7 +341,7 @@ public class HttpUrlConnectionCall extends ClientCall {
             getConnection().setRequestMethod(getMethod());
 
             // Set the request headers
-            for (Parameter header : getRequestHeaders()) {
+            for (Header header : getRequestHeaders()) {
                 getConnection().addRequestProperty(header.getName(),
                         header.getValue());
             }

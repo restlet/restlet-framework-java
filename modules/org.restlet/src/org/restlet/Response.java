@@ -44,7 +44,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
-import org.restlet.engine.util.CookieSettingSeries;
 import org.restlet.util.Series;
 
 /**
@@ -66,7 +65,7 @@ public class Response extends Message {
      * 
      * Warning: this method should only be used under duress. You should by
      * default prefer obtaining the current context using methods such as
-     * {@link org.restlet.resource.UniformResource#getResponse()}.
+     * {@link org.restlet.resource.Resource#getResponse()}.
      * 
      * This variable is stored internally as a thread local variable and updated
      * each time a call is handled by a Restlet via the
@@ -270,7 +269,7 @@ public class Response extends Message {
             synchronized (this) {
                 c = this.cookieSettings;
                 if (c == null) {
-                    this.cookieSettings = c = new CookieSettingSeries();
+                    this.cookieSettings = c = new Series<CookieSetting>(CookieSetting.class);
                 }
             }
         }

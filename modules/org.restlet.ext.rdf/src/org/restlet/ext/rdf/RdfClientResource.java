@@ -56,6 +56,7 @@ import org.restlet.util.Couple;
  * 
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public class RdfClientResource extends ClientResource {
 
     /** The links cache. */
@@ -306,9 +307,8 @@ public class RdfClientResource extends ClientResource {
             newInfo.getAcceptedMediaTypes().add(
                     new Preference<MediaType>(MediaType.TEXT_RDF_NTRIPLES));
             newInfo.getAcceptedMediaTypes()
-                    .add(
-                            new Preference<MediaType>(
-                                    MediaType.APPLICATION_RDF_TURTLE));
+                    .add(new Preference<MediaType>(
+                            MediaType.APPLICATION_RDF_TURTLE));
             newInfo.getAcceptedMediaTypes().add(
                     new Preference<MediaType>(MediaType.TEXT_XML, 0.5F));
             newInfo.getAcceptedMediaTypes().add(

@@ -44,7 +44,7 @@ import org.restlet.engine.converter.ConverterUtils;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.UniformResource;
+import org.restlet.resource.Resource;
 
 /**
  * Application service converting between representation and regular Java
@@ -143,7 +143,7 @@ public class ConverterService extends Service {
      * @throws IOException
      */
     public <T> T toObject(Representation source, Class<T> target,
-            UniformResource resource) throws IOException {
+            Resource resource) throws IOException {
         T result = null;
 
         if ((source != null) && source.isAvailable() && (source.getSize() != 0)) {
@@ -203,7 +203,7 @@ public class ConverterService extends Service {
      * @return The converted representation.
      */
     public Representation toRepresentation(Object source, Variant target,
-            UniformResource resource) {
+            Resource resource) {
         Representation result = null;
         ConverterHelper ch = ConverterUtils.getBestHelper(source, target,
                 resource);
@@ -227,8 +227,9 @@ public class ConverterService extends Service {
 
                     if ((variants != null) && !variants.isEmpty()) {
                         if (resource != null) {
-                            target = resource.getClientInfo()
+                            target = resource.getConnegService()
                                     .getPreferredVariant(variants,
+                                            resource.getClientInfo(),
                                             resource.getMetadataService());
                         } else {
                             target = variants.get(0);

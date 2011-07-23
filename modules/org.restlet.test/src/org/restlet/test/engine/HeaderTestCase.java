@@ -193,6 +193,7 @@ public class HeaderTestCase extends RestletTestCase {
         HeaderReader<Object> hr = new HeaderReader<Object>(header);
         String value = hr.readRawValue();
         int index = 0;
+
         while (value != null) {
             assertEquals(value, values[index]);
             index++;

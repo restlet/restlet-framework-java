@@ -36,8 +36,8 @@ import org.restlet.Client;
 import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.util.Series;
 
@@ -93,7 +93,7 @@ public abstract class ClientOutboundWay extends OutboundWay {
     }
 
     @Override
-    protected void addHeaders(Series<Parameter> headers) {
+    protected void addHeaders(Series<Header> headers) {
         Request request = getMessage().getRequest();
         addGeneralHeaders(headers);
         addEntityHeaders(request.getEntity(), headers);
@@ -109,7 +109,7 @@ public abstract class ClientOutboundWay extends OutboundWay {
      * @param headers
      *            The headers series to update.
      */
-    protected void addRequestHeaders(Series<Parameter> headers) {
+    protected void addRequestHeaders(Series<Header> headers) {
         HeaderUtils.addRequestHeaders(getMessage().getRequest(), headers);
     }
 

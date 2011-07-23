@@ -44,9 +44,9 @@ import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.server.HttpConnection;
 import org.restlet.Response;
 import org.restlet.Server;
-import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.adapter.ServerCall;
+import org.restlet.engine.header.Header;
 import org.restlet.util.Series;
 
 /**
@@ -151,22 +151,23 @@ public class JettyCall extends ServerCall {
      * @return The list of request headers.
      */
     @Override
-    public Series<Parameter> getRequestHeaders() {
-        final Series<Parameter> result = super.getRequestHeaders();
+    public Series<Header> getRequestHeaders() {
+        final Series<Header> result = super.getRequestHeaders();
 
         if (!this.requestHeadersAdded) {
             // Copy the headers from the request object
             String headerName;
             String headerValue;
-            for (final Enumeration<String> names = getConnection()
-                    .getRequestFields().getFieldNames(); names
-                    .hasMoreElements();) {
+
+            for (Enumeration<String> names = getConnection().getRequestFields()
+                    .getFieldNames(); names.hasMoreElements();) {
                 headerName = names.nextElement();
-                for (final Enumeration<String> values = getConnection()
+
+                for (Enumeration<String> values = getConnection()
                         .getRequestFields().getValues(headerName); values
                         .hasMoreElements();) {
                     headerValue = values.nextElement();
-                    result.add(new Parameter(headerName, headerValue));
+                    result.add(headerName, headerValue);
                 }
             }
 
@@ -281,8 +282,9 @@ public class JettyCall extends ServerCall {
     @Override
     public void sendResponse(Response response) throws IOException {
         // Add call headers
-        Parameter header;
-        for (final Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
+        Header header;
+
+        for (Iterator<Header> iter = getResponseHeaders().iterator(); iter
                 .hasNext();) {
             header = iter.next();
             getConnection().getResponse().addHeader(header.getName(),

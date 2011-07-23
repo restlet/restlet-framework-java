@@ -31,7 +31,7 @@
 package org.restlet.engine.connector;
 
 import org.restlet.Server;
-import org.restlet.data.Parameter;
+import org.restlet.engine.header.Header;
 import org.restlet.util.Series;
 
 /**
@@ -53,13 +53,14 @@ public interface InboundRequest {
      * 
      * @return The headers.
      */
-    public abstract Series<Parameter> getHeaders();
+    public abstract Series<Header> getHeaders();
 
     /**
      * Put the headers in the request's attributes map.
      * 
      * @param headers
+     *            The headers.
      */
-    public abstract void setHeaders(Series<Parameter> headers);
+    public abstract void setHeaders(Series<Header> headers);
 
 }

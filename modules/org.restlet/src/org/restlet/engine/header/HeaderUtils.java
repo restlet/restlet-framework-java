@@ -50,7 +50,6 @@ import org.restlet.data.Digest;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
@@ -78,7 +77,7 @@ public class HeaderUtils {
      *            The target headers {@link Series}.
      */
     public static void addEntityHeaders(Representation entity,
-            Series<Parameter> headers) {
+            Series<Header> headers) {
         if (entity == null || !entity.isAvailable()) {
             addHeader(HeaderConstants.HEADER_CONTENT_LENGTH, "0", headers);
         } else if (entity.getAvailableSize() != Representation.UNKNOWN_SIZE) {
@@ -152,10 +151,10 @@ public class HeaderUtils {
      * @param additionalHeaders
      *            The headers to add.
      */
-    public static void addExtensionHeaders(Series<Parameter> existingHeaders,
-            Series<Parameter> additionalHeaders) {
+    public static void addExtensionHeaders(Series<Header> existingHeaders,
+            Series<Header> additionalHeaders) {
         if (additionalHeaders != null) {
-            for (Parameter param : additionalHeaders) {
+            for (Header param : additionalHeaders) {
                 if (param.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_ACCEPT)
                         || param.getName().equalsIgnoreCase(
@@ -287,8 +286,7 @@ public class HeaderUtils {
      * @param headers
      *            The target headers {@link Series}.
      */
-    public static void addGeneralHeaders(Message message,
-            Series<Parameter> headers) {
+    public static void addGeneralHeaders(Message message, Series<Header> headers) {
 
         addHeader(HeaderConstants.HEADER_CACHE_CONTROL,
                 CacheDirectiveWriter.write(message.getCacheDirectives()),
@@ -319,7 +317,7 @@ public class HeaderUtils {
      *            The headers list.
      */
     public static void addHeader(String headerName, String headerValue,
-            Series<Parameter> headers) {
+            Series<Header> headers) {
         if ((headerName != null) && (headerValue != null)
                 && (headerValue.length() > 0)) {
             try {
@@ -341,7 +339,7 @@ public class HeaderUtils {
      *            The target headers {@link Series}.
      */
     public static void addNotModifiedEntityHeaders(Representation entity,
-            Series<Parameter> headers) {
+            Series<Header> headers) {
         if (entity != null) {
             if (entity.getTag() != null) {
                 HeaderUtils.addHeader(HeaderConstants.HEADER_ETAG,
@@ -366,8 +364,7 @@ public class HeaderUtils {
      *            The {@link Series} to copy the headers to.
      */
     @SuppressWarnings("unchecked")
-    public static void addRequestHeaders(Request request,
-            Series<Parameter> headers) {
+    public static void addRequestHeaders(Request request, Series<Header> headers) {
         ClientInfo clientInfo = request.getClientInfo();
 
         if (!clientInfo.getAcceptedMediaTypes().isEmpty()) {
@@ -500,7 +497,7 @@ public class HeaderUtils {
         // -------------------------------------
         // 4) Add user-defined extension headers
         // -------------------------------------
-        Series<Parameter> additionalHeaders = (Series<Parameter>) request
+        Series<Header> additionalHeaders = (Series<Header>) request
                 .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
         addExtensionHeaders(headers, additionalHeaders);
 
@@ -543,7 +540,7 @@ public class HeaderUtils {
      */
     @SuppressWarnings("unchecked")
     public static void addResponseHeaders(Response response,
-            Series<Parameter> headers) {
+            Series<Header> headers) {
         if (response.getServerInfo().isAcceptingRanges()) {
             addHeader(HeaderConstants.HEADER_ACCEPT_RANGES, "bytes", headers);
         }
@@ -632,7 +629,7 @@ public class HeaderUtils {
         // 4) Add user-defined extension headers
         // -------------------------------------
 
-        Series<Parameter> additionalHeaders = (Series<Parameter>) response
+        Series<Header> additionalHeaders = (Series<Header>) response
                 .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
         addExtensionHeaders(headers, additionalHeaders);
     }
@@ -649,15 +646,14 @@ public class HeaderUtils {
      * @throws NumberFormatException
      * @see HeaderUtils#copyResponseTransportHeaders(Series, Response)
      */
-    public static Representation extractEntityHeaders(
-            Iterable<Parameter> headers, Representation representation)
-            throws NumberFormatException {
+    public static Representation extractEntityHeaders(Iterable<Header> headers,
+            Representation representation) throws NumberFormatException {
         Representation result = (representation == null) ? new EmptyRepresentation()
                 : representation;
         boolean entityHeaderFound = false;
 
         if (headers != null) {
-            for (Parameter header : headers) {
+            for (Header header : headers) {
                 if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_CONTENT_TYPE)) {
                     ContentType contentType = new ContentType(header.getValue());
@@ -749,10 +745,10 @@ public class HeaderUtils {
      * @param response
      *            The response to update.
      */
-    public static void copyResponseTransportHeaders(Series<Parameter> headers,
+    public static void copyResponseTransportHeaders(Series<Header> headers,
             Response response) {
         if (headers != null) {
-            for (Parameter header : headers) {
+            for (Header header : headers) {
                 if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_LOCATION)) {
                     response.setLocationRef(header.getValue());
@@ -872,12 +868,12 @@ public class HeaderUtils {
      * 
      * @return The request content length.
      */
-    public static long getContentLength(Series<Parameter> headers) {
+    public static long getContentLength(Series<Header> headers) {
         long contentLength = Representation.UNKNOWN_SIZE;
 
         if (headers != null) {
             // Extract the content length header
-            for (Parameter header : headers) {
+            for (Header header : headers) {
                 if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_CONTENT_LENGTH)) {
                     try {
@@ -930,7 +926,7 @@ public class HeaderUtils {
      * 
      * @return True if the entity is chunked.
      */
-    public static boolean isChunkedEncoding(Series<Parameter> headers) {
+    public static boolean isChunkedEncoding(Series<Header> headers) {
         boolean result = false;
 
         if (headers != null) {
@@ -973,7 +969,7 @@ public class HeaderUtils {
      *            The headers to test.
      * @return True if the connection must be closed.
      */
-    public static boolean isConnectionClose(Series<Parameter> headers) {
+    public static boolean isConnectionClose(Series<Header> headers) {
         boolean result = false;
 
         if (headers != null) {
@@ -1235,7 +1231,7 @@ public class HeaderUtils {
      *            The output stream.
      * @throws IOException
      */
-    public static void writeHeaderLine(Parameter header, OutputStream os)
+    public static void writeHeaderLine(Header header, OutputStream os)
             throws IOException {
         os.write(StringUtils.getAsciiBytes(header.getName()));
         os.write(':');

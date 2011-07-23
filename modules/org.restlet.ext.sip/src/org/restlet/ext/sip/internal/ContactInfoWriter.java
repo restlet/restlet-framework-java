@@ -75,17 +75,20 @@ public class ContactInfoWriter extends HeaderWriter<ContactInfo> {
                 append(contact.getReference().toString());
                 append("> ");
             }
+            
             if (!contact.getParameters().isEmpty()) {
                 if (contact.getQuality() < 1F) {
                     appendParameterSeparator();
                     append("q=");
                     appendQuality(contact.getQuality());
                 }
+                
                 if (contact.getExpires() != null) {
                     appendParameterSeparator();
                     append("expires=");
                     append(contact.getExpires());
                 }
+                
                 for (Parameter param : contact.getParameters()) {
                     appendParameterSeparator();
                     appendExtension(param);

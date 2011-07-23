@@ -38,14 +38,15 @@ import org.junit.Test;
 import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Form;
 import org.restlet.data.Method;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.crypto.internal.AwsUtils;
 import org.restlet.ext.crypto.internal.AwsVerifier;
 import org.restlet.security.LocalVerifier;
 import org.restlet.security.Verifier;
 import org.restlet.test.RestletTestCase;
+import org.restlet.util.Series;
 
 /**
  * Unit tests for {@link AwsVerifier}.
@@ -65,7 +66,7 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
 
     private Request createRequest() {
         Request request = new Request();
-        Form headers = new Form();
+        Series<Header> headers = new Series<Header>(Header.class);
         request.getAttributes().put(ATTRIBUTES_HEADERS, headers);
         request.setMethod(Method.GET);
         request.setResourceRef("http://johnsmith.s3.amazonaws.com/photos/puppy.jpg");
@@ -97,7 +98,9 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
     @Test
     public void testVerify() {
         Request request = createRequest();
-        Form headers = (Form) request.getAttributes().get(ATTRIBUTES_HEADERS);
+        @SuppressWarnings("unchecked")
+        Series<Header> headers = (Series<Header>) request.getAttributes().get(
+                ATTRIBUTES_HEADERS);
 
         // Test for missing due to no challenge response
         Assert.assertEquals(Verifier.RESULT_MISSING,
@@ -112,8 +115,8 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
                 awsVerifier.verify(request, null));
 
         // Test authentication with bad credentials
-        String sig = AwsUtils.getSignature(request,
-                "badpassword".toCharArray());
+        String sig = AwsUtils
+                .getSignature(request, "badpassword".toCharArray());
         cr.setRawValue(ACCESS_ID + ":" + sig);
         Assert.assertEquals(Verifier.RESULT_INVALID,
                 awsVerifier.verify(request, null));

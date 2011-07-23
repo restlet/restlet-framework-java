@@ -43,6 +43,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.header.ChallengeWriter;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.util.Base64;
@@ -70,28 +71,31 @@ public class SharedKeyHelper extends AuthenticatorHelper {
      * @return The canonicalized Azure headers.
      */
     private static String getCanonicalizedAzureHeaders(
-            Series<Parameter> requestHeaders) {
+            Series<Header> requestHeaders) {
         // Filter out all the Azure headers required for SharedKey
         // authentication
-        final SortedMap<String, String> azureHeaders = new TreeMap<String, String>();
+        SortedMap<String, String> azureHeaders = new TreeMap<String, String>();
         String headerName;
-        for (final Parameter param : requestHeaders) {
-            headerName = param.getName().toLowerCase();
+
+        for (Header header : requestHeaders) {
+            headerName = header.getName().toLowerCase();
+
             if (headerName.startsWith("x-ms-")) {
                 if (!azureHeaders.containsKey(headerName)) {
-                    azureHeaders.put(headerName, requestHeaders
-                            .getValues(headerName));
+                    azureHeaders.put(headerName,
+                            requestHeaders.getValues(headerName));
                 }
             }
         }
 
         // Concatenate all Azure headers
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
+
         for (Iterator<String> iterator = azureHeaders.keySet().iterator(); iterator
                 .hasNext();) {
             String key = iterator.next();
-            sb.append(key).append(':').append(azureHeaders.get(key)).append(
-                    "\n");
+            sb.append(key).append(':').append(azureHeaders.get(key))
+                    .append("\n");
         }
 
         return sb.toString();
@@ -106,13 +110,14 @@ public class SharedKeyHelper extends AuthenticatorHelper {
      */
     private static String getCanonicalizedResourceName(Reference resourceRef) {
         Form form = resourceRef.getQueryAsForm();
-
         Parameter param = form.getFirst("comp", true);
+
         if (param != null) {
             StringBuilder sb = new StringBuilder(resourceRef.getPath());
             return sb.append("?").append("comp=").append(param.getValue())
                     .toString();
         }
+
         return resourceRef.getPath();
     }
 
@@ -126,7 +131,7 @@ public class SharedKeyHelper extends AuthenticatorHelper {
     @Override
     public void formatRawResponse(ChallengeWriter cw,
             ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
+            Series<Header> httpHeaders) {
 
         // Setup the method name
         final String methodName = request.getMethod().getName();
@@ -139,8 +144,8 @@ public class SharedKeyHelper extends AuthenticatorHelper {
             date = httpHeaders.getFirstValue(HeaderConstants.HEADER_DATE, true);
             if (date == null) {
                 // Add a fresh Date header
-                date = DateUtils.format(new Date(), DateUtils.FORMAT_RFC_1123
-                        .get(0));
+                date = DateUtils.format(new Date(),
+                        DateUtils.FORMAT_RFC_1123.get(0));
                 httpHeaders.add(HeaderConstants.HEADER_DATE, date);
             }
         }
@@ -194,13 +199,15 @@ public class SharedKeyHelper extends AuthenticatorHelper {
         final StringBuilder rest = new StringBuilder();
         rest.append(methodName).append('\n').append(contentMd5).append('\n')
                 .append(contentType).append('\n').append(date).append('\n')
-                .append(canonicalizedAzureHeaders).append('/').append(
-                        challenge.getIdentifier())
+                .append(canonicalizedAzureHeaders).append('/')
+                .append(challenge.getIdentifier())
                 .append(canonicalizedResource);
 
         // Append the SharedKey credentials
-        cw.append(challenge.getIdentifier()).append(':').append(
-                Base64.encode(DigestUtils.toHMac256(rest.toString(), Base64
-                        .decode(challenge.getSecret())), true));
+        cw.append(challenge.getIdentifier())
+                .append(':')
+                .append(Base64.encode(
+                        DigestUtils.toHMac256(rest.toString(),
+                                Base64.decode(challenge.getSecret())), true));
     }
 }

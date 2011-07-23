@@ -985,7 +985,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     public MultivaluedMap<String, String> getQueryParameters() {
         if (this.queryParametersDecoded == null) {
             this.queryParametersDecoded = UnmodifiableMultivaluedMap
-                    .getFromForm(this.referenceOriginal.getQueryAsForm(), false);
+                    .getFromSeries(this.referenceOriginal.getQueryAsForm(),
+                            false);
         }
         return this.queryParametersDecoded;
     }
@@ -1005,12 +1006,14 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         if (decode) {
             return getQueryParameters();
         }
+
         if (this.queryParametersEncoded == null) {
-            final Form queryForm = Converter
-                    .toFormEncoded(this.referenceOriginal.getQuery());
+            Form queryForm = Converter.toFormEncoded(this.referenceOriginal
+                    .getQuery());
             this.queryParametersEncoded = UnmodifiableMultivaluedMap
-                    .getFromForm(queryForm, false);
+                    .getFromSeries(queryForm, false);
         }
+
         return this.queryParametersEncoded;
     }
 
@@ -1037,7 +1040,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public MultivaluedMap<String, String> getRequestHeaders() {
         if (this.requestHeaders == null) {
-            this.requestHeaders = UnmodifiableMultivaluedMap.getFromForm(
+            this.requestHeaders = UnmodifiableMultivaluedMap.getFromSeries(
                     Util.getHttpHeaders(this.request), false);
         }
         return this.requestHeaders;
@@ -1206,24 +1209,30 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         if ((variants == null) || variants.isEmpty()) {
             throw new IllegalArgumentException();
         }
-        final List<org.restlet.representation.Variant> restletVariants = Converter
+
+        List<org.restlet.representation.Variant> restletVariants = Converter
                 .toRestletVariants(variants);
-        final org.restlet.representation.Variant bestRestlVar = this.request
-                .getClientInfo().getPreferredVariant(restletVariants, null);
-        final Variant bestVariant = Converter.toJaxRsVariant(bestRestlVar);
-        final Set<Dimension> dimensions = this.response.getDimensions();
+        org.restlet.representation.Variant bestRestlVar = this.request
+                .getClientInfo().getPreferredVariant(restletVariants);
+        Variant bestVariant = Converter.toJaxRsVariant(bestRestlVar);
+        Set<Dimension> dimensions = this.response.getDimensions();
+
         if (bestRestlVar.getCharacterSet() != null) {
             dimensions.add(Dimension.CHARACTER_SET);
         }
+
         if (bestRestlVar.getEncodings() != null) {
             dimensions.add(Dimension.ENCODING);
         }
+
         if (bestRestlVar.getLanguages() != null) {
             dimensions.add(Dimension.LANGUAGE);
         }
+
         if (bestRestlVar.getMediaType() != null) {
             dimensions.add(Dimension.MEDIA_TYPE);
         }
+
         // NICE add also to JAX-RS-Response, which is possibly not yet
         // generated.
         return bestVariant;

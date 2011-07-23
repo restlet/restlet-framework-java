@@ -57,7 +57,6 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.adapter.ClientCall;
@@ -229,8 +228,9 @@ public class HttpMethodCall extends ClientCall {
      * @return The modifiable list of response headers.
      */
     @Override
-    public Series<Parameter> getResponseHeaders() {
-        Series<Parameter> result = super.getResponseHeaders();
+    public Series<org.restlet.engine.header.Header> getResponseHeaders() {
+        Series<org.restlet.engine.header.Header> result = super
+                .getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
             if ((getHttpResponse() != null)
@@ -284,7 +284,7 @@ public class HttpMethodCall extends ClientCall {
             final Representation entity = request.getEntity();
 
             // Set the request headers
-            for (Parameter header : getRequestHeaders()) {
+            for (org.restlet.engine.header.Header header : getRequestHeaders()) {
                 if (!header.getName().equals(
                         HeaderConstants.HEADER_CONTENT_LENGTH)) {
                     getHttpRequest().addHeader(header.getName(),

@@ -76,4 +76,7 @@ Export-Package: org.restlet.test,
  org.restlet.test.routing,
  org.restlet.test.security,
  org.restlet.test.util
-Import-Package: org.restlet.ext.xdb.internal
+Import-Package: com.jayway.awaitility,
+ com.jayway.awaitility.core,
+ org.hamcrest,
+ org.restlet.ext.xdb.internal

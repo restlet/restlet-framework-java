@@ -35,10 +35,10 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Form;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.engine.header.Header;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
@@ -50,14 +50,14 @@ import org.restlet.util.Series;
 public class AwsTest {
     public static void main(String[] args) throws Exception {
         // Prepare the request
-        final Request request = new Request(Method.GET,
+        Request request = new Request(Method.GET,
                 "http://s3.amazonaws.com/quotes/nelson");
         request.setChallengeResponse(new ChallengeResponse(
                 ChallengeScheme.HTTP_AWS_S3, "44CF9590006BF252F707",
                 "OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"));
 
         // Add some extra headers
-        final Series<Parameter> extraHeaders = new Form();
+        Series<Header> extraHeaders = new Series<Header>(Header.class);
         extraHeaders.add("X-Amz-Meta-Author", "foo@bar.com");
         extraHeaders.add("X-Amz-Magic", "abracadabra");
 
@@ -67,14 +67,15 @@ public class AwsTest {
         // header and use it
         // for authentication.
         // extraHeaders.add("X-Amz-Date", "Thu, 17 Nov 2005 18:49:58 GMT");
-        request.getAttributes().put("org.restlet.http.headers", extraHeaders);
+        request.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
+                extraHeaders);
 
         // Handle it using an HTTP client connector
-        final Client client = new Client(Protocol.HTTP);
-        final Response response = client.handle(request);
+        Client client = new Client(Protocol.HTTP);
+        Response response = client.handle(request);
 
         // Write the response entity on the console
-        final Representation output = response.getEntity();
+        Representation output = response.getEntity();
         output.write(System.out);
     }
 

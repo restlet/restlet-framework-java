@@ -47,15 +47,15 @@ public class FormTestCase extends RestletTestCase {
      * Tests the cookies parsing.
      */
     public void testParsing() throws IOException {
-        final Form form = new Form();
+        Form form = new Form();
         form.add("name", "John D. Mitchell");
         form.add("email", "john@bob.net");
         form.add("email2", "joe@bob.net");
 
-        final String query = form.encode(CharacterSet.UTF_8);
-        final Form newForm = new FormReader(query, CharacterSet.UTF_8, '&')
-                .read();
-        final String newQuery = newForm.encode(CharacterSet.UTF_8);
+        String query = form.encode(CharacterSet.UTF_8);
+        Form newForm = new FormReader(query, CharacterSet.UTF_8, '&').read();
+        String newQuery = newForm.encode(CharacterSet.UTF_8);
+
         assertEquals(query, newQuery);
     }
 }

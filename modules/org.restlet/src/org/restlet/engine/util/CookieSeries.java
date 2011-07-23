@@ -40,14 +40,16 @@ import org.restlet.util.Series;
  * Cookie series used internally by the {@link Request} class.
  * 
  * @author Jerome Louvel
+ * @deprecated Use {@link Series} directly
  */
+@Deprecated
 public class CookieSeries extends Series<Cookie> {
 
     /**
      * Constructor.
      */
     public CookieSeries() {
-        super();
+        super(Cookie.class);
     }
 
     /**
@@ -57,20 +59,7 @@ public class CookieSeries extends Series<Cookie> {
      *            The delegate list.
      */
     public CookieSeries(List<Cookie> delegate) {
-        super(delegate);
+        super(Cookie.class, delegate);
     }
 
-    @Override
-    public Cookie createEntry(String name, String value) {
-        return new Cookie(name, value);
-    }
-
-    @Override
-    public Series<Cookie> createSeries(List<Cookie> delegate) {
-        if (delegate != null) {
-            return new CookieSeries(delegate);
-        }
-
-        return new CookieSeries();
-    }
 }

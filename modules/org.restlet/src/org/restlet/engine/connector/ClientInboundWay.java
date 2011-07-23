@@ -37,9 +37,9 @@ import java.util.logging.Level;
 import org.restlet.Client;
 import org.restlet.Message;
 import org.restlet.Response;
-import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.io.IoState;
@@ -72,7 +72,7 @@ public abstract class ClientInboundWay extends InboundWay {
      * @param response
      *            The response to update.
      */
-    protected void copyResponseTransportHeaders(Series<Parameter> headers,
+    protected void copyResponseTransportHeaders(Series<Header> headers,
             Response response) {
         HeaderUtils.copyResponseTransportHeaders(headers, response);
     }

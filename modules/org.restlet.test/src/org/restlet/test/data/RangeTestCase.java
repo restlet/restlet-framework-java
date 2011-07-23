@@ -112,8 +112,8 @@ public class RangeTestCase extends RestletTestCase {
         public void handle(Request request, Response response) {
             Form form = request.getResourceRef().getQueryAsForm();
             List<Range> ranges = request.getRanges();
-
             boolean match = false;
+            
             for (Parameter parameter : form) {
                 long index = 0;
                 long length = 0;

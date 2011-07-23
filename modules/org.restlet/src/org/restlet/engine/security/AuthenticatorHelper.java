@@ -40,9 +40,9 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Digest;
-import org.restlet.data.Parameter;
 import org.restlet.engine.Helper;
 import org.restlet.engine.header.ChallengeWriter;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.util.Series;
 
@@ -93,7 +93,7 @@ public abstract class AuthenticatorHelper extends Helper {
      */
     public void formatRawRequest(ChallengeWriter cw,
             ChallengeRequest challenge, Response response,
-            Series<Parameter> httpHeaders) throws IOException {
+            Series<Header> httpHeaders) throws IOException {
     }
 
     /**
@@ -110,7 +110,7 @@ public abstract class AuthenticatorHelper extends Helper {
      */
     public void formatRawResponse(ChallengeWriter cw,
             ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
+            Series<Header> httpHeaders) {
     }
 
     /**
@@ -130,7 +130,7 @@ public abstract class AuthenticatorHelper extends Helper {
      * @throws IOException
      */
     public String formatRequest(ChallengeRequest challenge, Response response,
-            Series<Parameter> httpHeaders) throws IOException {
+            Series<Header> httpHeaders) throws IOException {
         ChallengeWriter cw = new ChallengeWriter();
         cw.append(challenge.getScheme().getTechnicalName()).appendSpace();
 
@@ -161,7 +161,7 @@ public abstract class AuthenticatorHelper extends Helper {
      * @return The {@link HeaderConstants#HEADER_AUTHORIZATION} header value.
      */
     public String formatResponse(ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
+            Series<Header> httpHeaders) {
         ChallengeWriter hb = new ChallengeWriter();
         hb.append(challenge.getScheme().getTechnicalName()).appendSpace();
 
@@ -250,7 +250,7 @@ public abstract class AuthenticatorHelper extends Helper {
      *            The current response HTTP headers.
      */
     public void parseRequest(ChallengeRequest challenge, Response response,
-            Series<Parameter> httpHeaders) {
+            Series<Header> httpHeaders) {
     }
 
     /**
@@ -265,7 +265,7 @@ public abstract class AuthenticatorHelper extends Helper {
      *            The current request HTTP headers.
      */
     public void parseResponse(ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
+            Series<Header> httpHeaders) {
     }
 
     /**

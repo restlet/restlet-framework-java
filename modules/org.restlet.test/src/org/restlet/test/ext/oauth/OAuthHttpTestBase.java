@@ -35,20 +35,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.List;
-
+import java.util.Random;
 
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.Server;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.engine.ClientHelper;
-import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.security.AuthenticatorHelper;
@@ -61,8 +58,6 @@ import org.restlet.test.ext.oauth.app.OAuthMultipleUserTestApplication;
 import org.restlet.test.ext.oauth.app.OAuthProtectedTestApplication;
 import org.restlet.test.ext.oauth.app.OAuthTestApplication;
 import org.restlet.util.Series;
-
-import java.util.Random;
 
 public abstract class OAuthHttpTestBase extends RestletTestCase{
 

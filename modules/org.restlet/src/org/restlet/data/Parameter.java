@@ -32,7 +32,9 @@ package org.restlet.data;
 
 import java.io.IOException;
 
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Couple;
+import org.restlet.util.NamedValue;
 
 /**
  * Multi-usage parameter. Note that the name and value properties are thread
@@ -40,15 +42,9 @@ import org.restlet.util.Couple;
  * 
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public class Parameter extends Couple<String, String> implements
-        Comparable<Parameter> {
-
-    /**
-     * Default constructor.
-     */
-    public Parameter() {
-        this(null, null);
-    }
+        Comparable<Parameter>, NamedValue {
 
     /**
      * Creates a parameter.
@@ -63,8 +59,16 @@ public class Parameter extends Couple<String, String> implements
     public static Parameter create(CharSequence name, CharSequence value) {
         if (value != null) {
             return new Parameter(name.toString(), value.toString());
+        } else {
+            return new Parameter(name.toString(), null);
         }
-        return new Parameter(name.toString(), null);
+    }
+
+    /**
+     * Default constructor.
+     */
+    public Parameter() {
+        this(null, null);
     }
 
     /**
@@ -79,27 +83,20 @@ public class Parameter extends Couple<String, String> implements
         super(name, value);
     }
 
-    /**
-     * Compares this object with the specified object for order.
+    /*
+     * (non-Javadoc)
      * 
-     * @param o
-     *            The object to be compared.
-     * @return A negative integer, zero, or a positive integer as this object is
-     *         less than, equal to, or greater than the specified object.
+     * @see org.restlet.data.NamedValue#compareTo(org.restlet.data.Parameter)
      */
     public int compareTo(Parameter o) {
         return getName().compareTo(o.getName());
     }
 
-    /**
-     * Encodes the parameter and appends the result to the given buffer. Uses
-     * the standard URI encoding mechanism.
+    /*
+     * (non-Javadoc)
      * 
-     * @param buffer
-     *            The buffer to append.
-     * @param characterSet
-     *            The supported character encoding
-     * @throws IOException
+     * @see org.restlet.data.NamedValue#encode(java.lang.Appendable,
+     * org.restlet.data.CharacterSet)
      */
     public void encode(Appendable buffer, CharacterSet characterSet)
             throws IOException {
@@ -113,13 +110,10 @@ public class Parameter extends Couple<String, String> implements
         }
     }
 
-    /**
-     * Encodes the parameter using the standard URI encoding mechanism.
+    /*
+     * (non-Javadoc)
      * 
-     * @param characterSet
-     *            The supported character encoding.
-     * @return The encoded string.
-     * @throws IOException
+     * @see org.restlet.data.NamedValue#encode(org.restlet.data.CharacterSet)
      */
     public String encode(CharacterSet characterSet) throws IOException {
         final StringBuilder sb = new StringBuilder();
@@ -127,39 +121,69 @@ public class Parameter extends Couple<String, String> implements
         return sb.toString();
     }
 
-    /**
-     * Returns the name of this parameter.
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        // if obj == this no need to go further
+        boolean result = (obj == this);
+
+        if (!result) {
+            result = obj instanceof Parameter;
+
+            // if obj isn't a parameter or is null don't evaluate further
+            if (result) {
+                Parameter that = (Parameter) obj;
+                result = (((that.getName() == null) && (getName() == null)) || ((getName() != null) && getName()
+                        .equals(that.getName())));
+
+                // if names are both null or equal continue
+                if (result) {
+                    result = (((that.getValue() == null) && (getValue() == null)) || ((getValue() != null) && getValue()
+                            .equals(that.getValue())));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
      * 
-     * @return The name of this parameter.
+     * @see org.restlet.data.NamedValue#getName()
      */
     public String getName() {
         return getFirst();
     }
 
-    /**
-     * Returns the value.
+    /*
+     * (non-Javadoc)
      * 
-     * @return The value.
+     * @see org.restlet.data.NamedValue#getValue()
      */
     public String getValue() {
         return getSecond();
     }
 
-    /**
-     * Sets the name.
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return SystemUtils.hashCode(getName(), getValue());
+    }
+
+    /*
+     * (non-Javadoc)
      * 
-     * @param name
-     *            The name.
+     * @see org.restlet.data.NamedValue#setName(java.lang.String)
      */
     public void setName(String name) {
         setFirst(name);
     }
 
-    /**
-     * Sets the value.
+    /*
+     * (non-Javadoc)
      * 
-     * @param value
-     *            The value.
+     * @see org.restlet.data.NamedValue#setValue(java.lang.String)
      */
     public void setValue(String value) {
         setSecond(value);

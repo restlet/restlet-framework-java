@@ -60,7 +60,7 @@ public class ContactsResource extends BaseResource {
      */
     @Post
     public void acceptContact(Representation entity) throws ResourceException {
-        final Form form = new Form(entity);
+        Form form = new Form(entity);
         Contact contact = new Contact();
         contact.setFirstName(form.getFirstValue("firstName"));
         contact.setLastName(form.getFirstValue("lastName"));
@@ -70,8 +70,8 @@ public class ContactsResource extends BaseResource {
 
         contact = getObjectsFacade().createContact(this.user, contact);
         getResponse().redirectSeeOther(
-                getChildReference(getRequest().getResourceRef(), contact
-                        .getId()));
+                getChildReference(getRequest().getResourceRef(),
+                        contact.getId()));
     }
 
     @Override

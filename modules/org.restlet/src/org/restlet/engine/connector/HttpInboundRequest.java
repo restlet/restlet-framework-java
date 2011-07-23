@@ -46,7 +46,6 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.RecipientInfo;
@@ -56,6 +55,7 @@ import org.restlet.data.Warning;
 import org.restlet.engine.header.CacheDirectiveReader;
 import org.restlet.engine.header.CookieReader;
 import org.restlet.engine.header.ExpectationReader;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.PreferenceReader;
@@ -204,7 +204,7 @@ public class HttpInboundRequest extends Request implements InboundRequest {
 
         if (!this.cacheDirectivesAdded) {
             if (getHeaders() != null) {
-                for (Parameter header : getHeaders().subList(
+                for (Header header : getHeaders().subList(
                         HeaderConstants.HEADER_CACHE_CONTROL)) {
                     CacheDirectiveReader.addValues(header, result);
                 }
@@ -358,7 +358,7 @@ public class HttpInboundRequest extends Request implements InboundRequest {
                 String ifRangeHeader = getHeaders().getFirstValue(
                         HeaderConstants.HEADER_IF_RANGE);
 
-                for (Parameter header : getHeaders()) {
+                for (Header header : getHeaders()) {
                     if (header.getName().equalsIgnoreCase(
                             HeaderConstants.HEADER_IF_MODIFIED_SINCE)) {
                         ifModifiedSince = HeaderReader.readDate(
@@ -501,8 +501,8 @@ public class HttpInboundRequest extends Request implements InboundRequest {
      * @see org.restlet.engine.nio.CRequest#getHeaders()
      */
     @SuppressWarnings("unchecked")
-    public Series<Parameter> getHeaders() {
-        return (Series<Parameter>) getAttributes().get(
+    public Series<Header> getHeaders() {
+        return (Series<Header>) getAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
     }
 
@@ -623,7 +623,7 @@ public class HttpInboundRequest extends Request implements InboundRequest {
      * 
      * @see org.restlet.engine.nio.CRequest#setHeaders(org.restlet.util.Series)
      */
-    public void setHeaders(Series<Parameter> headers) {
+    public void setHeaders(Series<Header> headers) {
         getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
 
         // Parse the version string

@@ -38,6 +38,7 @@ import org.json.JSONObject;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
+import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.util.Base64;
 import org.restlet.ext.oauth.internal.ExpireToken;
@@ -48,6 +49,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
 import org.restlet.security.Role;
+import org.restlet.util.Series;
 
 /**
  * Server resource used to acquire an OAuth token. A code, or refresh token can
@@ -108,8 +110,9 @@ public class AccessTokenServerResource extends OAuthServerResource {
      */
     // TODO The secret should be a char[].
     private Representation doAuthCodeFlow(String clientId, String clientSecret,
-            Form params) throws IllegalArgumentException {
+            Series<Parameter> params) throws IllegalArgumentException {
         String redirUri = params.getFirstValue(REDIR_URI);
+
         if ((redirUri == null) || (redirUri.length() == 0)) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return sendError(OAuthError.invalid_request,
@@ -144,7 +147,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
         // ScopedResource getOwner returns the user
 
         // 5 min timeout on tokens, 0 for unlimited
-        Token token = this.generator.exchangeForToken(code, this.tokenTimeSec);
+        Token token = generator.exchangeForToken(code, tokenTimeSec);
 
         // TODO send back scopes if limited
 
@@ -152,7 +155,6 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
-        // return new JsonRepresentation(body);
         return new JsonStringRepresentation(body);
     }
 
@@ -169,7 +171,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
      */
     // TODO The secret should be a char[].
     private Representation doNoneFlow(String clientId, String clientSecret,
-            Form params) {
+            Series<Parameter> params) {
         Client client = validate(clientId, clientSecret);
 
         // null check on failed
@@ -199,8 +201,6 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
-        // getLogger().warning("SENDING JsonRepresentation");
-        // return new JsonRepresentation(body);
         return new JsonStringRepresentation(body);
     }
 
@@ -217,7 +217,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
      */
     // TODO The secret should be a char[].
     private Representation doPasswordFlow(String clientId, String clientSecret,
-            Form params) {
+            Series<Parameter> params) {
         Client client = validate(clientId, clientSecret);
 
         // null check on failed
@@ -255,7 +255,6 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
         // Sets the no-store Cache-Control header
         getResponse().setCacheDirectives(noStore);
-        // return new JsonRepresentation(body);
         return new JsonStringRepresentation(body);
     }
 
@@ -272,7 +271,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
      */
     // TODO The secret should be a char[].
     private Representation doRefreshFlow(String clientId, String clientSecret,
-            Form params) {
+            Series<Parameter> params) {
         String rToken = params.getFirstValue(REFRESH_TOKEN);
 
         if ((rToken == null) || (rToken.length() == 0)) {
@@ -290,7 +289,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
                     "Client id verification failed.", null);
         }
 
-        Token token = this.generator.findToken(rToken);
+        Token token = generator.findToken(rToken);
 
         if ((token != null) && (token instanceof ExpireToken)) {
             AuthenticatedUser user = token.getUser();
@@ -298,13 +297,12 @@ public class AccessTokenServerResource extends OAuthServerResource {
             // Make sure that the user owning the token is owned by this client
             if (client.containsUser(user.getId())) {
                 // refresh the token
-                this.generator.refreshToken((ExpireToken) token);
+                generator.refreshToken((ExpireToken) token);
 
                 JSONObject body = createJsonToken(token, null); // Scopes N/A
 
                 // Sets the no-store Cache-Control header
                 getResponse().setCacheDirectives(noStore);
-                // return new JsonRepresentation(body);
                 return new JsonStringRepresentation(body);
             } else { // error not owner
                 setStatus(Status.CLIENT_ERROR_FORBIDDEN);
@@ -451,7 +449,6 @@ public class AccessTokenServerResource extends OAuthServerResource {
             if ((errorUri != null) && (errorUri.length() > 0)) {
                 result.put(OAuthServerResource.ERROR_URI, errorUri);
             }
-            // return new JsonRepresentation(result);
             return new JsonStringRepresentation(result);
         } catch (JSONException e) {
             getLogger().log(Level.WARNING, "Error while sending OAuth error.",
@@ -471,7 +468,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
      */
     // TODO The secret should be a char[].
     private Client validate(String clientId, String clientSecret) {
-        Client client = this.clients.findById(clientId);
+        Client client = clients.findById(clientId);
         getLogger().fine("Client = " + client);
 
         if (client == null) {

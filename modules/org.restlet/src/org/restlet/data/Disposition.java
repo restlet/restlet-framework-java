@@ -146,7 +146,7 @@ public class Disposition {
      */
     public Series<Parameter> getParameters() {
         if (this.parameters == null) {
-            this.parameters = new Form();
+            this.parameters = new Series<Parameter>(Parameter.class);
         }
 
         return this.parameters;

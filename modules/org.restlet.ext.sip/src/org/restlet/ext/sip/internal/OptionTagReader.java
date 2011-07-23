@@ -55,8 +55,8 @@ public class OptionTagReader extends HeaderReader<OptionTag> {
     @Override
     public OptionTag readValue() throws IOException {
         String token = readToken();
-        if(token != null){
-            return OptionTag.valueOf(token); 
+        if (token != null) {
+            return OptionTag.valueOf(token);
         }
         return null;
     }

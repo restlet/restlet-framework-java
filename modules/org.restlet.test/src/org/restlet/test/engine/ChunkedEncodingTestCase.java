@@ -42,12 +42,11 @@ import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
@@ -55,6 +54,7 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
+import org.restlet.util.Series;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -123,10 +123,10 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     static void checkForChunkedHeader(Message message) {
-        final Form parameters = (Form) message.getAttributes().get(
+        @SuppressWarnings("unchecked")
+        Series<Header> headers = (Series<Header>) message.getAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
-        final Parameter p = parameters
-                .getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING);
+        Header p = headers.getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING);
         assertFalse(p == null);
         assertEquals("chunked", p.getValue());
     }

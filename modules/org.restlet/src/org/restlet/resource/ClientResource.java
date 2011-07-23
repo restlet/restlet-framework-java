@@ -58,13 +58,13 @@ import org.restlet.util.Series;
 
 /**
  * Client-side resource. Acts like a proxy of a target resource.<br>
- * This class changes the semantics of the {@link UniformResource#getRequest()}
- * and {@link UniformResource#getResponse()} methods. Since a clientResource may
- * receive severals responses for a single request (in case of interim
- * response), the {@link #getResponse()} method returns the last received
- * response object. The Request object returned by the {@link #getRequest()} is
- * actually a prototype which is cloned (except the representation) just before
- * the {@link #handle()} method is called.<br>
+ * This class changes the semantics of the {@link Resource#getRequest()} and
+ * {@link Resource#getResponse()} methods. Since a clientResource may receive
+ * severals responses for a single request (in case of interim response), the
+ * {@link #getResponse()} method returns the last received response object. The
+ * Request object returned by the {@link #getRequest()} is actually a prototype
+ * which is cloned (except the representation) just before the {@link #handle()}
+ * method is called.<br>
  * Users must be aware that by most representations can only be read or written
  * once. Some others, such as {@link StringRepresentation} stored the entity in
  * memory which can be read several times but has the drawback to consume
@@ -75,6 +75,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public class ClientResource extends UniformResource {
 
     // [ifndef gwt] method
@@ -384,7 +385,7 @@ public class ClientResource extends UniformResource {
      *            The target URI.
      */
     public ClientResource(String uri) {
-        this(Context.getCurrent(), null, uri);
+        this(Context.getCurrent(), Method.GET, uri);
     }
 
     /**
@@ -897,8 +898,10 @@ public class ClientResource extends UniformResource {
 
         result = toObject(
                 handle(method,
-                        (entity == null) ? null : toRepresentation(entity,
-                                clientInfo.getPreferredVariant(variants,
+                        (entity == null) ? null : toRepresentation(
+                                entity,
+                                getConnegService().getPreferredVariant(
+                                        variants, clientInfo,
                                         getMetadataService())), clientInfo),
                 resultClass);
         return result;

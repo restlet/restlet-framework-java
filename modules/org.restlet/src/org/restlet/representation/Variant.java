@@ -48,7 +48,7 @@ import org.restlet.util.WrapperList;
  * important metadata about a representation but is not able to actually serve
  * the representation's content itself.<br>
  * <br>
- * For this, you need to use the Representation subclass.
+ * For this, you need to use on of the {@link Representation} subclasses.
  * 
  * @author Jerome Louvel
  */

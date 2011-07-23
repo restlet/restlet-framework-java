@@ -48,8 +48,9 @@ import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.header.ChallengeRequestReader;
 import org.restlet.engine.header.ChallengeWriter;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
-import org.restlet.engine.header.ParameterReader;
+import org.restlet.engine.header.HeaderReader;
 import org.restlet.util.Series;
 
 /**
@@ -159,7 +160,7 @@ public class AuthenticatorUtils {
      * @return The {@link HeaderConstants#HEADER_WWW_AUTHENTICATE} header value.
      */
     public static String formatRequest(ChallengeRequest challenge,
-            Response response, Series<Parameter> httpHeaders) {
+            Response response, Series<Header> httpHeaders) {
         String result = null;
 
         if (challenge != null) {
@@ -201,7 +202,7 @@ public class AuthenticatorUtils {
      * @throws IOException
      */
     public static String formatResponse(ChallengeResponse challenge,
-            Request request, Series<Parameter> httpHeaders) {
+            Request request, Series<Header> httpHeaders) {
         String result = null;
         AuthenticatorHelper helper = Engine.getInstance().findHelper(
                 challenge.getScheme(), true, false);
@@ -228,7 +229,7 @@ public class AuthenticatorUtils {
      */
     public static AuthenticationInfo parseAuthenticationInfo(String header) {
         AuthenticationInfo result = null;
-        ParameterReader hr = new ParameterReader(header);
+        HeaderReader<Parameter> hr = new HeaderReader<Parameter>(header);
 
         try {
             String nextNonce = null;
@@ -236,7 +237,7 @@ public class AuthenticatorUtils {
             String responseAuth = null;
             String cnonce = null;
             int nonceCount = 0;
-            Parameter param = hr.readValue();
+            Parameter param = hr.readParameter();
 
             while (param != null) {
                 try {
@@ -253,7 +254,7 @@ public class AuthenticatorUtils {
                     }
 
                     if (hr.skipValueSeparator()) {
-                        param = hr.readValue();
+                        param = hr.readParameter();
                     } else {
                         param = null;
                     }
@@ -288,7 +289,7 @@ public class AuthenticatorUtils {
      * @return The list of parsed challenge request.
      */
     public static List<ChallengeRequest> parseRequest(Response response,
-            String header, Series<Parameter> httpHeaders) {
+            String header, Series<Header> httpHeaders) {
         List<ChallengeRequest> result = new ArrayList<ChallengeRequest>();
 
         if (header != null) {
@@ -325,7 +326,7 @@ public class AuthenticatorUtils {
      * @return The parsed challenge response.
      */
     public static ChallengeResponse parseResponse(Request request,
-            String header, Series<Parameter> httpHeaders) {
+            String header, Series<Header> httpHeaders) {
         ChallengeResponse result = null;
 
         if (header != null) {

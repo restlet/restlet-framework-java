@@ -34,10 +34,10 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Server;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.engine.header.Header;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.util.Series;
 
 /**
@@ -54,20 +54,21 @@ public class HeadersTest {
                 // ------------------------------
                 // Getting an HTTP request header
                 // ------------------------------
-                Series<Parameter> headers = (Series<Parameter>) request.getAttributes()
-                        .get("org.restlet.http.headers");
+                Series<Header> headers = (Series<Header>) request
+                        .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
 
                 // The headers list contains all received HTTP headers, in raw
                 // format.
                 // Below, we simply display the standard "Accept" HTTP header.
-                response.setEntity("Accept header: "
-                        + headers.getFirstValue("accept", true),
+                response.setEntity(
+                        "Accept header: "
+                                + headers.getFirstValue("accept", true),
                         MediaType.TEXT_PLAIN);
 
                 // -----------------------
                 // Adding response headers
                 // -----------------------
-                headers = new Form();
+                headers = new Series<Header>(Header.class);
 
                 // Non-standard headers are allowed
                 headers.add("X-Test", "Test value");
@@ -80,7 +81,7 @@ public class HeadersTest {
 
                 // Setting the additional headers into the shared call's
                 // attribute
-                response.getAttributes().put("org.restlet.http.headers",
+                response.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
                         headers);
             }
         };
@@ -89,5 +90,4 @@ public class HeadersTest {
         final Server server = new Server(Protocol.HTTP, 8111, restlet);
         server.start();
     }
-
 }

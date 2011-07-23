@@ -56,18 +56,22 @@ public class SubscriptionWriter extends HeaderWriter<Subscription> {
     @Override
     public HeaderWriter<Subscription> append(Subscription value) {
         append(value.getValue());
+        
         if (value.getReason() != null) {
             appendParameterSeparator();
             appendExtension("reason", value.getReason());
         }
+        
         if (value.getExpires() > 0) {
             appendParameterSeparator();
             appendExtension("expires", Long.toString(value.getExpires()));
         }
+        
         if (value.getRetryAfter() > 0) {
             appendParameterSeparator();
             appendExtension("retry-after", Long.toString(value.getRetryAfter()));
         }
+        
         for (Parameter param : value.getParameters()) {
             appendParameterSeparator();
             appendExtension(param);

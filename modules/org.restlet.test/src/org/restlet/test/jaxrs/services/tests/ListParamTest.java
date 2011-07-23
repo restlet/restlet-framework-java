@@ -42,9 +42,10 @@ import junit.framework.AssertionFailedError;
 
 import org.restlet.Response;
 import org.restlet.data.Cookie;
-import org.restlet.data.Parameter;
 import org.restlet.data.Status;
+import org.restlet.engine.header.Header;
 import org.restlet.test.jaxrs.services.resources.ListParamService;
+import org.restlet.util.Series;
 
 /**
  * @author Stephan Koops
@@ -89,17 +90,19 @@ public class ListParamTest extends JaxRsTestCase {
     }
 
     public void testHeaderParams() throws IOException {
-        final List<Parameter> addHeaders = new ArrayList<Parameter>();
-        addHeaders.add(new Parameter("h", "h1"));
-        addHeaders.add(new Parameter("h", "h2"));
-        addHeaders.add(new Parameter("hh", "hh1"));
-        addHeaders.add(new Parameter("hh", "hh2"));
-        final Response response = getWithHeaders("header", addHeaders);
+        Series<Header> addHeaders = new Series<Header>(Header.class);
+        addHeaders.add("h", "h1");
+        addHeaders.add("h", "h2");
+        addHeaders.add("hh", "hh1");
+        addHeaders.add("hh", "hh2");
+
+        Response response = getWithHeaders("header", addHeaders);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        final String[] entity = response.getEntity().getText().split("\\n");
-        final String header = entity[0];
-        final String headers = entity[1];
+        String[] entity = response.getEntity().getText().split("\\n");
+        String header = entity[0];
+        String headers = entity[1];
         assertEquals("h=h1", header);
+
         try {
             assertEquals("hh=[hh1, hh2]", headers);
         } catch (AssertionFailedError afe) {

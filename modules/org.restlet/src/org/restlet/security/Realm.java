@@ -32,7 +32,6 @@ package org.restlet.security;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.util.Series;
 
@@ -84,7 +83,8 @@ public abstract class Realm {
     public Realm(Verifier verifier, Enroler enroler) {
         this.enroler = enroler;
         this.verifier = verifier;
-        this.parameters = new Form(new CopyOnWriteArrayList<Parameter>());
+        this.parameters = new Series<Parameter>(Parameter.class,
+                new CopyOnWriteArrayList<Parameter>());
         this.started = false;
     }
 

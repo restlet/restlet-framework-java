@@ -33,7 +33,6 @@ package org.restlet.engine.header;
 import java.io.IOException;
 
 import org.restlet.data.CharacterSet;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.util.Series;
@@ -121,7 +120,7 @@ public class ContentTypeReader extends HeaderReader<ContentType> {
                             readingMediaType = false;
                             readingParamName = true;
                             paramNameBuffer = new StringBuilder();
-                            parameters = new Form();
+                            parameters = new Series<Parameter>(Parameter.class);
                         } else {
                             throw new IOException(
                                     "Empty mediaType name detected.");
@@ -202,8 +201,7 @@ public class ContentTypeReader extends HeaderReader<ContentType> {
 
                         while ((!done) && (nextChar != -1)) {
                             nextChar = (nextIndex < nextValue.length()) ? nextValue
-                                    .charAt(nextIndex++)
-                                    : -1;
+                                    .charAt(nextIndex++) : -1;
 
                             if (quotedPair) {
                                 // End of quoted pair (escape sequence)

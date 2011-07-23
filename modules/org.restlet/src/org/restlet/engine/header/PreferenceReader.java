@@ -30,15 +30,18 @@
 
 package org.restlet.engine.header;
 
+import static org.restlet.engine.header.HeaderUtils.isComma;
+import static org.restlet.engine.header.HeaderUtils.isDoubleQuote;
+import static org.restlet.engine.header.HeaderUtils.isSpace;
+import static org.restlet.engine.header.HeaderUtils.isText;
+import static org.restlet.engine.header.HeaderUtils.isTokenChar;
+
 import java.io.IOException;
 import java.util.Iterator;
-
-import static org.restlet.engine.header.HeaderUtils.*;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
-import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
@@ -54,6 +57,7 @@ import org.restlet.util.Series;
  */
 public class PreferenceReader<T extends Metadata> extends
         HeaderReader<Preference<T>> {
+
     public static final int TYPE_CHARACTER_SET = 1;
 
     public static final int TYPE_ENCODING = 2;
@@ -269,7 +273,7 @@ public class PreferenceReader<T extends Metadata> extends
         Parameter param = null;
 
         if (parameters != null) {
-            result = new Form();
+            result = new Series<Parameter>(Parameter.class);
 
             for (final Iterator<Parameter> iter = parameters.iterator(); !qualityFound
                     && iter.hasNext();) {
@@ -300,6 +304,7 @@ public class PreferenceReader<T extends Metadata> extends
 
         if (parameters != null) {
             Parameter param = null;
+
             for (final Iterator<Parameter> iter = parameters.iterator(); !found
                     && iter.hasNext();) {
                 param = iter.next();
@@ -356,7 +361,7 @@ public class PreferenceReader<T extends Metadata> extends
                         readingMetadata = false;
                         readingParamName = true;
                         paramNameBuffer = new StringBuilder();
-                        parameters = new Form();
+                        parameters = new Series<Parameter>(Parameter.class);
                     } else {
                         throw new IOException("Empty metadata name detected.");
                     }

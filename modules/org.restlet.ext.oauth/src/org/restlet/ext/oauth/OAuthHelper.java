@@ -40,6 +40,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.engine.header.ChallengeWriter;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.util.Series;
 
@@ -149,8 +150,11 @@ public class OAuthHelper extends AuthenticatorHelper {
 
     /**
      * Sets the value of the "authpage" parameter.
-     * @param authPage The value of the "authpage" parameter.
-     * @param c The context to update.
+     * 
+     * @param authPage
+     *            The value of the "authpage" parameter.
+     * @param c
+     *            The context to update.
      */
     public static void setAuthPage(String authPage, Context c) {
         c.getParameters().set("authPage", authPage);
@@ -158,8 +162,11 @@ public class OAuthHelper extends AuthenticatorHelper {
 
     /**
      * Sets the value of the "authPageTemplate" parameter.
-     * @param authPageTemplate The value of the "authPageTemplate" parameter.
-     * @param c The context to update.
+     * 
+     * @param authPageTemplate
+     *            The value of the "authPageTemplate" parameter.
+     * @param c
+     *            The context to update.
      */
     public static void setAuthPageTemplate(String authPageTemplate, Context c) {
         c.getParameters().set("authPageTemplate", authPageTemplate);
@@ -167,15 +174,19 @@ public class OAuthHelper extends AuthenticatorHelper {
 
     /**
      * Sets the value of the "authSkipApproved" parameter.
-     * @param skip The value of the "authSkipApproved" parameter.
-     * @param c The context to update.
+     * 
+     * @param skip
+     *            The value of the "authSkipApproved" parameter.
+     * @param c
+     *            The context to update.
      */
     public static void setAuthSkipApproved(boolean skip, Context c) {
         c.getParameters().set("authSkipApproved", Boolean.toString(skip));
     }
 
     /**
-     * Constructor. Use the {@link ChallengeScheme#HTTP_OAUTH} authentication scheme.
+     * Constructor. Use the {@link ChallengeScheme#HTTP_OAUTH} authentication
+     * scheme.
      */
     public OAuthHelper() {
         super(ChallengeScheme.HTTP_OAUTH, true, true);
@@ -184,7 +195,7 @@ public class OAuthHelper extends AuthenticatorHelper {
     @Override
     public void formatRawRequest(ChallengeWriter cw,
             ChallengeRequest challenge, Response response,
-            Series<Parameter> httpHeaders) throws IOException {
+            Series<Header> httpHeaders) throws IOException {
         // Format the parameters WWW-Authenticate: OAuth realm='Example
         // Service', error='expired-token'
         cw.append("realm='");
@@ -202,7 +213,7 @@ public class OAuthHelper extends AuthenticatorHelper {
 
     @Override
     public void parseRequest(ChallengeRequest challenge, Response response,
-            Series<Parameter> httpHeaders) {
+            Series<Header> httpHeaders) {
         String raw = challenge.getRawValue();
 
         if (raw != null && raw.length() > 0) {

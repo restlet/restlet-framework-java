@@ -516,6 +516,7 @@ public class ComponentXmlParser {
 
                                 if (isParameter(childNode2)) {
                                     Parameter p = parseParameter(childNode2);
+
                                     if (p != null) {
                                         client.getContext().getParameters()
                                                 .add(p);
@@ -590,6 +591,7 @@ public class ComponentXmlParser {
 
                                 if (isParameter(childNode2)) {
                                     Parameter p = parseParameter(childNode2);
+
                                     if (p != null) {
                                         server.getContext().getParameters()
                                                 .add(p);
@@ -891,6 +893,7 @@ public class ComponentXmlParser {
                         Node aNode = childNodes2.item(j);
                         if (isParameter(aNode)) {
                             Parameter p = parseParameter(aNode);
+
                             if (p != null) {
                                 route.getNext().getContext().getParameters()
                                         .add(p);

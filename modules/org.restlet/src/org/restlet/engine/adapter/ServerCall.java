@@ -42,11 +42,11 @@ import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Digest;
-import org.restlet.data.Parameter;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.header.ContentType;
 import org.restlet.engine.header.DispositionReader;
 import org.restlet.engine.header.EncodingReader;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.HeaderUtils;
@@ -197,7 +197,7 @@ public abstract class ServerCall extends Call {
         }
 
         // Extract some interesting header values
-        for (Parameter header : getRequestHeaders()) {
+        for (Header header : getRequestHeaders()) {
             if (header.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_CONTENT_ENCODING)) {
                 new EncodingReader(header.getValue()).addValues(result
@@ -405,7 +405,8 @@ public abstract class ServerCall extends Call {
             sb.delete(0, sb.length());
 
             // Parse the headers
-            Parameter header = HeaderReader.readHeader(headStream, sb);
+            Header header = HeaderReader.readHeader(headStream, sb);
+
             while (header != null) {
                 getRequestHeaders().add(header);
                 header = HeaderReader.readHeader(headStream, sb);
@@ -556,7 +557,7 @@ public abstract class ServerCall extends Call {
         }
 
         // Write the response headers
-        for (Parameter header : getResponseHeaders()) {
+        for (Header header : getResponseHeaders()) {
             HeaderUtils.writeHeaderLine(header, headStream);
         }
 

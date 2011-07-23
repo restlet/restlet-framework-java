@@ -32,12 +32,13 @@ package org.restlet.ext.crypto.internal;
 
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.Form;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.security.LocalVerifier;
 import org.restlet.security.SecretVerifier;
 import org.restlet.security.User;
+import org.restlet.util.Series;
 
 /**
  * Wrapped verifier that can verify HTTP requests utilizing the Amazon S3
@@ -204,8 +205,9 @@ public class AwsVerifier extends SecretVerifier {
         if (request.getChallengeResponse() == null)
             return RESULT_MISSING;
 
-        Form headers = (Form) request.getAttributes().get(
-                "org.restlet.http.headers");
+        @SuppressWarnings("unchecked")
+        Series<Header> headers = (Series<Header>) request.getAttributes().get(
+                HeaderConstants.ATTRIBUTE_HEADERS);
         String userId = getIdentifier(request, response);
 
         if (userId == null || (userId.length() == 0))

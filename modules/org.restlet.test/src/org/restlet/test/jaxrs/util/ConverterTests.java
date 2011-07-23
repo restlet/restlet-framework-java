@@ -40,7 +40,9 @@ import junit.framework.TestCase;
 
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
+import org.restlet.util.Series;
 
 /**
  * @author Stephan Koops
@@ -60,7 +62,7 @@ public class ConverterTests extends TestCase {
     }
 
     public void testGetMediaTypeWitoutParams2() {
-        Form params = new Form();
+        Series<Parameter> params = new Series<Parameter>(Parameter.class);
         params.add("abc", "def");
         final MediaType mt = new MediaType("a/b", params);
         assertEquals("a/b", getMediaTypeWithoutParams(mt).toString());

@@ -54,6 +54,7 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public class Extractor extends Filter {
+
     /** Internal class holding extraction information. */
     private static final class ExtractInfo {
         /** Target attribute name. */
@@ -136,12 +137,13 @@ public class Extractor extends Filter {
     protected int beforeHandle(Request request, Response response) {
         // Extract the query parameters
         if (!getQueryExtracts().isEmpty()) {
-            final Form form = request.getResourceRef().getQueryAsForm();
+            Form form = request.getResourceRef().getQueryAsForm();
 
             if (form != null) {
-                for (final ExtractInfo ei : getQueryExtracts()) {
+                for (ExtractInfo ei : getQueryExtracts()) {
                     if (ei.first) {
                         String value = form.getFirstValue(ei.parameter);
+
                         if (value != null) {
                             request.getAttributes().put(ei.attribute, value);
                         }
@@ -157,11 +159,12 @@ public class Extractor extends Filter {
         if (!getEntityExtracts().isEmpty()) {
             Representation entity = request.getEntity();
             if (entity != null) {
-                final Form form = new Form(entity);
+                Form form = new Form(entity);
 
-                for (final ExtractInfo ei : getEntityExtracts()) {
+                for (ExtractInfo ei : getEntityExtracts()) {
                     if (ei.first) {
                         String value = form.getFirstValue(ei.parameter);
+
                         if (value != null) {
                             request.getAttributes().put(ei.attribute, value);
                         }
@@ -175,12 +178,13 @@ public class Extractor extends Filter {
 
         // Extract the cookie parameters
         if (!getCookieExtracts().isEmpty()) {
-            final Series<Cookie> cookies = request.getCookies();
+            Series<Cookie> cookies = request.getCookies();
 
             if (cookies != null) {
-                for (final ExtractInfo ei : getCookieExtracts()) {
+                for (ExtractInfo ei : getCookieExtracts()) {
                     if (ei.first) {
                         String value = cookies.getFirstValue(ei.parameter);
+
                         if (value != null) {
                             request.getAttributes().put(ei.attribute, value);
                         }

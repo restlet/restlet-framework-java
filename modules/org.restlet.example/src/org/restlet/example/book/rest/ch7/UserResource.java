@@ -267,7 +267,7 @@ public class UserResource extends ServerResource {
 
                 if (canSet) {
                     // Parse the entity as a web form
-                    final Form form = new Form(entity);
+                    Form form = new Form(entity);
                     getUser().setEmail(form.getFirstValue("user[email]"));
                     getUser()
                             .setFullName(form.getFirstValue("user[full_name]"));

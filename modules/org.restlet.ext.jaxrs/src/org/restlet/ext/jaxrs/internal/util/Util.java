@@ -70,12 +70,11 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Dimension;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
-import org.restlet.data.Parameter;
 import org.restlet.engine.header.ContentType;
 import org.restlet.engine.header.DimensionWriter;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.util.DateUtils;
@@ -152,14 +151,6 @@ public class Util {
      * 
      */
     public static final String ORG_RESTLET_EXT_JAXRS_HTTP_HEADERS = "org.restlet.ext.jaxrs.http.headers";
-
-    /**
-     * The name of the header {@link Form} in the attribute map.
-     * 
-     * @see #getHttpHeaders(Request)
-     * @see #getHttpHeaders(Response)
-     */
-    public static final String ORG_RESTLET_HTTP_HEADERS = "org.restlet.http.headers";
 
     /**
      * appends the given String to the StringBuilder. If convertBraces is true,
@@ -283,7 +274,7 @@ public class Util {
     public static void copyResponseHeaders(
             final MultivaluedMap<String, Object> jaxRsHeaders,
             Response restletResponse) {
-        Series<Parameter> headers = new Form();
+        Series<Header> headers = new Series<Header>(Header.class);
 
         for (Map.Entry<String, List<Object>> m : jaxRsHeaders.entrySet()) {
             String headerName = m.getKey();
@@ -299,7 +290,7 @@ public class Util {
                     hValue = headerValue.toString();
                 }
 
-                headers.add(new Parameter(headerName, hValue));
+                headers.add(headerName, hValue);
             }
         }
 
@@ -312,7 +303,7 @@ public class Util {
 
         // Copy extension headers
         @SuppressWarnings("unchecked")
-        Series<Parameter> extensionHeaders = (Series<Parameter>) jaxRsHeaders
+        Series<Header> extensionHeaders = (Series<Header>) jaxRsHeaders
                 .getFirst(HeaderConstants.ATTRIBUTE_HEADERS);
 
         if (extensionHeaders != null) {
@@ -332,8 +323,8 @@ public class Util {
      *            it.
      * @return The copied headers.
      */
-    public static Series<Parameter> copyResponseHeaders(Response restletResponse) {
-        final Series<Parameter> headers = new Form();
+    public static Series<Header> copyResponseHeaders(Response restletResponse) {
+        Series<Header> headers = new Series<Header>(Header.class);
         HeaderUtils.addResponseHeaders(restletResponse, headers);
         HeaderUtils.addEntityHeaders(restletResponse.getEntity(), headers);
         return headers;
@@ -872,34 +863,44 @@ public class Util {
     }
 
     /**
-     * Returns the HTTP headers of the Restlet {@link Request} as {@link Form}.
+     * Returns the HTTP headers of the Restlet {@link Request} as {@link Series}
+     * .
      * 
      * @param request
      * @return Returns the HTTP headers of the Request.
      */
-    public static Form getHttpHeaders(Request request) {
-        Form headers = (Form) request.getAttributes().get(
-                ORG_RESTLET_HTTP_HEADERS);
+    @SuppressWarnings("unchecked")
+    public static Series<Header> getHttpHeaders(Request request) {
+        Series<Header> headers = (Series<Header>) request.getAttributes().get(
+                HeaderConstants.ATTRIBUTE_HEADERS);
+
         if (headers == null) {
-            headers = new Form();
-            request.getAttributes().put(ORG_RESTLET_HTTP_HEADERS, headers);
+            headers = new Series<Header>(Header.class);
+            request.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
+                    headers);
         }
+
         return headers;
     }
 
     /**
-     * Returns the HTTP headers of the Restlet {@link Response} as {@link Form}.
+     * Returns the HTTP headers of the Restlet {@link Response} as
+     * {@link Series}.
      * 
      * @param response
      * @return Returns the HTTP headers of the Response.
      */
-    public static Form getHttpHeaders(Response response) {
-        Form headers = (Form) response.getAttributes().get(
-                ORG_RESTLET_HTTP_HEADERS);
+    @SuppressWarnings("unchecked")
+    public static Series<Header> getHttpHeaders(Response response) {
+        Series<Header> headers = (Series<Header>) response.getAttributes().get(
+                HeaderConstants.ATTRIBUTE_HEADERS);
+
         if (headers == null) {
-            headers = new Form();
-            response.getAttributes().put(ORG_RESTLET_HTTP_HEADERS, headers);
+            headers = new Series<Header>(Header.class);
+            response.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
+                    headers);
         }
+
         return headers;
     }
 
@@ -915,11 +916,13 @@ public class Util {
         @SuppressWarnings("unchecked")
         MultivaluedMap<String, String> headers = (MultivaluedMap<String, String>) attrsOfRequ
                 .get(ORG_RESTLET_EXT_JAXRS_HTTP_HEADERS);
+
         if (headers == null) {
-            headers = UnmodifiableMultivaluedMap.getFromForm(
+            headers = UnmodifiableMultivaluedMap.getFromSeries(
                     getHttpHeaders(request), false);
             attrsOfRequ.put(ORG_RESTLET_EXT_JAXRS_HTTP_HEADERS, headers);
         }
+
         return headers;
     }
 

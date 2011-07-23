@@ -37,8 +37,8 @@ import java.util.logging.Logger;
 import org.restlet.Context;
 import org.restlet.Message;
 import org.restlet.Response;
-import org.restlet.data.Parameter;
 import org.restlet.data.Status;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.BufferProcessor;
 import org.restlet.engine.io.BufferState;
@@ -64,7 +64,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
     private final Connection<?> connection;
 
     /** The message headers. */
-    private volatile Series<Parameter> headers;
+    private volatile Series<Header> headers;
 
     /** The IO state. */
     private volatile IoState ioState;
@@ -196,7 +196,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * 
      * @return The response headers to be written.
      */
-    public Series<Parameter> getHeaders() {
+    public Series<Header> getHeaders() {
         return headers;
     }
 
@@ -447,7 +447,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * @param headers
      *            The response headers.
      */
-    protected void setHeaders(Series<Parameter> headers) {
+    protected void setHeaders(Series<Header> headers) {
         this.headers = headers;
     }
 

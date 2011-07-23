@@ -32,13 +32,14 @@ package org.restlet.test.engine.connector;
 
 import org.restlet.Context;
 import org.restlet.Server;
-import org.restlet.data.Form;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.HttpInboundRequest;
 import org.restlet.engine.connector.HttpServerHelper;
+import org.restlet.engine.header.Header;
 import org.restlet.test.RestletTestCase;
+import org.restlet.util.Series;
 
 /**
  * Unit test for inbound HTTP requests with special HTTP headers.
@@ -62,7 +63,7 @@ public class HttpInboundRequestTestCase extends RestletTestCase {
                 "GET",
                 "/control/accounts/netdev/subscriptions/emily/preferences",
                 "HTTP/1.1");
-        Form headers = new Form();
+        Series<Header> headers = new Series<Header>(Header.class);
         headers.add("Accept", "application/json");
         headers.add("Content-Type", "application/json");
         headers.add("X-Requested-With", "XMLHttpRequest");

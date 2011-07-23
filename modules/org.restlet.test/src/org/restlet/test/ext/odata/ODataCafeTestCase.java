@@ -58,12 +58,11 @@ public class ODataCafeTestCase extends RestletTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+
         component.getServers().add(Protocol.HTTP, 8111);
         component.getClients().add(Protocol.CLAP);
-
         component.getDefaultHost().attach("/Cafe.svc",
                 new org.restlet.test.ext.odata.cafe.CafeApplication());
-
         component.start();
 
         service = new CafeService();
@@ -80,7 +79,6 @@ public class ODataCafeTestCase extends RestletTestCase {
      * Tests the parsing of Feed element.
      */
     public void testQueryCafes() {
-
         Query<Cafe> query = service.createCafeQuery("/Cafes");
         Iterator<Cafe> iterator = query.iterator();
 

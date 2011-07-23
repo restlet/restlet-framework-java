@@ -38,10 +38,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.engine.Engine;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Variant;
+import org.restlet.service.ConnegService;
+import org.restlet.service.MetadataService;
 
 /**
  * Client specific data related to a call. When extracted from a request, most
@@ -140,6 +143,37 @@ public final class ClientInfo {
 
     // [ifndef gwt] method
     /**
+     * Returns the preferred metadata taking into account both metadata
+     * supported by the server and client preferences.
+     * 
+     * @param supported
+     *            The metadata supported by the server.
+     * @param preferences
+     *            The client preferences.
+     * @return The preferred metadata.
+     */
+    public static <T extends Metadata> T getPreferredMetadata(
+            List<T> supported, List<Preference<T>> preferences) {
+        T result = null;
+        float maxQuality = 0;
+
+        if (supported != null) {
+            for (Preference<T> pref : preferences) {
+                for (T metadata : supported) {
+                    if (pref.getMetadata().isCompatible(metadata)
+                            && (pref.getQuality() > maxQuality)) {
+                        result = metadata;
+                        maxQuality = pref.getQuality();
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    // [ifndef gwt] method
+    /**
      * Returns the list of user-agent templates defined in "agent.properties"
      * file.
      * 
@@ -210,9 +244,6 @@ public final class ClientInfo {
     /** The immediate IP addresses. */
     private volatile String address;
 
-    /** The email address of the human user controlling the user agent. */
-    private volatile String from;
-
     /** The agent name. */
     private volatile String agent;
 
@@ -236,8 +267,15 @@ public final class ClientInfo {
      */
     private volatile boolean authenticated;
 
+    // [ifndef gwt] member
+    /** List of expectations. */
+    private volatile List<org.restlet.data.Expectation> expectations;
+
     /** The forwarded IP addresses. */
     private volatile List<String> forwardedAddresses;
+
+    /** The email address of the human user controlling the user agent. */
+    private volatile String from;
 
     /** The port number. */
     private volatile int port;
@@ -247,16 +285,12 @@ public final class ClientInfo {
     private volatile List<java.security.Principal> principals;
 
     // [ifndef gwt] member
-    /** Authenticated user. */
-    private volatile org.restlet.security.User user;
-
-    // [ifndef gwt] member
     /** List of user roles. */
     private volatile List<org.restlet.security.Role> roles;
 
     // [ifndef gwt] member
-    /** List of expectations. */
-    private volatile List<org.restlet.data.Expectation> expectations;
+    /** Authenticated user. */
+    private volatile org.restlet.security.User user;
 
     /**
      * Constructor.
@@ -631,8 +665,7 @@ public final class ClientInfo {
      * @return The preferred character set.
      */
     public CharacterSet getPreferredCharacterSet(List<CharacterSet> supported) {
-        return org.restlet.engine.util.ConnegUtils.getPreferredMetadata(
-                supported, getAcceptedCharacterSets());
+        return getPreferredMetadata(supported, getAcceptedCharacterSets());
     }
 
     // [ifndef gwt] method
@@ -645,8 +678,7 @@ public final class ClientInfo {
      * @return The preferred encoding.
      */
     public Encoding getPreferredEncoding(List<Encoding> supported) {
-        return org.restlet.engine.util.ConnegUtils.getPreferredMetadata(
-                supported, getAcceptedEncodings());
+        return getPreferredMetadata(supported, getAcceptedEncodings());
     }
 
     // [ifndef gwt] method
@@ -659,8 +691,7 @@ public final class ClientInfo {
      * @return The preferred language.
      */
     public Language getPreferredLanguage(List<Language> supported) {
-        return org.restlet.engine.util.ConnegUtils.getPreferredMetadata(
-                supported, getAcceptedLanguages());
+        return getPreferredMetadata(supported, getAcceptedLanguages());
     }
 
     // [ifndef gwt] method
@@ -673,8 +704,7 @@ public final class ClientInfo {
      * @return The preferred media type.
      */
     public MediaType getPreferredMediaType(List<MediaType> supported) {
-        return org.restlet.engine.util.ConnegUtils.getPreferredMetadata(
-                supported, getAcceptedMediaTypes());
+        return getPreferredMetadata(supported, getAcceptedMediaTypes());
     }
 
     // [ifndef gwt] method
@@ -684,6 +714,49 @@ public final class ClientInfo {
      * types and accepted encodings. A default language is provided in case the
      * variants don't match the client preferences.
      * 
+     * Note that the {@link ConnegService} and {@link MetadataService} of the
+     * parent application are first looked up. If no parent application is
+     * found, a new instance of those services is created and the
+     * {@link ConnegService#getPreferredVariant(ClientInfo, org.restlet.service.MetadataService, List)}
+     * method is called.
+     * 
+     * @param variants
+     *            The list of variants to compare.
+     * @return The best variant.
+     * @see <a
+     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
+     *      content negotiation algorithm</a>
+     */
+    public Variant getPreferredVariant(List<? extends Variant> variants) {
+        ConnegService connegService = null;
+        MetadataService metadataService = null;
+        Application app = Application.getCurrent();
+
+        if (app == null) {
+            connegService = new ConnegService();
+            metadataService = new MetadataService();
+        } else {
+            connegService = app.getConnegService();
+            metadataService = app.getMetadataService();
+        }
+
+        return connegService.getPreferredVariant(variants, this,
+                metadataService);
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns the best variant for a given resource according the the client
+     * preferences: accepted languages, accepted character sets, accepted media
+     * types and accepted encodings. A default language is provided in case the
+     * variants don't match the client preferences.
+     * 
+     * Note that the {@link ConnegService} of the parent application is first
+     * looked up. If no parent application is found, a new instance is created
+     * and the
+     * {@link ConnegService#getPreferredVariant(ClientInfo, org.restlet.service.MetadataService, List)}
+     * method is called.
+     * 
      * @param variants
      *            The list of variants to compare.
      * @param metadataService
@@ -692,11 +765,22 @@ public final class ClientInfo {
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
+     * @deprecated Use the {@link #getPreferredVariant(List)} method instead.
      */
+    @Deprecated
     public Variant getPreferredVariant(List<? extends Variant> variants,
             org.restlet.service.MetadataService metadataService) {
-        return org.restlet.engine.util.ConnegUtils.getPreferredVariant(this,
-                variants, metadataService);
+        ConnegService connegService = null;
+        Application app = Application.getCurrent();
+
+        if (app == null) {
+            connegService = new ConnegService();
+        } else {
+            connegService = app.getConnegService();
+        }
+
+        return connegService.getPreferredVariant(variants, this,
+                metadataService);
     }
 
     // [ifndef gwt] method

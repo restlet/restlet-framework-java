@@ -30,7 +30,6 @@
 
 package org.restlet.ext.sip;
 
-import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.util.Series;
 
@@ -218,8 +217,9 @@ public class Subscription {
      */
     public Series<Parameter> getParameters() {
         if (parameters == null) {
-            parameters = new Form();
+            parameters = new Series<Parameter>(Parameter.class);
         }
+
         return parameters;
     }
 

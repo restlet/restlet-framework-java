@@ -51,10 +51,10 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.PreferenceReader;
 import org.restlet.engine.io.IoUtils;
@@ -353,7 +353,7 @@ public class TunnelFilter extends Filter {
 
         if (tunnelService.isMethodTunnel()) {
             // get the headers
-            final Series<Parameter> extraHeaders = (Series<Parameter>) request
+            Series<Header> extraHeaders = (Series<Header>) request
                     .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
 
             if (extraHeaders != null) {
@@ -520,8 +520,9 @@ public class TunnelFilter extends Filter {
         if (agentAttributes != null) {
             if (!this.acceptReplacers.isEmpty()) {
                 // Get the old Accept header value
-                Form headers = (Form) request.getAttributes().get(
-                        HeaderConstants.ATTRIBUTE_HEADERS);
+                @SuppressWarnings("unchecked")
+                Series<Header> headers = (Series<Header>) request
+                        .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
                 String acceptOld = (headers != null) ? headers.getFirstValue(
                         HeaderConstants.HEADER_ACCEPT, true) : null;
 

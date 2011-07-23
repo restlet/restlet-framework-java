@@ -43,6 +43,7 @@ import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
 import org.restlet.security.Role;
 import org.restlet.service.ConnectorService;
+import org.restlet.service.ConnegService;
 import org.restlet.service.ConverterService;
 import org.restlet.service.DecoderService;
 import org.restlet.service.EncoderService;
@@ -53,7 +54,7 @@ import org.restlet.service.TunnelService;
 import org.restlet.util.ServiceList;
 
 /**
- * Restlet managing a coherent set of Resources and Services. Applications are
+ * Restlet managing a coherent set of resources and services. Applications are
  * guaranteed to receive calls with their base reference set relatively to the
  * {@link VirtualHost} that served them. This class is both a descriptor able to
  * create the root Restlet and the actual Restlet that can be attached to one or
@@ -92,7 +93,7 @@ public class Application extends Restlet {
      * 
      * Warning: this method should only be used under duress. You should by
      * default prefer obtaining the current application using methods such as
-     * {@link org.restlet.resource.UniformResource#getApplication()}
+     * {@link org.restlet.resource.Resource#getApplication()}
      * 
      * @return The current context.
      */
@@ -116,14 +117,14 @@ public class Application extends Restlet {
     /** The helper provided by the implementation. */
     private volatile ApplicationHelper helper;
 
-    /** The modifiable list of roles. */
-    private final List<Role> roles;
-
     /** The inbound root Restlet. */
     private volatile Restlet inboundRoot;
 
     /** The outbound root Restlet. */
     private volatile Restlet outboundRoot;
+
+    /** The modifiable list of roles. */
+    private final List<Role> roles;
 
     /** The list of services. */
     private final ServiceList services;
@@ -165,6 +166,7 @@ public class Application extends Restlet {
         this.services.add(new EncoderService(false));
         this.services.add(new RangeService());
         this.services.add(new ConnectorService());
+        this.services.add(new ConnegService());
         this.services.add(new ConverterService());
         this.services.add(new MetadataService());
 
@@ -210,6 +212,16 @@ public class Application extends Restlet {
      */
     public ConnectorService getConnectorService() {
         return getServices().get(ConnectorService.class);
+    }
+
+    /**
+     * Returns the content negotiation service. The service is enabled by
+     * default.
+     * 
+     * @return The content negotiation service.
+     */
+    public ConnegService getConnegService() {
+        return getServices().get(ConnegService.class);
     }
 
     /**
@@ -406,6 +418,16 @@ public class Application extends Restlet {
      */
     public void setConnectorService(ConnectorService connectorService) {
         getServices().set(connectorService);
+    }
+
+    /**
+     * Sets the content negotiation service.
+     * 
+     * @param connegService
+     *            The content negotiation service.
+     */
+    public void setConnegService(ConnegService connegService) {
+        getServices().set(connegService);
     }
 
     @Override

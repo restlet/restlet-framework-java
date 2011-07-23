@@ -62,17 +62,17 @@ public class UsersResource extends BaseResource {
      */
     @Post
     public void acceptUser(Representation entity) throws ResourceException {
-        final Form form = new Form(entity);
-
+        Form form = new Form(entity);
         User user = new User();
         user.setFirstName(form.getFirstValue("firstName"));
         user.setLastName(form.getFirstValue("lastName"));
         user.setImage(form.getFirstValue("image"));
+
         try {
             user = getObjectsFacade().createUser(user);
             getResponse().redirectSeeOther(
-                    getChildReference(getRequest().getResourceRef(), user
-                            .getId()));
+                    getChildReference(getRequest().getResourceRef(),
+                            user.getId()));
         } catch (ObjectsException e) {
             final Map<String, Object> dataModel = new TreeMap<String, Object>();
             dataModel.put("users", this.users);

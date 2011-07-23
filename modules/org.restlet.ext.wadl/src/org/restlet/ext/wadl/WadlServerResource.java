@@ -33,16 +33,17 @@ package org.restlet.ext.wadl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+import org.restlet.util.NamedValue;
 import org.restlet.util.Series;
 
 /**
@@ -382,8 +383,9 @@ public class WadlServerResource extends ServerResource {
      * 
      * @return The set of headers as a collection of {@link Parameter} objects.
      */
-    private Form getHeaders() {
-        return (Form) getRequestAttributes().get(
+    @SuppressWarnings("unchecked")
+    private Series<Header> getHeaders() {
+        return (Series<Header>) getRequestAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
     }
 
@@ -405,9 +407,9 @@ public class WadlServerResource extends ServerResource {
      *            The parameter name.
      * @return The first parameter found with the given name.
      */
-    protected Parameter getParameter(String name) {
-        Parameter result = null;
-        Series<Parameter> set = getParameters(name);
+    protected NamedValue getParameter(String name) {
+        NamedValue result = null;
+        Series<? extends NamedValue> set = getParameters(name);
 
         if (set != null) {
             result = set.getFirst(name);
@@ -424,21 +426,23 @@ public class WadlServerResource extends ServerResource {
      *            The ParameterInfo instance.
      * @return A collection of parameters objects
      */
-    private Series<Parameter> getParameters(ParameterInfo parameterInfo) {
-        Series<Parameter> result = null;
+    private Series<? extends NamedValue> getParameters(
+            ParameterInfo parameterInfo) {
+        Series<? extends NamedValue> result = null;
 
         if (parameterInfo.getFixed() != null) {
-            result = new Form();
+            result = new Series<Parameter>(Parameter.class);
             result.add(parameterInfo.getName(), parameterInfo.getFixed());
         } else if (ParameterStyle.HEADER.equals(parameterInfo.getStyle())) {
             result = getHeaders().subList(parameterInfo.getName());
         } else if (ParameterStyle.TEMPLATE.equals(parameterInfo.getStyle())) {
             Object parameter = getRequest().getAttributes().get(
                     parameterInfo.getName());
+
             if (parameter != null) {
-                result = new Form();
-                result.add(parameterInfo.getName(), Reference
-                        .decode((String) parameter));
+                result = new Series<Parameter>(Parameter.class);
+                result.add(parameterInfo.getName(),
+                        Reference.decode((String) parameter));
             }
         } else if (ParameterStyle.MATRIX.equals(parameterInfo.getStyle())) {
             result = getMatrix().subList(parameterInfo.getName());
@@ -449,10 +453,8 @@ public class WadlServerResource extends ServerResource {
         }
 
         if (result == null && parameterInfo.getDefaultValue() != null) {
-            result = new Form();
-            result
-                    .add(parameterInfo.getName(), parameterInfo
-                            .getDefaultValue());
+            result = new Series<Parameter>(Parameter.class);
+            result.add(parameterInfo.getName(), parameterInfo.getDefaultValue());
         }
 
         return result;
@@ -467,8 +469,8 @@ public class WadlServerResource extends ServerResource {
      *            The name of the parameter.
      * @return A collection of parameters.
      */
-    protected Series<Parameter> getParameters(String name) {
-        Series<Parameter> result = null;
+    protected Series<? extends NamedValue> getParameters(String name) {
+        Series<? extends NamedValue> result = null;
 
         if (describeParameters() != null) {
             for (ParameterInfo parameter : describeParameters()) {
@@ -488,15 +490,8 @@ public class WadlServerResource extends ServerResource {
      * @return The preferred WADL variant.
      */
     protected Variant getPreferredWadlVariant() {
-        Variant result = null;
-
-        // Compute the preferred variant
-        result = getRequest().getClientInfo().getPreferredVariant(
-                getWadlVariants(),
-                (getApplication() == null) ? null : getApplication()
-                        .getMetadataService());
-
-        return result;
+        return getRequest().getClientInfo().getPreferredVariant(
+                getWadlVariants());
     }
 
     /**

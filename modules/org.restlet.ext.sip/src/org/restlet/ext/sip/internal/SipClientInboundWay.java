@@ -34,12 +34,12 @@ import java.io.IOException;
 
 import org.restlet.Client;
 import org.restlet.Response;
-import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.engine.connector.ClientInboundWay;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.MessageState;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.IoState;
 import org.restlet.ext.sip.SipRequest;
@@ -67,7 +67,7 @@ public class SipClientInboundWay extends ClientInboundWay {
     }
 
     @Override
-    protected void copyResponseTransportHeaders(Series<Parameter> headers,
+    protected void copyResponseTransportHeaders(Series<Header> headers,
             Response response) {
         SipResponse sr = (SipResponse) response;
 
@@ -284,7 +284,7 @@ public class SipClientInboundWay extends ClientInboundWay {
             }
         }
 
-        for (Parameter headerParam : headers) {
+        for (Header headerParam : headers) {
             if (headerParam.getName().equalsIgnoreCase(
                     HeaderConstants.HEADER_VIA)) {
                 SipRecipientInfoReader.addValues(headerParam,

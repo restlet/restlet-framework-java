@@ -46,13 +46,13 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.CharacterSet;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.ext.atom.Content;
@@ -285,22 +285,27 @@ public class Service {
      */
     public ClientResource createResource(Reference reference) {
         ClientResource resource = new ClientResource(reference);
+
         if (clientConnector != null) {
             // We provide our own cient connector.
             resource.setNext(clientConnector);
         }
+
         resource.setChallengeResponse(getCredentials());
 
         if (getClientVersion() != null || getMaxClientVersion() != null) {
-            Form form = new Form();
+            Series<Header> headers = new Series<Header>(Header.class);
+
             if (getClientVersion() != null) {
-                form.add("DataServiceVersion", getClientVersion());
+                headers.add("DataServiceVersion", getClientVersion());
             }
+
             if (getMaxClientVersion() != null) {
-                form.add("MaxDataServiceVersion", getMaxClientVersion());
+                headers.add("MaxDataServiceVersion", getMaxClientVersion());
             }
+
             resource.getRequestAttributes().put(
-                    HeaderConstants.ATTRIBUTE_HEADERS, form);
+                    HeaderConstants.ATTRIBUTE_HEADERS, headers);
         }
 
         return resource;
@@ -511,10 +516,12 @@ public class Service {
             if (this.latestResponse != null) {
                 Object o = this.latestResponse.getAttributes().get(
                         HeaderConstants.ATTRIBUTE_HEADERS);
+
                 if (o != null) {
-                    Series<Parameter> headers = (Series<Parameter>) o;
+                    Series<Header> headers = (Series<Header>) o;
                     String strHeader = headers
                             .getFirstValue("DataServiceVersion");
+
                     if (strHeader != null) {
                         HeaderReader<Object> reader = new HeaderReader<Object>(
                                 strHeader);
@@ -523,6 +530,7 @@ public class Service {
                 }
             }
         }
+
         return serverVersion;
     }
 

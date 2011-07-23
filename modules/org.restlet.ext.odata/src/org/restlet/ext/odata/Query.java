@@ -281,9 +281,11 @@ public class Query<T> implements Iterable<T> {
         Query<T> result = new Query<T>(this.getService(), this.getSubpath(),
                 (Class<T>) this.entityClass);
         StringBuilder builder = new StringBuilder();
+
         if (params != null) {
             for (int i = 0; i < params.size(); i++) {
                 Parameter param = params.get(i);
+
                 if (i == 0) {
                     builder.append(param.getName());
                     builder.append("=");
@@ -291,6 +293,7 @@ public class Query<T> implements Iterable<T> {
                 }
             }
         }
+
         if (getQuery() == null || "".equals(getQuery())) {
             result.setQuery(builder.toString());
         } else {
@@ -383,8 +386,8 @@ public class Query<T> implements Iterable<T> {
                 case TYPE_UNKNOWN:
                     // Guess the type of query based on the returned
                     // representation
-                    Representation rep = new StringRepresentation(result
-                            .getText());
+                    Representation rep = new StringRepresentation(
+                            result.getText());
                     String string = rep.getText().substring(0,
                             Math.min(100, rep.getText().length()));
                     if (string.contains("<feed")) {

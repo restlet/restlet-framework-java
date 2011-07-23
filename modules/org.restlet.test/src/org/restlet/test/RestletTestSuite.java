@@ -79,6 +79,7 @@ import org.restlet.test.security.HttpBasicTestCase;
 import org.restlet.test.security.HttpDigestTestCase;
 import org.restlet.test.security.RoleTestCase;
 import org.restlet.test.security.SecurityTestCase;
+import org.restlet.test.service.ServiceTestSuite;
 import org.restlet.test.util.TemplateTestCase;
 
 /**
@@ -100,6 +101,7 @@ public class RestletTestSuite extends TestSuite {
     /** Constructor. */
     public RestletTestSuite() {
         addTest(ResourceTestSuite.suite());
+        addTest(ServiceTestSuite.suite());
         addTestSuite(AppendableRepresentationTestCase.class);
         addTestSuite(AtomTestCase.class);
         addTestSuite(AuthenticationInfoTestCase.class);

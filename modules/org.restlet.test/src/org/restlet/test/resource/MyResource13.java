@@ -40,13 +40,13 @@ import org.restlet.resource.Get;
  */
 public interface MyResource13 {
 
-    @Get("shallow")
+    @Get("?shallow")
     public LightContact retrieveLight();
 
     @Get
     public Contact retrieve();
 
-    @Get("deep")
+    @Get("?deep")
     public FullContact retrieveFull();
 
 }

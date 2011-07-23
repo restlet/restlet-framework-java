@@ -33,8 +33,8 @@ package org.restlet.test.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.data.Parameter;
 import org.restlet.data.RecipientInfo;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.RecipientInfoReader;
 import org.restlet.engine.header.RecipientInfoWriter;
@@ -48,15 +48,15 @@ import org.restlet.test.RestletTestCase;
 public class RecipientInfoTestCase extends RestletTestCase {
 
     public void testVia() {
-        Parameter via1a = new Parameter(HeaderConstants.HEADER_VIA,
+        Header via1a = new Header(HeaderConstants.HEADER_VIA,
                 "1.0 fred, 1.1 nowhere.com (Apache/1.1)");
-        Parameter via1b = new Parameter(HeaderConstants.HEADER_VIA,
+        Header via1b = new Header(HeaderConstants.HEADER_VIA,
                 "HTTP/1.0 fred, HTTP/1.1 nowhere.com (Apache/1.1)");
-        Parameter via1c = new Parameter(HeaderConstants.HEADER_VIA,
+        Header via1c = new Header(HeaderConstants.HEADER_VIA,
                 "HTTP/1.0 fred (Apache/1.1), HTTP/1.1 nowhere.com");
-        Parameter via1d = new Parameter(HeaderConstants.HEADER_VIA,
-        "HTTP/1.0 fred (Apache/1.1), HTTP/1.1 nowhere.com:8111");
-        
+        Header via1d = new Header(HeaderConstants.HEADER_VIA,
+                "HTTP/1.0 fred (Apache/1.1), HTTP/1.1 nowhere.com:8111");
+
         List<RecipientInfo> recipients = new ArrayList<RecipientInfo>();
         RecipientInfoReader.addValues(via1a, recipients);
 

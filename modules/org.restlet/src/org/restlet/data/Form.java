@@ -50,7 +50,7 @@ public class Form extends Series<Parameter> {
      * Empty constructor.
      */
     public Form() {
-        super();
+        super(Parameter.class);
     }
 
     /**
@@ -60,7 +60,7 @@ public class Form extends Series<Parameter> {
      *            The initial list capacity.
      */
     public Form(int initialCapacity) {
-        super(initialCapacity);
+        super(Parameter.class, initialCapacity);
     }
 
     /**
@@ -70,7 +70,7 @@ public class Form extends Series<Parameter> {
      *            The delegate list.
      */
     public Form(List<Parameter> delegate) {
-        super(delegate);
+        super(Parameter.class, delegate);
     }
 
     /**
@@ -81,6 +81,7 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public Form(Representation webForm) {
+        this();
         FormUtils.parse(this, webForm);
     }
 
@@ -136,21 +137,8 @@ public class Form extends Series<Parameter> {
      */
     public Form(String parametersString, CharacterSet characterSet,
             char separator) {
+        this();
         FormUtils.parse(this, parametersString, characterSet, true, separator);
-    }
-
-    @Override
-    public Parameter createEntry(String name, String value) {
-        return new Parameter(name, value);
-    }
-
-    @Override
-    public Series<Parameter> createSeries(List<Parameter> delegate) {
-        if (delegate != null) {
-            return new Form(delegate);
-        }
-
-        return new Form();
     }
 
     /**

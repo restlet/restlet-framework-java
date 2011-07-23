@@ -423,13 +423,13 @@ public class OpenIdConsumer extends ServerResource {
             if (getCookieSettings().size() > 0) {
                 for (CookieSetting setting : getCookieSettings()) {
                     log.fine("CookieSetting: " + setting.getName()
-                            + setting.getFirst());
+                            + setting.getValue());
                 }
             }
             if (getCookies().size() > 0) {
                 for (Cookie setting : getCookies()) {
                     log.fine("Cookie: " + setting.getName()
-                            + setting.getFirst());
+                            + setting.getValue());
                 }
             }
 

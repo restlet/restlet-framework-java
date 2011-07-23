@@ -38,9 +38,9 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Status;
 import org.restlet.engine.Edition;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.util.Series;
@@ -128,7 +128,7 @@ public class ClientAdapter extends Adapter {
      */
     protected void readResponseHeaders(ClientCall httpCall, Response response) {
         try {
-            Series<Parameter> responseHeaders = httpCall.getResponseHeaders();
+            Series<Header> responseHeaders = httpCall.getResponseHeaders();
 
             // Put the response headers in the call's attributes map
             response.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,

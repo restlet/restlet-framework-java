@@ -64,8 +64,8 @@ public class ChallengeWriter extends HeaderWriter<ChallengeRequest> {
      * @return This writer.
      */
     public ChallengeWriter appendChallengeParameter(Parameter parameter) {
-        return appendChallengeParameter(parameter.getName(), parameter
-                .getValue());
+        return appendChallengeParameter(parameter.getName(),
+                parameter.getValue());
     }
 
     /**
@@ -131,8 +131,8 @@ public class ChallengeWriter extends HeaderWriter<ChallengeRequest> {
      * @return This writer.
      */
     public ChallengeWriter appendQuotedChallengeParameter(Parameter parameter) {
-        return appendQuotedChallengeParameter(parameter.getName(), parameter
-                .getValue());
+        return appendQuotedChallengeParameter(parameter.getName(),
+                parameter.getValue());
     }
 
     /**

@@ -83,7 +83,7 @@ public class UserResource extends BaseResource {
      */
     @Put
     public void storeUser(Representation entity) throws ResourceException {
-        final Form form = new Form(entity);
+        Form form = new Form(entity);
         this.user.setFirstName(form.getFirstValue("firstName"));
         this.user.setLastName(form.getFirstValue("lastName"));
         this.user.setImage(form.getFirstValue("image"));

@@ -46,6 +46,7 @@ import org.restlet.util.Triple;
  * @author Jerome Louvel
  * @see <a href="http://www.w3.org/TR/rdf-concepts/">RDF concepts</a>
  */
+@SuppressWarnings("deprecation")
 public class Link extends Triple<Object, Reference, Object> {
 
     /**

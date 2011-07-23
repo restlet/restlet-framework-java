@@ -41,7 +41,9 @@ import org.restlet.engine.util.SystemUtils;
  *            The first object's type.
  * @param <U>
  *            The second object's type.
+ * @deprecated To be removed with no replacement.
  */
+@Deprecated
 public class Couple<T, U> {
 
     /** The first object. */
@@ -99,6 +101,12 @@ public class Couple<T, U> {
         return second;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return SystemUtils.hashCode(getFirst(), getSecond());
+    }
+
     /**
      * Sets the first object.
      * 
@@ -117,12 +125,6 @@ public class Couple<T, U> {
      */
     public void setSecond(U second) {
         this.second = second;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return SystemUtils.hashCode(getFirst(), getSecond());
     }
 
     @Override

@@ -71,10 +71,12 @@ public class SipRecipientInfoWriter extends HeaderWriter<SipRecipientInfo> {
             appendToken(recipientInfo.getProtocol().getName());
             append('/');
             appendToken(recipientInfo.getProtocol().getVersion());
+
             if (recipientInfo.getTransport() != null) {
                 append('/');
                 appendToken(recipientInfo.getTransport());
             }
+
             appendSpace();
 
             if (recipientInfo.getName() != null) {

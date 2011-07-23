@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.component;
+package org.restlet.engine.util;
 
 import org.restlet.Application;
 import org.restlet.Request;
@@ -71,12 +71,11 @@ public class ChildClientDispatcher extends TemplateDispatcher {
     @Override
     public void doHandle(Request request, Response response) {
         super.doHandle(request, response);
-        final Protocol protocol = request.getProtocol();
+        Protocol protocol = request.getProtocol();
 
         if (protocol.equals(Protocol.RIAP)) {
             // Let's dispatch it
-            final LocalReference cr = new LocalReference(request
-                    .getResourceRef());
+            LocalReference cr = new LocalReference(request.getResourceRef());
 
             if (cr.getRiapAuthorityType() == LocalReference.RIAP_APPLICATION) {
                 if ((getChildContext() != null)
@@ -105,9 +104,8 @@ public class ChildClientDispatcher extends TemplateDispatcher {
                 if (!application.getConnectorService().getClientProtocols()
                         .contains(protocol)) {
                     getLogger()
-                            .fine(
-                                    "The protocol used by this request is not declared in the application's connector service. "
-                                            + "Please update the list of client connectors used by your application and restart it.");
+                            .fine("The protocol used by this request is not declared in the application's connector service. "
+                                    + "Please update the list of client connectors used by your application and restart it.");
                 }
             }
 

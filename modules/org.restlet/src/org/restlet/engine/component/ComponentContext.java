@@ -31,6 +31,8 @@
 package org.restlet.engine.component;
 
 import org.restlet.Context;
+import org.restlet.engine.log.LogUtils;
+import org.restlet.engine.util.ChildContext;
 
 /**
  * Context allowing access to the component's connectors.
@@ -49,8 +51,8 @@ public class ComponentContext extends Context {
      *            The component helper.
      */
     public ComponentContext(ComponentHelper componentHelper) {
-        super(ChildContext.getLoggerName("org.restlet", componentHelper
-                .getHelped()));
+        super(LogUtils
+                .getLoggerName("org.restlet", componentHelper.getHelped()));
         this.componentHelper = componentHelper;
         setClientDispatcher(new ComponentClientDispatcher(this));
         setServerDispatcher(new ComponentServerDispatcher(this));

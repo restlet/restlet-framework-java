@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 
 /**
  * Method header reader.
@@ -51,7 +50,7 @@ public class MethodReader extends HeaderReader<Method> {
      * @param collection
      *            The collection to update.
      */
-    public static void addValues(Parameter header, Collection<Method> collection) {
+    public static void addValues(Header header, Collection<Method> collection) {
         new MethodReader(header.getValue()).addValues(collection);
     }
 

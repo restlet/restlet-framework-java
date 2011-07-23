@@ -37,9 +37,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
-import org.restlet.data.Form;
-import org.restlet.data.Parameter;
+import org.restlet.Context;
 import org.restlet.engine.Edition;
 
 /**
@@ -55,7 +55,7 @@ import org.restlet.engine.Edition;
  * @see java.util.Collections
  * @see java.util.List
  */
-public abstract class Series<E extends Parameter> extends WrapperList<E> {
+public class Series<E extends NamedValue> extends WrapperList<E> {
 
     /**
      * A marker for empty values to differentiate from non existing values
@@ -71,22 +71,28 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      *            The series for which an unmodifiable view should be returned.
      * @return The unmodifiable view of the specified series.
      */
-    @SuppressWarnings("unchecked")
-    public static Series<? extends Parameter> unmodifiableSeries(
-            Series<? extends Parameter> series) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static Series<? extends NamedValue> unmodifiableSeries(
+            final Series<? extends NamedValue> series) {
         if (Edition.CURRENT != Edition.GWT) {
-            return new Form(java.util.Collections.unmodifiableList(series
-                    .getDelegate()));
+            return new Series(
+                    series.entryClass,
+                    java.util.Collections.unmodifiableList(series.getDelegate()));
         }
 
-        return new Form((List<Parameter>) series.getDelegate());
+        return new Series(series.entryClass,
+                (List<NamedValue>) series.getDelegate());
     }
+
+    /** The entry class. */
+    private final Class<E> entryClass;
 
     /**
      * Constructor.
      */
-    public Series() {
+    public Series(Class<E> entryClass) {
         super();
+        this.entryClass = entryClass;
     }
 
     /**
@@ -95,8 +101,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @param initialCapacity
      *            The initial list capacity.
      */
-    public Series(int initialCapacity) {
+    public Series(Class<E> entryClass, int initialCapacity) {
         super(initialCapacity);
+        this.entryClass = entryClass;
     }
 
     /**
@@ -105,8 +112,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @param delegate
      *            The delegate list.
      */
-    public Series(List<E> delegate) {
+    public Series(Class<E> entryClass, List<E> delegate) {
         super(delegate);
+        this.entryClass = entryClass;
     }
 
     /**
@@ -132,7 +140,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      */
     @SuppressWarnings("unchecked")
     public void copyTo(Map<String, Object> params) {
-        Parameter param;
+        NamedValue param;
         Object currentValue = null;
         for (final Iterator<E> iter = iterator(); iter.hasNext();) {
             param = iter.next();
@@ -179,7 +187,16 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      *            The value of the entry.
      * @return A new entry.
      */
-    public abstract E createEntry(String name, String value);
+    public E createEntry(String name, String value) {
+        try {
+            return this.entryClass.getConstructor(String.class, String.class)
+                    .newInstance(name, value);
+        } catch (Exception e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to create a series entry", e);
+            return null;
+        }
+    }
 
     /**
      * Creates a new series.
@@ -188,7 +205,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      *            Optional delegate series.
      * @return A new series.
      */
-    public abstract Series<E> createSeries(List<E> delegate);
+    public Series<E> createSeries(List<E> delegate) {
+        return new Series<E>(this.entryClass, delegate);
+    }
 
     /**
      * Tests the equality of two string, potentially null, which a case
@@ -288,7 +307,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
     public String getFirstValue(String name, boolean ignoreCase,
             String defaultValue) {
         String result = defaultValue;
-        Parameter param = getFirst(name, ignoreCase);
+        NamedValue param = getFirst(name, ignoreCase);
 
         if ((param != null) && (param.getValue() != null)) {
             result = param.getValue();
@@ -320,7 +339,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
     public Set<String> getNames() {
         final Set<String> result = new HashSet<String>();
 
-        for (final Parameter param : this) {
+        for (final NamedValue param : this) {
             result.add(param.getName());
         }
 
@@ -464,7 +483,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
     public Map<String, String> getValuesMap() {
         Map<String, String> result = new LinkedHashMap<String, String>();
 
-        for (Parameter param : this) {
+        for (NamedValue param : this) {
             if (!result.containsKey(param.getName())) {
                 result.put(param.getName(), param.getValue());
             }
@@ -495,7 +514,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      */
     public boolean removeAll(String name, boolean ignoreCase) {
         boolean changed = false;
-        Parameter param = null;
+        NamedValue param = null;
 
         for (final Iterator<E> iter = iterator(); iter.hasNext();) {
             param = iter.next();
@@ -532,7 +551,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      */
     public boolean removeFirst(String name, boolean ignoreCase) {
         boolean changed = false;
-        Parameter param = null;
+        NamedValue param = null;
 
         for (final Iterator<E> iter = iterator(); iter.hasNext() && !changed;) {
             param = iter.next();

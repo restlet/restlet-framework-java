@@ -43,6 +43,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.engine.header.ChallengeWriter;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.util.Base64;
 import org.restlet.util.Series;
@@ -64,7 +65,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
     @Override
     public void formatRawRequest(ChallengeWriter cw,
             ChallengeRequest challenge, Response response,
-            Series<Parameter> httpHeaders) throws IOException {
+            Series<Header> httpHeaders) throws IOException {
         if (challenge.getRealm() != null) {
             cw.appendQuotedChallengeParameter("realm", challenge.getRealm());
         }
@@ -73,7 +74,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
     @Override
     public void formatRawResponse(ChallengeWriter cw,
             ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
+            Series<Header> httpHeaders) {
         try {
             if (challenge == null) {
                 throw new RuntimeException(
@@ -97,10 +98,10 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 
     @Override
     public void parseRequest(ChallengeRequest challenge, Response response,
-            Series<Parameter> httpHeaders) {
+            Series<Header> httpHeaders) {
         if (challenge.getRawValue() != null) {
-            HeaderReader<Object> hr = new HeaderReader<Object>(challenge
-                    .getRawValue());
+            HeaderReader<Object> hr = new HeaderReader<Object>(
+                    challenge.getRawValue());
 
             try {
                 Parameter param = hr.readParameter();
@@ -119,19 +120,15 @@ public class HttpBasicHelper extends AuthenticatorHelper {
                             param = null;
                         }
                     } catch (Exception e) {
-                        Context
-                                .getCurrentLogger()
-                                .log(
-                                        Level.WARNING,
+                        Context.getCurrentLogger()
+                                .log(Level.WARNING,
                                         "Unable to parse the challenge request header parameter",
                                         e);
                     }
                 }
             } catch (Exception e) {
-                Context
-                        .getCurrentLogger()
-                        .log(
-                                Level.WARNING,
+                Context.getCurrentLogger()
+                        .log(Level.WARNING,
                                 "Unable to parse the challenge request header parameter",
                                 e);
             }
@@ -140,7 +137,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 
     @Override
     public void parseResponse(ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
+            Series<Header> httpHeaders) {
         try {
             byte[] credentialsEncoded = Base64.decode(challenge.getRawValue());
 

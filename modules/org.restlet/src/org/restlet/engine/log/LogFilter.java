@@ -37,7 +37,6 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.Engine;
-import org.restlet.engine.component.ChildContext;
 import org.restlet.routing.Filter;
 import org.restlet.service.LogService;
 
@@ -79,9 +78,9 @@ public class LogFilter extends Filter {
                 this.logLogger = Engine.getLogger(context.getLogger()
                         .getParent().getName()
                         + "."
-                        + ChildContext.getBestClassName(logService.getClass()));
+                        + LogUtils.getBestClassName(logService.getClass()));
             } else {
-                this.logLogger = Engine.getLogger(ChildContext
+                this.logLogger = Engine.getLogger(LogUtils
                         .getBestClassName(logService.getClass()));
             }
         }

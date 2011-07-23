@@ -41,6 +41,7 @@ import org.restlet.data.Parameter;
  * @author Jerome Louvel
  */
 public class CookieReader extends HeaderReader<Cookie> {
+
     private static final String NAME_DOMAIN = "$Domain";
 
     private static final String NAME_PATH = "$Path";
@@ -183,8 +184,8 @@ public class CookieReader extends HeaderReader<Cookie> {
 
         if (pair != null) {
             // Set the cookie name and value
-            result = new Cookie(this.globalVersion, pair.getName(), pair
-                    .getValue());
+            result = new Cookie(this.globalVersion, pair.getName(),
+                    pair.getValue());
             pair = readPair(true);
         }
 

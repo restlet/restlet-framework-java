@@ -41,7 +41,7 @@ import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.UniformResource;
+import org.restlet.resource.Resource;
 
 /**
  * A converter helper to convert from {@link WebRowSet}, {@link JdbcResult} or
@@ -63,12 +63,12 @@ public class JdbcConverter extends ConverterHelper {
 
     @Override
     public <T> float score(Representation source, Class<T> target,
-            UniformResource resource) {
+            Resource resource) {
         return 0;
     }
 
     @Override
-    public float score(Object source, Variant target, UniformResource resource) {
+    public float score(Object source, Variant target, Resource resource) {
         if (source instanceof WebRowSet || source instanceof JdbcResult
                 || source instanceof ResultSet) {
             return 1.0f;
@@ -79,13 +79,13 @@ public class JdbcConverter extends ConverterHelper {
 
     @Override
     public <T> T toObject(Representation source, Class<T> target,
-            UniformResource resource) throws IOException {
+            Resource resource) throws IOException {
         return null;
     }
 
     @Override
     public Representation toRepresentation(Object source, Variant target,
-            UniformResource resource) throws IOException {
+            Resource resource) throws IOException {
         if (source instanceof WebRowSet) {
             return new RowSetRepresentation((WebRowSet) source);
         } else if (source instanceof JdbcResult) {

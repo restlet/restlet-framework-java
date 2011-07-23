@@ -469,14 +469,8 @@ public class WadlApplication extends Application {
      * @return The preferred WADL variant.
      */
     protected Variant getPreferredWadlVariant(ClientInfo clientInfo) {
-        Variant result = null;
-
-        // Compute the preferred variant. Get the default language
-        // preference from the Application (if any).
-        result = clientInfo.getPreferredVariant(getWadlVariants(),
-                (getApplication() == null) ? null : getApplication()
-                        .getMetadataService());
-        return result;
+        return getConnegService().getPreferredVariant(getWadlVariants(),
+                clientInfo, getMetadataService());
     }
 
     /**

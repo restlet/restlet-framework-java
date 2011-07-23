@@ -54,6 +54,7 @@ import org.restlet.Context;
 import org.restlet.data.Encoding;
 import org.restlet.data.Parameter;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.util.NamedValue;
 
 /**
  * HTTP-style header reader.
@@ -89,8 +90,8 @@ public class HeaderReader<V> {
      * @return The header read or null.
      * @throws IOException
      */
-    public static Parameter readHeader(CharSequence header) throws IOException {
-        Parameter result = null;
+    public static Header readHeader(CharSequence header) throws IOException {
+        Header result = null;
 
         if (header.length() > 0) {
             // Detect the end of headers
@@ -106,7 +107,7 @@ public class HeaderReader<V> {
                             "Invalid end of headers. Line feed missing after the carriage return.");
                 }
             } else {
-                result = new Parameter();
+                result = new Header();
 
                 // Parse the header name
                 while ((index < header.length()) && (next != ':')) {
@@ -147,20 +148,22 @@ public class HeaderReader<V> {
      * @return The header read or null.
      * @throws IOException
      */
-    public static Parameter readHeader(InputStream is, StringBuilder sb)
+    public static Header readHeader(InputStream is, StringBuilder sb)
             throws IOException {
-        Parameter result = null;
+        Header result = null;
 
         // Detect the end of headers
         int next = is.read();
+
         if (isCarriageReturn(next)) {
             next = is.read();
+
             if (!isLineFeed(next)) {
                 throw new IOException(
                         "Invalid end of headers. Line feed missing after the carriage return.");
             }
         } else {
-            result = new Parameter();
+            result = new Header();
 
             // Parse the header name
             while ((next != -1) && (next != ':')) {
@@ -175,8 +178,8 @@ public class HeaderReader<V> {
 
             result.setName(sb.toString());
             sb.delete(0, sb.length());
-
             next = is.read();
+
             while (isSpace(next)) {
                 // Skip any separator space between colon and header value
                 next = is.read();
@@ -192,6 +195,7 @@ public class HeaderReader<V> {
                 throw new IOException(
                         "Unable to parse the header value. End of stream reached too early.");
             }
+
             next = is.read();
 
             if (isLineFeed(next)) {
@@ -272,6 +276,43 @@ public class HeaderReader<V> {
     }
 
     /**
+     * Creates a new named value with a null value.
+     * 
+     * @param name
+     *            The name.
+     * @param resultClass
+     *            The named value class to return.
+     * @return The new named value.
+     */
+    protected final <NV extends NamedValue> NV createNamedValue(
+            Class<NV> resultClass, String name) {
+        return createNamedValue(resultClass, name, null);
+    }
+
+    /**
+     * Creates a new named value.
+     * 
+     * @param name
+     *            The name.
+     * @param value
+     *            The value or null.
+     * @param resultClass
+     *            The named value class to return.
+     * @return The new named value.
+     */
+    protected <NV extends NamedValue> NV createNamedValue(
+            Class<NV> resultClass, String name, String value) {
+        try {
+            return resultClass.getConstructor(String.class, String.class)
+                    .newInstance(name, value);
+        } catch (Exception e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to create named value", e);
+            return null;
+        }
+    }
+
+    /**
      * Creates a new parameter with a null value. Can be overridden.
      * 
      * @param name
@@ -292,7 +333,7 @@ public class HeaderReader<V> {
      * @return The new parameter.
      */
     protected Parameter createParameter(String name, String value) {
-        return new Parameter(name, value);
+        return createNamedValue(Parameter.class, name, value);
     }
 
     /**
@@ -333,6 +374,30 @@ public class HeaderReader<V> {
             if (this.index >= this.header.length()) {
                 this.index = -1;
             }
+        }
+
+        return result;
+    }
+
+    /**
+     * Reads a parameter value which is either a token or a quoted string.
+     * 
+     * @return A parameter value.
+     * @throws IOException
+     */
+    public String readActualNamedValue() throws IOException {
+        String result = null;
+
+        // Discard any leading space
+        skipSpaces();
+
+        // Detect if quoted string or token available
+        int nextChar = peek();
+
+        if (isDoubleQuote(nextChar)) {
+            result = readQuotedString();
+        } else if (isTokenChar(nextChar)) {
+            result = readToken();
         }
 
         return result;
@@ -404,22 +469,26 @@ public class HeaderReader<V> {
     /**
      * Reads the next pair as a parameter.
      * 
+     * @param resultClass
+     *            The named value class to return.
      * @return The next pair as a parameter.
      * @throws IOException
      */
-    public Parameter readParameter() throws IOException {
-        Parameter result = null;
+    public <NV extends NamedValue> NV readNamedValue(Class<NV> resultClass)
+            throws IOException {
+        NV result = null;
         String name = readToken();
         int nextChar = read();
 
         if (name.length() > 0) {
             if (nextChar == '=') {
                 // The parameter has a value
-                result = createParameter(name, readParameterValue());
+                result = createNamedValue(resultClass, name,
+                        readActualNamedValue());
             } else {
                 // The parameter has not value
                 unread();
-                result = createParameter(name);
+                result = createNamedValue(resultClass, name);
             }
         } else {
             throw new IOException(
@@ -430,27 +499,15 @@ public class HeaderReader<V> {
     }
 
     /**
-     * Reads a parameter value which is either a token or a quoted string.
+     * Reads the next pair as a parameter.
      * 
-     * @return A parameter value.
+     * @param resultClass
+     *            The named value class to return.
+     * @return The next pair as a parameter.
      * @throws IOException
      */
-    public String readParameterValue() throws IOException {
-        String result = null;
-
-        // Discard any leading space
-        skipSpaces();
-
-        // Detect if quoted string or token available
-        int nextChar = peek();
-
-        if (isDoubleQuote(nextChar)) {
-            result = readQuotedString();
-        } else if (isTokenChar(nextChar)) {
-            result = readToken();
-        }
-
-        return result;
+    public Parameter readParameter() throws IOException {
+        return readNamedValue(Parameter.class);
     }
 
     /**
@@ -588,6 +645,7 @@ public class HeaderReader<V> {
 
     /**
      * Read the next value. There can be multiple values for a single header.
+     * Returns null by default.
      * 
      * @return The next value.
      */

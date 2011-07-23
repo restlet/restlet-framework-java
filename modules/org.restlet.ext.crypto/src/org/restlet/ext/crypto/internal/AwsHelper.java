@@ -33,8 +33,8 @@ package org.restlet.ext.crypto.internal;
 import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Parameter;
 import org.restlet.engine.header.ChallengeWriter;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.util.Series;
 
@@ -55,12 +55,11 @@ public class AwsHelper extends AuthenticatorHelper {
     @Override
     public void formatRawResponse(ChallengeWriter cw,
             ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
+            Series<Header> httpHeaders) {
         // Append the AWS credentials
         cw.append(challenge.getIdentifier())
                 .append(':')
-                .append(AwsUtils.getSignature(request,
-                        httpHeaders,
+                .append(AwsUtils.getSignature(request, httpHeaders,
                         challenge.getSecret()));
     }
 

@@ -38,7 +38,6 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.service.MetadataService;
 import org.restlet.util.Series;
@@ -112,7 +111,7 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
         if ((getHelped() != null) && (getHelped().getContext() != null)) {
             result = getHelped().getContext().getParameters();
         } else {
-            result = new Form();
+            result = new Series<Parameter>(Parameter.class);
         }
 
         return result;

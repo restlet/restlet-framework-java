@@ -34,7 +34,6 @@ import java.io.IOException;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Expectation;
-import org.restlet.data.Parameter;
 
 /**
  * Expectation header reader.
@@ -68,13 +67,8 @@ public class ExpectationReader extends HeaderReader<Expectation> {
     }
 
     @Override
-    protected Parameter createParameter(String name, String value) {
-        return new Expectation(name, value);
-    }
-
-    @Override
     public Expectation readValue() throws IOException {
-        Expectation result = (Expectation) readParameter();
+        Expectation result = readNamedValue(Expectation.class);
 
         while (skipParameterSeparator()) {
             result.getParameters().add(readParameter());

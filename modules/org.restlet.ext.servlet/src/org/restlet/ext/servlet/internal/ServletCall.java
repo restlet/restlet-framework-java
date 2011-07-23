@@ -46,11 +46,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Response;
 import org.restlet.Server;
-import org.restlet.data.Form;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.adapter.ServerCall;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.UnclosableInputStream;
 import org.restlet.engine.io.UnclosableOutputStream;
@@ -67,7 +66,7 @@ public class ServletCall extends ServerCall {
     private volatile HttpServletRequest request;
 
     /** The request headers. */
-    private volatile Series<Parameter> requestHeaders;
+    private volatile Series<Header> requestHeaders;
 
     /** The HTTP Servlet response to wrap. */
     private volatile HttpServletResponse response;
@@ -181,21 +180,22 @@ public class ServletCall extends ServerCall {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Series<Parameter> getRequestHeaders() {
+    public Series<Header> getRequestHeaders() {
         if (this.requestHeaders == null) {
-            this.requestHeaders = new Form();
+            this.requestHeaders = new Series<Header>(Header.class);
 
             // Copy the headers from the request object
             String headerName;
             String headerValue;
-            for (final Enumeration<String> names = getRequest()
-                    .getHeaderNames(); names.hasMoreElements();) {
+
+            for (Enumeration<String> names = getRequest().getHeaderNames(); names
+                    .hasMoreElements();) {
                 headerName = names.nextElement();
-                for (final Enumeration<String> values = getRequest()
-                        .getHeaders(headerName); values.hasMoreElements();) {
+
+                for (Enumeration<String> values = getRequest().getHeaders(
+                        headerName); values.hasMoreElements();) {
                     headerValue = values.nextElement();
-                    this.requestHeaders.add(new Parameter(headerName,
-                            headerValue));
+                    this.requestHeaders.add(headerName, headerValue);
                 }
             }
         }
@@ -363,8 +363,9 @@ public class ServletCall extends ServerCall {
         if (Status.isError(getStatusCode()) && (response.getEntity() == null)) {
             try {
                 // Add the response headers
-                Parameter header;
-                for (Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
+                Header header;
+
+                for (Iterator<Header> iter = getResponseHeaders().iterator(); iter
                         .hasNext();) {
                     header = iter.next();
 
@@ -390,10 +391,10 @@ public class ServletCall extends ServerCall {
             // Add the response headers after setting the status because
             // otherwise some containers (ex: Tomcat 5.0) immediately send
             // the response if a "Content-Length: 0" header is found.
-            Parameter header;
-            Parameter contentLengthHeader = null;
+            Header header;
+            Header contentLengthHeader = null;
 
-            for (Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
+            for (Iterator<Header> iter = getResponseHeaders().iterator(); iter
                     .hasNext();) {
                 header = iter.next();
 

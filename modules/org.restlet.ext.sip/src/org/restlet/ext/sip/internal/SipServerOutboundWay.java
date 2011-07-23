@@ -32,10 +32,10 @@ package org.restlet.ext.sip.internal;
 
 import org.restlet.Response;
 import org.restlet.Server;
-import org.restlet.data.Parameter;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.ServerOutboundWay;
 import org.restlet.engine.header.DateWriter;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.IoState;
 import org.restlet.ext.sip.SipRecipientInfo;
@@ -63,7 +63,7 @@ public class SipServerOutboundWay extends ServerOutboundWay {
     }
 
     @Override
-    protected void addResponseHeaders(Series<Parameter> headers) {
+    protected void addResponseHeaders(Series<Header> headers) {
         SipRequest sipRequest = (SipRequest) getMessage().getRequest();
         SipResponse sipResponse = (SipResponse) getMessage();
 

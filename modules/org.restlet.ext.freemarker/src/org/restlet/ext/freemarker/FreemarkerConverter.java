@@ -38,7 +38,7 @@ import org.restlet.engine.resource.VariantInfo;
 import org.restlet.ext.freemarker.internal.ResolverHashModel;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.UniformResource;
+import org.restlet.resource.Resource;
 import org.restlet.util.Resolver;
 
 import freemarker.template.Template;
@@ -63,12 +63,12 @@ public class FreemarkerConverter extends ConverterHelper {
 
     @Override
     public <T> float score(Representation source, Class<T> target,
-            UniformResource resource) {
+            Resource resource) {
         return -1.0f;
     }
 
     @Override
-    public float score(Object source, Variant target, UniformResource resource) {
+    public float score(Object source, Variant target, Resource resource) {
         if (source instanceof Template) {
             return 1.0f;
         }
@@ -78,13 +78,13 @@ public class FreemarkerConverter extends ConverterHelper {
 
     @Override
     public <T> T toObject(Representation source, Class<T> target,
-            UniformResource resource) throws IOException {
+            Resource resource) throws IOException {
         return null;
     }
 
     @Override
     public Representation toRepresentation(Object source, Variant target,
-            UniformResource resource) throws IOException {
+            Resource resource) throws IOException {
 
         if (source instanceof Template) {
             return new TemplateRepresentation((Template) source,

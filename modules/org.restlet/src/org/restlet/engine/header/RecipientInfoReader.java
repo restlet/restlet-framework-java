@@ -33,7 +33,6 @@ package org.restlet.engine.header;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.RecipientInfo;
 
@@ -51,7 +50,7 @@ public class RecipientInfoReader extends HeaderReader<RecipientInfo> {
      * @param collection
      *            The collection to update.
      */
-    public static void addValues(Parameter header,
+    public static void addValues(Header header,
             Collection<RecipientInfo> collection) {
         new RecipientInfoReader(header.getValue()).addValues(collection);
     }

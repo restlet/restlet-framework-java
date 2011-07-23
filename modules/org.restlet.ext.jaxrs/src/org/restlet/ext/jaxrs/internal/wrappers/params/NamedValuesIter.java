@@ -32,29 +32,29 @@ package org.restlet.ext.jaxrs.internal.wrappers.params;
 
 import java.util.Iterator;
 
-import org.restlet.data.Parameter;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
+import org.restlet.util.NamedValue;
 
-class ParamValueIter implements Iterator<String> {
+class NamedValuesIter implements Iterator<String> {
 
-    private final Iterator<Parameter> paramIter;
+    private final Iterator<? extends NamedValue> namedValuesIter;
 
-    ParamValueIter(Iterable<Parameter> parameters) {
-        this.paramIter = parameters.iterator();
+    NamedValuesIter(Iterable<? extends NamedValue> namedValues) {
+        this.namedValuesIter = namedValues.iterator();
     }
 
     /** @see java.util.Iterator#hasNext() */
     public boolean hasNext() {
-        return this.paramIter.hasNext();
+        return this.namedValuesIter.hasNext();
     }
 
     /** @see java.util.Iterator#next() */
     public String next() {
-        return WrapperUtil.getValue(this.paramIter.next());
+        return WrapperUtil.getValue(this.namedValuesIter.next());
     }
 
     /** @see java.util.Iterator#remove() */
     public void remove() {
-        this.paramIter.remove();
+        this.namedValuesIter.remove();
     }
 }

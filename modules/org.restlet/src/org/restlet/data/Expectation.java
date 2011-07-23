@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.util.SystemUtils;
+import org.restlet.util.NamedValue;
 
 /**
  * Particular server behavior that is required by a client. Note that when used
@@ -41,7 +43,7 @@ import org.restlet.engine.header.HeaderConstants;
  * 
  * @author Jerome Louvel
  */
-public final class Expectation extends Parameter {
+public final class Expectation implements NamedValue {
 
     /**
      * Creates a "100-continue" expectation. If a client will wait for a 100
@@ -58,8 +60,14 @@ public final class Expectation extends Parameter {
         return new Expectation(HeaderConstants.EXPECT_CONTINUE);
     }
 
+    /** The name. */
+    private volatile String name;
+
     /** The list of parameters. */
     private volatile List<Parameter> parameters;
+
+    /** The value. */
+    private volatile String value;
 
     /**
      * Constructor for directives with no value.
@@ -80,12 +88,47 @@ public final class Expectation extends Parameter {
      *            The directive value.
      */
     public Expectation(String name, String value) {
-        super(name, value);
+        this.name = name;
+        this.value = value;
     }
 
+    /** {@inheritDoc} */
     @Override
-    public boolean equals(Object other) {
-        return super.equals(other);
+    public boolean equals(Object obj) {
+        // if obj == this no need to go further
+        boolean result = (obj == this);
+
+        if (!result) {
+            result = obj instanceof Expectation;
+
+            // if obj isn't an expectation or is null don't evaluate further
+            if (result) {
+                Expectation that = (Expectation) obj;
+                result = (((that.getName() == null) && (getName() == null)) || ((getName() != null) && getName()
+                        .equals(that.getName())));
+
+                // if names are both null or equal continue
+                if (result) {
+                    result = (((that.getValue() == null) && (getValue() == null)) || ((getValue() != null) && getValue()
+                            .equals(that.getValue())));
+
+                    if (result) {
+                        result = getParameters().equals(that.getParameters());
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the name.
+     * 
+     * @return The name.
+     */
+    public String getName() {
+        return name;
     }
 
     /**
@@ -108,6 +151,31 @@ public final class Expectation extends Parameter {
     }
 
     /**
+     * Returns the value.
+     * 
+     * @return The value.
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return SystemUtils.hashCode(getName(), getValue(), getParameters());
+    }
+
+    /**
+     * Sets the name.
+     * 
+     * @param name
+     *            The name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * Sets the list of parameters.
      * 
      * @param parameters
@@ -119,6 +187,16 @@ public final class Expectation extends Parameter {
             r.clear();
             r.addAll(parameters);
         }
+    }
+
+    /**
+     * Sets the value.
+     * 
+     * @param value
+     *            The value.
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

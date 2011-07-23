@@ -115,10 +115,13 @@ public class Converter {
         if (mediaType == null) {
             return null;
         }
-        final Series<Parameter> parameters = mediaType.getParameters();
+
+        Series<Parameter> parameters = mediaType.getParameters();
+
         if ((parameters == null) || parameters.isEmpty()) {
             return mediaType;
         }
+
         return mediaType.getParent();
     }
 
@@ -196,8 +199,8 @@ public class Converter {
         if (restletEntityTag == null) {
             return null;
         }
-        return new EntityTag(restletEntityTag.getName(), restletEntityTag
-                .isWeak());
+        return new EntityTag(restletEntityTag.getName(),
+                restletEntityTag.isWeak());
     }
 
     /**
@@ -232,11 +235,11 @@ public class Converter {
         final Map<String, String> parameters = toMap(restletMediaType
                 .getParameters());
         if (restletCharacterSet != null) {
-            parameters.put(Converter.CHARSET_PARAM, restletCharacterSet
-                    .getName());
+            parameters.put(Converter.CHARSET_PARAM,
+                    restletCharacterSet.getName());
         }
-        return new MediaType(restletMediaType.getMainType(), restletMediaType
-                .getSubType(), parameters);
+        return new MediaType(restletMediaType.getMainType(),
+                restletMediaType.getSubType(), parameters);
     }
 
     /**
@@ -269,8 +272,9 @@ public class Converter {
     public static javax.ws.rs.core.Variant toJaxRsVariant(
             org.restlet.representation.Variant restletVariant)
             throws IllegalArgumentException {
-        final MediaType mediaType = Converter.toJaxRsMediaType(restletVariant
-                .getMediaType(), restletVariant.getCharacterSet());
+        final MediaType mediaType = Converter
+                .toJaxRsMediaType(restletVariant.getMediaType(),
+                        restletVariant.getCharacterSet());
         final Locale language = toLocale(Util
                 .getOnlyMetadataName(restletVariant.getLanguages()));
         final String encoding = Util.getOnlyMetadataName(restletVariant
@@ -358,10 +362,13 @@ public class Converter {
         if (parameters == null) {
             return null;
         }
-        final Map<String, String> map = new HashMap<String, String>();
-        for (final Parameter parameter : parameters) {
+
+        Map<String, String> map = new HashMap<String, String>();
+
+        for (Parameter parameter : parameters) {
             map.put(parameter.getName(), parameter.getValue());
         }
+
         return map;
     }
 
@@ -377,8 +384,8 @@ public class Converter {
             return null;
         }
         return new org.restlet.data.Cookie(jaxRsCookie.getVersion(),
-                jaxRsCookie.getName(), jaxRsCookie.getValue(), jaxRsCookie
-                        .getPath(), jaxRsCookie.getDomain());
+                jaxRsCookie.getName(), jaxRsCookie.getValue(),
+                jaxRsCookie.getPath(), jaxRsCookie.getDomain());
     }
 
     /**
@@ -394,9 +401,9 @@ public class Converter {
             return null;
         }
         return new CookieSetting(newCookie.getVersion(), newCookie.getName(),
-                newCookie.getValue(), newCookie.getPath(), newCookie
-                        .getDomain(), newCookie.getComment(), newCookie
-                        .getMaxAge(), newCookie.isSecure());
+                newCookie.getValue(), newCookie.getPath(),
+                newCookie.getDomain(), newCookie.getComment(),
+                newCookie.getMaxAge(), newCookie.isSecure());
     }
 
     /**

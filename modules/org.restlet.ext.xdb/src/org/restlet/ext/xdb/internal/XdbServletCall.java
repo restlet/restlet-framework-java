@@ -45,11 +45,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Response;
 import org.restlet.Server;
-import org.restlet.data.Form;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.adapter.ServerCall;
+import org.restlet.engine.header.Header;
 import org.restlet.util.Series;
 
 /**
@@ -73,7 +72,7 @@ public class XdbServletCall extends ServerCall {
     private volatile OutputStream responseEntityStream;
 
     /** The request headers. */
-    private volatile Series<Parameter> requestHeaders;
+    private volatile Series<Header> requestHeaders;
 
     /**
      * Constructor.
@@ -158,21 +157,22 @@ public class XdbServletCall extends ServerCall {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Series<Parameter> getRequestHeaders() {
+    public Series<Header> getRequestHeaders() {
         if (this.requestHeaders == null) {
-            this.requestHeaders = new Form();
+            this.requestHeaders = new Series<Header>(Header.class);
 
             // Copy the headers from the request object
             String headerName;
             String headerValue;
-            for (final Enumeration<String> names = getRequest()
-                    .getHeaderNames(); names.hasMoreElements();) {
+
+            for (Enumeration<String> names = getRequest().getHeaderNames(); names
+                    .hasMoreElements();) {
                 headerName = names.nextElement();
-                for (final Enumeration<String> values = getRequest()
-                        .getHeaders(headerName); values.hasMoreElements();) {
+
+                for (Enumeration<String> values = getRequest().getHeaders(
+                        headerName); values.hasMoreElements();) {
                     headerValue = values.nextElement();
-                    this.requestHeaders.add(new Parameter(headerName,
-                            headerValue));
+                    this.requestHeaders.add(headerName, headerValue);
                 }
             }
         }
@@ -309,8 +309,9 @@ public class XdbServletCall extends ServerCall {
     @Override
     public void sendResponse(Response response) throws IOException {
         // Add the response headers
-        Parameter header;
-        for (final Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
+        Header header;
+
+        for (Iterator<Header> iter = getResponseHeaders().iterator(); iter
                 .hasNext();) {
             header = iter.next();
             getResponse().addHeader(header.getName(), header.getValue());

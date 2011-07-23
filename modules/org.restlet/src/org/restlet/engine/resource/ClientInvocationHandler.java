@@ -39,6 +39,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Uniform;
 import org.restlet.data.ClientInfo;
+import org.restlet.data.Form;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ClientProxy;
@@ -53,7 +54,8 @@ import org.restlet.resource.Result;
  * 
  * @author Jerome Louvel
  * 
- * @param <T> The annotated resource interface.
+ * @param <T>
+ *            The annotated resource interface.
  */
 public class ClientInvocationHandler<T> implements InvocationHandler {
 
@@ -112,10 +114,10 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 .getMethod("getClientResource"))) {
             result = clientResource;
         } else {
-            AnnotationInfo annotation = AnnotationUtils.getAnnotation(
+            AnnotationInfo annotationInfo = AnnotationUtils.getAnnotation(
                     annotations, javaMethod);
 
-            if (annotation != null) {
+            if (annotationInfo != null) {
                 Representation requestEntity = null;
                 boolean isSynchronous = true;
 
@@ -180,7 +182,15 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                         getClientResource().getRequest());
 
                 // The Java method was annotated
-                request.setMethod(annotation.getRestletMethod());
+                request.setMethod(annotationInfo.getRestletMethod());
+
+                // Add the mandatory query parameters
+                String query = annotationInfo.getQuery();
+
+                if (query != null) {
+                    Form queryParams = new Form(annotationInfo.getQuery());
+                    request.getResourceRef().addQueryParameters(queryParams);
+                }
 
                 // Set the entity
                 request.setEntity(requestEntity);
@@ -193,7 +203,7 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                                 .size() == 0)
                         && (request.getClientInfo().getAcceptedMediaTypes()
                                 .size() == 0)) {
-                    List<Variant> responseVariants = annotation
+                    List<Variant> responseVariants = annotationInfo
                             .getResponseVariants(getClientResource()
                                     .getMetadataService(), getClientResource()
                                     .getConverterService());
@@ -212,12 +222,12 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                         getClientResource().doError(response.getStatus());
                     }
 
-                    if (!annotation.getJavaOutputType().equals(void.class)) {
+                    if (!annotationInfo.getJavaOutputType().equals(void.class)) {
                         result = getClientResource()
                                 .toObject(
                                         (response == null ? null
                                                 : response.getEntity()),
-                                        annotation.getJavaOutputType());
+                                        annotationInfo.getJavaOutputType());
                     }
                 }
             }

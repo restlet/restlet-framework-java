@@ -37,13 +37,14 @@ import org.restlet.Request;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.engine.header.ChallengeWriter;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.ext.crypto.internal.AwsHelper;
 import org.restlet.test.RestletTestCase;
+import org.restlet.util.Series;
 
 /**
  * Unit tests for the SecurityData related classes.
@@ -71,7 +72,7 @@ public class AuthenticationTestCase extends RestletTestCase {
                 "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o");
         Request request = new Request(Method.GET,
                 "http://johnsmith.s3.amazonaws.com/photos/puppy.jpg");
-        Form httpHeaders = new Form();
+        Series<Header> httpHeaders = new Series<Header>(Header.class);
         httpHeaders.add(HeaderConstants.HEADER_DATE,
                 "Tue, 27 Mar 2007 19:36:42 +0000");
 

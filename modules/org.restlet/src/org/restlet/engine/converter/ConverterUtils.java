@@ -39,7 +39,7 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
-import org.restlet.resource.UniformResource;
+import org.restlet.resource.Resource;
 
 /**
  * Utilities for the converter service.
@@ -126,7 +126,7 @@ public class ConverterUtils {
      * @return The matched converter helper or null.
      */
     public static ConverterHelper getBestHelper(Object source, Variant target,
-            UniformResource resource) {
+            Resource resource) {
         ConverterHelper result = null;
         float bestScore = -1.0F;
         float currentScore;
@@ -165,7 +165,7 @@ public class ConverterUtils {
      * @return The matched converter helper or null.
      */
     public static <T> ConverterHelper getBestHelper(Representation source,
-            Class<T> target, UniformResource resource) {
+            Class<T> target, Resource resource) {
         ConverterHelper result = null;
         float bestScore = -1.0F;
         float currentScore;

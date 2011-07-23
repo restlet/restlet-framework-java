@@ -39,13 +39,15 @@ import org.restlet.util.Series;
  * Cookie setting series.
  * 
  * @author Jerome Louvel
+ * @deprecated Use {@link Series} directly
  */
+@Deprecated
 public class CookieSettingSeries extends Series<CookieSetting> {
     /**
      * Constructor.
      */
     public CookieSettingSeries() {
-        super();
+        super(CookieSetting.class);
     }
 
     /**
@@ -55,20 +57,7 @@ public class CookieSettingSeries extends Series<CookieSetting> {
      *            The delegate list.
      */
     public CookieSettingSeries(List<CookieSetting> delegate) {
-        super(delegate);
+        super(CookieSetting.class, delegate);
     }
 
-    @Override
-    public CookieSetting createEntry(String name, String value) {
-        return new CookieSetting(name, value);
-    }
-
-    @Override
-    public Series<CookieSetting> createSeries(List<CookieSetting> delegate) {
-        if (delegate != null) {
-            return new CookieSettingSeries(delegate);
-        }
-
-        return new CookieSettingSeries();
-    }
 }

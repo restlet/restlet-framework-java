@@ -35,6 +35,8 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
+import org.restlet.engine.component.ComponentContext;
+import org.restlet.engine.util.ChildContext;
 
 /**
  * Uniform class that provides a context and life cycle support. It has many
@@ -51,6 +53,32 @@ import org.restlet.engine.Engine;
 public abstract class Restlet implements Uniform {
     /** Error message. */
     private static final String UNABLE_TO_START = "Unable to start the Restlet";
+
+    // [ifndef gwt] method
+    /**
+     * Indicates that a Restlet's context has changed.
+     * 
+     * @param restlet
+     *            The Restlet with a changed context.
+     * @param context
+     *            The new context.
+     */
+    private static void fireContextChanged(Restlet restlet, Context context) {
+        if (context != null) {
+            if (context instanceof ChildContext) {
+                ChildContext childContext = (ChildContext) context;
+
+                if (childContext.getChild() == null) {
+                    childContext.setChild(restlet);
+                }
+            } else if (!(restlet instanceof Component)
+                    && (context instanceof ComponentContext)) {
+                context.getLogger()
+                        .severe("For security reasons, don't pass the component context to child Restlets anymore. Use the Context#createChildContext() method instead. "
+                                + restlet.getClass());
+            }
+        }
+    }
 
     /** The author(s). */
     private volatile String author;
@@ -107,8 +135,7 @@ public abstract class Restlet implements Uniform {
                     "Unable to fully initialize the Restlet. No Restlet engine available.");
         }
 
-        org.restlet.engine.component.ChildContext.fireContextChanged(this,
-                context);
+        fireContextChanged(this, context);
         // [enddef]
     }
 
@@ -290,8 +317,7 @@ public abstract class Restlet implements Uniform {
     public void setContext(Context context) {
         this.context = context;
         // [ifndef gwt] instruction
-        org.restlet.engine.component.ChildContext.fireContextChanged(this,
-                context);
+        fireContextChanged(this, context);
     }
 
     /**

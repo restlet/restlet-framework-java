@@ -41,15 +41,14 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
-import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.engine.application.TunnelFilter;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
@@ -368,7 +367,7 @@ public class TunnelFilterTestCase extends RestletTestCase {
     public void testMethodTunnelingViaHeader() {
         tunnelFilter.getTunnelService().setMethodTunnel(true);
         Map<String, Object> attributesHeader = new HashMap<String, Object>();
-        Series<Parameter> headers = new Form();
+        Series<Header> headers = new Series<Header>(Header.class);
         headers.add(HeaderConstants.HEADER_X_HTTP_METHOD_OVERRIDE,
                 Method.GET.getName());
         headers.add(HeaderConstants.HEADER_X_FORWARDED_FOR, "TEST");

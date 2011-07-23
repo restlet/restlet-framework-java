@@ -40,11 +40,10 @@ import java.util.logging.Level;
 import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.Form;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.ConnectorHelper;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.io.BlockableChannel;
@@ -116,7 +115,7 @@ public abstract class OutboundWay extends Way {
      *            The entity to inspect.
      */
     protected void addEntityHeaders(Representation entity,
-            Series<Parameter> headers) {
+            Series<Header> headers) {
         HeaderUtils.addEntityHeaders(entity, headers);
     }
 
@@ -126,7 +125,7 @@ public abstract class OutboundWay extends Way {
      * @param headers
      *            The target headers {@link Series}.
      */
-    protected void addGeneralHeaders(Series<Parameter> headers) {
+    protected void addGeneralHeaders(Series<Header> headers) {
         if (!getConnection().isPersistent()) {
             headers.set(HeaderConstants.HEADER_CONNECTION, "close", true);
         }
@@ -145,7 +144,7 @@ public abstract class OutboundWay extends Way {
      * @param headers
      *            The headers to update.
      */
-    protected abstract void addHeaders(Series<Parameter> headers);
+    protected abstract void addHeaders(Series<Header> headers);
 
     /**
      * Indicates if we should start processing the current message.
@@ -502,14 +501,14 @@ public abstract class OutboundWay extends Way {
 
         case HEADERS:
             if (getHeaders() == null) {
-                setHeaders(new Form());
+                setHeaders(new Series<Header>(Header.class));
                 setHeaderIndex(0);
                 addHeaders(getHeaders());
             }
 
             if (getHeaderIndex() < getHeaders().size()) {
                 // Write header
-                Parameter header = getHeaders().get(getHeaderIndex());
+                Header header = getHeaders().get(getHeaderIndex());
                 getLineBuilder().append(header.getName());
                 getLineBuilder().append(": ");
                 getLineBuilder().append(header.getValue());
@@ -577,6 +576,7 @@ public abstract class OutboundWay extends Way {
             break;
         }
     }
+
     /**
      * Writes the start line of the current outbound message.
      * 

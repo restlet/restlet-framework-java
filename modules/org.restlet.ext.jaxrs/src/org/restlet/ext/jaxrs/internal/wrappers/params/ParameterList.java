@@ -61,12 +61,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.PathSegment;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriInfo;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.engine.header.Header;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.PathSegmentImpl;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
@@ -430,40 +431,50 @@ public class ParameterList {
         @Override
         @SuppressWarnings({ "unchecked", "rawtypes" })
         public Object getParamValue() {
-            final String cookieName = this.cookieParam.value();
+            String cookieName = this.cookieParam.value();
             Series<org.restlet.data.Cookie> cookies;
             cookies = this.tlContext.get().getRequest().getCookies();
+
             if (this.convertTo.equals(Cookie.class)) {
-                final Collection<Cookie> coll = createColl();
-                for (final org.restlet.data.Cookie rc : cookies) {
+                Collection<Cookie> coll = createColl();
+
+                for (org.restlet.data.Cookie rc : cookies) {
                     if (!rc.getName().equals(cookieName)) {
                         continue;
                     }
-                    final Cookie cookie = Converter.toJaxRsCookie(rc);
+
+                    Cookie cookie = Converter.toJaxRsCookie(rc);
+
                     if (coll == null) {
                         return cookie;
                     }
+
                     coll.add(cookie);
                 }
+
                 if (coll == null) {
                     return null;
                 }
+
                 if (coll.isEmpty()) {
-                    final String value = this.defaultValue.value();
+                    String value = this.defaultValue.value();
                     coll.add(new Cookie(cookieName, value));
                 }
+
                 if (this.isArray) {
                     return Util.toArray(coll, Cookie.class);
                 }
+
                 return coll;
             }
             try {
                 if (this.collType == null) { // no collection parameter
-                    final String firstCookieValue = WrapperUtil
-                            .getValue(cookies.getFirst(cookieName));
+                    String firstCookieValue = WrapperUtil.getValue(cookies
+                            .getFirst(cookieName));
                     return convertParamValue(firstCookieValue);
                 }
-                return convertParamValues(new ParamValueIter(
+
+                return convertParamValues(new NamedValuesIter(
                         (Series) cookies.subList(cookieName)));
             } catch (ConvertParameterException e) {
                 throw new ConvertCookieParamException(e);
@@ -503,22 +514,23 @@ public class ParameterList {
         }
 
         /**
-         * @param form
+         * @param params
          * @param paramName
          * @return
          * @throws ConvertQueryParamException
          */
-        Object getParamValue(final Form form, final String paramName)
-                throws ConvertParameterException {
-            final List<Parameter> parameters = form.subList(paramName);
+        Object getParamValue(final Series<Parameter> params,
+                final String paramName) throws ConvertParameterException {
+            Series<Parameter> parameters = params.subList(paramName);
+
             if (this.collType == null) { // no collection parameter
-                final Parameter firstFormParam = form.getFirst(paramName);
-                final String queryParamValue = WrapperUtil
-                        .getValue(firstFormParam);
+                Parameter firstFormParam = params.getFirst(paramName);
+                String queryParamValue = WrapperUtil.getValue(firstFormParam);
                 return convertParamValue(queryParamValue);
             }
-            ParamValueIter queryParamValueIter;
-            queryParamValueIter = new ParamValueIter(parameters);
+
+            NamedValuesIter queryParamValueIter;
+            queryParamValueIter = new NamedValuesIter(parameters);
             return convertParamValues(queryParamValueIter);
         }
     }
@@ -572,16 +584,18 @@ public class ParameterList {
 
         @Override
         public Object getParamValue() {
-            final Form httpHeaders = Util.getHttpHeaders(this.tlContext.get()
-                    .getRequest());
-            final String headerName = this.headerParam.value();
+            Series<Header> httpHeaders = Util.getHttpHeaders(this.tlContext
+                    .get().getRequest());
+            String headerName = this.headerParam.value();
+
             try {
                 if (this.collType == null) { // no collection parameter
                     final String firstHeader = WrapperUtil.getValue(httpHeaders
                             .getFirst(headerName, true));
                     return convertParamValue(firstHeader);
                 }
-                return convertParamValues(new ParamValueIter(
+
+                return convertParamValues(new NamedValuesIter(
                         httpHeaders.subList(headerName, true)));
             } catch (ConvertParameterException e) {
                 throw new ConvertHeaderParamException(e);

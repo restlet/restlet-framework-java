@@ -37,7 +37,7 @@ import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 
 /**
- * Association of a media type and a character set.
+ * Association of a media type, a character set and modifiers.
  * 
  * @author Jerome Louvel
  */

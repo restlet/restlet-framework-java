@@ -35,13 +35,13 @@ import org.restlet.Component;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.header.Header;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.util.Series;
 
 public class HeaderTestCase extends RestletTestCase {
 
@@ -53,14 +53,16 @@ public class HeaderTestCase extends RestletTestCase {
     public static class TestHeaderRestlet extends Restlet {
         @Override
         public void handle(Request request, Response response) {
-            final StringBuilder stb = new StringBuilder();
-            final Form headers = getHttpHeaders(request);
-            for (final Parameter header : headers) {
+            StringBuilder stb = new StringBuilder();
+            Series<Header> headers = getHttpHeaders(request);
+
+            for (Header header : headers) {
                 if (header.getName().equals(TEST_HEADER)) {
                     stb.append(header.getValue());
                     stb.append('\n');
                 }
             }
+
             response.setEntity(new StringRepresentation(stb,
                     MediaType.TEXT_PLAIN));
         }
@@ -74,18 +76,22 @@ public class HeaderTestCase extends RestletTestCase {
     private static final String TEST_HEADER = "testHeader";
 
     /**
-     * Returns the list of http headers of a request as a Form.
+     * Returns the list of HTTP headers of a request as a Form.
      * 
      * @param request
      *            The request.
      * @return The list of headers as a Form object.
      */
-    private static Form getHttpHeaders(Request request) {
-        Form headers = (Form) request.getAttributes().get(HTTP_HEADERS);
+    private static Series<Header> getHttpHeaders(Request request) {
+        @SuppressWarnings("unchecked")
+        Series<Header> headers = (Series<Header>) request.getAttributes().get(
+                HTTP_HEADERS);
+
         if (headers == null) {
-            headers = new Form();
+            headers = new Series<Header>(Header.class);
             request.getAttributes().put(HTTP_HEADERS, headers);
         }
+
         return headers;
     }
 
@@ -97,18 +103,19 @@ public class HeaderTestCase extends RestletTestCase {
      * Handle a new request built according to the parameters and return the
      * response object.
      * 
-     * @param parameters
-     *            The list of parameters used to build the request.
+     * @param additionalHeaders
+     *            The list of header used to build the request.
      * @return The response of the request.
      * @throws Exception
      */
-    private Response getWithParams(Parameter... parameters) throws Exception {
+    private Response getWithParams(Header... additionalHeaders)
+            throws Exception {
         Request request = new Request(Method.GET, "http://localhost:"
                 + TEST_PORT);
-        Form headers = getHttpHeaders(request);
+        Series<Header> headers = getHttpHeaders(request);
 
-        for (Parameter p : parameters) {
-            headers.add(p);
+        for (Header header : additionalHeaders) {
+            headers.add(header);
         }
 
         Response result = client.handle(request);
@@ -149,15 +156,15 @@ public class HeaderTestCase extends RestletTestCase {
 
     /** test with one test header */
     public void test1() throws Exception {
-        Response response = getWithParams(new Parameter(TEST_HEADER, "a"));
+        Response response = getWithParams(new Header(TEST_HEADER, "a"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("a\n", response.getEntity().getText());
     }
 
     /** test with two test headers */
     public void test2() throws Exception {
-        Response response = getWithParams(new Parameter(TEST_HEADER, "a"),
-                new Parameter(TEST_HEADER, "b"));
+        Response response = getWithParams(new Header(TEST_HEADER, "a"),
+                new Header(TEST_HEADER, "b"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("a\nb\n", response.getEntity().getText());
     }

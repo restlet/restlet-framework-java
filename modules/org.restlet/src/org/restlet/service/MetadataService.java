@@ -445,6 +445,62 @@ public class MetadataService extends Service {
     }
 
     /**
+     * Returns all the character sets associated to this extension. It returns
+     * null if the extension was not declared.
+     * 
+     * @param extension
+     *            The extension name without any delimiter.
+     * @return The list of character sets associated to this extension.
+     */
+    public List<CharacterSet> getAllCharacterSets(String extension) {
+        List<CharacterSet> result = null;
+
+        if (extension != null) {
+            // Look for all registered convenient mapping.
+            for (MetadataExtension metadataExtension : this.mappings) {
+                if (extension.equals(metadataExtension.getName())
+                        && (metadataExtension.getMetadata() instanceof CharacterSet)) {
+                    if (result == null) {
+                        result = new ArrayList<CharacterSet>();
+                    }
+
+                    result.add(metadataExtension.getCharacterSet());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns all the languages associated to this extension. It returns null
+     * if the extension was not declared.
+     * 
+     * @param extension
+     *            The extension name without any delimiter.
+     * @return The list of languages associated to this extension.
+     */
+    public List<Language> getAllLanguages(String extension) {
+        List<Language> result = null;
+
+        if (extension != null) {
+            // Look for all registered convenient mapping.
+            for (MetadataExtension metadataExtension : this.mappings) {
+                if (extension.equals(metadataExtension.getName())
+                        && (metadataExtension.getMetadata() instanceof Language)) {
+                    if (result == null) {
+                        result = new ArrayList<Language>();
+                    }
+
+                    result.add(metadataExtension.getLanguage());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns all the media types associated to this extension. It returns null
      * if the extension was not declared.
      * 
@@ -457,7 +513,7 @@ public class MetadataService extends Service {
 
         if (extension != null) {
             // Look for all registered convenient mapping.
-            for (final MetadataExtension metadataExtension : this.mappings) {
+            for (MetadataExtension metadataExtension : this.mappings) {
                 if (extension.equals(metadataExtension.getName())
                         && (metadataExtension.getMetadata() instanceof MediaType)) {
                     if (result == null) {
@@ -485,7 +541,7 @@ public class MetadataService extends Service {
 
         if (extension != null) {
             // Look for all registered convenient mapping.
-            for (final MetadataExtension metadataExtension : this.mappings) {
+            for (MetadataExtension metadataExtension : this.mappings) {
                 if (extension.equals(metadataExtension.getName())) {
                     if (result == null) {
                         result = new ArrayList<Metadata>();

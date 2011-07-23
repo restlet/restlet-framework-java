@@ -31,15 +31,12 @@
 package org.restlet.test.ext.oauth;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
-import org.junit.Test;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.Engine;
 import org.restlet.ext.oauth.Flow;
 import org.restlet.ext.oauth.OAuthForm;
 import org.restlet.ext.oauth.OAuthUser;

@@ -36,6 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ServerResource;
@@ -192,6 +193,8 @@ public class AnnotationUtils {
      *            The list of annotations.
      * @param restletMethod
      *            The method to match.
+     * @param query
+     *            The query parameters.
      * @param entity
      *            The request entity to match or null if no entity is provided.
      * @param metadataService
@@ -201,12 +204,12 @@ public class AnnotationUtils {
      * @return The annotation descriptor.
      */
     public static AnnotationInfo getAnnotation(
-            List<AnnotationInfo> annotations, Method restletMethod,
+            List<AnnotationInfo> annotations, Method restletMethod, Form query,
             Representation entity, MetadataService metadataService,
             org.restlet.service.ConverterService converterService) {
         if (annotations != null) {
             for (AnnotationInfo annotationInfo : annotations) {
-                if (annotationInfo.isCompatible(restletMethod, entity,
+                if (annotationInfo.isCompatible(restletMethod, query, entity,
                         metadataService, converterService)) {
                     return annotationInfo;
                 }

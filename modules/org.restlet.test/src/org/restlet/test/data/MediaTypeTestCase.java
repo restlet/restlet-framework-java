@@ -90,8 +90,8 @@ public class MediaTypeTestCase extends RestletTestCase {
 
         mt = MediaType
                 .valueOf("multipart/x-mixed-replace; boundary=\"My boundary\"");
-        assertEquals("\"My boundary\"", mt.getParameters().getFirstValue(
-                "boundary"));
+        assertEquals("\"My boundary\"",
+                mt.getParameters().getFirstValue("boundary"));
     }
 
     /**
@@ -155,10 +155,10 @@ public class MediaTypeTestCase extends RestletTestCase {
     }
 
     public void testMostSpecificMediaType() {
-        assertEquals(MediaType.TEXT_ALL, MediaType.getMostSpecific(
-                MediaType.ALL, MediaType.TEXT_ALL));
-        assertEquals(MediaType.TEXT_ALL, MediaType.getMostSpecific(
-                MediaType.TEXT_ALL, MediaType.ALL));
+        assertEquals(MediaType.TEXT_ALL,
+                MediaType.getMostSpecific(MediaType.ALL, MediaType.TEXT_ALL));
+        assertEquals(MediaType.TEXT_ALL,
+                MediaType.getMostSpecific(MediaType.TEXT_ALL, MediaType.ALL));
 
         assertEquals(MediaType.TEXT_PLAIN, MediaType.getMostSpecific(
                 MediaType.ALL, MediaType.TEXT_ALL, MediaType.TEXT_PLAIN));
@@ -244,8 +244,8 @@ public class MediaTypeTestCase extends RestletTestCase {
      * {@link MediaType#register(String, String)}
      */
     public void testValueOf() {
-        assertSame(MediaType.APPLICATION_XML, MediaType
-                .valueOf("application/xml"));
+        assertSame(MediaType.APPLICATION_XML,
+                MediaType.valueOf("application/xml"));
         assertSame(MediaType.ALL, MediaType.valueOf("*/*"));
         final MediaType newType = MediaType
                 .valueOf("application/x-restlet-test");
@@ -263,10 +263,10 @@ public class MediaTypeTestCase extends RestletTestCase {
         assertEquals("Restlet testcase", registeredType.getDescription());
 
         // Later valueOf calls always returns the registered type
-        assertSame(registeredType, MediaType
-                .valueOf("application/x-restlet-test"));
-        assertSame(registeredType, MediaType
-                .valueOf("application/x-restlet-test"));
+        assertSame(registeredType,
+                MediaType.valueOf("application/x-restlet-test"));
+        assertSame(registeredType,
+                MediaType.valueOf("application/x-restlet-test"));
 
         // Test toString() equivalence
         MediaType mediaType = MediaType

@@ -51,10 +51,10 @@ import javax.ws.rs.core.UriInfo;
 
 import org.restlet.Request;
 import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
 import org.restlet.ext.jaxrs.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
+import org.restlet.util.NamedValue;
 
 /**
  * Utility methods for the wrappers.
@@ -269,19 +269,23 @@ public class WrapperUtil {
      * null, null will returned. If the parameter is not null, but it's value,
      * "" is returned.
      * 
-     * @param parameter
+     * @param namedValue
+     *            The name/value string couple.
      * @return the value from the given Parameter. If the given parameter is
      *         null, null will returned. If the parameter is not null, but it's
      *         value, "" is returned.
      */
-    public static String getValue(Parameter parameter) {
-        if (parameter == null) {
+    public static String getValue(NamedValue namedValue) {
+        if (namedValue == null) {
             return null;
         }
-        final String paramValue = parameter.getValue();
+
+        String paramValue = namedValue.getValue();
+
         if (paramValue == null) {
             return "";
         }
+
         return paramValue;
     }
 

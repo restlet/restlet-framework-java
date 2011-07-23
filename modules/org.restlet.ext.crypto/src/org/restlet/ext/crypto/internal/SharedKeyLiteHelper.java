@@ -39,6 +39,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.header.ChallengeWriter;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.util.Base64;
@@ -66,13 +67,14 @@ public class SharedKeyLiteHelper extends AuthenticatorHelper {
      */
     private static String getCanonicalizedResourceName(Reference resourceRef) {
         Form form = resourceRef.getQueryAsForm();
-
         Parameter param = form.getFirst("comp", true);
+
         if (param != null) {
             StringBuilder sb = new StringBuilder(resourceRef.getPath());
             return sb.append("?").append("comp=").append(param.getValue())
                     .toString();
         }
+
         return resourceRef.getPath();
     }
 
@@ -86,7 +88,7 @@ public class SharedKeyLiteHelper extends AuthenticatorHelper {
     @Override
     public void formatRawResponse(ChallengeWriter cw,
             ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
+            Series<Header> httpHeaders) {
 
         // Setup the Date header
         String date = "";
@@ -94,10 +96,11 @@ public class SharedKeyLiteHelper extends AuthenticatorHelper {
         if (httpHeaders.getFirstValue("x-ms-date", true) == null) {
             // X-ms-Date header didn't override the standard Date header
             date = httpHeaders.getFirstValue(HeaderConstants.HEADER_DATE, true);
+
             if (date == null) {
                 // Add a fresh Date header
-                date = DateUtils.format(new Date(), DateUtils.FORMAT_RFC_1123
-                        .get(0));
+                date = DateUtils.format(new Date(),
+                        DateUtils.FORMAT_RFC_1123.get(0));
                 httpHeaders.add(HeaderConstants.HEADER_DATE, date);
             }
         } else {
@@ -105,17 +108,20 @@ public class SharedKeyLiteHelper extends AuthenticatorHelper {
         }
 
         // Setup the canonicalized path
-        final String canonicalizedResource = getCanonicalizedResourceName(request
+        String canonicalizedResource = getCanonicalizedResourceName(request
                 .getResourceRef());
 
         // Setup the message part
-        final StringBuilder rest = new StringBuilder();
-        rest.append(date).append('\n').append('/').append(
-                challenge.getIdentifier()).append(canonicalizedResource);
+        StringBuilder rest = new StringBuilder();
+        rest.append(date).append('\n').append('/')
+                .append(challenge.getIdentifier())
+                .append(canonicalizedResource);
 
         // Append the SharedKey credentials
-        cw.append(challenge.getIdentifier()).append(':').append(
-                Base64.encode(DigestUtils.toHMac256(rest.toString(), Base64
-                        .decode(challenge.getSecret())), true));
+        cw.append(challenge.getIdentifier())
+                .append(':')
+                .append(Base64.encode(
+                        DigestUtils.toHMac256(rest.toString(),
+                                Base64.decode(challenge.getSecret())), true));
     }
 }

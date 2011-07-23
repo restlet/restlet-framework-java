@@ -42,7 +42,6 @@ import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openid4java.OpenIDException;
-import org.openid4java.consumer.ConsumerException;
 import org.openid4java.consumer.ConsumerManager;
 import org.openid4java.consumer.VerificationResult;
 import org.openid4java.discovery.Discovery;
@@ -244,18 +243,19 @@ public class OpenIdVerifier implements Verifier {
         if (!managers.containsKey(OPUri)) {
             // create a new manager
             l.fine("Creating new consumer manager for - " + OPUri);
-            //try {
-                ConsumerManager cm = new ConsumerManager();
-                cm.setConnectTimeout(30000);
-                cm.setSocketTimeout(30000);
-                cm.setFailedAssocExpire(0); // sec 0 = disabled
-                // cm.setMaxAssocAttempts(4); //default
-                managers.put(OPUri, cm);
-                return cm;
-            /*} catch (ConsumerException e) {
-                l.warning("Failed to create ConsumerManager for - " + OPUri);
-            }*/
-            //return null;
+            // try {
+            ConsumerManager cm = new ConsumerManager();
+            cm.setConnectTimeout(30000);
+            cm.setSocketTimeout(30000);
+            cm.setFailedAssocExpire(0); // sec 0 = disabled
+            // cm.setMaxAssocAttempts(4); //default
+            managers.put(OPUri, cm);
+            return cm;
+            /*
+             * } catch (ConsumerException e) {
+             * l.warning("Failed to create ConsumerManager for - " + OPUri); }
+             */
+            // return null;
         } else {
             return managers.get(OPUri);
         }
@@ -377,7 +377,7 @@ public class OpenIdVerifier implements Verifier {
 
         response.getCookieSettings().add(
                 new CookieSetting(OpenIdConsumer.DESCRIPTOR_COOKIE, sessionId));
-        
+
         // obtain a AuthRequest message to be sent to the OpenID provider
         AuthRequest authReq = manager.authenticate(discovered, redir); // TODO
                                                                        // maybe
@@ -545,8 +545,8 @@ public class OpenIdVerifier implements Verifier {
             }
         }
 
-        Context.getCurrentLogger()
-                .warning("No Target or Return - reporting error");
+        Context.getCurrentLogger().warning(
+                "No Target or Return - reporting error");
         return Verifier.RESULT_INVALID;
     }
 
@@ -577,13 +577,13 @@ public class OpenIdVerifier implements Verifier {
             if (resp.getCookieSettings().size() > 0) {
                 for (CookieSetting setting : resp.getCookieSettings()) {
                     l.fine("CookieSetting: " + setting.getName()
-                            + setting.getFirst());
+                            + setting.getValue());
                 }
             }
 
             if (request.getCookies().size() > 0) {
                 for (Cookie setting : request.getCookies()) {
-                    l.fine("Cookie: " + setting.getName() + setting.getFirst());
+                    l.fine("Cookie: " + setting.getName() + setting.getValue());
                 }
             }
 
