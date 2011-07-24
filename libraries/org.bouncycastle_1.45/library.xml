@@ -1,10 +1,10 @@
-<library id="bouncycastle">
-	<package name="org.bouncycastle" />
+<library id="bouncycastle" symbolicName="org.bouncycastle">
+	<name>Bouncy Castle cryptography API</name>
+	<description>Bouncy Castle cryptography API</description>
 	<version>1.45</version>
-	<homeUri>
-		http://www.bouncycastle.org/
-	</homeUri>
-	<downloadUri>
-		http://www.bouncycastle.org/latest_releases.html 
-	</downloadUri>
+	<homeUri>http://www.bouncycastle.org/</homeUri>
+	<downloadUri>http://www.bouncycastle.org/latest_releases.html</downloadUri>
+	<provider>The Legion of the Bouncy Castle</provider>
+
+	<package name="org.bouncycastle" />
 </library>

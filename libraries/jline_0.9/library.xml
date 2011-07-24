@@ -1,11 +1,11 @@
-<library id="jline">
-	<package name="jline" />
+<library id="jline" symbolicName="jline">
+	<name>JLine</name>
+	<description>JLine</description>
 	<version>0.9</version>
 	<release>94</release>
-	<homeUri>
-		http://jline.sourceforge.net/
-	</homeUri>
-	<downloadUri>
-		http://jline.sourceforge.net/downloads.html
-	</downloadUri>
+	<homeUri>http://jline.sourceforge.net/</homeUri>
+	<downloadUri>http://jline.sourceforge.net/downloads.html</downloadUri>
+	<provider>Marc Prud'hommeaux</provider>
+	
+	<package name="jline" />
 </library>

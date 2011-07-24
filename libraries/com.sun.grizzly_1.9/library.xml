@@ -1,4 +1,12 @@
-<library id="grizzly" dir="com.sun.grizzly">
+<library id="grizzly" symbolicName="com.sun.grizzly">
+	<name>Grizzly NIO Framework</name>
+	<description>Grizzly NIO Framework.</description>
+	<version>1.9</version>
+	<release>18-i</release>
+	<homeUri>https://grizzly.dev.java.net/</homeUri>
+	<downloadUri>http://download.java.net/maven/2/com/sun/grizzly/grizzly-framework/</downloadUri>
+	<provider>Sun Microsystems Inc.</provider>
+	
 	<package id="grizzly" name="com.sun.grizzly">
 		<maven>
 			<groupId>com.sun.grizzly</groupId>
@@ -11,18 +19,9 @@
 			<artifactId>grizzly-utils</artifactId>
 		</maven>
 	</package>
-
-	<version>1.9</version>
-	<release>18-i</release>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
-	<homeUri>
-		https://grizzly.dev.java.net/
-	</homeUri>
-	<downloadUri>
-		http://download.java.net/maven/2/com/sun/grizzly/grizzly-framework/
-	</downloadUri>
 	<javadocs>
 		<link href="https://grizzly.dev.java.net/nonav/apidocs/" />
 	</javadocs>

@@ -1,4 +1,11 @@
-<library id="quercus" dir="com.caucho.quercus">
+<library id="quercus" symbolicName="com.caucho.quercus">
+	<name>Quercus</name>
+	<version>3.2</version>
+	<release>1</release>
+	<homeUri>http://quercus.caucho.com/</homeUri>
+	<downloadUri>http://www.caucho.com/download/</downloadUri>
+	<provider>Caucho Technology, Inc.</provider>
+
 	<package id="quercus" name="com.caucho.quercus">
 		<maven></maven>
 	</package>
@@ -6,8 +13,4 @@
 		<maven></maven>
 	</package>
 
-	<version>3.2</version>
-	<release>1</release>
-	<homeUri>http://quercus.caucho.com/</homeUri>
-	<downloadUri>http://www.caucho.com/download/</downloadUri>
 </library>

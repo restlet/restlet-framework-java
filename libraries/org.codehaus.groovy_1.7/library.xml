@@ -1,15 +1,15 @@
-<library id="groovy">
+<library id="groovy" symbolicName="org.codehaus.groovy">
+	<name>Groovy</name>
+	<description>Groovy</description>
+	<version>1.7</version>
+	<release>1</release>
+	<homeUri>http://groovy.codehaus.org/</homeUri>
+	<downloadUri>http://groovy.codehaus.org/Download</downloadUri>
+	<provider>SpringSource and the Groovy Community</provider>
+	
 	<package name="org.codehaus.groovy">
 		<maven>
 			<artifactId>groovy-all</artifactId>
 		</maven>
 	</package>
-	<version>1.7</version>
-	<release>1</release>
-	<homeUri>
-		http://groovy.codehaus.org/
-	</homeUri>
-	<downloadUri>
-		http://groovy.codehaus.org/Download
-	</downloadUri>
 </library>

@@ -1,4 +1,11 @@
-<library id="cli">
+<library id="cli" symbolicName="org.apache.commons.cli">
+	<name>Apache Commons CLI</name>
+	<description>Apache Commons CLI</description>
+	<version>1.2</version>
+	<homeUri>http://commons.apache.org/cli/</homeUri>
+	<downloadUri>http://commons.apache.org/downloads/download_cli.cgi</downloadUri>
+	<provider>Apache Software Foundation</provider>
+	
 	<package name="org.apache.commons.cli">
 		<maven>
 			<maven>
@@ -7,14 +14,7 @@
 			</maven>
 		</maven>
 	</package>
-	<version>1.2</version>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
-	<homeUri>
-		http://commons.apache.org/cli/
-	</homeUri>
-	<downloadUri>
-		http://commons.apache.org/downloads/download_cli.cgi
-	</downloadUri>
 </library>

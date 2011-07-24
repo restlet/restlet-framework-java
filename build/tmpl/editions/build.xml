@@ -448,11 +448,11 @@
 		<attribute name="name" />
 		<sequential>
 			<!-- Create a destination directory -->
-			<mkdir dir="${dist-classic}/lib/${lib-@{name}-id}" />
+			<mkdir dir="${dist-classic}/lib/${lib-@{name}-root}" />
 
 			<!-- Copy all library content into the destination folder -->
-			<copy todir="${dist-classic}/lib/${lib-@{name}-id}">
-				<fileset dir="${libs}/${lib-@{name}-id}" excludes="bin, .classpath, .project, build.properties" />
+			<copy todir="${dist-classic}/lib/${lib-@{name}-root}">
+				<fileset dir="${libs}/${lib-@{name}-root}" excludes="bin, .classpath, .project, build.properties" />
 			</copy>
 		</sequential>
 	</macrodef>

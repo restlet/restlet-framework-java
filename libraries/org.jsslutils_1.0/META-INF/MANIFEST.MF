@@ -4,7 +4,7 @@ Bundle-Name: Java SSL utilities
 Bundle-SymbolicName: org.jsslutils
 Bundle-Version: 1.0
 Bundle-ClassPath: org.jsslutils.jar
-Bundle-Vendor: http://www.jsslutils.org/
+Bundle-Vendor: Bruno Harbulot, The University of Manchester.
 Export-Package: org.jsslutils.keystores,
  org.jsslutils.sslcontext,
  org.jsslutils.sslcontext.keymanagers,

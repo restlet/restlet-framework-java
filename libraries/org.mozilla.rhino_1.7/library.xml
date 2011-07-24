@@ -1,4 +1,12 @@
-<library id="rhino">
+<library id="rhino" symbolicName="org.mozilla.rhino">
+	<name>Mozilla Rhino</name>
+	<description>Mozilla Rhino</description>
+	<version>1.7</version>
+	<release>0.rc2</release>
+	<homeUri>http://www.mozilla.org/rhino/</homeUri>
+	<downloadUri>http://www.mozilla.org/rhino/download.html</downloadUri>
+	<provider>Mozilla Foundation</provider>
+	
 	<package name="org.mozilla.rhino">
 		<maven>
 			<groupId>rhino</groupId>
@@ -9,15 +17,7 @@
 	<package name="com.sun.phobos.script">
 		<maven />
 	</package>
-	<version>1.7</version>
-	<release>0.rc2</release>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
-	<homeUri>
-		http://www.mozilla.org/rhino/
-	</homeUri>
-	<downloadUri>
-		http://www.mozilla.org/rhino/download.html
-	</downloadUri>
 </library>

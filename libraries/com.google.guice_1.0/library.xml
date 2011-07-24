@@ -1,14 +1,17 @@
-<library id="guice" dir="com.google.guice">
+<library id="guice" symbolicName="com.google.guice">
+	<name>Google Guice</name>
+	<description>Google Guice.</description>
+	<version>1.0</version>
+	<homeUri>http://code.google.com/p/google-guice/</homeUri>
+	<downloadUri>http://code.google.com/p/google-guice/downloads/list</downloadUri>
+	<provider>Google Inc.</provider>
+
 	<package name="com.google.guice">
 		<maven>
 			<artifactId>guice</artifactId>
 		</maven>
 	</package>
-	<version>1.0</version>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
-	<homeUri>http://code.google.com/p/google-guice/
-	</homeUri>
-	<downloadUri>http://code.google.com/p/google-guice/downloads/list</downloadUri>
 </library>

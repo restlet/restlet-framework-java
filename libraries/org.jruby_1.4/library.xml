@@ -1,16 +1,16 @@
-<library id="jruby">
+<library id="jruby" symbolicName="org.jruby">
+	<name>JRuby</name>
+	<description>JRuby</description>
+	<version>1.4</version>
+	<release>0</release>
+	<homeUri>http://jruby.codehaus.org/</homeUri>
+	<downloadUri>http://dist.codehaus.org/jruby/</downloadUri>
+	<provider>The Codehaus foundation</provider>
+	
 	<package name="org.jruby">
 		<maven />
 	</package>
 	<package name="com.sun.script.jruby">
 		<maven />
 	</package>
-	<version>1.4</version>
-	<release>0</release>
-	<homeUri>
-		http://jruby.codehaus.org/
-	</homeUri>
-	<downloadUri>
-		http://dist.codehaus.org/jruby/
-	</downloadUri>
 </library>

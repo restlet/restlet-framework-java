@@ -1,16 +1,16 @@
-<library id="jpython">
+<library id="jpython" symbolicName="org.jpython">
+	<name>Jython</name>
+	<description>Jython</description>
+	<version>2.2</version>
+	<release>1</release>
+	<homeUri>http://www.jython.org/</homeUri>
+	<downloadUri>http://www.jython.org/Project/download.html</downloadUri>
+	<provider>Python Software Foundation</provider>
+	
 	<package name="org.jpython">
 		<maven />
 	</package>
 	<package name="com.sun.script.jython">
 		<maven />
 	</package>
-	<version>2.2</version>
-	<release>1</release>
-	<homeUri>
-		http://www.jython.org/
-	</homeUri>
-	<downloadUri>
-		http://www.jython.org/Project/download.html
-	</downloadUri>
 </library>
