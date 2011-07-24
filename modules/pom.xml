@@ -58,7 +58,7 @@
 		<lib-mime4j-version>0.6</lib-mime4j-version>
 		<lib-nekohtml-version>1.9.14</lib-nekohtml-version>
 		<lib-oauth-version>20090617</lib-oauth-version>
-		<lib-openid4java-version>0.9.5</lib-openid4java-version>
+		<lib-openid4java-version>0.9.6</lib-openid4java-version>
 		<lib-osgi-version>4.0.0</lib-osgi-version>
 		<lib-pool-version>1.5</lib-pool-version>
 		<lib-protobuf-version>2.2.0</lib-protobuf-version>

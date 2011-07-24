@@ -40,6 +40,7 @@ import org.restlet.engine.io.BioUtils;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -49,17 +50,34 @@ import org.restlet.test.RestletTestCase;
  */
 public class ZipClientTestCase extends RestletTestCase {
 
+    private File testDir;
+
+    private File zipFile;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        testDir = new File(System.getProperty("java.io.tmpdir"),
+                "zipClientTestCase");
+        BioUtils.delete(testDir, true);
+        testDir.mkdirs();
+        zipFile = new File(testDir, "test.zip");
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        // BioUtils.delete(testDir, true);
+    }
+
     public void testFileClient() throws IOException, InterruptedException {
-        File zipFile = File.createTempFile("Restlet", ".zip");
-        // We just wanted a valid writable path
-        BioUtils.delete(zipFile);
         String text = "Test content\r\nLine 2\r\nLine2";
         String text2 = "Test content\nLine 2";
         LocalReference fr = LocalReference.createFileReference(zipFile);
         Reference zr = new Reference("zip:" + fr.toString());
         String fzr = zr + "!/test.txt";
         String fzd = zr + "!/dir/";
-        String fzr2 = fzd + "test2.txt";
+        String fzr2 = zr + "!/test2.txt";
+        String fzr3 = fzd + "test3.txt";
 
         // Write the text to file
         ClientResource r = new ClientResource(fzr);
@@ -91,20 +109,29 @@ public class ZipClientTestCase extends RestletTestCase {
         rd.get();
         assertTrue(rd.getStatus().equals(Status.SUCCESS_OK));
 
+        ClientResource r3 = new ClientResource(fzr3);
+        r3.put(new StringRepresentation(text));
+        assertTrue(r3.getStatus().equals(Status.SUCCESS_OK));
+
         // Checking second one was output
         r2.get();
-        assertTrue("Could not get " + fzr2, r2.getStatus().equals(
-                Status.SUCCESS_OK));
+        assertTrue("Could not get " + fzr2,
+                r2.getStatus().equals(Status.SUCCESS_OK));
         assertEquals(r2.getResponseEntity().getText(), text2);
 
-        ClientResource rTest2 = new ClientResource(zr + "!test2");
-        rTest2.get();
-        assertFalse(rTest2.getStatus().equals(Status.SUCCESS_OK));
+        try {
+            ClientResource rTest2 = new ClientResource(zr + "!test2");
+            rTest2.get();
+            fail();
+        } catch (ResourceException e) {
+        }
 
         // Try to replace file by directory
-        ClientResource r2d = new ClientResource(fzr2 + "/");
-        r2d.put(new EmptyRepresentation());
-        assertFalse(r2d.getStatus().equals(Status.SUCCESS_OK));
+        try {
+            ClientResource r2d = new ClientResource(fzr2 + "/");
+            r2d.put(new EmptyRepresentation());
+            fail();
+        } catch (ResourceException e) {
+        }
     }
-
 }

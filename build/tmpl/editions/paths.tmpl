@@ -13,7 +13,7 @@
 	</#list>
 </#if>
 	<#list module.neededLibraries as dependency>
-		<#noparse><fileset dir="${libs}/${lib-</#noparse>${dependency.library.id}-id}" includes="*.jar" />
+		<#noparse><fileset dir="${libs}/${lib-</#noparse>${dependency.library.id}-root}" includes="*.jar" />
 	</#list>
         <#if module.id = "core-test">
 		<#noparse><pathelement path="${mod}/${mod-</#noparse>${module.id}-id}/src" />

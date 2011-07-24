@@ -402,9 +402,6 @@ public final class BioUtils {
             }
 
             final PipeStream pipe = new PipeStream();
-            org.restlet.Application application = org.restlet.Application
-                    .getCurrent();
-
             // Creates a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
             Runnable task = new Runnable() {
@@ -423,6 +420,8 @@ public final class BioUtils {
                 }
             };
 
+            org.restlet.Application application = org.restlet.Application
+                    .getCurrent();
             if (application != null && application.getTaskService() != null) {
                 application.getTaskService().execute(task);
             } else {

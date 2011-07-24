@@ -1,4 +1,12 @@
-<library id="spring" dir="org.springframework">
+<library id="spring" symbolicName="org.springframework">
+	<name>Spring Framework</name>
+	<description>Spring Framework</description>
+	<version>3.0</version>
+	<release>1</release>
+	<homeUri>http://www.springframework.org/</homeUri>
+	<downloadUri>http://www.springframework.org/download</downloadUri>
+	<provider>SpringSource community</provider>
+	
    <package id="spring-asm" name="org.springframework.asm">
       <maven>
          <groupId>org.springframework</groupId>
@@ -48,17 +56,9 @@
 			<version>3.0.1.RELEASE</version>
 		</maven>
 	</package>
-	<version>3.0</version>
-	<release>1</release>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
-	<homeUri>
-		http://www.springframework.org/
-	</homeUri>
-	<downloadUri>
-		http://www.springframework.org/download
-	</downloadUri>
 	<javadocs>
 		<link
 			href="http://static.springframework.org/spring/docs/${lib-spring-core-version}.x/javadoc-api/" />

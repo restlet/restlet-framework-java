@@ -19,7 +19,7 @@
 			<version>${lib-sdc-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.google.inject</groupId>
+			<groupId>com.google.guice</groupId>
 			<artifactId>guice</artifactId>
 			<version>1.0</version>
 		</dependency>

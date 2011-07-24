@@ -1,10 +1,10 @@
-<library id="rowset" dir="com.sun.rowset">
-	<package name="com.sun.rowset" />
+<library id="rowset" symbolicName="com.sun.rowset">
+	<name>JDBC Rowset Implementation</name>
+	<description>JDBC Rowset Implementation.</description>
 	<version>1.0</version>
-	<homeUri>
-		http://www.oracle.com/technetwork/java/javase/tech/index-jsp-136101.html
-	</homeUri>
-	<downloadUri>
-		http://java.sun.com/products/jdbc/download.html
-	</downloadUri>
+	<homeUri>http://www.oracle.com/technetwork/java/javase/tech/index-jsp-136101.html</homeUri>
+	<downloadUri>http://java.sun.com/products/jdbc/download.html</downloadUri>
+	<provider>Sun Microsystems Inc.</provider>
+
+	<package name="com.sun.rowset" />
 </library>

@@ -268,7 +268,7 @@ public class ZipClientHelper extends LocalClientHelper {
                 if (wrongReplace) {
                     response
                             .setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-                                    "Directory cannot be replace by a file or file by a directory.");
+                                    "Directory cannot be replaced by a file or file by a directory.");
                 } else {
                     File writeTo = null;
                     ZipFile zipFile = null;
