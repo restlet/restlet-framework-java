@@ -37,10 +37,11 @@ Changes log
         control the content negotiation behavior at the application level.
         It offers two mode: strict and flexible (default) by other algorithms
         can be plugged by overriding this class and reusing the Conneg
-        subclasses in the engine pacakge. Suggested by David Bordoley
+        subclasses in the engine package. Suggested by David Bordoley.        
       - Improved Restlet annotation value syntax to support alternate 
         variants using '|' and combination of several metadata for a 
-        single variant using '+' separator.
+        single variant using '+' separator. Also, all metadata are now
+        supported, not just media types.
     - Bug fixed
       - Fixed potential NPE in the Authenticator when logging authentication 
         failure. Reported by Martin Svensson.
