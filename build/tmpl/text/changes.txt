@@ -9,8 +9,6 @@ Changes log
         Response attributes, the type should now be Series<Header> 
         instead of Series<Parameter>.
     - API changes
-      - Added org.restlet.data.Modifier class, extending Metadata to specify 
-        expected or supported media subtype parameters.
       - Renamed UniformResource into Resource with proper deprecation.
       - Added NamedValue interface to support common behavior in Series
         instead of having to rely on the Parameter class as a base class.
@@ -25,14 +23,22 @@ Changes log
         addQueryParameters(Iterable<Parameter>) methods.
       - ClientResource now uses GET as its default HTTP method instead 
         of null.
-    - Enhancements
+      - Added "timeIssues" property to ChallengeResponse, in order to 
+        support cookie based authentication.
+      - Deprecated ClientInfo#getPreferredVariant() methods in favor of
+        the ConnegService.
+      - Deprecated ClientResource#createRequest(Request) in favor of a
+        new createRequest() method.
+      - Added Request#isSynchronous() and isAsynchronous() methods as
+        convenient shortcuts.
+      - Added ClientResource#handleInbound(...) and handleOutbound(...)
+        method to factorize even more logic.
+    - New features
       - Added a CookieAuthenticator class in the org.restlet.ext.crypto
         extension to provide customizable and secure authentication via
         cookies, in a way that is as compatible as possible with HTTP
         challenge based authentication.
         Based on an initial contribution by Remi Dewitte.
-      - Added "timeIssues" property to ChallengeResponse, in order to 
-        support cookie based authentication.
       - Added org.restlet.service.ConnegService to provide a way to 
         control the content negotiation behavior at the application level.
         It offers two mode: strict and flexible (default) by other algorithms
@@ -42,6 +48,10 @@ Changes log
         variants using '|' and combination of several metadata for a 
         single variant using '+' separator. Also, all metadata are now
         supported, not just media types.
+      - Added support for URI query constraints in the value of Restlet
+        method annotations such as @Get("form:json?light") or 
+        @Get("?level=2"). This allows returning and serializing 
+        different representation beans based on those parameters.
     - Bug fixed
       - Fixed potential NPE in the Authenticator when logging authentication 
         failure. Reported by Martin Svensson.

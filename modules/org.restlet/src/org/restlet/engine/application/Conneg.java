@@ -32,7 +32,7 @@ package org.restlet.engine.application;
 
 import java.util.List;
 
-import org.restlet.data.ClientInfo;
+import org.restlet.Request;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
 
@@ -43,28 +43,28 @@ import org.restlet.service.MetadataService;
  */
 public abstract class Conneg {
 
-    /** The client preferences. */
-    private final ClientInfo clientInfo;
+    /** The request including client preferences. */
+    private final Request request;
 
     /**
      * Constructor.
      * 
-     * @param clientInfo
-     *            The client info containing preferences.
+     * @param request
+     *            The request including client preferences.
      * @param metadataService
      *            The metadata service used to get default metadata values.
      */
-    public Conneg(ClientInfo clientInfo, MetadataService metadataService) {
-        this.clientInfo = clientInfo;
+    public Conneg(Request request, MetadataService metadataService) {
+        this.request = request;
     }
 
     /**
-     * Returns the client preferences.
+     * Returns the request including client preferences.
      * 
-     * @return The client preferences.
+     * @return The request including client preferences.
      */
-    public ClientInfo getClientInfo() {
-        return clientInfo;
+    public Request getRequest() {
+        return request;
     }
 
     /**

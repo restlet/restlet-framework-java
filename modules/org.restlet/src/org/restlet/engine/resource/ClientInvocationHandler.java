@@ -178,8 +178,7 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 }
 
                 // Clone the prototype request
-                Request request = getClientResource().createRequest(
-                        getClientResource().getRequest());
+                Request request = getClientResource().createRequest();
 
                 // The Java method was annotated
                 request.setMethod(annotationInfo.getRestletMethod());
@@ -214,7 +213,7 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 }
 
                 // Effectively handle the call
-                Response response = getClientResource().handle(request);
+                Response response = getClientResource().handleOutbound(request);
 
                 // Handle the response
                 if (isSynchronous) {

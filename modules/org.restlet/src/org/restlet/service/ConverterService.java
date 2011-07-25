@@ -229,7 +229,7 @@ public class ConverterService extends Service {
                         if (resource != null) {
                             target = resource.getConnegService()
                                     .getPreferredVariant(variants,
-                                            resource.getClientInfo(),
+                                            resource.getRequest(),
                                             resource.getMetadataService());
                         } else {
                             target = variants.get(0);

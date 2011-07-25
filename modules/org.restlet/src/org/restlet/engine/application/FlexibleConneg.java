@@ -33,6 +33,7 @@ package org.restlet.engine.application;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.Request;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
@@ -66,13 +67,14 @@ public class FlexibleConneg extends StrictConneg {
     /**
      * Constructor.
      * 
-     * @param clientInfo
-     *            The client info containing preferences.
+     * @param request
+     *            The request including client preferences.
      * @param metadataService
      *            The metadata service used to get default metadata values.
      */
-    public FlexibleConneg(ClientInfo clientInfo, MetadataService metadataService) {
-        super(clientInfo, metadataService);
+    public FlexibleConneg(Request request, MetadataService metadataService) {
+        super(request, metadataService);
+        ClientInfo clientInfo = request.getClientInfo();
 
         if (clientInfo != null) {
             // Get the enriched user preferences

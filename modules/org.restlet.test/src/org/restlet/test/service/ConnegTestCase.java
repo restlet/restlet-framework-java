@@ -33,7 +33,7 @@ package org.restlet.test.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.data.ClientInfo;
+import org.restlet.Request;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.representation.Variant;
@@ -53,30 +53,30 @@ public class ConnegTestCase extends RestletTestCase {
         Variant variant = new Variant(MediaType.APPLICATION_XML);
         variants.add(variant);
 
-        ClientInfo clientInfo = new ClientInfo();
-        clientInfo.getAcceptedMediaTypes().add(
-                new Preference<MediaType>(MediaType.APPLICATION_JSON));
+        Request request = new Request();
+        request.getClientInfo().getAcceptedMediaTypes()
+                .add(new Preference<MediaType>(MediaType.APPLICATION_JSON));
 
         MetadataService metadataService = new MetadataService();
         ConnegService connegService = new ConnegService();
 
         // Flexible algorithm
         Variant preferedVariant = connegService.getPreferredVariant(variants,
-                clientInfo, metadataService);
+                request, metadataService);
         assertNotNull(preferedVariant);
         assertEquals(MediaType.APPLICATION_XML, preferedVariant.getMediaType());
 
         // Strict algorithm
         connegService.setStrict(true);
-        preferedVariant = connegService.getPreferredVariant(variants,
-                clientInfo, metadataService);
+        preferedVariant = connegService.getPreferredVariant(variants, request,
+                metadataService);
         assertNull(preferedVariant);
 
         // Add a variant to match the strict preferences
         variant = new Variant(MediaType.APPLICATION_JSON);
         variants.add(variant);
-        preferedVariant = connegService.getPreferredVariant(variants,
-                clientInfo, metadataService);
+        preferedVariant = connegService.getPreferredVariant(variants, request,
+                metadataService);
         assertNotNull(preferedVariant);
         assertEquals(MediaType.APPLICATION_JSON, preferedVariant.getMediaType());
 

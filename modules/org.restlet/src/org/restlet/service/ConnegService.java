@@ -32,7 +32,7 @@ package org.restlet.service;
 
 import java.util.List;
 
-import org.restlet.data.ClientInfo;
+import org.restlet.Request;
 import org.restlet.engine.application.Conneg;
 import org.restlet.engine.application.FlexibleConneg;
 import org.restlet.engine.application.StrictConneg;
@@ -79,8 +79,8 @@ public class ConnegService extends Service {
      * 
      * @param variants
      *            The list of variants to compare.
-     * @param clientInfo
-     *            The client info containing preferences.
+     * @param request
+     *            The request including client preferences.
      * @param metadataService
      *            The metadata service used to get default metadata values.
      * @return The preferred variant.
@@ -89,10 +89,9 @@ public class ConnegService extends Service {
      *      content negotiation algorithm</a>
      */
     public Variant getPreferredVariant(List<? extends Variant> variants,
-            ClientInfo clientInfo, MetadataService metadataService) {
-        Conneg conneg = isStrict() ? new StrictConneg(clientInfo,
-                metadataService) : new FlexibleConneg(clientInfo,
-                metadataService);
+            Request request, MetadataService metadataService) {
+        Conneg conneg = isStrict() ? new StrictConneg(request, metadataService)
+                : new FlexibleConneg(request, metadataService);
         return conneg.getPreferredVariant(variants);
     }
 

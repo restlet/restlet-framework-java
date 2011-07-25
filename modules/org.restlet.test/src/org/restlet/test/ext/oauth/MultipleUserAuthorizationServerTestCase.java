@@ -53,7 +53,6 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.test.ext.oauth.app.SingletonStore;
 
-
 public class MultipleUserAuthorizationServerTestCase extends OAuthHttpTestBase {
 
     public MultipleUserAuthorizationServerTestCase() {
@@ -64,52 +63,55 @@ public class MultipleUserAuthorizationServerTestCase extends OAuthHttpTestBase {
         super(true, https, ClientConnector.HTTP_CLIENT, ServerConnector.JETTY);
         Engine.setLogLevel(Level.WARNING);
     }
-    
-    public void testMultipleServerRequests() throws Exception{
+
+    public void testMultipleServerRequests() throws Exception {
         int numThreads = 10;
-        int numCalls = 50;      
+        int numCalls = 50;
         int totCalls = (numThreads * numCalls);
-        List <OAuthRequest> calls = new ArrayList <OAuthRequest> (totCalls);
+        List<OAuthRequest> calls = new ArrayList<OAuthRequest>(totCalls);
         ExecutorService es = Executors.newFixedThreadPool(numThreads);
         Client c = this.createClient();
         Random r = new Random();
-        for(int i = 0; i < totCalls; i++){
-            calls.add(new OAuthRequest(c, r.nextInt(5)+1));
+        for (int i = 0; i < totCalls; i++) {
+            calls.add(new OAuthRequest(c, r.nextInt(5) + 1));
         }
-        long l = System.currentTimeMillis(); 
+        long l = System.currentTimeMillis();
         es.invokeAll(calls);
         es.shutdown();
         es.awaitTermination(30, TimeUnit.SECONDS);
         long tot = System.currentTimeMillis() - l;
-        if(!es.isTerminated()){
-            Logger.getAnonymousLogger().warning("All calls threads did not execute within 30 seconds");
+        if (!es.isTerminated()) {
+            Logger.getAnonymousLogger().warning(
+                    "All calls threads did not execute within 30 seconds");
             es.shutdownNow();
         }
         Assert.assertEquals(totCalls, SingletonStore.I().getCallbacks());
         Assert.assertEquals(0, SingletonStore.I().getErrors());
         int totReq = totCalls * 2;
         double avg = (double) tot / (double) totReq;
-        Logger.getAnonymousLogger().warning("Executed "+totReq+" in "+tot+" millis ("+avg+" average/request)");
+        Logger.getAnonymousLogger().warning(
+                "Executed " + totReq + " in " + tot + " millis (" + avg
+                        + " average/request)");
     }
 
-    private class OAuthRequest implements Callable <Boolean> {
+    private class OAuthRequest implements Callable<Boolean> {
         Client callClient;
+
         int callUser;
-        
-        public OAuthRequest(Client client, int user){
+
+        public OAuthRequest(Client client, int user) {
             callClient = client;
             callUser = user;
         }
 
         public Boolean call() throws Exception {
-            //System.out.println(""+Thread.currentThread().getName());
-            OAuthParameters params = new OAuthParameters(
-                    "client1234","secret1234",
-                    getProt()+ "://localhost:"+ oauthServerPort+ "/oauth/", 
-                    Scopes.toRoles("foo bar"));
-            OAuthUser user = Flow.PASSWORD.execute(params, null, null,
-                    "user" + callUser, "pass" + callUser, null, callClient);
-            if(user == null){
+            // System.out.println(""+Thread.currentThread().getName());
+            OAuthParameters params = new OAuthParameters("client1234",
+                    "secret1234", getProt() + "://localhost:" + oauthServerPort
+                            + "/oauth/", Scopes.toRoles("foo bar"));
+            OAuthUser user = Flow.PASSWORD.execute(params, null, null, "user"
+                    + callUser, "pass" + callUser, null, callClient);
+            if (user == null) {
                 SingletonStore.I().addError();
                 SingletonStore.I().addRequest();
                 return false;
@@ -125,23 +127,23 @@ public class MultipleUserAuthorizationServerTestCase extends OAuthHttpTestBase {
                 SingletonStore.I().addRequest();
                 cr.release();
                 return false;
-          }
-          try {
-              String text = r.getText();
-              if (!text.endsWith("user" + callUser)) {
-                  SingletonStore.I().addRequest();
-                  SingletonStore.I().addError();
-                  return false;
-              }
-          } catch (Exception e) {
-              SingletonStore.I().addError();
-              SingletonStore.I().addRequest();
-              return false;
-          }
-          SingletonStore.I().addRequest();
-          r.release();
-          cr.release();
-          return true;
+            }
+            try {
+                String text = r.getText();
+                if (!text.endsWith("user" + callUser)) {
+                    SingletonStore.I().addRequest();
+                    SingletonStore.I().addError();
+                    return false;
+                }
+            } catch (Exception e) {
+                SingletonStore.I().addError();
+                SingletonStore.I().addRequest();
+                return false;
+            }
+            SingletonStore.I().addRequest();
+            r.release();
+            cr.release();
+            return true;
         }
     }
 }

@@ -490,8 +490,8 @@ public class WadlServerResource extends ServerResource {
      * @return The preferred WADL variant.
      */
     protected Variant getPreferredWadlVariant() {
-        return getRequest().getClientInfo().getPreferredVariant(
-                getWadlVariants());
+        return getConnegService().getPreferredVariant(getWadlVariants(),
+                getRequest(), getMetadataService());
     }
 
     /**

@@ -41,7 +41,6 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Server;
-import org.restlet.data.ClientInfo;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -464,13 +463,13 @@ public class WadlApplication extends Application {
      * Returns the preferred WADL variant according to the client preferences
      * specified in the request.
      * 
-     * @param clientInfo
-     *            The client preferences and info.
+     * @param request
+     *            The request including client preferences.
      * @return The preferred WADL variant.
      */
-    protected Variant getPreferredWadlVariant(ClientInfo clientInfo) {
+    protected Variant getPreferredWadlVariant(Request request) {
         return getConnegService().getPreferredVariant(getWadlVariants(),
-                clientInfo, getMetadataService());
+                request, getMetadataService());
     }
 
     /**
@@ -798,8 +797,8 @@ public class WadlApplication extends Application {
      * @return The WADL description.
      */
     protected Representation wadlRepresent(Request request, Response response) {
-        return wadlRepresent(getPreferredWadlVariant(request.getClientInfo()),
-                request, response);
+        return wadlRepresent(getPreferredWadlVariant(request), request,
+                response);
     }
 
     /**

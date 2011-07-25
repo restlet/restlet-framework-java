@@ -211,11 +211,10 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
         if (response != null) {
             getLogger().finer("Handling response...");
             boolean handled = false;
+            Request request = response.getRequest();
 
-            if ((response.getRequest() != null)
-                    && (response.getRequest().getOnResponse() != null)) {
-                response.getRequest().getOnResponse()
-                        .handle(response.getRequest(), response);
+            if ((request != null) && (request.isAsynchronous())) {
+                request.getOnResponse().handle(request, response);
                 handled = true;
             }
 
@@ -504,7 +503,8 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                         "Handling client request: " + request);
             }
 
-            if (isSynchronous(request) && request.isExpectingResponse()) {
+            if ((request != null) && request.isSynchronous()
+                    && request.isExpectingResponse()) {
                 // Prepare the latch to block the caller thread
                 CountDownLatch latch = new CountDownLatch(1);
                 request.getAttributes().put(CONNECTOR_LATCH, latch);
@@ -529,7 +529,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
     @Override
     protected void handleInbound(Response response) {
-        handleInbound(response, isSynchronous(response.getRequest()));
+        handleInbound(response, response.getRequest().isSynchronous());
     }
 
     @Override
@@ -581,18 +581,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     public boolean isSocketOobInline() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "socketOobInline", "false"));
-    }
-
-    /**
-     * Indicates if the given request is handled in a synchronous way, blocking
-     * the calling thread.
-     * 
-     * @param request
-     *            The request to test.
-     * @return True if the given request is handled in a synchronous way.
-     */
-    public boolean isSynchronous(Request request) {
-        return (request == null) || (request.getOnResponse() == null);
     }
 
     @Override

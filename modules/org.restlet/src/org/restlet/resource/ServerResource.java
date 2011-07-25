@@ -809,7 +809,7 @@ public abstract class ServerResource extends UniformResource {
         // If variants were found, select the best matching one
         if ((variants != null) && (!variants.isEmpty())) {
             result = getConnegService().getPreferredVariant(variants,
-                    getClientInfo(), getMetadataService());
+                    getRequest(), getMetadataService());
         }
 
         return result;

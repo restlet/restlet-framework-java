@@ -40,6 +40,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Application;
 import org.restlet.Context;
+import org.restlet.Request;
 import org.restlet.engine.Engine;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Variant;
@@ -726,7 +727,9 @@ public final class ClientInfo {
      * @see <a
      *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
      *      content negotiation algorithm</a>
+     * @deprecated Use {@link ConnegService} instead.
      */
+    @Deprecated
     public Variant getPreferredVariant(List<? extends Variant> variants) {
         ConnegService connegService = null;
         MetadataService metadataService = null;
@@ -740,7 +743,9 @@ public final class ClientInfo {
             metadataService = app.getMetadataService();
         }
 
-        return connegService.getPreferredVariant(variants, this,
+        Request request = new Request();
+        request.setClientInfo(this);
+        return connegService.getPreferredVariant(variants, request,
                 metadataService);
     }
 
@@ -779,7 +784,9 @@ public final class ClientInfo {
             connegService = app.getConnegService();
         }
 
-        return connegService.getPreferredVariant(variants, this,
+        Request request = new Request();
+        request.setClientInfo(this);
+        return connegService.getPreferredVariant(variants, request,
                 metadataService);
     }
 

@@ -432,12 +432,24 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Creates a new request by cloning the one wrapped by this class.
+     * 
+     * @return The new response.
+     * @see #getRequest()
+     */
+    public Request createRequest() {
+        return createRequest(getRequest());
+    }
+
+    /**
      * Creates a new request by cloning the given one.
      * 
      * @param prototype
      *            The prototype request.
      * @return The new response.
+     * @deprecated Use {@link #createRequest()} instead
      */
+    @Deprecated
     public Request createRequest(Request prototype) {
         return new Request(prototype);
     }
@@ -821,7 +833,7 @@ public class ClientResource extends UniformResource {
      */
     @Override
     public Representation handle() {
-        Response response = handle(new Request(getRequest()));
+        Response response = handleOutbound(new Request(getRequest()));
         return (response == null) ? null : response.getEntity();
     }
 
@@ -886,7 +898,6 @@ public class ClientResource extends UniformResource {
      */
     protected <T> T handle(Method method, Object entity, Class<T> resultClass)
             throws ResourceException {
-        T result = null;
         org.restlet.service.ConverterService cs = getConverterService();
         List<? extends Variant> variants = cs.getVariants(resultClass, null);
         ClientInfo clientInfo = getClientInfo();
@@ -896,15 +907,22 @@ public class ClientResource extends UniformResource {
                     resultClass);
         }
 
-        result = toObject(
-                handle(method,
-                        (entity == null) ? null : toRepresentation(
-                                entity,
-                                getConnegService().getPreferredVariant(
-                                        variants, clientInfo,
-                                        getMetadataService())), clientInfo),
-                resultClass);
-        return result;
+        // Prepare the request by cloning the prototype request
+        Request request = createRequest();
+        request.setMethod(method);
+        request.setClientInfo(clientInfo);
+
+        Representation requestEntity = (entity == null) ? null
+                : toRepresentation(
+                        entity,
+                        getConnegService().getPreferredVariant(variants,
+                                request, getMetadataService()));
+        request.setEntity(requestEntity);
+
+        // Actually handle the call
+        Response response = handleOutbound(request);
+        Representation responseEntity = handleInbound(response);
+        return toObject(responseEntity, resultClass);
     }
 
     /**
@@ -918,6 +936,9 @@ public class ClientResource extends UniformResource {
      * @return The optional response entity.
      */
     protected Representation handle(Method method, Representation entity) {
+        Request request = createRequest();
+        request.setMethod(method);
+        request.setEntity(entity);
         return handle(method, entity, getClientInfo());
     }
 
@@ -935,24 +956,15 @@ public class ClientResource extends UniformResource {
      */
     protected Representation handle(Method method, Representation entity,
             ClientInfo clientInfo) {
-        Representation result = null;
-
         // Prepare the request by cloning the prototype request
-        Request request = createRequest(getRequest());
+        Request request = createRequest();
         request.setMethod(method);
         request.setEntity(entity);
         request.setClientInfo(clientInfo);
 
         // Actually handle the call
-        Response response = handle(request);
-
-        if (response.getStatus().isError()) {
-            doError(response.getStatus());
-        } else {
-            result = (response == null) ? null : response.getEntity();
-        }
-
-        return result;
+        Response response = handleOutbound(request);
+        return handleInbound(response);
     }
 
     /**
@@ -982,24 +994,11 @@ public class ClientResource extends UniformResource {
      *            The request to handle.
      * @return The response created.
      * @see #getNext()
+     * @deprecated Use the {@link #handleOutbound(Request)} method instead
      */
+    @Deprecated
     public Response handle(Request request) {
-        Response response = createResponse(request);
-        Uniform next = getNext();
-
-        if (next != null) {
-            // Effectively handle the call
-            handle(request, response, null, 0, next);
-
-            // Update the last received response.
-            setResponse(response);
-        } else {
-            getLogger()
-                    .warning(
-                            "Unable to process the call for a client resource. No next Restlet has been provided.");
-        }
-
-        return response;
+        return handleOutbound(request);
     }
 
     /**
@@ -1088,6 +1087,54 @@ public class ClientResource extends UniformResource {
             getLogger().log(Level.WARNING,
                     "Request ignored as no next Restlet is available");
         }
+    }
+
+    /**
+     * Handles the inbound call. Note that only synchronous calls are processed.
+     * 
+     * @param response
+     * @return
+     */
+    public Representation handleInbound(Response response) {
+        Representation result = null;
+
+        // Verify that the request was synchronous
+        if (response.getRequest().isSynchronous()) {
+            if (response.getStatus().isError()) {
+                doError(response.getStatus());
+            } else {
+                result = (response == null) ? null : response.getEntity();
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Handles the outbound call by invoking the next handler.
+     * 
+     * @param request
+     *            The request to handle.
+     * @return The response created.
+     * @see #getNext()
+     */
+    public Response handleOutbound(Request request) {
+        Response response = createResponse(request);
+        Uniform next = getNext();
+
+        if (next != null) {
+            // Effectively handle the call
+            handle(request, response, null, 0, next);
+
+            // Update the last received response.
+            setResponse(response);
+        } else {
+            getLogger()
+                    .warning(
+                            "Unable to process the call for a client resource. No next Restlet has been provided.");
+        }
+
+        return response;
     }
 
     /**

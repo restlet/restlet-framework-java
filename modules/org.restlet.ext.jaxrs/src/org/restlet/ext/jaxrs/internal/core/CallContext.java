@@ -1204,6 +1204,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      *             if variants is null or empty.
      * @see javax.ws.rs.core.Request#selectVariant(List)
      */
+    @SuppressWarnings("deprecation")
     public Variant selectVariant(List<Variant> variants)
             throws IllegalArgumentException {
         if ((variants == null) || variants.isEmpty()) {

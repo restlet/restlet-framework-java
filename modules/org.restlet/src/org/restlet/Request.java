@@ -578,6 +578,16 @@ public class Request extends Message {
     }
 
     /**
+     * Indicates if the request is asynchronous. The test consist in verifying
+     * that the {@link #getOnResponse()} method returns a callback object.
+     * 
+     * @return True if the request is synchronous.
+     */
+    public boolean isAsynchronous() {
+        return getOnResponse() != null;
+    }
+
+    /**
      * Implemented based on the {@link Protocol#isConfidential()} method for the
      * request's protocol returned by {@link #getProtocol()};
      */
@@ -623,6 +633,16 @@ public class Request extends Message {
      */
     public boolean isLoggable() {
         return loggable;
+    }
+
+    /**
+     * Indicates if the request is synchronous. The test consist in verifying
+     * that the {@link #getOnResponse()} method returns null.
+     * 
+     * @return True if the request is synchronous.
+     */
+    public boolean isSynchronous() {
+        return getOnResponse() == null;
     }
 
     /**

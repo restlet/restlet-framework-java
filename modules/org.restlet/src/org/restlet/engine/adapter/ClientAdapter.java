@@ -80,7 +80,7 @@ public class ClientAdapter extends Adapter {
             Response response) throws Exception {
         if (httpCall != null) {
             // Check if the call is asynchronous
-            if (request.getOnResponse() != null) {
+            if (request.isAsynchronous()) {
                 final Uniform userCallback = request.getOnResponse();
 
                 // Send the request to the client

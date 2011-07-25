@@ -30,15 +30,23 @@
 
 package org.restlet.engine.application;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
 
+import org.restlet.Context;
+import org.restlet.Request;
 import org.restlet.data.CharacterSet;
-import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
+import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
+import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
+import org.restlet.engine.resource.AnnotationInfo;
+import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
 
@@ -53,13 +61,13 @@ public class StrictConneg extends Conneg {
     /**
      * Constructor.
      * 
-     * @param clientInfo
-     *            The client info containing preferences.
+     * @param request
+     *            The request including client preferences.
      * @param metadataService
      *            The metadata service used to get default metadata values.
      */
-    public StrictConneg(ClientInfo clientInfo, MetadataService metadataService) {
-        super(clientInfo, metadataService);
+    public StrictConneg(Request request, MetadataService metadataService) {
+        super(request, metadataService);
     }
 
     /**
@@ -68,7 +76,7 @@ public class StrictConneg extends Conneg {
      * @return The enriched list of character set preferences.
      */
     protected List<Preference<CharacterSet>> getCharacterSetPrefs() {
-        return getClientInfo().getAcceptedCharacterSets();
+        return getRequest().getClientInfo().getAcceptedCharacterSets();
     }
 
     /**
@@ -77,7 +85,7 @@ public class StrictConneg extends Conneg {
      * @return The enriched list of encoding preferences.
      */
     protected List<Preference<Encoding>> getEncodingPrefs() {
-        return getClientInfo().getAcceptedEncodings();
+        return getRequest().getClientInfo().getAcceptedEncodings();
     }
 
     /**
@@ -86,7 +94,7 @@ public class StrictConneg extends Conneg {
      * @return The enriched list of language preferences.
      */
     protected List<Preference<Language>> getLanguagePrefs() {
-        return getClientInfo().getAcceptedLanguages();
+        return getRequest().getClientInfo().getAcceptedLanguages();
     }
 
     /**
@@ -95,7 +103,104 @@ public class StrictConneg extends Conneg {
      * @return The enriched list of media type preferences.
      */
     protected List<Preference<MediaType>> getMediaTypePrefs() {
-        return getClientInfo().getAcceptedMediaTypes();
+        return getRequest().getClientInfo().getAcceptedMediaTypes();
+    }
+
+    /**
+     * Scores the annotation descriptor. By default, it assess the quality of
+     * the query parameters with the URI query constraint defined in the
+     * annotation value if any.
+     * 
+     * @param annotation
+     *            The annotation descriptor to score.
+     * @return The annotation descriptor score.
+     */
+    protected float scoreAnnotation(AnnotationInfo annotation) {
+        float result = -1.0F;
+
+        if (annotation != null) {
+            if (annotation.getQuery() != null) {
+                if (getRequest().getResourceRef().getQuery() == null) {
+                    // Query constraint defined, but no query provided, no fit
+                    result = -1.0F;
+                } else {
+                    // Query constraint defined and a query provided, see if fit
+                    Form constraintParams = new Form(annotation.getQuery());
+                    Form actualParams = getRequest().getResourceRef()
+                            .getQueryAsForm();
+                    Set<Parameter> matchedParams = new HashSet<Parameter>();
+                    Parameter constraintParam;
+                    Parameter actualParam;
+
+                    boolean allConstraintsMatched = true;
+                    boolean constraintMatched = false;
+
+                    // Verify that each query constraint has been matched
+                    for (int i = 0; (i < constraintParams.size())
+                            && allConstraintsMatched; i++) {
+                        constraintParam = constraintParams.get(i);
+                        constraintMatched = false;
+
+                        for (int j = 0; j < actualParams.size(); j++) {
+                            actualParam = actualParams.get(j);
+
+                            if (constraintParam.getName().equals(
+                                    actualParam.getName())) {
+                                // Potential match found based on name
+                                if ((constraintParam.getValue() == null)
+                                        || constraintParam.getValue().equals(
+                                                actualParam.getValue())) {
+                                    // Actual match found!
+                                    constraintMatched = true;
+                                    matchedParams.add(actualParam);
+                                }
+                            }
+                        }
+
+                        allConstraintsMatched = allConstraintsMatched
+                                && constraintMatched;
+                    }
+
+                    // Test if all actual query parameters matched a constraint,
+                    // so
+                    // increase score
+                    boolean allActualMatched = (actualParams.size() == matchedParams
+                            .size());
+
+                    if (allConstraintsMatched) {
+                        if (allActualMatched) {
+                            // All filter parameters matched, no additional
+                            // parameter found
+                            result = 1.0F;
+                        } else {
+                            // All filter parameters matched, but additional
+                            // parameters found
+                            result = 0.75F;
+                        }
+                    } else {
+                        result = -1.0F;
+                    }
+                }
+            } else {
+                if (getRequest().getResourceRef().getQuery() == null) {
+                    // No query filter, but no query provided, average fit
+                    result = 0.5F;
+                } else {
+                    // No query filter, but a query provided, lower fit
+                    result = 0.25F;
+                }
+            }
+
+            if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+                Context.getCurrentLogger()
+                        .fine("Score of annotation \"" + annotation + "\"= "
+                                + result);
+            }
+        } else {
+            result = 0.0F;
+        }
+
+        return result;
     }
 
     /**
@@ -230,16 +335,31 @@ public class StrictConneg extends Conneg {
                     float encodingScore = scoreEncodings(variant.getEncodings());
 
                     if (encodingScore != -1.0F) {
-                        // Return the weighted average score
-                        result = ((languageScore * 4.0F)
-                                + (mediaTypeScore * 3.0F)
-                                + (characterSetScore * 2.0F) + (encodingScore * 1.0F)) / 10.0F;
+                        if (variant instanceof VariantInfo) {
+                            float annotationScore = scoreAnnotation(((VariantInfo) variant)
+                                    .getAnnotationInfo());
+
+                            // Return the weighted average score
+                            result = ((languageScore * 4.0F)
+                                    + (mediaTypeScore * 3.0F)
+                                    + (characterSetScore * 2.0F)
+                                    + (encodingScore * 1.0F) + (annotationScore * 2.0F)) / 12.0F;
+                        } else {
+                            // Return the weighted average score
+                            result = ((languageScore * 4.0F)
+                                    + (mediaTypeScore * 3.0F)
+                                    + (characterSetScore * 2.0F) + (encodingScore * 1.0F)) / 10.0F;
+                        }
                     }
                 }
             }
         }
 
+        if (Context.getCurrentLogger().isLoggable(Level.FINE)) {
+            Context.getCurrentLogger().fine(
+                    "Total score of variant \"" + variant + "\"= " + result);
+        }
+
         return result;
     }
-
 }

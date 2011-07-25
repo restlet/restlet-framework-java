@@ -203,7 +203,7 @@ public class WrapperRequest extends Request {
     public Reference getOriginalRef() {
         return wrappedRequest.getOriginalRef();
     }
-
+    
     /**
      * Returns the protocol by first returning the baseRef.schemeProtocol
      * property if it is set, or the resourceRef.schemeProtocol property
@@ -271,6 +271,11 @@ public class WrapperRequest extends Request {
         return this.wrappedRequest;
     }
 
+    @Override
+    public boolean isAsynchronous() {
+        return wrappedRequest.isAsynchronous();
+    }
+
     /**
      * Indicates if the call came over a confidential channel such as an
      * SSL-secured connection.
@@ -297,6 +302,11 @@ public class WrapperRequest extends Request {
     @Override
     public boolean isExpectingResponse() {
         return wrappedRequest.isExpectingResponse();
+    }
+
+    @Override
+    public boolean isSynchronous() {
+        return wrappedRequest.isSynchronous();
     }
 
     /**
