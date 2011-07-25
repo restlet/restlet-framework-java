@@ -30,15 +30,19 @@
 
 package org.restlet.test.ext.oauth;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import junit.framework.Assert;
 
-import org.hamcrest.Matchers;
 import org.restlet.Client;
-import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.ext.oauth.Flow;
@@ -49,8 +53,6 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.test.ext.oauth.app.SingletonStore;
 
-import com.jayway.awaitility.Awaitility;
-import com.jayway.awaitility.Duration;
 
 public class MultipleUserAuthorizationServerTestCase extends OAuthHttpTestBase {
 
@@ -62,115 +64,84 @@ public class MultipleUserAuthorizationServerTestCase extends OAuthHttpTestBase {
         super(true, https, ClientConnector.HTTP_CLIENT, ServerConnector.JETTY);
         Engine.setLogLevel(Level.WARNING);
     }
-
-    public void testMultipleServerRequests() throws Exception {
-        // Just test something:
-        int numThreads = 5;
-        int numCalls = 50;
-        int totRequests = (numThreads * numCalls) + numThreads;
-        Thread[] clients = new Thread[numThreads];
-        //Context c = new Context();
-
-        Client client = null;
-
-        long l = System.currentTimeMillis();
-        for (int i = 0; i < numThreads; i++) {
-            if (i % 25 == 0)
-                client = this.createClient();
-            clients[i] = new ClientCall(numCalls, client);
-            clients[i].start();
+    
+    public void testMultipleServerRequests() throws Exception{
+        int numThreads = 10;
+        int numCalls = 50;      
+        int totCalls = (numThreads * numCalls);
+        List <OAuthRequest> calls = new ArrayList <OAuthRequest> (totCalls);
+        ExecutorService es = Executors.newFixedThreadPool(numThreads);
+        Client c = this.createClient();
+        Random r = new Random();
+        for(int i = 0; i < totCalls; i++){
+            calls.add(new OAuthRequest(c, r.nextInt(5)+1));
         }
-        Awaitility.setDefaultTimeout(Duration.FOREVER);
-        Awaitility.await().until(numCalls(), Matchers.equalTo(totRequests));
+        long l = System.currentTimeMillis(); 
+        es.invokeAll(calls);
+        es.shutdown();
+        es.awaitTermination(30, TimeUnit.SECONDS);
         long tot = System.currentTimeMillis() - l;
-        Engine.getAnonymousLogger().warning(
-                "executed in " + tot + " milliseconds" + " "
-                        + (tot / (numThreads * numCalls)));
-        int errors = SingletonStore.I().getErrors();
-        SingletonStore.I().clear();
-        Assert.assertEquals(0, errors);
+        if(!es.isTerminated()){
+            Logger.getAnonymousLogger().warning("All calls threads did not execute within 30 seconds");
+            es.shutdownNow();
+        }
+        Assert.assertEquals(totCalls, SingletonStore.I().getCallbacks());
+        Assert.assertEquals(0, SingletonStore.I().getErrors());
+        int totReq = totCalls * 2;
+        double avg = (double) tot / (double) totReq;
+        Logger.getAnonymousLogger().warning("Executed "+totReq+" in "+tot+" millis ("+avg+" average/request)");
     }
 
-    private Callable<Integer> numCalls() {
-        return new Callable<Integer>() {
-            public Integer call() throws Exception {
-                return SingletonStore.I().getCallbacks();
-                // return i;
-            }
-        };
-    }
+    private class OAuthRequest implements Callable <Boolean> {
+        Client callClient;
+        int callUser;
+        
+        public OAuthRequest(Client client, int user){
+            callClient = client;
+            callUser = user;
+        }
 
-    class ClientCall extends Thread {
-
-        int numTimes;
-
-        Random r;
-
-        OAuthParameters params;
-
-        Context c;
-
-        Client myClient;
-
-        public ClientCall(int numTimes, Client client) {
-            this.numTimes = numTimes;
-            //this.c = c;
-            if (client != null)
-                myClient = client;
-            else
-                myClient = createClient();
-            r = new Random(System.nanoTime());
-            params = new OAuthParameters("client1234", "secret1234", getProt()
-                    + "://localhost:" + oauthServerPort + "/oauth/",
+        public Boolean call() throws Exception {
+            //System.out.println(""+Thread.currentThread().getName());
+            OAuthParameters params = new OAuthParameters(
+                    "client1234","secret1234",
+                    getProt()+ "://localhost:"+ oauthServerPort+ "/oauth/", 
                     Scopes.toRoles("foo bar"));
-        }
-
-        @Override
-        public void run() {
-            for (int i = 0; i < numTimes; i++) {
-                // System.out.println(this.getName()+" "+i);
-                int u = r.nextInt(5) + 1;
-                OAuthUser user = Flow.PASSWORD.execute(params, null, null,
-                        "user" + u, "pass" + u, null, myClient);
-
-                /*
-                 * OAuthUser user = OAuthUtils.passwordFlow(params, "user" + u,
-                 * "pass" + u, myClient);
-                 */
-                if (user == null) {
-                    SingletonStore.I().addError();
-                    SingletonStore.I().addRequest();
-                    continue;
-                }
-
-                Reference ref = new Reference(getProt() + "://localhost:"
-                        + serverPort + "/server/scoped/user" + u);
-                ref.addQueryParameter("oauth_token", user.getAccessToken());
-                ClientResource cr = new ClientResource(ref);
-                cr.setNext(myClient);
-                Representation r = cr.get();
-                if (r == null) {
-                    SingletonStore.I().addError();
-                    SingletonStore.I().addRequest();
-                    cr.release();
-                    continue;
-                }
-                try {
-                    String text = r.getText();
-                    // System.out.println("this is response text: "+text);
-                    if (!text.endsWith("user" + u)) {
-                        SingletonStore.I().addError();
-                    }
-                } catch (Exception e) {
-                    SingletonStore.I().addError();
-                }
+            OAuthUser user = Flow.PASSWORD.execute(params, null, null,
+                    "user" + callUser, "pass" + callUser, null, callClient);
+            if(user == null){
+                SingletonStore.I().addError();
                 SingletonStore.I().addRequest();
-                r.release();
-                cr.release();
+                return false;
             }
-            SingletonStore.I().addRequest();
+            Reference ref = new Reference(getProt() + "://localhost:"
+                    + serverPort + "/server/scoped/user" + callUser);
+            ref.addQueryParameter("oauth_token", user.getAccessToken());
+            ClientResource cr = new ClientResource(ref);
+            cr.setNext(callClient);
+            Representation r = cr.get();
+            if (r == null) {
+                SingletonStore.I().addError();
+                SingletonStore.I().addRequest();
+                cr.release();
+                return false;
+          }
+          try {
+              String text = r.getText();
+              if (!text.endsWith("user" + callUser)) {
+                  SingletonStore.I().addRequest();
+                  SingletonStore.I().addError();
+                  return false;
+              }
+          } catch (Exception e) {
+              SingletonStore.I().addError();
+              SingletonStore.I().addRequest();
+              return false;
+          }
+          SingletonStore.I().addRequest();
+          r.release();
+          cr.release();
+          return true;
         }
-
     }
-
 }
