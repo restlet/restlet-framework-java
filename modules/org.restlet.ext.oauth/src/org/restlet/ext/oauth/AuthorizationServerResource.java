@@ -57,6 +57,21 @@ import org.restlet.security.Role;
  * 
  * Implements OAuth 2.0 draft 10
  * 
+ * The following example shows how to set up a simple Authorization Service.
+ * <pre>
+ * {
+ *      &#064;code
+ *      public Restlet createInboundRoot(){
+ *      ...
+ *      ChallengeAuthenticator au = new ChallengeAuthenticator(getContext(),
+ *              ChallengeScheme.HTTP_BASIC, &quot;OAuth Test Server&quot;);
+ *      au.setVerifier(new MyVerifier());
+ *      au.setNext(AuthorizationServerResource.class);
+ *      root.attach(&quot;/authorize&quot;, au);
+ *      ...
+ * }
+ * </pre>
+ * 
  * @author Martin Svensson
  * 
  * @see <a

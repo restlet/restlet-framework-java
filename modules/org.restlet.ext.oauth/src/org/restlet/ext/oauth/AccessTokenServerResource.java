@@ -58,6 +58,18 @@ import org.restlet.util.Series;
  * Note: at the moment password and assertion flows are not supported.
  * Implements OAuth 2.0 draft 10
  * 
+ * Example. Attach an AccessTokenServerResource
+ * <pre>
+ * {
+ *      &#064;code
+ *      public Restlet createInboundRoot(){
+ *              ...
+ *              root.attach(&quot;/access_token&quot;, AccessTokenServerResource.class);
+ *              ...
+ *      }
+ * }
+ * </pre>
+ * 
  * @author Kristoffer Gronowski
  * 
  * @see <a

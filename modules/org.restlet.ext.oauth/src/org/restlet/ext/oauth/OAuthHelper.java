@@ -57,7 +57,7 @@ import org.restlet.util.Series;
  * }
  * </pre>
  * 
- * Here is the list of parameters that are supported. They should be set in the
+ * Here is the list of parameters that are supported. They should be set
  * before an OAuth2Server or Client is started:
  * <table>
  * <tr>

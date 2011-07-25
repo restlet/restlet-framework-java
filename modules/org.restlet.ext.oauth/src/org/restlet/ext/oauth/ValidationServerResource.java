@@ -60,13 +60,25 @@ import org.restlet.resource.ResourceException;
  * of the protected resource application. In this mode the Validator will check
  * that a validation request is performed using the RIAP protocol.
  * 
- * @see org.restlet.ext.oauth.internal.org.restlet.ext.oauth.internal.protectedresource.LocalAuthorizer
- * @see org.restlet.ext.oauth.OAuthAuthorizer.restlet.ext.oauth.internal.protectedresource.RemoteAuthorizer
+ * Example. Attach a ValidationTokenServerResource
+ * <pre>
+ * {
+ *      &#064;code
+ *      public Restlet createInboundRoot(){
+ *              ...
+ *              root.attach(&quot;/validate&quot;, ValidationServerResource.class);
+ *              ...
+ *      }
+ * }
+ * </pre>
+ * 
+ * @see org.restlet.ext.oauth.internal.org.restlet.ext.oauth.OAuthAuthorizer
  * 
  * @author Kristoffer Gronowski
  */
 public class ValidationServerResource extends OAuthServerResource {
 
+    //TODO: Move to OAuthHelper init parameters...
     public static final String LOCAL_ACCESS_ONLY = "localOnly";
 
     @Post("json")

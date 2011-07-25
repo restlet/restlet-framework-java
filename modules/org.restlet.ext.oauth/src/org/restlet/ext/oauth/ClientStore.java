@@ -41,10 +41,12 @@ import org.restlet.ext.oauth.internal.TokenGenerator;
  * following code adds a client to a store when you create your inbound root
  * 
  * <pre>
- * {@code
+ * {
+ * &#064;code
  * public synchronized Restlet createInboundRoot(){
  *   ClientStore clientStore = ClientStoreFactory.getInstance();
- *   clientStore.createClient("1234567890","1234567890", "http://localhost:8080");
+ *   clientStore.createClient(&quot;1234567890&quot;,&quot;1234567890&quot;,
+ *    &quot;http://localhost:8080&quot;);
  *  
  *   attribs.put(ClientStore.class.getCanonicalName(), clientStore);
  * }

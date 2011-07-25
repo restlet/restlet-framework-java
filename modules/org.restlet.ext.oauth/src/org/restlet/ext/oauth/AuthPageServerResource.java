@@ -53,10 +53,26 @@ import freemarker.template.Configuration;
  * Helper class to the AuhorizationResource Handles Authorization requests. By
  * default it will accept all scopes requested.
  * 
- * To intercept and allow a user to control a Context parameter
- * OAuthServerResource.AUTH_TEMPLATE_PARAM should be set in the attributes. It
- * should contain a static HTML page or a FreeMarker page that will be loaded
- * with the CLAP protocol straight from root.
+ * To intercept and allow a user to control authorization you should set
+ * the OAuthHelper.setAuthPageTemplate parameter. It should contain a static HTML page 
+ * or a FreeMarker page that will be loaded with the CLAP protocol straight from root.
+ * 
+ * Example. Add an AuthPageResource to your inbound root.
+ * <pre>
+ * {
+ *      &#064;code
+ *      public Restlet createInboundRoot(){
+ *              ...
+ *              root.attach(OAuthHelper.getAuthPage(getContext()), AuthPageServerResource.class);
+ *              //Set Template for AuthPage:
+ *              OAuthHelper.setAuthPageTemplate(&quot;authorize.html&quot;, getContext());
+ *              //Dont ask for approval if previously approved
+ *              OAuthHelper.setAuthSkipApproved(true, getContext());
+ *              ...
+ *      }
+ *      
+ * }
+ * </pre>
  * 
  * The FreeMarker data model looks like the following
  * 
