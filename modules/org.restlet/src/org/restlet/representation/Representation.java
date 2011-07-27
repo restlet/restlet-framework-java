@@ -594,6 +594,21 @@ public abstract class Representation extends RepresentationInfo {
         this.isTransient = isTransient;
     }
 
+    /**
+     * Writes the representation to an appendable sequence of characters. This
+     * method is ensured to write the full content for each invocation unless it
+     * is a transient representation, in which case an exception is thrown.<br>
+     * <br>
+     * Note that {@link #getText()} is used by the default implementation.
+     * 
+     * @param appendable
+     *            The appendable sequence of characters.
+     * @throws IOException
+     */
+    public void write(Appendable appendable) throws IOException {
+        appendable.append(getText());
+    }
+
     // [ifndef gwt] member
     /**
      * Writes the representation to a characters writer. This method is ensured

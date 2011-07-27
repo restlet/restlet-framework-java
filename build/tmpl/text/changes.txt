@@ -33,6 +33,7 @@ Changes log
         convenient shortcuts.
       - Added ClientResource#handleInbound(...) and handleOutbound(...)
         method to factorize even more logic.
+      - Added Representation#write(Appendable) method.
     - New features
       - Added a CookieAuthenticator class in the org.restlet.ext.crypto
         extension to provide customizable and secure authentication via
