@@ -32,8 +32,11 @@ package org.restlet.engine.header;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -54,6 +57,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.engine.Engine;
+import org.restlet.engine.util.CaseInsensitiveHashSet;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.EmptyRepresentation;
@@ -66,6 +70,65 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public class HeaderUtils {
+
+    /**
+     * Standard set of headers which cannot be modified.
+     */
+    private static final Set<String> STANDARD_HEADERS = Collections
+            .unmodifiableSet(new CaseInsensitiveHashSet(Arrays.asList(
+                    HeaderConstants.HEADER_ACCEPT,
+                    HeaderConstants.HEADER_ACCEPT_CHARSET,
+                    HeaderConstants.HEADER_ACCEPT_ENCODING,
+                    HeaderConstants.HEADER_ACCEPT_LANGUAGE,
+                    HeaderConstants.HEADER_ACCEPT_RANGES,
+                    HeaderConstants.HEADER_AGE, HeaderConstants.HEADER_ALLOW,
+                    HeaderConstants.HEADER_AUTHENTICATION_INFO,
+                    HeaderConstants.HEADER_AUTHORIZATION,
+                    HeaderConstants.HEADER_CACHE_CONTROL,
+                    HeaderConstants.HEADER_CONNECTION,
+                    HeaderConstants.HEADER_CONTENT_DISPOSITION,
+                    HeaderConstants.HEADER_CONTENT_ENCODING,
+                    HeaderConstants.HEADER_CONTENT_LANGUAGE,
+                    HeaderConstants.HEADER_CONTENT_LENGTH,
+                    HeaderConstants.HEADER_CONTENT_LOCATION,
+                    HeaderConstants.HEADER_CONTENT_MD5,
+                    HeaderConstants.HEADER_CONTENT_RANGE,
+                    HeaderConstants.HEADER_CONTENT_TYPE,
+                    HeaderConstants.HEADER_COOKIE, HeaderConstants.HEADER_DATE,
+                    HeaderConstants.HEADER_ETAG, HeaderConstants.HEADER_EXPECT,
+                    HeaderConstants.HEADER_EXPIRES,
+                    HeaderConstants.HEADER_FROM, HeaderConstants.HEADER_HOST,
+                    HeaderConstants.HEADER_IF_MATCH,
+                    HeaderConstants.HEADER_IF_MODIFIED_SINCE,
+                    HeaderConstants.HEADER_IF_NONE_MATCH,
+                    HeaderConstants.HEADER_IF_RANGE,
+                    HeaderConstants.HEADER_IF_UNMODIFIED_SINCE,
+                    HeaderConstants.HEADER_LAST_MODIFIED,
+                    HeaderConstants.HEADER_LOCATION,
+                    HeaderConstants.HEADER_MAX_FORWARDS,
+                    HeaderConstants.HEADER_PROXY_AUTHENTICATE,
+                    HeaderConstants.HEADER_PROXY_AUTHORIZATION,
+                    HeaderConstants.HEADER_RANGE,
+                    HeaderConstants.HEADER_REFERRER,
+                    HeaderConstants.HEADER_RETRY_AFTER,
+                    HeaderConstants.HEADER_SERVER,
+                    HeaderConstants.HEADER_SET_COOKIE,
+                    HeaderConstants.HEADER_SET_COOKIE2,
+                    HeaderConstants.HEADER_USER_AGENT,
+                    HeaderConstants.HEADER_VARY, HeaderConstants.HEADER_VIA,
+                    HeaderConstants.HEADER_WARNING,
+                    HeaderConstants.HEADER_WWW_AUTHENTICATE)));
+
+    /**
+     * Set of unsupported headers that will be covered in future versions.
+     */
+    private static final Set<String> UNSUPPORTED_STANDARD_HEADERS = Collections
+            .unmodifiableSet(new CaseInsensitiveHashSet(Arrays.asList(
+                    HeaderConstants.HEADER_PRAGMA,
+                    HeaderConstants.HEADER_TRAILER,
+                    HeaderConstants.HEADER_TRANSFER_ENCODING,
+                    HeaderConstants.HEADER_TRANSFER_EXTENSION,
+                    HeaderConstants.HEADER_UPGRADE)));
 
     /**
      * Adds the entity headers based on the {@link Representation} to the
@@ -155,121 +218,20 @@ public class HeaderUtils {
             Series<Header> additionalHeaders) {
         if (additionalHeaders != null) {
             for (Header param : additionalHeaders) {
-                if (param.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_ACCEPT)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_ACCEPT_CHARSET)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_ACCEPT_ENCODING)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_ACCEPT_LANGUAGE)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_ACCEPT_RANGES)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_AGE)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_ALLOW)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_AUTHENTICATION_INFO)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_AUTHORIZATION)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_CACHE_CONTROL)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_CONNECTION)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_CONTENT_DISPOSITION)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_CONTENT_ENCODING)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_CONTENT_LANGUAGE)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_CONTENT_LENGTH)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_CONTENT_LOCATION)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_CONTENT_MD5)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_CONTENT_RANGE)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_CONTENT_TYPE)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_COOKIE)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_DATE)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_ETAG)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_EXPECT)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_EXPIRES)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_FROM)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_HOST)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_IF_MATCH)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_IF_MODIFIED_SINCE)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_IF_NONE_MATCH)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_IF_RANGE)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_IF_UNMODIFIED_SINCE)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_LAST_MODIFIED)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_LOCATION)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_MAX_FORWARDS)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_PROXY_AUTHENTICATE)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_PROXY_AUTHORIZATION)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_RANGE)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_REFERRER)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_RETRY_AFTER)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_SERVER)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_SET_COOKIE)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_SET_COOKIE2)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_USER_AGENT)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_VARY)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_VIA)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_WARNING)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_WWW_AUTHENTICATE)) {
+                if (STANDARD_HEADERS.contains(param.getName())) {
                     // Standard headers that can't be overridden
                     Context.getCurrentLogger()
                             .warning(
                                     "Addition of the standard header \""
                                             + param.getName()
                                             + "\" is not allowed. Please use the equivalent property in the Restlet API.");
-                } else if (param.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_PRAGMA)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_TRAILER)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_TRANSFER_ENCODING)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_TRANSFER_EXTENSION)
-                        || param.getName().equalsIgnoreCase(
-                                HeaderConstants.HEADER_UPGRADE)) {
-                    // Standard headers that shouldn't be overridden
+                } else if (UNSUPPORTED_STANDARD_HEADERS.contains(param
+                        .getName())) {
                     Context.getCurrentLogger()
-                            .info("Addition of the standard header \""
-                                    + param.getName()
-                                    + "\" is discouraged as a future version of the Restlet API will directly support it.");
+                            .warning(
+                                    "Addition of the standard header \""
+                                            + param.getName()
+                                            + "\" is discouraged as a future version of the Restlet API will directly support it.");
                     existingHeaders.add(param);
                 } else {
                     existingHeaders.add(param);
@@ -287,7 +249,6 @@ public class HeaderUtils {
      *            The target headers {@link Series}.
      */
     public static void addGeneralHeaders(Message message, Series<Header> headers) {
-
         addHeader(HeaderConstants.HEADER_CACHE_CONTROL,
                 CacheDirectiveWriter.write(message.getCacheDirectives()),
                 headers);
@@ -635,109 +596,6 @@ public class HeaderUtils {
     }
 
     /**
-     * Extracts entity headers and updates a given representation or create an
-     * empty one when at least one entity header is present.
-     * 
-     * @param headers
-     *            The headers to copy.
-     * @param representation
-     *            The representation to update or null.
-     * @return a representation updated with the given entity headers.
-     * @throws NumberFormatException
-     * @see HeaderUtils#copyResponseTransportHeaders(Series, Response)
-     */
-    public static Representation extractEntityHeaders(Iterable<Header> headers,
-            Representation representation) throws NumberFormatException {
-        Representation result = (representation == null) ? new EmptyRepresentation()
-                : representation;
-        boolean entityHeaderFound = false;
-
-        if (headers != null) {
-            for (Header header : headers) {
-                if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_TYPE)) {
-                    ContentType contentType = new ContentType(header.getValue());
-                    result.setMediaType(contentType.getMediaType());
-
-                    if ((result.getCharacterSet() == null)
-                            || (contentType.getCharacterSet() != null)) {
-                        result.setCharacterSet(contentType.getCharacterSet());
-                    }
-
-                    entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_LENGTH)) {
-                    entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_EXPIRES)) {
-                    result.setExpirationDate(HeaderReader.readDate(
-                            header.getValue(), false));
-                    entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_ENCODING)) {
-                    new EncodingReader(header.getValue()).addValues(result
-                            .getEncodings());
-                    entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
-                    new LanguageReader(header.getValue()).addValues(result
-                            .getLanguages());
-                    entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_LAST_MODIFIED)) {
-                    result.setModificationDate(HeaderReader.readDate(
-                            header.getValue(), false));
-                    entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_ETAG)) {
-                    result.setTag(Tag.parse(header.getValue()));
-                    entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_LOCATION)) {
-                    result.setLocationRef(header.getValue());
-                    entityHeaderFound = true;
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
-                    try {
-                        result.setDisposition(new DispositionReader(header
-                                .getValue()).readValue());
-                        entityHeaderFound = true;
-                    } catch (IOException ioe) {
-                        Context.getCurrentLogger().log(
-                                Level.WARNING,
-                                "Error during Content-Disposition header parsing. Header: "
-                                        + header.getValue(), ioe);
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_RANGE)) {
-                    // [ifndef gwt]
-                    org.restlet.engine.header.RangeReader.update(
-                            header.getValue(), result);
-                    entityHeaderFound = true;
-                    // [enddef]
-                } else if (header.getName().equalsIgnoreCase(
-                        HeaderConstants.HEADER_CONTENT_MD5)) {
-                    // [ifndef gwt]
-                    result.setDigest(new org.restlet.data.Digest(
-                            org.restlet.data.Digest.ALGORITHM_MD5,
-                            org.restlet.engine.util.Base64.decode(header
-                                    .getValue())));
-                    entityHeaderFound = true;
-                    // [enddef]
-                }
-            }
-        }
-
-        // If no representation was initially expected and no entity header
-        // is found, then do not return any representation
-        if ((representation == null) && !entityHeaderFound) {
-            result = null;
-        }
-
-        return result;
-    }
-
-    /**
      * Copies headers into a response.
      * 
      * @param headers
@@ -860,6 +718,109 @@ public class HeaderUtils {
                 }
             }
         }
+    }
+
+    /**
+     * Extracts entity headers and updates a given representation or create an
+     * empty one when at least one entity header is present.
+     * 
+     * @param headers
+     *            The headers to copy.
+     * @param representation
+     *            The representation to update or null.
+     * @return a representation updated with the given entity headers.
+     * @throws NumberFormatException
+     * @see HeaderUtils#copyResponseTransportHeaders(Series, Response)
+     */
+    public static Representation extractEntityHeaders(Iterable<Header> headers,
+            Representation representation) throws NumberFormatException {
+        Representation result = (representation == null) ? new EmptyRepresentation()
+                : representation;
+        boolean entityHeaderFound = false;
+
+        if (headers != null) {
+            for (Header header : headers) {
+                if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_TYPE)) {
+                    ContentType contentType = new ContentType(header.getValue());
+                    result.setMediaType(contentType.getMediaType());
+
+                    if ((result.getCharacterSet() == null)
+                            || (contentType.getCharacterSet() != null)) {
+                        result.setCharacterSet(contentType.getCharacterSet());
+                    }
+
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_LENGTH)) {
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_EXPIRES)) {
+                    result.setExpirationDate(HeaderReader.readDate(
+                            header.getValue(), false));
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_ENCODING)) {
+                    new EncodingReader(header.getValue()).addValues(result
+                            .getEncodings());
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_LANGUAGE)) {
+                    new LanguageReader(header.getValue()).addValues(result
+                            .getLanguages());
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_LAST_MODIFIED)) {
+                    result.setModificationDate(HeaderReader.readDate(
+                            header.getValue(), false));
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_ETAG)) {
+                    result.setTag(Tag.parse(header.getValue()));
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_LOCATION)) {
+                    result.setLocationRef(header.getValue());
+                    entityHeaderFound = true;
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_DISPOSITION)) {
+                    try {
+                        result.setDisposition(new DispositionReader(header
+                                .getValue()).readValue());
+                        entityHeaderFound = true;
+                    } catch (IOException ioe) {
+                        Context.getCurrentLogger().log(
+                                Level.WARNING,
+                                "Error during Content-Disposition header parsing. Header: "
+                                        + header.getValue(), ioe);
+                    }
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_RANGE)) {
+                    // [ifndef gwt]
+                    org.restlet.engine.header.RangeReader.update(
+                            header.getValue(), result);
+                    entityHeaderFound = true;
+                    // [enddef]
+                } else if (header.getName().equalsIgnoreCase(
+                        HeaderConstants.HEADER_CONTENT_MD5)) {
+                    // [ifndef gwt]
+                    result.setDigest(new org.restlet.data.Digest(
+                            org.restlet.data.Digest.ALGORITHM_MD5,
+                            org.restlet.engine.util.Base64.decode(header
+                                    .getValue())));
+                    entityHeaderFound = true;
+                    // [enddef]
+                }
+            }
+        }
+
+        // If no representation was initially expected and no entity header
+        // is found, then do not return any representation
+        if ((representation == null) && !entityHeaderFound) {
+            result = null;
+        }
+
+        return result;
     }
 
     /**
