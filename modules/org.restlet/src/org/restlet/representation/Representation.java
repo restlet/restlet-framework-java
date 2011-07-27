@@ -479,6 +479,7 @@ public abstract class Representation extends RepresentationInfo {
             } else {
                 java.io.StringWriter sw = new java.io.StringWriter();
                 write(sw);
+                sw.flush();
                 result = sw.toString();
             }
         }

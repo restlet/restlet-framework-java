@@ -7,6 +7,8 @@ Changes log
     - Bugs fixed
        - Fixed severe log messages produced by the Component class due to 
          lack of child context usage.
+       - Fixed potential IO issue by adding missing calls to flush() 
+         methods in Writer and OutputStream. Reported by Jeroen Goubert
 
 - 2.0.8 (2011-06-21)
     - Bugs fixed

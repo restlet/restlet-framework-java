@@ -204,8 +204,10 @@ public abstract class DigestRepresentation extends WrapperRepresentation {
      */
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        getWrappedRepresentation().write(
-                new DigestOutputStream(outputStream, this.computedDigest));
+        OutputStream dos = new DigestOutputStream(outputStream,
+                this.computedDigest);
+        getWrappedRepresentation().write(dos);
+        dos.flush();
     }
 
     @Override
