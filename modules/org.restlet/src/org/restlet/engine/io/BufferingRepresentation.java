@@ -133,8 +133,14 @@ public class BufferingRepresentation extends WrapperRepresentation {
     @Override
     public String getText() throws IOException {
         buffer();
-        return (getBuffer() != null) ? new String(getBuffer(),
-                getCharacterSet().toCharset().name()) : null;
+
+        if (getBuffer() != null) {
+            return (getCharacterSet() != null) ? new String(getBuffer(),
+                    getCharacterSet().toCharset().name()) : new String(
+                    getBuffer());
+        }
+
+        return null;
     }
 
     /**
