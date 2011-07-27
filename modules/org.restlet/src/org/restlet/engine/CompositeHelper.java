@@ -122,9 +122,11 @@ public abstract class CompositeHelper<T extends Restlet> extends
      * Clears the chain. Sets the first and last filters to null.
      */
     public void clear() {
+        setFirstInboundFilter(null);
+        setFirstOutboundFilter(null);
         setInboundNext(null);
-        setInboundNext(null);
-        setOutboundNext(null);
+        setLastInboundFilter(null);
+        setLastOutboundFilter(null);
         setOutboundNext(null);
     }
 
