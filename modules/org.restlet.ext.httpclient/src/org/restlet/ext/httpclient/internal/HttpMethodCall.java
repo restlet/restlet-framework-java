@@ -323,6 +323,7 @@ public class HttpMethodCall extends ClientCall {
 
                     public void writeTo(OutputStream os) throws IOException {
                         entity.write(os);
+                        os.flush();
                     }
                 });
             }

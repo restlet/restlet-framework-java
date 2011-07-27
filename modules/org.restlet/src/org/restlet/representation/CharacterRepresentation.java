@@ -33,6 +33,7 @@ package org.restlet.representation;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
@@ -71,14 +72,19 @@ public abstract class CharacterRepresentation extends Representation {
     // [ifndef gwt] method
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        write(BioUtils.getWriter(outputStream, getCharacterSet()));
+        Writer writer = BioUtils.getWriter(outputStream, getCharacterSet());
+        write(writer);
+        writer.flush();
     }
 
     // [ifndef gwt] method
     @Override
     public void write(java.nio.channels.WritableByteChannel writableChannel)
             throws IOException {
-        write(org.restlet.engine.io.NioUtils.getOutputStream(writableChannel));
+        OutputStream os = org.restlet.engine.io.NioUtils
+                .getOutputStream(writableChannel);
+        write(os);
+        os.flush();
     }
 
 }

@@ -80,9 +80,10 @@ public class BufferingRepresentation extends WrapperRepresentation {
     private void buffer() throws IOException {
         if (!isBuffered()) {
             if (getWrappedRepresentation().isAvailable()) {
-                ByteArrayOutputStream bArray = new ByteArrayOutputStream();
-                getWrappedRepresentation().write(bArray);
-                setBuffer(bArray.toByteArray());
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                getWrappedRepresentation().write(baos);
+                baos.flush();
+                setBuffer(baos.toByteArray());
                 setBuffered(true);
             }
         }

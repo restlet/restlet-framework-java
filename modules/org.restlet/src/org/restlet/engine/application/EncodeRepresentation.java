@@ -287,9 +287,11 @@ public class EncodeRepresentation extends WrapperRepresentation {
                 final ZipOutputStream stream = new ZipOutputStream(outputStream);
                 String name = "entry";
                 if (getWrappedRepresentation().getDisposition() != null) {
-                    name = getWrappedRepresentation().getDisposition()
-                            .getParameters().getFirstValue(
-                                    Disposition.NAME_FILENAME, true, name);
+                    name = getWrappedRepresentation()
+                            .getDisposition()
+                            .getParameters()
+                            .getFirstValue(Disposition.NAME_FILENAME, true,
+                                    name);
                 }
                 stream.putNextEntry(new ZipEntry(name));
 
@@ -300,6 +302,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
 
             if (encoderOutputStream != null) {
                 getWrappedRepresentation().write(encoderOutputStream);
+                encoderOutputStream.flush();
                 encoderOutputStream.finish();
             } else {
                 getWrappedRepresentation().write(outputStream);

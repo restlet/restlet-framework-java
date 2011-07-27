@@ -33,6 +33,7 @@ package org.restlet.ext.odata;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -199,8 +200,7 @@ public class Generator {
         if (serviceClassName != null) {
             this.serviceClassName = ReflectUtils.normalize(serviceClassName);
             this.serviceClassName = this.serviceClassName.substring(0, 1)
-                    .toUpperCase()
-                    + this.serviceClassName.substring(1);
+                    .toUpperCase() + this.serviceClassName.substring(1);
         }
 
     }
@@ -284,9 +284,12 @@ public class Generator {
                     templateRepresentation.setCharacterSet(CharacterSet.UTF_8);
 
                     // Write the template representation as a Java class
-                    templateRepresentation.write(new FileOutputStream(new File(
-                            packageDir, type.getClassName() + ".java")));
+                    OutputStream fos = new FileOutputStream(new File(
+                            packageDir, type.getClassName() + ".java"));
+                    templateRepresentation.write(fos);
+                    fos.flush();
                 }
+
                 for (ComplexType type : schema.getComplexTypes()) {
                     String className = type.getClassName();
                     Map<String, Object> dataModel = new HashMap<String, Object>();
@@ -301,8 +304,10 @@ public class Generator {
                     templateRepresentation.setCharacterSet(CharacterSet.UTF_8);
 
                     // Write the template representation as a Java class
-                    templateRepresentation.write(new FileOutputStream(new File(
-                            packageDir, type.getClassName() + ".java")));
+                    OutputStream fos = new FileOutputStream(new File(
+                            packageDir, type.getClassName() + ".java"));
+                    templateRepresentation.write(fos);
+                    fos.flush();
                 }
             }
         }
@@ -347,8 +352,10 @@ public class Generator {
                 templateRepresentation.setCharacterSet(CharacterSet.UTF_8);
 
                 // Write the template representation as a Java class
-                templateRepresentation.write(new FileOutputStream(new File(
-                        outputDir, className + ".java")));
+                OutputStream fos = new FileOutputStream(new File(outputDir,
+                        className + ".java"));
+                templateRepresentation.write(fos);
+                fos.flush();
             }
         }
     }

@@ -31,6 +31,7 @@
 package org.restlet.representation;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Reader;
 
 import org.restlet.data.MediaType;
@@ -69,13 +70,18 @@ public abstract class StreamRepresentation extends Representation {
     @Override
     public void write(java.nio.channels.WritableByteChannel writableChannel)
             throws IOException {
-        write(org.restlet.engine.io.NioUtils.getOutputStream(writableChannel));
+        OutputStream os = org.restlet.engine.io.NioUtils
+                .getOutputStream(writableChannel);
+        write(os);
+        os.flush();
     }
 
     // [ifndef gwt] method
     @Override
     public void write(java.io.Writer writer) throws IOException {
-        write(BioUtils.getOutputStream(writer));
+        OutputStream os = BioUtils.getOutputStream(writer);
+        write(os);
+        os.flush();
     }
 
 }

@@ -215,11 +215,11 @@ public class Service {
             }
 
             try {
-                // TODO Fix chunked request with net client connector
-                ByteArrayOutputStream o = new ByteArrayOutputStream();
-                entry.write(o);
-                StringRepresentation r = new StringRepresentation(o.toString(),
-                        MediaType.APPLICATION_ATOM);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                entry.write(baos);
+                baos.flush();
+                StringRepresentation r = new StringRepresentation(
+                        baos.toString(), MediaType.APPLICATION_ATOM);
                 Representation rep = resource.post(r);
                 EntryContentHandler<?> entryContentHandler = new EntryContentHandler<Object>(
                         entity.getClass(), (Metadata) getMetadata(),
@@ -1024,7 +1024,7 @@ public class Service {
             return;
         }
         if (target != null) {
-            // TODO Take into acount the case where the target does exist.
+            // TODO Take into account the case where the target does exist.
             Metadata metadata = (Metadata) getMetadata();
             ClientResource resource = createResource(metadata
                     .getSubpath(source) + "/$links/" + sourceProperty);
@@ -1111,7 +1111,6 @@ public class Service {
                             nullAttrs.addAttribute(
                                     WCF_DATASERVICES_METADATA_NAMESPACE,
                                     "null", null, "boolean", "true");
-
                             writer.forceNSDecl(
                                     WCF_DATASERVICES_METADATA_NAMESPACE, "m");
                             writer.forceNSDecl(WCF_DATASERVICES_NAMESPACE, "d");
@@ -1137,6 +1136,7 @@ public class Service {
                                     + field.getName().substring(1);
                             Property prop = ((Metadata) getMetadata())
                                     .getProperty(entity, field.getName());
+
                             if (prop != null) {
                                 writeProperty(writer, entity, prop, getter,
                                         nullAttrs);
@@ -1153,22 +1153,25 @@ public class Service {
                                     && getter.equals(method.getName())
                                     && method.getParameterTypes().length == 0) {
                                 Object value = null;
+
                                 try {
                                     value = method.invoke(entity,
                                             (Object[]) null);
                                 } catch (Exception e) {
-
                                 }
+
                                 if (value != null) {
                                     writer.startElement(
                                             WCF_DATASERVICES_NAMESPACE,
                                             prop.getName());
+
                                     if (prop instanceof ComplexProperty) {
                                         write(writer, value, nullAttrs);
                                     } else {
                                         writer.characters(TypeUtils.toEdm(
                                                 value, prop.getType()));
                                     }
+
                                     writer.endElement(
                                             WCF_DATASERVICES_NAMESPACE,
                                             prop.getName());
@@ -1205,6 +1208,7 @@ public class Service {
                             }
                         }
                     };
+
                     Link editLink = new Link(getValueEditRef(entity),
                             Relation.EDIT_MEDIA, null);
                     result.getLinks().add(editLink);
@@ -1238,17 +1242,18 @@ public class Service {
         if (getMetadata() == null || entity == null) {
             return;
         }
-        Entry entry = toEntry(entity);
 
+        Entry entry = toEntry(entity);
         ClientResource resource = createResource(getSubpath(entity));
 
         try {
-            // TODO Fix chunked request with net client connector
-            ByteArrayOutputStream o = new ByteArrayOutputStream();
-            entry.write(o);
-            StringRepresentation r = new StringRepresentation(o.toString(),
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            entry.write(baos);
+            baos.flush();
+            StringRepresentation r = new StringRepresentation(baos.toString(),
                     MediaType.APPLICATION_ATOM);
             String tag = getTag(entity);
+
             if (tag != null) {
                 // Add a condition
                 resource.getConditions().setMatch(Arrays.asList(new Tag(tag)));

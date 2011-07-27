@@ -318,6 +318,7 @@ public final class BioUtils {
                 public void run() {
                     try {
                         representation.write(pipedWriter);
+                        pipedWriter.flush();
                         pipedWriter.close();
                     } catch (IOException ioe) {
                         Context.getCurrentLogger()
@@ -410,6 +411,7 @@ public final class BioUtils {
                         java.io.OutputStream os = pipe.getOutputStream();
                         representation.write(os);
                         os.write(-1);
+                        os.flush();
                         os.close();
                     } catch (IOException ioe) {
                         Context.getCurrentLogger()
@@ -459,6 +461,7 @@ public final class BioUtils {
             } else {
                 java.io.StringWriter sw = new java.io.StringWriter();
                 representation.write(sw);
+                sw.flush();
                 result = sw.toString();
             }
         }
