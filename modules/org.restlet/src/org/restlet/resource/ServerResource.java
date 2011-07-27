@@ -932,7 +932,7 @@ public abstract class ServerResource extends UniformResource {
      * 
      * @return True if annotations were defined on this resource.
      */
-    private boolean hasAnnotations() {
+    protected boolean hasAnnotations() {
         return (getAnnotations() != null) && (!getAnnotations().isEmpty());
     }
 
