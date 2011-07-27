@@ -171,13 +171,15 @@ public class TemplateRepresentation extends WriterRepresentation {
         this.engine = null;
         this.template = new Template();
 
-        CharacterSet charSet = (templateRepresentation.getCharacterSet() == null) ? templateRepresentation
+        CharacterSet charSet = (templateRepresentation.getCharacterSet() != null) ? templateRepresentation
                 .getCharacterSet() : CharacterSet.DEFAULT;
         this.template.setEncoding(charSet.getName());
+
         if (templateRepresentation.getModificationDate() != null) {
             this.template.setLastModified(templateRepresentation
                     .getModificationDate().getTime());
         }
+
         this.template.setName("org.restlet.resource.representation");
         this.template.setRuntimeServices(RuntimeSingleton.getRuntimeServices());
         this.template.setResourceLoader(new RepresentationResourceLoader(
@@ -204,7 +206,7 @@ public class TemplateRepresentation extends WriterRepresentation {
         this.engine = null;
         this.template = new Template();
 
-        CharacterSet charSet = (templateRepresentation.getCharacterSet() == null) ? templateRepresentation
+        CharacterSet charSet = (templateRepresentation.getCharacterSet() != null) ? templateRepresentation
                 .getCharacterSet() : CharacterSet.DEFAULT;
         this.template.setEncoding(charSet.getName());
         this.template.setLastModified((templateRepresentation
