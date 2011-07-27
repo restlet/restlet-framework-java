@@ -171,9 +171,8 @@ public class TemplateRepresentation extends WriterRepresentation {
         this.engine = null;
         this.template = new Template();
 
-        CharacterSet charSet = (templateRepresentation.getCharacterSet() == null) ? templateRepresentation
-                .getCharacterSet()
-                : CharacterSet.DEFAULT;
+        CharacterSet charSet = (templateRepresentation.getCharacterSet() != null) ? templateRepresentation
+                .getCharacterSet() : CharacterSet.DEFAULT;
         this.template.setEncoding(charSet.getName());
         if (templateRepresentation.getModificationDate() != null) {
             this.template.setLastModified(templateRepresentation
@@ -205,9 +204,8 @@ public class TemplateRepresentation extends WriterRepresentation {
         this.engine = null;
         this.template = new Template();
 
-        CharacterSet charSet = (templateRepresentation.getCharacterSet() == null) ? templateRepresentation
-                .getCharacterSet()
-                : CharacterSet.DEFAULT;
+        CharacterSet charSet = (templateRepresentation.getCharacterSet() != null) ? templateRepresentation
+                .getCharacterSet() : CharacterSet.DEFAULT;
         this.template.setEncoding(charSet.getName());
         this.template.setLastModified((templateRepresentation
                 .getModificationDate() == null) ? new Date().getTime()
