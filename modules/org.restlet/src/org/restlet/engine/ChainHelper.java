@@ -82,7 +82,7 @@ public abstract class ChainHelper<T extends Restlet> extends RestletHelper<T> {
      */
     public void clear() {
         setFirst(null);
-        setNext(null);
+        setLast(null);
     }
 
     /**
@@ -113,8 +113,7 @@ public abstract class ChainHelper<T extends Restlet> extends RestletHelper<T> {
             response.setStatus(Status.SERVER_ERROR_INTERNAL);
             getHelped()
                     .getLogger()
-                    .log(
-                            Level.SEVERE,
+                    .log(Level.SEVERE,
                             "The "
                                     + getHelped().getClass().getName()
                                     + " class has no Restlet defined to process calls. Maybe it wasn't properly started.");

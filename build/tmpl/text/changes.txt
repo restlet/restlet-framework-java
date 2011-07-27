@@ -12,6 +12,8 @@ Changes log
          Konstantin Pelykh.
        - Fixed potential NPE in Velocity's TemplateRepresentation.
          Reported by David Hamilton
+       - Fixed bug failing to properly clear the service filters of a
+         Component when stopped. Reported by Jean-Pascal Boignard.
 
 - 2.0.8 (2011-06-21)
     - Bugs fixed
