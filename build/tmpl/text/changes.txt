@@ -57,7 +57,7 @@ Changes log
         failure. Reported by Martin Svensson.
      - Misc
       - Optimized the HeaderReader class beavhior in the engine.
-      - Optimized the processing of extra headers. 
+      - Optimized the processing of extra headers and challenge schemes. 
         Contributed by Scott S. McCoy
       
 - 2.1 Milestone 5 (06/21/2011)

@@ -30,6 +30,10 @@
 
 package org.restlet.data;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Challenge scheme used to authenticate remote clients.
  * 
@@ -99,13 +103,39 @@ public final class ChallengeScheme {
     public static final ChallengeScheme POP_DIGEST = new ChallengeScheme(
             "POP_DIGEST", "Digest", "Digest POP authentication (APOP command)");
 
+    /** Private list of schemes for optimization purpose. */
+    private static Map<String, ChallengeScheme> SCHEMES;
+
     /** Secure Data Connector scheme. */
-    public static final ChallengeScheme SDC = new ChallengeScheme(
-            "SDC", "SDC", "Secure Data Connector authentication");
+    public static final ChallengeScheme SDC = new ChallengeScheme("SDC", "SDC",
+            "Secure Data Connector authentication");
 
     /** Plain SMTP scheme. */
     public static final ChallengeScheme SMTP_PLAIN = new ChallengeScheme(
             "SMTP_PLAIN", "PLAIN", "Plain SMTP authentication");
+
+    static {
+        Map<String, ChallengeScheme> schemes = new HashMap<String, ChallengeScheme>();
+
+        schemes.put(CUSTOM.getName().toLowerCase(), CUSTOM);
+        schemes.put(FTP_PLAIN.getName().toLowerCase(), FTP_PLAIN);
+        schemes.put(HTTP_AWS_S3.getName().toLowerCase(), HTTP_AWS_S3);
+        schemes.put(HTTP_AZURE_SHAREDKEY.getName().toLowerCase(),
+                HTTP_AZURE_SHAREDKEY);
+        schemes.put(HTTP_AZURE_SHAREDKEY_LITE.getName().toLowerCase(),
+                HTTP_AZURE_SHAREDKEY_LITE);
+        schemes.put(HTTP_BASIC.getName().toLowerCase(), HTTP_BASIC);
+        schemes.put(HTTP_COOKIE.getName().toLowerCase(), HTTP_COOKIE);
+        schemes.put(HTTP_DIGEST.getName().toLowerCase(), HTTP_DIGEST);
+        schemes.put(HTTP_NTLM.getName().toLowerCase(), HTTP_NTLM);
+        schemes.put(HTTP_OAUTH.getName().toLowerCase(), HTTP_OAUTH);
+        schemes.put(POP_BASIC.getName().toLowerCase(), POP_BASIC);
+        schemes.put(POP_DIGEST.getName().toLowerCase(), POP_DIGEST);
+        schemes.put(SDC.getName().toLowerCase(), SDC);
+        schemes.put(SMTP_PLAIN.getName().toLowerCase(), SMTP_PLAIN);
+
+        ChallengeScheme.SCHEMES = Collections.unmodifiableMap(schemes);
+    }
 
     /**
      * Returns the challenge scheme associated to a scheme name. If an existing
@@ -116,37 +146,15 @@ public final class ChallengeScheme {
      * @return The associated challenge scheme.
      */
     public static ChallengeScheme valueOf(final String name) {
-        ChallengeScheme result = null;
+        if (name == null) {
+            throw new IllegalArgumentException(
+                    "ChallengeScheme.valueOf(name) name must not be null");
+        }
 
-        if ((name != null) && !name.equals("")) {
-            if (name.equalsIgnoreCase(CUSTOM.getName())) {
-                result = CUSTOM;
-            } else if (name.equalsIgnoreCase(HTTP_AWS_S3.getName())) {
-                result = HTTP_AWS_S3;
-            } else if (name.equalsIgnoreCase(HTTP_BASIC.getName())) {
-                result = HTTP_BASIC;
-            } else if (name.equalsIgnoreCase(HTTP_COOKIE.getName())) {
-                result = HTTP_COOKIE;
-            } else if (name.equalsIgnoreCase(HTTP_DIGEST.getName())) {
-                result = HTTP_DIGEST;
-            } else if (name.equalsIgnoreCase(HTTP_AZURE_SHAREDKEY.getName())) {
-                result = HTTP_AZURE_SHAREDKEY;
-            } else if (name.equalsIgnoreCase(HTTP_AZURE_SHAREDKEY_LITE
-                    .getName())) {
-                result = HTTP_AZURE_SHAREDKEY_LITE;
-            } else if (name.equalsIgnoreCase(HTTP_NTLM.getName())) {
-                result = HTTP_NTLM;
-            } else if (name.equalsIgnoreCase(HTTP_OAUTH.getName())) {
-                result = HTTP_OAUTH;
-            } else if (name.equalsIgnoreCase(POP_BASIC.getName())) {
-                result = POP_BASIC;
-            } else if (name.equalsIgnoreCase(POP_DIGEST.getName())) {
-                result = POP_DIGEST;
-            } else if (name.equalsIgnoreCase(SMTP_PLAIN.getName())) {
-                result = SMTP_PLAIN;
-            } else {
-                result = new ChallengeScheme(name, null, null);
-            }
+        ChallengeScheme result = SCHEMES.get(name.toLowerCase());
+
+        if (result == null) {
+            result = new ChallengeScheme(name, null, null);
         }
 
         return result;
