@@ -204,7 +204,9 @@ public class Series<E extends NamedValue> extends WrapperList<E> {
      * @param delegate
      *            Optional delegate series.
      * @return A new series.
+     * @deprecated Use {@link Series#Series(Class, List)} constructor instead.
      */
+    @Deprecated
     public Series<E> createSeries(List<E> delegate) {
         return new Series<E>(this.entryClass, delegate);
     }
@@ -632,7 +634,8 @@ public class Series<E extends NamedValue> extends WrapperList<E> {
     @Override
     public Series<E> subList(int fromIndex, int toIndex) {
         // [ifndef gwt] instruction
-        return createSeries(getDelegate().subList(fromIndex, toIndex));
+        return new Series<E>(this.entryClass, getDelegate().subList(fromIndex,
+                toIndex));
         // [ifdef gwt] instruction uncomment
         // return
         // createSeries(org.restlet.engine.util.ListUtils.copySubList(
@@ -660,7 +663,7 @@ public class Series<E extends NamedValue> extends WrapperList<E> {
      * @return The list of values.
      */
     public Series<E> subList(String name, boolean ignoreCase) {
-        Series<E> result = createSeries(null);
+        Series<E> result = new Series<E>(this.entryClass);
 
         for (E param : this) {
             if (equals(param.getName(), name, ignoreCase)) {
