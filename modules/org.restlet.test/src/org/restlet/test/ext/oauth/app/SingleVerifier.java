@@ -34,14 +34,23 @@ import org.restlet.security.SecretVerifier;
 
 /**
  * @author esvmart
- *
  */
 public class SingleVerifier extends SecretVerifier {
 
     @Override
-    public boolean verify(String identifier, char[] secret) {
-        return (("bob".equals(identifier)) && compare("alice".toCharArray(),
-                secret));
-    }
+    public int verify(String identifier, char[] secret) {
+        int result = RESULT_MISSING;
 
+        if ("bob".equals(identifier)) {
+            if (compare("alice".toCharArray(), secret)) {
+                result = RESULT_VALID;
+            } else {
+                result = RESULT_INVALID;
+            }
+        } else {
+            result = RESULT_UNKNOWN;
+        }
+
+        return result;
+    }
 }

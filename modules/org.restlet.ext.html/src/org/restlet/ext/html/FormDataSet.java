@@ -51,7 +51,7 @@ import org.restlet.util.Series;
  */
 public class FormDataSet extends OutputRepresentation {
 
-    /** The default boundary separating multipart fields. */
+    /** The default boundary separating multipart entries. */
     private final static String DEFAULT_BOUNDARY = "---Aa1Bb2Cc3---";
 
     /**
@@ -169,9 +169,9 @@ public class FormDataSet extends OutputRepresentation {
     }
 
     /**
-     * Returns the modifiable series of form fields.
+     * Returns the modifiable series of form entries.
      * 
-     * @return The modifiable series of form fields.
+     * @return The modifiable series of form entries.
      */
     public Series<FormData> getEntries() {
         return entries;

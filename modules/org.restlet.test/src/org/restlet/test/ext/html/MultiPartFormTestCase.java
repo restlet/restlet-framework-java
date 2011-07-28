@@ -53,10 +53,9 @@ public class MultiPartFormTestCase extends RestletTestCase {
 
         String boundary = "-----------------------------1294919323195";
         String boundaryBis = "--" + boundary;
-        FormDataSet form;
         String expected;
 
-        form = new FormDataSet(boundary);
+        FormDataSet form = new FormDataSet(boundary);
         form.getEntries().add(new FormData("number", "5555555555"));
         form.getEntries().add(new FormData("clip", "rickroll"));
         form.getEntries().add(new FormData("upload_file", file));

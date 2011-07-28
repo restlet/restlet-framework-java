@@ -45,25 +45,25 @@ import org.restlet.util.NamedValue;
 import org.restlet.util.Series;
 
 /**
- * Representation of a Web form containing submitted fields.
+ * Representation of a Web form containing submitted entries.
  * 
  * @author Jerome Louvel
  */
 public class FormUtils {
 
     /**
-     * Creates a field.
+     * Creates a form data.
      * 
      * @param name
-     *            The field name buffer.
+     *            The name buffer.
      * @param value
-     *            The field value buffer (can be null).
+     *            The value buffer (can be null).
      * @param decode
      *            If true, the name and values are decoded with the given
      *            {@link CharacterSet}, if false, than nothing is decoded.
      * @param characterSet
      *            The supported character encoding.
-     * @return The created field.
+     * @return The created form data.
      */
     public static FormData create(CharSequence name, CharSequence value,
             boolean decode, CharacterSet characterSet) {
@@ -95,162 +95,163 @@ public class FormUtils {
     }
 
     /**
-     * Reads the fields with the given name.<br>
+     * Reads the entries whose name is a key in the given map.<br>
+     * If a matching entry is found, its value is put in the map.<br>
+     * If multiple values are found, a list is created and set in the map.
+     * 
+     * @param post
+     *            The web form representation.
+     * @param entries
+     *            The entries map controlling the reading.
+     * @throws IOException
+     *             If the entries could not be read.
+     */
+    public static void getEntries(Representation post,
+            Map<String, Object> entries) throws IOException {
+        if (!post.isAvailable()) {
+            throw new IllegalStateException(
+                    "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
+        }
+
+        new FormReader(post).readEntries(entries);
+    }
+
+    /**
+     * Reads the entries whose name is a key in the given map.<br>
+     * If a matching entry is found, its value is put in the map.<br>
+     * If multiple values are found, a list is created and set in the map.
+     * 
+     * @param queryString
+     *            The query string.
+     * @param entries
+     *            The entries map controlling the reading.
+     * @param characterSet
+     *            The supported character encoding.
+     * @param separator
+     *            The separator character to append between entries.
+     * @throws IOException
+     *             If the entries could not be read.
+     */
+    public static void getEntries(String queryString,
+            Map<String, Object> entries, CharacterSet characterSet,
+            char separator) throws IOException {
+        new FormReader(queryString, characterSet, separator)
+                .readEntries(entries);
+    }
+
+    /**
+     * Reads the entries with the given name.<br>
      * If multiple values are found, a list is returned created.
      * 
      * @param form
      *            The web form representation.
      * @param name
-     *            The field name to match.
-     * @return The field or list of values.
+     *            The name to match.
+     * @return The form data or list of values.
      * @throws IOException
-     *             If the fields could not be read.
+     *             If the entries could not be read.
      */
-    public static Object getField(Representation form, String name)
+    public static Object getEntry(Representation form, String name)
             throws IOException {
         if (!form.isAvailable()) {
             throw new IllegalStateException(
                     "The HTML form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
         }
 
-        return new FormReader(form).readField(name);
+        return new FormReader(form).readEntry(name);
     }
 
     /**
-     * Reads the fields with the given name.<br>
+     * Reads the entries with the given name.<br>
      * If multiple values are found, a list is returned created.
      * 
      * @param query
      *            The query string.
      * @param name
-     *            The field name to match.
+     *            The entry name to match.
      * @param characterSet
      *            The supported character encoding.
      * @param separator
-     *            The separator character to append between fields.
-     * @return The field value or list of values.
+     *            The separator character to append between entries.
+     * @return The entry value or list of values.
      * @throws IOException
-     *             If the fields could not be read.
+     *             If the entries could not be read.
      */
-    public static Object getField(String query, String name,
+    public static Object getEntry(String query, String name,
             CharacterSet characterSet, char separator) throws IOException {
-        return new FormReader(query, characterSet, separator).readField(name);
+        return new FormReader(query, characterSet, separator).readEntry(name);
     }
 
     /**
-     * Reads the fields whose name is a key in the given map.<br>
-     * If a matching field is found, its value is put in the map.<br>
-     * If multiple values are found, a list is created and set in the map.
-     * 
-     * @param post
-     *            The web form representation.
-     * @param fields
-     *            The fields map controlling the reading.
-     * @throws IOException
-     *             If the fields could not be read.
-     */
-    public static void getFields(Representation post, Map<String, Object> fields)
-            throws IOException {
-        if (!post.isAvailable()) {
-            throw new IllegalStateException(
-                    "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
-        }
-
-        new FormReader(post).readFields(fields);
-    }
-
-    /**
-     * Reads the fields whose name is a key in the given map.<br>
-     * If a matching field is found, its value is put in the map.<br>
-     * If multiple values are found, a list is created and set in the map.
-     * 
-     * @param queryString
-     *            The query string.
-     * @param fields
-     *            The fields map controlling the reading.
-     * @param characterSet
-     *            The supported character encoding.
-     * @param separator
-     *            The separator character to append between fields.
-     * @throws IOException
-     *             If the fields could not be read.
-     */
-    public static void getFields(String queryString,
-            Map<String, Object> fields, CharacterSet characterSet,
-            char separator) throws IOException {
-        new FormReader(queryString, characterSet, separator).readFields(fields);
-    }
-
-    /**
-     * Reads the first field with the given name.
+     * Reads the first entry with the given name.
      * 
      * @param post
      *            The web form representation.
      * @param name
-     *            The field name to match.
-     * @return The field.
+     *            The name to match.
+     * @return The form data entry.
      * @throws IOException
      */
-    public static FormData getFirstField(Representation post, String name)
+    public static FormData getFirstEntry(Representation post, String name)
             throws IOException {
         if (!post.isAvailable()) {
             throw new IllegalStateException(
                     "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
         }
 
-        return new FormReader(post).readFirstField(name);
+        return new FormReader(post).readFirstEntry(name);
     }
 
     /**
-     * Reads the first field with the given name.
+     * Reads the first entry with the given name.
      * 
      * @param query
      *            The query string.
      * @param name
-     *            The field name to match.
+     *            The name to match.
      * @param characterSet
      *            The supported character encoding.
      * @param separator
-     *            The separator character to append between fields.
-     * @return The field.
+     *            The separator character to append between entries.
+     * @return The form data entry.
      * @throws IOException
      */
-    public static FormData getFirstField(String query, String name,
+    public static FormData getFirstEntry(String query, String name,
             CharacterSet characterSet, char separator) throws IOException {
         return new FormReader(query, characterSet, separator)
-                .readFirstField(name);
+                .readFirstEntry(name);
     }
 
     /**
-     * Indicates if the searched field is specified in the given media range.
+     * Indicates if the searched entry is specified in the given media range.
      * 
-     * @param searchedField
-     *            The searched field.
+     * @param searchedEntry
+     *            The searched entry.
      * @param mediaRange
      *            The media range to inspect.
-     * @return True if the searched field is specified in the given media range.
+     * @return True if the searched entry is specified in the given media range.
      */
-    public static boolean isFieldFound(FormData searchedField,
+    public static boolean isEntryFound(FormData searchedEntry,
             MediaType mediaRange) {
         boolean result = false;
 
         for (Iterator<? extends NamedValue> iter = mediaRange.getParameters()
                 .iterator(); !result && iter.hasNext();) {
-            result = searchedField.equals(iter.next());
+            result = searchedEntry.equals(iter.next());
         }
 
         return result;
     }
 
     /**
-     * Parses a post into a given fields series.
+     * Parses a post into a given entries series.
      * 
-     * @param fields
-     *            The target fields series.
+     * @param entries
+     *            The target entries series.
      * @param post
      *            The posted form.
      */
-    public static void parse(Series<FormData> fields, Representation post) {
+    public static void parse(Series<FormData> entries, Representation post) {
         if (post != null) {
             if (post.isAvailable()) {
                 FormReader fr = null;
@@ -264,7 +265,7 @@ public class FormUtils {
                 }
 
                 if (fr != null) {
-                    fr.addFields(fields);
+                    fr.addEntries(entries);
                 }
             } else {
                 throw new IllegalStateException(
@@ -274,10 +275,10 @@ public class FormUtils {
     }
 
     /**
-     * Parses a fields string into a given form.
+     * Parses a entries string into a given form.
      * 
-     * @param fieldsSeries
-     *            The target fields series.
+     * @param entriesSeries
+     *            The target entries series.
      * @param queryString
      *            The query string.
      * @param characterSet
@@ -286,9 +287,9 @@ public class FormUtils {
      *            Indicates if the query string should be decoded using the
      *            given character set.
      * @param separator
-     *            The separator character to append between fields.
+     *            The separator character to append between entries.
      */
-    public static void parse(Series<FormData> fieldsSeries,
+    public static void parse(Series<FormData> entriesSeries,
             String queryString, CharacterSet characterSet, boolean decode,
             char separator) {
         if ((queryString != null) && !queryString.equals("")) {
@@ -300,7 +301,7 @@ public class FormUtils {
                 fr = new FormReader(queryString, separator);
             }
 
-            fr.addFields(fieldsSeries);
+            fr.addEntries(entriesSeries);
         }
     }
 

@@ -8,6 +8,9 @@ Changes log
       - When retrieving or updating the raw headers in the Request or 
         Response attributes, the type should now be Series<Header> 
         instead of Series<Parameter>.
+      - The SecretVerifier.verify(identifier, secret) nows returns an
+        integer instead of a Boolean for more precise answers such as
+        for stale credentials (expired password).
     - API changes
       - Renamed UniformResource into Resource with proper deprecation.
       - Added NamedValue interface to support common behavior in Series
@@ -25,17 +28,19 @@ Changes log
         of null.
       - Added "timeIssues" property to ChallengeResponse, in order to 
         support cookie based authentication.
-      - Deprecated ClientInfo#getPreferredVariant() methods in favor of
+      - Deprecated ClientInfo.getPreferredVariant() methods in favor of
         the ConnegService.
-      - Deprecated ClientResource#createRequest(Request) in favor of a
+      - Deprecated ClientResource.createRequest(Request) in favor of a
         new createRequest() method.
-      - Added Request#isSynchronous() and isAsynchronous() methods as
+      - Added Request.isSynchronous() and isAsynchronous() methods as
         convenient shortcuts.
-      - Added ClientResource#handleInbound(...) and handleOutbound(...)
+      - Added ClientResource.handleInbound(...) and handleOutbound(...)
         method to factorize even more logic.
-      - Added Representation#append(Appendable) method.
-      - Deprecated Series#createSeries(...) method. Use constructor
+      - Added Representation.append(Appendable) method.
+      - Deprecated Series.createSeries(...) method. Use constructor
         instead.
+      - Added SecretVerifier.createUser(identifier) to allow creation
+        of User subclasses if necessary.
     - New features
       - Added a CookieAuthenticator class in the org.restlet.ext.crypto
         extension to provide customizable and secure authentication via

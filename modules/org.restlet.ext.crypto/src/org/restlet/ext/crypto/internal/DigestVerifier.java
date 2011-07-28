@@ -127,6 +127,7 @@ public class DigestVerifier extends
             String username = getIdentifier(request, response);
             String cresponse = null;
             char[] secret = getSecret(request, response);
+
             if (secret != null) {
                 cresponse = new String(secret);
             } else {

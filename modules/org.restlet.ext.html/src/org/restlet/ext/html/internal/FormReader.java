@@ -55,10 +55,10 @@ public class FormReader {
     /** The encoding to use, decoding is enabled, see {@link #decoding}. */
     private volatile CharacterSet characterSet;
 
-    /** Indicates if the fields should be decoded. */
+    /** Indicates if the entries should be decoded. */
     private volatile boolean decoding;
 
-    /** The separator character used between fields. */
+    /** The separator character used between entries. */
     private volatile char separator;
 
     /** The form stream. */
@@ -125,33 +125,33 @@ public class FormReader {
     }
 
     /**
-     * Adds the fields into a given series.
+     * Adds the entries into a given series.
      * 
-     * @param fields
-     *            The target fields series.
+     * @param entries
+     *            The target series of entries.
      */
-    public void addFields(Series<FormData> fields) {
+    public void addEntries(Series<FormData> entries) {
         boolean readNext = true;
-        FormData field = null;
+        FormData entry = null;
 
         if (this.stream != null) {
-            // Let's read all form fields
+            // Let's read all form data entries
             try {
                 while (readNext) {
-                    field = readNextField();
+                    entry = readNextEntry();
 
-                    if (field != null) {
-                        // Add parsed field to the form
-                        fields.add(field);
+                    if (entry != null) {
+                        // Add parsed entry to the form
+                        entries.add(entry);
                     } else {
-                        // Last field parsed
+                        // Last entry parsed
                         readNext = false;
                     }
                 }
             } catch (IOException ioe) {
                 Context.getCurrentLogger()
                         .log(Level.WARNING,
-                                "Unable to parse a form field. Skipping the remaining fields.",
+                                "Unable to parse a form entry. Skipping the remaining entries.",
                                 ioe);
             }
 
@@ -165,19 +165,19 @@ public class FormReader {
     }
 
     /**
-     * Reads all the fields.
+     * Reads all the entries.
      * 
      * @return The form read.
      * @throws IOException
-     *             If the fields could not be read.
+     *             If the entries could not be read.
      */
     public Series<FormData> read() throws IOException {
         Series<FormData> result = new Series<FormData>(FormData.class);
-        FormData field = readNextField();
+        FormData entry = readNextEntry();
 
-        while (field != null) {
-            result.add(field);
-            field = readNextField();
+        while (entry != null) {
+            result.add(entry);
+            entry = readNextEntry();
         }
 
         this.stream.close();
@@ -185,51 +185,104 @@ public class FormReader {
     }
 
     /**
-     * Reads the fields with the given name. If multiple values are found, a
+     * Reads the entries whose name is a key in the given map. If a matching
+     * entry is found, its value is put in the map. If multiple values are
+     * found, a list is created and set in the map.
+     * 
+     * @param entries
+     *            The entries map controlling the reading.
+     * @throws IOException
+     *             If the entries could not be read.
+     */
+    @SuppressWarnings("unchecked")
+    public void readEntries(Map<String, Object> entries) throws IOException {
+        FormData entry = readNextEntry();
+        Object currentValue = null;
+
+        while (entry != null) {
+            if (entries.containsKey(entry.getName())) {
+                currentValue = entries.get(entry.getName());
+
+                if (currentValue != null) {
+                    List<Object> values = null;
+
+                    if (currentValue instanceof List) {
+                        // Multiple values already found for this entry
+                        values = (List<Object>) currentValue;
+                    } else {
+                        // Second value found for this entry
+                        // Create a list of values
+                        values = new ArrayList<Object>();
+                        values.add(currentValue);
+                        entries.put(entry.getName(), values);
+                    }
+
+                    if (entry.getValue() == null) {
+                        values.add(Series.EMPTY_VALUE);
+                    } else {
+                        values.add(entry.getValue());
+                    }
+                } else {
+                    if (entry.getValue() == null) {
+                        entries.put(entry.getName(), Series.EMPTY_VALUE);
+                    } else {
+                        entries.put(entry.getName(), entry.getValue());
+                    }
+                }
+            }
+
+            entry = readNextEntry();
+        }
+
+        this.stream.close();
+    }
+
+    /**
+     * Reads the entries with the given name. If multiple values are found, a
      * list is returned created.
      * 
      * @param name
-     *            The field name to match.
-     * @return The field value or list of values.
+     *            The entry name to match.
+     * @return The entry value or list of values.
      * @throws IOException
-     *             If the field could not be read.
+     *             If the entry could not be read.
      */
     @SuppressWarnings("unchecked")
-    public Object readField(String name) throws IOException {
-        FormData field = readNextField();
+    public Object readEntry(String name) throws IOException {
+        FormData entry = readNextEntry();
         Object result = null;
 
-        while (field != null) {
-            if (field.getName().equals(name)) {
+        while (entry != null) {
+            if (entry.getName().equals(name)) {
                 if (result != null) {
                     List<Object> values = null;
 
                     if (result instanceof List) {
-                        // Multiple values already found for this field
+                        // Multiple values already found for this entry
                         values = (List<Object>) result;
                     } else {
-                        // Second value found for this field
+                        // Second value found for this entry
                         // Create a list of values
                         values = new ArrayList<Object>();
                         values.add(result);
                         result = values;
                     }
 
-                    if (field.getValue() == null) {
+                    if (entry.getValue() == null) {
                         values.add(Series.EMPTY_VALUE);
                     } else {
-                        values.add(field.getValue());
+                        values.add(entry.getValue());
                     }
                 } else {
-                    if (field.getValue() == null) {
+                    if (entry.getValue() == null) {
                         result = Series.EMPTY_VALUE;
                     } else {
-                        result = field.getValue();
+                        result = entry.getValue();
                     }
                 }
             }
 
-            field = readNextField();
+            entry = readNextEntry();
         }
 
         this.stream.close();
@@ -237,76 +290,23 @@ public class FormReader {
     }
 
     /**
-     * Reads the fields whose name is a key in the given map. If a matching
-     * field is found, its value is put in the map. If multiple values are
-     * found, a list is created and set in the map.
-     * 
-     * @param fields
-     *            The fields map controlling the reading.
-     * @throws IOException
-     *             If the fields could not be read.
-     */
-    @SuppressWarnings("unchecked")
-    public void readFields(Map<String, Object> fields) throws IOException {
-        FormData field = readNextField();
-        Object currentValue = null;
-
-        while (field != null) {
-            if (fields.containsKey(field.getName())) {
-                currentValue = fields.get(field.getName());
-
-                if (currentValue != null) {
-                    List<Object> values = null;
-
-                    if (currentValue instanceof List) {
-                        // Multiple values already found for this field
-                        values = (List<Object>) currentValue;
-                    } else {
-                        // Second value found for this field
-                        // Create a list of values
-                        values = new ArrayList<Object>();
-                        values.add(currentValue);
-                        fields.put(field.getName(), values);
-                    }
-
-                    if (field.getValue() == null) {
-                        values.add(Series.EMPTY_VALUE);
-                    } else {
-                        values.add(field.getValue());
-                    }
-                } else {
-                    if (field.getValue() == null) {
-                        fields.put(field.getName(), Series.EMPTY_VALUE);
-                    } else {
-                        fields.put(field.getName(), field.getValue());
-                    }
-                }
-            }
-
-            field = readNextField();
-        }
-
-        this.stream.close();
-    }
-
-    /**
-     * Reads the first field with the given name.
+     * Reads the first entry with the given name.
      * 
      * @param name
-     *            The field name to match.
-     * @return The field value.
+     *            The entry name to match.
+     * @return The entry value.
      * @throws IOException
      */
-    public FormData readFirstField(String name) throws IOException {
-        FormData field = readNextField();
+    public FormData readFirstEntry(String name) throws IOException {
+        FormData entry = readNextEntry();
         FormData result = null;
 
-        while ((field != null) && (result == null)) {
-            if (field.getName().equals(name)) {
-                result = field;
+        while ((entry != null) && (result == null)) {
+            if (entry.getName().equals(name)) {
+                result = entry;
             }
 
-            field = readNextField();
+            entry = readNextEntry();
         }
 
         this.stream.close();
@@ -314,13 +314,13 @@ public class FormReader {
     }
 
     /**
-     * Reads the next field available or null.
+     * Reads the next entry available or null.
      * 
-     * @return The next field available or null.
+     * @return The next entry available or null.
      * @throws IOException
-     *             If the next field could not be read.
+     *             If the next entry could not be read.
      */
-    public FormData readNextField() throws IOException {
+    public FormData readNextEntry() throws IOException {
         FormData result = null;
 
         try {
@@ -340,7 +340,7 @@ public class FormReader {
                             readingValue = true;
                         } else {
                             throw new IOException(
-                                    "Empty field name detected. Please check your form data");
+                                    "Empty entry name detected. Please check your form data");
                         }
                     } else if ((nextChar == this.separator) || (nextChar == -1)) {
                         if (nameBuffer.length() > 0) {
@@ -350,7 +350,7 @@ public class FormReader {
                             // Do nothing return null preference
                         } else {
                             Context.getCurrentLogger()
-                                    .fine("Empty field name detected. Please check your form data");
+                                    .fine("Empty entry name detected. Please check your form data");
                         }
                     } else {
                         nameBuffer.append((char) nextChar);

@@ -49,8 +49,9 @@ public abstract class LocalVerifier extends SecretVerifier {
     public abstract char[] getLocalSecret(String identifier);
 
     @Override
-    public boolean verify(String identifier, char[] secret) {
-        return compare(secret, getLocalSecret(identifier));
+    public int verify(String identifier, char[] secret) {
+        return compare(secret, getLocalSecret(identifier)) ? RESULT_VALID
+                : RESULT_INVALID;
     }
 
 }

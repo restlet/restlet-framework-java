@@ -36,23 +36,31 @@ import org.restlet.security.SecretVerifier;
 
 /**
  * @author esvmart
- *
+ * 
  */
 public class MultipleVerifier extends SecretVerifier {
-    
-    private final Map <String, String> users;
-    
-    public MultipleVerifier(Map <String, String> users){
+
+    private final Map<String, String> users;
+
+    public MultipleVerifier(Map<String, String> users) {
         this.users = users;
     }
 
     @Override
-    public boolean verify(String identifier, char[] secret) {
-        if(users == null) return false;
-        if(identifier == null || secret == null) return false;
+    public int verify(String identifier, char[] secret) {
+        if (users == null)
+            return RESULT_UNKNOWN;
+
+        if (identifier == null || secret == null)
+            return RESULT_UNKNOWN;
+
         String pass = users.get(identifier);
-        if(pass == null) return false;
-        return compare(pass.toCharArray(), secret);
+
+        if (pass == null)
+            return RESULT_UNKNOWN;
+
+        return compare(pass.toCharArray(), secret) ? RESULT_VALID
+                : RESULT_INVALID;
     }
 
 }

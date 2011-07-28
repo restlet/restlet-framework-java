@@ -135,10 +135,8 @@ public class DigestVerifier<T extends SecretVerifier> extends SecretVerifier {
             LocalVerifier localVerifier = (LocalVerifier) getWrappedVerifier();
             result = localVerifier.getLocalSecret(identifier);
         } else {
-            Context
-                    .getCurrentLogger()
-                    .log(
-                            Level.WARNING,
+            Context.getCurrentLogger()
+                    .log(Level.WARNING,
                             "The wrapped verifier must be a LocalVerifier to allow digesting of wrapped secrets.");
         }
 
@@ -217,8 +215,8 @@ public class DigestVerifier<T extends SecretVerifier> extends SecretVerifier {
     }
 
     @Override
-    public boolean verify(String identifier, char[] secret) {
-        boolean result = false;
+    public int verify(String identifier, char[] secret) {
+        int result = RESULT_INVALID;
         char[] secretDigest = secret;
 
         if (getAlgorithm() == null) {
@@ -232,10 +230,12 @@ public class DigestVerifier<T extends SecretVerifier> extends SecretVerifier {
         } else {
             if (getWrappedAlgorithm() == null) {
                 result = compare(secretDigest,
-                        getWrappedSecretDigest(identifier));
+                        getWrappedSecretDigest(identifier)) ? RESULT_VALID
+                        : RESULT_INVALID;
             } else if (getAlgorithm().equals(getWrappedAlgorithm())) {
                 result = getWrappedVerifier().verify(identifier, secretDigest);
             } else {
+                result = RESULT_UNSUPPORTED;
                 Context.getCurrentLogger().log(Level.WARNING,
                         "The input and output algorithms can't be different.");
             }

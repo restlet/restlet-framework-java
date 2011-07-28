@@ -48,6 +48,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MapVerifier;
+import org.restlet.security.Verifier;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -74,11 +75,12 @@ public class HttpBasicTestCase extends RestletTestCase {
         }
 
         @Override
-        public boolean verify(String identifier, char[] inputSecret) {
+        public int verify(String identifier, char[] inputSecret) {
             // NOTE: Allocating Strings are not really secure treatment of
             // passwords
-            final String almostSecret = new String(inputSecret);
+            String almostSecret = new String(inputSecret);
             System.out.println("Checking " + identifier + " " + almostSecret);
+
             try {
                 return super.verify(identifier, inputSecret);
             } finally {
@@ -115,35 +117,40 @@ public class HttpBasicTestCase extends RestletTestCase {
     private MapVerifier verifier;
 
     public void guardLong() {
-        assertTrue("Didn't authenticate short user/pwd", this.verifier.verify(
-                LONG_USERNAME, LONG_PASSWORD.toCharArray()));
+        assertEquals("Didn't authenticate short user/pwd",
+                Verifier.RESULT_INVALID, this.verifier.verify(LONG_USERNAME,
+                        LONG_PASSWORD.toCharArray()));
     }
 
     public void guardLongWrong() {
-        assertFalse(
+        assertEquals(
                 "Authenticated long username with wrong password",
+                Verifier.RESULT_INVALID,
                 this.verifier.verify(LONG_USERNAME,
                         SHORT_PASSWORD.toCharArray()));
     }
 
     // Test our guard.checkSecret() stand-alone
     public void guardShort() {
-        assertTrue(
+        assertEquals(
                 "Didn't authenticate short user/pwd",
+                Verifier.RESULT_VALID,
                 this.verifier.verify(SHORT_USERNAME,
                         SHORT_PASSWORD.toCharArray()));
     }
 
     public void guardShortWrong() {
-        assertFalse(
+        assertEquals(
                 "Authenticated short username with wrong password",
+                Verifier.RESULT_INVALID,
                 this.verifier.verify(SHORT_USERNAME,
                         LONG_PASSWORD.toCharArray()));
     }
 
     public void guardWrongUser() {
-        assertFalse(
+        assertEquals(
                 "Authenticated wrong username",
+                Verifier.RESULT_INVALID,
                 this.verifier.verify(WRONG_USERNAME,
                         SHORT_PASSWORD.toCharArray()));
     }

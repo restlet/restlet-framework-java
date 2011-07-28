@@ -245,7 +245,7 @@ public class AwsVerifier extends SecretVerifier {
      * {@link #verify(Request, Response)}.
      */
     @Override
-    public boolean verify(String identifier, char[] secret)
+    public int verify(String identifier, char[] secret)
             throws IllegalArgumentException {
         throw new RuntimeException("Method not implemented");
     }

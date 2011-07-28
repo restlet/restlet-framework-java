@@ -81,7 +81,6 @@ public class MemoryRealm extends Realm {
      * mapped organizations.
      */
     private class DefaultVerifier extends LocalVerifier {
-
         @Override
         public char[] getLocalSecret(String identifier) {
             char[] result = null;

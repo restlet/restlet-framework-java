@@ -33,6 +33,7 @@ package org.restlet.test.security;
 import org.restlet.data.Digest;
 import org.restlet.ext.crypto.DigestVerifier;
 import org.restlet.security.MapVerifier;
+import org.restlet.security.Verifier;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -49,8 +50,10 @@ public class DigestVerifierTestCase extends RestletTestCase {
         DigestVerifier<MapVerifier> sdv = new DigestVerifier<MapVerifier>(
                 Digest.ALGORITHM_SHA_1, mv, null);
 
-        assertTrue(sdv.verify("scott", "RuPXcqGIjq3/JsetpH/XUC15bgc="
-                .toCharArray()));
+        assertEquals(
+                Verifier.RESULT_VALID,
+                sdv.verify("scott",
+                        "RuPXcqGIjq3/JsetpH/XUC15bgc=".toCharArray()));
     }
 
     public void test2() {
@@ -61,13 +64,16 @@ public class DigestVerifierTestCase extends RestletTestCase {
         DigestVerifier<MapVerifier> sdv = new DigestVerifier<MapVerifier>(
                 Digest.ALGORITHM_SHA_1, mv, Digest.ALGORITHM_SHA_1);
 
-        assertTrue(sdv.verify("scott", "RuPXcqGIjq3/JsetpH/XUC15bgc="
-                .toCharArray()));
+        assertEquals(
+                Verifier.RESULT_VALID,
+                sdv.verify("scott",
+                        "RuPXcqGIjq3/JsetpH/XUC15bgc=".toCharArray()));
 
-        assertFalse(sdv.verify("scott", "xxxxx".toCharArray()));
+        assertEquals(Verifier.RESULT_INVALID,
+                sdv.verify("scott", "xxxxx".toCharArray()));
 
-        assertFalse(sdv.verify("tom", "RuPXcqGIjq3/JsetpH/XUC15bgc="
-                .toCharArray()));
+        assertEquals(Verifier.RESULT_INVALID,
+                sdv.verify("tom", "RuPXcqGIjq3/JsetpH/XUC15bgc=".toCharArray()));
     }
 
     public void test3() {
@@ -78,6 +84,7 @@ public class DigestVerifierTestCase extends RestletTestCase {
         DigestVerifier<MapVerifier> sdv = new DigestVerifier<MapVerifier>(null,
                 mv, Digest.ALGORITHM_SHA_1);
 
-        assertTrue(sdv.verify("scott", "tiger".toCharArray()));
+        assertEquals(Verifier.RESULT_VALID,
+                sdv.verify("scott", "tiger".toCharArray()));
     }
 }

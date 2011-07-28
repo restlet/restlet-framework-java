@@ -43,7 +43,7 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.util.NamedValue;
 
 /**
- * HTML form field composed of a name and a value. The value is typically a
+ * HTML form data composed of a name and a value. The value is typically a
  * string but can also be a full fledged representation for multipart form (such
  * as a binary file uploaded).
  * 

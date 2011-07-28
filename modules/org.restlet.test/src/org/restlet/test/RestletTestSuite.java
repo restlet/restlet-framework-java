@@ -59,7 +59,7 @@ import org.restlet.test.ext.html.HtmlTestSuite;
 import org.restlet.test.ext.jaxb.JaxbBasicConverterTestCase;
 import org.restlet.test.ext.jaxb.JaxbIntegrationConverterTestCase;
 import org.restlet.test.ext.odata.ODataTestSuite;
-import org.restlet.test.ext.sip.AllSipTests;
+import org.restlet.test.ext.sip.SipTests;
 import org.restlet.test.ext.spring.SpringTestSuite;
 import org.restlet.test.ext.velocity.VelocityTestCase;
 import org.restlet.test.ext.wadl.WadlTestSuite;
@@ -166,7 +166,7 @@ public class RestletTestSuite extends TestSuite {
 
         addTest(EngineTestSuite.suite());
         addTest(JaxRsTestSuite.suite());
-        addTest(AllSipTests.suite());
+        addTest(SipTests.suite());
         addTest(SpringTestSuite.suite());
         // [enddef]
     }
