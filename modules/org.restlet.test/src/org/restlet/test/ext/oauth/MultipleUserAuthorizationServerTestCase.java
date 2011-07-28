@@ -68,7 +68,8 @@ public class MultipleUserAuthorizationServerTestCase extends OAuthHttpTestBase {
         int numThreads = 10;
         int numCalls = 50;
         int totCalls = (numThreads * numCalls);
-        List<OAuthRequest> calls = new ArrayList<OAuthRequest>(totCalls);
+        List<Callable<Boolean>> calls = new ArrayList<Callable<Boolean>>(
+                totCalls);
         ExecutorService es = Executors.newFixedThreadPool(numThreads);
         Client c = this.createClient();
         Random r = new Random();

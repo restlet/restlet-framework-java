@@ -218,6 +218,21 @@ public abstract class Representation extends RepresentationInfo {
     }
 
     /**
+     * Appends the representation to an appendable sequence of characters. This
+     * method is ensured to write the full content for each invocation unless it
+     * is a transient representation, in which case an exception is thrown.<br>
+     * <br>
+     * Note that {@link #getText()} is used by the default implementation.
+     * 
+     * @param appendable
+     *            The appendable sequence of characters.
+     * @throws IOException
+     */
+    public void append(Appendable appendable) throws IOException {
+        appendable.append(getText());
+    }
+
+    /**
      * Exhaust the content of the representation by reading it and silently
      * discarding anything read. By default, it relies on {@link #getStream()}
      * and closes the retrieved stream in the end.
@@ -412,6 +427,16 @@ public abstract class Representation extends RepresentationInfo {
         return this.available && (getSize() != 0);
     }
 
+    // [ifdef gwt] method uncomment
+    // /**
+    // * Converts the representation to a string value. Be careful when using
+    // * this method as the conversion of large content to a string fully
+    // * stored in memory can result in OutOfMemoryErrors being thrown.
+    // *
+    // * @return The representation as a string value.
+    // */
+    // public abstract String getText() throws IOException;
+
     // [ifndef gwt] method
     /**
      * Indicates if the representation content supports NIO selection. In this
@@ -430,16 +455,6 @@ public abstract class Representation extends RepresentationInfo {
             return false;
         }
     }
-
-    // [ifdef gwt] method uncomment
-    // /**
-    // * Converts the representation to a string value. Be careful when using
-    // * this method as the conversion of large content to a string fully
-    // * stored in memory can result in OutOfMemoryErrors being thrown.
-    // *
-    // * @return The representation as a string value.
-    // */
-    // public abstract String getText() throws IOException;
 
     /**
      * Indicates if the representation's content is transient, which means that
@@ -592,21 +607,6 @@ public abstract class Representation extends RepresentationInfo {
      */
     public void setTransient(boolean isTransient) {
         this.isTransient = isTransient;
-    }
-
-    /**
-     * Writes the representation to an appendable sequence of characters. This
-     * method is ensured to write the full content for each invocation unless it
-     * is a transient representation, in which case an exception is thrown.<br>
-     * <br>
-     * Note that {@link #getText()} is used by the default implementation.
-     * 
-     * @param appendable
-     *            The appendable sequence of characters.
-     * @throws IOException
-     */
-    public void write(Appendable appendable) throws IOException {
-        appendable.append(getText());
     }
 
     // [ifndef gwt] member
