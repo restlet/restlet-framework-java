@@ -92,11 +92,15 @@ public class Parameter extends Couple<String, String> implements
         return getName().compareTo(o.getName());
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Encodes the parameter into the target buffer.
      * 
-     * @see org.restlet.data.NamedValue#encode(java.lang.Appendable,
-     * org.restlet.data.CharacterSet)
+     * @param buffer
+     *            The target buffer.
+     * @param characterSet
+     *            The character set to use.
+     *            @deprecated Use
+     * @throws IOException
      */
     public void encode(Appendable buffer, CharacterSet characterSet)
             throws IOException {
@@ -110,10 +114,13 @@ public class Parameter extends Couple<String, String> implements
         }
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Encodes the parameter as a string.
      * 
-     * @see org.restlet.data.NamedValue#encode(org.restlet.data.CharacterSet)
+     * @param characterSet
+     *            The character set to use.
+     * @return The encoded string?
+     * @throws IOException
      */
     public String encode(CharacterSet characterSet) throws IOException {
         final StringBuilder sb = new StringBuilder();

@@ -55,6 +55,11 @@ Changes log
         method annotations such as @Get("form:json?light") or 
         @Get("?level=2"). This allows returning and serializing 
         different representation beans based on those parameters.
+      - Added HTML extension that currently supports write HTML form
+        in URL encoded or multipart form data. As a future replacement for 
+        the org.restlet.data.Form class, it adds the ability to work with 
+        multipart forms (currently writing only) with the same Java API.
+        Some suggestions from John Logdson.
     - Bug fixed
       - Fixed potential NPE in the Authenticator when logging authentication 
         failure. Reported by Martin Svensson.
