@@ -6,20 +6,13 @@ Bundle-Version: 2.1
 Bundle-Vendor: Noelios Technologies
 Import-Package: org.restlet,
  org.restlet.data,
- org.restlet.engine,
- org.restlet.engine.application,
- org.restlet.engine.component,
  org.restlet.engine.converter,
  org.restlet.engine.header,
- org.restlet.engine.local,
  org.restlet.engine.resource,
- org.restlet.engine.security,
- org.restlet.engine.util,
  org.restlet.representation,
  org.restlet.resource,
- org.restlet.service,
- org.restlet.test,
  org.restlet.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Export-Package: org.restlet.ext.html
+Export-Package: org.restlet.ext.html,
+ org.restlet.ext.html.internal
 Require-Bundle: org.junit;bundle-version="3.8.2"

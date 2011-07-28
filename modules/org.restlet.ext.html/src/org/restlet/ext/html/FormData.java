@@ -227,4 +227,9 @@ public class FormData implements NamedValue {
         this.valueRepresentation = valueRepresentation;
     }
 
+    @Override
+    public String toString() {
+        return "(" + getName() + "," + getValueRepresentation() + ")";
+    }
+
 }

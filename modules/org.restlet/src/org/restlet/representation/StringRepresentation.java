@@ -133,6 +133,15 @@ public class StringRepresentation extends CharacterRepresentation {
     }
 
     @Override
+    public Reader getReader() throws IOException {
+        if (getText() != null) {
+            return new StringReader(getText());
+        }
+
+        return null;
+    }
+
+    @Override
     public InputStream getStream() throws IOException {
         // [ifndef gwt]
         CharacterSet charset = getCharacterSet() == null ? CharacterSet.ISO_8859_1
@@ -141,17 +150,9 @@ public class StringRepresentation extends CharacterRepresentation {
                 .getBytes(charset.getName()));
         // [enddef]
         // [ifdef gwt] instruction uncomment
-        // InputStream result = new org.restlet.engine.io.StringInputStream(getText());
+        // InputStream result = new
+        // org.restlet.engine.io.StringInputStream(getText());
         return result;
-    }
-
-    @Override
-    public Reader getReader() throws IOException {
-        if (getText() != null) {
-            return new StringReader(getText());
-        }
-
-        return null;
     }
 
     @Override
@@ -193,6 +194,11 @@ public class StringRepresentation extends CharacterRepresentation {
      */
     public void setText(String text) {
         setText((CharSequence) text);
+    }
+
+    @Override
+    public String toString() {
+        return getText();
     }
 
     /**

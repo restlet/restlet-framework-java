@@ -99,7 +99,6 @@ public class Parameter extends Couple<String, String> implements
      *            The target buffer.
      * @param characterSet
      *            The character set to use.
-     *            @deprecated Use
      * @throws IOException
      */
     public void encode(Appendable buffer, CharacterSet characterSet)
@@ -123,7 +122,7 @@ public class Parameter extends Couple<String, String> implements
      * @throws IOException
      */
     public String encode(CharacterSet characterSet) throws IOException {
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         encode(sb, characterSet);
         return sb.toString();
     }

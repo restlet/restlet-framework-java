@@ -55,13 +55,14 @@ import org.restlet.test.ext.atom.AtomTestCase;
 import org.restlet.test.ext.crypto.CryptoTestSuite;
 import org.restlet.test.ext.freemarker.FreeMarkerTestCase;
 import org.restlet.test.ext.gwt.GwtConverterTestCase;
+import org.restlet.test.ext.html.HtmlTestSuite;
 import org.restlet.test.ext.jaxb.JaxbBasicConverterTestCase;
 import org.restlet.test.ext.jaxb.JaxbIntegrationConverterTestCase;
 import org.restlet.test.ext.odata.ODataTestSuite;
 import org.restlet.test.ext.sip.AllSipTests;
 import org.restlet.test.ext.spring.SpringTestSuite;
 import org.restlet.test.ext.velocity.VelocityTestCase;
-import org.restlet.test.ext.wadl.WadlTestCase;
+import org.restlet.test.ext.wadl.WadlTestSuite;
 import org.restlet.test.ext.xml.ResolvingTransformerTestCase;
 import org.restlet.test.ext.xml.RestletXmlTestCase;
 import org.restlet.test.ext.xml.TransformerTestCase;
@@ -134,9 +135,10 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(TransformerTestCase.class);
         addTestSuite(ValidatorTestCase.class);
         addTestSuite(VelocityTestCase.class);
-        addTestSuite(WadlTestCase.class);
         addTest(CryptoTestSuite.suite());
+        addTest(HtmlTestSuite.suite());
         addTest(ODataTestSuite.suite());
+        addTest(WadlTestSuite.suite());
 
         // Tests based on extension only supported by the JEE edition.
         // [ifdef jee]

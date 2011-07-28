@@ -106,6 +106,21 @@ public class FormDataSet extends OutputRepresentation {
     }
 
     /**
+     * Adds a new form data entry.
+     * 
+     * @param name
+     *            The entry name.
+     * @param value
+     *            The entry value.
+     * @return The entry created and added to {@link #getEntries()}.
+     */
+    public FormData add(String name, String value) {
+        FormData result = getEntries().createEntry(name, value);
+        getEntries().add(result);
+        return result;
+    }
+
+    /**
      * Encodes the form using the standard URI encoding mechanism and the UTF-8
      * character set.
      * 
