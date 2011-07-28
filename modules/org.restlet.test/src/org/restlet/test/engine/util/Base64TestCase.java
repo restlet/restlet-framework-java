@@ -28,8 +28,9 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test.engine;
+package org.restlet.test.engine.util;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 import org.restlet.engine.util.Base64;
@@ -48,21 +49,32 @@ public class Base64TestCase extends RestletTestCase {
     }
 
     public void test() throws Exception {
-        final byte[] b = ("Man is distinguished, not only by his reason, but by this singular passion from "
+        byte[] b = ("Man is distinguished, not only by his reason, but by this singular passion from "
                 + "other animals, which is a lust of the mind, that by a perseverance of delight "
                 + "in the continued and indefatigable generation of knowledge, exceeds the short "
                 + "vehemence of any carnal pleasure.").getBytes();
-        final String s = "TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlz\n"
+        String s = "TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlz\n"
                 + "IHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2Yg\n"
                 + "dGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGlu\n"
                 + "dWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRo\n"
                 + "ZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=";
-        final String base64 = Base64.encode(b, true);
+        String base64 = Base64.encode(b, true);
+
         assertEquals(s, base64);
         roundTrip(b, true);
         assertEquals(new String(b), new String(Base64.decode(base64)));
+        assertEquals("scott:tiger",
+                new String(Base64.decode("c2NvdHQ6dGlnZXI=")));
+    }
 
-        assertEquals("scott:tiger", new String(Base64
-                .decode("c2NvdHQ6dGlnZXI=")));
+    public void testParsing() throws UnsupportedEncodingException {
+        String header = "MGRjM2VhZWQtOWRiNi00NGQ0LWI3NDktNjI5MzgyMDdiNWIwOjBiYWU3MmFiLWFmZjYtNGFhZS1iYmU1LTkxxNjNmNjBkMQ==";
+
+        try {
+            Base64.decode(header);
+            fail("Values that aren't multiple of 4 are not allowed");
+        } catch (IllegalArgumentException iae) {
+            // OK
+        }
     }
 }

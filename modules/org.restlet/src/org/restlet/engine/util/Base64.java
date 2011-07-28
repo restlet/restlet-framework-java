@@ -79,18 +79,23 @@ public class Base64 {
     public static byte[] decode(final char[] chars) {
         // prepare to ignore newline chars
         int newlineCount = 0;
-        for (final char c : chars) {
+        for (char c : chars) {
             switch (c) {
             case '\r':
             case '\n':
                 newlineCount++;
                 break;
-
             default:
             }
         }
 
-        final int len = chars.length - newlineCount;
+        int len = chars.length - newlineCount;
+
+        if (len % 4 != 0) {
+            throw new IllegalArgumentException(
+                    "Base64.decode() requires input length to be a multiple of 4");
+        }
+
         int numBytes = ((len + 3) / 4) * 3;
 
         // fix up length relative to padding
@@ -102,7 +107,7 @@ public class Base64 {
             }
         }
 
-        final byte[] result = new byte[numBytes];
+        byte[] result = new byte[numBytes];
         int newlineOffset = 0;
 
         // decode each block of 4 chars into 3 bytes

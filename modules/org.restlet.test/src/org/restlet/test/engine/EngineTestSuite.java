@@ -37,6 +37,7 @@ import org.restlet.test.engine.connector.HttpInboundRequestTestCase;
 import org.restlet.test.engine.io.BioUtilsTestCase;
 import org.restlet.test.engine.io.BufferTestCase;
 import org.restlet.test.engine.io.ReaderInputStreamTestCase;
+import org.restlet.test.engine.util.Base64TestCase;
 
 /**
  * Suite of unit tests for the Noelios Restlet Engine.

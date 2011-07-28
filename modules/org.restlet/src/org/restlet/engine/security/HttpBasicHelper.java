@@ -143,9 +143,8 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 
             if (credentialsEncoded == null) {
                 getLogger()
-                        .warning(
-                                "Cannot decode credentials: "
-                                        + challenge.getRawValue());
+                        .info("Cannot decode credentials: "
+                                + challenge.getRawValue());
             }
 
             String credentials = new String(credentialsEncoded, "ISO-8859-1");
@@ -153,7 +152,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
 
             if (separator == -1) {
                 // Log the blocking
-                getLogger().warning(
+                getLogger().info(
                         "Invalid credentials given by client with IP: "
                                 + ((request != null) ? request.getClientInfo()
                                         .getAddress() : "?"));
@@ -162,7 +161,11 @@ public class HttpBasicHelper extends AuthenticatorHelper {
                 challenge.setSecret(credentials.substring(separator + 1));
             }
         } catch (UnsupportedEncodingException e) {
-            getLogger().log(Level.WARNING, "Unsupported encoding error", e);
+            getLogger().log(Level.INFO,
+                    "Unsupported HTTP Basic encoding error", e);
+        } catch (IllegalArgumentException e) {
+            getLogger().log(Level.INFO,
+                    "Unable to decode the HTTP Basic credential", e);
         }
     }
 
