@@ -14,6 +14,9 @@ Changes log
          Reported by David Hamilton
        - Fixed bug failing to properly clear the service filters of a
          Component when stopped. Reported by Jean-Pascal Boignard.
+       - Fixed parsing issue with invalid HTTP Basic credentials, when
+         length of Base 64 value isn't a multiple of 4. 
+         Contributed by Ray Waldin.
 
 - 2.0.8 (2011-06-21)
     - Bugs fixed

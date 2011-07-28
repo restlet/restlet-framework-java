@@ -91,6 +91,12 @@ public class Base64 {
         }
 
         final int len = chars.length - newlineCount;
+
+        if (len % 4 != 0) {
+            throw new IllegalArgumentException(
+                    "Base64.decode() requires input length to be a multiple of 4");
+        }
+
         int numBytes = ((len + 3) / 4) * 3;
 
         // fix up length relative to padding
