@@ -41,6 +41,8 @@ Changes log
         instead.
       - Added SecretVerifier.createUser(identifier) to allow creation
         of User subclasses if necessary.
+      - Renamed JaxRsApplication.guard into authenticator to match the
+        parameter Authenticator class.
     - New features
       - Added a CookieAuthenticator class in the org.restlet.ext.crypto
         extension to provide customizable and secure authentication via

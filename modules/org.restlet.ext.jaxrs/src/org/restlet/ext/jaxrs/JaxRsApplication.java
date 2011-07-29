@@ -38,7 +38,6 @@ import javax.ws.rs.core.Application;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.routing.Filter;
 import org.restlet.security.Authenticator;
 
 /**
@@ -66,9 +65,9 @@ import org.restlet.security.Authenticator;
 public class JaxRsApplication extends org.restlet.Application {
 
     /**
-     * The Guard to use {@link org.restlet.security.UniformGuard}). May be null.
+     * The {@link org.restlet.security.Authenticator}) to use. May be null.
      */
-    private volatile Filter guard;
+    private volatile Authenticator authenticator;
 
     /** The {@link JaxRsRestlet} to use. */
     private volatile JaxRsRestlet jaxRsRestlet;
@@ -157,21 +156,32 @@ public class JaxRsApplication extends org.restlet.Application {
     public Restlet createInboundRoot() {
         Restlet restlet = this.jaxRsRestlet;
 
-        if (this.guard != null) {
-            this.guard.setNext(restlet);
-            restlet = this.guard;
+        if (this.authenticator != null) {
+            this.authenticator.setNext(restlet);
+            restlet = this.authenticator;
         }
 
         return restlet;
     }
 
     /**
-     * Returns the guard.
+     * Returns the {@link Authenticator}.
      * 
-     * @return the guard.
+     * @return the {@link Authenticator}.
      */
-    public Filter getGuard() {
-        return this.guard;
+    public Authenticator getAuthenticator() {
+        return this.authenticator;
+    }
+
+    /**
+     * Returns the {@link Authenticator}.
+     * 
+     * @return the {@link Authenticator}.
+     * @deprecated Use {@link #getAuthenticator()} instead.
+     */
+    @Deprecated
+    public Authenticator getGuard() {
+        return this.authenticator;
     }
 
     /**
@@ -224,6 +234,19 @@ public class JaxRsApplication extends org.restlet.Application {
         }
     }
 
+    /**
+     * Sets the {@link Authenticator} to use. This should be called before the
+     * root Restlet is created.
+     * <p>
+     * This replaced the guard set via {@link #setGuard(Authenticator)}.
+     * 
+     * @param authenticator
+     *            The {@link Authenticator} to use.
+     */
+    public void setAuthenticator(Authenticator authenticator) {
+        this.authenticator = authenticator;
+    }
+
     @Override
     public void setContext(Context context) {
         super.setContext(context);
@@ -231,16 +254,18 @@ public class JaxRsApplication extends org.restlet.Application {
     }
 
     /**
-     * Set the Guard from the org.restlet.security package. This should be
-     * called before the root Restlet is created.
+     * Sets the {@link Authenticator} to use. This should be called before the
+     * root Restlet is created.
      * <p>
      * This replaced the guard set via {@link #setGuard(Authenticator)}.
      * 
-     * @param guard
-     *            the Guard to use.
+     * @param authenticator
+     *            The {@link Authenticator} to use.
+     * @deprecated Use {@link #setAuthenticator(Authenticator)} instead.
      */
-    public void setGuard(Authenticator guard) {
-        this.guard = guard;
+    @Deprecated
+    public void setGuard(Authenticator authenticator) {
+        this.authenticator = authenticator;
     }
 
     /**
