@@ -139,7 +139,8 @@ public class SpringFinder extends Finder {
 
     /**
      * Calls the {@link #create()} method that can be configured as a lookup
-     * method in Spring.
+     * method in Spring. Overriding this method was necessary for direct calls
+     * to it, for example by unit tests.
      */
     @Override
     public ServerResource create(Class<? extends ServerResource> targetClass,

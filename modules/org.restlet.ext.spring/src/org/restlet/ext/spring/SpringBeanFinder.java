@@ -54,6 +54,7 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
         ApplicationContextAware {
+
     /** The parent application context. */
     private volatile ApplicationContext applicationContext;
 
@@ -113,8 +114,8 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware,
                 && getBeanFactory().containsBean(getBeanName())) {
             return getBeanFactory().getBean(getBeanName());
         } else {
-            throw new IllegalStateException(
-                    String.format("No bean named %s present.", getBeanName()));
+            throw new IllegalStateException(String.format(
+                    "No bean named %s present.", getBeanName()));
         }
     }
 

@@ -154,8 +154,7 @@ public class Finder extends Restlet {
                 result = targetClass.newInstance();
             } catch (Exception e) {
                 getLogger()
-                        .log(
-                                Level.WARNING,
+                        .log(Level.WARNING,
                                 "Exception while instantiating the target server resource.",
                                 e);
             }
