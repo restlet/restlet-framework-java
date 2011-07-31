@@ -1,7 +1,7 @@
 <library id="guice" symbolicName="com.google.guice">
 	<name>Google Guice</name>
 	<description>Google Guice.</description>
-	<version>1.0</version>
+	<version>2.0</version>
 	<homeUri>http://code.google.com/p/google-guice/</homeUri>
 	<downloadUri>http://code.google.com/p/google-guice/downloads/list</downloadUri>
 	<provider>Google Inc.</provider>
