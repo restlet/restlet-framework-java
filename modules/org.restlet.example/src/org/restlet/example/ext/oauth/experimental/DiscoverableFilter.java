@@ -117,6 +117,7 @@ public class DiscoverableFilter extends Filter {
             if (next instanceof Finder) {
                 Finder f = (Finder) next;
                 ServerResource sr = f.find(request, response);
+
                 if (sr instanceof WadlServerResource) {
                     wadl = (WadlServerResource) sr;
                 }
@@ -153,6 +154,7 @@ public class DiscoverableFilter extends Filter {
             if (next instanceof Finder) {
                 Finder f = (Finder) next;
                 ServerResource sr = f.find(request, response);
+
                 if (sr instanceof DiscoverableResource) {
                     scoped = (DiscoverableResource) sr;
                     List<AnnotationInfo> ai = AnnotationUtils.getAnnotations(sr
@@ -181,7 +183,7 @@ public class DiscoverableFilter extends Filter {
         // Supported methods
         DiscoverableEndpointInfo result = new DiscoverableEndpointInfo(methods);
         // Required scopes
-        List <Role> roles = scoped.getRoles(request.getResourceRef(),
+        List<Role> roles = scoped.getRoles(request.getResourceRef(),
                 request.getMethod());
         if (roles != null)
             result.setScopes(roles);

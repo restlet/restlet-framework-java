@@ -43,8 +43,8 @@ import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
 
 /**
- * Utility for setting up a static html page resource. For more complex and
- * dynamic pages Freemarker is a better choice.
+ * Utility for setting up a static HTML page resource. For more complex and
+ * dynamic pages FreeMarker is a better choice.
  * 
  * @author Kristoffer Gronowski
  */
@@ -59,11 +59,13 @@ public class StaticHtmlPage extends Finder {
         // TODO could check that it is CLAP and ends .html
         ClientResource local = new ClientResource(ref);
         Representation tmpPage = local.get();
+
         try {
             page = tmpPage.getText();
         } catch (IOException e) {
             page = e.getLocalizedMessage();
         }
+
         type = tmpPage.getMediaType();
         tmpPage.release();
         local.release();

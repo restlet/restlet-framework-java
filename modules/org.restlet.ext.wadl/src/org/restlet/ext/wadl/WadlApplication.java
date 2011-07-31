@@ -288,6 +288,7 @@ public class WadlApplication extends Application {
         }
 
         Finder finder = createFinder(router, uriPattern, currentResource);
+
         if (finder != null) {
             // Attach the resource itself
             router.attach(uriPattern, finder);

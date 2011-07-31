@@ -47,21 +47,22 @@ import org.restlet.ext.oauth.ClientStoreFactory;
 import org.restlet.ext.oauth.OAuthServerResource;
 import org.restlet.ext.oauth.ValidationServerResource;
 import org.restlet.ext.oauth.internal.MemClientStore;
-import org.restlet.resource.Finder;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 
-
 public class OAuthTestApplication extends Application {
-    
+
     public static final String TEST_USER = "bob";
+
     public static final String TEST_PASS = "alice";
-	
+
     protected long timeout = 0; // unlimited
+
     protected String protocol;
+
     protected int port;
-    
-    public OAuthTestApplication(long timeout){
+
+    public OAuthTestApplication(long timeout) {
         this(timeout, "http", 8080);
     }
 
@@ -90,28 +91,25 @@ public class OAuthTestApplication extends Application {
         ClientStore<?> clientStore = ClientStoreFactory.getInstance();
         Client client = clientStore.createClient("1234567890", "1234567890",
                 protocol + "://localhost:" + port + "/");
-        
-        //Bootstrap for password flow test...
+
+        // Bootstrap for password flow test...
         AuthenticatedUser user = client.createUser(TEST_USER);
         user.setPassword(TEST_PASS);
 
         Router router = new Router(ctx);
 
-        //Set up a simple challenge authenticator:
-        //Challenge Authenticator
+        // Set up a simple challenge authenticator:
+        // Challenge Authenticator
         ChallengeAuthenticator au = new ChallengeAuthenticator(getContext(),
                 ChallengeScheme.HTTP_BASIC, "OAuth Test Server");
         au.setVerifier(new SingleVerifier());
         au.setNext(AuthorizationServerResource.class);
-        
+
         // Oauth 2 resources
         router.attach("/authorize", au);
-        router.attach("/access_token", new Finder(ctx,
-                AccessTokenServerResource.class));
-        router.attach("/validate", 
-                ValidationServerResource.class);
-        router.attach("/auth_page", new Finder(ctx, AuthPageServerResource.class));
-
+        router.attach("/access_token", AccessTokenServerResource.class);
+        router.attach("/validate", ValidationServerResource.class);
+        router.attach("/auth_page", AuthPageServerResource.class);
         return router;
     }
 
