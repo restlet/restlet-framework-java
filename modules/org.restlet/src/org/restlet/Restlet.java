@@ -37,6 +37,8 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.component.ComponentContext;
 import org.restlet.engine.util.ChildContext;
+import org.restlet.resource.Finder;
+import org.restlet.resource.ServerResource;
 
 /**
  * Uniform class that provides a context and life cycle support. It has many
@@ -89,6 +91,9 @@ public abstract class Restlet implements Uniform {
     /** The description. */
     private volatile String description;
 
+    /** Finder class to instantiate. */
+    private volatile Class<? extends Finder> finderClass;
+
     /** The display name. */
     private volatile String name;
 
@@ -119,6 +124,7 @@ public abstract class Restlet implements Uniform {
     public Restlet(Context context) {
         // [ifndef gwt] instruction
         this.context = context;
+        this.finderClass = null;
         // [ifdef gwt] instruction uncomment
         // this.context = (context != null) ? context : new Context();
         this.started = false;
@@ -137,6 +143,34 @@ public abstract class Restlet implements Uniform {
 
         fireContextChanged(this, context);
         // [enddef]
+    }
+
+    /**
+     * Creates a new finder instance based on the "targetClass" property. If
+     * none is define, the {@link Application#createFinder(Class)} method is
+     * invoked if available, otherwise the
+     * {@link Finder#createFinder(Class, Class, Context, Logger)} method is
+     * called with the {@link Finder} class as parameter.
+     * 
+     * @param resourceClass
+     *            The target {@link ServerResource} class to find.
+     * @return The new finder instance.
+     * @see Finder#createFinder(Class, Class, Context, Logger)
+     */
+    public Finder createFinder(Class<? extends ServerResource> resourceClass) {
+        Finder result = null;
+
+        if (getFinderClass() != null) {
+            result = Finder.createFinder(resourceClass, getFinderClass(),
+                    getContext(), getLogger());
+        } else if ((getApplication() != null) && (getApplication() != this)) {
+            result = getApplication().createFinder(resourceClass);
+        } else {
+            result = Finder.createFinder(resourceClass, Finder.class,
+                    getContext(), getLogger());
+        }
+
+        return result;
     }
 
     /**
@@ -184,6 +218,18 @@ public abstract class Restlet implements Uniform {
      */
     public String getDescription() {
         return this.description;
+    }
+
+    /**
+     * Returns the finder class used to instantiate resource classes. By
+     * default, it returns the {@link Finder} class. This property is leveraged
+     * by {@link Application#setOutboundRoot(Class)} and
+     * {@link Application#setInboundRoot(Class)} methods.
+     * 
+     * @return the finder class to instantiate.
+     */
+    public Class<? extends Finder> getFinderClass() {
+        return finderClass;
     }
 
     /**
@@ -328,6 +374,18 @@ public abstract class Restlet implements Uniform {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * Sets the finder class to instantiate. This property is leveraged by
+     * {@link #setOutboundRoot(Class)} and {@link #setInboundRoot(Class)}
+     * methods.
+     * 
+     * @param finderClass
+     *            The finder class to instantiate.
+     */
+    public void setFinderClass(Class<? extends Finder> finderClass) {
+        this.finderClass = finderClass;
     }
 
     /**

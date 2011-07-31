@@ -142,9 +142,6 @@ public class Router extends Restlet {
     /** The default route tested if no other one was available. */
     private volatile Route defaultRoute;
 
-    /** Finder class to instantiate. */
-    private volatile Class<? extends Finder> finderClass;
-
     /**
      * The maximum number of attempts if no attachment could be matched on the
      * first attempt.
@@ -185,7 +182,6 @@ public class Router extends Restlet {
         this.defaultMatchingMode = Template.MODE_EQUALS;
         this.defaultMatchingQuery = false;
         this.defaultRoute = null;
-        this.finderClass = Finder.class;
         this.routingMode = MODE_FIRST_MATCH;
         this.requiredScore = 0.5F;
         this.maxAttempts = 1;
@@ -326,18 +322,6 @@ public class Router extends Restlet {
     }
 
     /**
-     * Creates a new finder instance based on the "targetClass" property.
-     * 
-     * @param targetClass
-     *            The target Resource class to attach.
-     * @return The new finder instance.
-     */
-    public Finder createFinder(Class<? extends ServerResource> targetClass) {
-        return Finder.createFinder(targetClass, getFinderClass(), getContext(),
-                getLogger());
-    }
-
-    /**
      * Creates a new route for the given URI pattern and target. The route will
      * match the URI query string depending on the result of
      * {@link #getDefaultMatchingQuery()} and the matching mode will be given by
@@ -387,9 +371,11 @@ public class Router extends Restlet {
     public void detach(Class<?> targetClass) {
         for (int i = getRoutes().size() - 1; i >= 0; i--) {
             Restlet target = getRoutes().get(i).getNext();
+
             if (target != null
                     && Finder.class.isAssignableFrom(target.getClass())) {
                 Finder finder = (Finder) target;
+
                 if (finder.getTargetClass().equals(targetClass)) {
                     getRoutes().remove(i);
                 }
@@ -398,9 +384,11 @@ public class Router extends Restlet {
 
         if (getDefaultRoute() != null) {
             Restlet target = getDefaultRoute().getNext();
+
             if (target != null
                     && Finder.class.isAssignableFrom(target.getClass())) {
                 Finder finder = (Finder) target;
+
                 if (finder.getTargetClass().equals(targetClass)) {
                     setDefaultRoute(null);
                 }
@@ -485,15 +473,6 @@ public class Router extends Restlet {
      */
     public Route getDefaultRoute() {
         return this.defaultRoute;
-    }
-
-    /**
-     * Returns the finder class to instantiate.
-     * 
-     * @return the finder class to instantiate.
-     */
-    public Class<? extends Finder> getFinderClass() {
-        return this.finderClass;
     }
 
     /**
@@ -718,16 +697,6 @@ public class Router extends Restlet {
      */
     public void setDefaultRoute(Route defaultRoute) {
         this.defaultRoute = defaultRoute;
-    }
-
-    /**
-     * Sets the finder class to instantiate.
-     * 
-     * @param finderClass
-     *            The finder class to instantiate.
-     */
-    public void setFinderClass(Class<? extends Finder> finderClass) {
-        this.finderClass = finderClass;
     }
 
     /**

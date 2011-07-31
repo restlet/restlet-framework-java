@@ -37,7 +37,6 @@ import java.util.logging.Filter;
 import org.restlet.engine.Engine;
 import org.restlet.engine.application.ApplicationHelper;
 import org.restlet.engine.resource.AnnotationUtils;
-import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 import org.restlet.routing.VirtualHost;
@@ -110,9 +109,6 @@ public class Application extends Restlet {
     public static void setCurrent(Application application) {
         CURRENT.set(application);
     }
-
-    /** Finder class to instantiate. */
-    private volatile Class<? extends Finder> finderClass;
 
     /** The helper provided by the implementation. */
     private volatile ApplicationHelper helper;
@@ -249,18 +245,6 @@ public class Application extends Restlet {
      */
     public EncoderService getEncoderService() {
         return getServices().get(EncoderService.class);
-    }
-
-    /**
-     * Returns the finder class used to instantiate resource classes. By
-     * default, it returns the {@link Finder} class. This property is leveraged
-     * by {@link #setOutboundRoot(Class)} and {@link #setInboundRoot(Class)}
-     * methods.
-     * 
-     * @return the finder class to instantiate.
-     */
-    public Class<? extends Finder> getFinderClass() {
-        return finderClass;
     }
 
     /**
@@ -468,18 +452,6 @@ public class Application extends Restlet {
     }
 
     /**
-     * Sets the finder class to instantiate. This property is leveraged by
-     * {@link #setOutboundRoot(Class)} and {@link #setInboundRoot(Class)}
-     * methods.
-     * 
-     * @param finderClass
-     *            The finder class to instantiate.
-     */
-    public void setFinderClass(Class<? extends Finder> finderClass) {
-        this.finderClass = finderClass;
-    }
-
-    /**
      * Sets the inbound root Resource class.
      * 
      * @param inboundRootClass
@@ -487,8 +459,7 @@ public class Application extends Restlet {
      */
     public synchronized void setInboundRoot(
             Class<? extends ServerResource> inboundRootClass) {
-        setInboundRoot(Finder.createFinder(inboundRootClass, getFinderClass(),
-                getContext(), getLogger()));
+        setInboundRoot(createFinder(inboundRootClass));
     }
 
     /**
@@ -523,8 +494,7 @@ public class Application extends Restlet {
      */
     public synchronized void setOutboundRoot(
             Class<? extends ServerResource> outboundRootClass) {
-        setOutboundRoot(Finder.createFinder(outboundRootClass,
-                getFinderClass(), getContext(), getLogger()));
+        setOutboundRoot(createFinder(outboundRootClass));
     }
 
     /**

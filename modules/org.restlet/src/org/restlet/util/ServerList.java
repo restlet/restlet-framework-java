@@ -166,9 +166,12 @@ public final class ServerList extends WrapperList<Server> {
      * 
      * @param nextClass
      *            The next resource class to attach.
+     * @deprecated To be removed.
      */
+    @Deprecated
     public void setNext(Class<? extends ServerResource> nextClass) {
-        setNext(new Finder(getContext(), nextClass));
+        setNext(Finder.createFinder(nextClass, Finder.class, getContext(),
+                getContext().getLogger()));
     }
 
     /**

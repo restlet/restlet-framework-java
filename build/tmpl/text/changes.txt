@@ -43,6 +43,13 @@ Changes log
         of User subclasses if necessary.
       - Renamed JaxRsApplication.guard into authenticator to match the
         parameter Authenticator class.
+      - Factorized "finderClass" property from Application and Router
+        into parent Restlet class and added a createFinder(Class)
+        method to facilitate instantiation and overriding.
+        Reported by Tim Peierls.
+      - Deprecated ServerList.setNext(Class) as it isn't used and its
+        logic isn't consistent with similar methods in Filter/Router.        
+        Reported by Tim Peierls.
     - New features
       - Added a CookieAuthenticator class in the org.restlet.ext.crypto
         extension to provide customizable and secure authentication via

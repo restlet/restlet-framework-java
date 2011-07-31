@@ -241,7 +241,7 @@ public abstract class Filter extends Restlet {
      *            The target resource class to attach.
      */
     public void setNext(Class<? extends ServerResource> targetClass) {
-        setNext(new Finder(getContext(), targetClass));
+        setNext(createFinder(targetClass));
     }
 
     /**
