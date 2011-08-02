@@ -40,6 +40,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.XMLOptions;
 import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.EMOFResourceImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLOptionsImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 import org.restlet.Context;
@@ -96,10 +98,20 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
      * Creates and configure an EMF resource. Not to be confused with a Restlet
      * resource.
      * 
+     * @param mediaType
+     *            The associated media type (ECore, XMI or XML).
      * @return A new configured EMF resource.
      */
-    protected Resource createEmfResource() {
-        XMLResource result = new XMLResourceImpl();
+    protected XMLResource createEmfResource(MediaType mediaType) {
+        XMLResource result = null;
+
+        if (MediaType.APPLICATION_ECORE.isCompatible(getMediaType())) {
+            result = new EMOFResourceImpl();
+        } else if (MediaType.APPLICATION_XMI.isCompatible(getMediaType())) {
+            result = new XMIResourceImpl();
+        } else {
+            result = new XMLResourceImpl();
+        }
 
         if (getCharacterSet() != null) {
             result.setEncoding(getCharacterSet().getName());
@@ -151,7 +163,8 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
             result = this.object;
         } else if (this.representation != null) {
             try {
-                Resource emfResource = createEmfResource();
+                Resource emfResource = createEmfResource(this.representation
+                        .getMediaType());
                 emfResource.load(this.representation.getStream(),
                         getLoadOptions());
                 result = (T) emfResource.getContents().get(0);
@@ -179,8 +192,10 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
             this.representation.write(outputStream);
         } else if (object != null) {
             if (MediaType.APPLICATION_ALL_XML.isCompatible(getMediaType())
-                    || MediaType.TEXT_XML.isCompatible(getMediaType())) {
-                Resource emfResource = createEmfResource();
+                    || MediaType.TEXT_XML.isCompatible(getMediaType())
+                    || MediaType.APPLICATION_XMI.isCompatible(getMediaType())
+                    || MediaType.APPLICATION_ECORE.isCompatible(getMediaType())) {
+                Resource emfResource = createEmfResource(getMediaType());
                 emfResource.getContents().add((EObject) this.object);
                 emfResource.save(outputStream, getSaveOptions());
             } else if (MediaType.TEXT_HTML.isCompatible(getMediaType())) {

@@ -74,6 +74,10 @@ Changes log
         the org.restlet.data.Form class, it adds the ability to work with 
         multipart forms (currently writing only) with the same Java API.
         Some suggestions from John Logdson.
+      - Added MediaType.APPLICATION_ECORE and APPLICATION_XMI constants,
+        and deprecated APPLICATION_XMI_XML. Registered "ecore" extension
+        into the MetadataService common extensions.
+        Issue reported by Thomas Eskenazi.
     - Bug fixed
       - Fixed potential NPE in the Authenticator when logging authentication 
         failure. Reported by Martin Svensson.

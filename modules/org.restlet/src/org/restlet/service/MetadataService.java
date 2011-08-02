@@ -238,6 +238,7 @@ public class MetadataService extends Service {
         ext(dm, "dotm", MediaType.APPLICATION_MSOFFICE_DOTM);
         ext(dm, "dotx", MediaType.APPLICATION_MSOFFICE_DOTX);
         ext(dm, "dtd", MediaType.APPLICATION_XML_DTD);
+        ext(dm, "ecore", MediaType.APPLICATION_ECORE);
         ext(dm, "eps", MediaType.APPLICATION_POSTSCRIPT);
         ext(dm, "exe", MediaType.APPLICATION_OCTET_STREAM);
         ext(dm, "fmt", Encoding.FREEMARKER);
@@ -340,7 +341,7 @@ public class MetadataService extends Service {
         ext(dm, "xltm", MediaType.APPLICATION_MSOFFICE_XLTM);
         ext(dm, "xlsb", MediaType.APPLICATION_MSOFFICE_XLSB);
         ext(dm, "xlam", MediaType.APPLICATION_MSOFFICE_XLAM);
-        ext(dm, "xmi", MediaType.APPLICATION_XMI_XML);
+        ext(dm, "xmi", MediaType.APPLICATION_XMI);
         ext(dm, "xsd", MediaType.APPLICATION_W3C_SCHEMA);
         ext(dm, "xsl", MediaType.APPLICATION_W3C_XSLT);
         ext(dm, "xslt", MediaType.APPLICATION_W3C_XSLT);

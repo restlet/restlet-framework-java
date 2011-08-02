@@ -91,6 +91,10 @@ public final class MediaType extends Metadata {
             "application/x-compress", "Compressed file");
 
     // [ifndef gwt] member
+    public static final MediaType APPLICATION_ECORE = register(
+            "application/x-ecore+xmi+xml", "EMOF ECore metamodel");
+
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_EXCEL = register(
             "application/vnd.ms-excel", "Microsoft Excel document");
 
@@ -467,6 +471,10 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_XHTML = register(
             "application/xhtml+xml", "XHTML document");
 
+    public static final MediaType APPLICATION_XMI = register(
+            "application/xmi+xml", "XMI document");
+
+    @Deprecated
     public static final MediaType APPLICATION_XMI_XML = register(
             "application/xmi+xml", "XMI document");
 

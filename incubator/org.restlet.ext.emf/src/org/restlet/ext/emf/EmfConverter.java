@@ -56,7 +56,7 @@ public class EmfConverter extends ConverterHelper {
             MediaType.APPLICATION_XML);
 
     private static final VariantInfo VARIANT_APPLICATION_XMI = new VariantInfo(
-            MediaType.APPLICATION_XMI_XML);
+            MediaType.APPLICATION_XMI);
 
     private static final VariantInfo VARIANT_JSON = new VariantInfo(
             MediaType.APPLICATION_JSON);
@@ -219,7 +219,7 @@ public class EmfConverter extends ConverterHelper {
                 || EmfRepresentation.class.isAssignableFrom(entity)) {
             updatePreferences(preferences, MediaType.APPLICATION_ALL_XML, 1.0F);
             updatePreferences(preferences, MediaType.APPLICATION_XML, 1.0F);
-            updatePreferences(preferences, MediaType.APPLICATION_XMI_XML, 1.0F);
+            updatePreferences(preferences, MediaType.APPLICATION_XMI, 1.0F);
             updatePreferences(preferences, MediaType.TEXT_HTML, 1.0F);
             updatePreferences(preferences, MediaType.TEXT_XML, 1.0F);
         }
