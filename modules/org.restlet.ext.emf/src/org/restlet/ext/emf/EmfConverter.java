@@ -43,7 +43,7 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 
 /**
- * Converter between the XML/XMI and representation classes based on EMF.
+ * Converter between the XML/XMI/ECore and representation classes based on EMF.
  * 
  * @author Jerome Louvel
  */
@@ -52,20 +52,20 @@ public class EmfConverter extends ConverterHelper {
     private static final VariantInfo VARIANT_APPLICATION_ALL_XML = new VariantInfo(
             MediaType.APPLICATION_ALL_XML);
 
-    private static final VariantInfo VARIANT_APPLICATION_XML = new VariantInfo(
-            MediaType.APPLICATION_XML);
+    private static final VariantInfo VARIANT_APPLICATION_ECORE = new VariantInfo(
+            MediaType.APPLICATION_ECORE);
 
     private static final VariantInfo VARIANT_APPLICATION_XMI = new VariantInfo(
             MediaType.APPLICATION_XMI);
 
-    private static final VariantInfo VARIANT_JSON = new VariantInfo(
-            MediaType.APPLICATION_JSON);
-
-    private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(
-            MediaType.TEXT_XML);
+    private static final VariantInfo VARIANT_APPLICATION_XML = new VariantInfo(
+            MediaType.APPLICATION_XML);
 
     private static final VariantInfo VARIANT_TEXT_HTML = new VariantInfo(
             MediaType.TEXT_HTML);
+
+    private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(
+            MediaType.TEXT_XML);
 
     /**
      * Creates the marshaling {@link EmfRepresentation}.
@@ -112,15 +112,25 @@ public class EmfConverter extends ConverterHelper {
         List<VariantInfo> result = null;
 
         if ((source != null) && EObject.class.isAssignableFrom(source)) {
-            // result = addVariant(result, VARIANT_JSON);
             result = addVariant(result, VARIANT_APPLICATION_ALL_XML);
             result = addVariant(result, VARIANT_APPLICATION_XML);
             result = addVariant(result, VARIANT_APPLICATION_XMI);
+            result = addVariant(result, VARIANT_APPLICATION_ECORE);
             result = addVariant(result, VARIANT_TEXT_XML);
             result = addVariant(result, VARIANT_TEXT_HTML);
         }
 
         return result;
+    }
+
+    protected boolean isCompatible(Variant variant) {
+        return (variant != null)
+                && (VARIANT_APPLICATION_ALL_XML.isCompatible(variant)
+                        || VARIANT_APPLICATION_XML.isCompatible(variant)
+                        || VARIANT_APPLICATION_XMI.isCompatible(variant)
+                        || VARIANT_APPLICATION_ECORE.isCompatible(variant)
+                        || VARIANT_TEXT_HTML.isCompatible(variant) || VARIANT_TEXT_XML
+                        .isCompatible(variant));
     }
 
     @Override
@@ -132,8 +142,6 @@ public class EmfConverter extends ConverterHelper {
         } else {
             if (target == null) {
                 result = 0.5F;
-            } else if (VARIANT_JSON.isCompatible(target)) {
-                result = 0.8F;
             } else if (isCompatible(target)) {
                 result = 0.8F;
             } else {
@@ -150,9 +158,7 @@ public class EmfConverter extends ConverterHelper {
         float result = -1.0F;
 
         if (target != null) {
-            if (VARIANT_JSON.isCompatible(source)) {
-                result = 0.8F;
-            } else if (isCompatible(source)) {
+            if (isCompatible(source)) {
                 result = 0.8F;
             }
         } else {
@@ -170,8 +176,6 @@ public class EmfConverter extends ConverterHelper {
 
         if (source instanceof EmfRepresentation) {
             result = ((EmfRepresentation<?>) source).getObject();
-        } else if (VARIANT_JSON.isCompatible(source)) {
-            result = create(source).getObject();
         } else if (isCompatible(source)) {
             result = create(source).getObject();
         }
@@ -191,25 +195,12 @@ public class EmfConverter extends ConverterHelper {
                 target.setMediaType(MediaType.TEXT_XML);
             }
 
-            if (VARIANT_JSON.isCompatible(target)) {
-                EmfRepresentation<EObject> xstreamRepresentation = create(
-                        target.getMediaType(), (EObject) source);
-                result = xstreamRepresentation;
-            } else if (isCompatible(target)) {
+            if (isCompatible(target)) {
                 result = create(target.getMediaType(), (EObject) source);
             }
         }
 
         return result;
-    }
-
-    protected boolean isCompatible(Variant variant) {
-        return (variant != null)
-                && (VARIANT_APPLICATION_ALL_XML.isCompatible(variant)
-                        || VARIANT_APPLICATION_XML.isCompatible(variant)
-                        || VARIANT_APPLICATION_XMI.isCompatible(variant)
-                        || VARIANT_TEXT_HTML.isCompatible(variant) || VARIANT_TEXT_XML
-                        .isCompatible(variant));
     }
 
     @Override
@@ -220,6 +211,7 @@ public class EmfConverter extends ConverterHelper {
             updatePreferences(preferences, MediaType.APPLICATION_ALL_XML, 1.0F);
             updatePreferences(preferences, MediaType.APPLICATION_XML, 1.0F);
             updatePreferences(preferences, MediaType.APPLICATION_XMI, 1.0F);
+            updatePreferences(preferences, MediaType.APPLICATION_ECORE, 1.0F);
             updatePreferences(preferences, MediaType.TEXT_HTML, 1.0F);
             updatePreferences(preferences, MediaType.TEXT_XML, 1.0F);
         }

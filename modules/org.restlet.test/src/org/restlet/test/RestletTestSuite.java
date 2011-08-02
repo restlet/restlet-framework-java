@@ -53,6 +53,7 @@ import org.restlet.test.data.StatusTestCase;
 import org.restlet.test.engine.EngineTestSuite;
 import org.restlet.test.ext.atom.AtomTestCase;
 import org.restlet.test.ext.crypto.CryptoTestSuite;
+import org.restlet.test.ext.emf.EmfTestSuite;
 import org.restlet.test.ext.freemarker.FreeMarkerTestCase;
 import org.restlet.test.ext.gwt.GwtConverterTestCase;
 import org.restlet.test.ext.html.HtmlTestSuite;
@@ -136,6 +137,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(ValidatorTestCase.class);
         addTestSuite(VelocityTestCase.class);
         addTest(CryptoTestSuite.suite());
+        addTest(EmfTestSuite.suite());
         addTest(HtmlTestSuite.suite());
         addTest(ODataTestSuite.suite());
         addTest(WadlTestSuite.suite());

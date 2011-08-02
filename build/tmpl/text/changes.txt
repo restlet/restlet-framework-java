@@ -78,6 +78,11 @@ Changes log
         and deprecated APPLICATION_XMI_XML. Registered "ecore" extension
         into the MetadataService common extensions.
         Issue reported by Thomas Eskenazi.
+      - Added EMF extension that supports the conversion between EMF
+        generated beans and XML or XMI representations. It can also
+        automatically write simple HTML representations for navigating
+        your web API. Hyperlinks can be specified using EMF eAnnotations.
+        Key feed-back from Bryan Hunt, John Logdson and Thomas Eskenazi.
     - Bug fixed
       - Fixed potential NPE in the Authenticator when logging authentication 
         failure. Reported by Martin Svensson.
