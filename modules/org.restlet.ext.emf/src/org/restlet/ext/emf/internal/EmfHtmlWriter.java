@@ -51,7 +51,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
  */
 public class EmfHtmlWriter {
 
-    public static final String ANNOTATION_URI = "http://www.restlet.org/emf/2.0/html";
+    public static final String ANNOTATION_URI = "http://www.restlet.org/schemas/2011/emf/html";
 
     private final EObject object;
 
@@ -84,8 +84,8 @@ public class EmfHtmlWriter {
     public void write(Writer writer) throws IOException {
         String title = null;
         EClass eClass = getObject().eClass();
-
         EAnnotation annotation = eClass.getEAnnotation(ANNOTATION_URI);
+
         if (annotation != null) {
             title = (String) annotation.getDetails().get("label");
         }
@@ -111,8 +111,8 @@ public class EmfHtmlWriter {
                 EStructuralFeature sf = (EStructuralFeature) content;
                 String label = null;
                 boolean hyperlink = false;
-
                 annotation = sf.getEAnnotation(ANNOTATION_URI);
+
                 if (annotation != null) {
                     label = (String) annotation.getDetails().get("label");
                     hyperlink = Boolean.parseBoolean(annotation.getDetails()
