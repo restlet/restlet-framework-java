@@ -72,7 +72,9 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *            The target media type.
+     *            The target media type. Supported values are
+     *            {@link MediaType#APPLICATION_XMI},
+     *            {@link MediaType#APPLICATION_ECORE} and XML media types.
      * @param object
      *            The object to format.
      */
@@ -186,6 +188,15 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
         return null;
     }
 
+    /**
+     * If this representation wraps an {@link EObject}, then it tries to write
+     * it as either XML, XMI or ECore/EMOF depending on the media type set.
+     * 
+     * Note that in order to write this {@link EObject}, an EMF resource is
+     * created, configured for proper serialization and the {@link EObject} is
+     * then added to the content of this resource. This could has a side effect
+     * of removing it from a previous resource/container.
+     */
     @Override
     public void write(OutputStream outputStream) throws IOException {
         if (this.representation != null) {
