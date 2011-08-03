@@ -140,10 +140,12 @@ public class Decoder extends Filter {
 
         if (result) {
             boolean found = false;
+
             for (final Iterator<Encoding> iter = representation.getEncodings()
                     .iterator(); !found && iter.hasNext();) {
                 found = (!iter.next().equals(Encoding.IDENTITY));
             }
+
             result = found;
         }
         return result;
