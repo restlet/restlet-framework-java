@@ -1,9 +1,62 @@
 // [ifdef nodejs] uncomment
-//var jsclass = require("jsclass");
+//var jsclass = require("./jsclass/core");
 //var util = require("util");
 //var http = require("http");
 //var libxmljs = require("libxmljs");
 // [enddef]
+
+// OOP and generic stuff
+
+function copyElements(obj1, obj2) {
+	for (var elt in obj1) {
+		if (elt!="initialize" || typeof obj1[elt] != "function") {
+			obj2[elt] = obj1[elt];
+		} else {
+			obj2["_"+elt] = obj1[elt];
+		}
+	}
+}
+
+var Class = function() {
+	var parent = null;
+	var content = null;
+	if (arguments.length==1) {
+		content = arguments[0];
+	} else if (arguments.length==2) {
+		parent = arguments[0];
+		content = arguments[1];
+	}
+	
+	var clazz = function() {
+		if (clazz.initializeExtend!=null && clazz.initializeExtend==true) {
+			return;
+		}
+		if (content!=null && content["initialize"]!=null) {
+			content["initialize"].apply(this, arguments);
+		}
+	}
+	if (parent!=null) {
+		copyElements(parent, clazz);
+		parent.initializeExtend = true;
+		clazz.prototype = new parent();
+		clazz.parent = parent.prototype;
+		parent.initializeExtend = null;
+		copyElements(content, clazz.prototype);
+		clazz.prototype["callSuper"] = function() {
+			if (clazz.parent["_initialize"]!=null) {
+				var superInitialize = clazz.parent["_initialize"];
+				superInitialize.apply(this);
+			}
+		};
+	} else {
+		clazz.prototype = {};
+		copyElements(content, clazz.prototype);
+	}
+	clazz.extend = function(content) {
+		copyElements(content, this);
+	};
+	return clazz;
+};
 
 String.prototype.equalsIgnoreCase = function(arg) {               
     return (new String(this.toLowerCase())
@@ -13,8 +66,9 @@ String.prototype.equals = function(arg) {
 	return (this.toString()==arg.toString());
 };
 
+//End OOP and generic stuff
 
-var Context = new JS.Class({
+var Context = new Class({
 	initialize: function() {
 		this.clientDispatcher = null;
 	},
@@ -26,7 +80,7 @@ var Context = new JS.Class({
 	}
 });
 
-var Protocol = new JS.Class({
+var Protocol = new Class({
 	initialize: function(schemeName,name,technicalName,description,
 						defaultPort,confidential,version) {
 		this.schemeName = schemeName;
@@ -46,7 +100,7 @@ Protocol.extend({
         "HyperText Transport Protocol (Secure)", 443, true, "1.1")
 });
 
-var ClientInfo = new JS.Class({
+var ClientInfo = new Class({
 	initialize: function() {
 		/*
         this.address = null;
@@ -69,7 +123,7 @@ var ClientInfo = new JS.Class({
 	}
 });
 
-var Message = new JS.Class({
+var Message = new Class({
 	initialize: function() {
     	this.attributes = {};
     	this.cacheDirectives = null;
@@ -92,7 +146,7 @@ var Message = new JS.Class({
 	} 
 });
 
-var Reference = new JS.Class({
+var Reference = new Class({
 	initialize: function(url) {
 		this.url = url;
 		var tmp = this.url;
@@ -134,7 +188,7 @@ var Reference = new JS.Class({
 	}
 });
 
-var Request = new JS.Class(Message, {
+var Request = new Class(Message, {
 	initialize: function(method, url) {
 		this.callSuper();
 		this.method = method;
@@ -178,7 +232,7 @@ var Request = new JS.Class(Message, {
 	}
 });
 
-var Response = new JS.Class(Message, {
+var Response = new Class(Message, {
 	initialize: function(request) {
 		this.callSuper();
         this.age = 0;
@@ -230,7 +284,7 @@ var Response = new JS.Class(Message, {
 	}
 });
 
-var Method = new JS.Class({
+var Method = new Class({
 	initialize: function(name, description, uri, safe, idempotent) {
 		this.name = name;
 		this.description = description;
@@ -271,7 +325,7 @@ Method.extend({
         Method.BASE_HTTP + "#sec9.8", true, true)
 });
 
-var HeaderConstants = new JS.Class({});
+var HeaderConstants = new Class({});
 
 HeaderConstants.extend({
 	EXPECT_CONTINUE: "100-continue",
@@ -353,7 +407,7 @@ HeaderConstants.extend({
 	ATTRIBUTE_HTTPS_SSL_SESSION_ID: "org.restlet.https.sslSessionId"
 });
 
-var CharacterSet = new JS.Class({
+var CharacterSet = new Class({
 	initialize: function(name) {
 		this.name = name;
 	},
@@ -362,7 +416,7 @@ var CharacterSet = new JS.Class({
 	}
 });
 
-var ContentType = new JS.Class({
+var ContentType = new Class({
 	initialize: function(value) {
 		var index = -1;
 		if ((index = value.indexOf(";"))!=-1) {
@@ -380,7 +434,7 @@ var ContentType = new JS.Class({
 	} 
 });
 
-var Parameter = new JS.Class({
+var Parameter = new Class({
 	initialize: function(name, value) {
 		this.name = name;
 		this.value = value;
@@ -393,19 +447,19 @@ var Parameter = new JS.Class({
 	}
 });
 
-var HeaderReaderUtils = new JS.Class({});
+var HeaderReaderUtils = new Class({});
 
 HeaderReaderUtils.extend({
 	
 });
 
-var HeaderWriterUtils = new JS.Class({});
+var HeaderWriterUtils = new Class({});
 
 HeaderWriterUtils.extend({
 	
 });
 
-var HeaderUtils = new JS.Class({});
+var HeaderUtils = new Class({});
 
 HeaderUtils.extend({
 	addEntityHeaders: function(entity, headers) {
@@ -981,7 +1035,7 @@ HeaderUtils.extend({
 	}
 });
 
-var Status = new JS.Class({
+var Status = new Class({
     initialize: function(code, reasonPhrase, description, uri) {
     	this.code = code;
     	if (typeof reasonPhrase=="undefined" || reasonPhrase==null) {
@@ -1875,7 +1929,7 @@ Status.extend({
     }
 });
 
-var Restlet = new JS.Class(Restlet, {
+var Restlet = new Class(Restlet, {
 	setContext: function(context) {
 		this.context = context;
 	},
@@ -1914,7 +1968,7 @@ var Restlet = new JS.Class(Restlet, {
     }
 });
 
-var Connector = new JS.Class(Restlet, {
+var Connector = new Class(Restlet, {
 	initialize: function(context, protocols) {
 		this.context = context;
 		if (typeof protocols != "undefined" && protocols!=null) {
@@ -1928,7 +1982,7 @@ var Connector = new JS.Class(Restlet, {
 	}
 });
 
-var Engine = new JS.Class({
+var Engine = new Class({
 	createHelper: function(restlet) {
 		// [ifndef nodejs]
 		return new XhrHttpClientHelper();
@@ -1948,7 +2002,7 @@ Engine.extend({
 	}
 });
 
-var Call = new JS.Class({
+var Call = new Class({
     /*private volatile String clientAddress;
     private volatile int clientPort;
     private volatile boolean confidential;
@@ -1992,7 +2046,7 @@ var Call = new JS.Class({
 	}
 });
 
-var ClientCall = new JS.Class(Call, {
+var ClientCall = new Class(Call, {
 	getResponseEntity: function(response) {
 		console.log("> getResponseEntity");
         var result = response.getEntity();
@@ -2050,7 +2104,7 @@ var ClientCall = new JS.Class(Call, {
 });
 
 // [ifndef nodejs]
-var XhrHttpClientCall = new JS.Class(ClientCall, {
+var XhrHttpClientCall = new Class(ClientCall, {
 	initialize: function() {
 		this.xhr = this.createXhrObject();
 	},
@@ -2155,7 +2209,7 @@ var XhrHttpClientCall = new JS.Class(ClientCall, {
 // [enddef]
 
 // [ifdef nodejs] uncomment
-//var NodeJsHttpClientCall = new JS.Class({
+//var NodeJsHttpClientCall = new Class({
 //	initialize: function() {
 //	},
 //	sendRequest: function(request, callback) {
@@ -2211,7 +2265,7 @@ var XhrHttpClientCall = new JS.Class(ClientCall, {
 //});
 // [enddef]
 
-var ClientAdapter = new JS.Class({
+var ClientAdapter = new Class({
 	initialize: function(context) {
 		
 	},
@@ -2316,7 +2370,7 @@ var ClientAdapter = new JS.Class({
     }
 });
 
-var HttpClientHelper = new JS.Class({
+var HttpClientHelper = new Class({
     //public abstract ClientCall create(Request request);
 	getAdapter: function() {
         if (this.adapter == null) {
@@ -2342,7 +2396,7 @@ var HttpClientHelper = new JS.Class({
 });
 
 // [ifndef nodejs]
-var XhrHttpClientHelper = new JS.Class(HttpClientHelper, {
+var XhrHttpClientHelper = new Class(HttpClientHelper, {
 	initialize: function(client) {
 		this.client = client;
 	},
@@ -2353,7 +2407,7 @@ var XhrHttpClientHelper = new JS.Class(HttpClientHelper, {
 // [enddef]
 
 // [ifdef nodejs] uncomment
-//var NodeJsHttpClientHelper = new JS.Class(HttpClientHelper, {
+//var NodeJsHttpClientHelper = new Class(HttpClientHelper, {
 //	initialize: function(client) {
 //		this.client = client;
 //	},
@@ -2363,7 +2417,7 @@ var XhrHttpClientHelper = new JS.Class(HttpClientHelper, {
 //});
 // [enddef]
 
-var Client = new JS.Class(Connector, {
+var Client = new Class(Connector, {
 	initialize: function(context, protocols, helper) {
 		this.callSuper();
 		//TODO:
@@ -2405,7 +2459,7 @@ var Client = new JS.Class(Connector, {
     }
 });
 
-var MediaType = new JS.Class({
+var MediaType = new Class({
 	initialize: function(type) {
 		this.type = type;
     },
@@ -2421,7 +2475,7 @@ MediaType.extend({
 	TEXT_XML: new MediaType("text/xml")
 });
 
-var Variant = new JS.Class({
+var Variant = new Class({
 	setMediaType: function(mediaType) {
 		this.mediaType = mediaType;
 	},
@@ -2441,7 +2495,7 @@ var Variant = new JS.Class({
     private volatile MediaType mediaType;*/
 });
 
-var RepresentationInfo = new JS.Class(Variant, {
+var RepresentationInfo = new Class(Variant, {
     getModificationDate: function() {
     	return this.modificationDate;
     },
@@ -2456,7 +2510,7 @@ var RepresentationInfo = new JS.Class(Variant, {
     }
 });
 
-var Representation = new JS.Class(RepresentationInfo, {
+var Representation = new Class(RepresentationInfo, {
 	initialize: function() {
 	},
     getAvailable: function() {
@@ -2518,7 +2572,7 @@ var Representation = new JS.Class(RepresentationInfo, {
 	}
 });
 
-var JsonRepresentation = new JS.Class(Representation, { 
+var JsonRepresentation = new Class(Representation, { 
 	initialize: function(content) {
 		if (typeof this.text == "undefined") {
 			this.text = null;
@@ -2562,7 +2616,7 @@ var JsonRepresentation = new JS.Class(Representation, {
 	}
 });
 
-var DomRepresentation = new JS.Class(Representation, { 
+var DomRepresentation = new Class(Representation, { 
 	initialize: function(content) {
 		if (typeof this.text == "undefined") {
 			this.text = null;
@@ -2635,7 +2689,7 @@ var DomRepresentation = new JS.Class(Representation, {
 });
 
 // [ifndef nodejs]
-var XmlRepresentation = new JS.Class(DomRepresentation, {
+var XmlRepresentation = new Class(DomRepresentation, {
 	initialize: function(content, objectName) {
 		if (typeof this.text == "undefined") {
 			this.text = null;
@@ -2740,7 +2794,7 @@ var XmlRepresentation = new JS.Class(DomRepresentation, {
 });
 // [enddef]
 
-var ClientResource = new JS.Class({
+var ClientResource = new Class({
 	initialize: function(url) {
 		this.request = new Request(null, url);
 	},
@@ -2857,9 +2911,9 @@ var ClientResource = new JS.Class({
 	}
 });
 
-//[ifdef nodejs] uncomment
+// [ifdef nodejs] uncomment
 //exports = {
 //	ClientResource: ClientResource,
 //	MediaType: MediaType
 //};
-//[enddef]
+// [enddef]
