@@ -718,7 +718,7 @@ public final class ClientInfo {
      * Note that the {@link ConnegService} and {@link MetadataService} of the
      * parent application are first looked up. If no parent application is
      * found, a new instance of those services is created and the
-     * {@link ConnegService#getPreferredVariant(ClientInfo, org.restlet.service.MetadataService, List)}
+     * {@link ConnegService#getPreferredVariant(List, Request, org.restlet.service.MetadataService)}
      * method is called.
      * 
      * @param variants
@@ -759,7 +759,7 @@ public final class ClientInfo {
      * Note that the {@link ConnegService} of the parent application is first
      * looked up. If no parent application is found, a new instance is created
      * and the
-     * {@link ConnegService#getPreferredVariant(ClientInfo, org.restlet.service.MetadataService, List)}
+     * {@link ConnegService#getPreferredVariant(List, Request, org.restlet.service.MetadataService)}
      * method is called.
      * 
      * @param variants

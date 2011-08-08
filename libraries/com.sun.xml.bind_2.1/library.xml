@@ -17,7 +17,6 @@
 		<distribution id="classic" />
 	</distributions>
 	<javadocs>
-		<link
-			href="https://jaxb.dev.java.net/nonav/${lib-jaxb-ri-version}.${lib-jaxb-ri-release}/docs/api/" />
+		<link href="http://jaxb.java.net/nonav/${lib-jaxb-ri-version}.${lib-jaxb-ri-release}/api/" />
 	</javadocs>
 </library>

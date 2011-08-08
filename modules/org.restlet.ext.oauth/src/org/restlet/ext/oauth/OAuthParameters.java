@@ -192,7 +192,7 @@ public class OAuthParameters {
     /**
      * Sets the authorize path.
      * 
-     * @param authorize
+     * @param authorizePath
      *            The authorize path.
      */
     public void setAuthorizePath(String authorizePath) {

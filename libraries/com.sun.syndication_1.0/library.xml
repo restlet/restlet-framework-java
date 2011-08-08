@@ -13,6 +13,6 @@
 		</maven>
 	</package>
 	<javadocs>
-		<link href="https://rome.dev.java.net/apidocs/1_0/" />
+		<link href="http://rome.java.net/1_0/api/" />
 	</javadocs>
 </library>

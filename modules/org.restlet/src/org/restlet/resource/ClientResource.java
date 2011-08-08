@@ -1093,7 +1093,7 @@ public class ClientResource extends UniformResource {
      * Handles the inbound call. Note that only synchronous calls are processed.
      * 
      * @param response
-     * @return
+     * @return The response's entity, if any.
      */
     public Representation handleInbound(Response response) {
         Representation result = null;

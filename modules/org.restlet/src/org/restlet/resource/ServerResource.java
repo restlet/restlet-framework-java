@@ -44,7 +44,6 @@ import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Uniform;
 import org.restlet.data.ChallengeRequest;
-import org.restlet.data.ClientInfo;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
 import org.restlet.data.Form;
@@ -796,7 +795,7 @@ public abstract class ServerResource extends UniformResource {
     /**
      * Returns the preferred variant among a list of available variants. The
      * selection is based on the client preferences using the
-     * {@link org.restlet.service.ConnegService#getPreferredVariant(List, ClientInfo, org.restlet.service.MetadataService)}
+     * {@link org.restlet.service.ConnegService#getPreferredVariant(List, Request, org.restlet.service.MetadataService)}
      * method.
      * 
      * @param variants

@@ -378,8 +378,8 @@ public abstract class Restlet implements Uniform {
 
     /**
      * Sets the finder class to instantiate. This property is leveraged by
-     * {@link #setOutboundRoot(Class)} and {@link #setInboundRoot(Class)}
-     * methods.
+     * {@link Application#setOutboundRoot(Class)} and
+     * {@link Application#setInboundRoot(Class)} methods.
      * 
      * @param finderClass
      *            The finder class to instantiate.

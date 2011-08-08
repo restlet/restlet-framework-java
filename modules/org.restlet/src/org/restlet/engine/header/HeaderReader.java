@@ -501,8 +501,6 @@ public class HeaderReader<V> {
     /**
      * Reads the next pair as a parameter.
      * 
-     * @param resultClass
-     *            The named value class to return.
      * @return The next pair as a parameter.
      * @throws IOException
      */
