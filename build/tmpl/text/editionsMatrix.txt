@@ -26,7 +26,7 @@
 <td/>
 		<#else>
 <td>
-<p>X</p>
+<p align="center"><img src="daisy:415-restlet"/></p>
 </td>
 		</#if>
 	</#list>
