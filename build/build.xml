@@ -46,6 +46,11 @@
 		<istrue value="${manifestsgeneration}" />
 	</condition>
 
+	<!-- Set the property that will enable the generation of miscellaneous files -->
+	<condition property="do-miscgeneration">
+		<istrue value="${miscgeneration}" />
+	</condition>
+
 	<!-- ======================= -->
 	<!-- ===  Paths setting  === -->
 	<!-- ======================= -->
@@ -257,7 +262,7 @@
 		<antcall target="generate-modules-manifests" />
 	</target>
 
-	<target name="generate-misc" description="Generates miscellaneous files." >
+	<target name="generate-misc" if="do-miscgeneration" description="Generates miscellaneous files." >
 		<delete dir="${temp}/misc" />
 		<!-- Generate editions matrix file -->
 		<fmpp sourceroot="${tmpl}/text" outputroot="${temp}/misc" dataroot="${basedir}" expert="true">
