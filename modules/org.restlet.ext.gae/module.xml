@@ -1,15 +1,16 @@
 <module id="gae" includes="gae" type="integration" package="org.restlet.ext.gae">
-   <name>Restlet Extension - GAE</name>
-   <description>
-      Integration to the Google App Engine UserService for the GAE edition.
-   </description>
-   <distributions>
-      <distribution id="classic" />
-      <distribution id="maven" />
-   </distributions>
+	<name>Restlet Extension - GAE</name>
+	<description>
+		Integration to the Google App Engine UserService for the GAE edition.
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
-   <dependencies>
-      <dependency type="module" id="core" />
-      <dependency type="library" id="appengine" />
-   </dependencies>
+	<dependencies>
+		<dependency type="module" id="core" />
+		<dependency type="library" id="appengine" />
+	</dependencies>
+	<wikiUri>405-restlet</wikiUri>
 </module>

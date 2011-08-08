@@ -10,7 +10,7 @@
 
 	<artifactId>org.restlet.ext.sdc</artifactId>
 	<name>Restlet Extension - SDC</name>
-	<description>Integration with Google Secure Data Connector on the cloud side.</description>
+	<description>Integration with Google Secure Data Connector on the cloudside.</description>
 
 	<dependencies>
 		<dependency>

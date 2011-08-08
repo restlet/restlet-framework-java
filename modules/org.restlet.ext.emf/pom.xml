@@ -10,7 +10,7 @@
 
 	<artifactId>org.restlet.ext.emf</artifactId>
 	<name>Restlet Extension - EMF</name>
-	<description>Integration with Eclipse Modeling Framework).</description>
+	<description>Integration with Eclipse Modeling Framework.</description>
 
 	<dependencies>
 		<dependency>

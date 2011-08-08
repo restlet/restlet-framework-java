@@ -45,4 +45,5 @@
 		</files-sets>
 	</source>
 	<stage edition="gwt" includesource="true" />
+	<wikiUri>317-restlet</wikiUri>
 </module>

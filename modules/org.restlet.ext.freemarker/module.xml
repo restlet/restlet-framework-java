@@ -1,15 +1,17 @@
-<module id="freemarker" excludes="android,gwt" type="integration" package="org.restlet.ext.freemarker">
-   <name>Restlet Extension - FreeMarker</name>
-   <description>
-      Integration with FreeMarker.
+<module id="freemarker" excludes="android,gwt" type="integration"
+	package="org.restlet.ext.freemarker">
+	<name>Restlet Extension - FreeMarker</name>
+	<description>
+		Integration with FreeMarker.
 	</description>
-   <distributions>
-      <distribution id="classic" />
-      <distribution id="maven" />
-   </distributions>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
-   <dependencies>
-      <dependency type="library" id="freemarker" primary="true" />
-      <dependency type="module" id="core" />
-   </dependencies>
+	<dependencies>
+		<dependency type="library" id="freemarker" primary="true" />
+		<dependency type="module" id="core" />
+	</dependencies>
+	<wikiUri>66-restlet</wikiUri>
 </module>

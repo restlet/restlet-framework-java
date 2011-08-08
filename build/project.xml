@@ -14,6 +14,7 @@
 			<distribution id="classic" />
 			<distribution id="maven" />
 		</distributions>
+		<wikiUri>266-restlet</wikiUri>
 	</edition>
 	<edition id="jee">
 		<label>
@@ -31,6 +32,7 @@
 			<distribution id="classic" />
 			<distribution id="maven" />
 		</distributions>
+		<wikiUri>312-restlet</wikiUri>
 	</edition>
 	<edition id="jse">
 		<label>
@@ -47,6 +49,7 @@
 			<distribution id="classic" />
 			<distribution id="maven" />
 		</distributions>
+		<wikiUri>311-restlet</wikiUri>
 	</edition>
 	<edition id="gae">
 		<label>
@@ -63,6 +66,7 @@
 			<distribution id="classic" />
 			<distribution id="maven" />
 		</distributions>
+		<wikiUri>252-restlet</wikiUri>
 	</edition>
 	<edition id="gwt">
 		<label>
@@ -94,5 +98,6 @@
       <replace dir="${mod}/${module.package}" includes="**/.project" token="org.restlet.client" value="org.restlet.${edition}" />
 ]]>
 		</postSource>
+		<wikiUri>144-restlet</wikiUri>
 	</edition>
 </editions>

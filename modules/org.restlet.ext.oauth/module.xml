@@ -31,4 +31,5 @@
 		</repositories>
 ]]>
 	</maven-misc>
+	<wikiUri>392-restlet</wikiUri>
 </module>

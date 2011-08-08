@@ -13,4 +13,5 @@
 		<dependency type="library" id="jibx" primary="true" />
 		<dependency type="module" id="core" />
 	</dependencies>
+	<wikiUri>68-restlet</wikiUri>
 </module>

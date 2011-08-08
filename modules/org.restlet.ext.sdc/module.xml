@@ -2,7 +2,8 @@
 	package="org.restlet.ext.sdc">
 	<name>Restlet Extension - SDC</name>
 	<description>
-		Integration with Google Secure Data Connector on the cloud side.
+		Integration with Google Secure Data Connector on the cloud
+		side.
 	</description>
 	<distributions>
 		<distribution id="classic" />
@@ -16,7 +17,8 @@
 		<dependency type="library" id="gcollections" />
 		<dependency type="library" id="log4j" />
 		<dependency type="library" id="xstream" />
-        <dependency type="module" id="core" />
-        <dependency type="module" id="ssl" />
+		<dependency type="module" id="core" />
+		<dependency type="module" id="ssl" />
 	</dependencies>
+	<wikiUri>400-restlet</wikiUri>
 </module>

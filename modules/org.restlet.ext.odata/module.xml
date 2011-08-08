@@ -1,5 +1,4 @@
-<module id="odata" excludes="gwt" type="standard"
-	package="org.restlet.ext.odata">
+<module id="odata" excludes="gwt" type="standard" package="org.restlet.ext.odata">
 	<name>Restlet Extension - OData service</name>
 	<description>
 		Integration with OData services.
@@ -43,4 +42,5 @@
 ]]>
 		</files-sets>
 	</source>
+	<wikiUri>287-restlet</wikiUri>
 </module>

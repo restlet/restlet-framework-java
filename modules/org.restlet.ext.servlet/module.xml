@@ -1,17 +1,19 @@
-<module id="servlet" includes="jee, gae" type="integration" package="org.restlet.ext.servlet">
-   <name>Restlet Extension - Servlet</name>
-   <description>
-      Integration with Servlet API.
+<module id="servlet" includes="jee, gae" type="integration"
+	package="org.restlet.ext.servlet">
+	<name>Restlet Extension - Servlet</name>
+	<description>
+		Integration with Servlet API.
 	</description>
-   <distributions>
-      <distribution id="classic" />
-      <distribution id="maven" />
-   </distributions>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 
-   <dependencies>
-      <dependency type="library" id="servlet" maven-scope="provided" primary="true" />
-      <dependency type="module" id="core" />
-   </dependencies>
+	<dependencies>
+		<dependency type="library" id="servlet" maven-scope="provided"
+			primary="true" />
+		<dependency type="module" id="core" />
+	</dependencies>
 
 	<source edition="gae">
 		<files-sets>
@@ -20,5 +22,5 @@
 ]]>
 		</files-sets>
 	</source>
-   
+	<wikiUri>81-restlet</wikiUri>
 </module>

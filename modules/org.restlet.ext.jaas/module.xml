@@ -11,4 +11,5 @@
    <dependencies>
       <dependency type="module" id="core" />
    </dependencies>
+   <wikiUri>67-restlet</wikiUri>
 </module>

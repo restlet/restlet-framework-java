@@ -257,6 +257,21 @@
 		<antcall target="generate-modules-manifests" />
 	</target>
 
+	<target name="generate-misc" description="Generates miscellaneous files." >
+		<delete dir="${temp}/misc" />
+		<!-- Generate editions matrix file -->
+		<fmpp sourceroot="${tmpl}/text" outputroot="${temp}/misc" dataroot="${basedir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				editions: get(values, "editions")
+				ant: antProperties()
+			</data>
+			<include name="editionsMatrix.txt" />
+		</fmpp>
+	</target>
+
+	
 	<target name="generate-poms" description="Generates the pom files for the unique source code">
 		<!-- Parent pom file -->
 		<fmpp sourcefile="${tmpl}/poms/org.restlet.parent.pom.tmpl" outputfile="${modules}/pom.xml" dataroot="${basedir}" expert="true">
@@ -278,7 +293,7 @@
 		<delete file="${modules}/pom.tmpl" />
 	</target>
 
-	<target name="generate-artifacts" depends="generate-poms, generate-manifests, copy-eclipse" description="Generates artifacts for the unique source code" />
+	<target name="generate-artifacts" depends="generate-poms, generate-manifests, generate-misc, copy-eclipse" description="Generates artifacts for the unique source code" />
 
 	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
 		<!-- Svn revision number -->

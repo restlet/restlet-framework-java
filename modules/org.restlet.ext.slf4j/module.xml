@@ -1,11 +1,13 @@
-<module id="slf4j" type="integration" excludes="android,gwt,gae" package="org.restlet.ext.slf4j">
-   <name>Restlet Extension - SLF4J</name>
-   <description>
-      Support for the SLF4J logging bridge.
+<module id="slf4j" type="integration" excludes="android,gwt,gae"
+	package="org.restlet.ext.slf4j">
+	<name>Restlet Extension - SLF4J</name>
+	<description>
+		Support for the SLF4J logging bridge.
 	</description>
 
-   <dependencies>
-      <dependency type="library" id="slf4j" primary="true" />
-      <dependency type="module" id="core" />
-   </dependencies>
+	<dependencies>
+		<dependency type="library" id="slf4j" primary="true" />
+		<dependency type="module" id="core" />
+	</dependencies>
+	<wikiUri>316-restlet</wikiUri>
 </module>
