@@ -7,14 +7,16 @@
 	<downloadUri>http://wiki.fasterxml.com/JacksonDownload</downloadUri>
 	<provider>The Codehaus foundation</provider>
 
-	<package id="jackson-core" name="jackson-core-asl">
-    	<maven>
+	<package id="jackson-core" name="org.codehaus.jackson.core">
+		<maven>
 			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
 		</maven>
     </package>
-	<package id="jackson-mapper" name="jackson-mapper-asl">
-    	<maven>
+	<package id="jackson-mapper" name="org.codehaus.jackson.mapper">
+		<maven>
 			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
 		</maven>
     </package>
 	<distributions>

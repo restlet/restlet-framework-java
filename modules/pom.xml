@@ -17,12 +17,15 @@
 		<lib-db4o-ta-version>7.12.132</lib-db4o-ta-version>
 		<lib-db4o-tools-version>7.12.132</lib-db4o-tools-version>
 		<lib-dbcp-version>1.3</lib-dbcp-version>
+		<lib-emf-common-version>2.6.0.v20100614-1136</lib-emf-common-version>
+		<lib-emf-ecore-version>2.6.0.v20100614-1136</lib-emf-ecore-version>
+		<lib-emf-ecore-xmi-version>2.5.0.v20100521-1846</lib-emf-ecore-xmi-version>
 		<lib-fileupload-version>1.2.1</lib-fileupload-version>
 		<lib-freemarker-version>2.3.16</lib-freemarker-version>
 		<lib-gcollections-version>1.0</lib-gcollections-version>
 		<lib-gdata-version>1.0</lib-gdata-version>
 		<lib-gdata-client-version>1.0</lib-gdata-client-version>
-		<lib-guice-version>1.0</lib-guice-version>
+		<lib-guice-version>2.0</lib-guice-version>
 		<lib-gwt-version>2.2.0</lib-gwt-version>
 		<lib-gwt-server-version>2.1.0</lib-gwt-server-version>
 		<lib-httpclient-version>4.0.1</lib-httpclient-version>
@@ -137,6 +140,7 @@
 		<module>org.restlet</module>
 		<module>org.restlet.test</module>
 		<module>org.restlet.ext.crypto</module>
+		<module>org.restlet.ext.emf</module>
 		<module>org.restlet.example</module>
 		<module>org.restlet.ext.fileupload</module>
 		<module>org.restlet.ext.freemarker</module>

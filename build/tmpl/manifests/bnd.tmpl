@@ -1,0 +1,16 @@
+<#list project.libraries?values as library>
+  <#list library.packages as package>
+    <@pp.nestOutputFile name="${package.name}.bnd">
+-nouses: true
+-noextraheaders: true
+-debug: true
+Export-Package: !com.google.gwt.junit.translatable.com.google.gwt.junit.*, !com.google.gwt.benchmarks.translatable.com.google.gwt.benchmarks.client.*, !com.google.gwt.core.translatable.com.google.gwt.core.client.impl*, !com.google.gwt.dev.etc.tomcat.webapps.ROOT.WEB-INF*, !com.google.gwt.dev.jjs.intrinsic.com.google.gwt.lang*, !com.google.gwt.emul.*, !com.google.gwt.junit.*, !com.google.gwt.rpc.super.*, !com.google.gwt.user.client.*, !com.google.gwt.user.public, !com.google.gwt.user.theme.*, !com.google.gwt.user.translatable.*, *
+Bundle-Name: ${package.name}
+Bundle-SymbolicName: ${package.name}
+Bundle-Version: ${library.minorVersion}<#if library.versionSuffix??>.${library.versionSuffix}</#if>
+Created-By: Restlet forge
+Bundle-ClassPath: <#list library.packages as p>${p.name}.jar<#if p_has_next>,</#if></#list>
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+    </@pp.nestOutputFile>
+  </#list>  
+</#list>
