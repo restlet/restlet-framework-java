@@ -30,14 +30,13 @@
 
 package org.restlet.test.ext.sip;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.ext.sip.Address;
 import org.restlet.ext.sip.internal.AddressReader;
 import org.restlet.ext.sip.internal.AddressWriter;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test case for the Address reader and writer.
@@ -45,7 +44,7 @@ import org.restlet.ext.sip.internal.AddressWriter;
  * @author Thierry Boileau
  * 
  */
-public class AddressTestCase extends TestCase {
+public class AddressTestCase extends RestletTestCase {
 
     @Test
     public void testParsing() throws Exception {

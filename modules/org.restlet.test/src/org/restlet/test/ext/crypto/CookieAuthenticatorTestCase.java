@@ -30,8 +30,6 @@
 
 package org.restlet.test.ext.crypto;
 
-import junit.framework.TestCase;
-
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Request;
@@ -45,13 +43,14 @@ import org.restlet.ext.crypto.CookieAuthenticator;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.security.MapVerifier;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Unit test for the {@link CookieAuthenticator} class.
  * 
  * @author Jerome Louvel
  */
-public class CookieAuthenticatorTestCase extends TestCase {
+public class CookieAuthenticatorTestCase extends RestletTestCase {
 
     public class CookieGuardedApplication extends Application {
 

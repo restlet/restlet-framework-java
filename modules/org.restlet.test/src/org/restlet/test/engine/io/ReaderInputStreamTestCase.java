@@ -35,11 +35,10 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.CharacterSet;
 import org.restlet.engine.io.ReaderInputStream;
 import org.restlet.representation.InputRepresentation;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test the conversion from {@link Reader} to {@link InputStream} and the other
@@ -47,7 +46,7 @@ import org.restlet.representation.InputRepresentation;
  * 
  * @author Jerome Louvel
  */
-public class ReaderInputStreamTestCase extends TestCase {
+public class ReaderInputStreamTestCase extends RestletTestCase {
 
     public void testConversion() throws IOException {
         StringBuilder buf = new StringBuilder();

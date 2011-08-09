@@ -34,16 +34,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
 
 import org.restlet.ext.jaxrs.internal.util.EncodeOrCheck;
+import org.restlet.test.RestletTestCase;
 
 /**
  * @author Stephan Koops
  * @see EncodeOrCheck
  */
 @SuppressWarnings("all")
-public class EncodeOrCheckTests extends TestCase {
+public class EncodeOrCheckTests extends RestletTestCase {
 
     static final Method FRAGMENT;
 

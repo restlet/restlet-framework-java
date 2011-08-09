@@ -30,11 +30,10 @@
 
 package org.restlet.test.ext.sip;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.restlet.ext.sip.EventType;
 import org.restlet.ext.sip.internal.EventTypeReader;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test case for the Event type like headers.
@@ -42,7 +41,7 @@ import org.restlet.ext.sip.internal.EventTypeReader;
  * @author Thierry Boileau
  * 
  */
-public class EventTypeTestCase extends TestCase {
+public class EventTypeTestCase extends RestletTestCase {
 
     @Test
     public void testParsing() throws Exception {

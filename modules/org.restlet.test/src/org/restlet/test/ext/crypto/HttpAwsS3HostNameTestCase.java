@@ -30,14 +30,13 @@
 
 package org.restlet.test.ext.crypto;
 
-import junit.framework.TestCase;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.restlet.data.Reference;
 import org.restlet.ext.crypto.internal.AwsUtils;
+import org.restlet.test.RestletTestCase;
 
-public class HttpAwsS3HostNameTestCase extends TestCase {
+public class HttpAwsS3HostNameTestCase extends RestletTestCase {
 
     private String checkAddress(final String host, final String path) {
         return AwsUtils.getCanonicalizedResourceName(new Reference() {

@@ -30,13 +30,12 @@
 
 package org.restlet.test.ext.sip;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.internal.SipRecipientInfoReader;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test case for the Via header.
@@ -44,7 +43,7 @@ import org.restlet.ext.sip.internal.SipRecipientInfoReader;
  * @author Thierry Boileau
  * 
  */
-public class SipRecipientInfoTestCase extends TestCase {
+public class SipRecipientInfoTestCase extends RestletTestCase {
 
     @Test
     public void testParsing() throws Exception {
@@ -57,9 +56,9 @@ public class SipRecipientInfoTestCase extends TestCase {
         assertEquals("192.0.2.1:5060", s.getName());
 
         assertEquals(2, s.getParameters().size());
-        
+
         Parameter parameter = s.getParameters().get(0);
-        
+
         assertEquals("received", parameter.getName());
         assertEquals("192.0.2.207", parameter.getValue());
         parameter = s.getParameters().get(1);

@@ -30,19 +30,18 @@
 
 package org.restlet.test.ext.emf;
 
-import junit.framework.TestCase;
-
 import org.eclipse.emf.ecore.EObject;
 import org.restlet.ext.emf.EmfRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Unit test for the {@link EmfRepresentation} class.
  * 
  * @author Jerome Louvel
  */
-public class EmfRepresentationTestCase extends TestCase {
+public class EmfRepresentationTestCase extends RestletTestCase {
 
     public void testParsing() {
         ClientResource cr = new ClientResource(

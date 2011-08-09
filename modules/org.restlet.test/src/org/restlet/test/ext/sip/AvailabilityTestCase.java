@@ -30,12 +30,11 @@
 
 package org.restlet.test.ext.sip;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.restlet.data.Parameter;
 import org.restlet.ext.sip.Availability;
 import org.restlet.ext.sip.internal.AvailabilityReader;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test case for the Availability reader and writer.
@@ -43,7 +42,7 @@ import org.restlet.ext.sip.internal.AvailabilityReader;
  * @author Thierry Boileau
  * 
  */
-public class AvailabilityTestCase extends TestCase {
+public class AvailabilityTestCase extends RestletTestCase {
 
     @Test
     public void testParsing() throws Exception {
