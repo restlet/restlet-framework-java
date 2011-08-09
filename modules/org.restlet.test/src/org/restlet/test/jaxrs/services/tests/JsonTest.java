@@ -67,7 +67,7 @@ public class JsonTest extends JaxRsTestCase {
      * @param response
      * @throws JSONException
      * @throws IOException
-     */
+     */ 
     private void checkJsonResponse(Response response) throws JSONException,
             IOException {
         sysOutEntityIfError(response);

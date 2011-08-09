@@ -50,6 +50,7 @@ Changes log
       - Deprecated ServerList.setNext(Class) as it isn't used and its
         logic isn't consistent with similar methods in Filter/Router.        
         Reported by Tim Peierls.
+      - Fix JaxRs extension when handling Web forms.
     - New features
       - Added a CookieAuthenticator class in the org.restlet.ext.crypto
         extension to provide customizable and secure authentication via

@@ -34,10 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -45,8 +42,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.Context;
-import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.data.Form;
 import org.restlet.engine.io.BioUtils;
@@ -68,8 +63,6 @@ import org.restlet.representation.Representation;
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 @Produces(MediaType.APPLICATION_FORM_URLENCODED)
 public class WwwFormFormProvider extends AbstractProvider<Form> {
-
-    private static Logger logger = Context.getCurrentLogger();
 
     /**
      * @see AbstractProvider#getSize(java.lang.Object)
@@ -121,32 +114,9 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
     static Form getForm(MediaType mediaType, InputStream entityStream) {
         org.restlet.data.MediaType restletMediaType = Converter
                 .toRestletMediaType(mediaType);
-        final Form form;
-        form = new Form(new InputRepresentation(entityStream, restletMediaType));
-        saveToThreadsRequest(form);
+        Form form = new Form(new InputRepresentation(entityStream,
+                restletMediaType));
+        Request.getCurrent().setEntity(form.getWebRepresentation());
         return form;
-    }
-
-    /**
-     * @param form
-     */
-    private static void saveToThreadsRequest(Form form) {
-        try {
-            Field formField = Message.class.getDeclaredField("entityForm");
-            formField.setAccessible(true);
-            formField.set(Request.getCurrent(), form);
-        } catch (SecurityException e) {
-            logger.log(Level.WARNING,
-                    "Could not put the Form into the Restlet request", e);
-        } catch (IllegalArgumentException e) {
-            logger.log(Level.WARNING,
-                    "Could not put the Form into the Restlet request", e);
-        } catch (NoSuchFieldException e) {
-            logger.log(Level.WARNING,
-                    "Could not put the Form into the Restlet request", e);
-        } catch (IllegalAccessException e) {
-            logger.log(Level.WARNING,
-                    "Could not put the Form into the Restlet request", e);
-        }
     }
 }
