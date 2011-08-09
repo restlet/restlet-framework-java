@@ -61,6 +61,7 @@ import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.NioUtils;
@@ -487,6 +488,7 @@ public abstract class RestletServerTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        Engine.clearThreadLocalVariables();
         if (shouldStartServerInSetUp()) {
             startServer(createApplication());
         }
@@ -553,6 +555,7 @@ public abstract class RestletServerTestCase extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         stopServer();
+        Engine.clearThreadLocalVariables();
     }
 
 }
