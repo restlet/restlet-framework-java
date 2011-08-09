@@ -43,9 +43,9 @@ public abstract class RestletTestCase extends TestCase {
 
     public static final int DEFAULT_TEST_PORT = 1337;
 
-    public static int TEST_PORT = getTestPort();
-
     private static final String PROPERTY_TEST_PORT = "org.restlet.test.port";
+
+    public static int TEST_PORT = getTestPort();
 
     private static int getTestPort() {
         if (System.getProperties().containsKey(PROPERTY_TEST_PORT)) {
@@ -58,6 +58,8 @@ public abstract class RestletTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        System.out.println("Setting up test " + getClass().getName() + "#"
+                + getName());
         Engine.clearThreadLocalVariables();
 
         // Restore a clean engine

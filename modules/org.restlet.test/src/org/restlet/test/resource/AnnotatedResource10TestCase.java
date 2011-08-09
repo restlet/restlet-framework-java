@@ -38,9 +38,11 @@ import org.restlet.Component;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.Server;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Router;
 import org.restlet.test.RestletTestCase;
@@ -68,20 +70,28 @@ public class AnnotatedResource10TestCase extends RestletTestCase {
 
     private Client client;
 
+    private String uri;
+
     protected void setUp() throws Exception {
         super.setUp();
+        Engine.getInstance().getRegisteredConverters().clear();
+        Engine.getInstance().registerDefaultConverters();
         c = new Component();
-        c.getServers().add(Protocol.HTTP, 8111);
+        final Server server = c.getServers().add(Protocol.HTTP, 0);
         c.getDefaultHost().attach(new TestApplication());
         c.start();
 
         client = new Client(Protocol.HTTP);
+
+        uri = "http://localhost:" + server.getEphemeralPort() + "/test";
     }
 
     @Override
     protected void tearDown() throws Exception {
         c.stop();
         c = null;
+        client.stop();
+        client = null;
         super.tearDown();
     }
 
@@ -93,13 +103,13 @@ public class AnnotatedResource10TestCase extends RestletTestCase {
      */
     public void test() throws IOException, ResourceException {
         client = new Client(Protocol.HTTP);
-        Request request = new Request(Method.GET, "http://localhost:8111/test");
+        Request request = new Request(Method.GET, uri);
         Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("asText", response.getEntity().getText());
         response.getEntity().release();
 
-        request = new Request(Method.POST, "http://localhost:8111/test");
+        request = new Request(Method.POST, uri);
         response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("accept", response.getEntity().getText());
