@@ -31,10 +31,22 @@
 	<property name="temp" location="temp" />
 	<property name="tmpl" location="tmpl" />
 	<property name="modules" location="../modules" />
+	<property name="libs" location="../libraries" />
 	<property name="parent-maven-groupId" value="org.restlet" />
 	<property name="parent-maven-artifactId" value="org.restlet.parent" />
 	<property name="parent-maven-version" value="${version-maven}" />
 
+	<!-- Set the property that will enable the generation of eclipse project -->
+	<condition property="do-eclipsegeneration">
+		<istrue value="${eclipsegeneration}" />
+	</condition>
+
+
+	<!-- Set the property that will enable the generation of manifests files -->
+	<condition property="do-manifestsgeneration">
+		<istrue value="${manifestsgeneration}" />
+	</condition>
+	
 	<!-- ======================= -->
 	<!-- ===  Paths setting  === -->
 	<!-- ======================= -->
@@ -44,7 +56,10 @@
 	<path id="fmpp-path">
 		<fileset dir="tools/fmpp" includes="**/*.jar" />
 	</path>
-
+	<path id="bnd-path">
+		<fileset dir="tools/bnd" includes="**/*.jar" />
+	</path>
+	
 	<!-- =================== -->
 	<!-- ===  Ant Tasks  === -->
 	<!-- =================== -->
@@ -63,6 +78,9 @@
 			<path refid="forge-path" />
 		</classpath>
 	</taskdef>
+	
+	<!-- BND (FreeMarker-based text file PreProcessor) -->
+	<taskdef resource="aQute/bnd/ant/taskdef.properties" classpathref="bnd-path" />
 
 	<!-- = = = = = = = = = = = = = = = = =
           macrodef: generate-edition          
@@ -106,6 +124,21 @@
 					ant: antProperties()
     			</data>
 			</fmpp>
+			
+			<!-- Generate the feature.xml file -->
+			<echo message="Generate the feature.xml file" />
+			<fmpp sourceroot="${tmpl}/eclipse" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="feature.xml">
+				<data expandproperties="true">
+					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+					project: get(values, "project")
+					editions: get(values, "editions")
+					editionKey: @{edition}
+    				edition: get(editions, @{edition})
+					currentYear: ${current-year}
+					ant: antProperties()
+    			</data>
+			</fmpp>
+			
 			<move file="${temp}/@{edition}/poms/org.restlet.parent.pom.tmpl" tofile="${temp}/@{edition}/poms/org.restlet.parent.pom" />
 			<!-- Process the build.xml file. -->
 			<loadfile property="paths" srcFile="${tmpl}/editions/paths.tmpl" />
@@ -162,6 +195,66 @@
 		</sequential>
 	</macrodef>
 
+	<target name="generate-libraries-manifests" description="Generates the manifest.mf files for the unique source code">
+		<!-- Copy all library content into the destination folder -->
+		<delete dir="${temp}/libraries" />
+		<copy todir="${temp}/libraries">
+			<fileset dir="${libs}" includes="**/*.jar" />
+		</copy>
+		<!-- Generate eclipse .classpath, .project, .properties files -->
+		<fmpp sourceroot="${tmpl}/eclipse" outputroot="${temp}/libraries" dataroot="${basedir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				ant: antProperties()
+			</data>
+			<include name="classpath.tmpl" />
+			<include name="project.tmpl" />
+			<include name="build.properties.tmpl" />
+		</fmpp>
+		<delete file="${temp}/libraries/classpath.tmpl" />
+		<delete file="${temp}/libraries/project.tmpl" />
+		<delete file="${temp}/libraries/build.properties.tmpl" />
+		<copy file="${tmpl}/manifests/bndbis.bnd" todir="${temp}/definitions/libs" />
+		<!-- Generate bnd definition files -->
+		<fmpp sourceroot="${tmpl}/manifests" outputroot="${temp}/definitions/libs" dataroot="${basedir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				ant: antProperties()
+			</data>
+			<include name="bnd.tmpl" />
+		</fmpp>
+		<delete file="${temp}/definitions/libs/bnd.tmpl" />
+		<!-- Generate ant manifest generation script -->
+		<fmpp sourcefile="${tmpl}/manifests/extractmanifest.tmpl" outputfile="${temp}/libraries/extractmanifest.xml" dataroot="${basedir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				ant: antProperties()
+			</data>
+		</fmpp>
+		<ant antfile="${temp}/libraries/extractmanifest.xml" dir="${temp}/libraries" inheritAll="true" />
+		<delete file="${temp}/libraries/extractmanifest.tmpl" />
+	</target>
+
+	<target name="generate-modules-manifests" description="Generates the manifest.mf files for the unique source code">
+		<!-- TODO 
+		<bnd classpath="${modules}/org.restlet/src" eclipse="true" failok="false" exceptions="true" files="test.bnd" />
+		-->
+	</target>
+
+	<target name="copy-eclipse" depends="generate-manifests" if="do-eclipsegeneration" description="Copy the generated artifacts to the project">
+		<copy todir="${libs}">
+			<fileset dir="${temp}/libraries" excludes="**/*.jar" />
+		</copy>
+	</target>
+
+	<target name="generate-manifests" if="do-manifestsgeneration" description="Generates the manifest.mf files for the unique source code" >
+		<antcall target="generate-libraries-manifests" />
+		<antcall target="generate-modules-manifests" />
+	</target>
+
 	<target name="generate-poms" description="Generates the pom files for the unique source code">
 		<!-- Parent pom file -->
 		<fmpp sourcefile="${tmpl}/poms/org.restlet.parent.pom.tmpl" outputfile="${modules}/pom.xml" dataroot="${basedir}" expert="true">
@@ -183,6 +276,8 @@
 		<delete file="${modules}/pom.tmpl" />
 	</target>
 
+	<target name="generate-artifacts" depends="generate-poms, generate-manifests, copy-eclipse" description="Generates artifacts for the unique source code" />
+	
 	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
 		<!-- Svn revision number -->
 		<mkdir dir="${temp}" />
@@ -217,22 +312,14 @@
 			<fileset dir="${temp}" />
 		</delete>
 	</target>
-	<target name="build-current" depends="generate-poms, prepare-stage-maven" description="Build the editions with the current source code.">
+	<target name="build-current" depends="generate-artifacts, prepare-stage-maven" description="Build the editions with the current source code.">
 		<for param="edition" delimiter="," list="${editions}">
 			<sequential>
 				<exec-edition edition="@{edition}" target="build" />
 			</sequential>
 		</for>
 	</target>
-	<target name="build" depends="generate-poms, prepare-stage-maven" description="Regenerate the source code and build the editions.">
-		<for param="edition" delimiter="," list="${editions}">
-			<sequential>
-				<generate-edition edition="@{edition}" />
-				<exec-edition edition="@{edition}" target="build" />
-			</sequential>
-		</for>
-	</target>
-	<target name="rebuild" depends="clean-temp, generate-poms, prepare-stage-maven" description="Clean the temp files, regenerate the source code and build the editions.">
+	<target name="build" depends="generate-artifacts, prepare-stage-maven" description="Regenerate the source code and build the editions.">
 		<for param="edition" delimiter="," list="${editions}">
 			<sequential>
 				<generate-edition edition="@{edition}" />
@@ -240,7 +327,15 @@
 			</sequential>
 		</for>
 	</target>
-	<target name="generate" depends="generate-poms" description="Regenerate the source code.">
+	<target name="rebuild" depends="clean-temp, generate-artifacts, prepare-stage-maven" description="Clean the temp files, regenerate the source code and build the editions.">
+		<for param="edition" delimiter="," list="${editions}">
+			<sequential>
+				<generate-edition edition="@{edition}" />
+				<exec-edition edition="@{edition}" target="build" />
+			</sequential>
+		</for>
+	</target>
+	<target name="generate" depends="generate-artifacts" description="Regenerate the source code.">
 		<for param="edition" delimiter="," list="${editions}">
 			<sequential>
 				<generate-edition edition="@{edition}" />
