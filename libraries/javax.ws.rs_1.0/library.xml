@@ -15,7 +15,7 @@
 		<distribution id="classic" />
 	</distributions>
 	<javadocs>
-		<link href="https://jsr311.dev.java.net/nonav/javadoc/" />
+		<link href="http://jsr311.java.net/nonav/javadoc/" />
 	</javadocs>
 	<maven-misc>
 <![CDATA[
