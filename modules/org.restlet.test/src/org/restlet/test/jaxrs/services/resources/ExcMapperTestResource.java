@@ -46,6 +46,7 @@ public class ExcMapperTestResource {
 
     @GET
     public Object get() throws IllegalArgumentException {
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("Exception explicitly thrown by "
+                + this.getClass().getName());
     }
 }
