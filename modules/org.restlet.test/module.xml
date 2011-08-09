@@ -10,6 +10,7 @@
 
 	<dependencies>
 		<dependency type="library" id="junit" />
+		<dependency type="module" id="xstream" />
 		<dependency type="module" id="atom" />
 		<dependency type="module" id="crypto" />
 		<dependency type="module" id="core" />
@@ -36,7 +37,6 @@
 		<dependency type="module" id="wadl" />
 		<dependency type="module" id="xdb" includes="jee" />
 		<dependency type="module" id="xml" />
-		<dependency type="module" id="xstream" />
 	</dependencies>
 	<source edition="android">
 		<files-sets>
