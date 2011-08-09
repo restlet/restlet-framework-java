@@ -17,6 +17,8 @@ Changes log
        - Fixed parsing issue with invalid HTTP Basic credentials, when
          length of Base 64 value isn't a multiple of 4. 
          Contributed by Ray Waldin.
+       - Fixed conversion of representations to instances of primitive 
+         type using the default converter.
 
 - 2.0.8 (2011-06-21)
     - Bugs fixed
