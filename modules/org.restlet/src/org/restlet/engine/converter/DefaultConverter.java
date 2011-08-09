@@ -203,7 +203,8 @@ public class DefaultConverter extends ConverterHelper {
                 result = 1.0F;
             } else if (ReaderRepresentation.class.isAssignableFrom(target)) {
                 result = 1.0F;
-            } else if (Serializable.class.isAssignableFrom(target)) {
+            } else if (Serializable.class.isAssignableFrom(target)
+                    || target.isPrimitive()) {
                 if (MediaType.APPLICATION_JAVA_OBJECT.equals(source
                         .getMediaType())) {
                     result = 1.0F;
@@ -260,7 +261,7 @@ public class DefaultConverter extends ConverterHelper {
             } else if (ReaderRepresentation.class.isAssignableFrom(target)) {
                 result = new ReaderRepresentation(source.getReader());
             } else if (Serializable.class.isAssignableFrom(target)
-                    || (target == null)) {
+                    || target.isPrimitive()) {
                 if (source instanceof ObjectRepresentation<?>) {
                     result = ((ObjectRepresentation<?>) source).getObject();
                 } else {
