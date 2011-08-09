@@ -82,6 +82,7 @@
          <exclude name="src/org/restlet/engine/adapter/HttpResponse.java" />
          <exclude name="src/org/restlet/engine/adapter/HttpServer*.java" />
          <exclude name="src/org/restlet/engine/adapter/Server*.java" />
+         <exclude name="src/org/restlet/engine/application/*Conneg.java" />
          <exclude name="src/org/restlet/engine/component/**" />
          <exclude name="src/org/restlet/engine/connector/**" />
          <exclude name="src/org/restlet/engine/converter/**" />
@@ -108,6 +109,8 @@
          <exclude name="src/org/restlet/engine/util/AlphaNumericComparator.java" />
          <exclude name="src/org/restlet/engine/util/Base64.java" />
          <exclude name="src/org/restlet/engine/util/CallResolver.java" />
+         <exclude name="src/org/restlet/engine/util/ChildClientDispatcher.java" />
+         <exclude name="src/org/restlet/engine/util/ChildContext.java" />
          <exclude name="src/org/restlet/engine/util/Conneg.java" />
          <exclude name="src/org/restlet/engine/util/ConnegUtils.java" />
          <exclude name="src/org/restlet/engine/util/DefaultSaxHandler.java" />
@@ -130,12 +133,12 @@
          <exclude name="src/org/restlet/resource/Directory.java" />
          <exclude name="src/org/restlet/resource/Finder.java" />
          <exclude name="src/org/restlet/resource/Handler.java" />
-         <exclude name="src/org/restlet/resource/Resource.java" />
          <exclude name="src/org/restlet/resource/ServerResource.java" />
          <exclude name="src/org/restlet/routing/**" />
          <exclude name="src/org/restlet/security/**" />
          <exclude name="src/org/restlet/Server.java" />
          <exclude name="src/org/restlet/service/accept.properties" />
+         <exclude name="src/org/restlet/service/ConnegService.java" />
          <exclude name="src/org/restlet/service/ConnectorService.java" />
          <exclude name="src/org/restlet/service/ConverterService.java" />
          <exclude name="src/org/restlet/service/DecoderService.java" />

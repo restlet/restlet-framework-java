@@ -38,7 +38,6 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Parameter;
 import org.restlet.engine.Engine;
-import org.restlet.engine.util.ChildContext;
 import org.restlet.util.Series;
 
 /**
@@ -184,7 +183,10 @@ public class Context {
      * @return The child context.
      */
     public Context createChildContext() {
-        return new ChildContext(this);
+        // [ifndef gwt] instruction
+        return new org.restlet.engine.util.ChildContext(this);
+        // [ifdef gwt] instruction uncomment
+        // return new Context();
     }
 
     /**
