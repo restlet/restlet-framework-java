@@ -91,6 +91,7 @@ Changes log
       - Optimized the HeaderReader class beavhior in the engine.
       - Optimized the processing of extra headers and challenge schemes. 
         Contributed by Scott S. McCoy
+      - Updated GWT server library to version 2.3.0.
       
 - 2.1 Milestone 5 (06/21/2011)
     - API changes

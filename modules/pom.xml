@@ -27,7 +27,7 @@
 		<lib-gdata-client-version>1.0</lib-gdata-client-version>
 		<lib-guice-version>2.0</lib-guice-version>
 		<lib-gwt-version>2.2.0</lib-gwt-version>
-		<lib-gwt-server-version>2.1.0</lib-gwt-server-version>
+		<lib-gwt-server-version>2.3.0</lib-gwt-server-version>
 		<lib-httpclient-version>4.0.1</lib-httpclient-version>
 		<lib-httpcore-version>4.0.1</lib-httpcore-version>
 		<lib-httpmime-version>4.0.1</lib-httpmime-version>
