@@ -120,7 +120,10 @@ public class ContentTypeReader extends HeaderReader<ContentType> {
                             readingMediaType = false;
                             readingParamName = true;
                             paramNameBuffer = new StringBuilder();
+                            // [ifndef gwt] instruction
                             parameters = new Series<Parameter>(Parameter.class);
+                            // [ifdef gwt] instruction uncomment
+                            // parameters = new org.restlet.engine.util.ParameterSeries();
                         } else {
                             throw new IOException(
                                     "Empty mediaType name detected.");

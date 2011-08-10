@@ -881,8 +881,12 @@ public final class MediaType extends Metadata {
         super(normalizeType(name, parameters), description);
 
         if (parameters != null) {
+            // [ifndef gwt] instruction
             this.parameters = (Series<Parameter>) Series
                     .unmodifiableSeries(parameters);
+            // [ifdef gwt] instruction uncomment
+            // this.parameters =
+            // org.restlet.engine.util.ParameterSeries.unmodifiableSeries(parameters);
         }
     }
 
@@ -985,11 +989,19 @@ public final class MediaType extends Metadata {
                     }
 
                     if (params == null) {
+                        // [ifndef gwt] instruction
                         params = new Series<Parameter>(Parameter.class);
+                        // [ifdef gwt] instruction uncomment
+                        // params = new
+                        // org.restlet.engine.util.ParameterSeries();
                     }
 
+                    // [ifndef gwt] instruction
                     this.parameters = p = (Series<Parameter>) Series
                             .unmodifiableSeries(params);
+                    // [ifdef gwt] instruction uncomment
+                    // this.parameters = p =
+                    // org.restlet.engine.util.ParameterSeries.unmodifiableSeries(params);
                 }
             }
         }

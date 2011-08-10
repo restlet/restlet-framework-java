@@ -40,7 +40,6 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.engine.Edition;
 
 /**
  * Modifiable list of entries with many helper methods. Note that this class
@@ -55,14 +54,19 @@ import org.restlet.engine.Edition;
  * @see java.util.Collections
  * @see java.util.List
  */
+// [ifndef gwt] line
 public class Series<E extends NamedValue> extends WrapperList<E> {
-
+    // [ifdef gwt] uncomment
+    // public abstract class Series<E extends NamedValue> extends WrapperList<E>
+    // {
+    // [enddef]
     /**
      * A marker for empty values to differentiate from non existing values
      * (null).
      */
     public static final Object EMPTY_VALUE = new Object();
 
+    // [ifndef gwt] method
     /**
      * Returns an unmodifiable view of the specified series. Attempts to call a
      * modification method will throw an UnsupportedOperationException.
@@ -74,14 +78,8 @@ public class Series<E extends NamedValue> extends WrapperList<E> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Series<? extends NamedValue> unmodifiableSeries(
             final Series<? extends NamedValue> series) {
-        if (Edition.CURRENT != Edition.GWT) {
-            return new Series(
-                    series.entryClass,
-                    java.util.Collections.unmodifiableList(series.getDelegate()));
-        }
-
         return new Series(series.entryClass,
-                (List<NamedValue>) series.getDelegate());
+                java.util.Collections.unmodifiableList(series.getDelegate()));
     }
 
     /** The entry class. */
@@ -178,6 +176,7 @@ public class Series<E extends NamedValue> extends WrapperList<E> {
         }
     }
 
+    // [ifndef gwt] method
     /**
      * Creates a new entry.
      * 
@@ -198,6 +197,20 @@ public class Series<E extends NamedValue> extends WrapperList<E> {
         }
     }
 
+    // [ifdef gwt] uncomment
+    // /**
+    // * Creates a new entry.
+    // *
+    // * @param name
+    // * The name of the entry.
+    // * @param value
+    // * The value of the entry.
+    // * @return A new entry.
+    // */
+    // public abstract E createEntry(String name, String value);
+    // [enddef]
+
+    // [ifndef gwt] method
     /**
      * Creates a new series.
      * 
@@ -210,6 +223,17 @@ public class Series<E extends NamedValue> extends WrapperList<E> {
     public Series<E> createSeries(List<E> delegate) {
         return new Series<E>(this.entryClass, delegate);
     }
+
+    // [ifdef gwt] uncomment
+    // /**
+    // * Creates a new series.
+    // *
+    // * @param delegate
+    // * Optional delegate series.
+    // * @return A new series.
+    // */
+    // public abstract Series<E> createSeries(List<E> delegate);
+    // [enddef]
 
     /**
      * Tests the equality of two string, potentially null, which a case
@@ -663,7 +687,10 @@ public class Series<E extends NamedValue> extends WrapperList<E> {
      * @return The list of values.
      */
     public Series<E> subList(String name, boolean ignoreCase) {
+        // [ifndef gwt] instruction
         Series<E> result = new Series<E>(this.entryClass);
+        // [ifdef gwt] instruction uncomment
+        // Series<E> result = createSeries(null);
 
         for (E param : this) {
             if (equals(param.getName(), name, ignoreCase)) {

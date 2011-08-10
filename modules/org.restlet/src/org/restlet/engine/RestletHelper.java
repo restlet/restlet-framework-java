@@ -111,7 +111,10 @@ public abstract class RestletHelper<T extends Restlet> extends Helper {
         if ((getHelped() != null) && (getHelped().getContext() != null)) {
             result = getHelped().getContext().getParameters();
         } else {
+            // [ifndef gwt] instruction
             result = new Series<Parameter>(Parameter.class);
+            // [ifdef gwt] instruction uncomment
+            // result = new org.restlet.engine.util.ParameterSeries();
         }
 
         return result;

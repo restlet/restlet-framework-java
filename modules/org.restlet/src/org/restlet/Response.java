@@ -269,7 +269,12 @@ public class Response extends Message {
             synchronized (this) {
                 c = this.cookieSettings;
                 if (c == null) {
-                    this.cookieSettings = c = new Series<CookieSetting>(CookieSetting.class);
+                    // [ifndef gwt] instruction
+                    this.cookieSettings = c = new Series<CookieSetting>(
+                            CookieSetting.class);
+                    // [ifdef gwt] instruction uncomment
+                    // this.cookieSettings = c = new
+                    // org.restlet.engine.util.CookieSettingSeries();
                 }
             }
         }

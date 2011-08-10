@@ -131,9 +131,15 @@ public abstract class Call {
         this.method = null;
         this.protocol = null;
         this.reasonPhrase = "";
+        // [ifndef gwt] instruction
         this.requestHeaders = new Series<Header>(Header.class);
+        // [ifdef gwt] instruction uncomment
+        // this.requestHeaders = new org.restlet.engine.util.HeaderSeries();
         this.requestUri = null;
+        // [ifndef gwt] instruction
         this.responseHeaders = new Series<Header>(Header.class);
+        // [ifdef gwt] instruction uncomment
+        // this.responseHeaders = new org.restlet.engine.util.HeaderSeries();
         this.serverAddress = null;
         this.serverPort = -1;
         this.statusCode = 200;

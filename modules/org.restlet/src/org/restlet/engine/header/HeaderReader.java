@@ -65,6 +65,63 @@ import org.restlet.util.NamedValue;
  * @author Jerome Louvel
  */
 public class HeaderReader<V> {
+
+    /**
+     * Creates a new named value with a null value.
+     * 
+     * @param name
+     *            The name.
+     * @param resultClass
+     *            The named value class to return.
+     * @return The new named value.
+     */
+    private static final <NV extends NamedValue> NV createNamedValue(
+            Class<NV> resultClass, String name) {
+        return createNamedValue(resultClass, name, null);
+    }
+
+    /**
+     * Creates a new named value.
+     * 
+     * @param name
+     *            The name.
+     * @param value
+     *            The value or null.
+     * @param resultClass
+     *            The named value class to return.
+     * @return The new named value.
+     */
+    private static <NV extends NamedValue> NV createNamedValue(
+            Class<NV> resultClass, String name, String value) {
+        // [ifndef gwt]
+        try {
+            return resultClass.getConstructor(String.class, String.class)
+                    .newInstance(name, value);
+        } catch (Exception e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to create named value", e);
+            return null;
+        }
+        // [enddef]
+        // [ifdef gwt] uncomment
+        // if (org.restlet.data.Parameter.class.equals(resultClass)) {
+        // return (NV) new org.restlet.data.Parameter(name, value);
+        // } else if (org.restlet.data.Cookie.class.equals(resultClass)) {
+        // return (NV) new org.restlet.data.Cookie(name, value);
+        // } else if (org.restlet.data.CookieSetting.class.equals(resultClass))
+        // {
+        // return (NV) new org.restlet.data.CookieSetting(name, value);
+        // } else if (org.restlet.data.CacheDirective.class.equals(resultClass))
+        // {
+        // return (NV) new org.restlet.data.CacheDirective(name, value);
+        // } else if
+        // (org.restlet.engine.header.Header.class.equals(resultClass)) {
+        // return (NV) new org.restlet.engine.header.Header(name, value);
+        // }
+        // return null;
+        // [enddef]
+    }
+
     /**
      * Parses a date string.
      * 
@@ -276,43 +333,6 @@ public class HeaderReader<V> {
     }
 
     /**
-     * Creates a new named value with a null value.
-     * 
-     * @param name
-     *            The name.
-     * @param resultClass
-     *            The named value class to return.
-     * @return The new named value.
-     */
-    protected final <NV extends NamedValue> NV createNamedValue(
-            Class<NV> resultClass, String name) {
-        return createNamedValue(resultClass, name, null);
-    }
-
-    /**
-     * Creates a new named value.
-     * 
-     * @param name
-     *            The name.
-     * @param value
-     *            The value or null.
-     * @param resultClass
-     *            The named value class to return.
-     * @return The new named value.
-     */
-    protected <NV extends NamedValue> NV createNamedValue(
-            Class<NV> resultClass, String name, String value) {
-        try {
-            return resultClass.getConstructor(String.class, String.class)
-                    .newInstance(name, value);
-        } catch (Exception e) {
-            Context.getCurrentLogger().log(Level.WARNING,
-                    "Unable to create named value", e);
-            return null;
-        }
-    }
-
-    /**
      * Creates a new parameter with a null value. Can be overridden.
      * 
      * @param name
@@ -333,7 +353,7 @@ public class HeaderReader<V> {
      * @return The new parameter.
      */
     protected Parameter createParameter(String name, String value) {
-        return createNamedValue(Parameter.class, name, value);
+        return new Parameter(name, value);
     }
 
     /**

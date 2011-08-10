@@ -146,7 +146,10 @@ public class Disposition {
      */
     public Series<Parameter> getParameters() {
         if (this.parameters == null) {
+            // [ifndef gwt] instruction
             this.parameters = new Series<Parameter>(Parameter.class);
+            // [ifdef gwt] instruction uncomment
+            // this.parameters = new org.restlet.engine.util.ParameterSeries();
         }
 
         return this.parameters;

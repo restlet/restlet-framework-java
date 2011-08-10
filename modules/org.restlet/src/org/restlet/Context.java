@@ -152,8 +152,12 @@ public class Context {
     public Context(Logger logger) {
         this.attributes = new ConcurrentHashMap<String, Object>();
         this.logger = logger;
+        // [ifndef gwt] instruction
         this.parameters = new Series<Parameter>(Parameter.class,
                 new CopyOnWriteArrayList<Parameter>());
+        // [ifdef gwt] instruction uncomment
+        // this.parameters = new org.restlet.engine.util.ParameterSeries(new
+        // CopyOnWriteArrayList<Parameter>());
         this.clientDispatcher = null;
 
         // [ifndef gwt]

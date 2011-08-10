@@ -103,6 +103,7 @@
          <exclude name="src/org/restlet/engine/log/IdentClient.java" />
          <exclude name="src/org/restlet/engine/log/LogFilter.java" />
          <exclude name="src/org/restlet/engine/log/LoggingThreadFactory.java" />
+         <exclude name="src/org/restlet/engine/log/LogUtils.java" />
          <exclude name="src/org/restlet/engine/log/*Formatter.java" />
          <exclude name="src/org/restlet/engine/security/**" />
          <exclude name="src/org/restlet/engine/util/AlphabeticalComparator.java" />
@@ -113,6 +114,8 @@
          <exclude name="src/org/restlet/engine/util/ChildContext.java" />
          <exclude name="src/org/restlet/engine/util/Conneg.java" />
          <exclude name="src/org/restlet/engine/util/ConnegUtils.java" />
+         <exclude name="src/org/restlet/engine/util/CookieSeries.java" />
+         <exclude name="src/org/restlet/engine/util/CookieSettingSeries.java" />
          <exclude name="src/org/restlet/engine/util/DefaultSaxHandler.java" />
          <exclude name="src/org/restlet/engine/util/DigestUtils.java" />
          <exclude name="src/org/restlet/engine/util/EngineClassLoader.java" />

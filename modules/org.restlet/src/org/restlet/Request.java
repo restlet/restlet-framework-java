@@ -410,7 +410,11 @@ public class Request extends Message {
             synchronized (this) {
                 c = this.cookies;
                 if (c == null) {
+                    // [ifndef gwt] instruction
                     this.cookies = c = new Series<Cookie>(Cookie.class);
+                    // [ifdef gwt] instruction uncomment
+                    // this.cookies = c = new
+                    // org.restlet.engine.util.CookieSeries();
                 }
             }
         }
