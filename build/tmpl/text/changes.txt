@@ -19,6 +19,8 @@ Changes log
          Contributed by Ray Waldin.
        - Fixed conversion of representations to instances of primitive 
          type using the default converter.
+       - Fixed handling of binary data in OData extension.
+         Reported by Nikhil Purushe.
 
 - 2.0.8 (2011-06-21)
     - Bugs fixed
