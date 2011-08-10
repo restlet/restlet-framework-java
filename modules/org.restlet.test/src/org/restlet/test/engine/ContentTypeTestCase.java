@@ -30,16 +30,15 @@
 
 package org.restlet.test.engine;
 
-import junit.framework.TestCase;
-
 import org.restlet.engine.http.header.ContentType;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test {@link ContentType}
  * 
  * @author Jerome Louvel
  */
-public class ContentTypeTestCase extends TestCase {
+public class ContentTypeTestCase extends RestletTestCase {
 
     public void testParsingInvalid() {
         String h1 = "application/docbook+xml; version='my version 1.0'";

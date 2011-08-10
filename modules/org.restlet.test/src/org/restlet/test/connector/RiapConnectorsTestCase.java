@@ -30,8 +30,6 @@
 
 package org.restlet.test.connector;
 
-import junit.framework.TestCase;
-
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Request;
@@ -42,11 +40,12 @@ import org.restlet.data.Protocol;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.routing.Router;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Unit test case for the RIAP Internal routing protocol.
  */
-public class RiapConnectorsTestCase extends TestCase {
+public class RiapConnectorsTestCase extends RestletTestCase {
 
     /**
      * Test the RIAP client and server connectors.
@@ -64,8 +63,7 @@ public class RiapConnectorsTestCase extends TestCase {
 
                     @Override
                     public void handle(Request request, Response response) {
-                        response
-                                .setEntity("hello, world", MediaType.TEXT_PLAIN);
+                        response.setEntity("hello, world", MediaType.TEXT_PLAIN);
                     }
 
                 });
@@ -75,7 +73,7 @@ public class RiapConnectorsTestCase extends TestCase {
                                 "riap://component/app/testA");
                         try {
                             response.setEntity(resource.get().getText(),
-                                    MediaType.TEXT_PLAIN);                            
+                                    MediaType.TEXT_PLAIN);
                         } catch (Exception e) {
                         }
                     }

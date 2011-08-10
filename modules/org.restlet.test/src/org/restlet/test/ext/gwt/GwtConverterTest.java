@@ -34,17 +34,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import junit.framework.TestCase;
-
 import org.restlet.ext.gwt.GwtConverter;
 import org.restlet.representation.Representation;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Tests basic conversion using the GwtConverter.
  * 
  * @author Thierry Boileau
  */
-public class GwtConverterTest extends TestCase {
+public class GwtConverterTest extends RestletTestCase {
 
     public void testObjectToRepresentation() throws IOException {
         MyBean myBean = new MyBean();

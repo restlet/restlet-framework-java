@@ -32,21 +32,20 @@ package org.restlet.test.resource;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
 import org.restlet.resource.ResourceException;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test the annotated resources, client and server sides.
  * 
  * @author Jerome Louvel
  */
-public class AnnotatedResource1TestCase extends TestCase {
+public class AnnotatedResource1TestCase extends RestletTestCase {
 
     private ClientResource clientResource;
 
@@ -127,7 +126,8 @@ public class AnnotatedResource1TestCase extends TestCase {
             clientResource.put(new StringRepresentation("wxyz",
                     MediaType.APPLICATION_GNU_ZIP));
         } catch (ResourceException re) {
-            assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, re.getStatus());
+            assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
+                    re.getStatus());
         }
     }
 

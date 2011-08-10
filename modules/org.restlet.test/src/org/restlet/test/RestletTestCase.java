@@ -59,6 +59,8 @@ public abstract class RestletTestCase extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         Engine.clearThreadLocalVariables();
+        System.out.println("Setting up test " + getClass().getName() + "#"
+                + getName());
     }
 
     @Override

@@ -49,23 +49,23 @@ import org.restlet.test.RestletTestCase;
  */
 public abstract class BaseConnectorsTestCase extends RestletTestCase {
 
-    private final boolean apacheClientEnabled = true;
-
     private Component component;
 
-    private final boolean grizzlyServerEnabled = true;
+    private final boolean enabledClientApache = true;
 
-    private final boolean defaultClientEnabled = true;
+    private final boolean enabledClientDefault = true;
 
-    private final boolean defaultServerEnabled = true;
+    private final boolean enabledClientJdkNet = true;
 
-    private final boolean jdkNetClientEnabled = true;
+    private final boolean enabledServerDefault = true;
 
-    private final boolean jettyServerEnabled = true;
+    private final boolean enabledServerGrizzly = true;
 
-    private final boolean nettyServerEnabled = false;
+    private final boolean enabledServerJetty = true;
 
-    private final boolean simpleServerEnabled = true;
+    private final boolean enabledServerNetty = false;
+
+    private final boolean enabledServerSimple = true;
 
     protected abstract void call(String uri) throws Exception;
 
@@ -92,7 +92,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     private String start() throws Exception {
         this.component = new Component();
         final Server server = this.component.getServers().add(Protocol.HTTP, 0);
-        // server.getContext().getParameters().add("tracing", "true");
+        server.getContext().getParameters().add("tracing", "true");
         final Application application = createApplication(this.component);
 
         this.component.getDefaultHost().attach(application);
@@ -117,104 +117,104 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     }
 
     public void testDefaultAndApache() throws Exception {
-        if (this.defaultServerEnabled && this.apacheClientEnabled) {
+        if (this.enabledServerDefault && this.enabledClientApache) {
             runTest(new HttpServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testDefaultAndDefault() throws Exception {
-        if (this.defaultServerEnabled && this.defaultClientEnabled) {
+        if (this.enabledServerDefault && this.enabledClientDefault) {
             runTest(new HttpServerHelper(null), new HttpClientHelper(null));
         }
     }
 
     public void testDefaultAndJdkNet() throws Exception {
-        if (this.defaultServerEnabled && this.jdkNetClientEnabled) {
+        if (this.enabledServerDefault && this.enabledClientJdkNet) {
             runTest(new HttpServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
     }
 
     public void testGrizzlyAndApache() throws Exception {
-        if (this.grizzlyServerEnabled && this.apacheClientEnabled) {
+        if (this.enabledServerGrizzly && this.enabledClientApache) {
             runTest(new org.restlet.ext.grizzly.HttpServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testGrizzlyAndDefault() throws Exception {
-        if (this.grizzlyServerEnabled && this.defaultClientEnabled) {
+        if (this.enabledServerGrizzly && this.enabledClientDefault) {
             runTest(new org.restlet.ext.grizzly.HttpServerHelper(null),
                     new HttpClientHelper(null));
         }
     }
 
     public void testGrizzlyAndJdkNet() throws Exception {
-        if (this.grizzlyServerEnabled && this.jdkNetClientEnabled) {
+        if (this.enabledServerGrizzly && this.enabledClientJdkNet) {
             runTest(new org.restlet.ext.grizzly.HttpServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
     }
 
     public void testJettyAndApache() throws Exception {
-        if (this.jettyServerEnabled && this.apacheClientEnabled) {
+        if (this.enabledServerJetty && this.enabledClientApache) {
             runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testJettyAndDefault() throws Exception {
-        if (this.jettyServerEnabled && this.defaultClientEnabled) {
+        if (this.enabledServerJetty && this.enabledClientDefault) {
             runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
                     new HttpClientHelper(null));
         }
     }
 
     public void testJettyAndJdkNet() throws Exception {
-        if (this.jettyServerEnabled && this.jdkNetClientEnabled) {
+        if (this.enabledServerJetty && this.enabledClientJdkNet) {
             runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
     }
 
     public void testNettyAndApache() throws Exception {
-        if (this.nettyServerEnabled && this.apacheClientEnabled) {
+        if (this.enabledServerNetty && this.enabledClientApache) {
             runTest(new org.restlet.ext.netty.HttpServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testNettyAndDefault() throws Exception {
-        if (this.nettyServerEnabled && this.defaultClientEnabled) {
+        if (this.enabledServerNetty && this.enabledClientDefault) {
             runTest(new org.restlet.ext.netty.HttpServerHelper(null),
                     new HttpClientHelper(null));
         }
     }
 
     public void testNettyAndJdkNet() throws Exception {
-        if (this.nettyServerEnabled && this.jdkNetClientEnabled) {
+        if (this.enabledServerNetty && this.enabledClientJdkNet) {
             runTest(new org.restlet.ext.netty.HttpServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
     }
 
     public void testSimpleAndApache() throws Exception {
-        if (this.simpleServerEnabled && this.apacheClientEnabled) {
+        if (this.enabledServerSimple && this.enabledClientApache) {
             runTest(new org.restlet.ext.simple.HttpServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testSimpleAndDefault() throws Exception {
-        if (this.simpleServerEnabled && this.defaultClientEnabled) {
+        if (this.enabledServerSimple && this.enabledClientDefault) {
             runTest(new org.restlet.ext.simple.HttpServerHelper(null),
                     new HttpClientHelper(null));
         }
     }
 
     public void testSimpleAndJdkNet() throws Exception {
-        if (this.simpleServerEnabled && this.jdkNetClientEnabled) {
+        if (this.enabledServerSimple && this.enabledClientJdkNet) {
             runTest(new org.restlet.ext.simple.HttpServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }

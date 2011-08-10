@@ -30,11 +30,10 @@
 
 package org.restlet.test.routing;
 
-import junit.framework.TestCase;
-
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.routing.Route;
+import org.restlet.test.RestletTestCase;
 import org.restlet.util.RouteList;
 
 /**
@@ -43,7 +42,7 @@ import org.restlet.util.RouteList;
  * @author Kevin Conaway
  */
 @SuppressWarnings("deprecation")
-public class RouteListTestCase extends TestCase {
+public class RouteListTestCase extends RestletTestCase {
 
     static class MockScoringRoute extends Route {
         int score;

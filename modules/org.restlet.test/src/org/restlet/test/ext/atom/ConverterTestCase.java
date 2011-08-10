@@ -32,15 +32,14 @@ package org.restlet.test.ext.atom;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.MediaType;
 import org.restlet.ext.atom.Feed;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.service.ConverterService;
+import org.restlet.test.RestletTestCase;
 
-public class ConverterTestCase extends TestCase {
+public class ConverterTestCase extends RestletTestCase {
 
     public void testObjectToRepresentation() {
         ConverterService cs = new ConverterService();

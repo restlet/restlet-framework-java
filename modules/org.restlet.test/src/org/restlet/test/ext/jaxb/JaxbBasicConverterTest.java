@@ -34,20 +34,19 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxb.JaxbRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.service.ConverterService;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Tests basic Conversion using the JaxbConverter
  * 
  * @author Sanjay Acharya
  */
-public class JaxbBasicConverterTest extends TestCase {
+public class JaxbBasicConverterTest extends RestletTestCase {
 
     public void testObjectionToRepresentation() {
         ConverterService cs = new ConverterService();
