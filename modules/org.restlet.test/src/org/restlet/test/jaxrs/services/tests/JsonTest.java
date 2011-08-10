@@ -43,6 +43,8 @@ import org.json.JSONObject;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.ext.jaxb.JaxbRepresentation;
 import org.restlet.ext.jaxrs.JaxRsApplication;
 import org.restlet.ext.jaxrs.internal.provider.JsonProvider;
@@ -72,8 +74,7 @@ public class JsonTest extends JaxRsTestCase {
             IOException {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        JSONObject jsonObject = new JSONObject(response.getEntity()
-                .getText());
+        JSONObject jsonObject = new JSONObject(response.getEntity().getText());
         assertEquals("Angela", jsonObject.get("firstname"));
         assertEquals("Merkel", jsonObject.get("lastname"));
     }
@@ -88,10 +89,18 @@ public class JsonTest extends JaxRsTestCase {
             }
         };
     }
-    
+
     @Override
     protected void modifyApplication(JaxRsApplication app) {
         app.getTunnelService().setExtensionsTunnel(true);
+    }
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        // Explicitely promote the Jackson converter
+        Engine.getInstance().getRegisteredConverters()
+                .add(0, new JacksonConverter());
     }
 
     public void testGetJsonObject() throws Exception {

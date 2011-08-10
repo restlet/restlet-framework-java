@@ -130,6 +130,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(VelocityTestCase.class);
         addTestSuite(WadlTestCase.class);
         addTest(ODataTestSuite.suite());
+        
         // TODO Fix Zip client test case
         // addTestSuite(ZipClientTestCase.class);
 

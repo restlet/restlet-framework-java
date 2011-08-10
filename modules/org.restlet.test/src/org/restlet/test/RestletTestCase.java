@@ -61,6 +61,8 @@ public abstract class RestletTestCase extends TestCase {
         Engine.clearThreadLocalVariables();
         System.out.println("Setting up test " + getClass().getName() + "#"
                 + getName());
+        // Restore a clean engine
+        org.restlet.engine.Engine.register();
     }
 
     @Override

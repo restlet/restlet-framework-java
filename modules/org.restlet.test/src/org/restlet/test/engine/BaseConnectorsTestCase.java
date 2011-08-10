@@ -92,7 +92,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     private String start() throws Exception {
         this.component = new Component();
         final Server server = this.component.getServers().add(Protocol.HTTP, 0);
-        server.getContext().getParameters().add("tracing", "true");
+        // server.getContext().getParameters().add("tracing", "true");
         final Application application = createApplication(this.component);
 
         this.component.getDefaultHost().attach(application);
@@ -113,7 +113,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
         super.tearDown();
 
         // Restore a clean engine
-        org.restlet.engine.Engine.setInstance(new Engine());
+        org.restlet.engine.Engine.register();
     }
 
     public void testDefaultAndApache() throws Exception {
