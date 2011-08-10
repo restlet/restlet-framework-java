@@ -36,7 +36,7 @@ package org.restlet.util;
  * @author Jerome Louvel
  */
 public interface NamedValue {
-
+    
     /**
      * Returns the name of this parameter.
      * 
