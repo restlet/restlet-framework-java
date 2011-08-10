@@ -37,7 +37,7 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
 
 /**
- * Unit test case for the RIAP Internal routing protocol.
+ * Unit test case for the RDF extension.
  */
 public class RdfTestCase extends RestletTestCase {
 
