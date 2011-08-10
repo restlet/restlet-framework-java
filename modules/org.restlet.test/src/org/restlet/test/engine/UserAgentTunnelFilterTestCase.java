@@ -70,7 +70,8 @@ public class UserAgentTunnelFilterTestCase extends RestletTestCase {
     }
 
     @Override
-    public void setUp() {
+    public void setUp() throws Exception {
+        super.setUp();
         this.application = new Application() {
             @Override
             public Restlet createInboundRoot() {

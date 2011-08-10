@@ -47,6 +47,7 @@ public class AnnotatedResource12TestCase extends RestletTestCase {
     private MyResource12 myResource;
 
     protected void setUp() throws Exception {
+        super.setUp();
         Finder finder = new Finder();
         finder.setTargetClass(MyServerResource12.class);
 

@@ -116,6 +116,7 @@ public class HeaderTestCase extends RestletTestCase {
 
     @Override
     public void setUp() throws Exception {
+        super.setUp();
         if (this.component == null) {
             this.component = new Component();
             this.component.getServers().add(Protocol.HTTP, TEST_PORT);
@@ -131,6 +132,7 @@ public class HeaderTestCase extends RestletTestCase {
     public void tearDown() throws Exception {
         this.component.stop();
         this.component = null;
+        super.tearDown();
     }
 
     /** test with no test header */

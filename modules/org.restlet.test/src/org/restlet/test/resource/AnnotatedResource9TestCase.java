@@ -83,6 +83,7 @@ public class AnnotatedResource9TestCase extends RestletTestCase {
     private Client client;
 
     protected void setUp() throws Exception {
+        super.setUp();
         Engine.getInstance().getRegisteredConverters().clear();
         Engine.getInstance().registerDefaultConverters();
         c = new Component();
@@ -96,8 +97,8 @@ public class AnnotatedResource9TestCase extends RestletTestCase {
     @Override
     protected void tearDown() throws Exception {
         c.stop();
-
         c = null;
+        client.stop();
         client = null;
         // Restore default converters
         Engine.register();

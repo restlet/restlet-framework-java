@@ -34,6 +34,9 @@ import java.io.IOException;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.ext.jackson.JacksonConverter;
+import org.restlet.ext.xstream.XstreamConverter;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
@@ -52,6 +55,11 @@ public class AnnotatedResource1TestCase extends RestletTestCase {
     private MyResource1 myResource;
 
     protected void setUp() throws Exception {
+        super.setUp();
+        Engine.getInstance().getRegisteredConverters().clear();
+        Engine.getInstance().getRegisteredConverters().add(new JacksonConverter());
+        Engine.getInstance().getRegisteredConverters().add(new XstreamConverter());
+        Engine.getInstance().registerDefaultConverters();
         Finder finder = new Finder();
         finder.setTargetClass(MyServerResource1.class);
 

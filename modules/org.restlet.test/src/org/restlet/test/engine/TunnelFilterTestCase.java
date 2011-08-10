@@ -233,7 +233,8 @@ public class TunnelFilterTestCase extends RestletTestCase {
     }
 
     @Override
-    public void setUp() {
+    public void setUp() throws Exception {
+        super.setUp();
         final Application app = new Application(new Context());
         Application.setCurrent(app);
         this.tunnelFilter = new TunnelFilter(app.getContext());

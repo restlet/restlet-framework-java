@@ -100,6 +100,7 @@ public class DigesterRepresentationTestCase extends RestletTestCase {
 
     @Override
     protected void setUp() throws Exception {
+        super.setUp();
         component = new Component();
         component.getServers().add(Protocol.HTTP, TEST_PORT);
         component.getDefaultHost().attach(new TestDigestApplication());
@@ -110,6 +111,7 @@ public class DigesterRepresentationTestCase extends RestletTestCase {
     protected void tearDown() throws Exception {
         component.stop();
         component = null;
+        super.tearDown();
     }
 
     /**

@@ -22,14 +22,14 @@
 	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet</artifactId>
+			<artifactId>org.restlet.ext.atom</artifactId>
 <!--			<version>2.0-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.jackson</artifactId>
+			<artifactId>org.restlet</artifactId>
 <!--			<version>2.0-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
@@ -43,35 +43,42 @@
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.xstream</artifactId>
+			<artifactId>org.restlet.example</artifactId>
 <!--			<version>2.0-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.xml</artifactId>
+			<artifactId>org.restlet.ext.freemarker</artifactId>
 <!--			<version>2.0-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.json</artifactId>
+			<artifactId>org.restlet.ext.grizzly</artifactId>
 <!--			<version>2.0-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.atom</artifactId>
+			<artifactId>org.restlet.ext.gwt</artifactId>
 <!--			<version>2.0-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.spring</artifactId>
+			<artifactId>org.restlet.ext.httpclient</artifactId>
+<!--			<version>2.0-SNAPSHOT</version> -->
+			<version>${version}</version>
+			
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.dev</groupId>
+			<artifactId>org.restlet.ext.jackson</artifactId>
 <!--			<version>2.0-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
@@ -92,21 +99,21 @@
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.gwt</artifactId>
+			<artifactId>org.restlet.ext.jetty</artifactId>
 <!--			<version>2.0-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.grizzly</artifactId>
+			<artifactId>org.restlet.ext.json</artifactId>
 <!--			<version>2.0-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.httpclient</artifactId>
+			<artifactId>org.restlet.ext.lucene</artifactId>
 <!--			<version>2.0-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
@@ -134,6 +141,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
+			<artifactId>org.restlet.ext.rdf</artifactId>
+<!--			<version>2.0-SNAPSHOT</version> -->
+			<version>${version}</version>
+			
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet.ext.simple</artifactId>
 <!--			<version>2.0-SNAPSHOT</version> -->
 			<version>${version}</version>
@@ -141,21 +155,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.jetty</artifactId>
-<!--			<version>2.0-SNAPSHOT</version> -->
-			<version>${version}</version>
-			
-		</dependency>
-		<dependency>
-			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.freemarker</artifactId>
-<!--			<version>2.0-SNAPSHOT</version> -->
-			<version>${version}</version>
-			
-		</dependency>
-		<dependency>
-			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.lucene</artifactId>
+			<artifactId>org.restlet.ext.spring</artifactId>
 <!--			<version>2.0-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
@@ -169,7 +169,14 @@
 		</dependency>
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.ext.rdf</artifactId>
+			<artifactId>org.restlet.ext.xml</artifactId>
+<!--			<version>2.0-SNAPSHOT</version> -->
+			<version>${version}</version>
+			
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.dev</groupId>
+			<artifactId>org.restlet.ext.xstream</artifactId>
 <!--			<version>2.0-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
@@ -177,13 +184,6 @@
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet.ext.wadl</artifactId>
-<!--			<version>2.0-SNAPSHOT</version> -->
-			<version>${version}</version>
-			
-		</dependency>
-		<dependency>
-			<groupId>org.restlet.dev</groupId>
-			<artifactId>org.restlet.example</artifactId>
 <!--			<version>2.0-SNAPSHOT</version> -->
 			<version>${version}</version>
 			

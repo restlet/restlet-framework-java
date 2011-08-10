@@ -41,6 +41,7 @@ import org.restlet.Restlet;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.resource.ResourceException;
 import org.restlet.routing.Router;
 import org.restlet.test.RestletTestCase;
@@ -69,6 +70,9 @@ public class AnnotatedResource10TestCase extends RestletTestCase {
     private Client client;
 
     protected void setUp() throws Exception {
+        super.setUp();
+        Engine.getInstance().getRegisteredConverters().clear();
+        Engine.getInstance().registerDefaultConverters();
         c = new Component();
         c.getServers().add(Protocol.HTTP, 8111);
         c.getDefaultHost().attach(new TestApplication());
@@ -81,6 +85,9 @@ public class AnnotatedResource10TestCase extends RestletTestCase {
     protected void tearDown() throws Exception {
         c.stop();
         c = null;
+        client.stop();
+        client = null;
+        super.tearDown();
     }
 
     /**

@@ -120,6 +120,7 @@ public class JavaMailTestCase extends RestletTestCase {
 
     @Override
     protected void setUp() throws Exception {
+        super.setUp();
         final File keyStoreFile = new File(_TRUSTSTORE);
 
         if (keyStoreFile.exists()) {
