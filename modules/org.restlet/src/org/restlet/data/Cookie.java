@@ -67,7 +67,7 @@ public class Cookie implements NamedValue {
     private volatile int version;
 
     /**
-     * Constructor.
+     * Default constructor.
      */
     public Cookie() {
         this(0, null, null, null, null);
