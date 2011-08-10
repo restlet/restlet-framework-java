@@ -1,5 +1,5 @@
 <library id="gwt-server" symbolicName="com.google.gwt.server">
-	<name>Google Web Toolkit = server side</name>
+	<name>Google Web Toolkit - server side</name>
 	<description>Google Web Toolkit - server side</description>
 	<version>2.1</version>
 	<release>0</release>
