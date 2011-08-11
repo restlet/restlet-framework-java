@@ -80,7 +80,8 @@ public class ClientResource extends UniformResource {
     // [ifndef gwt] method
     /**
      * Creates a client resource that proxy calls to the given Java interface
-     * into Restlet method calls.
+     * into Restlet method calls. It basically creates a new instance of
+     * {@link ClientResource} and invokes the {@link #wrap(Class)} method.
      * 
      * @param <T>
      * @param context
@@ -100,7 +101,8 @@ public class ClientResource extends UniformResource {
     // [ifndef gwt] method
     /**
      * Creates a client resource that proxy calls to the given Java interface
-     * into Restlet method calls.
+     * into Restlet method calls. It basically creates a new instance of
+     * {@link ClientResource} and invokes the {@link #wrap(Class)} method.
      * 
      * @param <T>
      * @param resourceInterface
@@ -115,7 +117,8 @@ public class ClientResource extends UniformResource {
     // [ifndef gwt] method
     /**
      * Creates a client resource that proxy calls to the given Java interface
-     * into Restlet method calls.
+     * into Restlet method calls. It basically creates a new instance of
+     * {@link ClientResource} and invokes the {@link #wrap(Class)} method.
      * 
      * @param <T>
      * @param uri
