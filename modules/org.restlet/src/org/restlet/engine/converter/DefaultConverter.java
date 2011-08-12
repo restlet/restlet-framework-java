@@ -176,7 +176,7 @@ public class DefaultConverter extends ConverterHelper {
         float result = -1.0F;
 
         if (target != null) {
-            if (Representation.class.isAssignableFrom(target)) {
+            if (target.isAssignableFrom(source.getClass())) {
                 result = 1.0F;
             } else if (String.class.isAssignableFrom(target)) {
                 result = 1.0F;

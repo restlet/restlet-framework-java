@@ -21,6 +21,9 @@ Changes log
          type using the default converter.
        - Fixed handling of binary data in OData extension.
          Reported by Nikhil Purushe.
+       - Fixed a bug in the default converter that lead the latter to 
+         take precedence over specialized converter when converting 
+         incoming representations. Reported by Glenn Bruns.
 
 - 2.0.8 (2011-06-21)
     - Bugs fixed
