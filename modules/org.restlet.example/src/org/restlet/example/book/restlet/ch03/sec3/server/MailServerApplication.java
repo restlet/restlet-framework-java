@@ -28,33 +28,37 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch04.sec3.common;
+package org.restlet.example.book.restlet.ch03.sec3.server;
 
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
+import org.restlet.Application;
+import org.restlet.Restlet;
+import org.restlet.routing.Router;
 
 /**
- * Collection resource containing user accounts.
+ * The reusable mail server application.
  */
-public interface AccountsResource {
+public class MailServerApplication extends Application {
 
     /**
-     * Returns the list of accounts, each one on a separate line.
-     * 
-     * @return The list of accounts.
+     * Constructor.
      */
-    @Get
-    public String represent();
+    public MailServerApplication() {
+        setName("RESTful Mail Server application");
+        setDescription("Example application for 'Restlet in Action' book");
+        setOwner("Noelios Technologies");
+        setAuthor("The Restlet Team");
+    }
 
     /**
-     * Add the given account to the list and returns its position as an
-     * identifier.
-     * 
-     * @param account
-     *            The account to add.
-     * @return The account identifier.
+     * Creates a root Router to dispatch call to server resources.
      */
-    @Post
-    public String add(String account);
+    @Override
+    public Restlet createInboundRoot() {
+        Router router = new Router(getContext());
+        router.attach("/", RootServerResource.class);
+        router.attach("/accounts/", AccountsServerResource.class);
+        router.attach("/accounts/{accountId}", AccountServerResource.class);
+        return router;
+    }
 
 }

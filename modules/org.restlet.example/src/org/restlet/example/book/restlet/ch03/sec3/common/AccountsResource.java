@@ -28,41 +28,33 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch04.sec3.server;
+package org.restlet.example.book.restlet.ch03.sec3.common;
 
-import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountResource;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.ServerResource;
+import org.restlet.resource.Get;
+import org.restlet.resource.Post;
 
 /**
- * Implementation of a mail account resource.
+ * Collection resource containing user accounts.
  */
-public class AccountServerResource extends ServerResource implements
-        AccountResource {
-
-    /** The account identifier. */
-    private int accountId;
+public interface AccountsResource {
 
     /**
-     * Retrieve the account identifier based on the URI path variable
-     * "accountId" declared in the URI template attached to the application
-     * router.
+     * Returns the list of accounts, each one on a separate line.
+     * 
+     * @return The list of accounts.
      */
-    @Override
-    protected void doInit() throws ResourceException {
-        this.accountId = Integer.parseInt((String) getRequestAttributes().get(
-                "accountId"));
-    }
+    @Get
+    public String represent();
 
-    public String represent() {
-        return AccountsServerResource.getAccounts().get(this.accountId - 1);
-    }
+    /**
+     * Add the given account to the list and returns its position as an
+     * identifier.
+     * 
+     * @param account
+     *            The account to add.
+     * @return The account identifier.
+     */
+    @Post
+    public String add(String account);
 
-    public void store(String account) {
-        AccountsServerResource.getAccounts().set(this.accountId - 1, account);
-    }
-
-    public void remove() {
-        AccountsServerResource.getAccounts().remove(this.accountId - 1);
-    }
 }

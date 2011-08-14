@@ -28,42 +28,41 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch04.sec3.client;
+package org.restlet.example.book.restlet.ch03.sec3.server;
 
-import junit.framework.TestCase;
-
-import org.restlet.Request;
-import org.restlet.Response;
-import org.restlet.data.Method;
-import org.restlet.example.book.restlet.ch04.sec3.server.MailServerComponent;
+import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountResource;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.ServerResource;
 
 /**
- * Mail client JUnit test case.
+ * Implementation of a mail account resource.
  */
-public class MailClientTestCase extends TestCase {
+public class AccountServerResource extends ServerResource implements
+        AccountResource {
+
+    /** The account identifier. */
+    private int accountId;
 
     /**
-     * Unit test for virtual hosts.
-     * 
-     * @throws Exception
+     * Retrieve the account identifier based on the URI path variable
+     * "accountId" declared in the URI template attached to the application
+     * router.
      */
-    public void testVirtualHost() throws Exception {
-
-        // Instantiate our Restlet component
-        MailServerComponent component = new MailServerComponent();
-
-        // Prepare a mock HTTP call
-        Request request = new Request();
-        request.setMethod(Method.GET);
-        request.setResourceRef("http://www.rmep.org/accounts/");
-        request.setHostRef("http://www.rmep.org");
-        Response response = new Response(request);
-        response.getServerInfo().setAddress("1.2.3.10");
-        response.getServerInfo().setPort(80);
-        component.handle(request, response);
-
-        // Test if response was successful
-        assertTrue(response.getStatus().isSuccess());
+    @Override
+    protected void doInit() throws ResourceException {
+        this.accountId = Integer.parseInt((String) getRequestAttributes().get(
+                "accountId"));
     }
 
+    public String represent() {
+        return AccountsServerResource.getAccounts().get(this.accountId - 1);
+    }
+
+    public void store(String account) {
+        AccountsServerResource.getAccounts().set(this.accountId - 1, account);
+    }
+
+    public void remove() {
+        AccountsServerResource.getAccounts().remove(this.accountId - 1);
+    }
 }

@@ -28,21 +28,18 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch04.sec3.common;
+package org.restlet.example.book.restlet.ch03.sec3.server;
 
-import org.restlet.resource.Get;
+import org.restlet.example.book.restlet.ch02.sect5.sub5.common.RootResource;
+import org.restlet.resource.ServerResource;
 
 /**
- * Root resource.
+ * Root resource implementation.
  */
-public interface RootResource {
+public class RootServerResource extends ServerResource implements RootResource {
 
-    /**
-     * Represents the application root with a welcome message.
-     * 
-     * @return The root representation.
-     */
-    @Get
-    public String represent();
+    public String represent() {
+        return "Welcome to the " + getApplication().getName() + " !";
+    }
 
 }

@@ -28,38 +28,42 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch04.sec3.common;
+package org.restlet.example.book.restlet.ch03.sec3.client;
 
-import org.restlet.resource.Delete;
-import org.restlet.resource.Get;
-import org.restlet.resource.Put;
+import junit.framework.TestCase;
+
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.data.Method;
+import org.restlet.example.book.restlet.ch03.sec3.server.MailServerComponent;
 
 /**
- * User account resource.
+ * Mail client JUnit test case.
  */
-public interface AccountResource {
+public class MailClientTestCase extends TestCase {
 
     /**
-     * Represents the account as a simple string with the owner name for now.
+     * Unit test for virtual hosts.
      * 
-     * @return The account representation.
+     * @throws Exception
      */
-    @Get
-    public String represent();
+    public void testVirtualHost() throws Exception {
 
-    /**
-     * Stores the new value for the identified account.
-     * 
-     * @param account
-     *            The identified account.
-     */
-    @Put
-    public void store(String account);
+        // Instantiate our Restlet component
+        MailServerComponent component = new MailServerComponent();
 
-    /**
-     * Deletes the identified account by setting its value to null.
-     */
-    @Delete
-    public void remove();
+        // Prepare a mock HTTP call
+        Request request = new Request();
+        request.setMethod(Method.GET);
+        request.setResourceRef("http://www.rmep.org/accounts/");
+        request.setHostRef("http://www.rmep.org");
+        Response response = new Response(request);
+        response.getServerInfo().setAddress("1.2.3.10");
+        response.getServerInfo().setPort(80);
+        component.handle(request, response);
+
+        // Test if response was successful
+        assertTrue(response.getStatus().isSuccess());
+    }
 
 }

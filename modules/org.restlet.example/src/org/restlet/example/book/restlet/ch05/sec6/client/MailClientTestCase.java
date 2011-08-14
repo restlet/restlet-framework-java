@@ -35,7 +35,7 @@ import junit.framework.TestCase;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Method;
-import org.restlet.example.book.restlet.ch04.sec3.server.MailServerComponent;
+import org.restlet.example.book.restlet.ch03.sec3.server.MailServerComponent;
 
 /**
  * Mail client JUnit test case.
