@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch05.sec6.server;
+package org.restlet.example.book.restlet.ch02.sect5.sub5.server;
 
 import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountResource;
 import org.restlet.resource.ResourceException;
@@ -50,13 +50,8 @@ public class AccountServerResource extends ServerResource implements
      */
     @Override
     protected void doInit() throws ResourceException {
-        String accountIdAttribute = (String) getRequestAttributes().get(
-                "accountId");
-
-        if (accountIdAttribute != null) {
-            this.accountId = Integer.parseInt((String) getRequestAttributes()
-                    .get("accountId"));
-        }
+        this.accountId = Integer.parseInt((String) getRequestAttributes().get(
+                "accountId"));
     }
 
     public String represent() {

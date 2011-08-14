@@ -31,7 +31,7 @@
 package org.restlet.example.book.restlet.ch07.sec2.server;
 
 import org.restlet.data.MediaType;
-import org.restlet.example.book.restlet.ch03.sect5.sub5.common.RootResource;
+import org.restlet.example.book.restlet.ch02.sect5.sub5.common.RootResource;
 import org.restlet.ext.wadl.DocumentationInfo;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.RepresentationInfo;

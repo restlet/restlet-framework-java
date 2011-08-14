@@ -30,7 +30,7 @@
 
 package org.restlet.example.book.restlet.ch04.sec3.server;
 
-import org.restlet.example.book.restlet.ch03.sect5.sub5.common.RootResource;
+import org.restlet.example.book.restlet.ch02.sect5.sub5.common.RootResource;
 import org.restlet.resource.ServerResource;
 
 /**

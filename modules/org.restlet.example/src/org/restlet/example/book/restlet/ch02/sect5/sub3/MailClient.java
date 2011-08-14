@@ -28,41 +28,21 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch04.sec3.server;
+package org.restlet.example.book.restlet.ch02.sect5.sub3;
 
-import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountResource;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.ServerResource;
+import org.restlet.resource.ClientResource;
 
 /**
- * Implementation of a mail account resource.
+ * Illustrating features of client resources.
  */
-public class AccountServerResource extends ServerResource implements
-        AccountResource {
+public class MailClient {
 
-    /** The account identifier. */
-    private int accountId;
+    public static void main(String[] args) throws Exception {
+        ClientResource mailRoot = new ClientResource("http://localhost:8111/");
+        mailRoot.get().write(System.out);
 
-    /**
-     * Retrieve the account identifier based on the URI path variable
-     * "accountId" declared in the URI template attached to the application
-     * router.
-     */
-    @Override
-    protected void doInit() throws ResourceException {
-        this.accountId = Integer.parseInt((String) getRequestAttributes().get(
-                "accountId"));
+        String result = mailRoot.get(String.class);
+        System.out.println("\n" + result);
     }
 
-    public String represent() {
-        return AccountsServerResource.getAccounts().get(this.accountId - 1);
-    }
-
-    public void store(String account) {
-        AccountsServerResource.getAccounts().set(this.accountId - 1, account);
-    }
-
-    public void remove() {
-        AccountsServerResource.getAccounts().remove(this.accountId - 1);
-    }
 }

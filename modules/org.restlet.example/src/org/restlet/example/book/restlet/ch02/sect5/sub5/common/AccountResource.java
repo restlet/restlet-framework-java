@@ -28,41 +28,38 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch04.sec3.server;
+package org.restlet.example.book.restlet.ch02.sect5.sub5.common;
 
-import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountResource;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.ServerResource;
+import org.restlet.resource.Delete;
+import org.restlet.resource.Get;
+import org.restlet.resource.Put;
 
 /**
- * Implementation of a mail account resource.
+ * User account resource.
  */
-public class AccountServerResource extends ServerResource implements
-        AccountResource {
-
-    /** The account identifier. */
-    private int accountId;
+public interface AccountResource {
 
     /**
-     * Retrieve the account identifier based on the URI path variable
-     * "accountId" declared in the URI template attached to the application
-     * router.
+     * Represents the account as a simple string with the owner name for now.
+     * 
+     * @return The account representation.
      */
-    @Override
-    protected void doInit() throws ResourceException {
-        this.accountId = Integer.parseInt((String) getRequestAttributes().get(
-                "accountId"));
-    }
+    @Get("txt")
+    public String represent();
 
-    public String represent() {
-        return AccountsServerResource.getAccounts().get(this.accountId - 1);
-    }
+    /**
+     * Stores the new value for the identified account.
+     * 
+     * @param account
+     *            The identified account.
+     */
+    @Put("txt")
+    public void store(String account);
 
-    public void store(String account) {
-        AccountsServerResource.getAccounts().set(this.accountId - 1, account);
-    }
+    /**
+     * Deletes the identified account by setting its value to null.
+     */
+    @Delete
+    public void remove();
 
-    public void remove() {
-        AccountsServerResource.getAccounts().remove(this.accountId - 1);
-    }
 }

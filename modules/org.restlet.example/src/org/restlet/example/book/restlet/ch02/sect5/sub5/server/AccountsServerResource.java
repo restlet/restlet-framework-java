@@ -28,46 +28,44 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch05.sec6.server;
+package org.restlet.example.book.restlet.ch02.sect5.sub5.server;
 
-import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountResource;
-import org.restlet.resource.ResourceException;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountsResource;
 import org.restlet.resource.ServerResource;
 
 /**
- * Implementation of a mail account resource.
+ * Implementation of the resource containing the list of mail accounts.
  */
-public class AccountServerResource extends ServerResource implements
-        AccountResource {
+public class AccountsServerResource extends ServerResource implements
+        AccountsResource {
 
-    /** The account identifier. */
-    private int accountId;
+    /** Static list of accounts stored in memory. */
+    private static final List<String> accounts = new CopyOnWriteArrayList<String>();
 
     /**
-     * Retrieve the account identifier based on the URI path variable
-     * "accountId" declared in the URI template attached to the application
-     * router.
+     * Returns the static list of accounts stored in memory.
+     * 
+     * @return The static list of accounts.
      */
-    @Override
-    protected void doInit() throws ResourceException {
-        String accountIdAttribute = (String) getRequestAttributes().get(
-                "accountId");
-
-        if (accountIdAttribute != null) {
-            this.accountId = Integer.parseInt((String) getRequestAttributes()
-                    .get("accountId"));
-        }
+    public static List<String> getAccounts() {
+        return accounts;
     }
 
     public String represent() {
-        return AccountsServerResource.getAccounts().get(this.accountId - 1);
+        StringBuilder result = new StringBuilder();
+
+        for (String account : getAccounts()) {
+            result.append((account == null) ? "" : account).append('\n');
+        }
+
+        return result.toString();
     }
 
-    public void store(String account) {
-        AccountsServerResource.getAccounts().set(this.accountId - 1, account);
-    }
-
-    public void remove() {
-        AccountsServerResource.getAccounts().remove(this.accountId - 1);
+    public String add(String account) {
+        getAccounts().add(account);
+        return Integer.toString(getAccounts().indexOf(account) + 1);
     }
 }

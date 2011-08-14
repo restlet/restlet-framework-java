@@ -33,7 +33,7 @@ package org.restlet.example.book.restlet.ch05.sec6.server;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.restlet.example.book.restlet.ch03.sect5.sub5.common.AccountsResource;
+import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountsResource;
 import org.restlet.resource.ServerResource;
 
 /**

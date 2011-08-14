@@ -28,41 +28,50 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch04.sec3.server;
+package org.restlet.example.book.restlet.ch02.sect4.sub1;
 
-import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountResource;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.ServerResource;
+import org.restlet.Application;
+import org.restlet.Restlet;
+import org.restlet.Server;
+import org.restlet.data.Protocol;
 
 /**
- * Implementation of a mail account resource.
+ * Setting basic application properties
  */
-public class AccountServerResource extends ServerResource implements
-        AccountResource {
-
-    /** The account identifier. */
-    private int accountId;
+public class MailServerApplication extends Application {
 
     /**
-     * Retrieve the account identifier based on the URI path variable
-     * "accountId" declared in the URI template attached to the application
-     * router.
+     * Launches the application with an HTTP server.
+     * 
+     * @param args
+     *            The arguments.
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        Server mailServer = new Server(Protocol.HTTP, 8111);
+        mailServer.setNext(new MailServerApplication());
+        mailServer.start();
+    }
+
+    /**
+     * Constructor.
+     */
+    public MailServerApplication() {
+        setName("RESTful Mail Server");
+        setDescription("Example for 'Restlet in Action' book");
+        setOwner("Noelios Technologies");
+        setAuthor("The Restlet Team");
+    }
+
+    /**
+     * Creates a root Restlet to trace requests.
      */
     @Override
-    protected void doInit() throws ResourceException {
-        this.accountId = Integer.parseInt((String) getRequestAttributes().get(
-                "accountId"));
+    public Restlet createInboundRoot() {
+        Blocker blocker = new Blocker(getContext());
+        blocker.getBlockedAddresses().add("127.0.0.1");
+        blocker.setNext(new Tracer(getContext()));
+        return blocker;
     }
 
-    public String represent() {
-        return AccountsServerResource.getAccounts().get(this.accountId - 1);
-    }
-
-    public void store(String account) {
-        AccountsServerResource.getAccounts().set(this.accountId - 1, account);
-    }
-
-    public void remove() {
-        AccountsServerResource.getAccounts().remove(this.accountId - 1);
-    }
 }

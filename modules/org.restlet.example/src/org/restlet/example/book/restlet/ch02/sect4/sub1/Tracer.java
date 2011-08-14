@@ -28,41 +28,35 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch04.sec3.server;
+package org.restlet.example.book.restlet.ch02.sect4.sub1;
 
-import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountResource;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.ServerResource;
+import org.restlet.Context;
+import org.restlet.Request;
+import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.data.MediaType;
 
 /**
- * Implementation of a mail account resource.
+ * Restlet that returns common request properties to the client.
  */
-public class AccountServerResource extends ServerResource implements
-        AccountResource {
+public class Tracer extends Restlet {
 
-    /** The account identifier. */
-    private int accountId;
+    public Tracer(Context context) {
+        super(context);
+    }
 
-    /**
-     * Retrieve the account identifier based on the URI path variable
-     * "accountId" declared in the URI template attached to the application
-     * router.
-     */
     @Override
-    protected void doInit() throws ResourceException {
-        this.accountId = Integer.parseInt((String) getRequestAttributes().get(
-                "accountId"));
+    public void handle(Request request, Response response) {
+        String entity = "Method       : " + request.getMethod()
+                + "\nResource URI : " 
+                + request.getResourceRef()
+                + "\nIP address   : " 
+                + request.getClientInfo().getAddress()
+                + "\nAgent name   : " 
+                + request.getClientInfo().getAgentName()
+                + "\nAgent version: "
+                + request.getClientInfo().getAgentVersion();
+        response.setEntity(entity, MediaType.TEXT_PLAIN);
     }
 
-    public String represent() {
-        return AccountsServerResource.getAccounts().get(this.accountId - 1);
-    }
-
-    public void store(String account) {
-        AccountsServerResource.getAccounts().set(this.accountId - 1, account);
-    }
-
-    public void remove() {
-        AccountsServerResource.getAccounts().remove(this.accountId - 1);
-    }
 }
