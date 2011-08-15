@@ -28,58 +28,37 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch07.sec2.common;
+package org.restlet.example.book.restlet.ch06.sec2.server;
 
-public class ContactRepresentation {
+import org.restlet.Restlet;
+import org.restlet.ext.wadl.WadlApplication;
+import org.restlet.routing.Router;
 
-    private String firstName;
+/**
+ * The reusable mail server application.
+ */
+public class MailServerApplication extends WadlApplication {
 
-    private String lastName;
-
-    private String login;
-
-    private String nickName;
-
-    private String senderName;
-
-    public String getFirstName() {
-        return firstName;
+    /**
+     * Constructor.
+     */
+    public MailServerApplication() {
+        setName("RESTful Mail Server application");
+        setDescription("Example application for 'Restlet in Action' book");
+        setOwner("Noelios Technologies");
+        setAuthor("The Restlet Team");
     }
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public String getNickName() {
-        return nickName;
-    }
-
-    public String getSenderName() {
-        return senderName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
-
-    public void setSenderName(String senderName) {
-        this.senderName = senderName;
+    /**
+     * Creates a root Router to dispatch call to server resources.
+     */
+    @Override
+    public Restlet createInboundRoot() {
+        Router router = new Router(getContext());
+        router.attach("/", RootServerResource.class);
+        router.attach("/accounts/", AccountsServerResource.class);
+        router.attach("/accounts/{accountId}", AccountServerResource.class);
+        return router;
     }
 
 }

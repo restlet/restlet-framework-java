@@ -28,37 +28,43 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch07.sec2.server;
+package org.restlet.example.book.restlet.ch06.sec2.common;
 
-import org.restlet.Restlet;
-import org.restlet.ext.wadl.WadlApplication;
-import org.restlet.routing.Router;
+import java.util.List;
 
-/**
- * The reusable mail server application.
- */
-public class MailServerApplication extends WadlApplication {
+public class AccountRepresentation {
 
-    /**
-     * Constructor.
-     */
-    public MailServerApplication() {
-        setName("RESTful Mail Server application");
-        setDescription("Example application for 'Restlet in Action' book");
-        setOwner("Noelios Technologies");
-        setAuthor("The Restlet Team");
+    private List<String> contactRefs;
+
+    private List<String> mailRefs;
+
+    private List<String> feedRefs;
+
+    public AccountRepresentation() {
     }
 
-    /**
-     * Creates a root Router to dispatch call to server resources.
-     */
-    @Override
-    public Restlet createInboundRoot() {
-        Router router = new Router(getContext());
-        router.attach("/", RootServerResource.class);
-        router.attach("/accounts/", AccountsServerResource.class);
-        router.attach("/accounts/{accountId}", AccountServerResource.class);
-        return router;
+    public List<String> getContactRefs() {
+        return contactRefs;
+    }
+
+    public List<String> getFeedRefs() {
+        return feedRefs;
+    }
+
+    public List<String> getMailRefs() {
+        return mailRefs;
+    }
+
+    public void setContactRefs(List<String> contactRefs) {
+        this.contactRefs = contactRefs;
+    }
+
+    public void setFeedRefs(List<String> feedRefs) {
+        this.feedRefs = feedRefs;
+    }
+
+    public void setMailRefs(List<String> mailRefs) {
+        this.mailRefs = mailRefs;
     }
 
 }

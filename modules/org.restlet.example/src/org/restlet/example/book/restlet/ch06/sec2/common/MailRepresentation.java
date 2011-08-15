@@ -28,43 +28,48 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch07.sec2.common;
+package org.restlet.example.book.restlet.ch06.sec2.common;
 
-import java.util.List;
+public class MailRepresentation {
 
-public class AccountRepresentation {
+    private String status;
 
-    private List<String> contactRefs;
+    private String subject;
 
-    private List<String> mailRefs;
+    private String content;
 
-    private List<String> feedRefs;
+    private String accountRef;
 
-    public AccountRepresentation() {
+    public String getAccountRef() {
+        return accountRef;
     }
 
-    public List<String> getContactRefs() {
-        return contactRefs;
+    public String getContent() {
+        return content;
     }
 
-    public List<String> getFeedRefs() {
-        return feedRefs;
+    public String getStatus() {
+        return status;
     }
 
-    public List<String> getMailRefs() {
-        return mailRefs;
+    public String getSubject() {
+        return subject;
     }
 
-    public void setContactRefs(List<String> contactRefs) {
-        this.contactRefs = contactRefs;
+    public void setAccountRef(String accountRef) {
+        this.accountRef = accountRef;
     }
 
-    public void setFeedRefs(List<String> feedRefs) {
-        this.feedRefs = feedRefs;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public void setMailRefs(List<String> mailRefs) {
-        this.mailRefs = mailRefs;
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
 }

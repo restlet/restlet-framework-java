@@ -28,48 +28,31 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch07.sec2.common;
+package org.restlet.example.book.restlet.ch06.sec2.client;
 
-public class MailRepresentation {
+import org.restlet.resource.ClientResource;
 
-    private String status;
+/**
+ * Mail client.
+ */
+public class MailClient {
 
-    private String subject;
+    /**
+     * Mail client interacting with the RESTful mail server.
+     * 
+     * @param args
+     *            The optional arguments.
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        System.out.println("\n1) Set-up the service client resource\n");
+        ClientResource service = new ClientResource("http://localhost:8111");
 
-    private String content;
+        System.out.println("\n2) Describe the application\n");
+        System.out.println(service.options().getText());
 
-    private String accountRef;
-
-    public String getAccountRef() {
-        return accountRef;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setAccountRef(String accountRef) {
-        this.accountRef = accountRef;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
+        System.out.println("\n3) Describe the accounts resource\n");
+        System.out.println(service.getChild("/accounts/").options().getText());
     }
 
 }

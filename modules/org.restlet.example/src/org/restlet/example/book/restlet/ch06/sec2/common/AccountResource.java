@@ -28,33 +28,38 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.example.book.restlet.ch07.sec2.common;
+package org.restlet.example.book.restlet.ch06.sec2.common;
 
+import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
-import org.restlet.resource.Post;
+import org.restlet.resource.Put;
 
 /**
- * Collection resource containing user accounts.
+ * User account resource.
  */
-public interface AccountsResource {
+public interface AccountResource {
 
     /**
-     * Returns the list of accounts, each one on a separate line.
+     * Represents the account as a simple string with the owner name for now.
      * 
-     * @return The list of accounts.
+     * @return The account representation.
      */
     @Get
     public String represent();
 
     /**
-     * Add the given account to the list and returns its position as an
-     * identifier.
+     * Stores the new value for the identified account.
      * 
      * @param account
-     *            The account to add.
-     * @return The account identifier.
+     *            The identified account.
      */
-    @Post
-    public String add(String account);
+    @Put
+    public void store(String account);
+
+    /**
+     * Deletes the identified account by setting its value to null.
+     */
+    @Delete
+    public void remove();
 
 }
