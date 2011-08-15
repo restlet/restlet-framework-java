@@ -27,41 +27,51 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
-package org.restlet.example.book.restlet.ch06.sec3;
+package org.restlet.example.book.restlet.ch05.sec2;
 
 import org.restlet.Application;
-import org.restlet.Context;
+import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.example.book.restlet.ch06.EchoPrincipalsResource;
+import org.restlet.data.Protocol;
+import org.restlet.example.book.restlet.ch05.EchoPrincipalsResource;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
-import org.restlet.security.RoleAuthorizer;
+import org.restlet.security.LocalVerifier;
+import org.restlet.security.MapVerifier;
 
 /**
  * @author Bruno Harbulot (bruno/distributedmatter.net)
  * 
  */
-public class RoleAuthorizationApplication extends Application {
-    public RoleAuthorizationApplication(Context context) {
-        super(context);
+public class BasicAuthenticationApplication extends Application {
+    private final LocalVerifier verifier;
+
+    public BasicAuthenticationApplication() {
+        MapVerifier verifier = new MapVerifier();
+        verifier.getLocalSecrets().put("scott", "tiger".toCharArray());
+        this.verifier = verifier;
     }
 
     @Override
     public synchronized Restlet createInboundRoot() {
+        Router router = new Router(getContext());
+        router.attachDefault(EchoPrincipalsResource.class);
+
         ChallengeAuthenticator authenticator = new ChallengeAuthenticator(
                 getContext(), ChallengeScheme.HTTP_BASIC, "Basic Test");
-        authenticator.setVerifier(getContext().getDefaultVerifier());
-
-        RoleAuthorizer authorizer = new RoleAuthorizer();
-        authorizer.getAuthorizedRoles().add(getRole("admin"));
-        authorizer.setNext(EchoPrincipalsResource.class);
-
-        Router router = new Router(getContext());
-        router.attach("/admin", authorizer);
-        router.attachDefault(EchoPrincipalsResource.class);
+        authenticator.setVerifier(verifier);
 
         authenticator.setNext(router);
         return authenticator;
+    }
+
+    public static void main(String[] args) throws Exception {
+        Component component = new Component();
+        component.getServers().add(Protocol.HTTP, 8111);
+
+        component.getDefaultHost().attachDefault(
+                new BasicAuthenticationApplication());
+        component.start();
     }
 }

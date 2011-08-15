@@ -27,34 +27,43 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
-package org.restlet.example.book.restlet.ch06.sec4;
+package org.restlet.example.book.restlet.ch05.sec2;
 
 import org.restlet.Application;
-import org.restlet.Context;
+import org.restlet.Component;
 import org.restlet.Restlet;
-import org.restlet.data.ChallengeScheme;
+import org.restlet.Server;
+import org.restlet.data.Protocol;
+import org.restlet.example.book.restlet.ch05.EchoPrincipalsResource;
 import org.restlet.routing.Router;
-import org.restlet.security.ChallengeAuthenticator;
+import org.restlet.security.Authenticator;
 
 /**
  * @author Bruno Harbulot (bruno/distributedmatter.net)
  * 
  */
-public class SecurityManagerDemoApplication extends Application {
-    public SecurityManagerDemoApplication(Context context) {
-        super(context);
-    }
-
+public class CertificateAuthenticationApplication extends Application {
     @Override
     public synchronized Restlet createInboundRoot() {
-        ChallengeAuthenticator authenticator = new ChallengeAuthenticator(
-                getContext(), ChallengeScheme.HTTP_BASIC, "Basic Test");
-        authenticator.setVerifier(getContext().getDefaultVerifier());
-
         Router router = new Router(getContext());
-        router.attachDefault(ListHomeDirResource.class);
+        router.attachDefault(EchoPrincipalsResource.class);
+
+        Authenticator authenticator = new ClientCertificateAuthenticator(
+                getContext());
 
         authenticator.setNext(router);
         return authenticator;
+    }
+
+    public static void main(String[] args) throws Exception {
+        Component component = new Component();
+        Server server = component.getServers().add(Protocol.HTTPS, 8183);
+
+        server.getContext().getParameters().add("wantClientAuthentication",
+                "true");
+
+        component.getDefaultHost().attachDefault(
+                new CertificateAuthenticationApplication());
+        component.start();
     }
 }

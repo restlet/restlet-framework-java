@@ -27,43 +27,34 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
-package org.restlet.example.book.restlet.ch06.sec2;
+package org.restlet.example.book.restlet.ch05.sec4;
 
 import org.restlet.Application;
-import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.Server;
-import org.restlet.data.Protocol;
-import org.restlet.example.book.restlet.ch06.EchoPrincipalsResource;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.routing.Router;
-import org.restlet.security.Authenticator;
+import org.restlet.security.ChallengeAuthenticator;
 
 /**
  * @author Bruno Harbulot (bruno/distributedmatter.net)
  * 
  */
-public class CertificateAuthenticationApplication extends Application {
+public class SecurityManagerDemoApplication extends Application {
+    public SecurityManagerDemoApplication(Context context) {
+        super(context);
+    }
+
     @Override
     public synchronized Restlet createInboundRoot() {
-        Router router = new Router(getContext());
-        router.attachDefault(EchoPrincipalsResource.class);
+        ChallengeAuthenticator authenticator = new ChallengeAuthenticator(
+                getContext(), ChallengeScheme.HTTP_BASIC, "Basic Test");
+        authenticator.setVerifier(getContext().getDefaultVerifier());
 
-        Authenticator authenticator = new ClientCertificateAuthenticator(
-                getContext());
+        Router router = new Router(getContext());
+        router.attachDefault(ListHomeDirResource.class);
 
         authenticator.setNext(router);
         return authenticator;
-    }
-
-    public static void main(String[] args) throws Exception {
-        Component component = new Component();
-        Server server = component.getServers().add(Protocol.HTTPS, 8183);
-
-        server.getContext().getParameters().add("wantClientAuthentication",
-                "true");
-
-        component.getDefaultHost().attachDefault(
-                new CertificateAuthenticationApplication());
-        component.start();
     }
 }
