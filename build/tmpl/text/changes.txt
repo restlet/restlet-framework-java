@@ -92,6 +92,10 @@ Changes log
       - Optimized the processing of extra headers and challenge schemes. 
         Contributed by Scott S. McCoy
       - Updated GWT server library to version 2.3.0.
+      - GWT client proxy generator now uses "Impl" instead of "Proxy" for
+        the automatically generated class, preventing confusion when the
+        annotated interface already ends with "Proxy".
+        Suggested by Cyril Lakech.
       
 - 2.1 Milestone 5 (06/21/2011)
     - API changes

@@ -83,7 +83,7 @@ import com.google.gwt.user.rebind.rpc.TypeSerializerCreator;
 
 /**
  * Deferred binding generator capable of creating a subclass of
- * {@link GwtClientProxy} implementing a custom Java interface, extending the
+ * {@link ClientProxy} implementing a custom Java interface, extending the
  * marker {@link ClientProxy} interface, and annotated with Restlet annotations
  * such as {@link Get}, {@link Post}, {@link Put} or {@link Delete}.
  * 
@@ -234,7 +234,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             this.typeOracle = context.getTypeOracle();
             this.classType = typeOracle.getType(typeQName);
             this.packageName = getClassType().getPackage().getName();
-            this.className = getClassType().getSimpleSourceName() + "Proxy";
+            this.className = getClassType().getSimpleSourceName() + "Impl";
             generateProxy();
             result = getPackageName() + "." + getClassName();
         } catch (Exception e) {
