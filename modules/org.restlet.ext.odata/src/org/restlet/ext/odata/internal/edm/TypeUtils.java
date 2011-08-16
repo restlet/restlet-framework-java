@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.restlet.Context;
+import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.odata.internal.reflect.ReflectUtils;
 
@@ -87,7 +88,7 @@ public class TypeUtils {
         Object result = null;
         try {
             if (adoNetType.endsWith("Binary")) {
-                result = value.getBytes();
+                result = Base64.decode(value);
             } else if (adoNetType.endsWith("Boolean")) {
                 result = Boolean.valueOf(value);
             } else if (adoNetType.endsWith("DateTime")) {
@@ -332,7 +333,7 @@ public class TypeUtils {
      * @return The value converted as String object.
      */
     public static String toEdmBinary(byte[] value) {
-        return new String(value);
+        return Base64.encode(value, false);
     }
 
     /**
