@@ -26,10 +26,10 @@ Changes log
         addQueryParameters(Iterable<Parameter>) methods.
       - ClientResource now uses GET as its default HTTP method instead 
         of null.
-      - Added "timeIssues" property to ChallengeResponse, in order to 
+      - Added "timeIssued" property to ChallengeResponse, in order to 
         support cookie based authentication.
       - Deprecated ClientInfo.getPreferredVariant() methods in favor of
-        the ConnegService.
+        the new ConnegService.
       - Deprecated ClientResource.createRequest(Request) in favor of a
         new createRequest() method.
       - Added Request.isSynchronous() and isAsynchronous() methods as
@@ -59,7 +59,7 @@ Changes log
         Based on an initial contribution by Remi Dewitte.
       - Added org.restlet.service.ConnegService to provide a way to 
         control the content negotiation behavior at the application level.
-        It offers two mode: strict and flexible (default) by other algorithms
+        It offers two modes: strict and flexible (default) by other algorithms
         can be plugged by overriding this class and reusing the Conneg
         subclasses in the engine package. Suggested by David Bordoley.        
       - Improved Restlet annotation value syntax to support alternate 
@@ -99,7 +99,8 @@ Changes log
       - Generation of GWT client proxy now stops when it detects usage of 
         annotations that don't come from the Restlet edition of GWT.
         Suggested by Cyril Lakech.
-
+      - Clarified exception thrown when the converter service is unable
+        to convert a representation to a given target class.
       
 - 2.1 Milestone 5 (06/21/2011)
     - API changes

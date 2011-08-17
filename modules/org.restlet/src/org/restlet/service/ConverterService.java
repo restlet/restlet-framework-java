@@ -155,7 +155,15 @@ public class ConverterService extends Service {
                         "The following converter was selected for the "
                                 + source + " representation: " + ch);
 
-                result = ch.toObject(source, target, resource);
+                try {
+                    result = ch.toObject(source, target, resource);
+                } catch (Throwable throwable) {
+                    IOException ioe = new IOException("Unable to convert a "
+                            + source.getMediaType() + " representation into a "
+                            + target.getCanonicalName() + " object.");
+                    ioe.initCause(throwable);
+                    throw ioe;
+                }
 
                 if (result instanceof Representation) {
                     Representation resultRepresentation = (Representation) result;
