@@ -145,42 +145,54 @@ public class ConverterService extends Service {
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
         T result = null;
+        boolean loggable = (resource == null) ? true : resource.isLoggable();
 
         if ((source != null) && source.isAvailable() && (source.getSize() != 0)) {
             ConverterHelper ch = ConverterUtils.getBestHelper(source, target,
                     resource);
 
             if (ch != null) {
-                Context.getCurrentLogger().fine(
-                        "The following converter was selected for the "
-                                + source + " representation: " + ch);
-
                 try {
+                    if (loggable
+                            && Context.getCurrentLogger()
+                                    .isLoggable(Level.FINE)) {
+                        Context.getCurrentLogger().fine(
+                                "The following converter was selected for the "
+                                        + source + " representation: " + ch);
+                    }
+
                     result = ch.toObject(source, target, resource);
-                } catch (Throwable throwable) {
-                    IOException ioe = new IOException("Unable to convert a "
-                            + source.getMediaType() + " representation into a "
-                            + target.getCanonicalName() + " object.");
-                    ioe.initCause(throwable);
-                    throw ioe;
-                }
 
-                if (result instanceof Representation) {
-                    Representation resultRepresentation = (Representation) result;
+                    if (result instanceof Representation) {
+                        Representation resultRepresentation = (Representation) result;
 
-                    // Copy the variant metadata
-                    resultRepresentation.setCharacterSet(source
-                            .getCharacterSet());
-                    resultRepresentation.setMediaType(source.getMediaType());
-                    resultRepresentation.getEncodings().addAll(
-                            source.getEncodings());
-                    resultRepresentation.getLanguages().addAll(
-                            source.getLanguages());
+                        // Copy the variant metadata
+                        resultRepresentation.setCharacterSet(source
+                                .getCharacterSet());
+                        resultRepresentation
+                                .setMediaType(source.getMediaType());
+                        resultRepresentation.getEncodings().addAll(
+                                source.getEncodings());
+                        resultRepresentation.getLanguages().addAll(
+                                source.getLanguages());
+                    }
+                } catch (Exception exception) {
+                    if (loggable) {
+                        Context.getCurrentLogger()
+                                .log(Level.WARNING,
+                                        "Unable to convert a "
+                                                + source
+                                                + " representation into an object of class "
+                                                + target.getCanonicalName(),
+                                        exception);
+                    }
                 }
             } else {
-                Context.getCurrentLogger().warning(
-                        "Unable to find a converter for this representation : "
-                                + source);
+                if (loggable) {
+                    Context.getCurrentLogger().warning(
+                            "Unable to find a converter for this representation : "
+                                    + source);
+                }
             }
         }
 
@@ -213,14 +225,12 @@ public class ConverterService extends Service {
     public Representation toRepresentation(Object source, Variant target,
             Resource resource) {
         Representation result = null;
+        boolean loggable = (resource == null) ? true : resource.isLoggable();
         ConverterHelper ch = ConverterUtils.getBestHelper(source, target,
                 resource);
 
         if (ch != null) {
             try {
-                boolean loggable = (resource == null) ? true : resource
-                        .isLoggable();
-
                 if (loggable
                         && Context.getCurrentLogger().isLoggable(Level.FINE)) {
                     Context.getCurrentLogger().fine(
@@ -276,13 +286,21 @@ public class ConverterService extends Service {
                         result.getLanguages().addAll(target.getLanguages());
                     }
                 }
-            } catch (IOException e) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to convert object to a representation", e);
+            } catch (Exception e) {
+                if (loggable) {
+                    Context.getCurrentLogger().log(
+                            Level.WARNING,
+                            "Unable to convert object " + source
+                                    + " to this representation variant: "
+                                    + target, e);
+                }
             }
         } else {
-            Context.getCurrentLogger().warning(
-                    "Unable to find a converter for this object : " + source);
+            if (loggable) {
+                Context.getCurrentLogger().warning(
+                        "Unable to find a converter for this object : "
+                                + source);
+            }
         }
 
         return result;
