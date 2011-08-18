@@ -195,4 +195,9 @@ public class Parameter extends Couple<String, String> implements
         setSecond(value);
     }
 
+    @Override
+    public String toString() {
+        return "[" + getName() + "=" + getValue() + "]";
+    }
+
 }

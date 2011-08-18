@@ -314,4 +314,13 @@ public final class CookieSetting extends Cookie {
         this.secure = secure;
     }
 
+    @Override
+    public String toString() {
+        return "CookieSetting [accessRestricted=" + accessRestricted
+                + ", comment=" + comment + ", maxAge=" + maxAge + ", secure="
+                + secure + ", domain=" + getDomain() + ", name=" + getName()
+                + ", path=" + getPath() + ", value=" + getValue()
+                + ", version=" + getVersion() + "]";
+    }
+
 }

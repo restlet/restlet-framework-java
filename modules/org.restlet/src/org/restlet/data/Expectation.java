@@ -199,4 +199,10 @@ public final class Expectation implements NamedValue {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return "Expectation [name=" + name + ", parameters=" + parameters
+                + ", value=" + value + "]";
+    }
+
 }

@@ -136,4 +136,9 @@ public class Header implements NamedValue {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return "[" + getName() + ": " + getValue() + "]";
+    }
+
 }

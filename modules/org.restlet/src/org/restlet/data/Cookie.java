@@ -267,4 +267,10 @@ public class Cookie implements NamedValue {
     public void setVersion(int version) {
         this.version = version;
     }
+
+    @Override
+    public String toString() {
+        return "Cookie [domain=" + domain + ", name=" + name + ", path=" + path
+                + ", value=" + value + ", version=" + version + "]";
+    }
 }

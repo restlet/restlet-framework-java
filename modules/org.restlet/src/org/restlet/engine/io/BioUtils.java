@@ -71,15 +71,27 @@ public final class BioUtils {
      */
     public static void copy(InputStream inputStream,
             java.io.OutputStream outputStream) throws IOException {
-        int bytesRead;
-        byte[] buffer = new byte[2048];
+        if (inputStream != null) {
+            if (outputStream != null) {
+                int bytesRead;
+                byte[] buffer = new byte[2048];
 
-        while ((bytesRead = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer, 0, bytesRead);
+                while ((bytesRead = inputStream.read(buffer)) > 0) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+
+                outputStream.flush();
+                inputStream.close();
+            } else {
+                Context.getCurrentLogger()
+                        .log(Level.FINE,
+                                "Unable to copy input to output stream. Output stream is null.");
+            }
+        } else {
+            Context.getCurrentLogger()
+                    .log(Level.FINE,
+                            "Unable to copy input to output stream. Input stream is null.");
         }
-
-        outputStream.flush();
-        inputStream.close();
     }
 
     // [ifndef gwt] method

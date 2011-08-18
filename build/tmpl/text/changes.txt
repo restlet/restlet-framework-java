@@ -93,6 +93,8 @@ Changes log
         failure. Reported by Martin Svensson.
       - Fixed potential NPE in ClientAdapter#commit(...) and generated
         GWT proxies when no entity is returned. Reported by Cyril Lakech.
+      - Fixed potential NPE in BioUtils#copy() with one of the stream is null.
+        Reported by Cyril Lakech.
      - Misc
       - Optimized the HeaderReader class beavhior in the engine.
       - Optimized the processing of extra headers and challenge schemes. 

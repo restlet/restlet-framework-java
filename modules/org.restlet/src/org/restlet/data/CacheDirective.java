@@ -511,4 +511,10 @@ public final class CacheDirective implements NamedValue {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "CacheDirective [digit=" + digit + ", name=" + name + ", value="
+                + value + "]";
+    }
 }
