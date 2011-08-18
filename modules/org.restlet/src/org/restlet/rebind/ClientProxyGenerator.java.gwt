@@ -407,7 +407,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 println(sb.toString() + " result = null;");
                 println("try {");
                 indent();
-                println("if(response.getEntity().isAvailable()){");
+                println("if(response.isEntityAvailable()){");
                 indent();
                 println("if(MediaType.APPLICATION_JAVA_OBJECT_GWT.equals(response.getEntity().getMediaType())){");
                 indent();
