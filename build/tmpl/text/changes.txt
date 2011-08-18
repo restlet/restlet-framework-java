@@ -103,6 +103,8 @@ Changes log
       - Generation of GWT client proxy now stops when it detects usage of 
         annotations that don't come from the Restlet edition of GWT.
         Suggested by Cyril Lakech.
+      - Clarified Redirector Javadocs to explain more clearly the differences
+        between various options. Suggested by Cyril Lakech.
       
 - 2.1 Milestone 5 (06/21/2011)
     - API changes

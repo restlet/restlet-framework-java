@@ -70,7 +70,9 @@ import org.restlet.util.Resolver;
 public class Redirector extends Restlet {
     /**
      * In this mode, the client is permanently redirected to the URI generated
-     * from the target URI pattern.<br>
+     * from the target URI pattern, using the
+     * {@link Status#REDIRECTION_PERMANENT} status. Note: this is a client-side
+     * redirection.<br>
      * 
      * @see Status#REDIRECTION_PERMANENT
      */
@@ -78,7 +80,8 @@ public class Redirector extends Restlet {
 
     /**
      * In this mode, the client is simply redirected to the URI generated from
-     * the target URI pattern.<br>
+     * the target URI pattern using the {@link Status#REDIRECTION_FOUND} status.
+     * Note: this is a client-side redirection.<br>
      * 
      * @see Status#REDIRECTION_FOUND
      */
@@ -86,7 +89,8 @@ public class Redirector extends Restlet {
 
     /**
      * In this mode, the client is simply redirected to the URI generated from
-     * the target URI pattern.<br>
+     * the target URI pattern using the {@link Status#REDIRECTION_SEE_OTHER}
+     * status. Note: this is a client-side redirection.<br>
      * 
      * @see Status#REDIRECTION_SEE_OTHER
      */
@@ -94,22 +98,25 @@ public class Redirector extends Restlet {
 
     /**
      * In this mode, the client is temporarily redirected to the URI generated
-     * from the target URI pattern.<br>
+     * from the target URI pattern using the
+     * {@link Status#REDIRECTION_TEMPORARY} status. Note: this is a client-side
+     * redirection.<br>
      * 
      * @see Status#REDIRECTION_TEMPORARY
      */
     public static final int MODE_CLIENT_TEMPORARY = 4;
 
     /**
-     * In this mode, the call is sent to the application's outboundRoot or if
-     * null to the context's client dispatcher. Once the selected client
-     * connector has completed the request handling, the response is normally
-     * returned to the client. In this case, you can view the {@link Redirector}
-     * as acting as a transparent server-side proxy Restlet.<br>
+     * In this mode, the call is sent to {@link Application#getOutboundRoot()}
+     * or if null to {@link Context#getClientDispatcher()}. Once the selected
+     * client connector has completed the request handling, the response is
+     * normally returned to the client. In this case, you can view the
+     * {@link Redirector} as acting as a transparent server-side proxy. Note:
+     * this is a server-side redirection.<br>
      * <br>
-     * Remember to add the required connectors to the parent {@link Component}
-     * and to declare them in the list of required connectors on the
-     * {@link Application#getConnectorService()} property.<br>
+     * Warning: remember to add the required connectors to the parent
+     * {@link Component} and to declare them in the list of required connectors
+     * on the {@link Application#getConnectorService()} property.<br>
      * <br>
      * Note that in this mode, the headers of HTTP requests, stored in the
      * request's attributes, are removed before dispatching. Also, when a HTTP
@@ -121,14 +128,15 @@ public class Redirector extends Restlet {
     public static final int MODE_SERVER_OUTBOUND = 6;
 
     /**
-     * In this mode, the call is sent to the context's server dispatcher. Once
-     * the selected client connector has completed the request handling, the
-     * response is normally returned to the client. In this case, you can view
-     * the Redirector as acting as a transparent proxy Restlet.<br>
+     * In this mode, the call is sent to {@link Context#getServerDispatcher()}.
+     * Once the selected client connector has completed the request handling,
+     * the response is normally returned to the client. In this case, you can
+     * view the Redirector as acting as a transparent proxy Restlet. Note: this
+     * is a server-side redirection.<br>
      * <br>
-     * Remember to add the required connectors to the parent {@link Component}
-     * and to declare them in the list of required connectors on the
-     * {@link Application#getConnectorService()} property.<br>
+     * Warning: remember to add the required connectors to the parent
+     * {@link Component} and to declare them in the list of required connectors
+     * on the {@link Application#getConnectorService()} property.<br>
      * <br>
      * Note that in this mode, the headers of HTTP requests, stored in the
      * request's attributes, are removed before dispatching. Also, when a HTTP
