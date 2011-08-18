@@ -63,8 +63,7 @@ public class SslGetTestCase extends SslBaseConnectorsTestCase {
         Engine.setLogLevel(Level.FINE);
         SslGetTestCase sgt = new SslGetTestCase();
         sgt.setUp();
-        sgt.start();
-        sgt.testSslJettyAndInternal();
+        sgt.testSslInternalAndJdkNet();
     }
 
     public static class GetTestResource extends ServerResource {

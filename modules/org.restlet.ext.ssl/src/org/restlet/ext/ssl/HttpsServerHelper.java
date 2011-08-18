@@ -42,10 +42,6 @@ import org.restlet.data.Protocol;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.ConnectionController;
 import org.restlet.engine.connector.HttpServerHelper;
-import org.restlet.engine.connector.HttpServerInboundWay;
-import org.restlet.engine.connector.HttpServerOutboundWay;
-import org.restlet.engine.connector.OutboundWay;
-import org.restlet.engine.connector.ServerInboundWay;
 import org.restlet.ext.ssl.internal.SslConnection;
 import org.restlet.ext.ssl.internal.SslUtils;
 
@@ -104,18 +100,6 @@ public class HttpsServerHelper extends HttpServerHelper {
 
         return new SslConnection<Server>(this, socketChannel, controller,
                 socketAddress, engine);
-    }
-
-    @Override
-    public ServerInboundWay createInboundWay(Connection<Server> connection,
-            int bufferSize) {
-        return new HttpServerInboundWay(connection, bufferSize);
-    }
-
-    @Override
-    public OutboundWay createOutboundWay(Connection<Server> connection,
-            int bufferSize) {
-        return new HttpServerOutboundWay(connection, bufferSize);
     }
 
     /**
