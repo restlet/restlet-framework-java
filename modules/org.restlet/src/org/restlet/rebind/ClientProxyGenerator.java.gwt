@@ -290,28 +290,30 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
         AnnotationInfo info = AnnotationUtils.getAnnotation(method);
 
         if (info == null) {
-			if (method.getAnnotations() != null
-					&& method.getAnnotations().length > 0) {
-				// Try to detect anomalies in the annotations definition
-				for (Annotation annotation : method.getAnnotations()) {
-					if (annotation.annotationType().getName()
-							.startsWith("org." + "restlet.resource")) {
-						throw new IllegalArgumentException(
-								"The "
-										+ getTypeQName()
-										+ " interface contains a \""
-										+ method.getName()
-										+ "\" method that refers to an annotation that does not come from the Restlet edition for GWT: "
-										+ annotation.annotationType().getName()
-										+ ". The correct package name must be \"org.restlet.resource\".");
-					}
-				}
-			}
-			getLogger().log(
-					Type.WARN,
-					"The " + getTypeQName() + " interface contains a \""
-							+ method.getName()
-							+ "\" method without a proper annotation taken from the Restlet edition for GWT.");
+            if (method.getAnnotations() != null
+                    && method.getAnnotations().length > 0) {
+                // Try to detect anomalies in the annotations definition
+                for (Annotation annotation : method.getAnnotations()) {
+                    if (annotation.annotationType().getName()
+                            .startsWith("org." + "restlet.resource")) {
+                        throw new IllegalArgumentException(
+                                "The "
+                                        + getTypeQName()
+                                        + " interface contains a \""
+                                        + method.getName()
+                                        + "\" method that refers to an annotation that does not come from the Restlet edition for GWT: "
+                                        + annotation.annotationType().getName()
+                                        + ". The correct package name must be \"org.restlet.resource\".");
+                    }
+                }
+            }
+            getLogger()
+                    .log(Type.WARN,
+                            "The "
+                                    + getTypeQName()
+                                    + " interface contains a \""
+                                    + method.getName()
+                                    + "\" method without a proper annotation taken from the Restlet edition for GWT.");
         } else {
             int modifiers = method.getModifiers();
             if (Modifier.isPublic(modifiers)) {
@@ -424,7 +426,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 println(sb.toString() + " result = null;");
                 println("try {");
                 indent();
-                println("if(response.getEntity().isAvailable()){");
+                println("if(response.isEntityAvailable()){");
                 indent();
                 println("if(MediaType.APPLICATION_JAVA_OBJECT_GWT.equals(response.getEntity().getMediaType())){");
                 indent();
