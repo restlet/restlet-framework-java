@@ -91,6 +91,8 @@ Changes log
     - Bug fixed
       - Fixed potential NPE in the Authenticator when logging authentication 
         failure. Reported by Martin Svensson.
+      - Fixed potential NPE in ClientAdapter#commit(...).
+        Reported by Cyril Lakech.
      - Misc
       - Optimized the HeaderReader class beavhior in the engine.
       - Optimized the processing of extra headers and challenge schemes. 

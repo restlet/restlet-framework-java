@@ -91,14 +91,20 @@ public class ClientAdapter extends Adapter {
                                     new Status(httpCall.getStatusCode(), null,
                                             httpCall.getReasonPhrase(), null),
                                     httpCall);
-                            userCallback.handle(request, response);
+
+                            if (userCallback != null) {
+                                userCallback.handle(request, response);
+                            }
                         } catch (Exception e) {
                             // Unexpected exception occurred
                             if ((response.getStatus() == null)
                                     || !response.getStatus().isError()) {
                                 response.setStatus(
                                         Status.CONNECTOR_ERROR_INTERNAL, e);
-                                userCallback.handle(request, response);
+
+                                if (userCallback != null) {
+                                    userCallback.handle(request, response);
+                                }
                             }
                         }
                     }
