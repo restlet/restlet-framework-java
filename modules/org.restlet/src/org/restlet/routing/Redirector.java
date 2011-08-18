@@ -58,6 +58,12 @@ import org.restlet.util.Resolver;
  * class. For example "/target?referer={fi}" would redirect to the relative URI,
  * inserting the referrer URI as a query parameter.<br>
  * <br>
+ * To create a reverse proxy, a typically configuration will use the
+ * {@link #MODE_SERVER_OUTBOUND} constant and a target URI like
+ * "http://targetHost/targetRootPath/{rr}" to ensure that all child URIs are
+ * properly redirected as well, "rr" appending the remaining part of the current
+ * request URI that hasn't been routed yet.<br>
+ * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
