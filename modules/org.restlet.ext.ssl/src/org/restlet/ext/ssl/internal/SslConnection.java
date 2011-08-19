@@ -410,7 +410,7 @@ public class SslConnection<T extends Connector> extends Connection<T> {
                     try {
                         handleSslResult();
                     } catch (IOException e) {
-                        getLogger().log(Level.WARNING,
+                        getLogger().log(Level.INFO,
                                 "Unable to handle SSL handshake", e);
                     }
                 }
@@ -424,9 +424,10 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      * @throws IOException
      */
     private void onUnwrap() throws IOException {
+        getOutboundWay().setIoState(IoState.IDLE);
+
         if (getInboundWay().getIoState() != IoState.PROCESSING) {
             getInboundWay().setIoState(IoState.READY);
-            getOutboundWay().setIoState(IoState.IDLE);
         }
     }
 
@@ -436,8 +437,9 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      * @throws IOException
      */
     private void onWrap() throws IOException {
+        getInboundWay().setIoState(IoState.IDLE);
+
         if (getOutboundWay().getIoState() == IoState.IDLE) {
-            getInboundWay().setIoState(IoState.IDLE);
             getOutboundWay().setIoState(IoState.READY);
         }
     }

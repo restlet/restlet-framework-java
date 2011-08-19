@@ -61,7 +61,7 @@ public class HttpsServerInboundWay extends HttpServerInboundWay {
     }
 
     @Override
-    public void onProcessed(int drained) throws IOException {
+    public void postProcess(int drained) throws IOException {
         getConnection().handleSslResult();
     }
 

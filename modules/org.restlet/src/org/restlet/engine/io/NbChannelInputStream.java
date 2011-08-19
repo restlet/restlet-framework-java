@@ -271,7 +271,17 @@ public class NbChannelInputStream extends InputStream implements
     public void onFillEof() {
     }
 
-    public void onProcessed(int drained) throws IOException {
+    /**
+     * Does nothing by default.
+     */
+    public void postProcess(int drained) throws IOException {
+    }
+
+    /**
+     * Does nothing by default.
+     */
+    public int preProcess(int maxDrained, Object... args) throws IOException {
+        return 0;
     }
 
     @Override

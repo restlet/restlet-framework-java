@@ -381,12 +381,6 @@ public abstract class Way implements SelectionListener, CompletionListener,
     }
 
     /**
-     * Does nothing by default.
-     */
-    public void onProcessed(int drained) throws IOException {
-    }
-
-    /**
      * Callback method invoked when the way has been selected for IO operations
      * it registered interest in.
      */
@@ -431,6 +425,19 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * Called back by the controller when an IO time out has been detected.
      */
     public abstract void onTimeOut();
+
+    /**
+     * Does nothing by default.
+     */
+    public void postProcess(int drained) throws IOException {
+    }
+
+    /**
+     * Does nothing by default.
+     */
+    public int preProcess(int maxDrained, Object... args) throws IOException {
+        return 0;
+    }
 
     /**
      * Processes the IO buffer by filling and draining it.

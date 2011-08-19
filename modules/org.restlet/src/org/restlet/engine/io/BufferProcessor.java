@@ -101,6 +101,19 @@ public interface BufferProcessor {
      *            The number of bytes drained or -1 if the filling source has
      *            ended.
      */
-    public void onProcessed(int drained) throws IOException;
+    public void postProcess(int drained) throws IOException;
+
+    /**
+     * Called back before a processing pass.
+     * 
+     * @param maxDrained
+     *            The maximum number of bytes drained by this call or 0 for
+     *            unlimited length.
+     * @param args
+     *            The optional arguments to pass back to the callbacks.
+     * @return The number of bytes drained or -1 if the filling source has
+     *         ended.
+     */
+    public int preProcess(int maxDrained, Object... args) throws IOException;
 
 }

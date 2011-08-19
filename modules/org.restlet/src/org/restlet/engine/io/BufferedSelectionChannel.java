@@ -95,7 +95,14 @@ public abstract class BufferedSelectionChannel<T extends SelectionChannel>
     /**
      * Does nothing by default.
      */
-    public void onProcessed(int drained) throws IOException {
+    public void postProcess(int drained) throws IOException {
+    }
+
+    /**
+     * Does nothing by default.
+     */
+    public int preProcess(int maxDrained, Object... args) throws IOException {
+        return 0;
     }
 
 }

@@ -524,6 +524,18 @@ public class Buffer {
                         "Beginning process of buffer " + this);
             }
 
+            // Calling back the processor for preparation work, such as
+            // initiating a SSL handshake
+            result += processor.preProcess(maxDrained, args);
+
+            if (Context.getCurrentLogger().isLoggable(Level.INFO)) {
+                Context.getCurrentLogger()
+                        .log(Level.FINE,
+                                result
+                                        + " bytes drained from buffer at pre-processing, "
+                                        + remaining() + " remaining bytes");
+            }
+
             while (tryAgain && processor.canLoop(this, args)) {
                 if (isDraining()) {
                     if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
@@ -627,9 +639,10 @@ public class Buffer {
                                 + ", can loop: "
                                 + processor.canLoop(this, args));
             }
+
+            processor.postProcess(result);
         }
 
-        processor.onProcessed(result);
         return result;
     }
 

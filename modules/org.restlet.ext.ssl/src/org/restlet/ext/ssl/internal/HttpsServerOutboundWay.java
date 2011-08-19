@@ -37,6 +37,8 @@ import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import org.restlet.Server;
 import org.restlet.engine.connector.Connection;
 import org.restlet.engine.connector.HttpServerOutboundWay;
+import org.restlet.engine.connector.MessageState;
+import org.restlet.engine.io.IoState;
 
 /**
  * HTTPS server outbound way.
@@ -70,7 +72,21 @@ public class HttpsServerOutboundWay extends HttpServerOutboundWay {
     }
 
     @Override
-    public void onProcessed(int drained) throws IOException {
+    public int preProcess(int maxDrained, Object... args) throws IOException {
+        int result = 0;
+
+        if ((getIoState() == IoState.READY)
+                && (getMessageState() == MessageState.IDLE)) {
+            // SSL handshake underway
+            getBuffer().beforeDrain();
+            result = onDrain(getBuffer(), maxDrained, args);
+        }
+
+        return result;
+    }
+
+    @Override
+    public void postProcess(int drained) throws IOException {
         getConnection().handleSslResult();
     }
 
