@@ -24,7 +24,9 @@ Changes log
        - Fixed a bug in the default converter that lead the latter to 
          take precedence over specialized converter when converting 
          incoming representations. Reported by Glenn Bruns.
-       - Fixed potential NPE in the GWT edition. Reported by Cyril Lakesh. 
+       - Fixed potential NPE in the GWT edition. Reported by Cyril Lakesh.
+       - Added warning message when an unexpected error happen during the 
+         invocation of an asynchronous callback.
 
 - 2.0.8 (2011-06-21)
     - Bugs fixed
