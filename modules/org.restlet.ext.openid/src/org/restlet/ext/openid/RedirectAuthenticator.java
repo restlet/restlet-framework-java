@@ -34,6 +34,8 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.Cookie;
+import org.restlet.data.CookieSetting;
 import org.restlet.data.Status;
 import org.restlet.security.Authenticator;
 import org.restlet.security.User;
@@ -144,6 +146,21 @@ public class RedirectAuthenticator extends Authenticator {
         this.origRefCookie = origRefCookie != null ? origRefCookie
                 : DEFAULT_ORIGINAL_REF_COOKIE;
     }
+    
+    public static void clearIdentiiferCookie(Request req, Response res){
+        clearIdentifierCookie(DEFAULT_IDENTIFIER_COOKIE, req, res);
+    }
+    
+    public static void clearIdentifierCookie(String cookieId, Request req, Response res){
+        Cookie cookie = req.getCookies().getFirst(cookieId);
+        CookieSetting identifierCookie = res.getCookieSettings().getFirst(cookieId);
+        if(identifierCookie == null && cookie != null){
+            identifierCookie = new CookieSetting(cookieId, null);
+            res.getCookieSettings().add(identifierCookie);
+        }
+        if(identifierCookie != null)
+            identifierCookie.setMaxAge(0);
+    }
 
     @Override
     protected boolean authenticate(Request request, Response response) {
@@ -244,6 +261,7 @@ public class RedirectAuthenticator extends Authenticator {
      *            The user.
      */
     protected void handleUser(User user) {
+        getLogger().info("Handle User: "+user.getIdentifier()+" "+user.getEmail());
         ;
     }
 

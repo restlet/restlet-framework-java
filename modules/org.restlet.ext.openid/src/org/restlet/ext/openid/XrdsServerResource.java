@@ -51,6 +51,7 @@ import org.w3c.dom.Element;
  * 
  * @author Kristoffer Gronowski
  */
+@Deprecated
 public class XrdsServerResource extends ServerResource {
     /** The identifier of the "return to" type. */
     public static final String TYPE_RETURN_TO = "http://specs.openid.net/auth/2.0/return_to";

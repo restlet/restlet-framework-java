@@ -32,38 +32,20 @@ package org.restlet.ext.openid;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.openid4java.OpenIDException;
-import org.openid4java.consumer.ConsumerManager;
-import org.openid4java.consumer.VerificationResult;
-import org.openid4java.discovery.Discovery;
-import org.openid4java.discovery.DiscoveryInformation;
 import org.openid4java.discovery.Identifier;
-import org.openid4java.message.AuthRequest;
-import org.openid4java.message.AuthSuccess;
-import org.openid4java.message.MessageExtension;
-import org.openid4java.message.ParameterList;
-import org.openid4java.message.ax.AxMessage;
-import org.openid4java.message.ax.FetchRequest;
-import org.openid4java.message.ax.FetchResponse;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
+
 import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.ext.openid.internal.OpenIdConsumer;
+import org.restlet.data.Reference;
+import org.restlet.ext.openid.internal.OpenIdUser;
+import org.restlet.ext.openid.internal.RP;
+import org.restlet.ext.openid.internal.XRDS;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.security.User;
 import org.restlet.security.Verifier;
 
@@ -100,57 +82,28 @@ import org.restlet.security.Verifier;
  */
 public class OpenIdVerifier implements Verifier {
 
-    public enum AX {
-        country, dob, email, first, friendly, fullname, gender, language, last, postcode, timezone;
-    }
-
-    public static final ConcurrentHashMap<AX, String> ax = new ConcurrentHashMap<AX, String>(
-            9);
-
-    private static final Discovery discovery = new Discovery();
-
-    private static final ConcurrentHashMap<String, ConsumerManager> managers = new ConcurrentHashMap<String, ConsumerManager>();
-
+    //Known OpenId Providers:
     public static final String PROVIDER_FLICKR = "http://flickr.com";
-
     public static final String PROVIDER_GOOGLE = "https://www.google.com/accounts/o8/id";
-
     public static final String PROVIDER_MYOPENID = "https://www.myopenid.com/";
-
     public static final String PROVIDER_MYSPACE = "http://api.myspace.com/openid";
-
     public static final String PROVIDER_YAHOO = "http://me.yahoo.com";
 
-    private static final ConcurrentHashMap<String, Object> session = new ConcurrentHashMap<String, Object>();
-
-    static {
-        ax.put(AX.friendly, "http://axschema.org/namePerson/friendly");
-        ax.put(AX.email, "http://axschema.org/contact/email"); // "http://schema.openid.net/contact/email"
-        ax.put(AX.first, "http://axschema.org/namePerson/first");
-        ax.put(AX.last, "http://axschema.org/namePerson/last");
-        ax.put(AX.fullname, "http://axschema.org/namePerson");
-        ax.put(AX.dob, "http://axschema.org/birthDate");
-        ax.put(AX.gender, "http://axschema.org/person/gender");
-        ax.put(AX.postcode, "http://axschema.org/contact/postalCode/home");
-        ax.put(AX.country, "http://axschema.org/contact/country/home");
-        ax.put(AX.language, "http://axschema.org/pref/language");
-        ax.put(AX.timezone, "http://axschema.org/pref/timezone");
-    }
 
     private volatile String defaultProvider;
 
     private final Set<AX> optionalAttributes;
-
     private final Set<AX> requiredAttributes;
 
     private volatile boolean useDefault = false;
+    
+    private final RP rp;
 
     /**
      * Default constructor.
      */
     public OpenIdVerifier() {
-        optionalAttributes = new HashSet<AX>();
-        requiredAttributes = new HashSet<AX>();
+        this(null, null);
     }
 
     /**
@@ -160,8 +113,14 @@ public class OpenIdVerifier implements Verifier {
      *            The default OpenIdProvider/Identifier.
      */
     public OpenIdVerifier(String defaultProvider) {
-        this();
-        setDefaultProvider(defaultProvider);
+        this(defaultProvider, null);
+    }
+    
+    public OpenIdVerifier(String defaultProvider, RP rp){
+        this.rp = (rp != null) ? rp : new RP();
+        optionalAttributes = new HashSet<AX>();
+        requiredAttributes = new HashSet<AX>();
+        if(defaultProvider != null) setDefaultProvider(defaultProvider);
     }
 
     /**
@@ -199,69 +158,6 @@ public class OpenIdVerifier implements Verifier {
     }
 
     /**
-     * Returns the representation of an authentication form, in this case, a
-     * simple HTML form.
-     * 
-     * @param authReq
-     *            The authentication request.
-     * @return The representation of an authentication form.
-     */
-    private Representation generateForm(AuthRequest authReq) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html>");
-        sb.append("<head>");
-        sb.append("<title>OpenID HTML FORM Redirection</title>");
-        sb.append("</head>");
-        sb.append("<body onload=\"document.forms['openid-form-redirection'].submit();\">");
-        sb.append("<form name=\"openid-form-redirection\" action=\"");
-        sb.append(authReq.getOPEndpoint());
-        sb.append("\" method=\"post\" accept-charset=\"utf-8\">");
-        for (Object key : authReq.getParameterMap().keySet()) {
-            sb.append(" <input type=\"hidden\" name=\"");
-            sb.append(key.toString());
-            // ${parameter.key}
-            sb.append("\" value=\"");
-            sb.append(authReq.getParameterMap().get(key));
-            sb.append("\"/>");
-        }
-        sb.append("</form>");
-        sb.append("</body>");
-        sb.append("</html>");
-        return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
-    }
-
-    /**
-     * Returns the {@link ConsumerManager} corresponding to the given URI.
-     * 
-     * @param OPUri
-     *            The OP endpoint URI.
-     * @return The {@link ConsumerManager} corresponding to the given URI.
-     */
-    private ConsumerManager getManager(String OPUri) {
-        Logger l = Context.getCurrentLogger();
-        l.fine("Getting consumer manager for - " + OPUri);
-        if (!managers.containsKey(OPUri)) {
-            // create a new manager
-            l.fine("Creating new consumer manager for - " + OPUri);
-            // try {
-            ConsumerManager cm = new ConsumerManager();
-            cm.setConnectTimeout(30000);
-            cm.setSocketTimeout(30000);
-            cm.setFailedAssocExpire(0); // sec 0 = disabled
-            // cm.setMaxAssocAttempts(4); //default
-            managers.put(OPUri, cm);
-            return cm;
-            /*
-             * } catch (ConsumerException e) {
-             * l.warning("Failed to create ConsumerManager for - " + OPUri); }
-             */
-            // return null;
-        } else {
-            return managers.get(OPUri);
-        }
-    }
-
-    /**
      * Extracts the Target (openid identifier/provider) from a set of
      * parameters. First by looking at the query string, then in the request
      * attributes and finally if a default provider has been set
@@ -284,196 +180,6 @@ public class OpenIdVerifier implements Verifier {
         return target;
     }
 
-    /**
-     * Handles the return of an OpenID authentication request. Basically, it
-     * extracts the user identifier, and the attributes to be exchanged from the
-     * response.
-     * 
-     * @param queryParams
-     *            The query's parameters.
-     * @param request
-     *            The authentication request.
-     * @param response
-     *            The authentication response.
-     * @return An instance of {@link JSONObject} that contains the user
-     *         identifier, and the attributes to be exchanged.
-     */
-    private JSONObject handleReturn(Form queryParams, Request request,
-            Response response) {
-        JSONObject obj = null;
-        Logger l = Context.getCurrentLogger();
-        // Map<String, String> axRequired = new HashMap<String, String>();
-        Map<AX, String> axResp = new HashMap<AX, String>();
-        Identifier i = verifyResponse(queryParams, axResp, request, response);
-        if (i == null) {
-            l.warning("Authentication Failed");
-            return obj;
-        }
-        l.fine("Identifier = " + i.getIdentifier());
-        String id = i.getIdentifier();
-
-        if (id != null) {
-            // New Code, always return JSON and let filter handle any
-            // callback.
-            // TODO maybe move it to use Principal.
-            obj = new JSONObject();
-            try {
-                obj.put("id", i.getIdentifier());
-                for (AX s : axResp.keySet()) {
-                    obj.put(s.toString(), axResp.get(s));
-                }
-            } catch (JSONException e) {
-                l.log(Level.WARNING, "Failed to get the ID!", e);
-            }
-
-        }
-        // cleanup of cookie
-        response.getCookieSettings().remove(OpenIdConsumer.DESCRIPTOR_COOKIE);
-        CookieSetting disc = new CookieSetting(
-                OpenIdConsumer.DESCRIPTOR_COOKIE, "");
-        disc.setMaxAge(0);
-        response.getCookieSettings().add(disc);
-        return obj;
-    }
-
-    /**
-     * Creates and sends an authentication request.
-     * 
-     * @param target
-     *            The target.
-     * @param params
-     *            The set of params (not used yet).
-     * @param request
-     *            The original authenticated request.
-     * @param response
-     *            The response to complete.
-     * @throws Exception
-     */
-    private void handleTarget(String target, Form params, Request request,
-            Response response) throws Exception {
-        Logger l = Context.getCurrentLogger();
-
-        // create return to url
-        String redir = request.getResourceRef().getHostIdentifier()
-                + request.getResourceRef().getPath() + "?return=true";
-
-        List<?> discoveries = null;
-        discoveries = discovery.discover(target);
-        for (Object o : discoveries) {
-            if (o instanceof DiscoveryInformation) {
-                DiscoveryInformation di = (DiscoveryInformation) o;
-                l.fine("Found - " + di.getOPEndpoint());
-                target = di.getOPEndpoint().toString();
-            }
-        }
-
-        ConsumerManager manager = getManager(target);
-        DiscoveryInformation discovered = manager.associate(discoveries);
-
-        // store the discovery information in the user's session
-        // getContext().getAttributes().put("openid-disc", discovered);
-        String sessionId = String.valueOf(System.identityHashCode(discovered));
-        session.put(sessionId, discovered);
-
-        response.getCookieSettings().add(
-                new CookieSetting(OpenIdConsumer.DESCRIPTOR_COOKIE, sessionId));
-
-        // obtain a AuthRequest message to be sent to the OpenID provider
-        AuthRequest authReq = manager.authenticate(discovered, redir); // TODO
-                                                                       // maybe
-                                                                       // add
-                                                                       // TIMESTAMP?;
-        String ref = request.getResourceRef().getBaseRef().toString();
-        l.fine("OpenID - REALM = " + ref);
-        authReq.setRealm(ref);
-
-        // Attribute Exchange - getting optional and required
-        FetchRequest fetch = null;
-        // String[] optional = params.getValuesArray("ax_optional", true);
-        for (AX o : this.optionalAttributes) {
-            if (fetch == null)
-                fetch = FetchRequest.createFetchRequest();
-            fetch.addAttribute(o.toString(), ax.get(o), false);
-        }
-
-        // String[] required = params.getValuesArray("ax_required", true);
-        for (AX r : this.requiredAttributes) {
-            if (fetch == null)
-                fetch = FetchRequest.createFetchRequest();
-            fetch.addAttribute(r.toString(), ax.get(r), true);
-        }
-
-        if (fetch != null) {
-            authReq.addExtension(fetch);
-        }
-
-        if (!discovered.isVersion2()) {
-            l.fine("OpenId - Http Redirect");
-            response.redirectTemporary(authReq.getDestinationUrl(true));
-
-        } else {
-            l.fine("OpenId - HTML Form Redirect");
-            Form msg = new Form();
-            for (Object key : authReq.getParameterMap().keySet()) {
-                msg.add(key.toString(),
-                        authReq.getParameterValue(key.toString()));
-                l.fine("Adding to form - key " + key.toString() + " : value"
-                        + authReq.getParameterValue(key.toString()));
-            }
-            response.setEntity(generateForm(authReq));
-            // response.redirectTemporary(authReq.getDestinationUrl(true));
-        }
-
-    }
-
-    /**
-     * Checks if it looks like a response to an OpenID authentication request.
-     * 
-     * @param queryParams
-     *            The list of parameters.
-     * @return True if the parameters ensure that it looks like a response to an
-     *         OpenID authentication request.
-     */
-    private boolean isResponse(Form queryParams) {
-        String rc = queryParams.getFirstValue("return");
-        Context.getCurrentLogger().fine("isReturn - " + rc);
-        if (rc != null)
-            return true;
-        return false;
-    }
-
-    /**
-     * Updates the given user with the values of the specified list of
-     * attributes taken from the given {@link JSONObject}.
-     * 
-     * @param attributeSet
-     *            The set of attributes.
-     * @param object
-     *            The source object.
-     * @param user
-     *            The User instance to update.
-     */
-    private void setAttributes(Set<AX> attributeSet, JSONObject object,
-            User user) {
-        if (attributeSet.size() < 1)
-            return;
-        try {
-            if (attributeSet.contains(AX.email)
-                    && !object.isNull(AX.email.toString())) {
-                user.setEmail(object.getString(AX.email.toString()));
-            }
-            if (attributeSet.contains(AX.first)
-                    && !object.isNull(AX.first.toString())) {
-                user.setFirstName(object.getString(AX.first.toString()));
-            }
-            if (attributeSet.contains(AX.last)
-                    && !object.isNull(AX.last.toString())) {
-                user.setLastName(object.getString(AX.last.toString()));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * Sets the default provider. Will also set useDefaultProvider to true.
@@ -506,135 +212,64 @@ public class OpenIdVerifier implements Verifier {
      */
     public int verify(Request request, Response response) {
         Form params = request.getResourceRef().getQueryAsForm();
-
-        if (this.isResponse(params)) {
-            JSONObject obj = this.handleReturn(params, request, response);
-
-            if (obj == null) {
-                return Verifier.RESULT_INVALID;
-            } else {
-                if (!obj.isNull("id")) {
-                    try {
-                        Context.getCurrentLogger().fine(obj.toString(2));
-                        String id = obj.getString("id");
-                        User u = new User();
-                        u.setIdentifier(id);
-                        request.getClientInfo().setUser(u);
-                        // set any attributes
-                        setAttributes(optionalAttributes, obj, u);
-                        setAttributes(requiredAttributes, obj, u);
-                        return Verifier.RESULT_VALID;
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Context.getCurrentLogger().warning("Could not find identifier");
-                return Verifier.RESULT_INVALID;
-            }
-        }
-
-        String target = this.getTarget(params, request);
-
-        if (target != null) {
-            try {
-                this.handleTarget(target, params, request, response);
-                return Verifier.RESULT_MISSING;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        Context.getCurrentLogger().warning(
-                "No Target or Return - reporting error");
-        return Verifier.RESULT_INVALID;
-    }
-
-    // --- processing the authentication response ---
-    @SuppressWarnings("unchecked")
-    public Identifier verifyResponse(Form params, Map<AX, String> axResp,
-            Request request, Response resp) {
-        Logger l = Context.getCurrentLogger();
-
-        try {
-            // extract the parameters from the authentication response
-            // (which comes in as a HTTP request from the OpenID provider)
-            ParameterList response = new ParameterList(params.getValuesMap());
-            l.fine("response = " + response);
-
-            // retrieve the previously stored discovery information
-            String openidDisc = request.getCookies().getFirstValue(
-                    OpenIdConsumer.DESCRIPTOR_COOKIE);
-            // String openidDisc =
-            // getCookieSettings().getFirstValue(DESCRIPTOR_COOKIE);
-            l.fine("openIdDiscServer - "
-                    + resp.getCookieSettings().getFirstValue(
-                            "DESCRIPTOR_COOKIE"));
-            l.fine("openIdDiscServerLength -" + resp.getCookieSettings().size());
-            l.fine("openIdDiscClient - " + openidDisc);
-            l.fine("openIdDiscClientLength -" + request.getCookies().size());
-
-            if (resp.getCookieSettings().size() > 0) {
-                for (CookieSetting setting : resp.getCookieSettings()) {
-                    l.fine("CookieSetting: " + setting.getName()
-                            + setting.getValue());
-                }
-            }
-
-            if (request.getCookies().size() > 0) {
-                for (Cookie setting : request.getCookies()) {
-                    l.fine("Cookie: " + setting.getName() + setting.getValue());
-                }
-            }
-
-            DiscoveryInformation discovered = (DiscoveryInformation) session
-                    .get(openidDisc); // TODO cleanup
-
-            l.fine("discovered = " + discovered);
-
-            // extract the receiving URL from the HTTP request
-
-            l.fine("getOriginalRef = " + request.getOriginalRef());
-
-            ConsumerManager manager = getManager(discovered.getOPEndpoint()
-                    .toString());
-            String redir = request.getResourceRef().getHostIdentifier()
-                    + request.getResourceRef().getPath() + "?return=true";
-
-            VerificationResult verification = manager.verify(redir, response,
-                    discovered);
-
-            // examine the verification result and extract the verified
-            // identifier
-            Identifier verified = verification.getVerifiedId();
-            l.fine("verified = " + verified);
-
-            if (verified != null) {
-                AuthSuccess authSuccess = (AuthSuccess) verification
-                        .getAuthResponse();
-
-                if (authSuccess.hasExtension(AxMessage.OPENID_NS_AX)) {
-                    FetchResponse fetchResp = (FetchResponse) authSuccess
-                            .getExtension(AxMessage.OPENID_NS_AX);
-
-                    MessageExtension ext = authSuccess
-                            .getExtension(AxMessage.OPENID_NS_AX);
-
-                    if (ext instanceof FetchResponse) {
-                        List<String> aliases = fetchResp.getAttributeAliases();
-                        for (String alias : aliases) {
-                            String value = fetchResp.getAttributeValue(alias);
-                            axResp.put(AX.valueOf(alias), value);
+        if(rp.hasReturnTo(request)){
+            Context.getCurrentLogger().info("handling return");
+            Map <AX, String> axResp = new HashMap <AX, String> ();
+            try{
+                Identifier identifier = rp.verify(axResp, request, true);
+                //do some processing
+                if(identifier != null && identifier.getIdentifier() != null){
+                    User u = new User(identifier.getIdentifier());
+                    if(axResp.size() > 0){
+                        for(Map.Entry<AX, String> entry : axResp.entrySet()){
+                            OpenIdUser.setValueFromAX(entry.getKey(), entry.getValue(), u);
                         }
                     }
+                    request.getClientInfo().setUser(u);
+                    return RESULT_VALID;
                 }
-
-                return verified; // success
+                else
+                    return RESULT_INVALID;
             }
-        } catch (OpenIDException e) {
-            l.log(Level.WARNING, "could not verify response", e);
+            catch(Exception e){ //assume rp discovery
+                Reference ref = new Reference(request.getResourceRef().getHostIdentifier()+
+                        request.getResourceRef().getPath());
+                Context.getCurrentLogger().info("Generating XRDS Response");
+                if(params.getFirst("sessionId") != null){
+                    ref.addQueryParameter("sessionId", params.getFirstValue("sessionId"));
+                    ref.addQueryParameter("return", "true");
+                }
+                try{
+                    Representation rep =  XRDS.returnToXrds(ref.toString());
+                    response.setEntity(rep);
+                    return RESULT_MISSING;
+                }
+                catch(Exception e1){
+                    //should not happen
+                    e.printStackTrace();
+                    return RESULT_UNKNOWN;
+                }
+            }
+            
         }
-        return null;
+        else{
+            //generate a request
+            String target = this.getTarget(params, request);
+            Reference ref = new Reference(request.getResourceRef().getHostIdentifier()
+            + request.getResourceRef().getPath());
+            Context.getCurrentLogger().info("generating a authentication request");
+            try{
+                rp.authRequest(target, true, true, ref.toString(), 
+                        optionalAttributes, requiredAttributes, 
+                        request, response);
+                return RESULT_MISSING;
+            }
+            catch(Exception e){
+                e.printStackTrace();
+                return RESULT_INVALID;
+            }
+        }
+
     }
 
 }

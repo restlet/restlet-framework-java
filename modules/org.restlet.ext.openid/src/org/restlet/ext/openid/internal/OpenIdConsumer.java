@@ -74,6 +74,7 @@ import org.restlet.resource.ServerResource;
  * 
  * @author Kristoffer Gronowski
  */
+@Deprecated
 public class OpenIdConsumer extends ServerResource {
 
     public static final ConcurrentHashMap<String, String> ax = new ConcurrentHashMap<String, String>(

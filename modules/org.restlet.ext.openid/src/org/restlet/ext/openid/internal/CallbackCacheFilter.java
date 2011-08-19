@@ -54,6 +54,7 @@ import org.restlet.routing.Redirector;
  * @author Kristoffer Gronowski
  */
 // TODO: Check if this needs to be a filter and possibly rename!
+@Deprecated
 public class CallbackCacheFilter extends Filter implements CacheLookup {
     public static final String EXTERNAL_SERVER_COOKIE = "callback";
 

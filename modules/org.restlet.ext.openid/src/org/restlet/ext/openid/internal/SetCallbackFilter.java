@@ -42,6 +42,7 @@ import org.restlet.routing.Filter;
  * 
  * @author Kristoffer Gronowski
  */
+@Deprecated
 public class SetCallbackFilter extends Filter {
     /** Internal cache. */
     private CacheLookup cache = null;

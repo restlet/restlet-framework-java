@@ -38,6 +38,7 @@ import org.restlet.Response;
  * 
  * @author Kristoffer Gronowski
  */
+@Deprecated
 public interface CacheLookup {
     /**
      * Handles the pair of request/response, by completing the given request
