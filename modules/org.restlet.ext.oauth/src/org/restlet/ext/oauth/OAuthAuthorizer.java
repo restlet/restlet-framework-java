@@ -31,6 +31,7 @@
 package org.restlet.ext.oauth;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -58,9 +59,18 @@ import org.restlet.security.User;
 import org.restlet.util.Series;
 
 /**
- * Class for OAuth 2.0 protection of REST resources. Can be deployed outside the
+ * Authorizer for OAuth 2.0 protection of REST resources. Can be deployed outside the
  * Authorization Server Restlet application. A Validation resource must be
  * started and mapped in the auth server.
+ * 
+ * In addition to the normal operation of a RoleAuthorizer the OAuthAuthorizer can authorize
+ * roles per request by setting a Request Attribute (defaults to DEFAULT_ROLE_ATTRIBUTE) with
+ * a Role[]. If that is present it will authorize those Roles instead of the global roles for
+ * the Authorizer.
+ * 
+ * The OAuthAuthorizer also allows for authorizing against a specific owner - a person who has issued
+ * a token. The token provided to the authorizer will then be validated against that owner. The owner
+ * is also specified as request attribute (defaults to DEFAULT_OWNER_ATTRIBUTE)
  * 
  * Example invocation:
  * 
@@ -88,6 +98,16 @@ import org.restlet.util.Series;
  *                      &quot;https://path/to/validate&quot;, client);
  *              ...
  *      }
+ *      
+ *      //Set up an OAuthAuthorizer that validates owner as well
+ *      public Restlet createInboundRoot(){
+ *              ...
+ *              OAuthAuthorizer auth = new OAuthAuthorizer(
+ *              &quot;http://localhost:8080/OAuth2Provider/validate&quot;);
+ *              auth.setNext(ProtectedResource.class);
+ *              router.attach(&quot;/{&quot;+DEFAULT_OWNER_ATTRIBUTE+&quot;}&quot;, auth);
+ *              ...
+ *      }
  * }
  * @see org.restlet.ext.oauth.ValidationServerResource
  * 
@@ -101,6 +121,14 @@ public class OAuthAuthorizer extends RoleAuthorizer {
     protected final Reference validateRef;
 
     protected final org.restlet.Client client;
+    
+    
+    public static String DEFAULT_OWNER_ATTRIBUTE = "oauth-user";
+    private final String ownerAttribute;
+    
+    public static String DEFAULT_ROLE_ATTRIBUTE = "oauth-roles";
+    private final String roleAttribute;
+    
 
     /**
      * Default constructor.
@@ -109,6 +137,8 @@ public class OAuthAuthorizer extends RoleAuthorizer {
         // this.authorizeRef = null;
         this.validateRef = null;
         this.client = null;
+        this.ownerAttribute = DEFAULT_OWNER_ATTRIBUTE;
+        this.roleAttribute = DEFAULT_ROLE_ATTRIBUTE;
     } // For extending the class
 
     /**
@@ -137,6 +167,8 @@ public class OAuthAuthorizer extends RoleAuthorizer {
             org.restlet.Client requestClient) {
         this.validateRef = validationRef;
         this.client = requestClient;
+        this.ownerAttribute = DEFAULT_OWNER_ATTRIBUTE;
+        this.roleAttribute = DEFAULT_ROLE_ATTRIBUTE;
     }
 
     /**
@@ -149,7 +181,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
     public OAuthAuthorizer(String validationRef) {
         this(new Reference(validationRef));
     }
-
+    
     /**
      * Set up an OAuthAuthorizer.
      * 
@@ -166,6 +198,34 @@ public class OAuthAuthorizer extends RoleAuthorizer {
      */
     public OAuthAuthorizer(String validationRef, boolean local,
             org.restlet.Client requestClient) {
+        this(validationRef, local, requestClient, null, null);
+    }
+
+    /**
+     * Set up an OAuthAuthorizer.
+     * 
+     * @param validationRef
+     *            The validation URI referencing the auth server validation
+     *            resource.
+     * @param local
+     *            If local is set to true "riap://application" will appended to
+     *            the validationRef
+     * @param requestClient
+     *            A predefined client that will be used for remote client
+     *            request. Useful when you need to set e.g. SSL initialization
+     *            parameters (not needed for e.g. local)
+     * @param ownerAttr
+     *            To dynamically authorize against a specific this Authorizer
+     *            search for this request attribute. If null it will be set to
+     *            DEFAULT_OWNER_ATTRIBUTE
+     * @param roleAttr
+     *            To dynamically authorize against specific roles this Authorizer
+     *            search for this request attribute. If null it will be set to
+     *            DEFAULT_ROLE_ATTRIBUTE. Any dynamic roles will have precedence over
+     *            default roles for this authorizer
+     */
+    public OAuthAuthorizer(String validationRef, boolean local,
+            org.restlet.Client requestClient, String ownerAttr, String roleAttr) {
         this.client = requestClient;
         if (local) {
             this.validateRef = new Reference("riap://application"
@@ -173,6 +233,8 @@ public class OAuthAuthorizer extends RoleAuthorizer {
         } else {
             this.validateRef = new Reference(validationRef);
         }
+        this.ownerAttribute = ownerAttr != null ? ownerAttr : DEFAULT_OWNER_ATTRIBUTE;
+        this.roleAttribute = roleAttr != null ? roleAttr : DEFAULT_ROLE_ATTRIBUTE; 
     }
 
     /**
@@ -188,7 +250,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
      */
     public OAuthAuthorizer(String validationRef,
             org.restlet.Client requestClient) {
-        this(validationRef, false, requestClient);
+        this(validationRef, false, requestClient, null, null);
     }
 
     @Override
@@ -269,8 +331,9 @@ public class OAuthAuthorizer extends RoleAuthorizer {
         }
 
         return false;
-
     }
+    
+    
 
     // GET SIZE TO HANDLE BUG IN GLASSFISH
     /*
@@ -302,6 +365,13 @@ public class OAuthAuthorizer extends RoleAuthorizer {
 
         // add any roles...
         List<Role> roles = getAuthorizedRoles();
+        
+        //now check if any dynamic roles has been set:
+        Object obj = req.getAttributes().get(this.roleAttribute);
+        if(obj != null && obj instanceof Role[]){
+            getLogger().fine("Found dynamic scopes");
+            roles = Arrays.asList((Role[])obj);
+        }
         if ((roles != null) && (roles.size() > 0)) {
             JSONArray jArray = new JSONArray();
             for (Role r : roles) {
@@ -310,7 +380,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
             request.put("scope", jArray);
             getLogger().fine("Found scopes: " + jArray.toString());
         }
-        String owner = (String) req.getAttributes().get("oauth-user");
+        String owner = (String) req.getAttributes().get(this.ownerAttribute);
         if ((owner != null) && (owner.length() > 0)) {
             getLogger().fine("Found Owner:" + owner);
             request.put("owner", owner);
