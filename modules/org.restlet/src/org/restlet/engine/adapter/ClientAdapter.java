@@ -95,17 +95,11 @@ public class ClientAdapter extends Adapter {
                             if (userCallback != null) {
                                 userCallback.handle(request, response);
                             }
-                        } catch (Exception e) {
-                            // Unexpected exception occurred
-                            if ((response.getStatus() == null)
-                                    || !response.getStatus().isError()) {
-                                response.setStatus(
-                                        Status.CONNECTOR_ERROR_INTERNAL, e);
-
-                                if (userCallback != null) {
-                                    userCallback.handle(request, response);
-                                }
-                            }
+                        } catch (Throwable t) {
+                            getLogger()
+                                    .log(Level.WARNING,
+                                            "Unexpected error or exception inside the user call back",
+                                            t);
                         }
                     }
                 });

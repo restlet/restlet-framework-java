@@ -55,6 +55,11 @@ Changes log
         to convert a representation to a given target class. Also, if 
         the conversion fails, a null object is returned and can be passed
         to an annotated Java method for example.
+      - In case of exception in the user code invoked by an onResponse
+        callback or a GWT client proxy, the callback was invoked again with
+        an error status which proved to be non intuitive. Now, we simply
+        log a warning and stop the processing.
+        Reported by Cyril Lakech.
     - New features
       - Added a CookieAuthenticator class in the org.restlet.ext.crypto
         extension to provide customizable and secure authentication via
