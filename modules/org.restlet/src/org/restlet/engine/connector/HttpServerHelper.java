@@ -104,7 +104,7 @@ public class HttpServerHelper extends ServerConnectionHelper {
     }
 
     @Override
-    public ServerInboundWay createInboundWay(Connection<Server> connection,
+    public InboundWay createInboundWay(Connection<Server> connection,
             int bufferSize) {
         return new HttpServerInboundWay(connection, bufferSize);
     }
