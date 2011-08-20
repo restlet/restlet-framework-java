@@ -38,7 +38,7 @@
       <replace dir="<#noparse>${mod}</#noparse>/${module.package}" includes="**/package.html" token="@home-uri@" value="${module.primaryLibrary.homeUri}" />
    </#if>
    <#if edition.postSource??>${edition.postSource?replace("\\$\\{module\\.package\\}", module.package, "r")}</#if>
-   <!-- generate the manifest.mf file -->
+   <!-- generate the manifest.mf file
    <pathconvert property="${module.id}.manifest.export.packages" dirsep="." pathsep=",">
       <map from="<#noparse>${mod}</#noparse>/${module.package}/src/" to=''/>	
 	  <dirset dir="<#noparse>${mod}</#noparse>/${module.package}/src">
@@ -61,7 +61,7 @@
    <#if module.importedPackagesAsOptional??>
       <attribute name="Import-package" value="<#noparse>${</#noparse>${module.id}.manifest.import.packages}" />
    </#if>
-   </manifest>
+   </manifest> -->
 </#list>
 <#noparse>
       <replace dir="${mod}" includes="**/MANIFEST.MF*" token="Bundle-Version: ${version-minor}" value="Bundle-Version: ${version-manifest}" />
