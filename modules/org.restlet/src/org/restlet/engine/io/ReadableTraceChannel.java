@@ -78,9 +78,12 @@ public class ReadableTraceChannel extends
      */
     public int read(ByteBuffer dst) throws IOException {
         int off = dst.arrayOffset() + dst.position();
+        int pos = dst.position();
         int result = getWrappedChannel().read(dst);
 
-        if (result > 0) {
+        // We need to verify the position as well because during SSL handshake,
+        // bytes mights be read by never put into the destination buffer
+        if ((result > 0) && (dst.position() > pos)) {
             System.out.write(dst.array(), off, result);
         }
 

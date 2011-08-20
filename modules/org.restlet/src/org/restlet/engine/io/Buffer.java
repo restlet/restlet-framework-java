@@ -528,9 +528,9 @@ public class Buffer {
             // initiating a SSL handshake
             result += processor.preProcess(maxDrained, args);
 
-            if (Context.getCurrentLogger().isLoggable(Level.INFO)) {
+            if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
                 Context.getCurrentLogger()
-                        .log(Level.FINE,
+                        .log(Level.FINEST,
                                 result
                                         + " bytes drained from buffer at pre-processing, "
                                         + remaining() + " remaining bytes");

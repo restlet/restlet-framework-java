@@ -77,9 +77,16 @@ public class WritableTraceChannel extends
      * @return The number of bytes written.
      */
     public int write(ByteBuffer src) throws IOException {
-        int off = src.arrayOffset() + src.position();
+        int pos = src.position();
+        int off = src.arrayOffset() + pos;
         int result = getWrappedChannel().write(src);
-        System.out.write(src.array(), off, result);
+
+        // We need to verify the position as well because during SSL handshake,
+        // bytes mights be written but not from the source buffer
+        if ((result > 0) && (src.position() > pos)) {
+            System.out.write(src.array(), off, result);
+        }
+
         return result;
     }
 

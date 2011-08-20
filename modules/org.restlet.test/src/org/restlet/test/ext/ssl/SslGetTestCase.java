@@ -30,8 +30,6 @@
 
 package org.restlet.test.ext.ssl;
 
-import java.util.logging.Level;
-
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -43,7 +41,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -60,7 +57,6 @@ public class SslGetTestCase extends SslBaseConnectorsTestCase {
 
     public static void main(String[] args) throws Exception {
         // [ifdef jse] instruction
-        Engine.setLogLevel(Level.FINE);
         SslGetTestCase sgt = new SslGetTestCase();
         sgt.setUp();
         sgt.testSslInternalAndJdkNet();
