@@ -118,9 +118,9 @@ public class HttpServerHelper extends ServerConnectionHelper {
 
     @Override
     protected Request createRequest(Connection<Server> connection,
-            String methodName, String resourceUri, String version) {
+            String methodName, String resourceUri, String protocol) {
         return new HttpInboundRequest(getContext(), connection, methodName,
-                resourceUri, version);
+                resourceUri, protocol);
     }
 
 }

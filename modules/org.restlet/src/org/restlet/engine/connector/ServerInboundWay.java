@@ -134,7 +134,7 @@ public abstract class ServerInboundWay extends InboundWay {
     protected void readStartLine() throws IOException {
         String requestMethod = null;
         String requestUri = null;
-        String version = null;
+        String protocol = null;
 
         int i = 0;
         int start = 0;
@@ -179,23 +179,23 @@ public abstract class ServerInboundWay extends InboundWay {
             }
 
             // Parse the protocol version
-            for (i = start; (version == null) && (i < size); i++) {
+            for (i = start; (protocol == null) && (i < size); i++) {
                 next = getLineBuilder().charAt(i);
             }
 
             if (i == size) {
-                version = getLineBuilder().substring(start, i);
+                protocol = getLineBuilder().substring(start, i);
                 start = i + 1;
             }
 
-            if (version == null) {
+            if (protocol == null) {
                 throw new IOException(
                         "Unable to parse the protocol version. End of line reached too early.");
             }
 
             // Create a new request object
             Request request = getHelper().createRequest(getConnection(),
-                    requestMethod, requestUri, version);
+                    requestMethod, requestUri, protocol);
             Response response = createResponse(request);
             setMessage(response);
             setMessageState(MessageState.HEADERS);

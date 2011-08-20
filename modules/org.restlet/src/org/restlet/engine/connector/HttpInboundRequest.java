@@ -108,6 +108,9 @@ public class HttpInboundRequest extends Request implements InboundRequest {
     /** Indicates if the cookies were parsed and added. */
     private volatile boolean cookiesAdded;
 
+    /** The protocol name and version. */
+    private volatile String protocol;
+
     /** Indicates if the proxy security data was parsed and added. */
     private volatile boolean proxySecurityAdded;
 
@@ -129,24 +132,8 @@ public class HttpInboundRequest extends Request implements InboundRequest {
     /** The user principal. */
     private final Principal userPrincipal;
 
-    /** The protocol version. */
-    private volatile String version;
-
     /** Indicates if the warning data was parsed and added. */
     private volatile boolean warningsAdded;
-
-    /**
-     * Copy constructor.
-     * 
-     * @param request
-     *            The request to copy.
-     */
-    public HttpInboundRequest(HttpInboundRequest request) {
-        super(request);
-        this.connection = request.getConnection();
-        this.context = request.context;
-        this.userPrincipal = request.getUserPrincipal();
-    }
 
     /**
      * Constructor.
@@ -159,11 +146,11 @@ public class HttpInboundRequest extends Request implements InboundRequest {
      *            The protocol method name.
      * @param resourceUri
      *            The target resource URI.
-     * @param version
-     *            The protocol version.
+     * @param protocol
+     *            The protocol name and version.
      */
     public HttpInboundRequest(Context context, Connection<Server> connection,
-            String methodName, String resourceUri, String version) {
+            String methodName, String resourceUri, String protocol) {
         super();
         this.connection = connection;
         this.context = context;
@@ -180,8 +167,38 @@ public class HttpInboundRequest extends Request implements InboundRequest {
         this.securityAdded = false;
         this.warningsAdded = false;
 
+        // Set the protocol
+        int versionSeparator = protocol.indexOf('/');
+        Protocol connectorProtocol = getConnection().getHelper().getHelped()
+                .getProtocols().get(0);
+
+        if (versionSeparator != -1) {
+            String name = protocol.substring(0, versionSeparator);
+            String version = protocol.substring(versionSeparator + 1);
+
+            if (connectorProtocol.getTechnicalName().equals(name)
+                    && connectorProtocol.getVersion().equals(version)) {
+                setProtocol(connectorProtocol);
+            } else {
+                setProtocol(Protocol.valueOf(name, version));
+            }
+        }
+
         // Set the properties
         setMethod(Method.valueOf(methodName));
+    }
+
+    /**
+     * Copy constructor.
+     * 
+     * @param request
+     *            The request to copy.
+     */
+    public HttpInboundRequest(HttpInboundRequest request) {
+        super(request);
+        this.connection = request.getConnection();
+        this.context = request.context;
+        this.userPrincipal = request.getUserPrincipal();
     }
 
     @Override
@@ -627,23 +644,15 @@ public class HttpInboundRequest extends Request implements InboundRequest {
         getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
 
         // Parse the version string
-        if (version != null) {
-            int slashIndex = version.indexOf('/');
+        if (protocol != null) {
+            int slashIndex = protocol.indexOf('/');
 
             if (slashIndex != -1) {
-                version = version.substring(slashIndex + 1);
+                protocol = protocol.substring(slashIndex + 1);
             } else {
-                version = null;
+                protocol = null;
             }
         }
-
-        // Set the protocol used for this request
-        Protocol serverProtocol = getConnection().getHelper().getHelped()
-                .getProtocols().get(0);
-        setProtocol(new Protocol(serverProtocol.getSchemeName(),
-                serverProtocol.getName(), serverProtocol.getDescription(),
-                serverProtocol.getDefaultPort(),
-                serverProtocol.isConfidential(), version));
 
         // Parse the host header
         String host = (getHeaders() == null) ? null : getHeaders()
@@ -662,6 +671,9 @@ public class HttpInboundRequest extends Request implements InboundRequest {
                 hostPort = getProtocol().getDefaultPort();
             }
         } else {
+            Protocol serverProtocol = getConnection().getHelper().getHelped()
+                    .getProtocols().get(0);
+
             if (!Protocol.SIP.getSchemeName().equals(
                     serverProtocol.getSchemeName())
                     && !Protocol.SIPS.getSchemeName().equals(

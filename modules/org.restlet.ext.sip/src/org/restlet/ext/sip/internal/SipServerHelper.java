@@ -79,10 +79,10 @@ public class SipServerHelper extends ServerConnectionHelper {
 
     @Override
     protected Request createRequest(Connection<Server> connection,
-            String methodName, String resourceUri, String version) {
+            String methodName, String resourceUri, String protocol) {
 
         SipInboundRequest request = new SipInboundRequest(getContext(),
-                connection, methodName, resourceUri, version);
+                connection, methodName, resourceUri, protocol);
 
         // The via header is linked with the sipRecipientsInfo attribute, due to
         // distinct formats.

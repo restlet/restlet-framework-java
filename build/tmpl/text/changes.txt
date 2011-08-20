@@ -60,6 +60,7 @@ Changes log
         an error status which proved to be non intuitive. Now, we simply
         log a warning and stop the processing.
         Reported by Cyril Lakech.
+      - Added Protocol.valueOf(name, version) method.
     - New features
       - Added a CookieAuthenticator class in the org.restlet.ext.crypto
         extension to provide customizable and secure authentication via
@@ -93,6 +94,8 @@ Changes log
         automatically write simple HTML representations for navigating
         your web API. Hyperlinks can be specified using EMF eAnnotations.
         Key feed-back from Bryan Hunt, John Logdson and Thomas Eskenazi.
+      - Added new HTTPS server connector based on the internal non-blocking 
+        NIO connector. Co-developped with NetDev.
     - Bug fixed
       - Fixed potential NPE in the Authenticator when logging authentication 
         failure. Reported by Martin Svensson.

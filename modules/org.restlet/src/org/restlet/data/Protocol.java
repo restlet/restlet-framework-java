@@ -219,6 +219,28 @@ public final class Protocol {
         return result;
     }
 
+    /**
+     * Creates the protocol associated to a URI scheme name. If an existing
+     * constant exists then it is returned, otherwise a new instance is created.
+     * 
+     * @param name
+     *            The scheme name.
+     * @param The
+     *            version number.
+     * @return The associated protocol.
+     */
+    public static Protocol valueOf(String name, String version) {
+        Protocol result = valueOf(name);
+
+        if (!version.equals(result.getVersion())) {
+            result = new Protocol(result.getSchemeName(), result.getName(),
+                    result.getTechnicalName(), result.getDescription(),
+                    result.getDefaultPort(), result.isConfidential(), version);
+        }
+
+        return result;
+    }
+
     /** The confidentiality. */
     private final boolean confidential;
 

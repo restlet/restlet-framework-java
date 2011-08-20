@@ -130,12 +130,12 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
      *            The method name.
      * @param resourceUri
      *            The target resource URI.
-     * @param version
-     *            The protocol version.
+     * @param protocol
+     *            The protocol name and version.
      * @return The created request.
      */
     protected abstract Request createRequest(Connection<Server> connection,
-            String methodName, String resourceUri, String version);
+            String methodName, String resourceUri, String protocol);
 
     /**
      * Create a server socket channel and bind it to the given address
@@ -209,7 +209,8 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
                         getOutboundMessages().add(response);
                     }
                 } catch (IOException e) {
-                    getLogger().log(Level.FINE, "Unable to handle outbound message", e);
+                    getLogger().log(Level.FINE,
+                            "Unable to handle outbound message", e);
                 }
             } else {
                 // The request expects no response, the connection is free to

@@ -104,6 +104,9 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
     /** Indicates if the cookies were parsed and added. */
     private volatile boolean cookiesAdded;
 
+    /** The protocol name and version. */
+    private volatile String protocol;
+
     /** Indicates if the proxy security data was parsed and added. */
     private volatile boolean proxySecurityAdded;
 
@@ -124,9 +127,6 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
 
     /** The user principal. */
     private final Principal userPrincipal;
-
-    /** The protocol version. */
-    private volatile String version;
 
     /** Indicates if the warning data was parsed and added. */
     private volatile boolean warningsAdded;
@@ -195,11 +195,11 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
      *            The protocol method name.
      * @param resourceUri
      *            The target resource URI.
-     * @param version
-     *            The protocol version.
+     * @param protocol
+     *            The protocol name and version.
      */
     public SipInboundRequest(Context context, Connection<Server> connection,
-            String methodName, String resourceUri, String version) {
+            String methodName, String resourceUri, String protocol) {
         super();
         this.context = context;
         this.cacheDirectivesAdded = false;
@@ -213,7 +213,7 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
         this.proxySecurityAdded = false;
         this.recipientsInfoAdded = false;
         this.resourceUri = resourceUri;
-        this.version = version;
+        this.protocol = protocol;
         this.warningsAdded = false;
 
         // SIP specific initialization
@@ -1079,14 +1079,14 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
     public void setHeaders(Series<Header> headers) {
         getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
 
-        // Parse the version string
-        if (version != null) {
-            int slashIndex = version.indexOf('/');
+        // Parse the protocol string
+        if (protocol != null) {
+            int slashIndex = protocol.indexOf('/');
 
             if (slashIndex != -1) {
-                version = version.substring(slashIndex + 1);
+                protocol = protocol.substring(slashIndex + 1);
             } else {
-                version = null;
+                protocol = null;
             }
         }
 
@@ -1096,7 +1096,7 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
         setProtocol(new Protocol(serverProtocol.getSchemeName(),
                 serverProtocol.getName(), serverProtocol.getDescription(),
                 serverProtocol.getDefaultPort(),
-                serverProtocol.isConfidential(), version));
+                serverProtocol.isConfidential(), protocol));
 
         // Parse the host header
         String host = (getHeaders() == null) ? null : getHeaders()

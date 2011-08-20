@@ -46,9 +46,23 @@ import org.restlet.engine.header.HeaderConstants;
  */
 public class HttpsInboundRequest extends HttpInboundRequest {
 
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context of the parent connector.
+     * @param connection
+     *            The associated network connection.
+     * @param methodName
+     *            The protocol method name.
+     * @param resourceUri
+     *            The target resource URI.
+     * @param protocol
+     *            The protocol name and version.
+     */
     public HttpsInboundRequest(Context context, Connection<Server> connection,
-            String methodName, String resourceUri, String version) {
-        super(context, connection, methodName, resourceUri, version);
+            String methodName, String resourceUri, String protocol) {
+        super(context, connection, methodName, resourceUri, protocol);
 
         // Set the SSL certificates
         List<Certificate> clientCertificates = getConnection()
