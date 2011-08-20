@@ -47,12 +47,11 @@ public class BioUtilsTestCase extends RestletTestCase {
 
     public void testGetStream() throws IOException {
         StringWriter writer = new StringWriter();
-        OutputStream out = BioUtils.getOutputStream(writer,
-                CharacterSet.ISO_8859_1);
-        out.write("testé".getBytes());
+        OutputStream out = BioUtils.getOutputStream(writer, CharacterSet.UTF_8);
+        out.write("testÃ©".getBytes("UTF-8"));
         out.flush();
         out.close();
-        assertEquals("testé", writer.toString());
+        assertEquals("testÃ©", writer.toString());
     }
 
 }
