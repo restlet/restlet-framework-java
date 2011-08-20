@@ -52,25 +52,25 @@ import org.restlet.security.ChallengeAuthenticator;
  * Challenge authenticator based on browser cookies. This is useful when the web
  * application requires a finer grained control on the login and logout process
  * and can't rely solely on standard schemes such as
- * {@link ChallengeScheme#HTTP_BASIC}.
- * 
+ * {@link ChallengeScheme#HTTP_BASIC}.<br>
+ * <br>
  * Login can be automatically handled by intercepting HTTP POST calls to the
  * {@link #getLoginPath()} URI. The request entity should contain an HTML form
  * with two fields, the first one named {@link #getIdentifierFormName()} and the
- * second one named {@link #getSecretFormName()}.
- * 
+ * second one named {@link #getSecretFormName()}.<br>
+ * <br>
  * Logout can be automatically handled as well by intercepting HTTP GET or POST
- * calls to the {@link #getLogoutPath()} URI.
- * 
+ * calls to the {@link #getLogoutPath()} URI.<br>
+ * <br>
  * After login or logout, the user's browser can be redirected to the URI
- * provided in a query parameter named by {@link #getRedirectQueryName()}.
- * 
+ * provided in a query parameter named by {@link #getRedirectQueryName()}.<br>
+ * <br>
  * When the credentials are missing or stale, the
  * {@link #challenge(Response, boolean)} method is invoked by the parent class,
  * and its default behavior is to redirect the user's browser to the
  * {@link #getLoginFormPath()} URI, adding the URI of the target resource as a
- * query parameter of name {@link #getRedirectQueryName()}.
- * 
+ * query parameter of name {@link #getRedirectQueryName()}.<br>
+ * <br>
  * Note that credentials, both identifier and secret, are stored in a cookie in
  * an encrypted manner. The default encryption algorithm is AES but can be
  * changed with {@link #setEncryptAlgorithm(String)}. It is also strongly

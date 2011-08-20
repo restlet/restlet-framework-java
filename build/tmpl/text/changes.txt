@@ -4,6 +4,16 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - API changes
+       - 
+    - New features
+       - 
+    - Bug fixed
+       - 
+    - Misc
+       - 
+      
+- 2.1 Milestone 6 (08/20/2011)
     - Breaking change
       - When retrieving or updating the raw headers in the Request or 
         Response attributes, the type should now be Series<Header> 
