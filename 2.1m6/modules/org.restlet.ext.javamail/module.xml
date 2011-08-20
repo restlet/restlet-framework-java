@@ -1,0 +1,19 @@
+<module id="javamail" excludes="android, gae, gwt" type="connector"
+	package="org.restlet.ext.javamail">
+	<name>Restlet Extension - JavaMail</name>
+	<description>
+		Integration with JavaMail.
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="library" id="activation" />
+		<dependency type="library" id="javamail" primary="true" />
+		<dependency type="module" id="core" />
+		<dependency type="module" id="xml" />
+	</dependencies>
+	<wikiUri>76-restlet</wikiUri>
+</module>

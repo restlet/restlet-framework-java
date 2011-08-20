@@ -1,0 +1,19 @@
+<library id="stax" symbolicName="javax.xml.stream">
+	<name>Java Architecture for XML Stream</name>
+	<description>Java Architecture for XML Stream</description>
+	<version>1.0</version>
+	<release>2</release>
+	<homeUri>http://download.oracle.com/docs/cd/E17802_01/webservices/webservices/docs/2.0/sjsxp/index.html</homeUri>
+	<downloadUri>http://download.java.net/maven/1/javax.xml.stream/jars/</downloadUri>
+	<provider>Sun Microsystems Inc.</provider>
+	
+	<package name="javax.xml.stream">
+		<maven>
+			<artifactId>stax-api</artifactId>
+			<version>1.0-2</version>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

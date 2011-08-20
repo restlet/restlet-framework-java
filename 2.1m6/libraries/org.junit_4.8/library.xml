@@ -1,0 +1,21 @@
+<library id="junit" symbolicName="org.junit">
+	<name>JUnit Testing Framework 4</name>
+	<description>JUnit Testing Framework 4</description>
+	<version>4.8</version>
+	<release>1</release>
+	<homeUri>http://www.junit.org/</homeUri>
+	<downloadUri>
+		<![CDATA[http://sourceforge.net/project/showfiles.php?group_id=15278&package_id=12472]]>
+	</downloadUri>
+	<provider>Object Mentor Inc.</provider>
+	
+	<package name="org.junit">
+		<maven>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>
