@@ -134,11 +134,8 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
      *            The protocol version.
      * @return The created request.
      */
-    protected Request createRequest(Connection<Server> connection,
-            String methodName, String resourceUri, String version) {
-        return new HttpInboundRequest(getContext(), connection, methodName,
-                resourceUri, version);
-    }
+    protected abstract Request createRequest(Connection<Server> connection,
+            String methodName, String resourceUri, String version);
 
     /**
      * Create a server socket channel and bind it to the given address

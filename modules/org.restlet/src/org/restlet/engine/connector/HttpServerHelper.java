@@ -33,6 +33,7 @@ package org.restlet.engine.connector;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -113,6 +114,13 @@ public class HttpServerHelper extends ServerConnectionHelper {
     public OutboundWay createOutboundWay(Connection<Server> connection,
             int bufferSize) {
         return new HttpServerOutboundWay(connection, bufferSize);
+    }
+
+    @Override
+    protected Request createRequest(Connection<Server> connection,
+            String methodName, String resourceUri, String version) {
+        return new HttpInboundRequest(getContext(), connection, methodName,
+                resourceUri, version);
     }
 
 }
