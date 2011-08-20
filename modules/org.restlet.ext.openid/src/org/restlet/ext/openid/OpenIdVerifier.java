@@ -39,11 +39,9 @@ import org.openid4java.discovery.Identifier;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.ext.openid.internal.OpenIdUser;
-import org.restlet.ext.openid.internal.RelayingParty;
 import org.restlet.ext.openid.internal.XRDS;
 import org.restlet.representation.Representation;
 import org.restlet.security.User;
@@ -224,7 +222,8 @@ public class OpenIdVerifier implements Verifier {
                 if (identifier != null && identifier.getIdentifier() != null) {
                     User u = new User(identifier.getIdentifier());
                     if (axResp.size() > 0) {
-                        for (Map.Entry<AttributeExchange, String> entry : axResp.entrySet()) {
+                        for (Map.Entry<AttributeExchange, String> entry : axResp
+                                .entrySet()) {
                             OpenIdUser.setValueFromAX(entry.getKey(),
                                     entry.getValue(), u);
                         }

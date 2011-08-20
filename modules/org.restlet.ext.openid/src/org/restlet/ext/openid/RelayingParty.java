@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.openid.internal;
+package org.restlet.ext.openid;
 
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +55,6 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
-import org.restlet.ext.openid.AttributeExchange;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 

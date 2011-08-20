@@ -54,84 +54,68 @@ public class CookieCopyClientResource extends ClientResource {
 
     public CookieCopyClientResource() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(ClientResource resource) {
         super(resource);
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(Context context, Method method,
             Reference reference) {
         super(context, method, reference);
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(Context context, Method method, String uri) {
         super(context, method, uri);
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(Context context, Method method, URI uri) {
         super(context, method, uri);
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(Context context, Reference reference) {
         super(context, reference);
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(Context context, Request request,
             Response response) {
         super(context, request, response);
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(Context context, String uri) {
         super(context, uri);
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(Context context, URI uri) {
         super(context, uri);
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(Method method, Reference reference) {
         super(method, reference);
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(Method method, String uri) {
         super(method, uri);
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(Method method, URI uri) {
         super(method, uri);
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(Reference reference) {
         super(reference);
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(Request request, Response response) {
         super(request, response);
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(String uri) {
         super(uri);
-        // TODO Auto-generated constructor stub
     }
 
     public CookieCopyClientResource(URI uri) {
         super(uri);
-        // TODO Auto-generated constructor stub
     }
 
     public boolean getCopyCookies() {
