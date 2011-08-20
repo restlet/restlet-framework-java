@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.test.RestletTestCase;
 
@@ -46,11 +47,12 @@ public class BioUtilsTestCase extends RestletTestCase {
 
     public void testGetStream() throws IOException {
         StringWriter writer = new StringWriter();
-        OutputStream out = BioUtils.getOutputStream(writer);
-        out.write("test".getBytes());
+        OutputStream out = BioUtils.getOutputStream(writer,
+                CharacterSet.ISO_8859_1);
+        out.write("testé".getBytes());
         out.flush();
         out.close();
-        assertEquals("test", writer.toString());
+        assertEquals("testé", writer.toString());
     }
 
 }

@@ -103,6 +103,10 @@ Changes log
         GWT proxies when no entity is returned. Reported by Cyril Lakech.
       - Fixed potential NPE in BioUtils#copy() with one of the stream is null.
         Reported by Cyril Lakech.
+      - Fixed character encoding bug with internal HTTP connectors with 
+        2 bytes characters (accents, etc.). This might have caused troubles
+        in other parts of the framework as it was located inside the
+        BioUtils.getOutputStream(Writer) method. Reported by Laurent Rustruel.
      - Misc
       - Optimized the HeaderReader class beavhior in the engine.
       - Optimized the processing of extra headers and challenge schemes. 

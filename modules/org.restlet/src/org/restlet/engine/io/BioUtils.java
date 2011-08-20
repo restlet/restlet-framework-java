@@ -364,10 +364,13 @@ public final class BioUtils {
      * 
      * @param writer
      *            The writer.
+     * @param characterSet
+     *            The character set used to write on the output stream.
      * @return the output stream of the writer
      */
-    public static java.io.OutputStream getOutputStream(java.io.Writer writer) {
-        return new WriterOutputStream(writer);
+    public static java.io.OutputStream getOutputStream(java.io.Writer writer,
+            CharacterSet characterSet) {
+        return new WriterOutputStream(writer, characterSet);
     }
 
     // [ifndef gwt] method

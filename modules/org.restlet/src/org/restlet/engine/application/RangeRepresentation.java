@@ -135,7 +135,7 @@ public class RangeRepresentation extends WrapperRepresentation {
     // [ifndef gwt] method
     @Override
     public void write(java.io.Writer writer) throws IOException {
-        write(BioUtils.getOutputStream(writer));
+        write(BioUtils.getOutputStream(writer, getCharacterSet()));
     }
 
     @Override

@@ -290,6 +290,6 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     @Override
     public void write(Writer writer) throws IOException {
-        write(BioUtils.getOutputStream(writer));
+        write(BioUtils.getOutputStream(writer, getCharacterSet()));
     }
 }
