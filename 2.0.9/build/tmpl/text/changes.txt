@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.0.9 (2011-08-20)
     - Bugs fixed
        - Fixed severe log messages produced by the Component class due to 
          lack of child context usage.
