@@ -68,7 +68,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private final boolean enabledClientJdkNet = true;
 
-    private final boolean enabledServerInternal = false;
+    private final boolean enabledServerInternal = true;
 
     private final boolean enabledServerJetty = true;
 
@@ -94,6 +94,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
         parameters.add("keyPassword", "testtest");
         parameters.add("truststorePath", testKeystoreFile.getPath());
         parameters.add("truststorePassword", "testtest");
+        // parameters.add("tracing", "true");
     }
 
     protected abstract Application createApplication(Component component);
