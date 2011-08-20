@@ -84,7 +84,7 @@ public class WriterOutputStream extends OutputStream {
     public void write(byte[] b, int off, int len) throws IOException {
         CharBuffer charBuffer = this.charSet.decode(ByteBuffer
                 .wrap(b, off, len));
-        this.writer.write(charBuffer.array());
+        this.writer.write(charBuffer.toString());
     }
 
     @Override
