@@ -75,7 +75,7 @@ import org.restlet.resource.ServerResource;
  * @author Kristoffer Gronowski
  */
 @Deprecated
-public class OpenIdConsumer extends ServerResource {
+public class Consumer extends ServerResource {
 
     public static final ConcurrentHashMap<String, String> ax = new ConcurrentHashMap<String, String>(
             9);
@@ -156,18 +156,19 @@ public class OpenIdConsumer extends ServerResource {
         if (!managers.containsKey(OPUri)) {
             // create a new manager
             log.fine("Creating new consumer manager for - " + OPUri);
-            //try {
-                ConsumerManager cm = new ConsumerManager();
-                cm.setConnectTimeout(30000);
-                cm.setSocketTimeout(30000);
-                cm.setFailedAssocExpire(0); // sec 0 = disabled
-                // cm.setMaxAssocAttempts(4); //default
-                managers.put(OPUri, cm);
-                return cm;
-            /*} catch (ConsumerException e) {
-                log.warning("Failed to create ConsumerManager for - " + OPUri);
-            }
-            return null;*/
+            // try {
+            ConsumerManager cm = new ConsumerManager();
+            cm.setConnectTimeout(30000);
+            cm.setSocketTimeout(30000);
+            cm.setFailedAssocExpire(0); // sec 0 = disabled
+            // cm.setMaxAssocAttempts(4); //default
+            managers.put(OPUri, cm);
+            return cm;
+            /*
+             * } catch (ConsumerException e) {
+             * log.warning("Failed to create ConsumerManager for - " + OPUri); }
+             * return null;
+             */
         } else {
             return managers.get(OPUri);
         }

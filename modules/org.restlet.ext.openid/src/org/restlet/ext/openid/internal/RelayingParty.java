@@ -37,7 +37,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-
 import org.openid4java.consumer.ConsumerManager;
 import org.openid4java.consumer.VerificationResult;
 import org.openid4java.discovery.DiscoveryInformation;
@@ -56,153 +55,16 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
-import org.restlet.ext.openid.AX;
+import org.restlet.ext.openid.AttributeExchange;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 
-
 /**
- * @author esvmart
- *
+ * Describes a relaying party, also known as a RP.
+ * 
+ * @author Martin Svensson
  */
-public class RP {
-
-
-    private final ConsumerManager cm;
-    private final Map <String, DiscoveryInformation> sessions;
-
-    public RP(){
-        this(new ConsumerManager());
-    }
-
-    public RP(ConsumerManager cm){
-        this.cm = cm;
-        this.sessions = new HashMap <String, DiscoveryInformation> ();
-    }
-    
-    public boolean hasReturnTo(Request request){
-        String val = request.getResourceRef().getQueryAsForm().getFirstValue("returnTo");
-        return "true".equals(val) == true ? true : false;
-    }
-
-
-    public String authRequest(
-            String identifier,
-            boolean sessionAware,
-            boolean addReturnTo,
-            String returnTo,
-            Set <AX> optionalAttrs,
-            Set <AX> requiredAttrs,
-            Request req,
-            Response res) throws Exception{
-
-        List <?> discoveries = cm.discover(identifier);
-        DiscoveryInformation di = cm.associate(discoveries);
-
-        //return
-        String sessionId = null;
-        if(sessionAware && di != null){
-            getLogger().info("save discovery information to session");
-            sessionId = UUID.randomUUID().toString();
-            this.sessions.put(sessionId, di);
-            Reference ref = new Reference(returnTo);
-            ref.addQueryParameter("sessionId", sessionId);
-            returnTo = ref.toString();
-        }
-        if(addReturnTo){
-            Reference ref = new Reference(returnTo);
-            ref.addQueryParameter("returnTo", "true");
-            returnTo = ref.toString();
-        }
-        AuthRequest authReq = cm.authenticate(di, returnTo);
-        FetchRequest fetch = null;
-
-        //add attributes
-        if(optionalAttrs != null){
-            fetch = FetchRequest.createFetchRequest();
-            for (AX o : optionalAttrs) {
-                fetch.addAttribute(o.getName(), o.getSchema(), false);
-            }
-        }
-        if(requiredAttrs != null){
-            if(fetch == null)
-                fetch = FetchRequest.createFetchRequest();
-            for (AX r : requiredAttrs) {
-                fetch.addAttribute(r.getName(), r.getSchema(), true);
-            }
-        }
-        if(fetch != null)
-            authReq.addExtension(fetch);
-
-        if(di.isVersion2()){
-            getLogger().info("sending auth request using OpenId 2 form");
-            res.setEntity(getForm(authReq));
-        }
-        else{
-            getLogger().info("sending auth request using OpenId 1 query parameters");
-            res.redirectTemporary(authReq.getDestinationUrl(true));
-        }
-        return sessionId;
-    }
-
-    public Identifier verify(Map<AX, String> axResp, Request req, 
-            boolean sessionAware) throws Exception{
-
-        //TODO: Make sure it can handle form based returns as well!
-        Form params = req.getResourceRef().getQueryAsForm();
-        ParameterList response = new ParameterList(params.getValuesMap());
-
-        String sessionId = sessionAware ? params.getFirstValue("sessionId") : null;
-
-        // retrieve the previously stored discovery information
-        DiscoveryInformation discovered = sessionId != null ? sessions.get(sessionId) : null;
-        getLogger().info("retrieved discovery information from session: ("+sessionId+") "+discovered);
-
-        String received = req.getResourceRef().getHostIdentifier()
-        + req.getResourceRef().getPath();
-        if(req.getResourceRef().hasQuery()){
-            received += "?"+req.getResourceRef().getQuery();
-        }
-        VerificationResult verification = cm.verify(received, response, discovered);
-        Identifier verified = verification.getVerifiedId();
-        if(verified != null){
-            AuthSuccess authSuccess = (AuthSuccess) verification
-            .getAuthResponse();
-            
-            if (authSuccess.hasExtension(AxMessage.OPENID_NS_AX)) {
-                FetchResponse fetchResp = (FetchResponse) authSuccess
-                .getExtension(AxMessage.OPENID_NS_AX);
-
-                MessageExtension ext = authSuccess
-                .getExtension(AxMessage.OPENID_NS_AX);
-                if (ext instanceof FetchResponse) {
-                    @SuppressWarnings("unchecked")
-                    List<String> aliases = (List <String>) fetchResp.getAttributeAliases();
-                    for (String alias : aliases) {
-                        String value = fetchResp.getAttributeValue(alias);
-                        axResp.put(AX.valueOf(alias), value);
-                    }
-                }
-            }
-        }
-        return verified;
-    }
-
-    public Logger getLogger() {
-        Logger result = null;
-
-        Context context = Context.getCurrent();
-
-        if (context != null) {
-            result = context.getLogger();
-        }
-
-        if (result == null) {
-            result = Engine.getLogger(this, "org.restlet.ext.openid.RP");
-        }
-
-        return result;
-    }
+public class RelayingParty {
 
     private static Representation getForm(AuthRequest authReq) {
         StringBuilder sb = new StringBuilder();
@@ -226,6 +88,145 @@ public class RP {
         sb.append("</body>");
         sb.append("</html>");
         return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
+    }
+
+    private final ConsumerManager cm;
+
+    private final Map<String, DiscoveryInformation> sessions;
+
+    public RelayingParty() {
+        this(new ConsumerManager());
+    }
+
+    public RelayingParty(ConsumerManager cm) {
+        this.cm = cm;
+        this.sessions = new HashMap<String, DiscoveryInformation>();
+    }
+
+    public String authRequest(String identifier, boolean sessionAware,
+            boolean addReturnTo, String returnTo,
+            Set<AttributeExchange> optionalAttrs,
+            Set<AttributeExchange> requiredAttrs, Request req, Response res)
+            throws Exception {
+
+        List<?> discoveries = cm.discover(identifier);
+        DiscoveryInformation di = cm.associate(discoveries);
+
+        // return
+        String sessionId = null;
+        if (sessionAware && di != null) {
+            getLogger().info("save discovery information to session");
+            sessionId = UUID.randomUUID().toString();
+            this.sessions.put(sessionId, di);
+            Reference ref = new Reference(returnTo);
+            ref.addQueryParameter("sessionId", sessionId);
+            returnTo = ref.toString();
+        }
+        if (addReturnTo) {
+            Reference ref = new Reference(returnTo);
+            ref.addQueryParameter("returnTo", "true");
+            returnTo = ref.toString();
+        }
+        AuthRequest authReq = cm.authenticate(di, returnTo);
+        FetchRequest fetch = null;
+
+        // add attributes
+        if (optionalAttrs != null) {
+            fetch = FetchRequest.createFetchRequest();
+            for (AttributeExchange o : optionalAttrs) {
+                fetch.addAttribute(o.getName(), o.getSchema(), false);
+            }
+        }
+        if (requiredAttrs != null) {
+            if (fetch == null)
+                fetch = FetchRequest.createFetchRequest();
+            for (AttributeExchange r : requiredAttrs) {
+                fetch.addAttribute(r.getName(), r.getSchema(), true);
+            }
+        }
+        if (fetch != null)
+            authReq.addExtension(fetch);
+
+        if (di.isVersion2()) {
+            getLogger().info("sending auth request using OpenId 2 form");
+            res.setEntity(getForm(authReq));
+        } else {
+            getLogger().info(
+                    "sending auth request using OpenId 1 query parameters");
+            res.redirectTemporary(authReq.getDestinationUrl(true));
+        }
+        return sessionId;
+    }
+
+    public Logger getLogger() {
+        Logger result = null;
+
+        Context context = Context.getCurrent();
+
+        if (context != null) {
+            result = context.getLogger();
+        }
+
+        if (result == null) {
+            result = Engine.getLogger(this, "org.restlet.ext.openid.RP");
+        }
+
+        return result;
+    }
+
+    public boolean hasReturnTo(Request request) {
+        String val = request.getResourceRef().getQueryAsForm()
+                .getFirstValue("returnTo");
+        return "true".equals(val) == true ? true : false;
+    }
+
+    public Identifier verify(Map<AttributeExchange, String> axResp,
+            Request req, boolean sessionAware) throws Exception {
+
+        // TODO: Make sure it can handle form based returns as well!
+        Form params = req.getResourceRef().getQueryAsForm();
+        ParameterList response = new ParameterList(params.getValuesMap());
+
+        String sessionId = sessionAware ? params.getFirstValue("sessionId")
+                : null;
+
+        // retrieve the previously stored discovery information
+        DiscoveryInformation discovered = sessionId != null ? sessions
+                .get(sessionId) : null;
+        getLogger().info(
+                "retrieved discovery information from session: (" + sessionId
+                        + ") " + discovered);
+
+        String received = req.getResourceRef().getHostIdentifier()
+                + req.getResourceRef().getPath();
+        if (req.getResourceRef().hasQuery()) {
+            received += "?" + req.getResourceRef().getQuery();
+        }
+        VerificationResult verification = cm.verify(received, response,
+                discovered);
+        Identifier verified = verification.getVerifiedId();
+        if (verified != null) {
+            AuthSuccess authSuccess = (AuthSuccess) verification
+                    .getAuthResponse();
+
+            if (authSuccess.hasExtension(AxMessage.OPENID_NS_AX)) {
+                FetchResponse fetchResp = (FetchResponse) authSuccess
+                        .getExtension(AxMessage.OPENID_NS_AX);
+
+                MessageExtension ext = authSuccess
+                        .getExtension(AxMessage.OPENID_NS_AX);
+                if (ext instanceof FetchResponse) {
+                    @SuppressWarnings("unchecked")
+                    List<String> aliases = (List<String>) fetchResp
+                            .getAttributeAliases();
+                    for (String alias : aliases) {
+                        String value = fetchResp.getAttributeValue(alias);
+                        axResp.put(AttributeExchange.valueOf(alias), value);
+                    }
+                }
+            }
+        }
+        return verified;
     }
 
 }

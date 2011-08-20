@@ -36,7 +36,6 @@ import org.restlet.Context;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.ext.openid.internal.OpenIdConsumer;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -59,8 +58,6 @@ public class OpenIdFormForwarder {
      * 
      * There is no harm in having the forwarder in place even if there is no
      * post there then the code would be skipped.
-     * 
-     * @see OpenIdConsumer
      * 
      * @param input
      *            - html form to post

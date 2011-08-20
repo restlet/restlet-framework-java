@@ -83,6 +83,23 @@ public class RedirectAuthenticator extends Authenticator {
 
     public final static String ORIGINAL_REF_ATTRIBUTE = "origRef";
 
+    public static void clearIdentifierCookie(String cookieId, Request req,
+            Response res) {
+        Cookie cookie = req.getCookies().getFirst(cookieId);
+        CookieSetting identifierCookie = res.getCookieSettings().getFirst(
+                cookieId);
+        if (identifierCookie == null && cookie != null) {
+            identifierCookie = new CookieSetting(cookieId, null);
+            res.getCookieSettings().add(identifierCookie);
+        }
+        if (identifierCookie != null)
+            identifierCookie.setMaxAge(0);
+    }
+
+    public static void clearIdentiiferCookie(Request req, Response res) {
+        clearIdentifierCookie(DEFAULT_IDENTIFIER_COOKIE, req, res);
+    }
+
     // private final String errorResource;
     /**
      * The restlet in charge of handling authentication or authorization
@@ -145,21 +162,6 @@ public class RedirectAuthenticator extends Authenticator {
                 : DEFAULT_IDENTIFIER_COOKIE;
         this.origRefCookie = origRefCookie != null ? origRefCookie
                 : DEFAULT_ORIGINAL_REF_COOKIE;
-    }
-    
-    public static void clearIdentiiferCookie(Request req, Response res){
-        clearIdentifierCookie(DEFAULT_IDENTIFIER_COOKIE, req, res);
-    }
-    
-    public static void clearIdentifierCookie(String cookieId, Request req, Response res){
-        Cookie cookie = req.getCookies().getFirst(cookieId);
-        CookieSetting identifierCookie = res.getCookieSettings().getFirst(cookieId);
-        if(identifierCookie == null && cookie != null){
-            identifierCookie = new CookieSetting(cookieId, null);
-            res.getCookieSettings().add(identifierCookie);
-        }
-        if(identifierCookie != null)
-            identifierCookie.setMaxAge(0);
     }
 
     @Override
@@ -225,9 +227,8 @@ public class RedirectAuthenticator extends Authenticator {
     /**
      * Rejects the call due to a failed authentication or authorization. This
      * can be overridden to change the default behavior, for example to display
-     * an error page. By default, calls errorResource.handle
-     * (if provided) otherwise it will set the response status to
-     * ClIENT_ERROR_FORBIDDEN
+     * an error page. By default, calls errorResource.handle (if provided)
+     * otherwise it will set the response status to ClIENT_ERROR_FORBIDDEN
      * 
      * @param origRef
      *            The original ref stored by the RedirectAuthenticator
@@ -246,13 +247,7 @@ public class RedirectAuthenticator extends Authenticator {
 
     }
 
-    @Override
-    protected int unauthenticated(Request request, Response response) {
-        int ret = super.unauthenticated(request, response);
-        return ret;
-    }
-
-        /**
+    /**
      * Handles the retrieved user from the verifier. The only thing that will be
      * stored is the user identifier (in a cookie). Should be overridden as it
      * does nothing by default.
@@ -261,8 +256,15 @@ public class RedirectAuthenticator extends Authenticator {
      *            The user.
      */
     protected void handleUser(User user) {
-        getLogger().info("Handle User: "+user.getIdentifier()+" "+user.getEmail());
+        getLogger().info(
+                "Handle User: " + user.getIdentifier() + " " + user.getEmail());
         ;
+    }
+
+    @Override
+    protected int unauthenticated(Request request, Response response) {
+        int ret = super.unauthenticated(request, response);
+        return ret;
     }
 
 }

@@ -40,23 +40,29 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * @author esvmart
- *
+ * Describes an eXtensible Resource Descriptor Sequence (XRDS).
+ * 
+ * @author Martin Svensson
  */
 public class XRDS {
-    
-    private static final String XRD = "XRD";
-    private static final String URI = "URI";
+
     private static final String Type = "Type";
-    
+
     public static final String TYPE_RETURN_TO = "http://specs.openid.net/auth/2.0/return_to";
+
     public static final String TYPE_SERVER = "http://specs.openid.net/auth/2.0/server";
+
     public static final String TYPE_SIGNON = "http://specs.openid.net/auth/2.0/signon";
-    
-    public static final MediaType XRDS = 
-        new MediaType("application/xrds+xml", "XRDS Document");
-    
-    private static Element createRootAndXrd(DomRepresentation dr) throws Exception{
+
+    private static final String URI = "URI";
+
+    private static final String XRD = "XRD";
+
+    public static final MediaType XRDS = new MediaType("application/xrds+xml",
+            "XRDS Document");
+
+    private static Element createRootAndXrd(DomRepresentation dr)
+            throws Exception {
         dr.setIndenting(true);
         Document d = dr.getDocument();
         Element root = d.createElement("xrds:XRDS");
@@ -68,33 +74,25 @@ public class XRDS {
         root.appendChild(xrd);
         return xrd;
     }
-    
-    private static void insert(Document d, Element parent, String node, String text){
-        Element elem = d.createElement(node);
-        if(text != null)
-            elem.appendChild(d.createTextNode(text));
-        parent.appendChild(elem);
-    }
-    
-    private static Element createService(Document d, Element parent, int priority){
+
+    private static Element createService(Document d, Element parent,
+            int priority) {
         Element service = d.createElement("Service");
-        service.setAttribute("priority", ""+priority);
+        service.setAttribute("priority", "" + priority);
         parent.appendChild(service);
         return service;
     }
-    
-    public static void setXRDSHeader(Response resp, String xrdsLocation){
-        @SuppressWarnings("unchecked")
-        Series<Header> headers = (Series<Header>) resp.getAttributes().get(
-                HeaderConstants.ATTRIBUTE_HEADERS);
-        if (headers == null) {
-            headers = new Series<Header>(Header.class);
-            resp.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
-        }
-        headers.add(new Header("X-XRDS-Location", xrdsLocation));
+
+    private static void insert(Document d, Element parent, String node,
+            String text) {
+        Element elem = d.createElement(node);
+        if (text != null)
+            elem.appendChild(d.createTextNode(text));
+        parent.appendChild(elem);
     }
-    
-    public static DomRepresentation returnToXrds(String returnTo) throws Exception{
+
+    public static DomRepresentation returnToXrds(String returnTo)
+            throws Exception {
         DomRepresentation dr = new DomRepresentation(XRDS);
         Element xrd = createRootAndXrd(dr);
         Element service = createService(dr.getDocument(), xrd, 0);
@@ -102,19 +100,9 @@ public class XRDS {
         insert(dr.getDocument(), service, URI, returnTo);
         return dr;
     }
-    
-    public static DomRepresentation serverXrds(String serverURI, boolean ax) throws Exception{
-        DomRepresentation dr = new DomRepresentation(XRDS);
-        Element xrd = createRootAndXrd(dr);
-        Element service = createService(dr.getDocument(), xrd, 0);
-        insert(dr.getDocument(), service, Type, TYPE_SERVER);
-        if(ax)
-            insert(dr.getDocument(), service, Type, "http://openid.net/srv/ax/1.0");
-        insert(dr.getDocument(), service, URI, serverURI);
-        return dr;
-    }
-    
-    public static DomRepresentation serverSignon(String serverURI) throws Exception{
+
+    public static DomRepresentation serverSignon(String serverURI)
+            throws Exception {
         DomRepresentation dr = new DomRepresentation(XRDS);
         Element xrd = createRootAndXrd(dr);
         Element service = createService(dr.getDocument(), xrd, 0);
@@ -122,7 +110,30 @@ public class XRDS {
         insert(dr.getDocument(), service, URI, serverURI);
         return dr;
     }
-    
-    
+
+    public static DomRepresentation serverXrds(String serverURI, boolean ax)
+            throws Exception {
+        DomRepresentation dr = new DomRepresentation(XRDS);
+        Element xrd = createRootAndXrd(dr);
+        Element service = createService(dr.getDocument(), xrd, 0);
+        insert(dr.getDocument(), service, Type, TYPE_SERVER);
+        if (ax)
+            insert(dr.getDocument(), service, Type,
+                    "http://openid.net/srv/ax/1.0");
+        insert(dr.getDocument(), service, URI, serverURI);
+        return dr;
+    }
+
+    public static void setXRDSHeader(Response resp, String xrdsLocation) {
+        @SuppressWarnings("unchecked")
+        Series<Header> headers = (Series<Header>) resp.getAttributes().get(
+                HeaderConstants.ATTRIBUTE_HEADERS);
+        if (headers == null) {
+            headers = new Series<Header>(Header.class);
+            resp.getAttributes()
+                    .put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
+        }
+        headers.add(new Header("X-XRDS-Location", xrdsLocation));
+    }
 
 }

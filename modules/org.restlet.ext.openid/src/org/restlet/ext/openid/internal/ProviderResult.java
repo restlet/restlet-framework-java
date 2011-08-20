@@ -31,17 +31,21 @@
 package org.restlet.ext.openid.internal;
 
 /**
- * @author esvmart
- *
+ * Result returned by a {@link Provider}.
+ * 
+ * @author Martin Svensson
  */
-public class OPReturn {
-    
-    public enum OPR {GET_USER, OK};
-    
+public class ProviderResult {
+
+    public enum OPR {
+        GET_USER, OK
+    };
+
     public OPR ret;
+
     public String text;
-    
-    public OPReturn(OPR ret, String text){
+
+    public ProviderResult(OPR ret, String text) {
         this.ret = ret;
         this.text = text;
     }

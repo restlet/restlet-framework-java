@@ -32,103 +32,95 @@ package org.restlet.ext.openid.internal;
 
 import java.util.Set;
 
-import org.restlet.ext.openid.AX;
+import org.restlet.ext.openid.AttributeExchange;
 import org.restlet.security.User;
 
 /**
- * @author esvmart
- *
+ * Authenticated user with OpenID specific properties.
+ * 
+ * @author Martin Svensson
  */
 public class OpenIdUser extends User {
-    
-    private volatile String claimedId;
+
+    public static void setValueFromAX(AttributeExchange attribute, String value, User u) {
+        if (attribute == AttributeExchange.EMAIL)
+            u.setEmail(value);
+        else if (attribute == AttributeExchange.FIRST_NAME)
+            u.setFirstName(value);
+        else if (attribute == AttributeExchange.LAST_NAME)
+            u.setLastName(value);
+    }
+
     private volatile boolean approved;
-    private volatile Set <AX> attributes;
-    
+
+    private volatile Set<AttributeExchange> attributes;
+
+    private volatile String claimedId;
+
     public OpenIdUser() {
         super();
-        // TODO Auto-generated constructor stub
+    }
+
+    public OpenIdUser(String identifier) {
+        super(identifier);
+    }
+
+    public OpenIdUser(String identifier, char[] secret) {
+        super(identifier, secret);
     }
 
     public OpenIdUser(String identifier, char[] secret, String firstName,
             String lastName, String email) {
         super(identifier, secret, firstName, lastName, email);
-        // TODO Auto-generated constructor stub
     }
 
-    public OpenIdUser(String identifier, char[] secret) {
+    public OpenIdUser(String identifier, String secret) {
         super(identifier, secret);
-        // TODO Auto-generated constructor stub
     }
 
     public OpenIdUser(String identifier, String secret, String firstName,
             String lastName, String email) {
         super(identifier, secret, firstName, lastName, email);
-        // TODO Auto-generated constructor stub
     }
 
-    public OpenIdUser(String identifier, String secret) {
-        super(identifier, secret);
-        // TODO Auto-generated constructor stub
-    }
-
-    public OpenIdUser(String identifier) {
-        super(identifier);
-        // TODO Auto-generated constructor stub
-    }
-    
-    public void setClaimedId(String claimedId){
-        this.claimedId = claimedId;
-    }
-    
-    public String getClaimedId(){
-        return this.claimedId;
-    }
-    
-    public boolean setApproved(boolean approved){
-        return this.approved = approved;
-    }
-    
-    public boolean getApproved(){
-        return this.approved;
-    }
-    
-    public void setAttributes(Set <AX> attributes){
-        this.attributes = attributes;
-    }
-    
-    public Set <AX> attributes(){
+    public Set<AttributeExchange> attributes() {
         return this.attributes;
     }
-    
-    public static void setValueFromAX(AX attribute, String value, User u){
-        if(attribute == AX.EMAIL)
-            u.setEmail(value);
-        else if(attribute == AX.FIRST_NAME)
-            u.setFirstName(value);
-        else if(attribute == AX.LAST_NAME)
-            u.setLastName(value);
+
+    public boolean getApproved() {
+        return this.approved;
     }
-    
-    public void setValueFromAX(AX attribute, String value){
-        setValueFromAX(attribute, value, this);
-    }
-    
-    public String getAXValue(AX attribute){
-        if(attribute == AX.FULL_NAME)
+
+    public String getAXValue(AttributeExchange attribute) {
+        if (attribute == AttributeExchange.FULL_NAME)
             return this.getName();
-        else if(attribute == AX.EMAIL)
+        else if (attribute == AttributeExchange.EMAIL)
             return this.getEmail();
-        else if(attribute == AX.FIRST_NAME)
+        else if (attribute == AttributeExchange.FIRST_NAME)
             return this.getFirstName();
-        else if(attribute == AX.LAST_NAME)
+        else if (attribute == AttributeExchange.LAST_NAME)
             return this.getLastName();
         return null;
     }
-    
 
-    
-    
-    
+    public String getClaimedId() {
+        return this.claimedId;
+    }
+
+    public boolean setApproved(boolean approved) {
+        return this.approved = approved;
+    }
+
+    public void setAttributes(Set<AttributeExchange> attributes) {
+        this.attributes = attributes;
+    }
+
+    public void setClaimedId(String claimedId) {
+        this.claimedId = claimedId;
+    }
+
+    public void setValueFromAX(AttributeExchange attribute, String value) {
+        setValueFromAX(attribute, value, this);
+    }
 
 }

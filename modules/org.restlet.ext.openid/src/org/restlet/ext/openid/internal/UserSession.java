@@ -30,19 +30,19 @@
 
 package org.restlet.ext.openid.internal;
 
-
 import org.openid4java.message.ParameterList;
 
 /**
- * @author esvmart
- *
+ * 
+ * @author Martin Svensson
  */
 public class UserSession {
-    
+
     ParameterList pl;
+
     OpenIdUser user;
-    
-    public UserSession(ParameterList pl){
+
+    public UserSession(ParameterList pl) {
         this.pl = pl;
     }
 

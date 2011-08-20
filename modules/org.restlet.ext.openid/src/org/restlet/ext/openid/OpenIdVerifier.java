@@ -43,7 +43,7 @@ import org.restlet.Response;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.ext.openid.internal.OpenIdUser;
-import org.restlet.ext.openid.internal.RP;
+import org.restlet.ext.openid.internal.RelayingParty;
 import org.restlet.ext.openid.internal.XRDS;
 import org.restlet.representation.Representation;
 import org.restlet.security.User;
@@ -78,26 +78,29 @@ import org.restlet.security.Verifier;
  * </ul>
  * 
  * @author Martin Svensson
- * 
  */
 public class OpenIdVerifier implements Verifier {
 
-    //Known OpenId Providers:
+    // Known OpenId Providers:
     public static final String PROVIDER_FLICKR = "http://flickr.com";
-    public static final String PROVIDER_GOOGLE = "https://www.google.com/accounts/o8/id";
-    public static final String PROVIDER_MYOPENID = "https://www.myopenid.com/";
-    public static final String PROVIDER_MYSPACE = "http://api.myspace.com/openid";
-    public static final String PROVIDER_YAHOO = "http://me.yahoo.com";
 
+    public static final String PROVIDER_GOOGLE = "https://www.google.com/accounts/o8/id";
+
+    public static final String PROVIDER_MYOPENID = "https://www.myopenid.com/";
+
+    public static final String PROVIDER_MYSPACE = "http://api.myspace.com/openid";
+
+    public static final String PROVIDER_YAHOO = "http://me.yahoo.com";
 
     private volatile String defaultProvider;
 
-    private final Set<AX> optionalAttributes;
-    private final Set<AX> requiredAttributes;
+    private final Set<AttributeExchange> optionalAttributes;
+
+    private final Set<AttributeExchange> requiredAttributes;
+
+    private final RelayingParty rp;
 
     private volatile boolean useDefault = false;
-    
-    private final RP rp;
 
     /**
      * Default constructor.
@@ -115,12 +118,13 @@ public class OpenIdVerifier implements Verifier {
     public OpenIdVerifier(String defaultProvider) {
         this(defaultProvider, null);
     }
-    
-    public OpenIdVerifier(String defaultProvider, RP rp){
-        this.rp = (rp != null) ? rp : new RP();
-        optionalAttributes = new HashSet<AX>();
-        requiredAttributes = new HashSet<AX>();
-        if(defaultProvider != null) setDefaultProvider(defaultProvider);
+
+    public OpenIdVerifier(String defaultProvider, RelayingParty rp) {
+        this.rp = (rp != null) ? rp : new RelayingParty();
+        optionalAttributes = new HashSet<AttributeExchange>();
+        requiredAttributes = new HashSet<AttributeExchange>();
+        if (defaultProvider != null)
+            setDefaultProvider(defaultProvider);
     }
 
     /**
@@ -129,7 +133,7 @@ public class OpenIdVerifier implements Verifier {
      * @param attributeName
      *            The name of the attribute. See valid attributes.
      */
-    public void addOptionalAttribute(AX attributeName) {
+    public void addOptionalAttribute(AttributeExchange attributeName) {
         this.optionalAttributes.add(attributeName);
     }
 
@@ -139,7 +143,7 @@ public class OpenIdVerifier implements Verifier {
      * @param attributeName
      *            The name of the attribute. See valid attributes.
      */
-    public void addRequiredAttribute(AX attributeName) {
+    public void addRequiredAttribute(AttributeExchange attributeName) {
         this.requiredAttributes.add(attributeName);
     }
 
@@ -180,7 +184,6 @@ public class OpenIdVerifier implements Verifier {
         return target;
     }
 
-
     /**
      * Sets the default provider. Will also set useDefaultProvider to true.
      */
@@ -212,59 +215,58 @@ public class OpenIdVerifier implements Verifier {
      */
     public int verify(Request request, Response response) {
         Form params = request.getResourceRef().getQueryAsForm();
-        if(rp.hasReturnTo(request)){
+        if (rp.hasReturnTo(request)) {
             Context.getCurrentLogger().info("handling return");
-            Map <AX, String> axResp = new HashMap <AX, String> ();
-            try{
+            Map<AttributeExchange, String> axResp = new HashMap<AttributeExchange, String>();
+            try {
                 Identifier identifier = rp.verify(axResp, request, true);
-                //do some processing
-                if(identifier != null && identifier.getIdentifier() != null){
+                // do some processing
+                if (identifier != null && identifier.getIdentifier() != null) {
                     User u = new User(identifier.getIdentifier());
-                    if(axResp.size() > 0){
-                        for(Map.Entry<AX, String> entry : axResp.entrySet()){
-                            OpenIdUser.setValueFromAX(entry.getKey(), entry.getValue(), u);
+                    if (axResp.size() > 0) {
+                        for (Map.Entry<AttributeExchange, String> entry : axResp.entrySet()) {
+                            OpenIdUser.setValueFromAX(entry.getKey(),
+                                    entry.getValue(), u);
                         }
                     }
                     request.getClientInfo().setUser(u);
                     return RESULT_VALID;
-                }
-                else
+                } else
                     return RESULT_INVALID;
-            }
-            catch(Exception e){ //assume rp discovery
-                Reference ref = new Reference(request.getResourceRef().getHostIdentifier()+
-                        request.getResourceRef().getPath());
+            } catch (Exception e) { // assume rp discovery
+                Reference ref = new Reference(request.getResourceRef()
+                        .getHostIdentifier()
+                        + request.getResourceRef().getPath());
                 Context.getCurrentLogger().info("Generating XRDS Response");
-                if(params.getFirst("sessionId") != null){
-                    ref.addQueryParameter("sessionId", params.getFirstValue("sessionId"));
+                if (params.getFirst("sessionId") != null) {
+                    ref.addQueryParameter("sessionId",
+                            params.getFirstValue("sessionId"));
                     ref.addQueryParameter("return", "true");
                 }
-                try{
-                    Representation rep =  XRDS.returnToXrds(ref.toString());
+                try {
+                    Representation rep = XRDS.returnToXrds(ref.toString());
                     response.setEntity(rep);
                     return RESULT_MISSING;
-                }
-                catch(Exception e1){
-                    //should not happen
+                } catch (Exception e1) {
+                    // should not happen
                     e.printStackTrace();
                     return RESULT_UNKNOWN;
                 }
             }
-            
-        }
-        else{
-            //generate a request
+
+        } else {
+            // generate a request
             String target = this.getTarget(params, request);
-            Reference ref = new Reference(request.getResourceRef().getHostIdentifier()
-            + request.getResourceRef().getPath());
-            Context.getCurrentLogger().info("generating a authentication request");
-            try{
-                rp.authRequest(target, true, true, ref.toString(), 
-                        optionalAttributes, requiredAttributes, 
-                        request, response);
+            Reference ref = new Reference(request.getResourceRef()
+                    .getHostIdentifier() + request.getResourceRef().getPath());
+            Context.getCurrentLogger().info(
+                    "generating a authentication request");
+            try {
+                rp.authRequest(target, true, true, ref.toString(),
+                        optionalAttributes, requiredAttributes, request,
+                        response);
                 return RESULT_MISSING;
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 return RESULT_INVALID;
             }
