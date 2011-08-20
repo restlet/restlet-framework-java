@@ -1,0 +1,28 @@
+<library id="jxta" symbolicName="net.jxta">
+	<name>JXTA Technology</name>
+	<description>JXTA Technology</description>
+	<version>2.5</version>
+	<homeUri>https://jxta.dev.java.net/</homeUri>
+	<downloadUri>http://download.java.net/jxta/</downloadUri>
+	<provider>Sun Microsystems Inc.</provider>
+
+	<package id="jxta" name="net.jxta">
+		<maven>
+			<groupId>net.jxta</groupId>
+			<artifactId>net.jxta</artifactId>
+		</maven>
+	</package>
+	<package id="jxta-configuration" name="net.jxta.ext.configuration">
+		<maven>
+			<groupId>net.jxta</groupId>
+			<artifactId>net.jxta.ext.configuration</artifactId>
+		</maven>
+	</package>
+	<package id="jxta-network" name="net.jxta.ext.network">
+		<maven>
+			<groupId>net.jxta</groupId>
+			<artifactId>net.jxta.ext.network</artifactId>
+		</maven>
+	</package>
+
+</library>

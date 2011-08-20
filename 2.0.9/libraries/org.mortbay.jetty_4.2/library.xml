@@ -1,0 +1,10 @@
+<library id="jetty4" symbolicName="org.mortbay.jetty">
+	<name>Jetty HTTP server 4</name>
+	<description>Jetty HTTP server 4</description>
+	<version>4.2</version>
+	<homeUri>http://jetty.mortbay.org/</homeUri>
+	<downloadUri>http://dist.codehaus.org/jetty/</downloadUri>
+	<provider>Mortbay Consulting</provider>
+	
+	<package name="org.mortbay.jetty" />
+</library>

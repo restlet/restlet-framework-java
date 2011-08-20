@@ -1,0 +1,17 @@
+<library id="json" symbolicName="org.json">
+	<name>JSON framework</name>
+	<description>JSON framework.</description>
+	<version>2.0</version>
+	<homeUri>http://www.json.org/</homeUri>
+	<downloadUri>http://www.json.org/java/index.html</downloadUri>
+	<provider>JSON.org</provider>
+	
+	<package name="org.json" />
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+	<javadocs>
+		<link href="http://www.json.org/javadoc/" />
+	</javadocs>
+</library>

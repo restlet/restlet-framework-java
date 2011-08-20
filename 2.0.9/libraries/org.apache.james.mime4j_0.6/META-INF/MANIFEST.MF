@@ -1,0 +1,44 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Apache James Mime4j
+Bundle-SymbolicName: org.apache.httpmime
+Bundle-Version: 0.6
+Bundle-ClassPath: 
+ org.apache.james.mime4j.jar
+Bundle-Vendor: Apache Software Foundation
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.apache.james.mime4j,
+ org.apache.james.mime4j.codec,
+ org.apache.james.mime4j.descriptor;uses:="org.apache.james.mime4j.field.datetime,org.apache.james.mime4j.parser,org.apache.james.mime4j",
+ org.apache.james.mime4j.field;
+  uses:="org.apache.james.mime4j.field.address.parser,
+   org.apache.james.mime4j.parser,
+   org.apache.james.mime4j.field.address,
+   org.apache.james.mime4j.field.contenttype.parser,
+   org.apache.james.mime4j.field.datetime.parser,
+   org.apache.james.mime4j.util,
+   org.apache.james.mime4j",
+ org.apache.james.mime4j.field.address;uses:="org.apache.james.mime4j.field.address.parser",
+ org.apache.james.mime4j.field.address.parser;uses:="org.apache.james.mime4j.field",
+ org.apache.james.mime4j.field.contentdisposition.parser;uses:="org.apache.james.mime4j.field",
+ org.apache.james.mime4j.field.contenttype.parser;uses:="org.apache.james.mime4j.field",
+ org.apache.james.mime4j.field.datetime,
+ org.apache.james.mime4j.field.datetime.parser;uses:="org.apache.james.mime4j.field.datetime,org.apache.james.mime4j.field",
+ org.apache.james.mime4j.field.language.parser;uses:="org.apache.james.mime4j.field",
+ org.apache.james.mime4j.field.mimeversion.parser;uses:="org.apache.james.mime4j.field",
+ org.apache.james.mime4j.field.structured.parser;uses:="org.apache.james.mime4j.field",
+ org.apache.james.mime4j.io;uses:="org.apache.james.mime4j.util,org.apache.james.mime4j",
+ org.apache.james.mime4j.message;
+  uses:="org.apache.james.mime4j.storage,
+   org.apache.james.mime4j.parser,
+   org.apache.james.mime4j.field.address,
+   org.apache.james.mime4j.util,
+   org.apache.james.mime4j.descriptor",
+ org.apache.james.mime4j.parser;
+  uses:="org.apache.commons.logging,
+   org.apache.james.mime4j.util,
+   org.apache.james.mime4j.io,
+   org.apache.james.mime4j,
+   org.apache.james.mime4j.descriptor",
+ org.apache.james.mime4j.storage,
+ org.apache.james.mime4j.util

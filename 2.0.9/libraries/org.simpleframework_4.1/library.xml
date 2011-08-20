@@ -1,0 +1,21 @@
+<library id="simple" symbolicName="org.simpleframework">
+	<name>Simple framework</name>
+	<description>Simple framework.</description>
+	<version>4.1</version>
+	<release>21</release>
+	<homeUri>http://simpleweb.sourceforge.net/</homeUri>
+	<downloadUri>http://www.simpleframework.org/download/</downloadUri>
+	<provider>Niall Gallagher</provider>
+	
+	<package name="org.simpleframework">
+		<maven>
+			<artifactId>simple</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<javadocs>
+		<link href="http://www.simpleframework.org/doc/javadoc/" />
+	</javadocs>
+</library>

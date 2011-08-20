@@ -1,0 +1,19 @@
+<library id="cglib" symbolicName="net.sf.cglib">
+	<name>cglib library</name>
+	<description>cglib library</description>
+	<version>2.2</version>
+	<homeUri>http://cglib.sourceforge.net/</homeUri>
+	<downloadUri>http://sourceforge.net/project/showfiles.php?group_id=56933</downloadUri>
+	<provider>cglib</provider>
+	
+	<package name="net.sf.cglib">
+		<maven>
+			<groupId>cglib</groupId>
+			<artifactId>cglib-nodep</artifactId>
+			<version>2.2</version>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

@@ -1,0 +1,17 @@
+<library id="jettison" symbolicName="org.codehaus.jettison">
+	<name>JSON StAX Implementation</name>
+	<description>JSON StAX Implementation</description>
+	<version>1.2</version>
+	<homeUri>http://jettison.codehaus.org/</homeUri>
+	<downloadUri>http://jettison.codehaus.org/Download</downloadUri>
+	<provider>Envoi Solutions LLC</provider>
+	
+	<package name="org.codehaus.jettison">
+		<maven>
+			<artifactId>jettison</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

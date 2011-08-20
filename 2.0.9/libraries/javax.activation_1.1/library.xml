@@ -1,0 +1,17 @@
+<library id="activation" symbolicName="javax.activation">
+	<name>JavaBeans Activation Framework API and RI</name>
+	<description>JavaBeans Activation Framework API and RI.</description>
+	<version>1.1</version>
+	<release>1</release>
+	<homeUri>http://www.oracle.com/technetwork/java/javase/tech/index-jsp-138795.html</homeUri>
+	<provider>Sun Microsystems Inc.</provider>
+
+	<package name="javax.activation">
+		<maven>
+			<artifactId>activation</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

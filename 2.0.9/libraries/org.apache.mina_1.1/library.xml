@@ -1,0 +1,22 @@
+<library id="mina" symbolicName="org.apache.mina">
+	<name>MINA network framework</name>
+	<description>MINA network framework</description>
+	<version>1.1</version>
+	<release>7</release>
+	<homeUri>http://mina.apache.org/</homeUri>
+	<downloadUri>http://mina.apache.org/downloads.html</downloadUri>
+	<provider>Apache Software Foundation</provider>
+	
+	<package id="mina" name="org.apache.mina">
+		<maven>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-core</artifactId>
+		</maven>
+	</package>
+	<package id="mina-ssl" name="org.apache.mina.ssl">
+		<maven>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-filter-ssl</artifactId>
+		</maven>
+	</package>
+</library>

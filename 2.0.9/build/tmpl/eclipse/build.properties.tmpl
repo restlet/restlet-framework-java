@@ -1,0 +1,8 @@
+<#list project.libraries?values as library>
+<@pp.nestOutputFile name="${library.rootDirectory}/build.properties">
+bin.includes = META-INF/,\
+<#list library.packages as package>
+               ${package.name}.jar<#if package_has_next>,\</#if>
+</#list>
+</@pp.nestOutputFile>
+</#list>
