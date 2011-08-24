@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.1 Milestone 7 (08/24/2011)
     - Bug fixed
        - Fixed blocking regression in the GWT edition that avoids to 
          compile client proxies. Reported by Joscha Feth.
