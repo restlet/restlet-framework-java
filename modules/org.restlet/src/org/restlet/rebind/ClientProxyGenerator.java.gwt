@@ -430,7 +430,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 indent();
                 println("if(response.isEntityAvailable()){");
                 indent();
-                println("if(MediaType.APPLICATION_JAVA_OBJECT_GWT.equals(response.getEntity().getMediaType())){");
+                println("if (MediaType.APPLICATION_JAVA_OBJECT_GWT.equals(response.getEntity().getMediaType())) {");
                 indent();
                 println("result = new ObjectRepresentation<" + sb.toString()
                         + ">(");
@@ -446,7 +446,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 if (String.class.getName().equals(sb.toString())) {
                     println("result = response.getEntity().getText();");
                 } else {
-                    println("throw new IOException(\"Can't parse the enclosed entity because of its media type; Expected <\" + MediaType.APPLICATION_JAVA_OBJECT_GWT + \"> but was <\" + response.getEntity().getMediaType() + \">\");");
+                    println("throw new IOException(\"Can't parse the enclosed entity because of its media type; Expected <\" + MediaType.APPLICATION_JAVA_OBJECT_GWT + \"> but was <\" + response.getEntity().getMediaType() + \">. Make sure you have added the org.restlet.ext.gwt.jar file to your server.\");");
                 }
                 outdent();
                 println("}");
