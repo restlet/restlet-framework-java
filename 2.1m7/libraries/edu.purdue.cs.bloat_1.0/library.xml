@@ -1,0 +1,14 @@
+<library id="bloat" symbolicName="edu.purdue.cs.bloat">
+	<name>The Bytecode-Level Optimizer and Analysis Tool</name>
+	<description>The Bytecode-Level Optimizer and Analysis Tool.</description>
+	<version>1.0</version>
+	<homeUri>http://www.cs.purdue.edu/homes/hosking/bloat/</homeUri>
+	<downloadUri>http://www.cs.purdue.edu/homes/hosking/bloat/</downloadUri>
+	<provider>Purdue University</provider>
+
+	<package name="edu.purdue.cs.bloat" />
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+</library>

@@ -1,0 +1,19 @@
+<library id="nekohtml" symbolicName="net.sourceforge.nekohtml">
+	<name>NekoHTML parser</name>
+	<description>NekoHTML parser</description>
+	<version>1.9</version>
+	<release>14</release>
+	<homeUri>http://nekohtml.sourceforge.net/</homeUri>
+	<downloadUri>http://sourceforge.net/projects/nekohtml/files/nekohtml/</downloadUri>
+	<provider>Andy Clark, Marc Guillemot</provider>
+	
+	<package name="net.sourceforge.nekohtml">
+		<maven>
+			<groupId>net.sourceforge.nekohtml</groupId>
+			<artifactId>nekohtml</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

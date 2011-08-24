@@ -1,0 +1,40 @@
+<table print-width="100%" width="100%">
+<tbody>
+<tr>
+<th>
+<p>Extensions</p>
+</th>
+<#list editions?keys?sort as eKey>
+<th>
+<p><a href="daisy:${editions[eKey].wikiUri}">${editions[eKey].shortLabel}</a></p>
+</th>
+</#list>
+<th>
+<p>Description</p>
+</th>
+</tr>
+<#list project.modules?keys?sort as mKey>
+	<#if ((project.modules[mKey].type!"") == 'integration') || ((project.modules[mKey].type!"") == 'standard') || ((project.modules[mKey].type!"") == 'connector')>
+<tr>
+<td>
+<p><a href="daisy:${project.modules[mKey].wikiUri!""}">${project.modules[mKey].package}</a></p>
+</td>
+	<#list editions?keys?sort as eKey>
+		<#assign found="nok">
+		<#list editions[eKey].modules as m><#if m.id == mKey><#assign found="ok"></#if></#list>
+		<#if found == 'nok'>
+<td/>
+		<#else>
+<td>
+<p align="center"><img src="daisy:415-restlet"/></p>
+</td>
+		</#if>
+	</#list>
+<td valign="top">
+<p>${project.modules[mKey].description}</p>
+</td>
+</tr>
+	</#if>
+</#list>
+</tbody>
+</table>

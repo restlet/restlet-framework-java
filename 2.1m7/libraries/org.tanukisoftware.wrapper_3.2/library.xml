@@ -1,0 +1,14 @@
+<library id="wrapper" symbolicName="org.tanukisoftware.wrapper">
+	<name>Java Service Wrapper Plug-in</name>
+	<description>Java Service Wrapper Plug-in</description>
+	<version>3.2</version>
+	<release>3</release>
+	<homeUri>http://wrapper.tanukisoftware.org/doc/english/introduction.html</homeUri>
+	<downloadUri>http://wrapper.tanukisoftware.org/doc/english/download.jsp</downloadUri>
+	<provider>Tanuki Software</provider>
+	
+	<package name="org.tanukisoftware.wrapper" />
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

@@ -1,0 +1,25 @@
+<library id="sdc" symbolicName="com.google.sdc">
+	<name>Google SDC - secured data connector</name>
+	<description>Google SDC - secured data connector.</description>
+	<version>1.3</version>
+	<release>rc2</release>
+	<homeUri>http://code.google.com/p/google-secure-data-connector/</homeUri>
+	<provider>Google Inc.</provider>
+
+	<package name="com.google.sdc">
+		<maven>
+			<groupId>com.google.sdc</groupId>
+			<artifactId>sdc</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+	<dependency type="library" id="guice" />
+	<dependency type="library" id="gdata" />
+	<dependency type="library" id="protobuf" />
+	<dependency type="library" id="gcollections" />
+	<dependency type="library" id="log4j" />
+	<dependency type="library" id="xstream" />
+</library>

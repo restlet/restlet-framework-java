@@ -1,0 +1,35 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Eclipse Modeling Framework
+Bundle-SymbolicName: org.eclipse.emf
+Bundle-Version: 2.6
+Bundle-ClassPath: org.eclipse.emf.common.jar,
+ org.eclipse.emf.ecore.jar,
+ org.eclipse.emf.ecore.xmi.jar
+Bundle-Vendor: Eclipse Foundation
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: javax.servlet,
+ javax.servlet.http,
+ javax.servlet.resources
+Export-Package: org.eclipse.emf.common,
+ org.eclipse.emf.common.archive,
+ org.eclipse.emf.common.command,
+ org.eclipse.emf.common.notify,
+ org.eclipse.emf.common.notify.impl,
+ org.eclipse.emf.common.util,
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.ecore.impl,
+ org.eclipse.emf.ecore.plugin,
+ org.eclipse.emf.ecore.resource,
+ org.eclipse.emf.ecore.resource.impl,
+ org.eclipse.emf.ecore.util,
+ org.eclipse.emf.ecore.xmi,
+ org.eclipse.emf.ecore.xmi.impl,
+ org.eclipse.emf.ecore.xmi.util,
+ org.eclipse.emf.ecore.xml.namespace,
+ org.eclipse.emf.ecore.xml.namespace.impl,
+ org.eclipse.emf.ecore.xml.namespace.util,
+ org.eclipse.emf.ecore.xml.type,
+ org.eclipse.emf.ecore.xml.type.impl,
+ org.eclipse.emf.ecore.xml.type.internal,
+ org.eclipse.emf.ecore.xml.type.util

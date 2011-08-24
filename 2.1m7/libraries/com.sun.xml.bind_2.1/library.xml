@@ -1,0 +1,22 @@
+<library id="jaxb-ri" symbolicName="com.sun.xml.bind">
+	<name>Java Architecture for XML Binding</name>
+	<description>Java Architecture for XML Binding.</description>
+	<version>2.1</version>
+	<release>12</release>
+	<homeUri>https://jaxb.dev.java.net/</homeUri>
+	<downloadUri>https://jaxb.dev.java.net/servlets/ProjectDocumentList</downloadUri>
+	<provider>Sun Microsystems Inc.</provider>
+
+	<package name="com.sun.jaxb">
+		<maven>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<javadocs>
+		<link href="http://jaxb.java.net/nonav/${lib-jaxb-ri-version}.${lib-jaxb-ri-release}/docs/api/" />
+	</javadocs>
+</library>

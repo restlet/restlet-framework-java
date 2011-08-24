@@ -1,0 +1,18 @@
+<library id="oauth" symbolicName="net.oauth">
+	<name>OAuth library</name>
+	<description>OAuth library</description>
+	<version>1.0</version>
+	<homeUri>http://oauth.net/</homeUri>
+	<provider>OAuth community</provider>
+	
+	<package name="net.oauth">
+		<maven>
+            <groupId>net.oauth.core</groupId>
+			<artifactId>oauth</artifactId>
+			<version>20090617</version>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

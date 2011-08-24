@@ -1,0 +1,17 @@
+<library id="appengine" symbolicName="com.google.appengine">
+	<name>Google App Engine API</name>
+	<description>Google App Engine API.</description>
+	<version>1.4</version>
+	<release>3</release>
+	<homeUri>http://code.google.com/appengine/</homeUri>
+	<downloadUri>http://code.google.com/appengine/downloads.html#Google_App_Engine_SDK_for_Java</downloadUri>
+	<provider>Google Inc.</provider>
+		
+	<package name="com.google.appengine">
+		<maven>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-api-1.0-sdk</artifactId>
+		</maven>
+	</package>
+
+</library>

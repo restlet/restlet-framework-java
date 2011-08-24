@@ -1,0 +1,17 @@
+<library id="jcip-annotations" symbolicName="net.jcip.annotations">
+	<name>jcip-annotations</name>
+	<description>jcip-annotations</description>
+	<version>1.0</version>
+	<homeUri>http://www.jcip.net</homeUri>
+	<provider>JCIP</provider>
+	
+	<package name="net.jcip.annotations">
+		<maven>
+			<groupId>net.jcip</groupId>
+			<artifactId>jcip-annotations</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

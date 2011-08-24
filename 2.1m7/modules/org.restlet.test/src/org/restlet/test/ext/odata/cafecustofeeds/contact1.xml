@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
+<entry xml:base="http://localhost:8111/Cafe.svc/"
+	xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+	xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+	xmlns:cafe="http://schemas.examples.microsoft.com/dataservices" xmlns="http://www.w3.org/2005/Atom">
+	<id>http://localhost:8111/CafeCustoFeeds.svc/Contacts('1')</id>
+	<title type="text"></title>
+	<updated>2010-02-17T11:49:08Z</updated>
+	<author>
+		<name />
+	</author>
+	<link rel="edit" title="Contact" href="Contacts('1')" />
+	<category term="org.restlet.test.ext.odata.cafeCustoFeeds.contact"
+		scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+	<content type="application/xml">
+		<m:properties>
+			<d:ID>1</d:ID>
+			<d:Name>Agathe Zeblues</d:Name>
+		</m:properties>
+	</content>
+	<cafe:contact title="Chief" />
+</entry>
