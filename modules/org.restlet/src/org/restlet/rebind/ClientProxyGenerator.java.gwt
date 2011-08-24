@@ -441,6 +441,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                         + String.class.getName().equals(sb.toString()) + ")");
                 println(".getObject();");
                 outdent();
+                outdent();
                 println("} else {");
                 indent();
                 if (String.class.getName().equals(sb.toString())) {
