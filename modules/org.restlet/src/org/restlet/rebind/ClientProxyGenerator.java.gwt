@@ -424,6 +424,8 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 StringBuilder sb = new StringBuilder();
                 buildTypeName(callbackType, sb);
                 println(sb.toString() + " result = null;");
+                println("try {");
+                indent();
                 println("if(response.isEntityAvailable()){");
                 indent();
                 println("if(MediaType.APPLICATION_JAVA_OBJECT_GWT.equals(response.getEntity().getMediaType())){");
@@ -450,6 +452,12 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 println("}");
                 outdent();
                 println("callback.onSuccess(result);");
+                outdent();
+                println("} catch (IOException ioe) {");
+                indent();
+                println("callback.onFailure(ioe);");
+                outdent();
+                println("}");
             }
             outdent();
             println("}");
