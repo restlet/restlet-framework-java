@@ -179,7 +179,7 @@ public class ObjectRepresentation<T> extends StringRepresentation {
 
             } catch (Exception e) {
                 this.object = null;
-                e.printStackTrace();
+                throw new RuntimeException("Unable to deserialize the representation into an object", e);
             }
         }
 
