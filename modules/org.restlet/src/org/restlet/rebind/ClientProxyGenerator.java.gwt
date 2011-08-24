@@ -452,6 +452,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 println("}");
                 outdent();
                 println("}");
+                outdent();
                 println("} catch (Exception e) {");
                 indent();
                 println("// Serialization error, considered as a communication error.");
