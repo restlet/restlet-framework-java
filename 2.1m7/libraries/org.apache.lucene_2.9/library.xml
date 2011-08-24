@@ -1,0 +1,21 @@
+<library id="lucene" symbolicName="org.apache.lucene">
+	<name>Apache Lucene</name>
+	<description>Apache Lucene</description>
+	<version>2.9</version>
+	<release>2</release>
+	<homeUri>http://lucene.apache.org/</homeUri>
+	<downloadUri>http://www.apache.org/dyn/closer.cgi/lucene/java/</downloadUri>
+	<provider>Apache Software Foundation</provider>
+
+	<package name="org.apache.lucene">
+		<maven>
+			<artifactId>lucene-core</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<javadocs>
+		<link href="http://lucene.apache.org/java/2_9_2/api/core/" />
+	</javadocs>
+</library>

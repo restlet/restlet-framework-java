@@ -1,0 +1,18 @@
+<library id="protobuf" symbolicName="com.google.protobuf">
+	<name>Google Protobuffer</name>
+	<description>Google Protobuffer.</description>
+	<version>2.2</version>
+	<homeUri>http://code.google.com/p/protobuf/</homeUri>
+	<downloadUri>http://code.google.com/p/protobuf/downloads/list</downloadUri>
+	<provider>Google Inc.</provider>
+
+	<package name="com.google.protobuf">
+		<maven>
+			<artifactId>protobuf-java</artifactId>
+			<version>2.2.0</version>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

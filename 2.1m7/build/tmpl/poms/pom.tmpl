@@ -1,0 +1,66 @@
+<#list project.modules?values as module>
+<@pp.nestOutputFile name="${module.package}/pom.xml">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.restlet.dev</groupId>
+		<artifactId>org.restlet.parent</artifactId>
+		<version>${ant["version-maven"]}</version>
+	</parent>
+
+	<artifactId>${module.package}</artifactId>
+	<#if module.name??><name>${module.name}</name></#if>
+	<#if module.description??><description>${module.description}</description></#if>
+	<#if module.mavenMisc??>
+	${module.mavenMisc}
+	</#if>
+
+	<dependencies>
+	<#if module.neededLibraries??>
+		<#list module.neededLibraries as dependency>
+			<#list dependency.library.packages as package>
+		<dependency>
+				<#if dependency.library.distributions?contains("maven")>
+			<groupId>org.restlet.jse</groupId>
+				<#else>
+					<#if package.mavenGroupId??>
+			<groupId>${package.mavenGroupId}</groupId>
+					<#else>
+			<groupId>${package.name}</groupId>
+					</#if>
+				</#if>
+			<artifactId><#if dependency.library.distributions?contains("maven")>org.restlet.lib.</#if><#if package.mavenArtifactId??>${package.mavenArtifactId}<#else>${package.name}</#if></artifactId>
+				<#if dependency.library.distributions?contains("maven")>
+			<version><#noparse>${lib-</#noparse>${dependency.library.id}-version}</version>
+				<#else>
+					<#if package.mavenVersion??>
+			<version>${package.mavenVersion}</version>
+					<#else>
+			<version>${dependency.library.minorVersion}<#if dependency.library.versionSuffix??>.${dependency.library.versionSuffix}</#if></version>
+      	          </#if>
+				</#if>
+				<#if dependency.mavenScope??>
+			<scope>${dependency.mavenScope}</scope>
+				</#if>
+		</dependency>
+			</#list>
+		</#list>
+	</#if>
+	
+	<#if module.neededModules??>
+		<#list module.neededModules as dependency>
+		<dependency>
+			<groupId>org.restlet.dev</groupId>
+			<artifactId>${dependency.module.package}</artifactId>
+<!--			<version>${ant["version-maven"]}</version> -->
+			<version><#noparse>${version}</#noparse></version>
+			<#if dependency.mavenScope??><scope>${dependency.mavenScope}</scope></#if>
+		</dependency>
+		</#list>
+	</#if>
+	</dependencies>
+</project>
+</@pp.nestOutputFile>
+</#list>

@@ -1,0 +1,19 @@
+<library id="logging" symbolicName="org.apache.commons.logging">
+	<name>Apache Commons Logging</name>
+	<description>Apache Commons Logging</description>
+	<version>1.1</version>
+    <release>1</release>
+	<homeUri>http://commons.apache.org/logging/</homeUri>
+	<downloadUri>http://commons.apache.org/downloads/download_logging.cgi</downloadUri>
+	<provider>Apache Software Foundation</provider>
+
+	<package name="org.apache.commons.logging">
+		<maven>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

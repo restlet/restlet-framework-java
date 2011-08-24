@@ -1,0 +1,19 @@
+<library id="openid4java" symbolicName="org.openid4java">
+	<name>Openid for Java</name>
+	<description>Openid for Java</description>
+	<version>0.9</version>
+	<release>6</release>
+	<homeUri>http://code.google.com/p/openid4java/</homeUri>
+	<downloadUri>http://code.google.com/p/openid4java/downloads/list</downloadUri>
+	<provider>openid4java</provider>
+	
+	<package id="openid4java" name="org.openid4java">
+		<maven>
+			<artifactId>openid4java-nodeps</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<dependency type="library" id="httpclient" />
+</library>

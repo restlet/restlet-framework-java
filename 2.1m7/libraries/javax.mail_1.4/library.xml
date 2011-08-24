@@ -1,0 +1,21 @@
+<library id="javamail" symbolicName="javax.mail">
+	<name>JavaMail API and RI</name>
+	<description>JavaMail API and RI</description>
+	<version>1.4</version>
+	<release>2</release>
+	<homeUri>http://www.oracle.com/technetwork/java/index-jsp-139225.html</homeUri>
+	<downloadUri>http://www.oracle.com/technetwork/java/index-138643.html</downloadUri>
+	<provider>Sun Microsystems Inc.</provider>
+	
+	<package id="javamail" name="javax.mail">
+		<maven>
+			<artifactId>mail</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<javadocs>
+		<link href="http://java.sun.com/products/javamail/javadocs/" />
+	</javadocs>
+</library>
