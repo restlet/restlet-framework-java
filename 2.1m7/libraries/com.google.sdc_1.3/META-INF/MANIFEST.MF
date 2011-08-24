@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Google Secure Data Connector
+Bundle-SymbolicName: com.google.sdc
+Bundle-Version: 1.0
+Bundle-ClassPath: com.google.sdc.jar
+Bundle-Vendor: Google Inc.
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: com.google.dataconnector.protocol,
+ com.google.dataconnector.protocol.proto,
+ com.google.dataconnector.util
+Import-Package: com.google.common.base,
+ com.google.common.collect,
+ com.google.gdata.util.common.base,
+ com.google.inject,
+ org.apache.log4j

@@ -1,0 +1,66 @@
+<library id="spring" symbolicName="org.springframework">
+	<name>Spring Framework</name>
+	<description>Spring Framework</description>
+	<version>3.0</version>
+	<release>1</release>
+	<homeUri>http://www.springframework.org/</homeUri>
+	<downloadUri>http://www.springframework.org/download</downloadUri>
+	<provider>SpringSource community</provider>
+	
+   <package id="spring-asm" name="org.springframework.asm">
+      <maven>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-asm</artifactId>
+         <version>3.0.1.RELEASE</version>
+      </maven>
+   </package>
+	<package id="spring-beans" name="org.springframework.beans">
+		<maven>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>3.0.1.RELEASE</version>
+		</maven>
+	</package>
+	<package id="spring-context" name="org.springframework.context">
+		<maven>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>3.0.1.RELEASE</version>
+		</maven>
+	</package>
+	<package id="spring-core" name="org.springframework.core">
+		<maven>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>3.0.1.RELEASE</version>
+		</maven>
+	</package>
+   <package id="spring-expression" name="org.springframework.expression">
+      <maven>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-expression</artifactId>
+         <version>3.0.1.RELEASE</version>
+      </maven>
+   </package>
+	<package id="spring-web" name="org.springframework.web">
+		<maven>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>3.0.1.RELEASE</version>
+		</maven>
+	</package>
+	<package id="spring-webmvc" name="org.springframework.webmvc">
+		<maven>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>3.0.1.RELEASE</version>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<javadocs>
+		<link
+			href="http://static.springframework.org/spring/docs/${lib-spring-core-version}.x/javadoc-api/" />
+	</javadocs>
+</library>

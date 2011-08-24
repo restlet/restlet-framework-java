@@ -1,0 +1,38 @@
+<module id="json" type="standard" package="org.restlet.ext.json">
+	<name>Restlet Extension - JSON</name>
+	<description>
+		Support for JSON representations.
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="library" id="gwt" includes="gwt" primary="true" />
+		<dependency type="library" id="json" excludes="gwt"
+			primary="true" />
+		<dependency type="module" id="core" />
+	</dependencies>
+	<source edition="gwt">
+		<files-mappers>
+<![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".java.gwt" to=".java" />
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".MF.gwt" to=".MF" />
+]]>
+		</files-mappers>
+		<files-sets>
+<![CDATA[
+         <exclude name="META-INF/MANIFEST.MF" />
+         <custom classname="selector.EditionFileSelector" classpathref="forge-path">
+            <param name="edition" value="gwt"/>
+         </custom>
+         <exclude name="src/org/restlet/ext/json/JsonRepresentation.java" />
+         <exclude name="src/org/restlet/ext/json/JsonConverter.java" />
+         <exclude name="src/META-INF/**" />
+]]>
+		</files-sets>
+	</source>
+	<stage edition="gwt" includesource="true" />
+	<wikiUri>69-restlet</wikiUri>
+</module>

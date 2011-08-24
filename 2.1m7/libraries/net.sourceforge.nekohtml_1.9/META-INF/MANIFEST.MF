@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NekoHTML parser
+Bundle-SymbolicName: net.sourceforge.nekohtml
+Bundle-Version: 1.9.14
+Bundle-ClassPath: net.sourceforge.nekohtml.jar
+Bundle-Vendor: Andy Clark, Marc Guillemot
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.cyberneko.html,
+ org.cyberneko.html.filters,
+ org.cyberneko.html.parsers,
+ org.cyberneko.html.xercesbridge

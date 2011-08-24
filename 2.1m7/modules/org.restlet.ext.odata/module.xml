@@ -1,0 +1,46 @@
+<module id="odata" excludes="gwt" type="standard" package="org.restlet.ext.odata">
+	<name>Restlet Extension - OData service</name>
+	<description>
+		Integration with OData services.
+   </description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+	<dependencies>
+		<dependency type="module" id="core" />
+		<dependency type="module" id="atom" />
+		<dependency type="module" id="freemarker" excludes="android" />
+		<dependency type="module" id="xml" />
+		<dependency type="library" id="freemarker" excludes="android" />
+	</dependencies>
+	<source edition="android">
+		<files-mappers>
+<![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".MF.android" to=".MF" />
+]]>
+		</files-mappers>
+		<files-sets>
+<![CDATA[
+         <exclude name="META-INF/MANIFEST.MF" />
+         <exclude name="src/org/restlet/ext/odata/Generator.java" />
+         <exclude name="src/org/restlet/ext/odata/internal/templates/**" />
+]]>
+		</files-sets>
+	</source>
+	<source edition="gae">
+		<files-mappers>
+<![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".MF.android" to=".MF" />
+]]>
+		</files-mappers>
+		<files-sets>
+<![CDATA[
+         <exclude name="META-INF/MANIFEST.MF" />
+         <exclude name="src/org/restlet/ext/odata/Generator.java" />
+         <exclude name="src/org/restlet/ext/odata/internal/templates/**" />
+]]>
+		</files-sets>
+	</source>
+	<wikiUri>287-restlet</wikiUri>
+</module>
