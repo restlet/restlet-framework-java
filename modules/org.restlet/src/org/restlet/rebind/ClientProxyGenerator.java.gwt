@@ -462,6 +462,7 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 outdent();
                 println("}");
                 outdent();
+                println();
                 println("if (!serializationError) {;");
                 indent();
                 println("callback.onSuccess(result);");
