@@ -424,6 +424,8 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 StringBuilder sb = new StringBuilder();
                 buildTypeName(callbackType, sb);
                 println(sb.toString() + " result = null;");
+                println("boolean serializationError = false;");
+                println();
                 println("try {");
                 indent();
                 println("if(response.isEntityAvailable()){");
@@ -444,18 +446,23 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
                 if (String.class.getName().equals(sb.toString())) {
                     println("result = response.getEntity().getText();");
                 } else {
-                    println("throw new IOException(\"Can't parse the enclosed entity\");");
+                    println("throw new IOException(\"Can't parse the enclosed entity because of its media type; Expected <\" + MediaType.APPLICATION_JAVA_OBJECT_GWT + \"> but was <\" + response.getEntity().getMediaType() + \">\");");
                 }
                 outdent();
                 println("}");
                 outdent();
                 println("}");
-                outdent();
-                println("callback.onSuccess(result);");
-                outdent();
-                println("} catch (IOException ioe) {");
+                println("} catch (Exception e) {");
                 indent();
-                println("callback.onFailure(ioe);");
+                println("// Serialization error, considered as a communication error.");
+                println("serializationError = true;");
+                println("callback.onFailure(new ResourceException(e));");
+                outdent();
+                println("}");
+                outdent();
+                println("if (!serializationError) {;");
+                indent();
+                println("callback.onSuccess(result);");
                 outdent();
                 println("}");
             }

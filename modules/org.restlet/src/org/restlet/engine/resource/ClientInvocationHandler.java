@@ -156,12 +156,25 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                                                         response.getStatus()));
                                     } else {
                                         if (actualType != null) {
-                                            rCallback
-                                                    .onSuccess(getClientResource()
-                                                            .toObject(
-                                                                    response.getEntity(),
-                                                                    actualType
-                                                                            .getClass()));
+                                            Object result = null;
+                                            boolean serializationError = false;
+                                            
+                                            try {
+                                                result = getClientResource()
+                                                        .toObject(
+                                                                response.getEntity(),
+                                                                actualType
+                                                                        .getClass());
+                                            } catch (Exception e) {
+                                                serializationError = true;
+                                                rCallback
+                                                        .onFailure(new ResourceException(
+                                                                e));
+                                            }
+                                            
+                                            if (!serializationError) {
+                                                rCallback.onSuccess(result);
+                                            }
                                         } else {
                                             rCallback.onSuccess(null);
                                         }
