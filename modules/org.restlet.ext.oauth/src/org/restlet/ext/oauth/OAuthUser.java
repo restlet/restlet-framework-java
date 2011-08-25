@@ -83,7 +83,8 @@ public class OAuthUser extends User {
             }
 
             // Store away the user
-            return new OAuthUser(null, accessToken, refreshToken, expiresIn);
+            return new OAuthUser((String) null, accessToken, refreshToken,
+                    expiresIn);
 
         } catch (JSONException e) {
             log.log(Level.WARNING, "Error parsing JSON", e);
@@ -138,12 +139,46 @@ public class OAuthUser extends User {
     }
 
     /**
+     * Constructor used for unlimited tokens.
+     * 
+     * @param user
+     *            The User object, all fields will be copied (email, lastName,
+     *            firstName, identifier).
+     * @param accessToken
+     *            The access token.
+     */
+    public OAuthUser(User user, String accessToken) {
+        this(user, accessToken, null, 0);
+    }
+
+    /**
+     * Constructor used for tokens with a expiration time.
+     * 
+     * @param user
+     *            The User object, all fields will be copied (email, lastName,
+     *            firstName, identifier).
+     * @param accessToken
+     *            The access token.
+     * @param refreshToken
+     *            The refresh token.
+     * @param expiresIn
+     *            The expiration time.
+     */
+    public OAuthUser(User user, String accessToken, String refreshToken,
+            long expiresIn) {
+        this(user.getIdentifier(), accessToken, refreshToken, expiresIn);
+        setEmail(user.getEmail());
+        setFirstName(user.getFirstName());
+        setLastName(user.getLastName());
+    }
+
+    /**
      * Returns the access token.
      * 
      * @return The access token.
      */
     public String getAccessToken() {
-        return accessToken;
+        return this.accessToken;
     }
 
     /**
@@ -152,7 +187,7 @@ public class OAuthUser extends User {
      * @return The expiration delay.
      */
     public long getExpiresIn() {
-        return expiresIn;
+        return this.expiresIn;
     }
 
     /**
@@ -161,7 +196,7 @@ public class OAuthUser extends User {
      * @return The refresh token.
      */
     public String getRefreshToken() {
-        return refreshToken;
+        return this.refreshToken;
     }
 
     /**
@@ -170,7 +205,7 @@ public class OAuthUser extends User {
      * @return The current state.
      */
     public String getState() {
-        return state;
+        return this.state;
     }
 
     /**
@@ -179,7 +214,7 @@ public class OAuthUser extends User {
      * @return True if there is a refresh token.
      */
     public boolean isExpireToken() {
-        return refreshToken != null;
+        return this.refreshToken != null;
     }
 
     /**
