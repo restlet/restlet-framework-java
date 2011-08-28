@@ -154,7 +154,7 @@ public class OauthProxyV2 extends Filter {
                         .fine("AccessToken in changed OldOauthProxy = "
                                 + accessToken);
                 request.getClientInfo().setUser(
-                        new OAuthUser((String)null, accessToken));
+                        new OAuthUser(request.getClientInfo().getUser(), accessToken));
                 request.getClientInfo().setAuthenticated(true);
                 auth = true;
             }

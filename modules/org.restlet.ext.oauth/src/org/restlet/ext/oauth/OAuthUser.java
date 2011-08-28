@@ -46,6 +46,7 @@ import org.restlet.security.User;
  * @author Kristoffer Gronowski
  */
 public class OAuthUser extends User {
+    
     /**
      * Converts successful JSON token body responses to OAuthUser.
      * 
@@ -54,7 +55,21 @@ public class OAuthUser extends User {
      * @return OAuthUser object containing accessToken, refreshToken and
      *         expiration time.
      */
-    public static OAuthUser createJson(Representation body) {
+    public static OAuthUser createJson(Representation body){
+        return createJson(null, body);
+    }
+    
+    /**
+     * Converts successful JSON token body responses to OAuthUser.
+     * 
+     * @param toCopy
+     *          Copy user data from. Can be null
+     * @param body
+     *            Representation containing a successful JSON body element.
+     * @return OAuthUser object containing accessToken, refreshToken and
+     *         expiration time.
+     */
+    public static OAuthUser createJson(User toCopy, Representation body) {
         Logger log = Context.getCurrentLogger();
         try {
             // Debug test for tracing back error
@@ -83,9 +98,9 @@ public class OAuthUser extends User {
             }
 
             // Store away the user
-            return new OAuthUser((String) null, accessToken, refreshToken,
-                    expiresIn);
-
+            return new OAuthUser(toCopy, accessToken, refreshToken,
+                        expiresIn);
+            
         } catch (JSONException e) {
             log.log(Level.WARNING, "Error parsing JSON", e);
         } catch (IOException e) {
@@ -166,10 +181,12 @@ public class OAuthUser extends User {
      */
     public OAuthUser(User user, String accessToken, String refreshToken,
             long expiresIn) {
-        this(user.getIdentifier(), accessToken, refreshToken, expiresIn);
-        setEmail(user.getEmail());
-        setFirstName(user.getFirstName());
-        setLastName(user.getLastName());
+        this(user != null ? user.getIdentifier() : null, accessToken, refreshToken, expiresIn);
+        if(user != null){
+            setEmail(user.getEmail());
+            setFirstName(user.getFirstName());
+            setLastName(user.getLastName());
+        }
     }
 
     /**

@@ -317,7 +317,7 @@ public class OAuthProxy extends Filter {
 
                 if (tokenResource.getStatus().isSuccess()) {
                     // Store away the user
-                    OAuthUser authUser = OAuthUser.createJson(body);
+                    OAuthUser authUser = OAuthUser.createJson(request.getClientInfo().getUser(), body);
 
                     if (authUser != null) {
                         request.getClientInfo().setUser(authUser);
