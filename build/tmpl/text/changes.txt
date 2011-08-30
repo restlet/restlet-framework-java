@@ -7,6 +7,8 @@ Changes log
     - Bug fixed
        - Potential NPE in ServerServlet#init(Application).
          Reported by Bryan Hunt.
+       - The Application(Context) constructor now behaves like the
+         setContext(Context) method. Reported by Bryan Hunt.
 
 - 2.1 Milestone 7 (08/24/2011)
     - Bug fixed

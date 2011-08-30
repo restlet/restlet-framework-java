@@ -150,6 +150,7 @@ public class Application extends Restlet {
 
         if (Engine.getInstance() != null) {
             this.helper = new ApplicationHelper(this);
+            this.helper.setContext(context);
         }
 
         this.outboundRoot = null;
