@@ -949,29 +949,31 @@ public class ServerServlet extends HttpServlet {
         if (application != null) {
             Context applicationContext = application.getContext();
 
-            // Copies the ServletContext into an attribute
-            applicationContext.getAttributes().put(
-                    "org.restlet.ext.servlet.ServletContext",
-                    getServletContext());
+            if (applicationContext != null) {
+                // Copies the ServletContext into an attribute
+                applicationContext.getAttributes().put(
+                        "org.restlet.ext.servlet.ServletContext",
+                        getServletContext());
 
-            // Copy all the servlet parameters into the context
-            String initParam;
+                // Copy all the servlet parameters into the context
+                String initParam;
 
-            // Copy all the Servlet component initialization parameters
-            javax.servlet.ServletConfig servletConfig = getServletConfig();
-            for (Enumeration<String> enum1 = servletConfig
-                    .getInitParameterNames(); enum1.hasMoreElements();) {
-                initParam = enum1.nextElement();
-                applicationContext.getParameters().add(initParam,
-                        servletConfig.getInitParameter(initParam));
-            }
+                // Copy all the Servlet component initialization parameters
+                javax.servlet.ServletConfig servletConfig = getServletConfig();
+                for (Enumeration<String> enum1 = servletConfig
+                        .getInitParameterNames(); enum1.hasMoreElements();) {
+                    initParam = enum1.nextElement();
+                    applicationContext.getParameters().add(initParam,
+                            servletConfig.getInitParameter(initParam));
+                }
 
-            // Copy all the Servlet application initialization parameters
-            for (Enumeration<String> enum1 = getServletContext()
-                    .getInitParameterNames(); enum1.hasMoreElements();) {
-                initParam = enum1.nextElement();
-                applicationContext.getParameters().add(initParam,
-                        getServletContext().getInitParameter(initParam));
+                // Copy all the Servlet application initialization parameters
+                for (Enumeration<String> enum1 = getServletContext()
+                        .getInitParameterNames(); enum1.hasMoreElements();) {
+                    initParam = enum1.nextElement();
+                    applicationContext.getParameters().add(initParam,
+                            getServletContext().getInitParameter(initParam));
+                }
             }
         }
     }
