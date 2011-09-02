@@ -35,8 +35,8 @@ import java.io.IOException;
 import org.restlet.data.Reference;
 
 /**
- * Handler for the content of a Graph. List of callbacks used when parsing or
- * writing a representation of a RDF graph.
+ * Handler for the content of a {@link Graph}. List of callbacks used when
+ * parsing or writing a representation of a RDF graph.
  */
 public abstract class GraphHandler {
 
