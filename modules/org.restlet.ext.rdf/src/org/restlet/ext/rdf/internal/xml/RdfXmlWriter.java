@@ -59,6 +59,9 @@ public class RdfXmlWriter extends GraphHandler {
     /** XML writer. */
     private XmlWriter writer;
 
+    /** The last source reference written, to try to factor statements. */
+    private Reference lastSource;
+
     /**
      * Constructor.
      * 
@@ -69,11 +72,17 @@ public class RdfXmlWriter extends GraphHandler {
     public RdfXmlWriter(Writer writer) throws UnsupportedEncodingException {
         super();
         this.writer = new XmlWriter(writer);
+        this.lastSource = null;
     }
 
     @Override
     public void endGraph() throws IOException {
         try {
+            if (this.lastSource != null) {
+                // We need to end the previous source
+                this.writer.endElement(RDF_SYNTAX, "Description");
+            }
+
             this.writer.endElement(RDF_SYNTAX, "RDF");
             this.writer.endDocument();
         } catch (SAXException e) {
@@ -122,16 +131,14 @@ public class RdfXmlWriter extends GraphHandler {
 
     @Override
     public void link(Graph source, Reference typeRef, Literal target) {
-        Context
-                .getCurrentLogger()
+        Context.getCurrentLogger()
                 .warning(
                         "Cannot write the representation of a statement due to the fact that the subject is not a Reference.");
     }
 
     @Override
     public void link(Graph source, Reference typeRef, Reference target) {
-        Context
-                .getCurrentLogger()
+        Context.getCurrentLogger()
                 .warning(
                         "Cannot write the representation of a statement due to the fact that the subject is not a Reference.");
     }
@@ -139,28 +146,39 @@ public class RdfXmlWriter extends GraphHandler {
     @Override
     public void link(Reference source, Reference typeRef, Literal target) {
         try {
-            writeNode(source, true);
+            if (this.lastSource == null) {
+                writeNode(source, true);
+            } else if (!source.equals(this.lastSource)) {
+                // We need to first end the previous source
+                this.writer.endElement(RDF_SYNTAX, "Description");
+                writeNode(source, true);
+            }
 
+            this.lastSource = source;
             String typeRefNs = getNamespace(typeRef.getTargetRef());
             String typeRefPrefix = getPrefix(typeRef.getTargetRef());
+
             if (target.getLanguage() != null || target.getDatatypeRef() != null) {
                 AttributesImpl attr = new AttributesImpl();
+
                 if (target.getLanguage() != null) {
                     attr.addAttribute(null, "lang", "xml:lang", "text", target
                             .getLanguage().getName());
                 }
+
                 if (target.getDatatypeRef() != null) {
                     attr.addAttribute(RDF_SYNTAX, "datatype", "rdf:datatype",
                             "text", target.getDatatypeRef()
                                     .toString(true, true));
                 }
+
                 this.writer.startElement(typeRefNs, typeRefPrefix, null, attr);
             } else {
                 this.writer.startElement(typeRefNs, typeRefPrefix);
             }
+
             this.writer.characters(target.getValue());
             this.writer.endElement(typeRefNs, typeRefPrefix);
-            this.writer.endElement(RDF_SYNTAX, "Description");
         } catch (SAXException e) {
             org.restlet.Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to: "
@@ -171,13 +189,20 @@ public class RdfXmlWriter extends GraphHandler {
     @Override
     public void link(Reference source, Reference typeRef, Reference target) {
         try {
-            writeNode(source, true);
+            if (this.lastSource == null) {
+                writeNode(source, true);
+            } else if (!source.equals(this.lastSource)) {
+                // We need to first end the previous source
+                this.writer.endElement(RDF_SYNTAX, "Description");
+                writeNode(source, true);
+            }
+
+            this.lastSource = source;
             String typeRefNs = getNamespace(typeRef.getTargetRef());
             String typeRefPrefix = getPrefix(typeRef.getTargetRef());
             this.writer.startElement(typeRefNs, typeRefPrefix);
             writeNode(target, false);
             this.writer.endElement(typeRefNs, typeRefPrefix);
-            this.writer.endElement(RDF_SYNTAX, "Description");
         } catch (SAXException e) {
             Context.getCurrentLogger().warning(
                     "Cannot write the representation of a statement due to: "
@@ -217,9 +242,12 @@ public class RdfXmlWriter extends GraphHandler {
      *            The reference of the subject or object node.
      * @param subject
      *            True if the node is the subject of a predicate
+     * @throws SAXException
      */
-    private void writeNode(Reference reference, boolean subject) {
+    private void writeNode(Reference reference, boolean subject)
+            throws SAXException {
         AttributesImpl atts = new AttributesImpl();
+
         if (Link.isBlankRef(reference)) {
             atts.addAttribute(RDF_SYNTAX, "NodeId", "rdf:NodeId", "text",
                     reference.getTargetRef().toString(true, true));
