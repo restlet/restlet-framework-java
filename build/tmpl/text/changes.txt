@@ -9,6 +9,10 @@ Changes log
          Reported by Bryan Hunt.
        - The Application(Context) constructor now behaves like the
          setContext(Context) method. Reported by Bryan Hunt.
+    - API changes
+       - Added Authenticator#multiAuthenticating to better control
+         optional authenticators and ensure we don't attempt 
+         several authentications if not necessary.
 
 - 2.1 Milestone 7 (08/24/2011)
     - Bug fixed

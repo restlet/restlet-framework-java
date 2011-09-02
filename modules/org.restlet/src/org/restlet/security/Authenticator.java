@@ -55,8 +55,17 @@ public abstract class Authenticator extends Filter {
     private volatile Enroler enroler;
 
     /**
+     * Indicates if the authenticator should attempt to authenticate an already
+     * authenticated client. By default, it is set to true.
+     */
+    private volatile boolean multiAuthenticating;
+
+    /**
      * Indicates if the authenticator is not required to succeed. In those
-     * cases, the attached Restlet is invoked.
+     * cases, the attached Restlet is invoked. Note that authentication will be
+     * attempted independently of this property unless the client is already
+     * authenticated and the {@link #isMultiAuthenticating()} prevents multiple
+     * authentications.
      */
     private volatile boolean optional;
 
@@ -77,7 +86,7 @@ public abstract class Authenticator extends Filter {
      * @param context
      *            The context.
      * @param optional
-     *            The authentication mode.
+     *            Indicates if the authenticator is not required to succeed.
      * @see #Authenticator(Context, boolean, Enroler)
      */
     public Authenticator(Context context, boolean optional) {
@@ -90,15 +99,34 @@ public abstract class Authenticator extends Filter {
      * 
      * @param context
      *            The context.
+     * @param multiAuthenticating
+     *            Indicates if the authenticator should attempt to authenticate
+     *            an already authenticated client.
      * @param optional
-     *            The authentication mode.
+     *            Indicates if the authenticator is not required to succeed.
+     * @param enroler
+     *            The enroler to invoke upon successful authentication.
+     */
+    public Authenticator(Context context, boolean multiAuthenticating,
+            boolean optional, Enroler enroler) {
+        super(context);
+        this.multiAuthenticating = multiAuthenticating;
+        this.optional = optional;
+        this.enroler = enroler;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context.
+     * @param optional
+     *            Indicates if the authenticator is not required to succeed.
      * @param enroler
      *            The enroler to invoke upon successful authentication.
      */
     public Authenticator(Context context, boolean optional, Enroler enroler) {
-        super(context);
-        this.optional = optional;
-        this.enroler = enroler;
+        this(context, true, optional, enroler);
     }
 
     /**
@@ -156,20 +184,28 @@ public abstract class Authenticator extends Filter {
 
     /**
      * Handles the authentication by first invoking the
-     * {@link #authenticate(Request, Response)} method. Then, depending on the
-     * result and the mode set, it invokes the
-     * {@link #authenticated(Request, Response)} or the
+     * {@link #authenticate(Request, Response)} method, only if
+     * {@link #isMultiAuthenticating()} returns true and if
+     * {@link ClientInfo#isAuthenticated()} returns false. If the method is
+     * invoked and returns true, the {@link #authenticated(Request, Response)}
+     * is called. Otherwise, if {@link #isOptional()} returns true it continues
+     * to the next Restlet or if it returns false it calls the
      * {@link #unauthenticated(Request, Response)} method.
      */
     @Override
     protected int beforeHandle(Request request, Response response) {
-        if (authenticate(request, response)) {
-            return authenticated(request, response);
-        } else if (isOptional()) {
-            response.setStatus(Status.SUCCESS_OK);
-            return CONTINUE;
+        if (isMultiAuthenticating()
+                || !request.getClientInfo().isAuthenticated()) {
+            if (authenticate(request, response)) {
+                return authenticated(request, response);
+            } else if (isOptional()) {
+                response.setStatus(Status.SUCCESS_OK);
+                return CONTINUE;
+            } else {
+                return unauthenticated(request, response);
+            }
         } else {
-            return unauthenticated(request, response);
+            return CONTINUE;
         }
     }
 
@@ -185,8 +221,24 @@ public abstract class Authenticator extends Filter {
     }
 
     /**
+     * Indicates if the authenticator should attempt to authenticate an already
+     * authenticated client. The client is considered authenticated if
+     * {@link ClientInfo#isAuthenticated()} returns true. By default, it is set
+     * to true.
+     * 
+     * @return True if the authenticator should attempt to authenticate an
+     *         already authenticated client.
+     */
+    public boolean isMultiAuthenticating() {
+        return multiAuthenticating;
+    }
+
+    /**
      * Indicates if the authenticator is not required to succeed. In those
-     * cases, the attached Restlet is invoked.
+     * cases, the attached Restlet is invoked. Note that authentication will be
+     * attempted independently of this property unless the client is already
+     * authenticated and the {@link #isMultiAuthenticating()} prevents multiple
+     * authentications.
      * 
      * @return True if the authentication success is optional.
      */
@@ -205,8 +257,25 @@ public abstract class Authenticator extends Filter {
     }
 
     /**
+     * Indicates if the authenticator should attempt to authenticate an already
+     * authenticated client. The client is considered authenticated if
+     * {@link ClientInfo#isAuthenticated()} returns true. By default, it is set
+     * to true.
+     * 
+     * @param multiAuthenticating
+     *            True if the authenticator should attempt to authenticate an
+     *            already authenticated client.
+     */
+    public void setMultiAuthenticating(boolean multiAuthenticating) {
+        this.multiAuthenticating = multiAuthenticating;
+    }
+
+    /**
      * Indicates if the authenticator is not required to succeed. In those
-     * cases, the attached Restlet is invoked.
+     * cases, the attached Restlet is invoked. Note that authentication will be
+     * attempted independently of this property unless the client is already
+     * authenticated and the {@link #isMultiAuthenticating()} prevents multiple
+     * authentications.
      * 
      * @param optional
      *            True if the authentication success is optional.
