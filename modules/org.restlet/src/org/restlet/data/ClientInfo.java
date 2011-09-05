@@ -575,6 +575,7 @@ public final class ClientInfo {
      * certificates.
      * 
      * @return The client certificates.
+     * @see javax.net.ssl.SSLSession#getPeerCertificates()
      */
     public List<java.security.cert.Certificate> getCertificates() {
         // Lazy initialization with double-check.
@@ -594,6 +595,7 @@ public final class ClientInfo {
      * Returns the SSL Cipher Suite, if available and accessible.
      * 
      * @return The SSL Cipher Suite, if available and accessible.
+     * @see javax.net.ssl.SSLSession#getCipherSuite()
      */
     public String getCipherSuite() {
         return this.cipherSuite;
