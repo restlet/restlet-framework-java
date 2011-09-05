@@ -13,6 +13,8 @@ Changes log
        - Added Authenticator#multiAuthenticating to better control
          optional authenticators and ensure we don't attempt 
          several authentications if not necessary.
+       - Added ClientInfo#certificates and cipherSuite properties
+         and deprecated related attributes.
 
 - 2.1 Milestone 7 (08/24/2011)
     - Bug fixed

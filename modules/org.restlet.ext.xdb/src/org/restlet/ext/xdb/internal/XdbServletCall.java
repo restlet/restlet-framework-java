@@ -59,20 +59,20 @@ import org.restlet.util.Series;
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
 public class XdbServletCall extends ServerCall {
+    /** The HTTP Servlet request to wrap. */
+    private volatile HttpServletRequest request;
+
     /** The request entity stream */
     private volatile InputStream requestEntityStream;
 
-    /** The HTTP Servlet request to wrap. */
-    private volatile HttpServletRequest request;
+    /** The request headers. */
+    private volatile Series<Header> requestHeaders;
 
     /** The HTTP Servlet response to wrap. */
     private volatile HttpServletResponse response;
 
     /** The response entity output stream. */
     private volatile OutputStream responseEntityStream;
-
-    /** The request headers. */
-    private volatile Series<Header> requestHeaders;
 
     /**
      * Constructor.
@@ -116,6 +116,24 @@ public class XdbServletCall extends ServerCall {
     @Override
     public boolean abort() {
         return false;
+    }
+
+    @Override
+    public List<Certificate> getCertificates() {
+        Certificate[] certificateArray = (Certificate[]) getRequest()
+                .getAttribute("javax.servlet.request.X509Certificate");
+
+        if (certificateArray != null) {
+            return Arrays.asList(certificateArray);
+        }
+
+        return Arrays.asList(new Certificate[0]);
+    }
+
+    @Override
+    public String getCipherSuite() {
+        return (String) getRequest().getAttribute(
+                "javax.servlet.request.cipher_suite");
     }
 
     @Override
@@ -227,23 +245,6 @@ public class XdbServletCall extends ServerCall {
             }
         }
         return this.responseEntityStream;
-    }
-
-    @Override
-    public String getSslCipherSuite() {
-        return (String) getRequest().getAttribute(
-                "javax.servlet.request.cipher_suite");
-    }
-
-    @Override
-    public List<Certificate> getSslClientCertificates() {
-        final Certificate[] certificateArray = (Certificate[]) getRequest()
-                .getAttribute("javax.servlet.request.X509Certificate");
-        if (certificateArray != null) {
-            return Arrays.asList(certificateArray);
-        }
-
-        return Arrays.asList(new Certificate[0]);
     }
 
     @Override

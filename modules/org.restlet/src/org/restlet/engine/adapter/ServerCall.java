@@ -110,6 +110,26 @@ public abstract class ServerCall extends Call {
     }
 
     /**
+     * Returns the chain of client SSL certificates, if available and
+     * accessible.
+     * 
+     * @return The chain of client SSL certificates, if available and
+     *         accessible.
+     */
+    public List<Certificate> getCertificates() {
+        return null;
+    }
+
+    /**
+     * Returns the SSL Cipher Suite, if available and accessible.
+     * 
+     * @return The SSL Cipher Suite, if available and accessible.
+     */
+    public String getCipherSuite() {
+        return null;
+    }
+
+    /**
      * Returns the content length of the request entity if know,
      * {@link Representation#UNKNOWN_SIZE} otherwise.
      * 
@@ -258,24 +278,6 @@ public abstract class ServerCall extends Call {
      * @return The response entity stream if it exists.
      */
     public abstract OutputStream getResponseEntityStream();
-
-    /**
-     * Returns the SSL Cipher Suite, if available and accessible.
-     * 
-     * @return The SSL Cipher Suite, if available and accessible.
-     */
-    public String getSslCipherSuite() {
-        return null;
-    }
-
-    /**
-     * Returns the chain of client certificates, if available and accessible.
-     * 
-     * @return The chain of client certificates, if available and accessible.
-     */
-    public List<Certificate> getSslClientCertificates() {
-        return null;
-    }
 
     /**
      * Returns the SSL key size, if available and accessible.

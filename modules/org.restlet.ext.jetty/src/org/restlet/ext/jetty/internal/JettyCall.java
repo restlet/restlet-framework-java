@@ -106,6 +106,25 @@ public class JettyCall extends ServerCall {
     }
 
     @Override
+    public List<Certificate> getCertificates() {
+        Certificate[] certificateArray = (Certificate[]) getConnection()
+                .getRequest().getAttribute(
+                        "javax.servlet.request.X509Certificate");
+
+        if (certificateArray != null) {
+            return Arrays.asList(certificateArray);
+        }
+
+        return null;
+    }
+
+    @Override
+    public String getCipherSuite() {
+        return (String) getConnection().getRequest().getAttribute(
+                "javax.servlet.request.cipher_suite");
+    }
+
+    @Override
     public String getClientAddress() {
         return getConnection().getRequest().getRemoteAddr();
     }
@@ -219,24 +238,6 @@ public class JettyCall extends ServerCall {
     @Override
     public String getServerAddress() {
         return getConnection().getRequest().getLocalAddr();
-    }
-
-    @Override
-    public String getSslCipherSuite() {
-        return (String) getConnection().getRequest().getAttribute(
-                "javax.servlet.request.cipher_suite");
-    }
-
-    @Override
-    public List<Certificate> getSslClientCertificates() {
-        final Certificate[] certificateArray = (Certificate[]) getConnection()
-                .getRequest().getAttribute(
-                        "javax.servlet.request.X509Certificate");
-        if (certificateArray != null) {
-            return Arrays.asList(certificateArray);
-        }
-
-        return null;
     }
 
     @Override

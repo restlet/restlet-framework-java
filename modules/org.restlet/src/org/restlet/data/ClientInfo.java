@@ -267,6 +267,14 @@ public final class ClientInfo {
     private volatile boolean authenticated;
 
     // [ifndef gwt] member
+    /** List of client certificates. */
+    private volatile List<java.security.cert.Certificate> certificates;
+
+    // [ifndef gwt] member
+    /** The SSL Cipher Suite, if available and accessible. */
+    private volatile String cipherSuite;
+
+    // [ifndef gwt] member
     /** List of expectations. */
     private volatile List<org.restlet.data.Expectation> expectations;
 
@@ -558,6 +566,37 @@ public final class ClientInfo {
         }
         return null;
 
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns the client certificates. Those certificates are available when a
+     * request is received via an HTTPS connection, corresponding to the SSL/TLS
+     * certificates.
+     * 
+     * @return The client certificates.
+     */
+    public List<java.security.cert.Certificate> getCertificates() {
+        // Lazy initialization with double-check.
+        List<java.security.cert.Certificate> a = this.certificates;
+        if (a == null) {
+            synchronized (this) {
+                a = this.certificates;
+                if (a == null) {
+                    this.certificates = a = new CopyOnWriteArrayList<java.security.cert.Certificate>();
+                }
+            }
+        }
+        return a;
+    }
+
+    /**
+     * Returns the SSL Cipher Suite, if available and accessible.
+     * 
+     * @return The SSL Cipher Suite, if available and accessible.
+     */
+    public String getCipherSuite() {
+        return this.cipherSuite;
     }
 
     // [ifndef gwt] method
@@ -1005,6 +1044,33 @@ public final class ClientInfo {
      */
     public void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Sets the new client certificates.
+     * 
+     * @param certificates
+     *            The client certificates.
+     * @see #getCertificates()
+     */
+    public void setCertificates(
+            List<java.security.cert.Certificate> certificates) {
+        synchronized (this) {
+            List<java.security.cert.Certificate> fa = getCertificates();
+            fa.clear();
+            fa.addAll(certificates);
+        }
+    }
+
+    /**
+     * Sets the SSL Cipher Suite, if available and accessible.
+     * 
+     * @param cipherSuite
+     *            The SSL Cipher Suite, if available and accessible.
+     */
+    public void setCipherSuite(String cipherSuite) {
+        this.cipherSuite = cipherSuite;
     }
 
     // [ifndef gwt] method

@@ -65,13 +65,13 @@ public class SimpleCall extends ServerCall {
      */
     private final Request request;
 
+    /** Indicates if the request headers were parsed and added. */
+    private volatile boolean requestHeadersAdded;
+
     /**
      * Simple Response.
      */
     private final Response response;
-
-    /** Indicates if the request headers were parsed and added. */
-    private volatile boolean requestHeadersAdded;
 
     /**
      * The version of the request;
@@ -122,6 +122,39 @@ public class SimpleCall extends ServerCall {
         } catch (Exception ex) {
             getLogger().log(Level.WARNING, "Unable to commit the response", ex);
         }
+    }
+
+    @Override
+    public List<Certificate> getCertificates() {
+        SSLEngine sslEngine = getSslEngine();
+
+        if (sslEngine != null) {
+             SSLSession sslSession = sslEngine.getSession();
+
+            if (sslSession != null) {
+                try {
+                    return Arrays.asList(sslSession.getPeerCertificates());
+                } catch (SSLPeerUnverifiedException e) {
+                    getLogger().log(Level.FINE,
+                            "Can't get the client certificates.", e);
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String getCipherSuite() {
+        SSLEngine sslEngine = getSslEngine();
+
+        if (sslEngine != null) {
+            SSLSession sslSession = sslEngine.getSession();
+
+            if (sslSession != null) {
+                return sslSession.getCipherSuite();
+            }
+        }
+        return null;
     }
 
     @Override
@@ -231,48 +264,26 @@ public class SimpleCall extends ServerCall {
                 .getAttribute(SimpleServer.PROPERTY_SOCKET);
     }
 
-    @Override
-    public String getSslCipherSuite() {
-        final SSLEngine sslEngine = getSslEngine();
-        if (sslEngine != null) {
-            final SSLSession sslSession = sslEngine.getSession();
-            if (sslSession != null) {
-                return sslSession.getCipherSuite();
-            }
-        }
-        return null;
+    /**
+     * Returns the SSL engine.
+     * 
+     * @return the SSL engine
+     */
+    private SSLEngine getSslEngine() {
+        return (SSLEngine) this.request
+                .getAttribute(SimpleServer.PROPERTY_ENGINE);
     }
 
     @Override
     public Integer getSslKeySize() {
         Integer keySize = null;
-        String sslCipherSuite = getSslCipherSuite();
+        String sslCipherSuite = getCipherSuite();
 
         if (sslCipherSuite != null) {
             keySize = SslUtils.extractKeySize(sslCipherSuite);
         }
 
         return keySize;
-    }
-
-    @Override
-    public List<Certificate> getSslClientCertificates() {
-        final SSLEngine sslEngine = getSslEngine();
-        if (sslEngine != null) {
-            final SSLSession sslSession = sslEngine.getSession();
-            if (sslSession != null) {
-                try {
-                    final List<Certificate> clientCertificates = Arrays
-                            .asList(sslSession.getPeerCertificates());
-
-                    return clientCertificates;
-                } catch (SSLPeerUnverifiedException e) {
-                    getLogger().log(Level.FINE,
-                            "Can't get the client certificates.", e);
-                }
-            }
-        }
-        return null;
     }
 
     @Override
@@ -288,16 +299,6 @@ public class SimpleCall extends ServerCall {
         }
 
         return null;
-    }
-
-    /**
-     * Returns the SSL engine.
-     * 
-     * @return the SSL engine
-     */
-    private SSLEngine getSslEngine() {
-        return (SSLEngine) this.request
-                .getAttribute(SimpleServer.PROPERTY_ENGINE);
     }
 
     @Override

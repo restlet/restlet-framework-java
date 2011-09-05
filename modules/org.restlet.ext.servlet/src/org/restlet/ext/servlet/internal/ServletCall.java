@@ -116,6 +116,24 @@ public class ServletCall extends ServerCall {
     }
 
     @Override
+    public List<Certificate> getCertificates() {
+        Certificate[] certificateArray = (Certificate[]) getRequest()
+                .getAttribute("javax.servlet.request.X509Certificate");
+
+        if (certificateArray != null) {
+            return Arrays.asList(certificateArray);
+        }
+
+        return null;
+    }
+
+    @Override
+    public String getCipherSuite() {
+        return (String) getRequest().getAttribute(
+                "javax.servlet.request.cipher_suite");
+    }
+
+    @Override
     public String getClientAddress() {
         return getRequest().getRemoteAddr();
     }
@@ -267,23 +285,6 @@ public class ServletCall extends ServerCall {
     @Override
     public int getServerPort() {
         return getRequest().getServerPort();
-    }
-
-    @Override
-    public String getSslCipherSuite() {
-        return (String) getRequest().getAttribute(
-                "javax.servlet.request.cipher_suite");
-    }
-
-    @Override
-    public List<Certificate> getSslClientCertificates() {
-        final Certificate[] certificateArray = (Certificate[]) getRequest()
-                .getAttribute("javax.servlet.request.X509Certificate");
-        if (certificateArray != null) {
-            return Arrays.asList(certificateArray);
-        }
-
-        return null;
     }
 
     @Override

@@ -232,6 +232,7 @@ public class ServerAdapter extends Adapter {
      *            The low-level HTTP call.
      * @return A new high-level uniform request.
      */
+    @SuppressWarnings("deprecation")
     public HttpRequest toRequest(ServerCall httpCall) {
         HttpRequest result = new HttpRequest(getContext(), httpCall);
         result.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
@@ -243,28 +244,33 @@ public class ServerAdapter extends Adapter {
         }
 
         if (httpCall.isConfidential()) {
-            final List<Certificate> clientCertificates = httpCall
-                    .getSslClientCertificates();
+            List<Certificate> clientCertificates = httpCall.getCertificates();
+
             if (clientCertificates != null) {
                 result.getAttributes().put(
                         HeaderConstants.ATTRIBUTE_HTTPS_CLIENT_CERTIFICATES,
                         clientCertificates);
+                result.getClientInfo().setCertificates(clientCertificates);
             }
 
-            final String cipherSuite = httpCall.getSslCipherSuite();
+            String cipherSuite = httpCall.getCipherSuite();
+
             if (cipherSuite != null) {
                 result.getAttributes().put(
                         HeaderConstants.ATTRIBUTE_HTTPS_CIPHER_SUITE,
                         cipherSuite);
+                result.getClientInfo().setCipherSuite(cipherSuite);
             }
 
-            final Integer keySize = httpCall.getSslKeySize();
+            Integer keySize = httpCall.getSslKeySize();
+
             if (keySize != null) {
                 result.getAttributes().put(
                         HeaderConstants.ATTRIBUTE_HTTPS_KEY_SIZE, keySize);
             }
 
-            final String sslSessionId = httpCall.getSslSessionId();
+            String sslSessionId = httpCall.getSslSessionId();
+
             if (sslSessionId != null) {
                 result.getAttributes().put(
                         HeaderConstants.ATTRIBUTE_HTTPS_SSL_SESSION_ID,

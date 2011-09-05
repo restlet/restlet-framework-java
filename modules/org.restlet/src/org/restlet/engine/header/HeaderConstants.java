@@ -30,6 +30,8 @@
 
 package org.restlet.engine.header;
 
+import org.restlet.data.ClientInfo;
+
 /**
  * Constants related to the HTTP protocol.
  * 
@@ -193,8 +195,16 @@ public final class HeaderConstants {
 
     public static final String ATTRIBUTE_VERSION = "org.restlet.http.version";
 
+    /**
+     * @deprecated Use {@link ClientInfo#getCertificates()} instead.
+     */
+    @Deprecated
     public static final String ATTRIBUTE_HTTPS_CLIENT_CERTIFICATES = "org.restlet.https.clientCertificates";
 
+    /**
+     * @deprecated Use {@link ClientInfo#getCipherSuite()} instead.
+     */
+    @Deprecated
     public static final String ATTRIBUTE_HTTPS_CIPHER_SUITE = "org.restlet.https.cipherSuite";
 
     public static final String ATTRIBUTE_HTTPS_KEY_SIZE = "org.restlet.https.keySize";
