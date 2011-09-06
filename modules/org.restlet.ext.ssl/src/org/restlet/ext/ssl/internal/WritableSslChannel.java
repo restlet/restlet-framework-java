@@ -114,6 +114,11 @@ public class WritableSslChannel extends WritableBufferedChannel implements
     }
 
     @Override
+    public void postProcess(int drained) throws IOException {
+        getConnection().handleSslResult();
+    }
+
+    @Override
     public int write(ByteBuffer sourceBuffer) throws IOException {
         return super.write(sourceBuffer);
     }
