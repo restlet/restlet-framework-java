@@ -9,6 +9,9 @@ Changes log
          Reported by Bryan Hunt.
        - The Application(Context) constructor now behaves like the
          setContext(Context) method. Reported by Bryan Hunt.
+       - Fixed internal HTTPS server which wasn't creating an HTTPS
+         request with all SSL related properties. 
+         Reported by Henry Story.
     - API changes
        - Added Authenticator#multiAuthenticating to better control
          optional authenticators and ensure we don't attempt 

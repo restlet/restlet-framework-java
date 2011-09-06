@@ -37,6 +37,7 @@ import java.nio.channels.SocketChannel;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 
+import org.restlet.Request;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.connector.Connection;
@@ -44,6 +45,7 @@ import org.restlet.engine.connector.ConnectionController;
 import org.restlet.engine.connector.HttpServerHelper;
 import org.restlet.engine.connector.InboundWay;
 import org.restlet.engine.connector.OutboundWay;
+import org.restlet.ext.ssl.internal.HttpsInboundRequest;
 import org.restlet.ext.ssl.internal.HttpsServerInboundWay;
 import org.restlet.ext.ssl.internal.HttpsServerOutboundWay;
 import org.restlet.ext.ssl.internal.SslConnection;
@@ -116,6 +118,13 @@ public class HttpsServerHelper extends HttpServerHelper {
     public OutboundWay createOutboundWay(Connection<Server> connection,
             int bufferSize) {
         return new HttpsServerOutboundWay(connection, bufferSize);
+    }
+
+    @Override
+    protected Request createRequest(Connection<Server> connection,
+            String methodName, String resourceUri, String protocol) {
+        return new HttpsInboundRequest(getContext(), connection, methodName,
+                resourceUri, protocol);
     }
 
     /**
