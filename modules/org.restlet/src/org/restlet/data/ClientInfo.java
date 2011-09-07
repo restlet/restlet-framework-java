@@ -591,6 +591,7 @@ public final class ClientInfo {
         return a;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns the SSL Cipher Suite, if available and accessible.
      * 
@@ -1065,6 +1066,7 @@ public final class ClientInfo {
         }
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the SSL Cipher Suite, if available and accessible.
      * 
