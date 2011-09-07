@@ -530,7 +530,7 @@
 		<attribute name="name" />
 		<sequential>
 			<copy todir="${dist-p2}/plugins" overwrite="true">
-				<fileset dir="${temp-base}/p2/${lib-@{name}-id}"/>
+				<fileset dir="${temp-base}/p2/${lib-@{name}-root}"/>
 				<mapper type="glob" from="*.jar" to="*_${eclipse-version-full}.jar"/>
 			</copy>
 		</sequential>

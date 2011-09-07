@@ -7,7 +7,7 @@
 	<downloadUri>http://sourceforge.net/project/showfiles.php?group_id=69358</downloadUri>
 	<provider>Dennis M. Sosnoski</provider>
 	
-	<package name="org.jibx">
+	<package name="org.jibx.runtime">
 		<maven>
 			<artifactId>jibx-run</artifactId>
 		</maven>

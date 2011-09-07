@@ -7,7 +7,7 @@
 	<downloadUri>http://code.google.com/webtoolkit/download.html</downloadUri>
 	<provider>Google Inc.</provider>
 
-	<package name="com.google.gwt">
+	<package name="com.google.gwt.server">
 		<maven>
 			<artifactId>gwt-servlet</artifactId>
 		</maven>

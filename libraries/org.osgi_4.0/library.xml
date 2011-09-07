@@ -7,7 +7,7 @@
 	<downloadUri>http://felix.apache.org/site/downloads.cgi</downloadUri>
 	<provider>OSGi Alliance</provider>
 
-	<package name="org.osgi">
+	<package name="org.osgi.core">
 		<maven>
 			<artifactId>org.osgi.core</artifactId>
 		</maven>
