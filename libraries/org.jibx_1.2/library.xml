@@ -9,6 +9,7 @@
 	
 	<package name="org.jibx.runtime">
 		<maven>
+			<groupId>org.jibx</groupId>
 			<artifactId>jibx-run</artifactId>
 		</maven>
 	</package>

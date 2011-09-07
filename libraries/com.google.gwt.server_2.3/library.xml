@@ -9,6 +9,7 @@
 
 	<package name="com.google.gwt.server">
 		<maven>
+			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-servlet</artifactId>
 		</maven>
 	</package>

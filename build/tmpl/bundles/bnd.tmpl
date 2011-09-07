@@ -4,11 +4,12 @@
 -nouses: true
 -noextraheaders: true
 -debug: true
+Export-Package: * 
+Import-Package: *;resolution:=optional
 Bundle-Name: ${package.name}
 Bundle-SymbolicName: ${package.name}
 Bundle-Version: ${ant["eclipse-version-full"]}
 Created-By: Restlet forge
-Bundle-ClassPath: <#list library.packages as p>${p.name}.jar<#if p_has_next>,</#if></#list>
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
     </@pp.nestOutputFile>
   </#list>  

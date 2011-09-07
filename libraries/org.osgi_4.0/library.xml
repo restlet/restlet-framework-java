@@ -9,6 +9,7 @@
 
 	<package name="org.osgi.core">
 		<maven>
+			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
 		</maven>
 	</package>

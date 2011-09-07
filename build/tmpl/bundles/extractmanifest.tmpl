@@ -11,14 +11,6 @@
 <#list project.libraries?values as library>
   <#list library.packages as package>
 		<bndwrap jars="${ant["libs"]}/${library.rootDirectory}/${package.name}.jar" output="${library.rootDirectory}/${package.name}.jar" definitions="../definitions/libs" />
-
-<!--
-		<unzip src="./${library.rootDirectory}.bar" dest="${library.rootDirectory}">
-			<patternset>
-				<include name="META-INF/"/>
-			</patternset>
-		</unzip>
--->
 	</#list>
 </#list>
 	</target>
