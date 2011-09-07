@@ -247,9 +247,9 @@
 		<delete file="${temp}/p2/classpath.tmpl" />
 		<delete file="${temp}/p2/project.tmpl" />
 		<delete file="${temp}/p2/build.properties.tmpl" />
-		<copy file="${tmpl}/manifests/bndbis.bnd" todir="${temp}/definitions/libs" />
+		<copy file="${tmpl}/bundles/bndbis.bnd" todir="${temp}/definitions/libs" />
 		<!-- Generate bnd definition files -->
-		<fmpp sourceroot="${tmpl}/manifests" outputroot="${temp}/definitions/libs" dataroot="${basedir}" expert="true">
+		<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/libs" dataroot="${basedir}" expert="true">
 			<data expandproperties="true">
 				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 				project: get(values, "project")
@@ -259,7 +259,7 @@
 		</fmpp>
 		<delete file="${temp}/definitions/libs/bnd.tmpl" />
 		<!-- Generate ant manifest generation script -->
-		<fmpp sourcefile="${tmpl}/manifests/extractmanifest.tmpl" outputfile="${temp}/p2/extractmanifest.xml" dataroot="${basedir}" expert="true">
+		<fmpp sourcefile="${tmpl}/bundles/extractmanifest.tmpl" outputfile="${temp}/p2/extractmanifest.xml" dataroot="${basedir}" expert="true">
 			<data expandproperties="true">
 				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 				project: get(values, "project")
