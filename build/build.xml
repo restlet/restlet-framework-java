@@ -16,6 +16,10 @@
 	<property file="build.properties" />
 
 	<!-- General properties -->
+
+	<!-- Increment the build number -->
+	<buildnumber />
+
 	<!-- Current year -->
 	<tstamp>
 		<format property="current-year" pattern="yyyy" />
@@ -24,6 +28,10 @@
 	<!-- Maven time stamp -->
 	<tstamp>
 		<format property="maven-snapshot-timestamp" pattern="yyyyMMdd.HHmmss" />
+	</tstamp>
+	
+	<tstamp>
+		<format property="build.date" pattern="yyyyMMdd-HHmm" />
 	</tstamp>
 
 	<!-- Location properties -->
@@ -35,6 +43,8 @@
 	<property name="parent-maven-groupId" value="org.restlet" />
 	<property name="parent-maven-artifactId" value="org.restlet.parent" />
 	<property name="parent-maven-version" value="${version-maven}" />
+	<property name="eclipse-version-suffix" value="v${build.date}" />
+	<property name="eclipse-version-full" value="${version-manifest}${eclipse-version-suffix}" />
 
 	<!-- Set the property that will enable the generation of eclipse project -->
 	<condition property="do-eclipsegeneration">
@@ -83,7 +93,7 @@
 		</classpath>
 	</taskdef>
 
-	<!-- BND (FreeMarker-based text file PreProcessor) -->
+	<!-- BND (handling of OSGI bundles) -->
 	<taskdef resource="aQute/bnd/ant/taskdef.properties" classpathref="bnd-path" />
 
 	<!-- = = = = = = = = = = = = = = = = =
@@ -176,9 +186,24 @@
     			</data>
 			</fmpp>
 			<delete file="${temp}/@{edition}/build.tmpl" />
-			<!-- Post-process the build file since ant and freemarker shares the same syntax. -->
+			<!-- Post-process the build file since ant and freemarker share the same syntax. -->
 			<replace file="${temp}/@{edition}/build.xml" token="*DOLLAR*" value="$" />
 
+			<!-- Generate the P2 feature files. -->
+			<echo message="Generate the P2 feature files" />
+			<fmpp sourceroot="${tmpl}/eclipse" outputroot="${temp}/@{edition}/p2" dataroot="${basedir}">
+				<data expandproperties="true">
+					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+					project: get(values, "project")
+					editions: get(values, "editions")
+					editionKey: @{edition}
+    				edition: get(editions, @{edition})
+					currentYear: ${current-year}
+					ant: antProperties()
+    			</data>
+				<include name="feature.tmpl" />
+			</fmpp>
+					
 			<copy file="build.properties" todir="${temp}/@{edition}" overwrite="true" />
 			<copy file="custom.properties" todir="${temp}/@{edition}" overwrite="true" failonerror="false" />
 			<ant antfile="build.xml" target="generate-sources" dir="${temp}/@{edition}/" inheritall="false" />
@@ -195,20 +220,21 @@
 		<sequential>
 			<for param="task" delimiter=" " list="@{target}">
 				<sequential>
-					<ant antfile="build.xml" target="@{task}" dir="${temp}/@{edition}/" inheritall="false" />
+					<ant antfile="build.xml" target="@{task}" dir="${temp}/@{edition}/" inheritall="false">
+						<property name="build.number" value="${build.number}" />
+						<property name="eclipse-version-full" value="${eclipse-version-full}" />
+					</ant>
 				</sequential>
 			</for>
 		</sequential>
 	</macrodef>
 
+	<!-- = = = = = = = = = = = = = = = = =
+          Definition of targets          
+         = = = = = = = = = = = = = = = = = -->
 	<target name="generate-libraries-manifests" description="Generates the manifest.mf files for the unique source code">
-		<!-- Copy all library content into the destination folder -->
-		<delete dir="${temp}/libraries" />
-		<copy todir="${temp}/libraries">
-			<fileset dir="${libs}" includes="**/*.jar" />
-		</copy>
 		<!-- Generate eclipse .classpath, .project, .properties files -->
-		<fmpp sourceroot="${tmpl}/eclipse" outputroot="${temp}/libraries" dataroot="${basedir}" expert="true">
+		<fmpp sourceroot="${tmpl}/eclipse" outputroot="${temp}/p2" dataroot="${basedir}" expert="true">
 			<data expandproperties="true">
 				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 				project: get(values, "project")
@@ -218,9 +244,9 @@
 			<include name="project.tmpl" />
 			<include name="build.properties.tmpl" />
 		</fmpp>
-		<delete file="${temp}/libraries/classpath.tmpl" />
-		<delete file="${temp}/libraries/project.tmpl" />
-		<delete file="${temp}/libraries/build.properties.tmpl" />
+		<delete file="${temp}/p2/classpath.tmpl" />
+		<delete file="${temp}/p2/project.tmpl" />
+		<delete file="${temp}/p2/build.properties.tmpl" />
 		<copy file="${tmpl}/manifests/bndbis.bnd" todir="${temp}/definitions/libs" />
 		<!-- Generate bnd definition files -->
 		<fmpp sourceroot="${tmpl}/manifests" outputroot="${temp}/definitions/libs" dataroot="${basedir}" expert="true">
@@ -233,16 +259,15 @@
 		</fmpp>
 		<delete file="${temp}/definitions/libs/bnd.tmpl" />
 		<!-- Generate ant manifest generation script -->
-		<fmpp sourcefile="${tmpl}/manifests/extractmanifest.tmpl" outputfile="${temp}/libraries/extractmanifest.xml" dataroot="${basedir}" expert="true">
+		<fmpp sourcefile="${tmpl}/manifests/extractmanifest.tmpl" outputfile="${temp}/p2/extractmanifest.xml" dataroot="${basedir}" expert="true">
 			<data expandproperties="true">
 				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 				project: get(values, "project")
 				ant: antProperties()
 			</data>
 		</fmpp>
-
-		<ant antfile="${temp}/libraries/extractmanifest.xml" dir="${temp}/libraries" inheritAll="true" />
-		<delete file="${temp}/libraries/extractmanifest.tmpl" />
+		<ant antfile="${temp}/p2/extractmanifest.xml" dir="${temp}/p2" inheritAll="true" />
+		<delete file="${temp}/p2/extractmanifest.tmpl" />
 	</target>
 
 	<target name="generate-modules-manifests" description="Generates the manifest.mf files for the unique source code">

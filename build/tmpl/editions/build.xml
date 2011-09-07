@@ -45,7 +45,7 @@
 	<property name="libs" location="../../../libraries" />
 	<property name="mods" location="../../../modules" />
 	<property name="temp" location="${basedir}/temp" />
-	<property name="temp-base" location="../temp" />
+	<property name="temp-base" location="../../temp" />
 	<property name="dist-base" location="dist" />
 	<property name="final-dist-base" location="../../dist" />
 	<property name="images" location="../../images" />
@@ -56,6 +56,7 @@
 	<property name="dist-classic" location="${dist-base}/classic/${dist-path}" />
 	<property name="dist-eclipse" location="${dist-base}/eclipse/${dist-path}" />
 	<property name="dist-maven2" location="${dist-base}/maven2/${dist-path}" />
+	<property name="dist-p2" location="${dist-base}/p2/${dist-path}" />
 	<property name="classes" location="${temp}/classes" />
 	<property name="docs" location="${temp}/docs" />
 	<property name="docs-api" location="${docs}/api" />
@@ -67,6 +68,7 @@
 	<property name="final-dist-classic" location="${final-dist-base}/classic/${final-dist-path}/${edition}" />
 	<property name="final-dist-eclipse" location="${final-dist-base}/eclipse/${final-dist-path}/${edition}" />
 	<property name="final-dist-maven2" location="${final-dist-base}/maven2/${final-dist-path}" />
+	<property name="final-dist-p2" location="${final-dist-base}/p2/${final-dist-path}" />
 
 	<!-- Boot classpath propertiesLoad system specific paths -->
 	<pathconvert property="defaultbootclasspath">
@@ -176,6 +178,11 @@
 	<!-- Set the property that will enable the package target -->
 	<condition property="do-package">
 		<istrue value="${package}" />
+	</condition>
+
+	<!-- Set the property that will enable the stage-p2 target -->
+	<condition property="do-p2">
+		<istrue value="${p2}" />
 	</condition>
 
 	<!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
@@ -354,7 +361,17 @@
 			<mkdir dir="${temp}/jar/META-INF" />
 			<delete failonerror="false" file="${temp}/jar/META-INF/MANIFEST.MF" />
 			<copy failonerror="false" file="${mod}/${mod-@{name}-id}/META-INF/MANIFEST.MF" tofile="${temp}/jar/META-INF/MANIFEST.MF" />
+			<dirset id="mod-@{name}-exported-packages" dir="${classes}/${mod-@{name}-id}">
+				<include name="org/restlet/**" />
+				<exclude name="**/internal/**" />
+			</dirset>
+			<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
+				<map from="${classes}/${mod-@{name}-id}/" to='' />
+			</pathconvert>
 			<manifest file="${temp}/jar/META-INF/MANIFEST.MF" mode="update">
+				<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
+				<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}-${edition}" />
+				<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
 				<section name="${mod-@{name}-id}">
 					<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
 					<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
@@ -496,6 +513,26 @@
 			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-sources.jar" algorithm="SHA" fileext=".sha1" />
 			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" algorithm="MD5" fileext=".md5" />
 			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" algorithm="SHA" fileext=".sha1" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="p22Module">
+		<attribute name="name" />
+		<sequential>
+			<copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${dist-p2}/plugins/${mod-@{name}-id}-${edition}_${eclipse-version-full}.jar" />
+			<copy file="p2/feature.@{name}.xml" tofile="${dist-p2}/features/feature.xml" />
+			<zip destfile="${dist-p2}/features/${mod-@{name}-id}-${edition}_${eclipse-version-full}.jar" basedir="${dist-p2}/features" includes="feature.xml" update="false" />
+			<delete file="${dist-p2}/features/feature.xml" />
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="p22Library">
+		<attribute name="name" />
+		<sequential>
+			<copy todir="${dist-p2}/plugins" overwrite="true">
+				<fileset dir="${temp-base}/p2/${lib-@{name}-id}"/>
+				<mapper type="glob" from="*.jar" to="*_${eclipse-version-full}.jar"/>
+			</copy>
 		</sequential>
 	</macrodef>
 
@@ -663,7 +700,11 @@
 	<target name="integrate" depends="" description="Integrate files from other projects." />
 
 	<!-- STAGE target -->
-	<target name="stage" depends="stage-classic, stage-maven" description="Stage the packaging step." />
+	<target name="stage" description="Stage the packaging step." >
+		<antcall target="stage-classic" />
+		<antcall target="stage-maven" />
+		<antcall target="stage-p2" />
+	</target>
 
 	<!-- STAGE-CLASSIC target (Stage the packaging step) -->
 	<target name="stage-classic" description="Stage the packaging step of classic distribution.">
@@ -672,10 +713,6 @@
 		<mkdir dir="${dist-classic}/lib" />
 		<!-- <mkdir dir="${dist-classic}/lib/poms" /> -->
 		<mkdir dir="${dist-classic}/src" />
-
-		<!-- Increment the build number -->
-		<buildnumber />
-
 
 		<!-- Copy the binaries -->
 		<if>
@@ -765,6 +802,20 @@
 		<checksum file="${mod-dir-restlet-parent-maven2}/${parent-maven-artifactId}-${mod-restlet-parent-version-maven}.pom" algorithm="SHA" fileext=".sha1" />
 	</target>
 
+	<!-- STAGE-P2 target -->
+	<target name="stage-p2" if="do-p2" description="Generate the p2 distribution." >
+		<for param="module" delimiter=" " list="${modules-p2}">
+			<sequential>
+				<p22Module name="@{module}" />
+			</sequential>
+		</for>
+		<for param="library" delimiter=" " list="${libraries-p2}">
+			<sequential>
+				<p22Library name="@{library}" />
+			</sequential>
+		</for>
+	</target>
+		
 	<!-- PACKAGE target -->
 	<target name="package" if="do-package" depends="package-classic" description="Generate the distribution.">
 		<!-- copy final artifacts to the final distribution directory -->
@@ -776,6 +827,9 @@
 		</move>
 		<move todir="${final-dist-classic}">
 			<fileset dir="${dist-classic}" />
+		</move>
+		<move todir="${final-dist-p2}">
+			<fileset dir="${dist-p2}" />
 		</move>
 	</target>
 
