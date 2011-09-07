@@ -3,10 +3,11 @@
    <description>
       Support for cryptography.
 	</description>
-   <distributions>
-      <distribution id="classic" />
-      <distribution id="maven" />
-   </distributions>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+		<distribution id="p2" />
+	</distributions>
    <dependencies>
       <dependency type="module" id="core" />
    </dependencies>

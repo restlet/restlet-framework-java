@@ -13,6 +13,7 @@
 		<distributions>
 			<distribution id="classic" />
 			<distribution id="maven" />
+			<distribution id="p2" />
 		</distributions>
 		<wikiUri>266-restlet</wikiUri>
 	</edition>
@@ -31,6 +32,7 @@
 		<distributions>
 			<distribution id="classic" />
 			<distribution id="maven" />
+			<distribution id="p2" />
 		</distributions>
 		<wikiUri>312-restlet</wikiUri>
 	</edition>
@@ -48,6 +50,7 @@
 		<distributions>
 			<distribution id="classic" />
 			<distribution id="maven" />
+			<distribution id="p2" />
 		</distributions>
 		<wikiUri>311-restlet</wikiUri>
 	</edition>
@@ -65,6 +68,7 @@
 		<distributions>
 			<distribution id="classic" />
 			<distribution id="maven" />
+			<distribution id="p2" />
 		</distributions>
 		<wikiUri>252-restlet</wikiUri>
 	</edition>
@@ -87,6 +91,7 @@
 		<distributions>
 			<distribution id="classic" />
 			<distribution id="maven" />
+			<distribution id="p2" />
 		</distributions>
 		<postSource>
 <![CDATA[

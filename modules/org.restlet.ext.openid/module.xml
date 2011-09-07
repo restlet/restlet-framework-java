@@ -7,7 +7,9 @@
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />
+		<distribution id="p2" />
 	</distributions>
+	
 	<dependencies>
 		<dependency type="library" id="openid4java" primary="true" />
 		<dependency type="library" id="nekohtml" />

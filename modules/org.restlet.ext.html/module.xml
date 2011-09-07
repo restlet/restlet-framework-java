@@ -3,10 +3,11 @@
    <description>
       Support for the HTML (HyperText Markup Language) standard in its 4.0 version and above.
 	</description>
-   <distributions>
-      <distribution id="classic" />
-      <distribution id="maven" />
-   </distributions>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+		<distribution id="p2" />
+	</distributions>
 
    <dependencies>
       <dependency type="module" id="core" />

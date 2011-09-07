@@ -6,7 +6,9 @@
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />
+		<distribution id="p2" />
 	</distributions>
+	
 	<dependencies>
 		<dependency type="module" id="core" />
 		<dependency type="module" id="atom" />
