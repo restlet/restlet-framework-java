@@ -69,11 +69,9 @@ public class Adapter {
      * @return The logger.
      */
     public Logger getLogger() {
-        if (getContext() != null) {
-            return getContext().getLogger();
-        }
-
-        return Context.getCurrentLogger();
+        Logger result = (getContext() != null) ? getContext().getLogger()
+                : null;
+        return (result != null) ? result : Context.getCurrentLogger();
     }
 
 }
