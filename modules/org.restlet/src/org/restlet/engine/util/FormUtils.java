@@ -254,6 +254,7 @@ public class FormUtils {
         if (post != null) {
             if (post.isAvailable()) {
                 FormReader fr = null;
+
                 try {
                     fr = new FormReader(post);
                 } catch (IOException ioe) {
@@ -266,8 +267,9 @@ public class FormUtils {
                     fr.addParameters(form);
                 }
             } else {
-                throw new IllegalStateException(
-                        "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
+                Context.getCurrentLogger()
+                        .log(Level.FINE,
+                                "The form wasn't changed as the given representation isn't available.");
             }
         }
     }

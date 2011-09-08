@@ -173,15 +173,19 @@ public class FormReader {
      *             If the parameters could not be read.
      */
     public Form read() throws IOException {
-        final Form result = new Form();
-        Parameter param = readNextParameter();
+        Form result = new Form();
 
-        while (param != null) {
-            result.add(param);
-            param = readNextParameter();
+        if (this.stream != null) {
+            Parameter param = readNextParameter();
+
+            while (param != null) {
+                result.add(param);
+                param = readNextParameter();
+            }
+
+            this.stream.close();
         }
 
-        this.stream.close();
         return result;
     }
 
@@ -194,18 +198,22 @@ public class FormReader {
      * @throws IOException
      */
     public Parameter readFirstParameter(String name) throws IOException {
-        Parameter param = readNextParameter();
         Parameter result = null;
 
-        while ((param != null) && (result == null)) {
-            if (param.getName().equals(name)) {
-                result = param;
+        if (this.stream != null) {
+            Parameter param = readNextParameter();
+
+            while ((param != null) && (result == null)) {
+                if (param.getName().equals(name)) {
+                    result = param;
+                }
+
+                param = readNextParameter();
             }
 
-            param = readNextParameter();
+            this.stream.close();
         }
 
-        this.stream.close();
         return result;
     }
 
@@ -219,55 +227,59 @@ public class FormReader {
     public Parameter readNextParameter() throws IOException {
         Parameter result = null;
 
-        try {
-            boolean readingName = true;
-            boolean readingValue = false;
-            final StringBuilder nameBuffer = new StringBuilder();
-            final StringBuilder valueBuffer = new StringBuilder();
+        if (this.stream != null) {
+            try {
+                boolean readingName = true;
+                boolean readingValue = false;
+                final StringBuilder nameBuffer = new StringBuilder();
+                final StringBuilder valueBuffer = new StringBuilder();
 
-            int nextChar = 0;
-            while ((result == null) && (nextChar != -1)) {
-                nextChar = this.stream.read();
+                int nextChar = 0;
+                while ((result == null) && (nextChar != -1)) {
+                    nextChar = this.stream.read();
 
-                if (readingName) {
-                    if (nextChar == '=') {
-                        if (nameBuffer.length() > 0) {
-                            readingName = false;
-                            readingValue = true;
+                    if (readingName) {
+                        if (nextChar == '=') {
+                            if (nameBuffer.length() > 0) {
+                                readingName = false;
+                                readingValue = true;
+                            } else {
+                                throw new IOException(
+                                        "Empty parameter name detected. Please check your form data");
+                            }
+                        } else if ((nextChar == this.separator)
+                                || (nextChar == -1)) {
+                            if (nameBuffer.length() > 0) {
+                                result = FormUtils.create(nameBuffer, null,
+                                        this.decoding, this.characterSet);
+                            } else if (nextChar == -1) {
+                                // Do nothing return null preference
+                            } else {
+                                Context.getCurrentLogger()
+                                        .fine("Empty parameter name detected. Please check your form data");
+                            }
                         } else {
-                            throw new IOException(
-                                    "Empty parameter name detected. Please check your form data");
+                            nameBuffer.append((char) nextChar);
                         }
-                    } else if ((nextChar == this.separator) || (nextChar == -1)) {
-                        if (nameBuffer.length() > 0) {
-                            result = FormUtils.create(nameBuffer, null,
-                                    this.decoding, this.characterSet);
-                        } else if (nextChar == -1) {
-                            // Do nothing return null preference
+                    } else if (readingValue) {
+                        if ((nextChar == this.separator) || (nextChar == -1)) {
+                            if (valueBuffer.length() > 0) {
+                                result = FormUtils.create(nameBuffer,
+                                        valueBuffer, this.decoding,
+                                        this.characterSet);
+                            } else {
+                                result = FormUtils.create(nameBuffer, null,
+                                        this.decoding, this.characterSet);
+                            }
                         } else {
-                            Context.getCurrentLogger()
-                                    .fine("Empty parameter name detected. Please check your form data");
+                            valueBuffer.append((char) nextChar);
                         }
-                    } else {
-                        nameBuffer.append((char) nextChar);
-                    }
-                } else if (readingValue) {
-                    if ((nextChar == this.separator) || (nextChar == -1)) {
-                        if (valueBuffer.length() > 0) {
-                            result = FormUtils.create(nameBuffer, valueBuffer,
-                                    this.decoding, this.characterSet);
-                        } else {
-                            result = FormUtils.create(nameBuffer, null,
-                                    this.decoding, this.characterSet);
-                        }
-                    } else {
-                        valueBuffer.append((char) nextChar);
                     }
                 }
+            } catch (UnsupportedEncodingException uee) {
+                throw new IOException(
+                        "Unsupported encoding. Please contact the administrator");
             }
-        } catch (UnsupportedEncodingException uee) {
-            throw new IOException(
-                    "Unsupported encoding. Please contact the administrator");
         }
 
         return result;
@@ -285,43 +297,47 @@ public class FormReader {
      */
     @SuppressWarnings("unchecked")
     public Object readParameter(String name) throws IOException {
-        Parameter param = readNextParameter();
         Object result = null;
 
-        while (param != null) {
-            if (param.getName().equals(name)) {
-                if (result != null) {
-                    List<Object> values = null;
+        if (this.stream != null) {
+            Parameter param = readNextParameter();
 
-                    if (result instanceof List) {
-                        // Multiple values already found for this parameter
-                        values = (List<Object>) result;
-                    } else {
-                        // Second value found for this parameter
-                        // Create a list of values
-                        values = new ArrayList<Object>();
-                        values.add(result);
-                        result = values;
-                    }
+            while (param != null) {
+                if (param.getName().equals(name)) {
+                    if (result != null) {
+                        List<Object> values = null;
 
-                    if (param.getValue() == null) {
-                        values.add(Series.EMPTY_VALUE);
+                        if (result instanceof List) {
+                            // Multiple values already found for this parameter
+                            values = (List<Object>) result;
+                        } else {
+                            // Second value found for this parameter
+                            // Create a list of values
+                            values = new ArrayList<Object>();
+                            values.add(result);
+                            result = values;
+                        }
+
+                        if (param.getValue() == null) {
+                            values.add(Series.EMPTY_VALUE);
+                        } else {
+                            values.add(param.getValue());
+                        }
                     } else {
-                        values.add(param.getValue());
-                    }
-                } else {
-                    if (param.getValue() == null) {
-                        result = Series.EMPTY_VALUE;
-                    } else {
-                        result = param.getValue();
+                        if (param.getValue() == null) {
+                            result = Series.EMPTY_VALUE;
+                        } else {
+                            result = param.getValue();
+                        }
                     }
                 }
+
+                param = readNextParameter();
             }
 
-            param = readNextParameter();
+            this.stream.close();
         }
 
-        this.stream.close();
         return result;
     }
 
@@ -338,44 +354,46 @@ public class FormReader {
     @SuppressWarnings("unchecked")
     public void readParameters(Map<String, Object> parameters)
             throws IOException {
-        Parameter param = readNextParameter();
-        Object currentValue = null;
+        if (this.stream != null) {
+            Parameter param = readNextParameter();
+            Object currentValue = null;
 
-        while (param != null) {
-            if (parameters.containsKey(param.getName())) {
-                currentValue = parameters.get(param.getName());
+            while (param != null) {
+                if (parameters.containsKey(param.getName())) {
+                    currentValue = parameters.get(param.getName());
 
-                if (currentValue != null) {
-                    List<Object> values = null;
+                    if (currentValue != null) {
+                        List<Object> values = null;
 
-                    if (currentValue instanceof List) {
-                        // Multiple values already found for this parameter
-                        values = (List<Object>) currentValue;
+                        if (currentValue instanceof List) {
+                            // Multiple values already found for this parameter
+                            values = (List<Object>) currentValue;
+                        } else {
+                            // Second value found for this parameter
+                            // Create a list of values
+                            values = new ArrayList<Object>();
+                            values.add(currentValue);
+                            parameters.put(param.getName(), values);
+                        }
+
+                        if (param.getValue() == null) {
+                            values.add(Series.EMPTY_VALUE);
+                        } else {
+                            values.add(param.getValue());
+                        }
                     } else {
-                        // Second value found for this parameter
-                        // Create a list of values
-                        values = new ArrayList<Object>();
-                        values.add(currentValue);
-                        parameters.put(param.getName(), values);
-                    }
-
-                    if (param.getValue() == null) {
-                        values.add(Series.EMPTY_VALUE);
-                    } else {
-                        values.add(param.getValue());
-                    }
-                } else {
-                    if (param.getValue() == null) {
-                        parameters.put(param.getName(), Series.EMPTY_VALUE);
-                    } else {
-                        parameters.put(param.getName(), param.getValue());
+                        if (param.getValue() == null) {
+                            parameters.put(param.getName(), Series.EMPTY_VALUE);
+                        } else {
+                            parameters.put(param.getName(), param.getValue());
+                        }
                     }
                 }
+
+                param = readNextParameter();
             }
 
-            param = readNextParameter();
+            this.stream.close();
         }
-
-        this.stream.close();
     }
 }

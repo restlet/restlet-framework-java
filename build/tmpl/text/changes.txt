@@ -31,6 +31,11 @@ Changes log
          when new content is asynchronously provided.
        - Added TransformRepresentation#errorListener to be able to
          replace the default one. Suggested by Warren Janssens.
+       - Attempting to create a Form instance from an EmptyRepres.
+         doesn't throw an exception anymore, just a fine log trace.
+         Reported by George Calm.
+     - Misc
+       - Updated SLF4j to version 1.6.2.
 
 - 2.1 Milestone 7 (08/24/2011)
     - Bug fixed
