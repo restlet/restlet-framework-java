@@ -34,10 +34,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.ReadableByteChannel;
-import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 
@@ -46,13 +43,7 @@ import org.restlet.representation.Representation;
  * 
  * @author Jerome Louvel
  */
-public abstract class InputListener implements SelectionListener {
-
-    /** The internal byte buffer. */
-    private final ByteBuffer byteBuffer;
-
-    /** The byte channel to read from when selected. */
-    private final ReadableByteChannel byteChannel;
+public abstract class InputListener extends ReadableListener {
 
     /**
      * Default constructor. Uses a byte buffer of {@link IoUtils#BUFFER_SIZE}
@@ -63,7 +54,7 @@ public abstract class InputListener implements SelectionListener {
      * @throws IOException
      */
     public InputListener(Representation source) throws IOException {
-        this(source, IoUtils.BUFFER_SIZE);
+        super(source);
     }
 
     /**
@@ -77,8 +68,18 @@ public abstract class InputListener implements SelectionListener {
      */
     public InputListener(Representation source, int bufferSize)
             throws IOException {
-        this.byteBuffer = ByteBuffer.allocate(bufferSize);
-        this.byteChannel = source.getChannel();
+        super(source, bufferSize);
+    }
+
+    /**
+     * Callback invoked when new content is available.
+     * 
+     * @param byteBuffer
+     *            The byte buffer filled with the new content (correctly flip).
+     */
+    protected final void onContent(ByteBuffer byteBuffer) {
+        onContent(new ByteArrayInputStream(byteBuffer.array(),
+                byteBuffer.arrayOffset(), byteBuffer.remaining()));
     }
 
     /**
@@ -89,50 +90,4 @@ public abstract class InputListener implements SelectionListener {
      */
     protected abstract void onContent(InputStream inputStream);
 
-    /**
-     * Callback invoked when the end of the representation has been reached. By
-     * default, it does nothing.
-     */
-    protected void onEnd() {
-    }
-
-    /**
-     * Callback invoked when an IO exception occurs. By default, it logs the
-     * exception at the {@link Level#WARNING} level.
-     * 
-     * @param ioe
-     *            The exception caught.
-     */
-    protected void onError(IOException ioe) {
-        Context.getCurrentLogger().log(Level.WARNING, "", ioe);
-    }
-
-    /**
-     * Callback invoked when new content is available. It reads the available
-     * bytes from the source channel into an internal buffer then calls
-     * {@link #onContent(InputStream)}.
-     */
-    public final void onSelected() {
-        try {
-            synchronized (byteBuffer) {
-                byteBuffer.clear();
-                int result = byteChannel.read(byteBuffer);
-
-                if (result > 0) {
-                    byteBuffer.flip();
-                    ByteArrayInputStream bais = new ByteArrayInputStream(
-                            byteBuffer.array(), byteBuffer.arrayOffset(),
-                            byteBuffer.remaining());
-                    onContent(bais);
-                } else if (result == -1) {
-                    onEnd();
-                } else {
-                    Context.getCurrentLogger()
-                            .fine("Input stream selection found with no content available");
-                }
-            }
-        } catch (IOException ioe) {
-            onError(ioe);
-        }
-    }
 }

@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -220,7 +221,13 @@ public class Connection<T extends Connector> implements SelectionListener {
      * @return A new readable channel.
      */
     protected ReadableSelectionChannel createReadableSelectionChannel() {
-        return new ReadableSocketChannel(getSocketChannel(), getRegistration());
+        return new ReadableSocketChannel(getSocketChannel(), getRegistration()) {
+            @Override
+            public int read(ByteBuffer dst) throws IOException {
+                onActivity();
+                return super.read(dst);
+            }
+        };
     }
 
     /**
@@ -229,7 +236,13 @@ public class Connection<T extends Connector> implements SelectionListener {
      * @return A new writable channel.
      */
     protected WritableSelectionChannel createWritableSelectionChannel() {
-        return new WritableSocketChannel(getSocketChannel(), getRegistration());
+        return new WritableSocketChannel(getSocketChannel(), getRegistration()) {
+            @Override
+            public int write(ByteBuffer src) throws IOException {
+                onActivity();
+                return super.write(src);
+            }
+        };
     }
 
     /**
@@ -411,7 +424,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public boolean hasTimedOut() {
         return (getMaxIoIdleTimeMs() > 0)
-                && (System.currentTimeMillis() - this.lastActivity) >= getMaxIoIdleTimeMs();
+                && (System.currentTimeMillis() - getLastActivity()) >= getMaxIoIdleTimeMs();
     }
 
     /**
@@ -451,7 +464,7 @@ public class Connection<T extends Connector> implements SelectionListener {
 
         }
 
-        this.lastActivity = System.currentTimeMillis();
+        onActivity();
     }
 
     /**
@@ -511,6 +524,14 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
+     * Notifies the connection that a new activity has been detected and that it
+     * should be kept alive.
+     */
+    public void onActivity() {
+        this.lastActivity = System.currentTimeMillis();
+    }
+
+    /**
      * Called on error. By default, it calls {@link #close(boolean)} with a
      * 'false' parameter.
      * 
@@ -542,7 +563,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * way.
      */
     public void onSelected() {
-        this.lastActivity = System.currentTimeMillis();
+        onActivity();
 
         if (getLogger().isLoggable(Level.FINER)) {
             String trace = null;
@@ -607,7 +628,8 @@ public class Connection<T extends Connector> implements SelectionListener {
     public void onTimeOut() {
         if (getHelper().getLogger().isLoggable(Level.FINE)) {
             getHelper().getLogger().fine(
-                    "Closing connection with \"" + getSocketAddress()
+                    "Closing " + (isServerSide() ? "server" : "client")
+                            + " connection with \"" + getSocketAddress()
                             + "\" due to lack of activity during "
                             + getHelper().getMaxIoIdleTimeMs() + " ms");
         }

@@ -12,6 +12,9 @@ Changes log
        - Fixed internal HTTPS server which wasn't creating an HTTPS
          request with all SSL related properties. 
          Reported by Henry Story.
+       - Fixed bug causing premature closing of connections managed
+         by the internal NIO/HTTP/SIP connector.
+         Reported by Cyril Lakech.
     - API changes
        - Added Authenticator#multiAuthenticating to better control
          optional authenticators and ensure we don't attempt 
@@ -22,6 +25,8 @@ Changes log
          addSegment methods, based on the "reference" property.
        - Added WadlApplication#canDescribe() method to facilitate
          customization.
+       - Added lower-level RedableListener providing a ByteBuffer
+         when new content is asynchronously provided.
 
 - 2.1 Milestone 7 (08/24/2011)
     - Bug fixed

@@ -102,4 +102,3 @@ Import-Package: com.db4o,
  org.springframework.core.io,
  org.springmodules.db4o
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.apache.commons.io;bundle-version="1.4.0"

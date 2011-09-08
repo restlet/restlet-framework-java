@@ -490,7 +490,7 @@ public class HttpClientHelper extends
         this.idleConnectionReaper = new HttpIdleConnectionReaper(httpClient,
                 getIdleCheckInterval(), getIdleTimeout());
 
-        getLogger().info("Starting the HTTP client");
+        getLogger().info("Starting the Apache HTTP client");
     }
 
     @Override
