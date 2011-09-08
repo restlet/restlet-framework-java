@@ -35,6 +35,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -138,6 +139,9 @@ public class TransformRepresentation extends WriterRepresentation {
         return result;
     }
 
+    /** The transformer's error listener. */
+    private volatile ErrorListener errorListener;
+
     /** The JAXP transformer output properties. */
     private volatile Map<String, String> outputProperties;
 
@@ -222,6 +226,7 @@ public class TransformRepresentation extends WriterRepresentation {
         this.uriResolver = uriResolver;
         this.parameters = new HashMap<String, Object>();
         this.outputProperties = new HashMap<String, String>();
+        this.errorListener = null;
     }
 
     /**
@@ -237,6 +242,16 @@ public class TransformRepresentation extends WriterRepresentation {
     public TransformRepresentation(URIResolver uriResolver,
             Representation source, Templates templates) {
         this(uriResolver, source, null, templates);
+    }
+
+    /**
+     * Returns the transformer's error listener. Default value is null, leaving
+     * the original listener intact.
+     * 
+     * @return The transformer's error listener.
+     */
+    public ErrorListener getErrorListener() {
+        return errorListener;
     }
 
     /**
@@ -345,19 +360,21 @@ public class TransformRepresentation extends WriterRepresentation {
             if (templates != null) {
                 result = templates.newTransformer();
 
-                if (this.uriResolver != null) {
+                if (getErrorListener() != null) {
+                    result.setErrorListener(getErrorListener());
+                }
+
+                if (getUriResolver() != null) {
                     result.setURIResolver(getUriResolver());
                 }
 
-                // Set the parameters
-                for (final String name : getParameters().keySet()) {
+                for (String name : getParameters().keySet()) {
                     result.setParameter(name, getParameters().get(name));
                 }
 
-                // Set the output properties
                 for (String name : getOutputProperties().keySet()) {
-                    result.setOutputProperty(name, getOutputProperties().get(
-                            name));
+                    result.setOutputProperty(name,
+                            getOutputProperties().get(name));
                 }
             }
         } catch (TransformerConfigurationException tce) {
@@ -463,6 +480,16 @@ public class TransformRepresentation extends WriterRepresentation {
     }
 
     /**
+     * Sets the transformer's error listener.
+     * 
+     * @param errorListener
+     *            The transformer's error listener.
+     */
+    public void setErrorListener(ErrorListener errorListener) {
+        this.errorListener = errorListener;
+    }
+
+    /**
      * Sets the modifiable map of JAXP transformer output properties.
      * 
      * @param outputProperties
@@ -533,8 +560,7 @@ public class TransformRepresentation extends WriterRepresentation {
      */
     public void transform(Source source, Result result) throws IOException {
         if (getTransformer() == null) {
-            Context
-                    .getCurrentLogger()
+            Context.getCurrentLogger()
                     .warning(
                             "Unable to apply the transformation. No transformer found!");
         } else {
@@ -549,16 +575,6 @@ public class TransformRepresentation extends WriterRepresentation {
     }
 
     /**
-     * Writes the transformed source into the given output stream. By default,
-     * it leverages the {@link #write(Result)} method using a
-     * {@link StreamResult} object.
-     */
-    @Override
-    public void write(Writer writer) throws IOException {
-        write(new StreamResult(writer));
-    }
-
-    /**
      * Writes the transformed source into the given JAXP result. The source is
      * retrieved using the {@link #getSaxSource()} method.
      * 
@@ -568,5 +584,15 @@ public class TransformRepresentation extends WriterRepresentation {
      */
     public void write(Result result) throws IOException {
         transform(getSaxSource(), result);
+    }
+
+    /**
+     * Writes the transformed source into the given output stream. By default,
+     * it leverages the {@link #write(Result)} method using a
+     * {@link StreamResult} object.
+     */
+    @Override
+    public void write(Writer writer) throws IOException {
+        write(new StreamResult(writer));
     }
 }

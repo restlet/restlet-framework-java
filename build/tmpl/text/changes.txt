@@ -29,6 +29,8 @@ Changes log
          customization.
        - Added lower-level RedableListener providing a ByteBuffer
          when new content is asynchronously provided.
+       - Added TransformRepresentation#errorListener to be able to
+         replace the default one. Suggested by Warren Janssens.
 
 - 2.1 Milestone 7 (08/24/2011)
     - Bug fixed
