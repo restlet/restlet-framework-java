@@ -486,6 +486,10 @@ public final class MediaType extends Metadata {
             "application/xml-dtd", "XML DTD");
 
     // [ifndef gwt] member
+    public static final MediaType APPLICATION_XQUERY = register(
+            "application/xquery", "XQuery document");
+
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_XUL = register(
             "application/vnd.mozilla.xul+xml", "XUL document");
 

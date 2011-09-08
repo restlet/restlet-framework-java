@@ -34,6 +34,8 @@ Changes log
        - Attempting to create a Form instance from an EmptyRepres.
          doesn't throw an exception anymore, just a fine log trace.
          Reported by George Calm.
+       - Added APPLICATION_XQUERY media type constant.
+         Suggested by Alex Milowski.
      - Misc
        - Updated SLF4j to version 1.6.2.
 
