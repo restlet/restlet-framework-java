@@ -92,8 +92,8 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     public SaxRepresentation(MediaType mediaType, Document xmlDocument) {
         super(mediaType);
-        this.source = new SAXSource(SAXSource
-                .sourceToInputSource(new DOMSource(xmlDocument)));
+        this.source = new SAXSource(
+                SAXSource.sourceToInputSource(new DOMSource(xmlDocument)));
     }
 
     /**
@@ -138,8 +138,8 @@ public class SaxRepresentation extends XmlRepresentation {
                 this.source = ((XmlRepresentation) xmlRepresentation)
                         .getSaxSource();
             } else {
-                this.source = new SAXSource(new InputSource(xmlRepresentation
-                        .getReader()));
+                this.source = new SAXSource(new InputSource(
+                        xmlRepresentation.getReader()));
             }
 
             if (xmlRepresentation.getLocationRef() != null) {
@@ -176,8 +176,8 @@ public class SaxRepresentation extends XmlRepresentation {
         if (contentHandler != null) {
             try {
                 Result result = new SAXResult(contentHandler);
-                TransformerFactory.newInstance().newTransformer().transform(
-                        this.source, result);
+                TransformerFactory.newInstance().newTransformer()
+                        .transform(this.source, result);
             } catch (TransformerConfigurationException tce) {
                 throw new IOException(
                         "Couldn't parse the source representation: "
@@ -229,13 +229,15 @@ public class SaxRepresentation extends XmlRepresentation {
 
     /**
      * Writes the representation to a XML writer. The default implementation
-     * does nothing and is intended to be overridden.
+     * calls {@link #parse(ContentHandler)} using the {@link XmlWriter}
+     * parameter as the content handler. This behavior is intended to be
+     * overridden.
      * 
      * @param writer
      *            The XML writer to write to.
      * @throws IOException
      */
     public void write(XmlWriter writer) throws IOException {
-        // Do nothing by default.
+        parse(writer);
     }
 }
