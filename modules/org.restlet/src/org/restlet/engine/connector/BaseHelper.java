@@ -436,7 +436,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getMaxIoIdleTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxIoIdleTimeMs", "60000"));
+                "maxIoIdleTimeMs", "30000"));
     }
 
     /**
