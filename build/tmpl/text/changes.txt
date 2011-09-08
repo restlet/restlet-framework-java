@@ -20,6 +20,8 @@ Changes log
          and deprecated related attributes.
        - Added shortcut ClientResource#addQueryParameter and
          addSegment methods, based on the "reference" property.
+       - Added WadlApplication#canDescribe() method to facilitate
+         customization.
 
 - 2.1 Milestone 7 (08/24/2011)
     - Bug fixed

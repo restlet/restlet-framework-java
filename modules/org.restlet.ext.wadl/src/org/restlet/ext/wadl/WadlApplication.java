@@ -353,6 +353,26 @@ public class WadlApplication extends Application {
     }
 
     /**
+     * Indicates if the application and all its resources can be described using
+     * WADL.
+     * 
+     * @param remainingPart
+     *            The URI remaining part.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    protected boolean canDescribe(String remainingPart, Request request,
+            Response response) {
+        return isAutoDescribing()
+                && Method.OPTIONS.equals(request.getMethod())
+                && (response.getStatus().isClientError() || !response
+                        .isEntityAvailable())
+                && ("/".equals(remainingPart) || "".equals(remainingPart));
+    }
+
+    /**
      * Creates a finder for the given resource info. By default, it looks up for
      * an "id" attribute containing a fully qualified class name.
      * 
@@ -426,7 +446,7 @@ public class WadlApplication extends Application {
                 request.getResourceRef().getBaseRef());
         applicationInfo.getResources().setResources(
                 getResourceInfos(applicationInfo,
-                        getFirstRouter(getInboundRoot()), request, response));
+                        getNextRouter(getInboundRoot()), request, response));
         return applicationInfo;
     }
 
@@ -440,20 +460,20 @@ public class WadlApplication extends Application {
     }
 
     /**
-     * Returns the first router available.
+     * Returns the next router available.
      * 
      * @param current
      *            The current Restlet to inspect.
      * @return The first router available.
      */
-    private Router getFirstRouter(Restlet current) {
+    private Router getNextRouter(Restlet current) {
         Router result = getRouter();
 
         if (result == null) {
             if (current instanceof Router) {
                 result = (Router) current;
             } else if (current instanceof Filter) {
-                result = getFirstRouter(((Filter) current).getNext());
+                result = getNextRouter(((Filter) current).getNext());
             }
         }
 
@@ -735,11 +755,7 @@ public class WadlApplication extends Application {
         // Handle OPTIONS requests.
         String rp = rr.getRemainingPart(false, false);
 
-        if (isAutoDescribing()
-                && Method.OPTIONS.equals(request.getMethod())
-                && (response.getStatus().isClientError() || !response
-                        .isEntityAvailable())
-                && ("/".equals(rp) || "".equals(rp))) {
+        if (canDescribe(rp, request, response)) {
             // Make sure that the base of the "resources" element ends with a
             // "/".
             if (!rr.getBaseRef().getIdentifier().endsWith("/")) {
