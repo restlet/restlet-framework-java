@@ -96,8 +96,8 @@ import org.restlet.util.Series;
  * <br>
  * Concurrency note: contrary to the {@link org.restlet.Uniform} class and its
  * main {@link Restlet} subclass where a single instance can handle several
- * calls concurrently, one instance of {@link Resource} is created for
- * each call handled and accessed by only one thread at a time.
+ * calls concurrently, one instance of {@link Resource} is created for each call
+ * handled and accessed by only one thread at a time.
  * 
  * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
@@ -264,7 +264,8 @@ public abstract class Resource {
 
     // [ifndef gwt] method
     /**
-     * Returns the application's content negotiation service or create a new one.
+     * Returns the application's content negotiation service or create a new
+     * one.
      * 
      * @return The content negotiation service.
      */
@@ -438,7 +439,9 @@ public abstract class Resource {
     }
 
     /**
-     * Returns the resource reference's optional query.
+     * Returns the resource reference's optional query. Note that modifications
+     * to the returned {@link Form} object aren't reported to the underlying
+     * reference.
      * 
      * @return The resource reference's optional query.
      * @see Reference#getQueryAsForm()

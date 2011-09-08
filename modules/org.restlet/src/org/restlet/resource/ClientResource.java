@@ -47,6 +47,7 @@ import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
@@ -389,6 +390,61 @@ public class ClientResource extends UniformResource {
      */
     public ClientResource(String uri) {
         this(Context.getCurrent(), Method.GET, uri);
+    }
+
+    /**
+     * Adds a parameter to the query component. The name and value are
+     * automatically encoded if necessary.
+     * 
+     * @param parameter
+     *            The parameter to add.
+     * @return The updated reference.
+     * @see Reference#addQueryParameter(Parameter)
+     */
+    public Reference addQueryParameter(Parameter parameter) {
+        return getReference().addQueryParameter(parameter);
+    }
+
+    /**
+     * Adds a parameter to the query component. The name and value are
+     * automatically encoded if necessary.
+     * 
+     * @param name
+     *            The parameter name.
+     * @param value
+     *            The optional parameter value.
+     * @return The updated reference.
+     * @see Reference#addQueryParameter(String, String)
+     */
+    public Reference addQueryParameter(String name, String value) {
+        return getReference().addQueryParameter(name, value);
+    }
+
+    /**
+     * Adds several parameters to the query component. The name and value are
+     * automatically encoded if necessary.
+     * 
+     * @param parameters
+     *            The parameters to add.
+     * @return The updated reference.
+     * @see Reference#addQueryParameters(Iterable)
+     */
+    public Reference addQueryParameters(Iterable<Parameter> parameters) {
+        return getReference().addQueryParameters(parameters);
+    }
+
+    /**
+     * Adds a segment at the end of the path. If the current path doesn't end
+     * with a slash character, one is inserted before the new segment value. The
+     * value is automatically encoded if necessary.
+     * 
+     * @param value
+     *            The segment value to add.
+     * @return The updated reference.
+     * @see Reference#addSegment(String)
+     */
+    public Reference addSegment(String value) {
+        return getReference().addSegment(value);
     }
 
     /**
