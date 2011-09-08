@@ -51,7 +51,7 @@ import org.restlet.security.MapVerifier;
  * 
  * @author Jerome Louvel
  */
-public class Part11 extends Application {
+public class Part11_Routing extends Application {
 
     /**
      * Run the example as a standalone component.
@@ -67,7 +67,7 @@ public class Part11 extends Application {
         component.getClients().add(Protocol.FILE);
 
         // Create an application
-        Application application = new Part11();
+        Application application = new Part11_Routing();
 
         // Attach the application to the component and start it
         component.getDefaultHost().attach(application);

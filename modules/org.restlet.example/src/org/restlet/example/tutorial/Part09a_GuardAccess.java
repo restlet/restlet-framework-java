@@ -35,15 +35,26 @@ import static org.restlet.example.tutorial.Constants.ROOT_URI;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.resource.Directory;
+import org.restlet.security.ChallengeAuthenticator;
+import org.restlet.security.MapVerifier;
 
 /**
- * Server static files using an application.
+ * Guard access to a Restlet.
  * 
  * @author Jerome Louvel
  */
-public class Part06 {
+public class Part09a_GuardAccess extends Application {
+
+    /**
+     * Run the example as a standalone component.
+     * 
+     * @param args
+     *            The optional arguments.
+     * @throws Exception
+     */
     public static void main(String[] args) throws Exception {
         // Create a component
         Component component = new Component();
@@ -51,16 +62,29 @@ public class Part06 {
         component.getClients().add(Protocol.FILE);
 
         // Create an application
-        Application application = new Application() {
-            @Override
-            public Restlet createInboundRoot() {
-                return new Directory(getContext(), ROOT_URI);
-            }
-        };
+        Application application = new Part09a_GuardAccess();
 
         // Attach the application to the component and start it
-        component.getDefaultHost().attach(application);
+        component.getDefaultHost().attachDefault(application);
         component.start();
+    }
+
+    @Override
+    public Restlet createInboundRoot() {
+        // Create a simple password verifier
+        MapVerifier verifier = new MapVerifier();
+        verifier.getLocalSecrets().put("scott", "tiger".toCharArray());
+
+        // Create a Guard
+        ChallengeAuthenticator authenticator = new ChallengeAuthenticator(
+                getContext(), ChallengeScheme.HTTP_BASIC, "Tutorial");
+        authenticator.setVerifier(verifier);
+
+        // Create a Directory able to return a deep hierarchy of files
+        Directory directory = new Directory(getContext(), ROOT_URI);
+        directory.setListingAllowed(true);
+        authenticator.setNext(directory);
+        return authenticator;
     }
 
 }

@@ -30,38 +30,23 @@
 
 package org.restlet.example.tutorial;
 
-import org.restlet.Component;
-import org.restlet.data.Protocol;
-import org.restlet.resource.Get;
-import org.restlet.resource.ServerResource;
+import org.restlet.resource.ClientResource;
 
 /**
- * Restlets components.
+ * Retrieving the content of a Web page (detailed).
  * 
  * @author Jerome Louvel
  */
-public class Part05 extends ServerResource {
-
+public class Part02b_RetrieveContent {
     public static void main(String[] args) throws Exception {
-        // Create a new Restlet component and add a HTTP server connector to it
-        Component component = new Component();
-        component.getServers().add(Protocol.HTTP, 8111);
+        // Create the client resource
+        ClientResource resource = new ClientResource("http://www.restlet.org");
 
-        // Then attach it to the local host
-        component.getDefaultHost().attach("/trace", Part05.class);
+        // Customize the referrer property
+        resource.setReferrerRef("http://www.mysite.org");
 
-        // Now, let's start the component!
-        // Note that the HTTP server connector is also automatically started.
-        component.start();
-    }
-
-    @Get
-    public String toString() {
-        // Print the requested URI path
-        return "Resource URI  : " + getReference() + '\n' + "Root URI      : "
-                + getRootRef() + '\n' + "Routed part   : "
-                + getReference().getBaseRef() + '\n' + "Remaining part: "
-                + getReference().getRemainingPart();
+        // Write the response entity on the console
+        resource.get().write(System.out);
     }
 
 }

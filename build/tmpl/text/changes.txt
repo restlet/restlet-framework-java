@@ -15,6 +15,8 @@ Changes log
        - Fixed bug causing premature closing of connections managed
          by the internal NIO/HTTP/SIP connector.
          Reported by Cyril Lakech.
+       - The max IO idle time used in code was 60s instead of the
+         30s announced in the Javadocs. Now using 30s.
     - API changes
        - Added Authenticator#multiAuthenticating to better control
          optional authenticators and ensure we don't attempt 

@@ -68,6 +68,7 @@ import org.restlet.test.ext.xml.ResolvingTransformerTestCase;
 import org.restlet.test.ext.xml.RestletXmlTestCase;
 import org.restlet.test.ext.xml.TransformerTestCase;
 import org.restlet.test.jaxrs.JaxRsTestSuite;
+import org.restlet.test.regression.RegressionTestSuite;
 import org.restlet.test.representation.AppendableRepresentationTestCase;
 import org.restlet.test.representation.DigesterRepresentationTestCase;
 import org.restlet.test.representation.RangeRepresentationTestCase;
@@ -136,6 +137,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(TransformerTestCase.class);
         addTestSuite(ValidatorTestCase.class);
         addTestSuite(VelocityTestCase.class);
+        addTest(RegressionTestSuite.suite());
         addTest(CryptoTestSuite.suite());
         addTest(EmfTestSuite.suite());
         addTest(HtmlTestSuite.suite());
@@ -166,10 +168,10 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(SecurityTestCase.class);
         addTestSuite(TemplateFilterTestCase.class);
 
-        addTest(EngineTestSuite.suite());
         addTest(JaxRsTestSuite.suite());
         addTest(SipTests.suite());
         addTest(SpringTestSuite.suite());
+        addTest(EngineTestSuite.suite());
         // [enddef]
     }
 

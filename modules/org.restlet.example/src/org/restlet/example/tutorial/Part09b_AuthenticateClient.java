@@ -40,7 +40,7 @@ import org.restlet.resource.ClientResource;
  * 
  * @author Jerome Louvel
  */
-public class Part09b {
+public class Part09b_AuthenticateClient {
     public static void main(String[] args) throws Exception {
         // Prepare the request
         ClientResource resource = new ClientResource("http://localhost:8111/");

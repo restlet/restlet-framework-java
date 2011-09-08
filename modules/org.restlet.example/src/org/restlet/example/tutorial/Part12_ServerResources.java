@@ -30,23 +30,18 @@
 
 package org.restlet.example.tutorial;
 
-import static org.restlet.example.tutorial.Constants.ROOT_URI;
-
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
-import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
-import org.restlet.resource.Directory;
-import org.restlet.security.ChallengeAuthenticator;
-import org.restlet.security.MapVerifier;
+import org.restlet.routing.Router;
 
 /**
- * Guard access to a Restlet.
+ * Reaching target Resources
  * 
  * @author Jerome Louvel
  */
-public class Part09a extends Application {
+public class Part12_ServerResources extends Application {
 
     /**
      * Run the example as a standalone component.
@@ -59,10 +54,9 @@ public class Part09a extends Application {
         // Create a component
         Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8111);
-        component.getClients().add(Protocol.FILE);
 
         // Create an application
-        Application application = new Part09a();
+        Application application = new Part12_ServerResources();
 
         // Attach the application to the component and start it
         component.getDefaultHost().attachDefault(application);
@@ -71,20 +65,16 @@ public class Part09a extends Application {
 
     @Override
     public Restlet createInboundRoot() {
-        // Create a simple password verifier
-        MapVerifier verifier = new MapVerifier();
-        verifier.getLocalSecrets().put("scott", "tiger".toCharArray());
+        // Create a router
+        Router router = new Router(getContext());
 
-        // Create a Guard
-        ChallengeAuthenticator authenticator = new ChallengeAuthenticator(
-                getContext(), ChallengeScheme.HTTP_BASIC, "Tutorial");
-        authenticator.setVerifier(verifier);
+        // Attach the resources to the router
+        router.attach("/users/{user}", UserResource.class);
+        router.attach("/users/{user}/orders", OrdersResource.class);
+        router.attach("/users/{user}/orders/{order}", OrderResource.class);
 
-        // Create a Directory able to return a deep hierarchy of files
-        Directory directory = new Directory(getContext(), ROOT_URI);
-        directory.setListingAllowed(true);
-        authenticator.setNext(directory);
-        return authenticator;
+        // Return the root router
+        return router;
     }
 
 }

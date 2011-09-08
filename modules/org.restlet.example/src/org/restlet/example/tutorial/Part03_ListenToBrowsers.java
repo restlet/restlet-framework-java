@@ -40,11 +40,11 @@ import org.restlet.resource.ServerResource;
  * 
  * @author Jerome Louvel
  */
-public class Part03 extends ServerResource {
+public class Part03_ListenToBrowsers extends ServerResource {
 
     public static void main(String[] args) throws Exception {
         // Create the HTTP server and listen on port 8111
-        new Server(Protocol.HTTP, 8111, Part03.class).start();
+        new Server(Protocol.HTTP, 8111, Part03_ListenToBrowsers.class).start();
     }
 
     @Get

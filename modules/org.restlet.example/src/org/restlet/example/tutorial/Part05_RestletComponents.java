@@ -30,51 +30,38 @@
 
 package org.restlet.example.tutorial;
 
-import org.restlet.Application;
 import org.restlet.Component;
-import org.restlet.Restlet;
 import org.restlet.data.Protocol;
-import org.restlet.routing.Router;
+import org.restlet.resource.Get;
+import org.restlet.resource.ServerResource;
 
 /**
- * Reaching target Resources
+ * Restlets components.
  * 
  * @author Jerome Louvel
  */
-public class Part12 extends Application {
+public class Part05_RestletComponents extends ServerResource {
 
-    /**
-     * Run the example as a standalone component.
-     * 
-     * @param args
-     *            The optional arguments.
-     * @throws Exception
-     */
     public static void main(String[] args) throws Exception {
-        // Create a component
+        // Create a new Restlet component and add a HTTP server connector to it
         Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8111);
 
-        // Create an application
-        Application application = new Part12();
+        // Then attach it to the local host
+        component.getDefaultHost().attach("/trace", Part05_RestletComponents.class);
 
-        // Attach the application to the component and start it
-        component.getDefaultHost().attachDefault(application);
+        // Now, let's start the component!
+        // Note that the HTTP server connector is also automatically started.
         component.start();
     }
 
-    @Override
-    public Restlet createInboundRoot() {
-        // Create a router
-        Router router = new Router(getContext());
-
-        // Attach the resources to the router
-        router.attach("/users/{user}", UserResource.class);
-        router.attach("/users/{user}/orders", OrdersResource.class);
-        router.attach("/users/{user}/orders/{order}", OrderResource.class);
-
-        // Return the root router
-        return router;
+    @Get
+    public String toString() {
+        // Print the requested URI path
+        return "Resource URI  : " + getReference() + '\n' + "Root URI      : "
+                + getRootRef() + '\n' + "Routed part   : "
+                + getReference().getBaseRef() + '\n' + "Remaining part: "
+                + getReference().getRemainingPart();
     }
 
 }

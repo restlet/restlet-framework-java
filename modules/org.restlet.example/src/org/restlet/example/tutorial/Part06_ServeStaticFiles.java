@@ -30,17 +30,37 @@
 
 package org.restlet.example.tutorial;
 
-import org.restlet.resource.ClientResource;
+import static org.restlet.example.tutorial.Constants.ROOT_URI;
+
+import org.restlet.Application;
+import org.restlet.Component;
+import org.restlet.Restlet;
+import org.restlet.data.Protocol;
+import org.restlet.resource.Directory;
 
 /**
- * Retrieving the content of a Web page.
+ * Serve static files using an application.
  * 
  * @author Jerome Louvel
  */
-public class Part02a {
+public class Part06_ServeStaticFiles {
     public static void main(String[] args) throws Exception {
-        // Outputting the content of a Web page
-        new ClientResource("http://www.restlet.org").get().write(System.out);
+        // Create a component
+        Component component = new Component();
+        component.getServers().add(Protocol.HTTP, 8111);
+        component.getClients().add(Protocol.FILE);
+
+        // Create an application
+        Application application = new Application() {
+            @Override
+            public Restlet createInboundRoot() {
+                return new Directory(getContext(), ROOT_URI);
+            }
+        };
+
+        // Attach the application to the component and start it
+        component.getDefaultHost().attach(application);
+        component.start();
     }
 
 }

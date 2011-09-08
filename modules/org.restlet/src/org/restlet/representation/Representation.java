@@ -340,10 +340,10 @@ public abstract class Representation extends RepresentationInfo {
 
     // [ifndef gwt] method
     /**
-     * Returns the NIO registration of the channel with its selector. You can
-     * modify this registration to be called back when some readable content is
-     * available. Note that the listener will keep being called back until you
-     * suspend or cancel the registration returned by this method.
+     * Returns the NIO registration of the related channel with its selector.
+     * You can modify this registration to be called back when some readable
+     * content is available. Note that the listener will keep being called back
+     * until you suspend or cancel the registration returned by this method.
      * 
      * @return The NIO registration.
      * @throws IOException

@@ -33,20 +33,14 @@ package org.restlet.example.tutorial;
 import org.restlet.resource.ClientResource;
 
 /**
- * Retrieving the content of a Web page (detailed).
+ * Retrieving the content of a Web page.
  * 
  * @author Jerome Louvel
  */
-public class Part02b {
+public class Part02a_RetrieveContent {
     public static void main(String[] args) throws Exception {
-        // Create the client resource
-        ClientResource resource = new ClientResource("http://www.restlet.org");
-
-        // Customize the referrer property
-        resource.setReferrerRef("http://www.mysite.org");
-
-        // Write the response entity on the console
-        resource.get().write(System.out);
+        // Outputting the content of a Web page
+        new ClientResource("http://www.restlet.org").get().write(System.out);
     }
 
 }
