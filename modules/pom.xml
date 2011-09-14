@@ -67,7 +67,7 @@
 		<lib-sdc-version>1.3.rc2</lib-sdc-version>
 		<lib-servlet-version>2.5</lib-servlet-version>
 		<lib-simple-version>4.1.21</lib-simple-version>
-		<lib-slf4j-version>1.5.8</lib-slf4j-version>
+		<lib-slf4j-version>1.6.2</lib-slf4j-version>
 		<lib-solr-version>1.4.0</lib-solr-version>
 		<lib-solr-common-version>1.4.0</lib-solr-common-version>
 		<lib-spring-asm-version>3.0.1.RELEASE</lib-spring-asm-version>
