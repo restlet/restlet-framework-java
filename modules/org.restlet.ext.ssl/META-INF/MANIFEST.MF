@@ -20,6 +20,4 @@ Import-Package: org.jsslutils.keystores,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util
-ionEnvironment: J2SE-1.5
-Bundle-RequiredExecutionEnvironment: J2SE-1.5,
- J2SE-1.5
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -519,10 +519,26 @@
 	<macrodef name="p22Module">
 		<attribute name="name" />
 		<sequential>
+			<!-- Generation of bundle and feature. -->
 			<copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${dist-p2}/plugins/${mod-@{name}-id}-${edition}_${eclipse-version-full}.jar" />
 			<copy file="p2/feature.@{name}.xml" tofile="${dist-p2}/features/feature.xml" />
 			<zip destfile="${dist-p2}/features/${mod-@{name}-id}-${edition}_${eclipse-version-full}.jar" basedir="${dist-p2}/features" includes="feature.xml" update="false" />
 			<delete file="${dist-p2}/features/feature.xml" />
+			<!-- Generation of source bundle. -->
+			<delete dir="${temp}/@{name}" />
+			<mkdir dir="${temp}/@{name}"/>
+			<copy todir="${temp}/@{name}" overwrite="true" >
+				<fileset dir="${mod}/${mod-@{name}-id}/src"/>
+			</copy>
+
+			<mkdir dir="${temp}/@{name}/META-INF"/>
+			<manifest file="${temp}/@{name}/META-INF/MANIFEST.MF" mode="replace">
+				<attribute id="Eclipse-SourceBundle" name="Eclipse-SourceBundle" value="${mod-@{name}-id}-${edition};version=${eclipse-version-full}" />
+				<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}-${edition}.source" />
+				<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
+			</manifest>
+			<zip destfile="${dist-p2}/plugins/${mod-@{name}-id}-${edition}.source_${eclipse-version-full}.jar" basedir="${temp}/@{name}" update="false" />
+			<delete dir="${temp}/@{name}" />
 		</sequential>
 	</macrodef>
 	
