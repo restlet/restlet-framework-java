@@ -6,12 +6,14 @@
 <feature id="${module.package}-${edition.id}" label="${module.name}" version="${ant["eclipse-version-full"]}" provider-name="Noelios Technologies">
    <description>${module.description}</description>
    <plugin id="${module.package}-${edition.id}" version="${ant["eclipse-version-full"]}" unpack="false" />
-   <plugin id="${module.package}-${edition.id}.source" version="${ant["eclipse-version-full"]}" unpack="false" />
+   <plugin id="${module.package}-${edition.id}.source" version="${ant["eclipse-version-full"]}" />
+<#--
 	<#list module.neededLibraries as libdep>
 		<#list libdep.library.packages as package>
    <plugin id="${package.name}" version="${ant["eclipse-version-full"]}" unpack="false" />
 		</#list>
 	</#list>
+-->
 </feature>
 </@pp.nestOutputFile>
 </#list>

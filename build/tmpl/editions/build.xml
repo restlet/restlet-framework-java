@@ -361,9 +361,17 @@
 			<mkdir dir="${temp}/jar/META-INF" />
 			<delete failonerror="false" file="${temp}/jar/META-INF/MANIFEST.MF" />
 			<copy failonerror="false" file="${mod}/${mod-@{name}-id}/META-INF/MANIFEST.MF" tofile="${temp}/jar/META-INF/MANIFEST.MF" />
+
+			<condition property="include-@{name}-pattern" value="org/restlet/test/**">
+				<equals arg1="@{name}" arg2="core-test"/>
+			</condition>
+			<condition property="include-@{name}-pattern" value="org/restlet/**">
+				<equals arg1="@{name}" arg2="core" />
+			</condition>
+			<property name="include-@{name}-pattern" value="org/restlet/ext/@{name}/**" />
 			<dirset id="mod-@{name}-exported-packages" dir="${classes}/${mod-@{name}-id}">
-				<include name="org/restlet/**" />
-				<exclude name="**/internal/**" />
+				<include name="${include-@{name}-pattern}" />
+				<!-- <exclude name="**/internal/**" /> -->
 			</dirset>
 			<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
 				<map from="${classes}/${mod-@{name}-id}/" to='' />
