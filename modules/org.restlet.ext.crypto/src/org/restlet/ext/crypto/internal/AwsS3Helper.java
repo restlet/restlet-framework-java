@@ -43,12 +43,12 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class AwsHelper extends AuthenticatorHelper {
+public class AwsS3Helper extends AuthenticatorHelper {
 
     /**
      * Constructor.
      */
-    public AwsHelper() {
+    public AwsS3Helper() {
         super(ChallengeScheme.HTTP_AWS_S3, true, true);
     }
 
@@ -59,7 +59,7 @@ public class AwsHelper extends AuthenticatorHelper {
         // Append the AWS credentials
         cw.append(challenge.getIdentifier())
                 .append(':')
-                .append(AwsUtils.getSignature(request, httpHeaders,
+                .append(AwsUtils.getS3Signature(request, httpHeaders,
                         challenge.getSecret()));
     }
 

@@ -162,16 +162,18 @@ public abstract class AuthenticatorHelper extends Helper {
      */
     public String formatResponse(ChallengeResponse challenge, Request request,
             Series<Header> httpHeaders) {
-        ChallengeWriter hb = new ChallengeWriter();
-        hb.append(challenge.getScheme().getTechnicalName()).appendSpace();
+        ChallengeWriter cw = new ChallengeWriter();
+        cw.append(challenge.getScheme().getTechnicalName()).appendSpace();
+        int cwInitialLength = cw.getBuffer().length();
 
         if (challenge.getRawValue() != null) {
-            hb.append(challenge.getRawValue());
+            cw.append(challenge.getRawValue());
         } else {
-            formatRawResponse(hb, challenge, request, httpHeaders);
+            formatRawResponse(cw, challenge, request, httpHeaders);
         }
 
-        return hb.toString();
+        return (cw.getBuffer().length() > cwInitialLength) ? cw.toString()
+                : null;
     }
 
     /**

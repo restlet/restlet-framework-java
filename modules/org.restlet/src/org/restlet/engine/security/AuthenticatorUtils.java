@@ -210,7 +210,6 @@ public class AuthenticatorUtils {
         if (helper != null) {
             result = helper.formatResponse(challenge, request, httpHeaders);
         } else {
-            result = "?";
             Context.getCurrentLogger().warning(
                     "Challenge scheme " + challenge.getScheme()
                             + " not supported by the Restlet engine.");

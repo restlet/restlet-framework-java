@@ -470,21 +470,28 @@ public class HeaderUtils {
         // Add the security headers. NOTE: This must stay at the end because
         // the AWS challenge scheme requires access to all HTTP headers
         ChallengeResponse challengeResponse = request.getChallengeResponse();
+
         if (challengeResponse != null) {
-            addHeader(
-                    HeaderConstants.HEADER_AUTHORIZATION,
-                    org.restlet.engine.security.AuthenticatorUtils
-                            .formatResponse(challengeResponse, request, headers),
-                    headers);
+            String authHeader = org.restlet.engine.security.AuthenticatorUtils
+                    .formatResponse(challengeResponse, request, headers);
+
+            if (authHeader != null) {
+                addHeader(HeaderConstants.HEADER_AUTHORIZATION, authHeader,
+                        headers);
+            }
         }
 
         ChallengeResponse proxyChallengeResponse = request
                 .getProxyChallengeResponse();
+
         if (proxyChallengeResponse != null) {
-            addHeader(HeaderConstants.HEADER_PROXY_AUTHORIZATION,
-                    org.restlet.engine.security.AuthenticatorUtils
-                            .formatResponse(proxyChallengeResponse, request,
-                                    headers), headers);
+            String authHeader = org.restlet.engine.security.AuthenticatorUtils
+                    .formatResponse(proxyChallengeResponse, request, headers);
+
+            if (authHeader != null) {
+                addHeader(HeaderConstants.HEADER_PROXY_AUTHORIZATION,
+                        authHeader, headers);
+            }
         }
         // [enddef]
     }

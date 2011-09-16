@@ -58,6 +58,40 @@ public class DigestUtils {
     private static final char[] HEXDIGITS = "0123456789abcdef".toCharArray();
 
     /**
+     * Returns the digest of the target string. Target is decoded to bytes using
+     * the US-ASCII charset. Supports MD5 and SHA-1 algorithms.
+     * 
+     * @param target
+     *            The string to encode.
+     * @param algorithm
+     *            The digest algorithm to use.
+     * @return The digest of the target string.
+     */
+    public static char[] digest(char[] target, String algorithm) {
+        return DigestUtils.digest(new String(target), algorithm).toCharArray();
+    }
+
+    /**
+     * Returns the digest of the target string. Target is decoded to bytes using
+     * the US-ASCII charset. Supports MD5 and SHA-1 algorithms.
+     * 
+     * @param target
+     *            The string to encode.
+     * @param algorithm
+     *            The digest algorithm to use.
+     * @return The digest of the target string.
+     */
+    public static String digest(String target, String algorithm) {
+        if (Digest.ALGORITHM_MD5.equals(algorithm)) {
+            return toMd5(target);
+        } else if (Digest.ALGORITHM_SHA_1.equals(algorithm)) {
+            return toSha1(target);
+        }
+
+        throw new IllegalArgumentException("Unsupported algorithm.");
+    };
+
+    /**
      * Converts a source string to its HMAC/SHA-1 value.
      * 
      * @param source
@@ -66,16 +100,15 @@ public class DigestUtils {
      *            The secret key to use for conversion.
      * @return The HMac value of the source string.
      */
-    public static byte[] toHMac(String source, byte[] secretKey) {
+    public static byte[] toHMacSha1(String source, byte[] secretKey) {
         byte[] result = null;
 
         try {
             // Create the HMAC/SHA1 key
-            final SecretKeySpec signingKey = new SecretKeySpec(secretKey,
-                    "HmacSHA1");
+            SecretKeySpec signingKey = new SecretKeySpec(secretKey, "HmacSHA1");
 
             // Create the message authentication code (MAC)
-            final Mac mac = Mac.getInstance("HmacSHA1");
+            Mac mac = Mac.getInstance("HmacSHA1");
             mac.init(signingKey);
 
             // Compute the HMAC value
@@ -102,9 +135,9 @@ public class DigestUtils {
      *            The secret key to use for conversion.
      * @return The HMac value of the source string.
      */
-    public static byte[] toHMac(String source, String secretKey) {
-        return toHMac(source, secretKey.getBytes());
-    };
+    public static byte[] toHMacSha1(String source, String secretKey) {
+        return toHMacSha1(source, secretKey.getBytes());
+    }
 
     /**
      * Converts a source string to its HMAC/SHA256 value.
@@ -115,16 +148,16 @@ public class DigestUtils {
      *            The secret key to use for conversion.
      * @return The HMac value of the source string.
      */
-    public static byte[] toHMac256(String source, byte[] secretKey) {
+    public static byte[] toHMacSha256(String source, byte[] secretKey) {
         byte[] result = null;
 
         try {
             // Create the HMAC/SHA256 key
-            final SecretKeySpec signingKey = new SecretKeySpec(secretKey,
+            SecretKeySpec signingKey = new SecretKeySpec(secretKey,
                     "HmacSHA256");
 
             // Create the message authentication code (MAC)
-            final Mac mac = Mac.getInstance("HmacSHA256");
+            Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(signingKey);
 
             // Compute the HMAC value
@@ -158,8 +191,8 @@ public class DigestUtils {
      *            The secret key to use for conversion.
      * @return The HMac value of the source string.
      */
-    public static byte[] toHMac256(String source, String secretKey) {
-        return toHMac256(source, secretKey.getBytes());
+    public static byte[] toHMacSha256(String source, String secretKey) {
+        return toHMacSha256(source, secretKey.getBytes());
     }
 
     /**
@@ -256,40 +289,6 @@ public class DigestUtils {
     }
 
     /**
-     * Returns the digest of the target string. Target is decoded to bytes using
-     * the US-ASCII charset. Supports MD5 and SHA-1 algorithms.
-     * 
-     * @param target
-     *            The string to encode.
-     * @param algorithm
-     *            The digest algorithm to use.
-     * @return The digest of the target string.
-     */
-    public static char[] digest(char[] target, String algorithm) {
-        return DigestUtils.digest(new String(target), algorithm).toCharArray();
-    }
-
-    /**
-     * Returns the digest of the target string. Target is decoded to bytes using
-     * the US-ASCII charset. Supports MD5 and SHA-1 algorithms.
-     * 
-     * @param target
-     *            The string to encode.
-     * @param algorithm
-     *            The digest algorithm to use.
-     * @return The digest of the target string.
-     */
-    public static String digest(String target, String algorithm) {
-        if (Digest.ALGORITHM_MD5.equals(algorithm)) {
-            return toMd5(target);
-        } else if (Digest.ALGORITHM_SHA_1.equals(algorithm)) {
-            return toSha1(target);
-        }
-
-        throw new IllegalArgumentException("Unsupported algorithm.");
-    }
-
-    /**
      * Returns the SHA1 digest of target string. Target is decoded to bytes
      * using the named charset.
      * 
@@ -304,8 +303,9 @@ public class DigestUtils {
     public static String toSha1(String target, String charsetName)
             throws UnsupportedEncodingException {
         try {
-            return Base64.encode(MessageDigest.getInstance("SHA1").digest(
-                    target.getBytes(charsetName)), false);
+            return Base64.encode(
+                    MessageDigest.getInstance("SHA1").digest(
+                            target.getBytes(charsetName)), false);
         } catch (NoSuchAlgorithmException nsae) {
             throw new RuntimeException(
                     "No SHA1 algorithm, unable to compute SHA1");

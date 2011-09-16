@@ -140,14 +140,14 @@ public class HttpAwsS3SigningTestCase extends RestletTestCase {
 
     @Test
     public void testGetSignature() {
-        String result = AwsUtils.getSignature(getRequest,
+        String result = AwsUtils.getS3Signature(getRequest,
                 ACCESS_KEY.toCharArray());
         Assert.assertEquals("xXjDGYUmKxnwqr5KXNPGldn5LbA=", result);
 
-        result = AwsUtils.getSignature(putRequest, ACCESS_KEY.toCharArray());
+        result = AwsUtils.getS3Signature(putRequest, ACCESS_KEY.toCharArray());
         Assert.assertEquals("hcicpDDvL9SsO6AkvxqmIWkmOuQ=", result);
 
-        result = AwsUtils.getSignature(uploadRequest, ACCESS_KEY.toCharArray());
+        result = AwsUtils.getS3Signature(uploadRequest, ACCESS_KEY.toCharArray());
         Assert.assertEquals("C0FlOtU8Ylb9KDTpZqYkZPX91iI=", result);
     }
 
@@ -156,13 +156,13 @@ public class HttpAwsS3SigningTestCase extends RestletTestCase {
         String expected = "GET\n" + "\n" + "\n"
                 + "Tue, 27 Mar 2007 19:36:42 +0000\n"
                 + "/johnsmith/photos/puppy.jpg";
-        String actual = AwsUtils.getStringToSign(getRequest);
+        String actual = AwsUtils.getS3StringToSign(getRequest);
         Assert.assertEquals(expected, actual);
 
         expected = "PUT\n" + "\n" + "image/jpeg\n"
                 + "Tue, 27 Mar 2007 21:15:45 +0000\n"
                 + "/johnsmith/photos/puppy.jpg";
-        actual = AwsUtils.getStringToSign(putRequest);
+        actual = AwsUtils.getS3StringToSign(putRequest);
         Assert.assertEquals(expected, actual);
 
         expected = "PUT\n" + "4gJE4saaMU4BqNR0kLY+lw==\n"
@@ -174,7 +174,7 @@ public class HttpAwsS3SigningTestCase extends RestletTestCase {
                 + "x-amz-meta-reviewedby:"
                 + "joe@johnsmith.net,jane@johnsmith.net\n"
                 + "/static.johnsmith.net/db-backup.dat.gz";
-        actual = AwsUtils.getStringToSign(uploadRequest);
+        actual = AwsUtils.getS3StringToSign(uploadRequest);
         Assert.assertEquals(expected, actual);
     }
 }

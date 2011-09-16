@@ -981,12 +981,12 @@ public class Engine {
      */
     public void registerHelpers(String descriptorPath, List<?> helpers,
             Class<?> constructorClass) throws IOException {
-        final ClassLoader classLoader = getClassLoader();
+        ClassLoader classLoader = getClassLoader();
         Enumeration<java.net.URL> configUrls = classLoader
                 .getResources(descriptorPath);
 
         if (configUrls != null) {
-            for (final Enumeration<java.net.URL> configEnum = configUrls; configEnum
+            for (Enumeration<java.net.URL> configEnum = configUrls; configEnum
                     .hasMoreElements();) {
                 registerHelpers(classLoader, configEnum.nextElement(), helpers,
                         constructorClass);

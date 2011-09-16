@@ -120,6 +120,51 @@ public class Link extends Triple<Object, Reference, Object> {
     }
 
     /**
+     * Constructor. Leverages n3 reification feature where a graph itself can be
+     * the source node of a link.
+     * 
+     * @param sourceGraph
+     *            The source graph or subject in RDF terminology.
+     * @param typeRef
+     *            The type reference or predicate in RDF terminology.
+     * @param targetLit
+     *            The target literal or object in RDF terminology.
+     */
+    public Link(Graph sourceGraph, String typeRef, Literal targetLit) {
+        this(sourceGraph, new Reference(typeRef), targetLit);
+    }
+
+    /**
+     * Constructor. Leverages n3 reification feature where a graph itself can be
+     * the source node of a link.
+     * 
+     * @param sourceGraph
+     *            The source graph or subject in RDF terminology.
+     * @param typeRef
+     *            The type reference or predicate in RDF terminology.
+     * @param target
+     *            The target node or object in RDF terminology.
+     */
+    public Link(Graph sourceGraph, String typeRef, Object target) {
+        this(sourceGraph, new Reference(typeRef), target);
+    }
+
+    /**
+     * Constructor. Leverages n3 reification feature where a graph itself can be
+     * the source node of a link.
+     * 
+     * @param sourceGraph
+     *            The source graph or subject in RDF terminology.
+     * @param typeRef
+     *            The type reference or predicate in RDF terminology.
+     * @param targetRef
+     *            The target reference or object in RDF terminology.
+     */
+    public Link(Graph sourceGraph, String typeRef, Reference targetRef) {
+        this(sourceGraph, new Reference(typeRef), targetRef);
+    }
+
+    /**
      * Constructor by copy.
      * 
      * @param from
@@ -169,6 +214,34 @@ public class Link extends Triple<Object, Reference, Object> {
      */
     public Link(Reference sourceRef, Reference typeRef, Reference targetRef) {
         this(sourceRef, typeRef, (Object) targetRef);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param sourceRef
+     *            The source resource reference or subject in RDF terminology.
+     * @param typeRef
+     *            The type reference or predicate in RDF terminology.
+     * @param targetLit
+     *            The target literal node or object in RDF terminology.
+     */
+    public Link(Reference sourceRef, String typeRef, Literal targetLit) {
+        this(sourceRef, new Reference(typeRef), targetLit);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param sourceRef
+     *            The source resource reference or subject in RDF terminology.
+     * @param typeRef
+     *            The type reference or predicate in RDF terminology.
+     * @param targetRef
+     *            The target resource reference or object in RDF terminology.
+     */
+    public Link(Reference sourceRef, String typeRef, Reference targetRef) {
+        this(sourceRef, new Reference(typeRef), targetRef);
     }
 
     /**

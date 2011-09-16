@@ -229,7 +229,7 @@ public class AwsVerifier extends SecretVerifier {
 
         char[] userSecret = getLocalSecret(userId);
         char[] signature = getSecret(request, response);
-        String sigToCompare = AwsUtils.getSignature(request, userSecret);
+        String sigToCompare = AwsUtils.getS3Signature(request, userSecret);
 
         if (!compare(signature, sigToCompare.toCharArray()))
             return RESULT_INVALID;

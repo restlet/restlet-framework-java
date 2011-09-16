@@ -116,13 +116,13 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
 
         // Test authentication with bad credentials
         String sig = AwsUtils
-                .getSignature(request, "badpassword".toCharArray());
+                .getS3Signature(request, "badpassword".toCharArray());
         cr.setRawValue(ACCESS_ID + ":" + sig);
         Assert.assertEquals(Verifier.RESULT_INVALID,
                 awsVerifier.verify(request, null));
 
         // Test authentication with valid credentials
-        sig = AwsUtils.getSignature(request, ACCESS_KEY.toCharArray());
+        sig = AwsUtils.getS3Signature(request, ACCESS_KEY.toCharArray());
         cr.setRawValue(ACCESS_ID + ":" + sig);
         Assert.assertEquals(Verifier.RESULT_VALID,
                 awsVerifier.verify(request, null));

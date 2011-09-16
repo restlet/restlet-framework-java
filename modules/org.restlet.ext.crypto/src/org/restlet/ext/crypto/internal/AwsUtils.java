@@ -30,6 +30,7 @@
 
 package org.restlet.ext.crypto.internal;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -38,7 +39,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.restlet.Request;
+import org.restlet.data.Form;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
@@ -162,6 +165,39 @@ public class AwsUtils {
     }
 
     /**
+     * Returns the AWS authentication compatible signature for the given string
+     * to sign and secret.
+     * 
+     * @param stringToSign
+     *            The string to sign.
+     * @param secret
+     *            The user secret to sign with
+     * @return The AWS compatible signature
+     */
+    public static String getHmacSha1Signature(String stringToSign, char[] secret) {
+        return Base64.encode(
+                DigestUtils.toHMacSha1(stringToSign,
+                        BioUtils.toByteArray(secret)), false);
+    }
+
+    /**
+     * Returns the AWS authentication compatible signature for the given string
+     * to sign and secret.
+     * 
+     * @param stringToSign
+     *            The string to sign.
+     * @param secret
+     *            The user secret to sign with
+     * @return The AWS compatible signature
+     */
+    public static String getHmacSha256Signature(String stringToSign,
+            char[] secret) {
+        return Base64.encode(
+                DigestUtils.toHMacSha256(stringToSign,
+                        BioUtils.toByteArray(secret)), false);
+    }
+
+    /**
      * Returns the AWS S3 authentication compatible signature for the given
      * request and secret.
      * 
@@ -171,11 +207,25 @@ public class AwsUtils {
      *            The user secret to sign with
      * @return The AWS S3 compatible signature
      */
-    public static String getSignature(Request request, char[] secret) {
+    public static String getS3Signature(Request request, char[] secret) {
         @SuppressWarnings("unchecked")
         Series<Header> headers = (Series<Header>) request.getAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
-        return getSignature(request, headers, secret);
+        return getS3Signature(request, headers, secret);
+    }
+
+    /**
+     * Returns the AWS SimpleDB authentication compatible signature for the
+     * given request and secret.
+     * 
+     * @param request
+     *            The request to create the signature for
+     * @param secret
+     *            The user secret to sign with
+     * @return The AWS SimpleDB compatible signature
+     */
+    public static String getSdbSignature(Request request, char[] secret) {
+        return getHmacSha256Signature(getSdbStringToSign(request), secret);
     }
 
     /**
@@ -190,13 +240,9 @@ public class AwsUtils {
      *            The user secret to sign with
      * @return The AWS S3 compatible signature
      */
-    public static String getSignature(Request request, Series<Header> headers,
-            char[] secret) {
-        String stringToSign = getStringToSign(request, headers);
-        String sig = Base64.encode(
-                DigestUtils.toHMac(stringToSign, BioUtils.toByteArray(secret)),
-                false);
-        return sig;
+    public static String getS3Signature(Request request,
+            Series<Header> headers, char[] secret) {
+        return getHmacSha1Signature(getS3StringToSign(request, headers), secret);
     }
 
     /**
@@ -206,15 +252,15 @@ public class AwsUtils {
      *            The request to generate the signature string from
      * @return The string to sign
      */
-    public static String getStringToSign(Request request) {
+    public static String getS3StringToSign(Request request) {
         @SuppressWarnings("unchecked")
         Series<Header> headers = (Series<Header>) request.getAttributes().get(
                 "org.restlet.http.headers");
-        return getStringToSign(request, headers);
+        return getS3StringToSign(request, headers);
     }
 
     /**
-     * Returns the string to sign.
+     * Returns the S3 string to sign.
      * 
      * @param request
      *            The request to generate the signature string from
@@ -222,7 +268,8 @@ public class AwsUtils {
      *            The HTTP headers associated with the request
      * @return The string to sign
      */
-    public static String getStringToSign(Request request, Series<Header> headers) {
+    public static String getS3StringToSign(Request request,
+            Series<Header> headers) {
         String canonicalizedAmzHeaders = getCanonicalizedAmzHeaders(headers);
         String canonicalizedResource = getCanonicalizedResourceName(request
                 .getResourceRef());
@@ -285,6 +332,57 @@ public class AwsUtils {
                 : "");
         toSign.append(canonicalizedResource != null ? canonicalizedResource
                 : "");
+
+        return toSign.toString();
+    }
+
+    /**
+     * Returns the SimpleDB string to sign.
+     * 
+     * @param request
+     *            The request to generate the signature string from
+     * @return The string to sign.
+     */
+    public static String getSdbStringToSign(Request request) {
+        StringBuilder toSign = new StringBuilder();
+
+        // Append HTTP method
+        String method = request.getMethod().getName();
+        toSign.append(method != null ? method : "").append("\n");
+
+        // Append domain name
+        String domain = request.getResourceRef().getHostDomain();
+        toSign.append(domain != null ? domain : "").append("\n");
+
+        // Append URI path
+        String path = request.getResourceRef().getPath();
+        toSign.append(path != null ? path : "").append("\n");
+
+        // Prepare the query parameters
+        Form query = request.getResourceRef().getQueryAsForm();
+        query.set("AWSAccessKeyId", new String(request.getChallengeResponse()
+                .getSecret()));
+        query.set("SignatureMethod", "HmacSHA256");
+        query.set("SignatureVersion", "2");
+        query.set("Version", "2009-04-15");
+        query.set("Timestamp", Reference.encode(DateUtils.format(new Date(),
+                DateUtils.FORMAT_RFC_3339.get(0))));
+        Collections.sort(query);
+        Parameter param;
+
+        for (int i = 0; i < query.size(); i++) {
+            param = query.get(i);
+
+            if (i > 0) {
+                toSign.append('&');
+            }
+
+            toSign.append(param.getName());
+
+            if (param.getValue() != null) {
+                toSign.append('=').append(param.getValue());
+            }
+        }
 
         return toSign.toString();
     }

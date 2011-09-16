@@ -150,6 +150,7 @@ import org.restlet.util.Series;
  * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
  * @see javax.net.ssl.SSLContext
  * @see java.security.KeyStore
+ * @see <a href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jsse/JSSERefGuide.html#AppA">JSSE Reference - Standard names</a>
  */
 public class DefaultSslContextFactory extends SslContextFactory {
 

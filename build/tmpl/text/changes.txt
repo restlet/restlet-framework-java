@@ -17,6 +17,8 @@ Changes log
          Reported by Cyril Lakech.
        - The max IO idle time used in code was 60s instead of the
          30s announced in the Javadocs. Now using 30s.
+       - Removed extra empty line in XML documents added by the
+         XmlWriter class.
     - API changes
        - Added Authenticator#multiAuthenticating to better control
          optional authenticators and ensure we don't attempt 
@@ -36,7 +38,17 @@ Changes log
          Reported by George Calm.
        - Added APPLICATION_XQUERY media type constant.
          Suggested by Alex Milowski.
-     - Misc
+       - Refactored internal DigestUtils to clearly separate HMac
+         variants SHA-1 and SHA-256, in crypto extension.
+       - Refactored internal AwsUtils to clearly separate HMac
+         variants SHA-1 and SHA-256, in crypto extension.
+       - Added Graph.add*() methods and Link constructors as syntaxic
+         sugar in RDF extension.
+    - New features
+       - Added ChallengeScheme.HTTP_AWS_SDB constant and client-side
+         support for Amazon Web Services's SimpleDB special
+         authentication scheme (using URI query parameters).
+    - Misc
        - Updated SLF4j to version 1.6.2.
 
 - 2.1 Milestone 7 (08/24/2011)

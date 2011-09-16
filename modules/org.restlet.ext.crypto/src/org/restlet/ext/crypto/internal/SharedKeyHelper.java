@@ -207,7 +207,7 @@ public class SharedKeyHelper extends AuthenticatorHelper {
         cw.append(challenge.getIdentifier())
                 .append(':')
                 .append(Base64.encode(
-                        DigestUtils.toHMac256(rest.toString(),
+                        DigestUtils.toHMacSha256(rest.toString(),
                                 Base64.decode(challenge.getSecret())), true));
     }
 }
