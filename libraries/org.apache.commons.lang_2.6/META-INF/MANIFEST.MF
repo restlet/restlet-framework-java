@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Apache Commons Lang
 Bundle-SymbolicName: org.apache.commons.lang
-Bundle-Version: 2.5
+Bundle-Version: 2.6
 Bundle-ClassPath: org.apache.commons.lang.jar
 Bundle-Vendor: Apache Software Foundation
 Export-Package: org.apache.commons.lang,

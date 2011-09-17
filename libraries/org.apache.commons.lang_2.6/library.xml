@@ -1,7 +1,7 @@
 <library id="lang" symbolicName="org.apache.commons.lang">
 	<name>Apache Commons Lang</name>
 	<description>Apache Commons Lang</description>
-	<version>2.5</version>
+	<version>2.6</version>
 	<homeUri>http://commons.apache.org/lang/</homeUri>
 	<downloadUri>http://commons.apache.org/downloads/download_lang.cgi</downloadUri>
 	<provider>Apache Software Foundation</provider>

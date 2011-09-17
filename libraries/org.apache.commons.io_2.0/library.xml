@@ -1,7 +1,8 @@
 <library id="io" symbolicName="org.apache.commons.io">
 	<name>Apache Commons IO</name>
 	<description>Apache Commons IO</description>
-	<version>1.4</version>
+	<version>2.0</version>
+	<release>1</release>
 	<homeUri>http://commons.apache.org/io/</homeUri>
 	<downloadUri>http://commons.apache.org/downloads/download_io.cgi</downloadUri>
 	<provider>Apache Software Foundation</provider>

@@ -1,8 +1,8 @@
 <library id="httpmime" symbolicName="org.apache.httpmime">
 	<name>Apache HTTP Components MIME</name>
 	<description>Apache HTTP Components MIME</description>
-	<version>4.0</version>
-    <release>1</release>
+	<version>4.1</version>
+    <release>2</release>
 	<homeUri>http://hc.apache.org/httpcomponents-client/httpmime/</homeUri>
 	<downloadUri>http://hc.apache.org/httpcomponents-client/download.html</downloadUri>
 	<provider>Apache Software Foundation</provider>

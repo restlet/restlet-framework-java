@@ -70,6 +70,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public class HttpMethodCall extends ClientCall {
 
     /** The associated HTTP client. */

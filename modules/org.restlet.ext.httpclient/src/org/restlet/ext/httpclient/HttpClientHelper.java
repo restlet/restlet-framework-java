@@ -176,6 +176,7 @@ import org.restlet.ext.ssl.internal.SslUtils;
  *      Features</a>
  * @author Jerome Louvel
  */
+@SuppressWarnings("deprecation")
 public class HttpClientHelper extends
         org.restlet.engine.adapter.HttpClientHelper {
     private volatile DefaultHttpClient httpClient;
