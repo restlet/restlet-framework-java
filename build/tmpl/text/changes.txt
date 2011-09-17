@@ -47,6 +47,8 @@ Changes log
        - Added Reference.encode(...) methods with a "queryString"
          boolean parameter to ensure that spaces are encoded as %20
          instead of '+'. Reported by Matt Stromske.
+       - Added Reference.getQueryAsForm(boolean decode) method to 
+         prevent decoding of form parameters in some cases.
     - New features
        - Added ChallengeScheme.HTTP_AWS_SDB constant and client-side
          support for Amazon Web Services's SimpleDB special

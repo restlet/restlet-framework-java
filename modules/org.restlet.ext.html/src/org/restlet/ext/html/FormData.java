@@ -122,7 +122,7 @@ public class FormData implements NamedValue {
 
             if (getValue() != null) {
                 buffer.append('=');
-                buffer.append(Reference.encode(getValue()));
+                buffer.append(Reference.encode(getValue(), queryString));
             }
         }
     }

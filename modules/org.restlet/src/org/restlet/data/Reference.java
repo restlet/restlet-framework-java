@@ -193,15 +193,15 @@ public class Reference {
     }
 
     /**
-     * Encodes a given string using the standard HTML form post URI encoding
-     * mechanism and the UTF-8 character set.
+     * Encodes a given string using the standard URI encoding mechanism and the
+     * UTF-8 character set.
      * 
      * @param toEncode
      *            The string to encode.
      * @return The encoded string.
      */
     public static String encode(String toEncode) {
-        return encode(toEncode, false, CharacterSet.UTF_8);
+        return encode(toEncode, true, CharacterSet.UTF_8);
     }
 
     /**
@@ -281,9 +281,8 @@ public class Reference {
     }
 
     /**
-     * Encodes a given string using the standard HTML form post URI encoding
-     * mechanism. If the provided character set is null, the string is returned
-     * but not encoded.
+     * Encodes a given string using the standard URI encoding mechanism. If the
+     * provided character set is null, the string is returned but not encoded.
      * 
      * <em><strong>Note:</strong> The <a
      * href="http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
@@ -298,7 +297,7 @@ public class Reference {
      *         supported.
      */
     public static String encode(String toEncode, CharacterSet characterSet) {
-        return encode(toEncode, false, characterSet);
+        return encode(toEncode, true, characterSet);
     }
 
     /**
@@ -692,7 +691,7 @@ public class Reference {
 
     /**
      * Adds a parameter to the query component. The name and value are
-     * automatically encoded if necessary.
+     * automatically URL encoded if necessary.
      * 
      * @param parameter
      *            The parameter to add.
@@ -704,7 +703,7 @@ public class Reference {
 
     /**
      * Adds a parameter to the query component. The name and value are
-     * automatically encoded if necessary.
+     * automatically URL encoded if necessary.
      * 
      * @param name
      *            The parameter name.
@@ -734,7 +733,7 @@ public class Reference {
 
     /**
      * Adds several parameters to the query component. The name and value are
-     * automatically encoded if necessary.
+     * automatically URL encoded if necessary.
      * 
      * @param parameters
      *            The parameters to add.
@@ -1460,6 +1459,18 @@ public class Reference {
      */
     public Form getQueryAsForm() {
         return new Form(getQuery());
+    }
+
+    /**
+     * Returns the optional query component as a form.
+     * 
+     * @param decode
+     *            Indicates if the names and values should be automatically
+     *            decoded.
+     * @return The optional query component as a form.
+     */
+    public Form getQueryAsForm(boolean decode) {
+        return new Form(getQuery(), decode);
     }
 
     /**

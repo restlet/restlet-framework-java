@@ -94,7 +94,22 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public Form(String queryString) {
-        this(queryString, CharacterSet.UTF_8);
+        this(queryString, true);
+    }
+
+    /**
+     * Constructor. Uses UTF-8 as the character set for encoding non-ASCII
+     * characters.
+     * 
+     * @param queryString
+     *            The Web form parameters as a string.
+     * @param decode
+     *            Indicates if the names and values should be automatically
+     *            decoded.
+     * @throws IOException
+     */
+    public Form(String queryString, boolean decode) {
+        this(queryString, CharacterSet.UTF_8, decode);
     }
 
     /**
@@ -108,7 +123,24 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public Form(String parametersString, char separator) {
-        this(parametersString, CharacterSet.UTF_8, separator);
+        this(parametersString, separator, true);
+    }
+
+    /**
+     * Constructor. Uses UTF-8 as the character set for encoding non-ASCII
+     * characters.
+     * 
+     * @param parametersString
+     *            The parameters string to parse.
+     * @param separator
+     *            The separator character to append between parameters.
+     * @param decode
+     *            Indicates if the names and values should be automatically
+     *            decoded.
+     * @throws IOException
+     */
+    public Form(String parametersString, char separator, boolean decode) {
+        this(parametersString, CharacterSet.UTF_8, separator, decode);
     }
 
     /**
@@ -121,7 +153,23 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public Form(String queryString, CharacterSet characterSet) {
-        this(queryString, characterSet, '&');
+        this(queryString, characterSet, true);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param queryString
+     *            The Web form parameters as a string.
+     * @param characterSet
+     *            The supported character encoding.
+     * @param decode
+     *            Indicates if the names and values should be automatically
+     *            decoded.
+     * @throws IOException
+     */
+    public Form(String queryString, CharacterSet characterSet, boolean decode) {
+        this(queryString, characterSet, '&', decode);
     }
 
     /**
@@ -137,8 +185,28 @@ public class Form extends Series<Parameter> {
      */
     public Form(String parametersString, CharacterSet characterSet,
             char separator) {
+        this(parametersString, characterSet, separator, true);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param parametersString
+     *            The parameters string to parse.
+     * @param characterSet
+     *            The supported character encoding.
+     * @param separator
+     *            The separator character to append between parameters.
+     * @param decode
+     *            Indicates if the names and values should be automatically
+     *            decoded.
+     * @throws IOException
+     */
+    public Form(String parametersString, CharacterSet characterSet,
+            char separator, boolean decode) {
         this();
-        FormUtils.parse(this, parametersString, characterSet, true, separator);
+        FormUtils
+                .parse(this, parametersString, characterSet, decode, separator);
     }
 
     @Override
@@ -187,11 +255,13 @@ public class Form extends Series<Parameter> {
      */
     public String encode(CharacterSet characterSet, char separator)
             throws IOException {
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
+
         for (int i = 0; i < size(); i++) {
             if (i > 0) {
                 sb.append(separator);
             }
+
             get(i).encode(sb, characterSet);
         }
 

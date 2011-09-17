@@ -218,14 +218,14 @@ public class AwsUtils {
      * Returns the AWS SimpleDB authentication compatible signature for the
      * given request and secret.
      * 
-     * @param request
-     *            The request to create the signature for
+     * @param resourceRef
+     *            The target resource reference.
      * @param secret
      *            The user secret to sign with
      * @return The AWS SimpleDB compatible signature
      */
-    public static String getSdbSignature(Request request, char[] secret) {
-        return getHmacSha256Signature(getSdbStringToSign(request), secret);
+    public static String getSdbSignature(Reference resourceRef, char[] secret) {
+        return getHmacSha256Signature(getSdbStringToSign(resourceRef), secret);
     }
 
     /**
@@ -339,34 +339,28 @@ public class AwsUtils {
     /**
      * Returns the SimpleDB string to sign.
      * 
-     * @param request
-     *            The request to generate the signature string from
+     * @param resourceRef
+     *            The target resource reference.
      * @return The string to sign.
      */
-    public static String getSdbStringToSign(Request request) {
+    public static String getSdbStringToSign(Reference resourceRef) {
         StringBuilder toSign = new StringBuilder();
 
         // Append HTTP method
-        String method = request.getMethod().getName();
-        toSign.append(method != null ? method : "").append("\n");
+        // String method = request.getMethod().getName();
+        // toSign.append(method != null ? method : "").append("\n");
+        toSign.append("POST").append("\n");
 
         // Append domain name
-        String domain = request.getResourceRef().getHostDomain();
+        String domain = resourceRef.getHostDomain();
         toSign.append(domain != null ? domain : "").append("\n");
 
         // Append URI path
-        String path = request.getResourceRef().getPath();
+        String path = resourceRef.getPath();
         toSign.append(path != null ? path : "").append("\n");
 
         // Prepare the query parameters
-        Form query = request.getResourceRef().getQueryAsForm();
-        query.set("AWSAccessKeyId", new String(request.getChallengeResponse()
-                .getSecret()));
-        query.set("SignatureMethod", "HmacSHA256");
-        query.set("SignatureVersion", "2");
-        query.set("Version", "2009-04-15");
-        query.set("Timestamp", Reference.encode(DateUtils.format(new Date(),
-                DateUtils.FORMAT_RFC_3339.get(0))));
+        Form query = resourceRef.getQueryAsForm(false);
         Collections.sort(query);
         Parameter param;
 
@@ -384,6 +378,7 @@ public class AwsUtils {
             }
         }
 
+        System.out.println(toSign.toString());
         return toSign.toString();
     }
 }
