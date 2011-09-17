@@ -1,8 +1,8 @@
 <library id="jackson" symbolicName="org.codehaus.jackson">
 	<name>High-performance JSON processor</name>
 	<description>High-performance JSON processor</description>
-	<version>1.7</version>
-	<release>1</release>
+	<version>1.8</version>
+	<release>5</release>
 	<homeUri>http://jackson.codehaus.org/</homeUri>
 	<downloadUri>http://wiki.fasterxml.com/JacksonDownload</downloadUri>
 	<provider>The Codehaus foundation</provider>

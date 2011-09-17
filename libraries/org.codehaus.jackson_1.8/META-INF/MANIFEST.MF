@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: High-performance JSON processor
 Bundle-SymbolicName: org.codehaus.jackson
-Bundle-Version: 1.7
+Bundle-Version: 1.8
 Bundle-ClassPath: org.codehaus.jackson.core.jar,
  org.codehaus.jackson.mapper.jar
 Bundle-Vendor: Codehaus
