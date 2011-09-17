@@ -121,39 +121,40 @@ public class FormDataSet extends OutputRepresentation {
     }
 
     /**
-     * Encodes the form using the standard URI encoding mechanism and the UTF-8
-     * character set.
+     * Encodes the form using the standard HTML form encoding mechanism and the
+     * UTF-8 character set.
      * 
      * @return The encoded form.
      * @throws IOException
      */
     public String encode() throws IOException {
-        return encode(CharacterSet.UTF_8);
+        return encode(false);
     }
 
     /**
-     * URL encodes the form. The '&' character is used as a separator.
+     * Encodes the form using the standard URI encoding mechanism and the UTF-8
+     * character set.
      * 
-     * @param characterSet
-     *            The supported character encoding.
+     * @param queryString
+     *            True if the target is a query string.
      * @return The encoded form.
      * @throws IOException
      */
-    public String encode(CharacterSet characterSet) throws IOException {
-        return encode(characterSet, '&');
+    public String encode(boolean queryString) throws IOException {
+        return encode('&', queryString);
     }
 
     /**
      * URL encodes the form.
      * 
-     * @param characterSet
-     *            The supported character encoding.
      * @param separator
      *            The separator character to append between parameters.
+     * @param queryString
+     *            True if the target is a query string.
      * @return The encoded form.
      * @throws IOException
      */
-    public String encode(CharacterSet characterSet, char separator)
+    public String encode(char separator, boolean queryString)
             throws IOException {
         StringBuilder sb = new StringBuilder();
 
@@ -162,7 +163,7 @@ public class FormDataSet extends OutputRepresentation {
                 sb.append(separator);
             }
 
-            getEntries().get(i).encode(sb, characterSet);
+            getEntries().get(i).encode(sb, queryString);
         }
 
         return sb.toString();
@@ -186,21 +187,8 @@ public class FormDataSet extends OutputRepresentation {
      *      by Tim Berners Lee</a>
      */
     public String getMatrixString() {
-        return getMatrixString(CharacterSet.UTF_8);
-    }
-
-    /**
-     * Formats the form as a query string.
-     * 
-     * @param characterSet
-     *            The supported character encoding.
-     * @return The form as a matrix string.
-     * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs
-     *      by Tim Berners Lee</a>
-     */
-    public String getMatrixString(CharacterSet characterSet) {
         try {
-            return encode(characterSet, ';');
+            return encode(';', true);
         } catch (IOException ioe) {
             return null;
         }
@@ -217,19 +205,8 @@ public class FormDataSet extends OutputRepresentation {
      * @return The form as a query string.
      */
     public String getQueryString() {
-        return getQueryString(CharacterSet.UTF_8);
-    }
-
-    /**
-     * Formats the form as a query string.
-     * 
-     * @param characterSet
-     *            The supported character encoding.
-     * @return The form as a query string.
-     */
-    public String getQueryString(CharacterSet characterSet) {
         try {
-            return encode(characterSet);
+            return encode(true);
         } catch (IOException ioe) {
             return null;
         }
@@ -290,8 +267,7 @@ public class FormDataSet extends OutputRepresentation {
                     .getBytes());
             HeaderUtils.writeCRLF(outputStream);
         } else {
-            Representation formRep = new StringRepresentation(
-                    getQueryString(CharacterSet.UTF_8),
+            Representation formRep = new StringRepresentation(getQueryString(),
                     MediaType.APPLICATION_WWW_FORM, null, CharacterSet.UTF_8);
             formRep.write(outputStream);
         }

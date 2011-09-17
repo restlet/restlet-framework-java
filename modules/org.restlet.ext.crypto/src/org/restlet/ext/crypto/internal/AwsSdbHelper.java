@@ -33,10 +33,8 @@ package org.restlet.ext.crypto.internal;
 import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.engine.header.ChallengeWriter;
-import org.restlet.engine.header.Header;
+import org.restlet.data.Reference;
 import org.restlet.engine.security.AuthenticatorHelper;
-import org.restlet.util.Series;
 
 /**
  * Implements the HTTP authentication for the Amazon SimpleDB service.
@@ -53,16 +51,15 @@ public class AwsSdbHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawResponse(ChallengeWriter cw,
-            ChallengeResponse challenge, Request request,
-            Series<Header> httpHeaders) {
+    public Reference updateReference(Reference resourceRef,
+            ChallengeResponse challengeResponse, Request request) {
+        Reference result = new Reference(resourceRef);
+
         // Special scheme that adds URI query parameters instead of an HTTP
         // Authorization header.
-        if (request.getChallengeResponse() != null) {
-            String signature = AwsUtils.getSdbSignature(request, request
-                    .getChallengeResponse().getSecret());
-            request.getResourceRef().addQueryParameter("Signature", signature);
-        }
+        String signature = AwsUtils.getSdbSignature(request, request
+                .getChallengeResponse().getSecret());
+        return result.addQueryParameter("Signature", signature);
     }
 
 }

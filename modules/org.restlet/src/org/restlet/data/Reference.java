@@ -140,33 +140,7 @@ public class Reference {
      * @return The decoded string.
      */
     public static String decode(String toDecode) {
-        String result = null;
-
-        if (toDecode != null) {
-            // [ifndef gwt]
-            try {
-                result = java.net.URLDecoder.decode(toDecode, "UTF-8");
-            } catch (UnsupportedEncodingException uee) {
-                Context.getCurrentLogger()
-                        .log(Level.WARNING,
-                                "Unable to decode the string with the UTF-8 character set.",
-                                uee);
-            }
-            // [enddef]
-
-            // [ifdef gwt] uncomment
-            // try {
-            // result =
-            // com.google.gwt.http.client.URL.decodeComponent(toDecode);
-            // } catch (NullPointerException npe) {
-            // System.err
-            // .println("Unable to decode the string with the UTF-8 character set.");
-            // }
-            // [enddef]
-
-        }
-
-        return result;
+        return decode(toDecode, CharacterSet.UTF_8);
     }
 
     /**
@@ -219,60 +193,53 @@ public class Reference {
     }
 
     /**
-     * Encodes a given string using the standard URI encoding mechanism and the
-     * UTF-8 character set.
+     * Encodes a given string using the standard HTML form post URI encoding
+     * mechanism and the UTF-8 character set.
      * 
      * @param toEncode
      *            The string to encode.
      * @return The encoded string.
      */
     public static String encode(String toEncode) {
-        String result = null;
-
-        if (toEncode != null) {
-            // [ifndef gwt]
-            try {
-                result = java.net.URLEncoder.encode(toEncode, "UTF-8");
-            } catch (UnsupportedEncodingException uee) {
-                Context.getCurrentLogger()
-                        .log(Level.WARNING,
-                                "Unable to encode the string with the UTF-8 character set.",
-                                uee);
-            }
-            // [enddef]
-
-            // [ifdef gwt] uncomment
-            // try {
-            // result =
-            // com.google.gwt.http.client.URL.encodeComponent(toEncode);
-            // } catch (NullPointerException npe) {
-            // System.err
-            // .println("Unable to encode the string with the UTF-8 character set.");
-            // }
-            // [enddef]
-
-        }
-
-        return result;
+        return encode(toEncode, false, CharacterSet.UTF_8);
     }
 
     /**
-     * Encodes a given string using the standard URI encoding mechanism. If the
-     * provided character set is null, the string is returned but not encoded.
-     * 
-     * <em><strong>Note:</strong> The <a
-     * href="http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
-     * World Wide Web Consortium Recommendation</a> states that UTF-8 should be
-     * used. Not doing so may introduce incompatibilites.</em>
+     * Encodes a given string using the standard URI encoding mechanism and the
+     * UTF-8 character set. Useful to prevent the usage of '+' to encode spaces
+     * (%20 instead). The '*' characters are encoded as %2A and %7E are replaced
+     * by '~'.
      * 
      * @param toEncode
      *            The string to encode.
+     * @param queryString
+     *            True if the string to encode is part of a query string instead
+     *            of a HTML form post.
      * @param characterSet
      *            The supported character encoding.
-     * @return The encoded string or null if the named character encoding is not
-     *         supported.
+     * @return The encoded string.
      */
-    public static String encode(String toEncode, CharacterSet characterSet) {
+    public static String encode(String toEncode, boolean queryString) {
+        return encode(toEncode, queryString, CharacterSet.UTF_8);
+    }
+
+    /**
+     * Encodes a given string using the standard URI encoding mechanism and the
+     * UTF-8 character set. Useful to prevent the usage of '+' to encode spaces
+     * (%20 instead). The '*' characters are encoded as %2A and %7E are replaced
+     * by '~'.
+     * 
+     * @param toEncode
+     *            The string to encode.
+     * @param queryString
+     *            True if the string to encode is part of a query string instead
+     *            of a HTML form post.
+     * @param characterSet
+     *            The supported character encoding.
+     * @return The encoded string.
+     */
+    public static String encode(String toEncode, boolean queryString,
+            CharacterSet characterSet) {
         if (Edition.CURRENT == Edition.GWT) {
             if (!CharacterSet.UTF_8.equals(characterSet)) {
                 throw new IllegalArgumentException(
@@ -304,7 +271,34 @@ public class Reference {
         // }
         // [enddef]
 
+        if (queryString) {
+            result.replace("+", "%20");
+            result.replace("*", "%2A");
+            result.replace("%7E", "~");
+        }
+
         return result;
+    }
+
+    /**
+     * Encodes a given string using the standard HTML form post URI encoding
+     * mechanism. If the provided character set is null, the string is returned
+     * but not encoded.
+     * 
+     * <em><strong>Note:</strong> The <a
+     * href="http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
+     * World Wide Web Consortium Recommendation</a> states that UTF-8 should be
+     * used. Not doing so may introduce incompatibilities.</em>
+     * 
+     * @param toEncode
+     *            The string to encode.
+     * @param characterSet
+     *            The supported character encoding.
+     * @return The encoded string or null if the named character encoding is not
+     *         supported.
+     */
+    public static String encode(String toEncode, CharacterSet characterSet) {
+        return encode(toEncode, false, characterSet);
     }
 
     /**
@@ -719,7 +713,7 @@ public class Reference {
      * @return The updated reference.
      */
     public Reference addQueryParameter(String name, String value) {
-        final String query = getQuery();
+        String query = getQuery();
 
         if (query == null) {
             if (value == null) {
@@ -1929,10 +1923,10 @@ public class Reference {
             }
 
             // Relative URI detected
-            final String authority = getAuthority();
-            final String path = getPath();
-            final String query = getQuery();
-            final String fragment = getFragment();
+            String authority = getAuthority();
+            String path = getPath();
+            String query = getQuery();
+            String fragment = getFragment();
 
             // Create an empty reference
             result = new Reference();

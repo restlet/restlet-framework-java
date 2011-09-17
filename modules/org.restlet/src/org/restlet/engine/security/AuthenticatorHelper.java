@@ -40,6 +40,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Digest;
+import org.restlet.data.Reference;
 import org.restlet.engine.Helper;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.header.Header;
@@ -201,6 +202,7 @@ public abstract class AuthenticatorHelper extends Helper {
         if (baseSecret != null) {
             return baseSecret;
         }
+
         return null;
     }
 
@@ -298,6 +300,25 @@ public abstract class AuthenticatorHelper extends Helper {
      */
     public void setServerSide(boolean serverSide) {
         this.serverSide = serverSide;
+    }
+
+    /**
+     * Optionally updates the request with a challenge response before sending
+     * it. This is sometimes useful for authentication schemes that aren't based
+     * on the Authorization header but instead on URI query parameters or other
+     * headers. By default it returns the resource URI reference unchanged.
+     * 
+     * @param resourceRef
+     *            The resource URI reference to update.
+     * @param challengeResponse
+     *            The challenge response provided.
+     * @param request
+     *            The request to update.
+     * @return The original URI reference if unchanged or a new one if updated.
+     */
+    public Reference updateReference(Reference resourceRef,
+            ChallengeResponse challengeResponse, Request request) {
+        return resourceRef;
     }
 
 }

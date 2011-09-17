@@ -36,9 +36,9 @@ import org.restlet.Client;
 import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.data.Reference;
 import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderUtils;
+import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.util.Series;
 
 /**
@@ -47,38 +47,6 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public abstract class ClientOutboundWay extends OutboundWay {
-
-    /**
-     * Returns the request URI.
-     * 
-     * @param resourceRef
-     *            The resource reference.
-     * @param isProxied
-     *            Indicates if the request goes through a proxy and requires an
-     *            absolute URI.
-     * @return The absolute request URI.
-     */
-    private static String getRequestUri(Reference resourceRef, boolean isProxied) {
-        String result = null;
-        Reference requestRef = resourceRef.isAbsolute() ? resourceRef
-                : resourceRef.getTargetRef();
-
-        if (isProxied) {
-            result = requestRef.getIdentifier();
-        } else {
-            if (requestRef.hasQuery()) {
-                result = requestRef.getPath() + "?" + requestRef.getQuery();
-            } else {
-                result = requestRef.getPath();
-            }
-
-            if ((result == null) || (result.equals(""))) {
-                result = "/";
-            }
-        }
-
-        return result;
-    }
 
     /**
      * Constructor.
@@ -145,10 +113,11 @@ public abstract class ClientOutboundWay extends OutboundWay {
         getLineBuilder().append(request.getMethod().getName());
         getLineBuilder().append(' ');
         getLineBuilder().append(
-                getRequestUri(request.getResourceRef(), getHelper()
-                        .isProxying()));
+                ReferenceUtils.format(request.getResourceRef(), getHelper()
+                        .isProxying(), request));
         getLineBuilder().append(' ');
         getLineBuilder().append(getVersion(request));
         getLineBuilder().append("\r\n");
     }
+
 }

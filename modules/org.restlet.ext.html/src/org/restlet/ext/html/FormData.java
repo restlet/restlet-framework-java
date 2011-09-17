@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.data.CharacterSet;
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -92,38 +91,40 @@ public class FormData implements NamedValue {
     }
 
     /**
-     * Encodes the parameter into the target buffer.
-     * 
-     * @param buffer
-     *            The target buffer.
-     * @param characterSet
-     *            The character set to use.
-     * @throws IOException
-     */
-    public void encode(Appendable buffer, CharacterSet characterSet)
-            throws IOException {
-        if (getName() != null) {
-            buffer.append(Reference.encode(getName(), characterSet));
-
-            if (getValue() != null) {
-                buffer.append('=');
-                buffer.append(Reference.encode(getValue(), characterSet));
-            }
-        }
-    }
-
-    /**
      * Encodes the parameter as a string.
      * 
      * @param characterSet
      *            The character set to use.
+     * @param queryString
+     *            True if the target is a query string.
      * @return The encoded string?
      * @throws IOException
      */
-    public String encode(CharacterSet characterSet) throws IOException {
-        final StringBuilder sb = new StringBuilder();
-        encode(sb, characterSet);
+    public String encode(boolean queryString) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        encode(sb, queryString);
         return sb.toString();
+    }
+
+    /**
+     * Encodes the parameter into the target buffer.
+     * 
+     * @param buffer
+     *            The target buffer.
+     * @param queryString
+     *            True if the target is a query string.
+     * @throws IOException
+     */
+    public void encode(Appendable buffer, boolean queryString)
+            throws IOException {
+        if (getName() != null) {
+            buffer.append(Reference.encode(getName(), queryString));
+
+            if (getValue() != null) {
+                buffer.append('=');
+                buffer.append(Reference.encode(getValue()));
+            }
+        }
     }
 
     /**

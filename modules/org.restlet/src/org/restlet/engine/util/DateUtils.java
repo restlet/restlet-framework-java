@@ -54,6 +54,9 @@ public final class DateUtils {
     /** W3C date format (RFC 3339). */
     public static final List<String> FORMAT_RFC_3339 = unmodifiableList("yyyy-MM-dd'T'HH:mm:ssz");
 
+    /** AWS date format (ISO 8601). */
+    public static final List<String> FORMAT_ISO_8601 = unmodifiableList("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
     /** Common date format (RFC 822). */
     public static final List<String> FORMAT_RFC_822 = unmodifiableList(
             "EEE, dd MMM yy HH:mm:ss z", "EEE, dd MMM yy HH:mm z",
@@ -82,8 +85,8 @@ public final class DateUtils {
                     "Can't compare the dates, at least one of them is null");
         }
 
-        final long baseTime = baseDate.getTime() / 1000;
-        final long afterTime = afterDate.getTime() / 1000;
+        long baseTime = baseDate.getTime() / 1000;
+        long afterTime = afterDate.getTime() / 1000;
         return baseTime < afterTime;
     }
 
@@ -102,8 +105,8 @@ public final class DateUtils {
                     "Can't compare the dates, at least one of them is null");
         }
 
-        final long baseTime = baseDate.getTime() / 1000;
-        final long beforeTime = beforeDate.getTime() / 1000;
+        long baseTime = baseDate.getTime() / 1000;
+        long beforeTime = beforeDate.getTime() / 1000;
         return beforeTime < baseTime;
     }
 
@@ -122,8 +125,8 @@ public final class DateUtils {
                     "Can't compare the dates, at least one of them is null");
         }
 
-        final long baseTime = baseDate.getTime() / 1000;
-        final long otherTime = otherDate.getTime() / 1000;
+        long baseTime = baseDate.getTime() / 1000;
+        long otherTime = otherDate.getTime() / 1000;
         return otherTime == baseTime;
     }
 
@@ -154,6 +157,7 @@ public final class DateUtils {
 
         // [ifndef gwt]
         java.text.DateFormat formatter = null;
+
         if (FORMAT_RFC_3339.get(0).equals(format)) {
             formatter = new InternetDateFormat(TIMEZONE_GMT);
         } else {
@@ -161,6 +165,7 @@ public final class DateUtils {
                     java.util.Locale.US);
             formatter.setTimeZone(TIMEZONE_GMT);
         }
+
         return formatter.format(date);
         // [enddef]
         // [ifdef gwt]

@@ -39,9 +39,9 @@ import javax.net.ssl.HostnameVerifier;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.data.Protocol;
-import org.restlet.data.Reference;
 import org.restlet.engine.Edition;
 import org.restlet.engine.adapter.ClientCall;
+import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.ext.net.internal.HttpUrlConnectionCall;
 
 /**
@@ -94,9 +94,9 @@ import org.restlet.ext.net.internal.HttpUrlConnectionCall;
  * <td>sslContextFactory</td>
  * <td>String</td>
  * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
- * <td>Let you specify a {@link org.restlet.ext.ssl.SslContextFactory} qualified class name as a
- * parameter, or an instance as an attribute for a more complete and flexible
- * SSL context setting.</td>
+ * <td>Let you specify a {@link org.restlet.ext.ssl.SslContextFactory} qualified
+ * class name as a parameter, or an instance as an attribute for a more complete
+ * and flexible SSL context setting.</td>
  * </tr>
  * </table>
  * For the default SSL parameters see the Javadocs of the
@@ -150,11 +150,9 @@ public class HttpClientHelper extends
         ClientCall result = null;
 
         try {
-            Reference targetRef = request.getResourceRef().getBaseRef() == null ? request
-                    .getResourceRef() : request.getResourceRef().getTargetRef();
-
             result = new HttpUrlConnectionCall(this, request.getMethod()
-                    .toString(), targetRef.toString(),
+                    .toString(), ReferenceUtils.update(
+                    request.getResourceRef(), request).toString(),
                     request.isEntityAvailable());
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING,

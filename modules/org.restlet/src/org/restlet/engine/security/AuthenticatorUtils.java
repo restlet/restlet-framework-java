@@ -219,6 +219,39 @@ public class AuthenticatorUtils {
     }
 
     /**
+     * Optionally updates the request with a challenge response before sending
+     * it. This is sometimes useful for authentication schemes that aren't based
+     * on the Authorization header but instead on URI query parameters or other
+     * headers. By default it returns the resource URI reference unchanged.
+     * 
+     * @param resourceRef
+     *            The resource URI reference to update.
+     * @param challengeResponse
+     *            The challenge response provided.
+     * @param request
+     *            The request to update.
+     * @return The original URI reference if unchanged or a new one if updated.
+     */
+    public static Reference updateReference(Reference resourceRef,
+            ChallengeResponse challengeResponse, Request request) {
+        if (challengeResponse != null) {
+            AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                    challengeResponse.getScheme(), true, false);
+
+            if (helper != null) {
+                resourceRef = helper.updateReference(resourceRef,
+                        challengeResponse, request);
+            } else {
+                Context.getCurrentLogger().warning(
+                        "Challenge scheme " + challengeResponse.getScheme()
+                                + " not supported by the Restlet engine.");
+            }
+        }
+
+        return resourceRef;
+    }
+
+    /**
      * Parses the "Authentication-Info" header.
      * 
      * @param header
@@ -360,7 +393,7 @@ public class AuthenticatorUtils {
     }
 
     /**
-     * Updates a ChallengeResponse object according to given request and
+     * Updates a {@link ChallengeResponse} object according to given request and
      * response.
      * 
      * @param challengeResponse
@@ -373,6 +406,7 @@ public class AuthenticatorUtils {
     public static void update(ChallengeResponse challengeResponse,
             Request request, Response response) {
         ChallengeRequest challengeRequest = null;
+
         for (ChallengeRequest c : response.getChallengeRequests()) {
             if (challengeResponse.getScheme().equals(c.getScheme())) {
                 challengeRequest = c;
@@ -382,11 +416,13 @@ public class AuthenticatorUtils {
 
         String realm = null;
         String nonce = null;
+
         if (challengeRequest != null) {
             realm = challengeRequest.getRealm();
             nonce = challengeRequest.getServerNonce();
             challengeResponse.setOpaque(challengeRequest.getOpaque());
         }
+
         challengeResponse.setRealm(realm);
         challengeResponse.setServerNonce(nonce);
 
@@ -395,7 +431,7 @@ public class AuthenticatorUtils {
     }
 
     /**
-     * Updates a ChallengeResponse object according to given request and
+     * Updates a {@link ChallengeResponse} object according to given request and
      * response and compute a new secret according to the response sent by the
      * server.
      * 
@@ -419,7 +455,7 @@ public class AuthenticatorUtils {
         update(challengeResponse, request, response);
 
         // Compute the new secret.
-        final AuthenticatorHelper helper = Engine.getInstance().findHelper(
+        AuthenticatorHelper helper = Engine.getInstance().findHelper(
                 challengeResponse.getScheme(), false, true);
         challengeResponse
                 .setSecret(helper.formatSecret(challengeResponse, request,

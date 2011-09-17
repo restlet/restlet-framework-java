@@ -44,10 +44,14 @@ Changes log
          variants SHA-1 and SHA-256, in crypto extension.
        - Added Graph.add*() methods and Link constructors as syntaxic
          sugar in RDF extension.
+       - Added Reference.encode(...) methods with a "queryString"
+         boolean parameter to ensure that spaces are encoded as %20
+         instead of '+'. Reported by Matt Stromske.
     - New features
        - Added ChallengeScheme.HTTP_AWS_SDB constant and client-side
          support for Amazon Web Services's SimpleDB special
          authentication scheme (using URI query parameters).
+       - Added ISO 8601 date format in DateUtils class.
     - Misc
        - Updated SLF4j to version 1.6.2.
 

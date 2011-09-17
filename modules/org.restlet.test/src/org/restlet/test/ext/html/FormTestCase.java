@@ -53,14 +53,14 @@ public class FormTestCase extends RestletTestCase {
         form.add("name", "John D. Mitchell");
         form.add("email", "john@bob.net");
         form.add("email2", "joe@bob.net");
-        String query = form.encode(CharacterSet.UTF_8);
+        String query = form.encode();
 
         Series<FormData> newFormData = new FormReader(query,
                 CharacterSet.UTF_8, '&').read();
 
         FormDataSet newForm = new FormDataSet();
         newForm.getEntries().addAll(newFormData);
-        String newQuery = newForm.encode(CharacterSet.UTF_8);
+        String newQuery = newForm.encode();
 
         assertEquals(query, newQuery);
     }

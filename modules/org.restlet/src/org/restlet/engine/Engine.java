@@ -717,7 +717,7 @@ public class Engine {
             ChallengeScheme challengeScheme, boolean clientSide,
             boolean serverSide) {
         org.restlet.engine.security.AuthenticatorHelper result = null;
-        final List<org.restlet.engine.security.AuthenticatorHelper> helpers = getRegisteredAuthenticators();
+        List<org.restlet.engine.security.AuthenticatorHelper> helpers = getRegisteredAuthenticators();
         org.restlet.engine.security.AuthenticatorHelper current;
 
         for (int i = 0; (result == null) && (i < helpers.size()); i++) {

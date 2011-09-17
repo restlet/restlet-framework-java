@@ -48,10 +48,10 @@ import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
-import org.restlet.data.Reference;
 import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.adapter.HttpClientHelper;
 import org.restlet.engine.io.IoUtils;
+import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.ext.sdc.internal.SdcClientCall;
 import org.restlet.ext.sdc.internal.SdcServerConnection;
 import org.restlet.ext.ssl.DefaultSslContextFactory;
@@ -145,8 +145,6 @@ public class SdcClientHelper extends HttpClientHelper {
         ClientCall result = null;
 
         try {
-            Reference targetRef = request.getResourceRef().getBaseRef() == null ? request
-                    .getResourceRef() : request.getResourceRef().getTargetRef();
             ChallengeResponse cr = request.getProxyChallengeResponse();
 
             if (cr != null) {
@@ -176,7 +174,8 @@ public class SdcClientHelper extends HttpClientHelper {
                                         request.getResourceRef());
                     } else {
                         result = new SdcClientCall(this, ssc, request
-                                .getMethod().toString(), targetRef.toString());
+                                .getMethod().toString(), ReferenceUtils.update(
+                                request.getResourceRef(), request).toString());
                     }
                 }
             }

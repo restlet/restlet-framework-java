@@ -59,6 +59,7 @@ import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.adapter.ClientCall;
+import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.ext.httpclient.internal.HttpIdleConnectionReaper;
 import org.restlet.ext.httpclient.internal.HttpMethodCall;
 import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
@@ -293,8 +294,8 @@ public class HttpClientHelper extends
 
         try {
             result = new HttpMethodCall(this, request.getMethod().toString(),
-                    request.getResourceRef().toString(),
-                    request.isEntityAvailable());
+                    ReferenceUtils.update(request.getResourceRef(), request)
+                            .toString(), request.isEntityAvailable());
         } catch (IOException ioe) {
             getLogger().log(Level.WARNING,
                     "Unable to create the HTTP client call", ioe);
