@@ -1,12 +1,9 @@
-<module id="jdbc" includes="jee, jse" type="connector" package="org.restlet.ext.jdbc">
+<module id="jdbc" includes="jee,jse,osgi" type="connector" package="org.restlet.ext.jdbc">
 	<name>Restlet Extension - JDBC</name>
-	<description>
-		Integration with Java DataBase Connectivity (JDBC).
-   </description>
+	<description>Integration with Java DataBase Connectivity (JDBC).</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />
-		<distribution id="p2" />
 	</distributions>
 
 	<dependencies>

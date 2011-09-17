@@ -1,9 +1,6 @@
-<module id="lucene" excludes="android, gwt" type="integration"
-	package="org.restlet.ext.lucene">
+<module id="lucene" excludes="android,gwt" type="integration" package="org.restlet.ext.lucene">
 	<name>Restlet Extension - Lucene</name>
-	<description>
-		Integration with Apache Lucene, Solr and Tika sub-projects.
-	</description>
+	<description>Integration with Apache Lucene, Solr and Tika sub-projects.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />

@@ -215,8 +215,6 @@ public class Reference {
      * @param queryString
      *            True if the string to encode is part of a query string instead
      *            of a HTML form post.
-     * @param characterSet
-     *            The supported character encoding.
      * @return The encoded string.
      */
     public static String encode(String toEncode, boolean queryString) {

@@ -1,9 +1,6 @@
-<module id="jibx" excludes="android, gwt" type="integration"
-	package="org.restlet.ext.jibx">
+<module id="jibx" excludes="android,gwt" type="integration" package="org.restlet.ext.jibx">
 	<name>Restlet Extension - JiBX</name>
-	<description>
-		Integration with JiBX.
-	</description>
+	<description>Integration with JiBX.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />

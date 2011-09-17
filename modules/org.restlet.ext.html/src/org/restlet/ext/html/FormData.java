@@ -93,11 +93,9 @@ public class FormData implements NamedValue {
     /**
      * Encodes the parameter as a string.
      * 
-     * @param characterSet
-     *            The character set to use.
      * @param queryString
      *            True if the target is a query string.
-     * @return The encoded string?
+     * @return The encoded string.
      * @throws IOException
      */
     public String encode(boolean queryString) throws IOException {

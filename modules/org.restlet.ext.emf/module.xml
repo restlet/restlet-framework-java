@@ -1,9 +1,6 @@
-<module id="emf" excludes="android,gwt" type="integration"
-	package="org.restlet.ext.emf">
+<module id="emf" excludes="android,gwt" type="integration" package="org.restlet.ext.emf">
 	<name>Restlet Extension - EMF</name>
-	<description>
-		Integration with Eclipse Modeling Framework.
-	</description>
+	<description>Integration with Eclipse Modeling Framework.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />

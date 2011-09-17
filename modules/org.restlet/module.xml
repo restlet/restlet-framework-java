@@ -10,33 +10,20 @@
 	</distributions>
 
 	<dependencies>
-		<dependency excludes="android, gae, gwt" type="library" id="osgi"
-			maven-scope="compile" />
+		<dependency includes="osgi" type="library" id="osgi" maven-scope="compile" />
 		<dependency includes="gwt" type="library" id="gwt" />
 	</dependencies>
 	<source edition="android">
-		<files-mappers>
-<![CDATA[
-      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".MF.android" to=".MF" />
-]]>
-		</files-mappers>
 		<files-sets>
 <![CDATA[
-         <exclude name="META-INF/MANIFEST.MF" />
          <exclude name="src/com/**" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
 ]]>
 		</files-sets>
 	</source>
 	<source edition="gae">
-		<files-mappers>
-<![CDATA[
-      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".MF.gae" to=".MF" />
-]]>
-		</files-mappers>
 		<files-sets>
 <![CDATA[
-         <exclude name="META-INF/MANIFEST.MF" />
          <exclude name="src/com/**" />
          <exclude name="src/org/restlet/engine/connector/**" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
@@ -53,7 +40,6 @@
 		<files-mappers>
 <![CDATA[
       <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".java.gwt" to=".java" />
-      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".MF.gwt" to=".MF" />
 ]]>
 		</files-mappers>
 		<files-filters>
@@ -65,7 +51,6 @@
 		</files-filters>
 		<files-sets>
 <![CDATA[
-         <exclude name="META-INF/MANIFEST.MF" />
          <custom classname="selector.EditionFileSelector" classpathref="forge-path">
             <param name="edition" value="gwt"/>
          </custom>
@@ -122,7 +107,8 @@
          <exclude name="src/org/restlet/engine/util/EngineClassLoader.java" />
          <exclude name="src/org/restlet/engine/util/InternetDateFormat.java" />
          <exclude name="src/org/restlet/engine/util/MapResolver.java" />
-         <exclude name="src/org/restlet/engine/util/Pool.java" />         
+         <exclude name="src/org/restlet/engine/util/Pool.java" />
+         <exclude name="src/org/restlet/engine/util/ReferenceUtils.java" />
          <exclude name="src/org/restlet/representation/AppendableRepresentation.java" />
          <exclude name="src/org/restlet/representation/CachingRepresentation.java" />
          <exclude name="src/org/restlet/representation/ChannelRepresentation.java" />
@@ -174,10 +160,19 @@
 		<files-sets>
 <![CDATA[
          <exclude name="src/com/**" />
+         <exclude name="src/org/restlet/engine/internal/Activator.java" />
 ]]>
 		</files-sets>
 	</source>
 	<source edition="jse">
+		<files-sets>
+<![CDATA[
+         <exclude name="src/com/**" />
+         <exclude name="src/org/restlet/engine/internal/Activator.java" />
+]]>
+		</files-sets>
+	</source>
+	<source edition="osgi">
 		<files-sets>
 <![CDATA[
          <exclude name="src/com/**" />

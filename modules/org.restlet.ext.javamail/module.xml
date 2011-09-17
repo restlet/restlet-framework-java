@@ -1,9 +1,6 @@
-<module id="javamail" excludes="android, gae, gwt" type="connector"
-	package="org.restlet.ext.javamail">
+<module id="javamail" excludes="android,gae,gwt" type="connector" package="org.restlet.ext.javamail">
 	<name>Restlet Extension - JavaMail</name>
-	<description>
-		Integration with JavaMail.
-	</description>
+	<description>Integration with JavaMail.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />

@@ -1,8 +1,6 @@
-<module id="simple" includes="jse" type="connector" package="org.restlet.ext.simple">
+<module id="simple" includes="jse,osgi" type="connector" package="org.restlet.ext.simple">
 	<name>Restlet Extension - Simple</name>
-	<description>
-		Integration with Simple framework.
-	</description>
+	<description>Integration with Simple framework.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />

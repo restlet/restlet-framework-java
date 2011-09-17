@@ -45,9 +45,6 @@ public class ReferenceUtils {
      * 
      * @param resourceRef
      *            The resource reference.
-     * @param isProxied
-     *            Indicates if the request goes through a proxy and requires an
-     *            absolute URI.
      * @param request
      *            The parent request.
      * @return The absolute request URI.

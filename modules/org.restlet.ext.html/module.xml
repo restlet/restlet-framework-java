@@ -1,8 +1,6 @@
 <module id="html" excludes="gwt" type="standard" package="org.restlet.ext.html">
    <name>Restlet Extension - HTML</name>
-   <description>
-      Support for the HTML (HyperText Markup Language) standard in its 4.0 version and above.
-	</description>
+   <description>Support for the HTML (HyperText Markup Language) standard in its 4.0 version and above.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />

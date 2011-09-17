@@ -8,7 +8,7 @@
 		<lib-bloat-version>1.0</lib-bloat-version>
 		<lib-cglib-version>2.2</lib-cglib-version>
 		<lib-cli-version>1.2</lib-cli-version>
-		<lib-codec-version>1.4</lib-codec-version>
+		<lib-codec-version>1.5</lib-codec-version>
 		<lib-collections-version>3.2.1</lib-collections-version>
 		<lib-db4o-version>7.12.132</lib-db4o-version>
 		<lib-db4o-instrumentation-version>7.12.132</lib-db4o-instrumentation-version>
@@ -20,7 +20,7 @@
 		<lib-emf-common-version>2.6.0.v20100614-1136</lib-emf-common-version>
 		<lib-emf-ecore-version>2.6.0.v20100614-1136</lib-emf-ecore-version>
 		<lib-emf-ecore-xmi-version>2.5.0.v20100521-1846</lib-emf-ecore-xmi-version>
-		<lib-fileupload-version>1.2.1</lib-fileupload-version>
+		<lib-fileupload-version>1.2.2</lib-fileupload-version>
 		<lib-freemarker-version>2.3.16</lib-freemarker-version>
 		<lib-gcollections-version>1.0</lib-gcollections-version>
 		<lib-gdata-version>1.0</lib-gdata-version>
@@ -28,12 +28,12 @@
 		<lib-guice-version>2.0</lib-guice-version>
 		<lib-gwt-version>2.2.0</lib-gwt-version>
 		<lib-gwt-server-version>2.3.0</lib-gwt-server-version>
-		<lib-httpclient-version>4.0.1</lib-httpclient-version>
-		<lib-httpcore-version>4.0.1</lib-httpcore-version>
-		<lib-httpmime-version>4.0.1</lib-httpmime-version>
-		<lib-io-version>1.4</lib-io-version>
-		<lib-jackson-core-version>1.7.1</lib-jackson-core-version>
-		<lib-jackson-mapper-version>1.7.1</lib-jackson-mapper-version>
+		<lib-httpclient-version>4.1.2</lib-httpclient-version>
+		<lib-httpcore-version>4.1.2</lib-httpcore-version>
+		<lib-httpmime-version>4.1.2</lib-httpmime-version>
+		<lib-io-version>2.0.1</lib-io-version>
+		<lib-jackson-core-version>1.8.5</lib-jackson-core-version>
+		<lib-jackson-mapper-version>1.8.5</lib-jackson-mapper-version>
 		<lib-javamail-version>1.4.2</lib-javamail-version>
 		<lib-jaxb-api-version>2.1</lib-jaxb-api-version>
 		<lib-jaxb-ri-version>2.1.12</lib-jaxb-ri-version>
@@ -51,7 +51,7 @@
 		<lib-json-version>2.0</lib-json-version>
 		<lib-jsslutils-version>1.0.5</lib-jsslutils-version>
 		<lib-junit-version>4.8.1</lib-junit-version>
-		<lib-lang-version>2.5</lib-lang-version>
+		<lib-lang-version>2.6</lib-lang-version>
 		<lib-log4j-version>1.2.16</lib-log4j-version>
 		<lib-logging-version>1.1.1</lib-logging-version>
 		<lib-lucene-version>2.9.2</lib-lucene-version>
@@ -60,7 +60,7 @@
 		<lib-oauth-version>20090617</lib-oauth-version>
 		<lib-openid4java-version>0.9.6</lib-openid4java-version>
 		<lib-osgi-version>4.0.0</lib-osgi-version>
-		<lib-pool-version>1.5</lib-pool-version>
+		<lib-pool-version>1.5.6</lib-pool-version>
 		<lib-protobuf-version>2.2.0</lib-protobuf-version>
 		<lib-rome-version>1.0</lib-rome-version>
 		<lib-rowset-version>1.0</lib-rowset-version>

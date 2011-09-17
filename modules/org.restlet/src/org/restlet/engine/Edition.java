@@ -37,8 +37,8 @@ package org.restlet.engine;
  */
 public enum Edition {
 
-    /** Android mobile OS, Google App Engine, Google Web Toolkit, JEE, JSE. */
-    ANDROID, GAE, GWT, JEE, JSE;
+    /** Android mobile OS, Google App Engine, Google Web Toolkit, JEE, JSE, OSGI. */
+    ANDROID, GAE, GWT, JEE, JSE, OSGI;
 
     /** The current engine edition. */
     public static final Edition CURRENT = Edition.JSE;
@@ -60,6 +60,8 @@ public enum Edition {
             return "Java Enterprise Edition";
         case JSE:
             return "Java Standard Edition";
+        case OSGI:
+            return "OSGi";
         }
 
         return null;
@@ -82,6 +84,8 @@ public enum Edition {
             return "Java EE";
         case JSE:
             return "Java SE";
+        case OSGI:
+            return "OSGi";
         }
 
         return null;
@@ -102,8 +106,8 @@ public enum Edition {
             return "GWT";
         case JEE:
             return "JEE";
-        case JSE:
-            return "JSE";
+        case OSGI:
+            return "OSGi";
         }
 
         return null;

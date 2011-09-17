@@ -1,9 +1,6 @@
-<module id="servlet" includes="jee, gae" type="integration"
-	package="org.restlet.ext.servlet">
+<module id="servlet" includes="jee,gae,osgi" type="integration" package="org.restlet.ext.servlet">
 	<name>Restlet Extension - Servlet</name>
-	<description>
-		Integration with Servlet API.
-	</description>
+	<description>Integration with Servlet API.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />
@@ -11,8 +8,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="library" id="servlet" maven-scope="provided"
-			primary="true" />
+		<dependency type="library" id="servlet" maven-scope="provided" primary="true" />
 		<dependency type="module" id="core" />
 	</dependencies>
 

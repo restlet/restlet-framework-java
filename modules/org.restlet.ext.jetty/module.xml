@@ -1,8 +1,6 @@
-<module id="jetty" includes="jse" type="connector" package="org.restlet.ext.jetty">
+<module id="jetty" includes="jse,osgi" type="connector" package="org.restlet.ext.jetty">
 	<name>Restlet Extension - Jetty</name>
-	<description>
-		Integration with Jetty.
-	</description>
+	<description>Integration with Jetty.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />

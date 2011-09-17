@@ -225,8 +225,8 @@ public final class Protocol {
      * 
      * @param name
      *            The scheme name.
-     * @param The
-     *            version number.
+     * @param version
+     *            The version number.
      * @return The associated protocol.
      */
     public static Protocol valueOf(String name, String version) {

@@ -1,9 +1,6 @@
-<module id="net" includes="android, gae, jee, jse" type="connector"
-	package="org.restlet.ext.net">
+<module id="net" excludes="gwt" type="connector" package="org.restlet.ext.net">
 	<name>Restlet Extension - Net</name>
-	<description>
-		Integration with java.net.HttpURLConnection class.
-	</description>
+	<description>Integration with java.net.HttpURLConnection class.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />

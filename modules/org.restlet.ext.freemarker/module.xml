@@ -1,9 +1,6 @@
-<module id="freemarker" excludes="android,gwt" type="integration"
-	package="org.restlet.ext.freemarker">
+<module id="freemarker" excludes="android,gwt" type="integration" package="org.restlet.ext.freemarker">
 	<name>Restlet Extension - FreeMarker</name>
-	<description>
-		Integration with FreeMarker.
-	</description>
+	<description>Integration with FreeMarker.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />

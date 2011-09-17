@@ -1,9 +1,6 @@
-<module id="xstream" excludes="android,gae,gwt" type="integration"
-	package="org.restlet.ext.xstream">
+<module id="xstream" excludes="android,gae,gwt" type="integration" package="org.restlet.ext.xstream">
 	<name>Restlet Extension - XStream</name>
-	<description>
-		Integration with XStream.
-	</description>
+	<description>Integration with XStream.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />

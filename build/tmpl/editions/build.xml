@@ -185,6 +185,15 @@
 		<istrue value="${p2}" />
 	</condition>
 
+	
+	<!-- Set the property that will enable the package target -->
+	<condition property="do-package-p2">
+		<and>
+			<istrue value="${p2}" />
+			<istrue value="${package}" />
+		</and>
+	</condition>
+	
 	<!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
 	<condition property="exclude-packages" value="">
 		<isfalse value="${javadoc-hide}" />
@@ -841,23 +850,30 @@
 	</target>
 		
 	<!-- PACKAGE target -->
-	<target name="package" if="do-package" depends="package-classic" description="Generate the distribution.">
+	<target name="package" if="do-package" depends="package-classic, package-maven, package-p2" description="Generate the distribution.">
 		<!-- copy final artifacts to the final distribution directory -->
 		<move file="${dist-base}/restlet-${edition}-${version-compact}.zip" todir="${final-dist-base}" />
 		<!-- do not fail on error if the exe does not exist in builds that didn't run the nsis task -->
 		<move file="${dist-base}/restlet-${edition}-${version-compact}.exe" todir="${final-dist-base}" failonerror="false" />
-		<move todir="${final-dist-maven2}">
-			<fileset dir="${dist-maven2}" />
-		</move>
+	</target>
+
+	<target name="package-classic" if="do-package" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions.">
 		<move todir="${final-dist-classic}">
 			<fileset dir="${dist-classic}" />
 		</move>
+	</target>
+
+	<target name="package-maven" if="do-package" description="Generate the maven distributions.">
+		<move todir="${final-dist-maven2}">
+			<fileset dir="${dist-maven2}" />
+		</move>
+	</target>
+
+	<target name="package-p2" if="do-package-p2" description="Generate the p2 distributions.">
 		<move todir="${final-dist-p2}">
 			<fileset dir="${dist-p2}" />
 		</move>
 	</target>
-
-	<target name="package-classic" if="do-package" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions." />
 
 	<!-- PACKAGE-ZIP target (generation of final Zip file) -->
 	<target name="package-classic-zip" if="do-package" description="Generate the final zip file for the classic distribution.">
@@ -871,4 +887,5 @@
 			<fileset dir="${dist-classic}" includes="**/*" />
 		</nsis>
 	</target>
+	
 </project>

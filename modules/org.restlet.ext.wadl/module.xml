@@ -1,9 +1,6 @@
-<module excludes="android, gwt" id="wadl" type="standard"
-	package="org.restlet.ext.wadl">
+<module excludes="android, gwt" id="wadl" type="standard" package="org.restlet.ext.wadl">
 	<name>Restlet Extension - WADL</name>
-	<description>
-		Support for the WADL specification.
-	</description>
+	<description>Support for the WADL specification.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />
