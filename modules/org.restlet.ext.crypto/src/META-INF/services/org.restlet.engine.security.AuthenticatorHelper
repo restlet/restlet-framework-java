@@ -1,5 +1,5 @@
 org.restlet.ext.crypto.internal.AwsS3Helper
-org.restlet.ext.crypto.internal.AwsSdbHelper
+org.restlet.ext.crypto.internal.AwsQueryHelper
 org.restlet.ext.crypto.internal.DigestHelper
 org.restlet.ext.crypto.internal.SharedKeyHelper
 org.restlet.ext.crypto.internal.SharedKeyLiteHelper
