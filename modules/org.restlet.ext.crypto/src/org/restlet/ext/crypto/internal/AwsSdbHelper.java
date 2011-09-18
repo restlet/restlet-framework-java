@@ -63,7 +63,7 @@ public class AwsSdbHelper extends AuthenticatorHelper {
         if (MediaType.APPLICATION_WWW_FORM.equals(entity.getMediaType())) {
             Form form = new Form(entity);
             form.add("AWSAccessKeyId", new String(request
-                    .getChallengeResponse().getSecret()));
+                    .getChallengeResponse().getIdentifier()));
             form.add("SignatureMethod", "HmacSHA256");
             form.add("SignatureVersion", "2");
             form.add("Version", "2009-04-15");
