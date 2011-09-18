@@ -198,6 +198,70 @@ public class AwsUtils {
     }
 
     /**
+     * Returns the AWS SimpleDB authentication compatible signature for the
+     * given request and secret.
+     * 
+     * @param method
+     *            The request method.
+     * @param resourceRef
+     *            The target resource reference.
+     * @param params
+     *            The request parameters.
+     * @param secret
+     *            The user secret to sign with
+     * @return The AWS SimpleDB compatible signature
+     */
+    public static String getQuerySignature(Method method,
+            Reference resourceRef, List<Parameter> params, char[] secret) {
+        return getHmacSha256Signature(
+                getQueryStringToSign(method, resourceRef, params), secret);
+    }
+
+    /**
+     * Returns the SimpleDB string to sign.
+     * 
+     * @param resourceRef
+     *            The target resource reference.
+     * @return The string to sign.
+     */
+    public static String getQueryStringToSign(Method method,
+            Reference resourceRef, List<Parameter> params) {
+        StringBuilder toSign = new StringBuilder();
+
+        // Append HTTP method
+        toSign.append(method != null ? method.getName() : "").append("\n");
+
+        // Append domain name
+        String domain = resourceRef.getHostDomain();
+        toSign.append(domain != null ? domain : "").append("\n");
+
+        // Append URI path
+        String path = resourceRef.getPath();
+        toSign.append(path != null ? path : "").append("\n");
+
+        // Prepare the query parameters
+        Collections.sort(params);
+        Parameter param;
+
+        for (int i = 0; i < params.size(); i++) {
+            param = params.get(i);
+
+            if (i > 0) {
+                toSign.append('&');
+            }
+
+            toSign.append(Reference.encode(param.getName()));
+
+            if (param.getValue() != null) {
+                toSign.append('=').append(Reference.encode(param.getValue()));
+            }
+        }
+
+        System.out.println(toSign.toString());
+        return toSign.toString();
+    }
+
+    /**
      * Returns the AWS S3 authentication compatible signature for the given
      * request and secret.
      * 
@@ -212,26 +276,6 @@ public class AwsUtils {
         Series<Header> headers = (Series<Header>) request.getAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
         return getS3Signature(request, headers, secret);
-    }
-
-    /**
-     * Returns the AWS SimpleDB authentication compatible signature for the
-     * given request and secret.
-     * 
-     * @param method
-     *            The request method.
-     * @param resourceRef
-     *            The target resource reference.
-     * @param params
-     *            The request parameters.
-     * @param secret
-     *            The user secret to sign with
-     * @return The AWS SimpleDB compatible signature
-     */
-    public static String getSdbSignature(Method method, Reference resourceRef,
-            List<Parameter> params, char[] secret) {
-        return getHmacSha256Signature(
-                getSdbStringToSign(method, resourceRef, params), secret);
     }
 
     /**
@@ -339,50 +383,6 @@ public class AwsUtils {
         toSign.append(canonicalizedResource != null ? canonicalizedResource
                 : "");
 
-        return toSign.toString();
-    }
-
-    /**
-     * Returns the SimpleDB string to sign.
-     * 
-     * @param resourceRef
-     *            The target resource reference.
-     * @return The string to sign.
-     */
-    public static String getSdbStringToSign(Method method,
-            Reference resourceRef, List<Parameter> params) {
-        StringBuilder toSign = new StringBuilder();
-
-        // Append HTTP method
-        toSign.append(method != null ? method.getName() : "").append("\n");
-
-        // Append domain name
-        String domain = resourceRef.getHostDomain();
-        toSign.append(domain != null ? domain : "").append("\n");
-
-        // Append URI path
-        String path = resourceRef.getPath();
-        toSign.append(path != null ? path : "").append("\n");
-
-        // Prepare the query parameters
-        Collections.sort(params);
-        Parameter param;
-
-        for (int i = 0; i < params.size(); i++) {
-            param = params.get(i);
-
-            if (i > 0) {
-                toSign.append('&');
-            }
-
-            toSign.append(Reference.encode(param.getName()));
-
-            if (param.getValue() != null) {
-                toSign.append('=').append(Reference.encode(param.getValue()));
-            }
-        }
-
-        System.out.println(toSign.toString());
         return toSign.toString();
     }
 }

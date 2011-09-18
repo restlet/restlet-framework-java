@@ -52,9 +52,9 @@ public final class ChallengeScheme {
     public static final ChallengeScheme HTTP_AWS_S3 = new ChallengeScheme(
             "HTTP_AWS_S3", "AWS_S3", "Amazon S3 HTTP authentication");
 
-    /** Amazon SimpleDB HTTP scheme. */
-    public static final ChallengeScheme HTTP_AWS_SDB = new ChallengeScheme(
-            "HTTP_AWS_SDB", "AWS_SDB", "Amazon SimpleDB HTTP authentication");
+    /** Amazon Query String HTTP scheme. */
+    public static final ChallengeScheme HTTP_AWS_QUERY = new ChallengeScheme(
+            "HTTP_AWS_QUERY", "AWS_QUERY", "Amazon Query String authentication");
 
     /**
      * Microsoft Azure Shared Key scheme.

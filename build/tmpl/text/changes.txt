@@ -50,8 +50,8 @@ Changes log
        - Added Reference.getQueryAsForm(boolean decode) method to 
          prevent decoding of form parameters in some cases.
     - New features
-       - Added ChallengeScheme.HTTP_AWS_SDB constant and client-side
-         support for Amazon Web Services's SimpleDB special
+       - Added ChallengeScheme.HTTP_AWS_QUERY constant and client-
+         side support for Amazon Web Services's SimpleDB special
          authentication scheme (using URI query parameters).
        - Added ISO 8601 date format in DateUtils class.
     - Misc
