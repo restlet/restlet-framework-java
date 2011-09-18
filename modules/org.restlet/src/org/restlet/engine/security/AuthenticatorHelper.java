@@ -45,7 +45,6 @@ import org.restlet.engine.Helper;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
-import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 /**
@@ -301,25 +300,6 @@ public abstract class AuthenticatorHelper extends Helper {
      */
     public void setServerSide(boolean serverSide) {
         this.serverSide = serverSide;
-    }
-
-    /**
-     * Optionally updates the request entity with a challenge response before
-     * sending it. This is sometimes useful for authentication schemes that
-     * aren't based on the Authorization header but instead on form parameters
-     * or other headers. By default it returns the entity unchanged.
-     * 
-     * @param entity
-     *            The optional entity to update.
-     * @param challengeResponse
-     *            The challenge response provided.
-     * @param request
-     *            The request to update.
-     * @return The original URI reference if unchanged or a new one if updated.
-     */
-    public Representation updateEntity(Representation entity,
-            ChallengeResponse challengeResponse, Request request) {
-        return entity;
     }
 
     /**

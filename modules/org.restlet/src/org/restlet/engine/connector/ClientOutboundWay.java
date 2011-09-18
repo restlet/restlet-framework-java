@@ -37,7 +37,6 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderUtils;
-import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.util.Series;
 
@@ -118,12 +117,6 @@ public abstract class ClientOutboundWay extends OutboundWay {
         getLineBuilder().append(' ');
         getLineBuilder().append(getVersion(request));
         getLineBuilder().append("\r\n");
-
-        // Optionally rewrite the entity for some authentication schemes
-        getActualMessage().setEntity(
-                AuthenticatorUtils.updateEntity(getActualMessage().getEntity(),
-                        getActualMessage().getChallengeResponse(),
-                        getActualMessage()));
     }
 
 }
