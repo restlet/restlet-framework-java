@@ -81,8 +81,19 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public Form(Representation webForm) {
+        this(webForm, true);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param webForm
+     *            The URL encoded Web form.
+     * @throws IOException
+     */
+    public Form(Representation webForm, boolean decode) {
         this();
-        FormUtils.parse(this, webForm);
+        FormUtils.parse(this, webForm, decode);
     }
 
     /**

@@ -121,12 +121,16 @@ public class FormUtils {
      *            The supported character encoding.
      * @param separator
      *            The separator character to append between parameters.
+     * @param decode
+     *            Indicates if the parameters should be decoded using the given
+     *            character set.
      * @return The parameter.
      * @throws IOException
      */
     public static Parameter getFirstParameter(String query, String name,
-            CharacterSet characterSet, char separator) throws IOException {
-        return new FormReader(query, characterSet, separator)
+            CharacterSet characterSet, char separator, boolean decode)
+            throws IOException {
+        return new FormReader(query, characterSet, separator, decode)
                 .readFirstParameter(name);
     }
 
@@ -164,13 +168,17 @@ public class FormUtils {
      *            The supported character encoding.
      * @param separator
      *            The separator character to append between parameters.
-     * @return The parameter value or list of values.
+     * @param decode
+     *            Indicates if the parameters should be decoded using the given
+     *            character set. s * @return The parameter value or list of
+     *            values.
      * @throws IOException
      *             If the parameters could not be read.
      */
     public static Object getParameter(String query, String name,
-            CharacterSet characterSet, char separator) throws IOException {
-        return new FormReader(query, characterSet, separator)
+            CharacterSet characterSet, char separator, boolean decode)
+            throws IOException {
+        return new FormReader(query, characterSet, separator, decode)
                 .readParameter(name);
     }
 
@@ -209,13 +217,16 @@ public class FormUtils {
      *            The supported character encoding.
      * @param separator
      *            The separator character to append between parameters.
+     * @param decode
+     *            Indicates if the parameters should be decoded using the given
+     *            character set.
      * @throws IOException
      *             If the parameters could not be read.
      */
     public static void getParameters(String parametersString,
             Map<String, Object> parameters, CharacterSet characterSet,
-            char separator) throws IOException {
-        new FormReader(parametersString, characterSet, separator)
+            char separator, boolean decode) throws IOException {
+        new FormReader(parametersString, characterSet, separator, decode)
                 .readParameters(parameters);
     }
 
@@ -249,14 +260,16 @@ public class FormUtils {
      *            The target form.
      * @param post
      *            The posted form.
+     * @param decode
+     *            Indicates if the parameters should be decoded.
      */
-    public static void parse(Form form, Representation post) {
+    public static void parse(Form form, Representation post, boolean decode) {
         if (post != null) {
             if (post.isAvailable()) {
                 FormReader fr = null;
 
                 try {
-                    fr = new FormReader(post);
+                    fr = new FormReader(post, decode);
                 } catch (IOException ioe) {
                     Context.getCurrentLogger().log(Level.WARNING,
                             "Unable to create a form reader. Parsing aborted.",
@@ -284,8 +297,8 @@ public class FormUtils {
      * @param characterSet
      *            The supported character encoding.
      * @param decode
-     *            Indicates if the query parameters should be decoded using the
-     *            given character set.
+     *            Indicates if the parameters should be decoded using the given
+     *            character set.
      * @param separator
      *            The separator character to append between parameters.
      */
@@ -293,13 +306,8 @@ public class FormUtils {
             CharacterSet characterSet, boolean decode, char separator) {
         if ((parametersString != null) && !parametersString.equals("")) {
             FormReader fr = null;
-
-            if (decode) {
-                fr = new FormReader(parametersString, characterSet, separator);
-            } else {
-                fr = new FormReader(parametersString, separator);
-            }
-
+            fr = new FormReader(parametersString, characterSet, separator,
+                    decode);
             fr.addParameters(form);
         }
     }

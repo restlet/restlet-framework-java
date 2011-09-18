@@ -33,7 +33,6 @@ package org.restlet.engine.connector;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
@@ -142,7 +141,7 @@ public abstract class ServerOutboundWay extends OutboundWay {
     }
 
     @Override
-    public Message getActualMessage() {
+    public Response getActualMessage() {
         return getMessage();
     }
 

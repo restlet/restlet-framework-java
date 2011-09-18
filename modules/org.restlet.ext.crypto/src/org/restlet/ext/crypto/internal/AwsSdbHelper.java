@@ -35,9 +35,11 @@ import java.util.Date;
 import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Reference;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.representation.Representation;
 
 /**
  * Implements the HTTP authentication for the Amazon SimpleDB service.
@@ -54,22 +56,29 @@ public class AwsSdbHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public Reference updateReference(Reference resourceRef,
+    public Representation updateEntity(Representation entity,
             ChallengeResponse challengeResponse, Request request) {
-        Reference result = new Reference(resourceRef);
-        result.addQueryParameter("AWSAccessKeyId", new String(request
-                .getChallengeResponse().getSecret()));
-        result.addQueryParameter("SignatureMethod", "HmacSHA256");
-        result.addQueryParameter("SignatureVersion", "2");
-        result.addQueryParameter("Version", "2009-04-15");
-        String df = DateUtils.format(new Date(),
-                DateUtils.FORMAT_ISO_8601.get(0));
-        result.addQueryParameter("Timestamp", df);
+        Representation result = entity;
 
-        // Special scheme that adds URI query parameters instead of an HTTP
-        // Authorization header.
-        String signature = AwsUtils.getSdbSignature(result, request
-                .getChallengeResponse().getSecret());
-        return result.addQueryParameter("Signature", signature);
+        if (MediaType.APPLICATION_WWW_FORM.equals(entity.getMediaType())) {
+            Form form = new Form(entity);
+            form.add("AWSAccessKeyId", new String(request
+                    .getChallengeResponse().getSecret()));
+            form.add("SignatureMethod", "HmacSHA256");
+            form.add("SignatureVersion", "2");
+            form.add("Version", "2009-04-15");
+            String df = DateUtils.format(new Date(),
+                    DateUtils.FORMAT_ISO_8601.get(0));
+            form.add("Timestamp", df);
+
+            // Compute then add the signature parameter
+            String signature = AwsUtils.getSdbSignature(request.getMethod(),
+                    request.getResourceRef(), form, request
+                            .getChallengeResponse().getSecret());
+            form.add("Signature", signature);
+            result = form.getWebRepresentation();
+        }
+
+        return result;
     }
 }

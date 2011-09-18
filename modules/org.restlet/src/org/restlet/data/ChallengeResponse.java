@@ -91,8 +91,8 @@ public final class ChallengeResponse extends ChallengeMessage {
      * @param baseSecret
      *            The user secret, such as a password or a secret key.
      */
-    public ChallengeResponse(final ChallengeRequest challengeRequest,
-            final Response response, final String identifier, char[] baseSecret) {
+    public ChallengeResponse(ChallengeRequest challengeRequest,
+            Response response, String identifier, char[] baseSecret) {
         this(challengeRequest, response, identifier, baseSecret,
                 Digest.ALGORITHM_NONE);
     }
@@ -114,9 +114,9 @@ public final class ChallengeResponse extends ChallengeMessage {
      *            The digest algorithm of the base secret (see {@link Digest}
      *            class).
      */
-    public ChallengeResponse(final ChallengeRequest challengeRequest,
-            final Response response, final String identifier,
-            char[] baseSecret, String baseSecretAlgorithm) {
+    public ChallengeResponse(ChallengeRequest challengeRequest,
+            Response response, String identifier, char[] baseSecret,
+            String baseSecretAlgorithm) {
         super(challengeRequest.getScheme());
         this.identifier = identifier;
         org.restlet.engine.security.AuthenticatorUtils.update(this,
@@ -138,8 +138,8 @@ public final class ChallengeResponse extends ChallengeMessage {
      * @param baseSecret
      *            The user secret, such as a password or a secret key.
      */
-    public ChallengeResponse(final ChallengeRequest challengeRequest,
-            final Response response, final String identifier, String baseSecret) {
+    public ChallengeResponse(ChallengeRequest challengeRequest,
+            Response response, String identifier, String baseSecret) {
         this(challengeRequest, response, identifier, baseSecret.toCharArray(),
                 Digest.ALGORITHM_NONE);
     }

@@ -32,6 +32,7 @@ package org.restlet.ext.crypto.internal;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -39,7 +40,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.restlet.Request;
-import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
@@ -218,14 +218,20 @@ public class AwsUtils {
      * Returns the AWS SimpleDB authentication compatible signature for the
      * given request and secret.
      * 
+     * @param method
+     *            The request method.
      * @param resourceRef
      *            The target resource reference.
+     * @param params
+     *            The request parameters.
      * @param secret
      *            The user secret to sign with
      * @return The AWS SimpleDB compatible signature
      */
-    public static String getSdbSignature(Reference resourceRef, char[] secret) {
-        return getHmacSha256Signature(getSdbStringToSign(resourceRef), secret);
+    public static String getSdbSignature(Method method, Reference resourceRef,
+            List<Parameter> params, char[] secret) {
+        return getHmacSha256Signature(
+                getSdbStringToSign(method, resourceRef, params), secret);
     }
 
     /**
@@ -343,13 +349,12 @@ public class AwsUtils {
      *            The target resource reference.
      * @return The string to sign.
      */
-    public static String getSdbStringToSign(Reference resourceRef) {
+    public static String getSdbStringToSign(Method method,
+            Reference resourceRef, List<Parameter> params) {
         StringBuilder toSign = new StringBuilder();
 
         // Append HTTP method
-        // String method = request.getMethod().getName();
-        // toSign.append(method != null ? method : "").append("\n");
-        toSign.append("POST").append("\n");
+        toSign.append(method != null ? method.getName() : "").append("\n");
 
         // Append domain name
         String domain = resourceRef.getHostDomain();
@@ -360,21 +365,20 @@ public class AwsUtils {
         toSign.append(path != null ? path : "").append("\n");
 
         // Prepare the query parameters
-        Form query = resourceRef.getQueryAsForm(false);
-        Collections.sort(query);
+        Collections.sort(params);
         Parameter param;
 
-        for (int i = 0; i < query.size(); i++) {
-            param = query.get(i);
+        for (int i = 0; i < params.size(); i++) {
+            param = params.get(i);
 
             if (i > 0) {
                 toSign.append('&');
             }
 
-            toSign.append(param.getName());
+            toSign.append(Reference.encode(param.getName()));
 
             if (param.getValue() != null) {
-                toSign.append('=').append(param.getValue());
+                toSign.append('=').append(Reference.encode(param.getValue()));
             }
         }
 

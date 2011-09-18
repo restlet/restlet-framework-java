@@ -52,17 +52,17 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public class FormReader {
-    /** The encoding to use, decoding is enabled, see {@link #decoding}. */
+    /** The encoding to use, decoding is enabled, see {@link #decode}. */
     private volatile CharacterSet characterSet;
 
     /** Indicates if the parameters should be decoded. */
-    private volatile boolean decoding;
-
-    /** The form stream. */
-    private volatile InputStream stream;
+    private volatile boolean decode;
 
     /** The separator character used between parameters. */
     private volatile char separator;
+
+    /** The form stream. */
+    private volatile InputStream stream;
 
     /**
      * Constructor.<br>
@@ -75,7 +75,25 @@ public class FormReader {
      *             if the stream of the representation could not be opened.
      */
     public FormReader(Representation representation) throws IOException {
-        this.decoding = true;
+        this(representation, true);
+    }
+
+    /**
+     * Constructor.<br>
+     * In case the representation does not define a character set, the UTF-8
+     * character set is used.
+     * 
+     * @param representation
+     *            The web form content.
+     * @param decode
+     *            Indicates if the parameters should be decoded using the given
+     *            character set.
+     * @throws IOException
+     *             if the stream of the representation could not be opened.
+     */
+    public FormReader(Representation representation, boolean decode)
+            throws IOException {
+        this.decode = decode;
         this.stream = representation.getStream();
         this.separator = '&';
 
@@ -91,16 +109,11 @@ public class FormReader {
      * 
      * @param parametersString
      *            The parameters string.
+     * @param separator
+     *            The separator character used between parameters.
      */
     public FormReader(String parametersString, char separator) {
-        this.decoding = false;
-        // [ifndef gwt] instruction
-        this.stream = new ByteArrayInputStream(parametersString.getBytes());
-        // [ifdef gwt] instruction uncomment
-        // this.stream = new
-        // org.restlet.engine.io.StringInputStream(parametersString);
-        this.characterSet = null;
-        this.separator = separator;
+        this(parametersString, null, separator, false);
     }
 
     /**
@@ -111,10 +124,34 @@ public class FormReader {
      * @param characterSet
      *            The supported character encoding. Set to null to leave the
      *            data encoded.
+     * @param separator
+     *            The separator character used between parameters.
+     * @param decode
+     *            Indicates if the parameters should be decoded using the given
+     *            character set.
      */
     public FormReader(String parametersString, CharacterSet characterSet,
             char separator) {
-        this.decoding = true;
+        this(parametersString, characterSet, separator, true);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param parametersString
+     *            The parameters string.
+     * @param characterSet
+     *            The supported character encoding. Set to null to leave the
+     *            data encoded.
+     * @param separator
+     *            The separator character used between parameters.
+     * @param decode
+     *            Indicates if the parameters should be decoded using the given
+     *            character set.
+     */
+    public FormReader(String parametersString, CharacterSet characterSet,
+            char separator, boolean decode) {
+        this.decode = decode;
         // [ifndef gwt] instruction
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
         // [ifdef gwt] instruction uncomment
@@ -251,7 +288,7 @@ public class FormReader {
                                 || (nextChar == -1)) {
                             if (nameBuffer.length() > 0) {
                                 result = FormUtils.create(nameBuffer, null,
-                                        this.decoding, this.characterSet);
+                                        this.decode, this.characterSet);
                             } else if (nextChar == -1) {
                                 // Do nothing return null preference
                             } else {
@@ -265,11 +302,11 @@ public class FormReader {
                         if ((nextChar == this.separator) || (nextChar == -1)) {
                             if (valueBuffer.length() > 0) {
                                 result = FormUtils.create(nameBuffer,
-                                        valueBuffer, this.decoding,
+                                        valueBuffer, this.decode,
                                         this.characterSet);
                             } else {
                                 result = FormUtils.create(nameBuffer, null,
-                                        this.decoding, this.characterSet);
+                                        this.decode, this.characterSet);
                             }
                         } else {
                             valueBuffer.append((char) nextChar);
