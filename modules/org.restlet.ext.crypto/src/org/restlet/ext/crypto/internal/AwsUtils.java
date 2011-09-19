@@ -253,9 +253,7 @@ public class AwsUtils {
             toSign.append(Reference.encode(param.getName()));
 
             if (param.getValue() != null) {
-        		toSign.append('=').append(Reference.encode(param.getValue())
-        				.replace("+", "%20").replace("*", "%2A")
-                        .replace("%7E", "~"));
+        		toSign.append('=').append(Reference.encode(param.getValue(), true));
             }
         }
 
