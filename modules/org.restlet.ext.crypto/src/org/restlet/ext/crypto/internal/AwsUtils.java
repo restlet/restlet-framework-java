@@ -253,11 +253,12 @@ public class AwsUtils {
             toSign.append(Reference.encode(param.getName()));
 
             if (param.getValue() != null) {
-                toSign.append('=').append(Reference.encode(param.getValue()));
+        		toSign.append('=').append(Reference.encode(param.getValue())
+        				.replace("+", "%20").replace("*", "%2A")
+                        .replace("%7E", "~"));
             }
         }
 
-        System.out.println(toSign.toString());
         return toSign.toString();
     }
 
