@@ -30,8 +30,8 @@
 
 package org.restlet.example.book.restlet.ch10.sec3.server;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.restlet.Application;
 import org.restlet.Restlet;
@@ -45,7 +45,7 @@ import org.restlet.routing.Router;
 public class MailApiApplication extends Application {
 
     /** Static list of accounts stored in memory. */
-    private final List<Account> accounts = new CopyOnWriteArrayList<Account>();
+    private final Map<String, Account> accounts = new HashMap<String, Account>();
 
     /**
      * Constructor.
@@ -66,7 +66,7 @@ public class MailApiApplication extends Application {
         homer.getContacts().add(new Contact("/accounts/bretzels34/"));
         homer.getContacts().add(new Contact("/accounts/jojo10/"));
         homer.getContacts().add(new Contact("/accounts/lisa1984/"));
-        getAccounts().add(homer);
+        getAccounts().put("chunkylover53", homer);
 
         Account marge = new Account();
         marge.setFirstName("Marge");
@@ -78,7 +78,7 @@ public class MailApiApplication extends Application {
         marge.getContacts().add(new Contact("/accounts/chunkylover53/"));
         marge.getContacts().add(new Contact("/accounts/jojo10/"));
         marge.getContacts().add(new Contact("/accounts/lisa1984/"));
-        getAccounts().add(marge);
+        getAccounts().put("bretzels34", marge);
 
         Account bart = new Account();
         bart.setFirstName("Bart");
@@ -90,7 +90,7 @@ public class MailApiApplication extends Application {
         bart.getContacts().add(new Contact("/accounts/chunkylover53/"));
         bart.getContacts().add(new Contact("/accounts/bretzels34/"));
         bart.getContacts().add(new Contact("/accounts/lisa1984/"));
-        getAccounts().add(bart);
+        getAccounts().put("jojo10", bart);
 
         Account lisa = new Account();
         lisa.setFirstName("Lisa");
@@ -102,7 +102,7 @@ public class MailApiApplication extends Application {
         lisa.getContacts().add(new Contact("/accounts/chunkylover53/"));
         lisa.getContacts().add(new Contact("/accounts/bretzels34/"));
         lisa.getContacts().add(new Contact("/accounts/jojo10/"));
-        getAccounts().add(lisa);
+        getAccounts().put("lisa1984", lisa);
     }
 
     /**
@@ -120,7 +120,7 @@ public class MailApiApplication extends Application {
      * 
      * @return The list of accounts stored in memory.
      */
-    public List<Account> getAccounts() {
+    public Map<String, Account> getAccounts() {
         return accounts;
     }
 

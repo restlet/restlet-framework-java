@@ -30,11 +30,12 @@
 
 package org.restlet.example.book.restlet.ch10.sec3.server;
 
-import java.util.List;
+import java.util.Map;
 
 import org.restlet.data.Reference;
 import org.restlet.example.book.restlet.ch10.sec3.api.AccountRepresentation;
 import org.restlet.example.book.restlet.ch10.sec3.api.AccountResource;
+import org.restlet.example.book.restlet.ch10.sec3.model.Account;
 import org.restlet.ext.rdf.Graph;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
@@ -46,12 +47,12 @@ public class AccountServerResource extends ServerResource implements
         AccountResource {
 
     /** The account identifier. */
-    private int accountId;
+    private String accountId;
 
-    public List<Account> getAccounts(){
-        
+    public Map<String, Account> getAccounts() {
+        return ((MailApiApplication) getApplication()).getAccounts();
     }
-    
+
     /**
      * Retrieve the account identifier based on the URI path variable
      * "accountId" declared in the URI template attached to the application
@@ -59,23 +60,18 @@ public class AccountServerResource extends ServerResource implements
      */
     @Override
     protected void doInit() throws ResourceException {
-        String accountIdAttribute = (String) getRequestAttributes().get(
-                "accountId");
-
-        if (accountIdAttribute != null) {
-            this.accountId = Integer.parseInt(accountIdAttribute);
-        }
+        this.accountId = (String) getRequestAttributes().get("accountId");
     }
 
     public void remove() {
-        AccountsServerResource.getAccounts().remove(this.accountId - 1);
+        getAccounts().remove(this.accountId);
     }
 
     public Graph representFoaf() {
         Graph result = new Graph();
         AccountRepresentation accountRep = represent();
 
-        accountRep.get
+        // accountRep.get
         
         for (String contactRef : accountRep.getContactRefs()) {
             result.add(getReference(), FoafConstants.KNOWS, new Reference(
@@ -86,10 +82,15 @@ public class AccountServerResource extends ServerResource implements
     }
 
     public AccountRepresentation represent() {
-        return AccountsServerResource.getAccounts().get(this.accountId - 1);
+        AccountRepresentation result = new AccountRepresentation();
+        Account account = getAccounts().get(this.accountId);
+
+        return result;
     }
 
-    public void store(AccountRepresentation account) {
-        AccountsServerResource.getAccounts().set(this.accountId - 1, account);
+    public void store(AccountRepresentation accountRep) {
+        Account account = getAccounts().get(this.accountId);
+        
+        
     }
 }
