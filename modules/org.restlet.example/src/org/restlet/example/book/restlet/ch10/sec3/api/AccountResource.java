@@ -30,9 +30,8 @@
 
 package org.restlet.example.book.restlet.ch10.sec3.api;
 
-import org.restlet.resource.Delete;
+import org.restlet.ext.rdf.Graph;
 import org.restlet.resource.Get;
-import org.restlet.resource.Put;
 
 /**
  * User account resource.
@@ -48,18 +47,11 @@ public interface AccountResource {
     public AccountRepresentation represent();
 
     /**
-     * Stores the new value for the identified account.
+     * Represents the account as a FOAF profile using RDF.
      * 
-     * @param account
-     *            The identified account.
+     * @return The FOAF profile as a RDF graph.
      */
-    @Put
-    public void store(AccountRepresentation account);
-
-    /**
-     * Deletes the identified account by setting its value to null.
-     */
-    @Delete
-    public void remove();
+    @Get("rdf")
+    public Graph getFoafProfile();
 
 }

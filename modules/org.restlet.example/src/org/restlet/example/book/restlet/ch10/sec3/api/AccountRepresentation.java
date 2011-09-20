@@ -34,6 +34,18 @@ import java.util.List;
 
 public class AccountRepresentation {
 
+    private String login;
+
+    private String firstName;
+
+    private String lastName;
+
+    private String nickName;
+
+    private String senderName;
+
+    private String emailAddress;
+
     private List<String> contactRefs;
 
     private List<String> mailRefs;
@@ -47,24 +59,72 @@ public class AccountRepresentation {
         return contactRefs;
     }
 
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
     public List<String> getFeedRefs() {
         return feedRefs;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getLogin() {
+        return login;
     }
 
     public List<String> getMailRefs() {
         return mailRefs;
     }
 
+    public String getNickName() {
+        return nickName;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
     public void setContactRefs(List<String> contactRefs) {
         this.contactRefs = contactRefs;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 
     public void setFeedRefs(List<String> feedRefs) {
         this.feedRefs = feedRefs;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
     public void setMailRefs(List<String> mailRefs) {
         this.mailRefs = mailRefs;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
 
 }

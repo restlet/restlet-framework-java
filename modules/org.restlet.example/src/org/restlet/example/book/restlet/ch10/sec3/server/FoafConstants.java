@@ -10,4 +10,12 @@ public class FoafConstants {
 
     public static final Reference NAME = new Reference(BASE + "name");
 
+    public static final Reference FIRST_NAME = new Reference(BASE + "firstName");
+
+    public static final Reference LAST_NAME = new Reference(BASE + "lastName");
+
+    public static final Reference MBOX = new Reference(BASE + "mbox");
+
+    public static final Reference NICK = new Reference(BASE + "nick");
+
 }

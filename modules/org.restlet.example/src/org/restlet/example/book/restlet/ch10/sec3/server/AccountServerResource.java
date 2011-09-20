@@ -36,7 +36,9 @@ import org.restlet.data.Reference;
 import org.restlet.example.book.restlet.ch10.sec3.api.AccountRepresentation;
 import org.restlet.example.book.restlet.ch10.sec3.api.AccountResource;
 import org.restlet.example.book.restlet.ch10.sec3.model.Account;
+import org.restlet.example.book.restlet.ch10.sec3.model.Contact;
 import org.restlet.ext.rdf.Graph;
+import org.restlet.ext.rdf.Literal;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
@@ -67,30 +69,47 @@ public class AccountServerResource extends ServerResource implements
         getAccounts().remove(this.accountId);
     }
 
-    public Graph representFoaf() {
-        Graph result = new Graph();
-        AccountRepresentation accountRep = represent();
+    public Graph getFoafProfile() {
+        Graph result = null;
+        Account account = getAccounts().get(this.accountId);
 
-        // accountRep.get
-        
-        for (String contactRef : accountRep.getContactRefs()) {
-            result.add(getReference(), FoafConstants.KNOWS, new Reference(
-                    contactRef));
+        if (account != null) {
+            result = new Graph();
+            result.add(getReference(), FoafConstants.MBOX,
+                    new Literal(account.getEmailAddress()));
+            result.add(getReference(), FoafConstants.FIRST_NAME, new Literal(
+                    account.getFirstName()));
+            result.add(getReference(), FoafConstants.LAST_NAME, new Literal(
+                    account.getLastName()));
+            result.add(getReference(), FoafConstants.NICK,
+                    new Literal(account.getNickName()));
+            result.add(getReference(), FoafConstants.NAME,
+                    new Literal(account.getSenderName()));
+
+            for (Contact contact : account.getContacts()) {
+                result.add(getReference(), FoafConstants.KNOWS, new Reference(
+                        contact.getProfileRef()));
+            }
         }
 
         return result;
     }
 
     public AccountRepresentation represent() {
-        AccountRepresentation result = new AccountRepresentation();
+        AccountRepresentation result = null;
         Account account = getAccounts().get(this.accountId);
+
+        if (account != null) {
+            result = new AccountRepresentation();
+            result.setEmailAddress(account.getEmailAddress());
+            result.setFirstName(account.getFirstName());
+            result.setLastName(account.getLastName());
+            result.setLogin(account.getLogin());
+            result.setNickName(account.getNickName());
+            result.setSenderName(account.getSenderName());
+        }
 
         return result;
     }
 
-    public void store(AccountRepresentation accountRep) {
-        Account account = getAccounts().get(this.accountId);
-        
-        
-    }
 }
