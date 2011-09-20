@@ -182,7 +182,9 @@ public class RdfRepresentation extends WriterRepresentation {
         } else if (link.hasGraphSource()) {
             discoverNamespaces(link.getSourceAsGraph(), graphHandler);
         }
+        
         discoverNamespaces(link.getTypeRef(), graphHandler);
+        
         if (link.hasLinkTarget()) {
             discoverNamespaces(link.getTargetAsLink(), graphHandler);
         } else if (link.hasGraphSource()) {
@@ -276,40 +278,37 @@ public class RdfRepresentation extends WriterRepresentation {
         if (graph != null) {
             discoverNamespaces(graph, graphHandler);
             graphHandler.startGraph();
+
             for (Link link : graph) {
                 if (link.hasReferenceSource()) {
                     if (link.hasReferenceTarget()) {
-                        graphHandler.link(link.getSourceAsReference(), link
-                                .getTypeRef(), link.getTargetAsReference());
+                        graphHandler.link(link.getSourceAsReference(),
+                                link.getTypeRef(), link.getTargetAsReference());
                     } else if (link.hasLiteralTarget()) {
-                        graphHandler.link(link.getSourceAsReference(), link
-                                .getTypeRef(), link.getTargetAsLiteral());
+                        graphHandler.link(link.getSourceAsReference(),
+                                link.getTypeRef(), link.getTargetAsLiteral());
                     } else if (link.hasLinkTarget()) {
-                        Context
-                                .getCurrentLogger()
+                        Context.getCurrentLogger()
                                 .warning(
                                         "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
                     } else {
-                        Context
-                                .getCurrentLogger()
+                        Context.getCurrentLogger()
                                 .warning(
                                         "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
                     }
                 } else if (link.hasGraphSource()) {
                     if (link.hasReferenceTarget()) {
-                        graphHandler.link(link.getSourceAsGraph(), link
-                                .getTypeRef(), link.getTargetAsReference());
+                        graphHandler.link(link.getSourceAsGraph(),
+                                link.getTypeRef(), link.getTargetAsReference());
                     } else if (link.hasLiteralTarget()) {
-                        graphHandler.link(link.getSourceAsGraph(), link
-                                .getTypeRef(), link.getTargetAsLiteral());
+                        graphHandler.link(link.getSourceAsGraph(),
+                                link.getTypeRef(), link.getTargetAsLiteral());
                     } else if (link.hasLinkTarget()) {
-                        Context
-                                .getCurrentLogger()
+                        Context.getCurrentLogger()
                                 .warning(
                                         "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
                     } else {
-                        Context
-                                .getCurrentLogger()
+                        Context.getCurrentLogger()
                                 .warning(
                                         "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
                     }

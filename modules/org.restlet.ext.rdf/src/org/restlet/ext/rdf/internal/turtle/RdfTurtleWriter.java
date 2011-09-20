@@ -78,13 +78,6 @@ public class RdfTurtleWriter extends GraphHandler {
         Map<String, String> prefixes = context.getPrefixes();
         prefixes.put(RdfConstants.RDF_SCHEMA.toString(), "rdf");
         prefixes.put(RdfConstants.RDF_SYNTAX.toString(), "rdfs");
-        prefixes.put("http://www.w3.org/2000/10/swap/grammar/bnf#", "cfg");
-        prefixes.put("http://www.w3.org/2000/10/swap/grammar/n3#", "n3");
-        prefixes.put("http://www.w3.org/2000/10/swap/list#", "list");
-        prefixes.put("http://www.w3.org/2000/10/swap/pim/doc#", "doc");
-        prefixes.put("http://www.w3.org/2002/07/owl#", "owl");
-        prefixes.put("http://www.w3.org/2000/10/swap/log#", "log");
-        prefixes.put("http://purl.org/dc/elements/1.1/", "dc");
         prefixes.put("http://www.w3.org/2001/XMLSchema#", "type");
 
         for (String key : prefixes.keySet()) {

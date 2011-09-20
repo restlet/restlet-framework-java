@@ -79,18 +79,11 @@ public class RdfN3Writer extends GraphHandler {
         Map<String, String> prefixes = context.getPrefixes();
         prefixes.put(RdfConstants.RDF_SCHEMA.toString(), "rdf");
         prefixes.put(RdfConstants.RDF_SYNTAX.toString(), "rdfs");
-        prefixes.put("http://www.w3.org/2000/10/swap/grammar/bnf#", "cfg");
-        prefixes.put("http://www.w3.org/2000/10/swap/grammar/n3#", "n3");
-        prefixes.put("http://www.w3.org/2000/10/swap/list#", "list");
-        prefixes.put("http://www.w3.org/2000/10/swap/pim/doc#", "doc");
-        prefixes.put("http://www.w3.org/2002/07/owl#", "owl");
-        prefixes.put("http://www.w3.org/2000/10/swap/log#", "log");
-        prefixes.put("http://purl.org/dc/elements/1.1/", "dc");
         prefixes.put("http://www.w3.org/2001/XMLSchema#", "type");
 
         for (String key : prefixes.keySet()) {
-            this.writer.append("@prefix ").append(prefixes.get(key)).append(
-                    ": <").append(key).append(">.\n");
+            this.writer.append("@prefix ").append(prefixes.get(key))
+                    .append(": <").append(key).append(">.\n");
         }
 
         this.writer.append("@keywords a, is, of, has.\n");
@@ -217,27 +210,11 @@ public class RdfN3Writer extends GraphHandler {
         for (Link link : linkset) {
             if (link.hasReferenceSource()) {
                 if (link.hasReferenceTarget()) {
-                    link(link.getSourceAsReference(), link.getTypeRef(), link
-                            .getTargetAsReference());
+                    link(link.getSourceAsReference(), link.getTypeRef(),
+                            link.getTargetAsReference());
                 } else if (link.hasLiteralTarget()) {
-                    link(link.getSourceAsReference(), link.getTypeRef(), link
-                            .getTargetAsLiteral());
-                } else if (link.hasLinkTarget()) {
-                    // TODO Hande source as link.
-                } else {
-                    org.restlet.Context
-                            .getCurrentLogger()
-                            .warning(
-                                    "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
-                }
-            } else if (link.hasGraphSource()) {
-                this.writingExtraDot = false;
-                if (link.hasReferenceTarget()) {
-                    link(link.getSourceAsGraph(), link.getTypeRef(), link
-                            .getTargetAsReference());
-                } else if (link.hasLiteralTarget()) {
-                    link(link.getSourceAsGraph(), link.getTypeRef(), link
-                            .getTargetAsLiteral());
+                    link(link.getSourceAsReference(), link.getTypeRef(),
+                            link.getTargetAsLiteral());
                 } else if (link.hasLinkTarget()) {
                     // TODO Handle source as link.
                 } else {
@@ -246,8 +223,26 @@ public class RdfN3Writer extends GraphHandler {
                             .warning(
                                     "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
                 }
+            } else if (link.hasGraphSource()) {
+                this.writingExtraDot = false;
+
+                if (link.hasReferenceTarget()) {
+                    link(link.getSourceAsGraph(), link.getTypeRef(),
+                            link.getTargetAsReference());
+                } else if (link.hasLiteralTarget()) {
+                    link(link.getSourceAsGraph(), link.getTypeRef(),
+                            link.getTargetAsLiteral());
+                } else if (link.hasLinkTarget()) {
+                    // TODO Handlle source as link.
+                } else {
+                    org.restlet.Context
+                            .getCurrentLogger()
+                            .warning(
+                                    "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
+                }
                 this.writer.write(".\n");
             }
+
             this.precSource = link.getSourceAsReference();
             this.precPredicate = link.getTypeRef();
         }
