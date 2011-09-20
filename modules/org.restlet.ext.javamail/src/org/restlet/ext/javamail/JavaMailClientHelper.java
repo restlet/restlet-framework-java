@@ -151,10 +151,6 @@ import com.sun.mail.pop3.POP3Folder;
  */
 public class JavaMailClientHelper extends ClientHelper {
 
-    /** POP protocol. */
-    public static final Protocol POP = new Protocol("pop", "POP",
-            "Post Office Protocol", 110);
-
     /** Basic POP scheme. Based on the USER/PASS commands. */
     public static final ChallengeScheme POP_BASIC = new ChallengeScheme(
             "POP_BASIC", "Basic",
@@ -163,10 +159,6 @@ public class JavaMailClientHelper extends ClientHelper {
     /** Digest POP scheme. Based on the APOP command. */
     public static final ChallengeScheme POP_DIGEST = new ChallengeScheme(
             "POP_DIGEST", "Digest", "Digest POP authentication (APOP command)");
-
-    /** POPS protocol (via SSL/TLS socket).. */
-    public static final Protocol POPS = new Protocol("pops", "POPS",
-            "Post Office Protocol (Secure)", 995);
 
     /**
      * Constructor.
@@ -178,8 +170,8 @@ public class JavaMailClientHelper extends ClientHelper {
         super(client);
         getProtocols().add(Protocol.SMTP);
         getProtocols().add(Protocol.SMTPS);
-        getProtocols().add(POP);
-        getProtocols().add(POPS);
+        getProtocols().add(Protocol.POP);
+        getProtocols().add(Protocol.POPS);
     }
 
     /**
@@ -296,7 +288,8 @@ public class JavaMailClientHelper extends ClientHelper {
             if (Protocol.SMTP.equals(protocol)
                     || Protocol.SMTPS.equals(protocol)) {
                 handleSmtp(request, response);
-            } else if (POP.equals(protocol) || POPS.equals(protocol)) {
+            } else if (Protocol.POP.equals(protocol)
+                    || Protocol.POPS.equals(protocol)) {
                 handlePop(request, response);
             }
         } catch (IOException e) {
@@ -350,9 +343,9 @@ public class JavaMailClientHelper extends ClientHelper {
 
         String transport = null;
 
-        if (POP.equals(request.getProtocol())) {
+        if (Protocol.POP.equals(request.getProtocol())) {
             transport = "pop3";
-        } else if (POPS.equals(request.getProtocol())) {
+        } else if (Protocol.POPS.equals(request.getProtocol())) {
             transport = "pop3s";
         }
 
@@ -466,13 +459,11 @@ public class JavaMailClientHelper extends ClientHelper {
 
             final Properties props = System.getProperties();
             props.put("mail." + transport + ".host", smtpHost);
-            props
-                    .put("mail." + transport + ".port", Integer
-                            .toString(smtpPort));
-            props.put("mail." + transport + ".auth", Boolean.toString(
-                    authenticate).toLowerCase());
-            props.put("mail." + transport + ".starttls.enable", Boolean
-                    .toString(isStartTls()));
+            props.put("mail." + transport + ".port", Integer.toString(smtpPort));
+            props.put("mail." + transport + ".auth",
+                    Boolean.toString(authenticate).toLowerCase());
+            props.put("mail." + transport + ".starttls.enable",
+                    Boolean.toString(isStartTls()));
 
             // Open the JavaMail session
             final Session session = Session.getDefaultInstance(props);
@@ -491,8 +482,7 @@ public class JavaMailClientHelper extends ClientHelper {
                 // Actually send the message
                 if (tr.isConnected()) {
                     getLogger()
-                            .info(
-                                    "JavaMail client connection successfully established. Attempting to send the message");
+                            .info("JavaMail client connection successfully established. Attempting to send the message");
 
                     // Create the JavaMail message
                     final Message msg = createMessage(request.getEntity(),
