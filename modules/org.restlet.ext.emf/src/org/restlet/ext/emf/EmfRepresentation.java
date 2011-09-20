@@ -62,11 +62,17 @@ import org.restlet.representation.Representation;
  */
 public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
 
+    /** The maximum number of characters per line. */
+    private volatile int lineWidth;
+
     /** The (parsed) object to format. */
-    private T object;
+    private volatile T object;
 
     /** The representation to parse. */
-    private Representation representation;
+    private volatile Representation representation;
+
+    /** Indicates if EMF references should be written as URI anchors. */
+    private volatile boolean usingEncodedAttributeStyle;
 
     /**
      * Constructor.
@@ -82,6 +88,8 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
         super(mediaType);
         this.object = object;
         this.representation = null;
+        this.usingEncodedAttributeStyle = true;
+        this.lineWidth = 80;
     }
 
     /**
@@ -132,9 +140,11 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
         // Set XML save options
         result.getDefaultSaveOptions().put(
                 XMLResource.OPTION_EXTENDED_META_DATA, Boolean.TRUE);
-        result.getDefaultSaveOptions().put(XMLResource.OPTION_LINE_WIDTH, 80);
+        result.getDefaultSaveOptions().put(XMLResource.OPTION_LINE_WIDTH,
+                getLineWidth());
         result.getDefaultSaveOptions().put(
-                XMLResource.OPTION_USE_ENCODED_ATTRIBUTE_STYLE, Boolean.TRUE);
+                XMLResource.OPTION_USE_ENCODED_ATTRIBUTE_STYLE,
+                isUsingEncodedAttributeStyle());
         result.getDefaultSaveOptions().put(XMLResource.OPTION_SCHEMA_LOCATION,
                 Boolean.TRUE);
 
@@ -146,6 +156,15 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
                 xmlOptions);
 
         return result;
+    }
+
+    /**
+     * Returns the maximum number of characters per line. Defaults to 80.
+     * 
+     * @return The maximum number of characters per line.
+     */
+    public int getLineWidth() {
+        return lineWidth;
     }
 
     /**
@@ -186,6 +205,35 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
      */
     protected Map<?, ?> getSaveOptions() {
         return null;
+    }
+
+    /**
+     * Indicates if EMF references should be written as URI anchors.
+     * 
+     * @return True if EMF references should be written as URI anchors.
+     */
+    public boolean isUsingEncodedAttributeStyle() {
+        return usingEncodedAttributeStyle;
+    }
+
+    /**
+     * Sets the maximum number of characters per line.
+     * 
+     * @param lineWidth
+     *            The maximum number of characters per line.
+     */
+    public void setLineWidth(int lineWidth) {
+        this.lineWidth = lineWidth;
+    }
+
+    /**
+     * Indicates if EMF references should be written as URI anchors.
+     * 
+     * @param usingEncodedAttributeStyle
+     *            True if EMF references should be written as URI anchors.
+     */
+    public void setUsingEncodedAttributeStyle(boolean usingEncodedAttributeStyle) {
+        this.usingEncodedAttributeStyle = usingEncodedAttributeStyle;
     }
 
     /**

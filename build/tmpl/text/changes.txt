@@ -49,6 +49,9 @@ Changes log
          instead of '+'. Reported by Matt Stromske.
        - Added Reference.getQueryAsForm(boolean decode) method to 
          prevent decoding of form parameters in some cases.
+       - Added "lineWidth" and "usingEncodedAttributeStyle" properties
+         to EmfRepresentation to facilitate XMI writing configuration. 
+         Reported by Sebastien Schneider.
     - New features
        - Added ChallengeScheme.HTTP_AWS_QUERY constant and client-
          side support for Amazon Web Services's SimpleDB special
