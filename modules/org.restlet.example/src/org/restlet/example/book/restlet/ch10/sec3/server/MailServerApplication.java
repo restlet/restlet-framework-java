@@ -42,7 +42,7 @@ import org.restlet.routing.Router;
 /**
  * The reusable mail server application.
  */
-public class MailApiApplication extends Application {
+public class MailServerApplication extends Application {
 
     /** Static list of accounts stored in memory. */
     private final Map<String, Account> accounts = new HashMap<String, Account>();
@@ -50,7 +50,7 @@ public class MailApiApplication extends Application {
     /**
      * Constructor.
      */
-    public MailApiApplication() {
+    public MailServerApplication() {
         setName("RESTful Mail API application");
         setDescription("Example API for 'Restlet in Action' book");
         setOwner("Noelios Technologies");
@@ -74,7 +74,7 @@ public class MailApiApplication extends Application {
         marge.setLogin("bretzels34");
         marge.setNickName("Personal mailbox of Marge");
         marge.setSenderName("Homer");
-        homer.setEmailAddress("homer@simpson.org");
+        marge.setEmailAddress("homer@simpson.org");
         marge.getContacts().add(new Contact("/accounts/chunkylover53/"));
         marge.getContacts().add(new Contact("/accounts/jojo10/"));
         marge.getContacts().add(new Contact("/accounts/lisa1984/"));
@@ -86,7 +86,7 @@ public class MailApiApplication extends Application {
         bart.setLogin("jojo10");
         bart.setNickName("Personal mailbox of Bart");
         bart.setSenderName("Bart");
-        homer.setEmailAddress("bart@simpson.org");
+        bart.setEmailAddress("bart@simpson.org");
         bart.getContacts().add(new Contact("/accounts/chunkylover53/"));
         bart.getContacts().add(new Contact("/accounts/bretzels34/"));
         bart.getContacts().add(new Contact("/accounts/lisa1984/"));
@@ -98,7 +98,7 @@ public class MailApiApplication extends Application {
         lisa.setLogin("lisa1984");
         lisa.setNickName("Personal mailbox of Lisa");
         lisa.setSenderName("Lisa");
-        homer.setEmailAddress("lisa@simpson.org");
+        lisa.setEmailAddress("lisa@simpson.org");
         lisa.getContacts().add(new Contact("/accounts/chunkylover53/"));
         lisa.getContacts().add(new Contact("/accounts/bretzels34/"));
         lisa.getContacts().add(new Contact("/accounts/jojo10/"));

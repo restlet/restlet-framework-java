@@ -31,6 +31,7 @@
 package org.restlet.example.book.restlet.ch10.sec3.model;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Account {
 
@@ -48,11 +49,14 @@ public class Account {
 
     private List<Contact> contacts;
 
-    private List<Mail> mail;
+    private List<Mail> mails;
 
-    private List<Feed> feed;
+    private List<Feed> feeds;
 
     public Account() {
+        this.contacts = new CopyOnWriteArrayList<Contact>();
+        this.mails = new CopyOnWriteArrayList<Mail>();
+        this.feeds = new CopyOnWriteArrayList<Feed>();
     }
 
     public List<Contact> getContacts() {
@@ -63,8 +67,8 @@ public class Account {
         return emailAddress;
     }
 
-    public List<Feed> getFeed() {
-        return feed;
+    public List<Feed> getFeeds() {
+        return feeds;
     }
 
     public String getFirstName() {
@@ -79,8 +83,8 @@ public class Account {
         return login;
     }
 
-    public List<Mail> getMail() {
-        return mail;
+    public List<Mail> getMails() {
+        return mails;
     }
 
     public String getNickName() {
@@ -99,8 +103,8 @@ public class Account {
         this.emailAddress = emailAddress;
     }
 
-    public void setFeed(List<Feed> feed) {
-        this.feed = feed;
+    public void setFeeds(List<Feed> feed) {
+        this.feeds = feed;
     }
 
     public void setFirstName(String firstName) {
@@ -115,8 +119,8 @@ public class Account {
         this.login = login;
     }
 
-    public void setMail(List<Mail> mail) {
-        this.mail = mail;
+    public void setMails(List<Mail> mail) {
+        this.mails = mail;
     }
 
     public void setNickName(String nickName) {

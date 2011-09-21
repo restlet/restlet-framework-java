@@ -52,7 +52,7 @@ public class AccountServerResource extends ServerResource implements
     private String accountId;
 
     public Map<String, Account> getAccounts() {
-        return ((MailApiApplication) getApplication()).getAccounts();
+        return ((MailServerApplication) getApplication()).getAccounts();
     }
 
     /**
