@@ -1,4 +1,4 @@
-package org.restlet.example.book.restlet.ch10.sec3.server;
+package org.restlet.example.book.restlet.ch10.sec3;
 
 import org.restlet.data.Reference;
 

@@ -69,11 +69,11 @@ public class MailServerApplication extends Application {
         getAccounts().put("chunkylover53", homer);
 
         Account marge = new Account();
-        marge.setFirstName("Marge");
+        marge.setFirstName("Marjorie");
         marge.setLastName("Simpson");
         marge.setLogin("bretzels34");
         marge.setNickName("Personal mailbox of Marge");
-        marge.setSenderName("Homer");
+        marge.setSenderName("Marge");
         marge.setEmailAddress("homer@simpson.org");
         marge.getContacts().add(new Contact("/accounts/chunkylover53/"));
         marge.getContacts().add(new Contact("/accounts/jojo10/"));
@@ -81,7 +81,7 @@ public class MailServerApplication extends Application {
         getAccounts().put("bretzels34", marge);
 
         Account bart = new Account();
-        bart.setFirstName("Bart");
+        bart.setFirstName("Bartholomew");
         bart.setLastName("Simpson");
         bart.setLogin("jojo10");
         bart.setNickName("Personal mailbox of Bart");
@@ -111,7 +111,7 @@ public class MailServerApplication extends Application {
     @Override
     public Restlet createInboundRoot() {
         Router router = new Router(getContext());
-        router.attach("/accounts/{accountId}", AccountServerResource.class);
+        router.attach("/accounts/{accountId}/", AccountServerResource.class);
         return router;
     }
 

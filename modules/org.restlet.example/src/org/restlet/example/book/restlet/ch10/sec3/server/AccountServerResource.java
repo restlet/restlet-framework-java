@@ -33,6 +33,7 @@ package org.restlet.example.book.restlet.ch10.sec3.server;
 import java.util.Map;
 
 import org.restlet.data.Reference;
+import org.restlet.example.book.restlet.ch10.sec3.FoafConstants;
 import org.restlet.example.book.restlet.ch10.sec3.api.AccountRepresentation;
 import org.restlet.example.book.restlet.ch10.sec3.api.AccountResource;
 import org.restlet.example.book.restlet.ch10.sec3.model.Account;
@@ -75,8 +76,8 @@ public class AccountServerResource extends ServerResource implements
 
         if (account != null) {
             result = new Graph();
-            result.add(getReference(), FoafConstants.MBOX,
-                    new Literal(account.getEmailAddress()));
+            result.add(getReference(), FoafConstants.MBOX, new Literal(
+                    "mailto:" + account.getEmailAddress()));
             result.add(getReference(), FoafConstants.FIRST_NAME, new Literal(
                     account.getFirstName()));
             result.add(getReference(), FoafConstants.LAST_NAME, new Literal(
@@ -88,7 +89,7 @@ public class AccountServerResource extends ServerResource implements
 
             for (Contact contact : account.getContacts()) {
                 result.add(getReference(), FoafConstants.KNOWS, new Reference(
-                        contact.getProfileRef()));
+                        getReference(), contact.getProfileRef()).getTargetRef());
             }
         }
 
