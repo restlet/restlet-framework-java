@@ -22,9 +22,11 @@ public class FoafBrowser {
             int maxDepth) {
         Set<Couple<Reference, Literal>> literals = foafProfile.getLiterals();
 
-        for (Couple<Reference, Literal> literal : literals) {
-            System.out.println(literal.getFirst().getLastSegment() + ": "
-                    + literal.getSecond());
+        if (literals != null) {
+            for (Couple<Reference, Literal> literal : literals) {
+                System.out.println(literal.getFirst().getLastSegment() + ": "
+                        + literal.getSecond());
+            }
         }
 
         System.out.println("--------------------------------------------");
@@ -33,8 +35,10 @@ public class FoafBrowser {
             Set<RdfClientResource> knows = foafProfile
                     .getLinked(FoafConstants.KNOWS);
 
-            for (RdfClientResource know : knows) {
-                displayFoafProfile(know, maxDepth - 1);
+            if (knows != null) {
+                for (RdfClientResource know : knows) {
+                    displayFoafProfile(know, maxDepth - 1);
+                }
             }
         }
     }

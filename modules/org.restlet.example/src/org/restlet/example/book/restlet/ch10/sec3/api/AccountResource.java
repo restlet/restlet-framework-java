@@ -39,19 +39,19 @@ import org.restlet.resource.Get;
 public interface AccountResource {
 
     /**
-     * Represents the account as a simple string with the owner name for now.
-     * 
-     * @return The account representation.
-     */
-    @Get
-    public AccountRepresentation represent();
-
-    /**
      * Represents the account as a FOAF profile using RDF.
      * 
      * @return The FOAF profile as a RDF graph.
      */
     @Get("rdf")
     public Graph getFoafProfile();
+
+    /**
+     * Represents the account as a simple string with the owner name for now.
+     * 
+     * @return The account representation.
+     */
+    @Get
+    public AccountRepresentation represent();
 
 }

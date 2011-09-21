@@ -72,29 +72,6 @@ public class AccountServerResource extends ServerResource implements
     }
 
     /**
-     * Builds the representation bean.
-     */
-    public AccountRepresentation represent() {
-        AccountRepresentation result = null;
-
-        if (account != null) {
-            result = new AccountRepresentation();
-            result.setEmailAddress(account.getEmailAddress());
-            result.setFirstName(account.getFirstName());
-            result.setLastName(account.getLastName());
-            result.setLogin(account.getLogin());
-            result.setNickName(account.getNickName());
-            result.setSenderName(account.getSenderName());
-
-            for (Contact contact : account.getContacts()) {
-                result.getContactRefs().add(contact.getProfileRef());
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Builds the RDF graph.
      */
     public Graph getFoafProfile() {
@@ -116,6 +93,29 @@ public class AccountServerResource extends ServerResource implements
             for (Contact contact : account.getContacts()) {
                 result.add(getReference(), FoafConstants.KNOWS, new Reference(
                         getReference(), contact.getProfileRef()).getTargetRef());
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Builds the representation bean.
+     */
+    public AccountRepresentation represent() {
+        AccountRepresentation result = null;
+
+        if (account != null) {
+            result = new AccountRepresentation();
+            result.setEmailAddress(account.getEmailAddress());
+            result.setFirstName(account.getFirstName());
+            result.setLastName(account.getLastName());
+            result.setLogin(account.getLogin());
+            result.setNickName(account.getNickName());
+            result.setSenderName(account.getSenderName());
+
+            for (Contact contact : account.getContacts()) {
+                result.getContactRefs().add(contact.getProfileRef());
             }
         }
 
