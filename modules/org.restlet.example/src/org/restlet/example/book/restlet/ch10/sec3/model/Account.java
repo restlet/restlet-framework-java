@@ -49,14 +49,8 @@ public class Account {
 
     private List<Contact> contacts;
 
-    private List<Mail> mails;
-
-    private List<Feed> feeds;
-
     public Account() {
         this.contacts = new CopyOnWriteArrayList<Contact>();
-        this.mails = new CopyOnWriteArrayList<Mail>();
-        this.feeds = new CopyOnWriteArrayList<Feed>();
     }
 
     public List<Contact> getContacts() {
@@ -65,10 +59,6 @@ public class Account {
 
     public String getEmailAddress() {
         return emailAddress;
-    }
-
-    public List<Feed> getFeeds() {
-        return feeds;
     }
 
     public String getFirstName() {
@@ -81,10 +71,6 @@ public class Account {
 
     public String getLogin() {
         return login;
-    }
-
-    public List<Mail> getMails() {
-        return mails;
     }
 
     public String getNickName() {
@@ -103,10 +89,6 @@ public class Account {
         this.emailAddress = emailAddress;
     }
 
-    public void setFeeds(List<Feed> feed) {
-        this.feeds = feed;
-    }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -117,10 +99,6 @@ public class Account {
 
     public void setLogin(String login) {
         this.login = login;
-    }
-
-    public void setMails(List<Mail> mail) {
-        this.mails = mail;
     }
 
     public void setNickName(String nickName) {

@@ -51,10 +51,6 @@ public class AccountRepresentation {
 
     private List<String> contactRefs;
 
-    private List<String> mailRefs;
-
-    private List<String> feedRefs;
-
     public AccountRepresentation() {
     }
 
@@ -64,10 +60,6 @@ public class AccountRepresentation {
 
     public String getEmailAddress() {
         return emailAddress;
-    }
-
-    public List<String> getFeedRefs() {
-        return feedRefs;
     }
 
     public String getFirstName() {
@@ -80,10 +72,6 @@ public class AccountRepresentation {
 
     public String getLogin() {
         return login;
-    }
-
-    public List<String> getMailRefs() {
-        return mailRefs;
     }
 
     public String getNickName() {
@@ -102,10 +90,6 @@ public class AccountRepresentation {
         this.emailAddress = emailAddress;
     }
 
-    public void setFeedRefs(List<String> feedRefs) {
-        this.feedRefs = feedRefs;
-    }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -116,10 +100,6 @@ public class AccountRepresentation {
 
     public void setLogin(String login) {
         this.login = login;
-    }
-
-    public void setMailRefs(List<String> mailRefs) {
-        this.mailRefs = mailRefs;
     }
 
     public void setNickName(String nickName) {
