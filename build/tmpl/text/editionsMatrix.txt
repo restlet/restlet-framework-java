@@ -4,7 +4,7 @@
 <th>
 <p>Extensions</p>
 </th>
-<#list editions?keys?sort as eKey>
+<#list editions?keys as eKey>
 <th>
 <p><a href="daisy:${editions[eKey].wikiUri}">${editions[eKey].shortLabel}</a></p>
 </th>
@@ -19,7 +19,7 @@
 <td>
 <p><a href="daisy:${project.modules[mKey].wikiUri!""}">${project.modules[mKey].package}</a></p>
 </td>
-	<#list editions?keys?sort as eKey>
+	<#list editions?keys as eKey>
 		<#assign found="nok">
 		<#list editions[eKey].modules as m><#if m.id == mKey><#assign found="ok"></#if></#list>
 		<#if found == 'nok'>

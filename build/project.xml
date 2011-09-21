@@ -1,20 +1,20 @@
 <editions>
-	<edition id="android">
+	<edition id="jse">
 		<label>
-			<full>Android</full>
-			<medium>Android</medium>
-			<short>Android</short>
+			<full>Java Standard Edition</full>
+			<medium>Java SE</medium>
+			<short>JSE</short>
 		</label>
-		<description>Restlet Edition for the Android platform.
+		<description>Restlet Edition for Java Standard Edition.
 		</description>
 		<javadocs>
-			<link href="http://developer.android.com/reference/" />
+			<link href="http://download.oracle.com/javase/1.5.0/docs/api/" />
 		</javadocs>
 		<distributions>
 			<distribution id="classic" />
 			<distribution id="maven" />
 		</distributions>
-		<wikiUri>266-restlet</wikiUri>
+		<wikiUri>311-restlet</wikiUri>
 	</edition>
 	<edition id="jee">
 		<label>
@@ -34,22 +34,22 @@
 		</distributions>
 		<wikiUri>312-restlet</wikiUri>
 	</edition>
-	<edition id="jse">
+	<edition id="osgi">
 		<label>
-			<full>Java Standard Edition</full>
-			<medium>Java SE</medium>
-			<short>JSE</short>
+			<full>OSGi</full>
+			<medium>OSGi</medium>
+			<short>OSGi</short>
 		</label>
-		<description>Restlet Edition for Java Standard Edition.
-		</description>
+		<description>Restlet Edition for OSGi.</description>
 		<javadocs>
 			<link href="http://download.oracle.com/javase/1.5.0/docs/api/" />
 		</javadocs>
 		<distributions>
 			<distribution id="classic" />
 			<distribution id="maven" />
+			<distribution id="p2" />
 		</distributions>
-		<wikiUri>311-restlet</wikiUri>
+		<wikiUri>419-restlet</wikiUri>
 	</edition>
 	<edition id="gae">
 		<label>
@@ -100,21 +100,21 @@
 		</postSource>
 		<wikiUri>144-restlet</wikiUri>
 	</edition>
-	<edition id="osgi">
+	<edition id="android">
 		<label>
-			<full>OSGi</full>
-			<medium>OSGi</medium>
-			<short>OSGi</short>
+			<full>Android</full>
+			<medium>Android</medium>
+			<short>Android</short>
 		</label>
-		<description>Restlet Edition for OSGi.</description>
+		<description>Restlet Edition for the Android platform.
+		</description>
 		<javadocs>
-			<link href="http://download.oracle.com/javase/1.5.0/docs/api/" />
+			<link href="http://developer.android.com/reference/" />
 		</javadocs>
 		<distributions>
 			<distribution id="classic" />
 			<distribution id="maven" />
-			<distribution id="p2" />
 		</distributions>
-		<wikiUri>419-restlet</wikiUri>
+		<wikiUri>266-restlet</wikiUri>
 	</edition>
 </editions>

@@ -1,5 +1,5 @@
 <module id="ssl" excludes="gae,gwt" type="standard" package="org.restlet.ext.ssl">
-	<name>Restlet Extension - SSL support</name>
+	<name>Restlet Extension - SSL</name>
 	<description>Utilities to configure SSL support.</description>
 	<distributions>
 		<distribution id="classic" />

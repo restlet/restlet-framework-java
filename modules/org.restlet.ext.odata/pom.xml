@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.odata</artifactId>
-	<name>Restlet Extension - OData service</name>
+	<name>Restlet Extension - OData</name>
 	<description>Integration with OData services.</description>
 
 	<dependencies>

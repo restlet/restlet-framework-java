@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.ssl</artifactId>
-	<name>Restlet Extension - SSL support</name>
+	<name>Restlet Extension - SSL</name>
 	<description>Utilities to configure SSL support.</description>
 
 	<dependencies>

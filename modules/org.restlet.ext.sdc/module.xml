@@ -1,4 +1,4 @@
-<module id="sdc" excludes="android,gae,gwt" type="standard" package="org.restlet.ext.sdc">
+<module id="sdc" excludes="android,gae,gwt" type="connector" package="org.restlet.ext.sdc">
 	<name>Restlet Extension - SDC</name>
 	<description>Integration with Google Secure Data Connector on the cloud side.</description>
 	<distributions>
