@@ -32,6 +32,7 @@ package org.restlet.ext.rdf;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -182,9 +183,9 @@ public class RdfRepresentation extends WriterRepresentation {
         } else if (link.hasGraphSource()) {
             discoverNamespaces(link.getSourceAsGraph(), graphHandler);
         }
-        
+
         discoverNamespaces(link.getTypeRef(), graphHandler);
-        
+
         if (link.hasLinkTarget()) {
             discoverNamespaces(link.getTargetAsLink(), graphHandler);
         } else if (link.hasGraphSource()) {
@@ -275,46 +276,57 @@ public class RdfRepresentation extends WriterRepresentation {
      * @throws IOException
      */
     public void write(GraphHandler graphHandler) throws IOException {
-        if (graph != null) {
-            discoverNamespaces(graph, graphHandler);
-            graphHandler.startGraph();
+        try {
+            if (graph != null) {
+                discoverNamespaces(graph, graphHandler);
+                graphHandler.startGraph();
 
-            for (Link link : graph) {
-                if (link.hasReferenceSource()) {
-                    if (link.hasReferenceTarget()) {
-                        graphHandler.link(link.getSourceAsReference(),
-                                link.getTypeRef(), link.getTargetAsReference());
-                    } else if (link.hasLiteralTarget()) {
-                        graphHandler.link(link.getSourceAsReference(),
-                                link.getTypeRef(), link.getTargetAsLiteral());
-                    } else if (link.hasLinkTarget()) {
-                        Context.getCurrentLogger()
-                                .warning(
-                                        "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
-                    } else {
-                        Context.getCurrentLogger()
-                                .warning(
-                                        "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
-                    }
-                } else if (link.hasGraphSource()) {
-                    if (link.hasReferenceTarget()) {
-                        graphHandler.link(link.getSourceAsGraph(),
-                                link.getTypeRef(), link.getTargetAsReference());
-                    } else if (link.hasLiteralTarget()) {
-                        graphHandler.link(link.getSourceAsGraph(),
-                                link.getTypeRef(), link.getTargetAsLiteral());
-                    } else if (link.hasLinkTarget()) {
-                        Context.getCurrentLogger()
-                                .warning(
-                                        "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
-                    } else {
-                        Context.getCurrentLogger()
-                                .warning(
-                                        "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
+                for (Link link : graph) {
+                    if (link.hasReferenceSource()) {
+                        if (link.hasReferenceTarget()) {
+                            graphHandler.link(link.getSourceAsReference(),
+                                    link.getTypeRef(),
+                                    link.getTargetAsReference());
+                        } else if (link.hasLiteralTarget()) {
+                            graphHandler.link(link.getSourceAsReference(),
+                                    link.getTypeRef(),
+                                    link.getTargetAsLiteral());
+                        } else if (link.hasLinkTarget()) {
+                            Context.getCurrentLogger()
+                                    .warning(
+                                            "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
+                        } else {
+                            Context.getCurrentLogger()
+                                    .warning(
+                                            "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
+                        }
+                    } else if (link.hasGraphSource()) {
+                        if (link.hasReferenceTarget()) {
+                            graphHandler.link(link.getSourceAsGraph(),
+                                    link.getTypeRef(),
+                                    link.getTargetAsReference());
+                        } else if (link.hasLiteralTarget()) {
+                            graphHandler.link(link.getSourceAsGraph(),
+                                    link.getTypeRef(),
+                                    link.getTargetAsLiteral());
+                        } else if (link.hasLinkTarget()) {
+                            Context.getCurrentLogger()
+                                    .warning(
+                                            "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
+                        } else {
+                            Context.getCurrentLogger()
+                                    .warning(
+                                            "Cannot write the representation of a statement due to the fact that the object is neither a Reference nor a literal.");
+                        }
                     }
                 }
+                graphHandler.endGraph();
             }
-            graphHandler.endGraph();
+        } catch (Exception e) {
+            Context.getCurrentLogger()
+                    .log(Level.WARNING,
+                            "Cannot write the RDF graph due to an unexpected exception",
+                            e);
         }
     }
 

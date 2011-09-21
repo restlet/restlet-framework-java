@@ -89,6 +89,7 @@ public class RdfXmlWriter extends GraphHandler {
             Context.getCurrentLogger().warning(
                     "Cannot write the end of the graph: " + e.getMessage());
         }
+
         this.writer.flush();
     }
 
