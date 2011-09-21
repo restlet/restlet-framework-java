@@ -299,6 +299,15 @@
 			</data>
 			<include name="editionsMatrix.txt" />
 		</fmpp>
+		<!-- Generate modules/type file -->
+		<fmpp sourceroot="${tmpl}/text" outputroot="${temp}/misc" dataroot="${basedir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				editions: get(values, "editions")
+			</data>
+			<include name="mcs.properties" />
+		</fmpp>
 	</target>
 
 	
@@ -323,7 +332,7 @@
 		<delete file="${modules}/pom.tmpl" />
 	</target>
 
-	<target name="generate-artifacts" depends="generate-poms, generate-manifests, generate-misc, copy-eclipse" description="Generates artifacts for the unique source code" />
+	<target name="generate-artifacts" depends="generate-misc, generate-poms, generate-manifests, copy-eclipse" description="Generates artifacts for the unique source code" />
 
 	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
 		<!-- Svn revision number -->
