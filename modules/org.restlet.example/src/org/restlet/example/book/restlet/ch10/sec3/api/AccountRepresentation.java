@@ -31,27 +31,31 @@
 package org.restlet.example.book.restlet.ch10.sec3.api;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 @XStreamAlias("account")
 public class AccountRepresentation {
 
-    private String login;
+    private volatile String login;
 
-    private String firstName;
+    private volatile String firstName;
 
-    private String lastName;
+    private volatile String lastName;
 
-    private String nickName;
+    private volatile String nickName;
 
-    private String senderName;
+    private volatile String senderName;
 
-    private String emailAddress;
+    private volatile String emailAddress;
 
-    private List<String> contactRefs;
+    @XStreamImplicit
+    private volatile List<String> contactRefs;
 
     public AccountRepresentation() {
+        this.contactRefs = new CopyOnWriteArrayList<String>();
     }
 
     public List<String> getContactRefs() {

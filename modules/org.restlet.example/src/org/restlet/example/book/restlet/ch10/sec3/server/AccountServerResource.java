@@ -50,7 +50,7 @@ public class AccountServerResource extends ServerResource implements
         AccountResource {
 
     /** The account identifier. */
-    private String accountId;
+    private Account account;
 
     public Map<String, Account> getAccounts() {
         return ((MailServerApplication) getApplication()).getAccounts();
@@ -63,16 +63,42 @@ public class AccountServerResource extends ServerResource implements
      */
     @Override
     protected void doInit() throws ResourceException {
-        this.accountId = (String) getRequestAttributes().get("accountId");
+        String accountId = (String) getRequestAttributes().get("accountId");
+        this.account = getAccounts().get(accountId);
     }
 
     public void remove() {
-        getAccounts().remove(this.accountId);
+        getAccounts().remove(this.account);
     }
 
+    /**
+     * Builds the representation bean.
+     */
+    public AccountRepresentation represent() {
+        AccountRepresentation result = null;
+
+        if (account != null) {
+            result = new AccountRepresentation();
+            result.setEmailAddress(account.getEmailAddress());
+            result.setFirstName(account.getFirstName());
+            result.setLastName(account.getLastName());
+            result.setLogin(account.getLogin());
+            result.setNickName(account.getNickName());
+            result.setSenderName(account.getSenderName());
+
+            for (Contact contact : account.getContacts()) {
+                result.getContactRefs().add(contact.getProfileRef());
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Builds the RDF graph.
+     */
     public Graph getFoafProfile() {
         Graph result = null;
-        Account account = getAccounts().get(this.accountId);
 
         if (account != null) {
             result = new Graph();
@@ -91,23 +117,6 @@ public class AccountServerResource extends ServerResource implements
                 result.add(getReference(), FoafConstants.KNOWS, new Reference(
                         getReference(), contact.getProfileRef()).getTargetRef());
             }
-        }
-
-        return result;
-    }
-
-    public AccountRepresentation represent() {
-        AccountRepresentation result = null;
-        Account account = getAccounts().get(this.accountId);
-
-        if (account != null) {
-            result = new AccountRepresentation();
-            result.setEmailAddress(account.getEmailAddress());
-            result.setFirstName(account.getFirstName());
-            result.setLastName(account.getLastName());
-            result.setLogin(account.getLogin());
-            result.setNickName(account.getNickName());
-            result.setSenderName(account.getSenderName());
         }
 
         return result;
