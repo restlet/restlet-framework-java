@@ -135,7 +135,7 @@ public class DigestVerifier extends
             }
 
             try {
-                if (!DigestHelper.isNonceValid(nonce, getDigestAuthenticator()
+                if (!HttpDigestHelper.isNonceValid(nonce, getDigestAuthenticator()
                         .getServerKey(), getDigestAuthenticator()
                         .getMaxServerNonceAge())) {
                     // Nonce expired, send challenge request with stale=true

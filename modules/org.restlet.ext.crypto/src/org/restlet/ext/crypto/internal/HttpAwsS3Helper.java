@@ -43,12 +43,12 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class AwsS3Helper extends AuthenticatorHelper {
+public class HttpAwsS3Helper extends AuthenticatorHelper {
 
     /**
      * Constructor.
      */
-    public AwsS3Helper() {
+    public HttpAwsS3Helper() {
         super(ChallengeScheme.HTTP_AWS_S3, true, true);
     }
 

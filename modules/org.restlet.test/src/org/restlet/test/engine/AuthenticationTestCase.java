@@ -42,7 +42,7 @@ import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.security.AuthenticatorUtils;
-import org.restlet.ext.crypto.internal.AwsS3Helper;
+import org.restlet.ext.crypto.internal.HttpAwsS3Helper;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
 
@@ -63,7 +63,7 @@ public class AuthenticationTestCase extends RestletTestCase {
      * Test Amazon S3 authentication.
      */
     public void testAwsS3() {
-        AwsS3Helper helper = new AwsS3Helper();
+        HttpAwsS3Helper helper = new HttpAwsS3Helper();
 
         // Example Object GET
         ChallengeWriter cw = new ChallengeWriter();

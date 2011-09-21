@@ -49,7 +49,7 @@ import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.engine.security.AuthenticatorHelper;
-import org.restlet.ext.oauth.OAuthHelper;
+import org.restlet.ext.oauth.HttpOAuthHelper;
 import org.restlet.test.RestletTestCase;
 import org.restlet.test.ext.oauth.app.OAuthClientTestApplication;
 import org.restlet.test.ext.oauth.app.OAuthComboTestApplication;
@@ -133,7 +133,7 @@ public abstract class OAuthHttpTestBase extends RestletTestCase{
         this.reqClient = this.createClient();
         List<AuthenticatorHelper> authenticators = Engine.getInstance()
         .getRegisteredAuthenticators();
-        authenticators.add(new OAuthHelper());
+        authenticators.add(new HttpOAuthHelper());
         if(multiple)
             setupMultiple();
         else

@@ -41,7 +41,7 @@ import org.restlet.data.Status;
 import org.restlet.ext.oauth.AuthenticatedUser;
 import org.restlet.ext.oauth.Client;
 import org.restlet.ext.oauth.OAuthError;
-import org.restlet.ext.oauth.OAuthHelper;
+import org.restlet.ext.oauth.HttpOAuthHelper;
 import org.restlet.ext.oauth.OAuthServerResource;
 import org.restlet.ext.oauth.ResponseType;
 import org.restlet.representation.Representation;
@@ -256,7 +256,7 @@ public class AuthorizationServerResourceOld extends OAuthServerResource {
             Client client) {
 
         Reference ref = new Reference("riap://application/"
-                + OAuthHelper.getAuthPage(getContext()));
+                + HttpOAuthHelper.getAuthPage(getContext()));
         getLogger().fine("Name = " + getApplication().getInboundRoot());
         ref.addQueryParameter("client", client.getClientId());
         // Requested

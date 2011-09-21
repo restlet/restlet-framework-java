@@ -110,7 +110,7 @@ import org.restlet.util.Series;
  * 
  * @author Kristoffer Gronowski
  */
-public class OAuthHelper extends AuthenticatorHelper {
+public class HttpOAuthHelper extends AuthenticatorHelper {
     /**
      * Returns the value of the "authPage" parameter.
      * 
@@ -188,7 +188,7 @@ public class OAuthHelper extends AuthenticatorHelper {
      * Constructor. Use the {@link ChallengeScheme#HTTP_OAUTH} authentication
      * scheme.
      */
-    public OAuthHelper() {
+    public HttpOAuthHelper() {
         super(ChallengeScheme.HTTP_OAUTH, true, true);
     }
 

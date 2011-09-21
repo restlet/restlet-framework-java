@@ -260,7 +260,7 @@ public class AuthorizationServerResource extends OAuthServerResource {
             Client client) {
 
         Reference ref = new Reference("riap://application"
-                + OAuthHelper.getAuthPage(getContext()));
+                + HttpOAuthHelper.getAuthPage(getContext()));
         getLogger().fine("Name = " + getApplication().getInboundRoot());
         ref.addQueryParameter("client", client.getClientId());
         // Requested

@@ -45,12 +45,12 @@ import org.restlet.engine.util.DateUtils;
  * 
  * @author Jerome Louvel
  */
-public class AwsQueryHelper extends AuthenticatorHelper {
+public class HttpAwsQueryHelper extends AuthenticatorHelper {
 
     /**
      * Constructor.
      */
-    public AwsQueryHelper() {
+    public HttpAwsQueryHelper() {
         super(ChallengeScheme.HTTP_AWS_QUERY, true, false);
     }
 

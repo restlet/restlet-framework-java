@@ -61,7 +61,7 @@ import org.restlet.util.Series;
  * 
  * @author Thierry Boileau
  */
-public class SharedKeyHelper extends AuthenticatorHelper {
+public class HttpAzureSharedKeyHelper extends AuthenticatorHelper {
 
     /**
      * Returns the canonicalized Azure headers.
@@ -124,7 +124,7 @@ public class SharedKeyHelper extends AuthenticatorHelper {
     /**
      * Constructor.
      */
-    public SharedKeyHelper() {
+    public HttpAzureSharedKeyHelper() {
         super(ChallengeScheme.HTTP_AZURE_SHAREDKEY, true, false);
     }
 

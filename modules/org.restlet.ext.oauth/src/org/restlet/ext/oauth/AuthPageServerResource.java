@@ -169,12 +169,12 @@ public class AuthPageServerResource extends OAuthServerResource {
         }
 
         // Check if an auth page is set in the Context
-        String authPage = OAuthHelper.getAuthPageTemplate(getContext());
+        String authPage = HttpOAuthHelper.getAuthPageTemplate(getContext());
         getLogger().fine("this is auth page: " + authPage);
         if (authPage != null && authPage.length() > 0) {
             getLogger().fine("loading authPage: " + authPage);
             // Check if we should skip the page if already approved scopes
-            boolean sameScope = OAuthHelper.getAuthSkipApproved(getContext());
+            boolean sameScope = HttpOAuthHelper.getAuthSkipApproved(getContext());
             if (sameScope) {
                 String[] scopesArray = getQuery().getValuesArray("scope");
 
@@ -318,7 +318,7 @@ public class AuthPageServerResource extends OAuthServerResource {
         // Build the model
         HashMap<String, Object> data = new HashMap<String, Object>();
 
-        data.put("target", getRootRef() + OAuthHelper.getAuthPage(getContext()));
+        data.put("target", getRootRef() + HttpOAuthHelper.getAuthPage(getContext()));
 
         // TODO check with Restlet lead
         data.put("clientId", clientId);

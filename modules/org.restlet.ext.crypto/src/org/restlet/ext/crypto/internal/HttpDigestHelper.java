@@ -57,7 +57,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class DigestHelper extends AuthenticatorHelper {
+public class HttpDigestHelper extends AuthenticatorHelper {
 
     /**
      * Checks whether the specified nonce is valid with respect to the specified
@@ -99,7 +99,7 @@ public class DigestHelper extends AuthenticatorHelper {
     /**
      * Constructor.
      */
-    public DigestHelper() {
+    public HttpDigestHelper() {
         super(ChallengeScheme.HTTP_DIGEST, true, true);
     }
 

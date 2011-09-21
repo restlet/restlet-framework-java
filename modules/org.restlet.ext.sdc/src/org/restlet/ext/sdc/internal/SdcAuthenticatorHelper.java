@@ -46,7 +46,7 @@ public class SdcAuthenticatorHelper extends AuthenticatorHelper {
      * Constructor.
      */
     public SdcAuthenticatorHelper() {
-        super(ChallengeScheme.valueOf("SDC"), true, false);
+        super(ChallengeScheme.SDC, true, false);
     }
 
 }
