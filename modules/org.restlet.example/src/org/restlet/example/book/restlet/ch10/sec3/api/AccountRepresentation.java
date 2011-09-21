@@ -32,6 +32,9 @@ package org.restlet.example.book.restlet.ch10.sec3.api;
 
 import java.util.List;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+@XStreamAlias("account")
 public class AccountRepresentation {
 
     private String login;

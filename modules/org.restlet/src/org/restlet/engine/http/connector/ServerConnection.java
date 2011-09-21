@@ -133,8 +133,8 @@ public class ServerConnection extends Connection<Server> {
             ServerConnection connection, String methodName, String resourceUri,
             String version, Series<Parameter> headers, Representation entity,
             boolean confidential, Principal userPrincipal) {
-        return new ConnectedRequest(getHelper().getContext(), this, Method
-                .valueOf(methodName), resourceUri, version, headers,
+        return new ConnectedRequest(getHelper().getContext(), this,
+                Method.valueOf(methodName), resourceUri, version, headers,
                 createInboundEntity(headers), false, null);
     }
 
@@ -278,9 +278,8 @@ public class ServerConnection extends Connection<Server> {
 
                 if (response.isEntityAvailable()) {
                     getLogger()
-                            .fine(
-                                    "Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
-                                            + request.getResourceRef() + "\".");
+                            .fine("Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
+                                    + request.getResourceRef() + "\".");
                     response.setEntity(null);
                 }
             } else if (response.getStatus()
@@ -295,8 +294,8 @@ public class ServerConnection extends Connection<Server> {
             } else if (response.getStatus().equals(
                     Status.REDIRECTION_NOT_MODIFIED)) {
                 if (response.getEntity() != null) {
-                    HeaderUtils.addNotModifiedEntityHeaders(response
-                            .getEntity(), headers);
+                    HeaderUtils.addNotModifiedEntityHeaders(
+                            response.getEntity(), headers);
                     response.setEntity(null);
                 }
             } else if (response.getStatus().isInformational()) {
@@ -333,7 +332,7 @@ public class ServerConnection extends Connection<Server> {
             // Write the response to the client
             writeMessage(response, headers);
         } catch (Exception e) {
-            getLogger().log(Level.INFO,
+            getLogger().log(Level.FINE,
                     "An exception occured while writing the response", e);
             response.setStatus(Status.SERVER_ERROR_INTERNAL,
                     "An exception occured while writing the response");
@@ -342,7 +341,7 @@ public class ServerConnection extends Connection<Server> {
             try {
                 writeMessage(response, headers);
             } catch (IOException ioe) {
-                getLogger().log(Level.WARNING, "Unable to send error response",
+                getLogger().log(Level.FINE, "Unable to send error response",
                         ioe);
             }
         } finally {
