@@ -48,6 +48,7 @@
  *      href="https://jsr311.dev.java.net/nonav/releases/1.0/spec/index.html">
  *      HTML (non normative)</a>
  * @see <a href="https://jsr311.dev.java.net/">JSR-311 Web site</a>
+ * @see <a href="http://wiki.restlet.org/docs_2.1/57-restlet.html">User Guide - JAX-RS extension</a>
  * @author Stephan Koops
  */
 package org.restlet.ext.jaxrs;
