@@ -48,7 +48,7 @@ import org.restlet.security.User;
  * 
  * @author Jerome Louvel
  */
-public class DigestVerifier extends
+public class HttpDigestVerifier extends
         org.restlet.ext.crypto.DigestVerifier<LocalVerifier> {
 
     /** The associated digest authenticator. */
@@ -65,7 +65,7 @@ public class DigestVerifier extends
      * @param wrappedVerifier
      *            The wrapped secret verifier.
      */
-    public DigestVerifier(DigestAuthenticator digestAuthenticator,
+    public HttpDigestVerifier(DigestAuthenticator digestAuthenticator,
             LocalVerifier wrappedVerifier, String wrappedAlgorithm) {
         super(Digest.ALGORITHM_HTTP_DIGEST, wrappedVerifier, wrappedAlgorithm);
         this.digestAuthenticator = digestAuthenticator;

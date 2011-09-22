@@ -87,7 +87,7 @@ public class DigestAuthenticator extends ChallengeAuthenticator {
         this.domainRefs = domainRefs;
         this.maxServerNonceAge = DEFAULT_MAX_SERVER_NONCE_AGE;
         this.serverKey = serverKey;
-        setVerifier(new org.restlet.ext.crypto.internal.DigestVerifier(this,
+        setVerifier(new org.restlet.ext.crypto.internal.HttpDigestVerifier(this,
                 null, null));
     }
 

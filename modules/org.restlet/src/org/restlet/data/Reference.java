@@ -270,9 +270,8 @@ public class Reference {
         // [enddef]
 
         if (queryString) {
-            result.replace("+", "%20");
-            result.replace("*", "%2A");
-            result.replace("%7E", "~");
+            result = result.replace("+", "%20").replace("*", "%2A")
+                    .replace("%7E", "~");
         }
 
         return result;
