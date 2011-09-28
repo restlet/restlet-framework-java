@@ -42,7 +42,6 @@ import org.restlet.data.AuthenticationInfo;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Digest;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
@@ -177,8 +176,8 @@ public class AuthenticatorUtils {
             if (info.getNextServerNonce() != null
                     && info.getNextServerNonce().length() > 0) {
                 cw.setFirstChallengeParameter(firstParameter);
-                cw.appendQuotedChallengeParameter("nextnonce", info
-                        .getNextServerNonce());
+                cw.appendQuotedChallengeParameter("nextnonce",
+                        info.getNextServerNonce());
                 firstParameter = false;
             }
 
@@ -188,16 +187,16 @@ public class AuthenticatorUtils {
                 firstParameter = false;
 
                 if (info.getNonceCount() > 0) {
-                    cw.appendChallengeParameter("nc", formatNonceCount(info
-                            .getNonceCount()));
+                    cw.appendChallengeParameter("nc",
+                            formatNonceCount(info.getNonceCount()));
                 }
             }
 
             if (info.getResponseDigest() != null
                     && info.getResponseDigest().length() > 0) {
                 cw.setFirstChallengeParameter(firstParameter);
-                cw.appendQuotedChallengeParameter("rspauth", info
-                        .getResponseDigest());
+                cw.appendQuotedChallengeParameter("rspauth",
+                        info.getResponseDigest());
                 firstParameter = false;
             }
 
@@ -221,8 +220,8 @@ public class AuthenticatorUtils {
      * @return The formatted value of the given nonce count.
      */
     public static String formatNonceCount(int nonceCount) {
-        StringBuilder result = new StringBuilder(Integer
-                .toHexString(nonceCount));
+        StringBuilder result = new StringBuilder(
+                Integer.toHexString(nonceCount));
         while (result.length() < 8) {
             result.insert(0, '0');
         }
@@ -342,10 +341,8 @@ public class AuthenticatorUtils {
                         param = null;
                     }
                 } catch (Exception e) {
-                    Context
-                            .getCurrentLogger()
-                            .log(
-                                    Level.WARNING,
+                    Context.getCurrentLogger()
+                            .log(Level.WARNING,
                                     "Unable to parse the authentication info header parameter",
                                     e);
                 }
@@ -355,8 +352,7 @@ public class AuthenticatorUtils {
                     responseAuth);
         } catch (IOException e) {
             Context.getCurrentLogger()
-                    .log(
-                            Level.WARNING,
+                    .log(Level.WARNING,
                             "Unable to parse the authentication info header: "
                                     + header, e);
         }
@@ -479,38 +475,6 @@ public class AuthenticatorUtils {
 
         challengeResponse.setDigestRef(new Reference(request.getResourceRef()
                 .getPath()));
-    }
-
-    /**
-     * Updates a ChallengeResponse object according to given request and
-     * response and compute a new secret according to the response sent by the
-     * server.
-     * 
-     * @param challengeResponse
-     *            The challengeResponse to update.
-     * @param request
-     *            The request if available.
-     * @param response
-     *            The response if available.
-     * @param identifier
-     *            The identifier.
-     * @param baseSecret
-     *            The base secret used to compute the secret.
-     * @param baseSecretAlgorithm
-     *            The digest algorithm of the base secret (@see {@link Digest}
-     *            class).
-     */
-    public static void update(ChallengeResponse challengeResponse,
-            Request request, Response response, String identifier,
-            char[] baseSecret, String baseSecretAlgorithm) {
-        update(challengeResponse, request, response);
-
-        // Compute the new secret.
-        final AuthenticatorHelper helper = Engine.getInstance().findHelper(
-                challengeResponse.getScheme(), false, true);
-        challengeResponse
-                .setSecret(helper.formatSecret(challengeResponse, request,
-                        response, identifier, baseSecret, baseSecretAlgorithm));
     }
 
     /**

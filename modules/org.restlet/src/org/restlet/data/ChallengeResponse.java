@@ -140,9 +140,8 @@ public final class ChallengeResponse extends ChallengeMessage {
             char[] baseSecret, String baseSecretAlgorithm) {
         super(challengeRequest.getScheme());
         this.identifier = identifier;
-        org.restlet.engine.security.AuthenticatorUtils.update(this, response
-                .getRequest(), response, identifier, baseSecret,
-                baseSecretAlgorithm);
+        this.secret = baseSecret;
+        org.restlet.engine.security.AuthenticatorUtils.update(this, response.getRequest(), response);
     }
 
     /**

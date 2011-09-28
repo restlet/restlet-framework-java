@@ -18,6 +18,8 @@ Changes log
          of a simple SHIFT+F5 browser reload.
        - Exceptions while writing RDF were not properly traced, leading to
          hard to debug issues.
+       - Fixed the DIGEST authentication, when reusing a valid digest 
+         ChallengeResponse for a distinct resource. Reported by Steve Ferris.
     
     - 2.0.9 (2011-08-20)
     - Bugs fixed
