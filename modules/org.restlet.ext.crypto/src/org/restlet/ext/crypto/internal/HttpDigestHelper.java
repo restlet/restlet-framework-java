@@ -187,13 +187,17 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         }
 
         if (challenge.getDigestRef() != null) {
+            challenge.setDigestRef(new Reference(request.getResourceRef()
+                    .getPath()));
             cw.appendQuotedChallengeParameter("uri", challenge.getDigestRef()
                     .toString());
         }
 
-        if (challenge.getSecret() != null) {
-            cw.appendQuotedChallengeParameter("response",
-                    new String(challenge.getSecret()));
+        char[] secret = formatSecret(challenge, request, null,
+                challenge.getIdentifier(), challenge.getSecret(),
+                Digest.ALGORITHM_NONE);
+        if (secret != null) {
+            cw.appendQuotedChallengeParameter("response", new String(secret));
         }
 
         if ((challenge.getDigestAlgorithm() != null)

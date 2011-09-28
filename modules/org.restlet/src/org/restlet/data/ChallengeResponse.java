@@ -119,9 +119,9 @@ public final class ChallengeResponse extends ChallengeMessage {
             String baseSecretAlgorithm) {
         super(challengeRequest.getScheme());
         this.identifier = identifier;
+        this.secret = baseSecret;
         org.restlet.engine.security.AuthenticatorUtils.update(this,
-                response.getRequest(), response, identifier, baseSecret,
-                baseSecretAlgorithm);
+                response.getRequest(), response);
     }
 
     // [ifndef gwt] method

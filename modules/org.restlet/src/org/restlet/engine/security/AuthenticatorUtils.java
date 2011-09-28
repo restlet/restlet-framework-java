@@ -431,38 +431,6 @@ public class AuthenticatorUtils {
     }
 
     /**
-     * Updates a {@link ChallengeResponse} object according to given request and
-     * response and compute a new secret according to the response sent by the
-     * server.
-     * 
-     * @param challengeResponse
-     *            The challengeResponse to update.
-     * @param request
-     *            The request if available.
-     * @param response
-     *            The response if available.
-     * @param identifier
-     *            The identifier.
-     * @param baseSecret
-     *            The base secret used to compute the secret.
-     * @param baseSecretAlgorithm
-     *            The digest algorithm of the base secret (@see {@link Digest}
-     *            class).
-     */
-    public static void update(ChallengeResponse challengeResponse,
-            Request request, Response response, String identifier,
-            char[] baseSecret, String baseSecretAlgorithm) {
-        update(challengeResponse, request, response);
-
-        // Compute the new secret.
-        AuthenticatorHelper helper = Engine.getInstance().findHelper(
-                challengeResponse.getScheme(), false, true);
-        challengeResponse
-                .setSecret(helper.formatSecret(challengeResponse, request,
-                        response, identifier, baseSecret, baseSecretAlgorithm));
-    }
-
-    /**
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instantiable and extensible.
      */
