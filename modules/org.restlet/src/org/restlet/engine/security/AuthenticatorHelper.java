@@ -39,7 +39,6 @@ import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Digest;
 import org.restlet.data.Reference;
 import org.restlet.engine.Helper;
 import org.restlet.engine.header.ChallengeWriter;
@@ -175,35 +174,6 @@ public abstract class AuthenticatorHelper extends Helper {
 
         return (cw.getBuffer().length() > cwInitialLength) ? cw.toString()
                 : null;
-    }
-
-    /**
-     * Formats the secret of a challenge response. By default, it returns the
-     * given password.
-     * 
-     * @param challengeResponse
-     *            The challenge response.
-     * @param request
-     *            The request if available.
-     * @param response
-     *            The response if available.
-     * @param identifier
-     *            The identifier.
-     * @param baseSecret
-     *            The base secret used to compute the secret.
-     * @param baseSecretAlgorithm
-     *            The digest algorithm of the base secret (@see {@link Digest}
-     *            class).
-     * @return The formatted secret of a challenge response.
-     */
-    public char[] formatSecret(ChallengeResponse challengeResponse,
-            Request request, Response response, String identifier,
-            char[] baseSecret, String baseSecretAlgorithm) {
-        if (baseSecret != null) {
-            return baseSecret;
-        }
-
-        return null;
     }
 
     /**

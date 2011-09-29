@@ -193,11 +193,11 @@ public class HttpDigestHelper extends AuthenticatorHelper {
                     .toString());
         }
 
-        char[] secret = formatSecret(challenge, request, null,
-                challenge.getIdentifier(), challenge.getSecret(),
-                Digest.ALGORITHM_NONE);
-        if (secret != null) {
-            cw.appendQuotedChallengeParameter("response", new String(secret));
+        char[] responseDigest = formatResponseDigest(challenge, request);
+
+        if (responseDigest != null) {
+            cw.appendQuotedChallengeParameter("response", new String(
+                    responseDigest));
         }
 
         if ((challenge.getDigestAlgorithm() != null)
@@ -234,19 +234,32 @@ public class HttpDigestHelper extends AuthenticatorHelper {
         }
     }
 
-    @Override
-    public char[] formatSecret(ChallengeResponse challengeResponse,
-            Request request, Response response, String identifier,
-            char[] baseSecret, String baseSecretAlgorithm) {
+    /**
+     * Formats the response digest.
+     * 
+     * @param challengeResponse
+     *            The challenge response.
+     * @param request
+     *            The request if available.
+     * @return The formatted secret of a challenge response.
+     */
+    public char[] formatResponseDigest(ChallengeResponse challengeResponse,
+            Request request) {
         String a1 = null;
-        if (!Digest.ALGORITHM_HTTP_DIGEST.equals(baseSecretAlgorithm)) {
-            if (!AuthenticatorUtils.anyNull(challengeResponse.getIdentifier(),
-                    baseSecret, challengeResponse.getRealm())) {
-                a1 = DigestUtils.toHttpDigest(identifier, baseSecret,
+
+        if (!Digest.ALGORITHM_HTTP_DIGEST.equals(challengeResponse
+                .getSecretAlgorithm())) {
+            if (!AuthenticatorUtils
+                    .anyNull(challengeResponse.getIdentifier(),
+                            challengeResponse.getSecret(),
+                            challengeResponse.getRealm())) {
+                a1 = DigestUtils.toHttpDigest(
+                        challengeResponse.getIdentifier(),
+                        challengeResponse.getSecret(),
                         challengeResponse.getRealm());
             }
         } else {
-            a1 = new String(baseSecret);
+            a1 = new String(challengeResponse.getSecret());
         }
 
         if (a1 != null

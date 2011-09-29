@@ -143,13 +143,13 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>inboundBufferSize</td>
  * <td>int</td>
- * <td>8192</td>
+ * <td>16 * 1024</td>
  * <td>Size of the content buffer for receiving messages.</td>
  * </tr>
  * <tr>
  * <td>outboundBufferSize</td>
  * <td>int</td>
- * <td>8192</td>
+ * <td>32 * 1024</td>
  * <td>Size of the content buffer for sending messages.</td>
  * </tr>
  * <tr>
@@ -405,7 +405,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getInboundBufferSize() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "inboundBufferSize", Integer.toString(8 * 1024)));
+                "inboundBufferSize", Integer.toString(16 * 1024)));
     }
 
     /**
@@ -497,7 +497,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getOutboundBufferSize() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "outboundBufferSize", Integer.toString(8 * 1024)));
+                "outboundBufferSize", Integer.toString(32 * 1024)));
     }
 
     /**

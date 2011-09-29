@@ -52,6 +52,12 @@ Changes log
        - Added "lineWidth" and "usingEncodedAttributeStyle" properties
          to EmfRepresentation to facilitate XMI writing configuration. 
          Reported by Sebastien Schneider.
+       - Added ChallengeResponse.secretAlgorithm property in case the
+         password is only known and usable in a hashed form (like it 
+         can be the case for HTTP Digest). Added new constructors as 
+         well as on ChallengeMessage.
+       - Increased the default request and response buffer size of the
+         internal connector to 16 and 32 kb in order, similar to Jetty.
     - New features
        - Added ChallengeScheme.HTTP_AWS_QUERY constant and client-
          side support for Amazon Web Services's SimpleDB special

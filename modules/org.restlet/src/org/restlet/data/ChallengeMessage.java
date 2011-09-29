@@ -117,13 +117,36 @@ public abstract class ChallengeMessage {
      */
     public ChallengeMessage(ChallengeScheme scheme, String realm,
             Series<Parameter> parameters) {
-        this.scheme = scheme;
-        this.rawValue = null;
-        this.realm = realm;
+        this(scheme, realm, parameters, Digest.ALGORITHM_MD5, null, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param scheme
+     *            The challenge scheme.
+     * @param realm
+     *            The authentication realm.
+     * @param parameters
+     *            The additional scheme parameters.
+     * @param digestAlgorithm
+     *            The digest algorithm.
+     * @param opaque
+     *            An opaque string of data which should be returned by the
+     *            client unchanged.
+     * @param serverNonce
+     *            The server nonce.
+     */
+    public ChallengeMessage(ChallengeScheme scheme, String realm,
+            Series<Parameter> parameters, String digestAlgorithm,
+            String opaque, String serverNonce) {
+        super();
         this.parameters = parameters;
-        this.digestAlgorithm = Digest.ALGORITHM_MD5;
-        this.serverNonce = null;
-        this.opaque = null;
+        this.scheme = scheme;
+        this.serverNonce = serverNonce;
+        this.realm = realm;
+        this.opaque = opaque;
+        this.digestAlgorithm = digestAlgorithm;
     }
 
     /**

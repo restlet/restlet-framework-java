@@ -68,6 +68,9 @@ public final class ChallengeResponse extends ChallengeMessage {
     /** The user secret, such as a password or a secret key. */
     private volatile char[] secret;
 
+    /** The digest algorithm name optionally applied on the user secret. */
+    private volatile String secretAlgorithm;
+
     /** The server nonce count. */
     private volatile int serverNounceCount;
 
@@ -88,12 +91,13 @@ public final class ChallengeResponse extends ChallengeMessage {
      *            The latest server response.
      * @param identifier
      *            The user identifier, such as a login name or an access key.
-     * @param baseSecret
-     *            The user secret, such as a password or a secret key.
+     * @param secret
+     *            The user secret, such as a password or a secret key, with no
+     *            digest applied.
      */
     public ChallengeResponse(ChallengeRequest challengeRequest,
-            Response response, String identifier, char[] baseSecret) {
-        this(challengeRequest, response, identifier, baseSecret,
+            Response response, String identifier, char[] secret) {
+        this(challengeRequest, response, identifier, secret,
                 Digest.ALGORITHM_NONE);
     }
 
@@ -108,18 +112,19 @@ public final class ChallengeResponse extends ChallengeMessage {
      *            The latest server response.
      * @param identifier
      *            The user identifier, such as a login name or an access key.
-     * @param baseSecret
-     *            The base secret used to compute the secret.
-     * @param baseSecretAlgorithm
-     *            The digest algorithm of the base secret (see {@link Digest}
+     * @param secret
+     *            The user secret used to compute the secret, with an optional
+     *            digest applied.
+     * @param secretAlgorithm
+     *            The digest algorithm of the user secret (see {@link Digest}
      *            class).
      */
     public ChallengeResponse(ChallengeRequest challengeRequest,
-            Response response, String identifier, char[] baseSecret,
-            String baseSecretAlgorithm) {
-        super(challengeRequest.getScheme());
-        this.identifier = identifier;
-        this.secret = baseSecret;
+            Response response, String identifier, char[] secret,
+            String secretAlgorithm) {
+        this(challengeRequest.getScheme(), null, identifier, secret,
+                secretAlgorithm, null, null, null, null, null, null, null, 0,
+                0L);
         org.restlet.engine.security.AuthenticatorUtils.update(this,
                 response.getRequest(), response);
     }
@@ -135,12 +140,12 @@ public final class ChallengeResponse extends ChallengeMessage {
      *            The latest server response.
      * @param identifier
      *            The user identifier, such as a login name or an access key.
-     * @param baseSecret
+     * @param secret
      *            The user secret, such as a password or a secret key.
      */
     public ChallengeResponse(ChallengeRequest challengeRequest,
-            Response response, String identifier, String baseSecret) {
-        this(challengeRequest, response, identifier, baseSecret.toCharArray(),
+            Response response, String identifier, String secret) {
+        this(challengeRequest, response, identifier, secret.toCharArray(),
                 Digest.ALGORITHM_NONE);
     }
 
@@ -151,13 +156,60 @@ public final class ChallengeResponse extends ChallengeMessage {
      *            The challenge scheme.
      */
     public ChallengeResponse(ChallengeScheme scheme) {
-        super(scheme);
-        this.identifier = null;
-        this.secret = null;
-        this.clientNonce = null;
-        this.digestRef = null;
-        this.quality = null;
-        this.serverNounceCount = 1;
+        this(scheme, null, (char[]) null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param scheme
+     *            The challenge scheme.
+     * @param parameters
+     *            The additional scheme parameters.
+     * @param identifier
+     *            The user identifier, such as a login name or an access key.
+     * @param secret
+     *            The user secret, such as a password or a secret key.
+     * @param secretAlgorithm
+     *            The digest algorithm name optionally applied on the user
+     *            secret.
+     * @param realm
+     *            The authentication realm.
+     * @param quality
+     *            The chosen quality of protection.
+     * @param digestRef
+     *            The {@link Request#getResourceRef()} value duplicated here in
+     *            case a proxy changed it.
+     * @param digestAlgorithm
+     *            The digest algorithm.
+     * @param opaque
+     *            An opaque string of data which should be returned by the
+     *            client unchanged.
+     * @param clientNonce
+     *            The client nonce value.
+     * @param serverNonce
+     *            The server nonce.
+     * @param serverNounceCount
+     *            The server nonce count.
+     * @param timeIssued
+     *            The time when the response was issued, as returned by
+     *            {@link System#currentTimeMillis()}.
+     */
+    public ChallengeResponse(ChallengeScheme scheme,
+            Series<Parameter> parameters, String identifier, char[] secret,
+            String secretAlgorithm, String realm, String quality,
+            Reference digestRef, String digestAlgorithm, String opaque,
+            String clientNonce, String serverNonce, int serverNounceCount,
+            long timeIssued) {
+        super(scheme, realm, parameters, digestAlgorithm, opaque, serverNonce);
+        this.clientNonce = clientNonce;
+        this.digestRef = digestRef;
+        this.identifier = identifier;
+        this.quality = quality;
+        this.secret = secret;
+        this.secretAlgorithm = secretAlgorithm;
+        this.serverNounceCount = serverNounceCount;
+        this.timeIssued = timeIssued;
     }
 
     /**
@@ -170,11 +222,9 @@ public final class ChallengeResponse extends ChallengeMessage {
      * @param secret
      *            The user secret, such as a password or a secret key.
      */
-    public ChallengeResponse(final ChallengeScheme scheme,
-            final String identifier, char[] secret) {
-        super(scheme);
-        this.identifier = identifier;
-        this.secret = secret;
+    public ChallengeResponse(ChallengeScheme scheme, String identifier,
+            char[] secret) {
+        this(scheme, identifier, secret, null);
     }
 
     /**
@@ -187,11 +237,25 @@ public final class ChallengeResponse extends ChallengeMessage {
      * @param parameters
      *            The additional scheme parameters.
      */
-    public ChallengeResponse(final ChallengeScheme scheme,
-            final String identifier, Series<Parameter> parameters) {
-        super(scheme, parameters);
-        this.identifier = identifier;
-        this.secret = null;
+    public ChallengeResponse(ChallengeScheme scheme, String identifier,
+            char[] secret, Series<Parameter> parameters) {
+        this(scheme, parameters, identifier, secret, Digest.ALGORITHM_NONE,
+                null, null, null, null, null, null, null, 0, 0L);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param scheme
+     *            The challenge scheme.
+     * @param identifier
+     *            The user identifier, such as a login name or an access key.
+     * @param parameters
+     *            The additional scheme parameters.
+     */
+    public ChallengeResponse(ChallengeScheme scheme, String identifier,
+            Series<Parameter> parameters) {
+        this(scheme, identifier, null, parameters);
     }
 
     /**
@@ -204,11 +268,9 @@ public final class ChallengeResponse extends ChallengeMessage {
      * @param secret
      *            The user secret, such as a password or a secret key.
      */
-    public ChallengeResponse(final ChallengeScheme scheme,
-            final String identifier, String secret) {
-        super(scheme);
-        this.identifier = identifier;
-        this.secret = (secret != null) ? secret.toCharArray() : null;
+    public ChallengeResponse(ChallengeScheme scheme, String identifier,
+            String secret) {
+        this(scheme, identifier, (secret != null) ? secret.toCharArray() : null);
     }
 
     /** {@inheritDoc} */
@@ -221,7 +283,7 @@ public final class ChallengeResponse extends ChallengeMessage {
             // if obj isn't a challenge request or is null don't evaluate
             // further
             if (obj instanceof ChallengeResponse) {
-                final ChallengeResponse that = (ChallengeResponse) obj;
+                ChallengeResponse that = (ChallengeResponse) obj;
 
                 if (getRawValue() != null) {
                     result = getRawValue().equals(that.getRawValue());
@@ -332,6 +394,15 @@ public final class ChallengeResponse extends ChallengeMessage {
     }
 
     /**
+     * Returns the digest algorithm name optionally applied on the user secret.
+     * 
+     * @return The digest algorithm name optionally applied on the user secret.
+     */
+    public String getSecretAlgorithm() {
+        return secretAlgorithm;
+    }
+
+    /**
      * Returns the server nonce count.
      * 
      * @return The server nonce count.
@@ -429,6 +500,17 @@ public final class ChallengeResponse extends ChallengeMessage {
      */
     public void setSecret(String secret) {
         this.secret = (secret == null) ? null : secret.toCharArray();
+    }
+
+    /**
+     * Sets the digest algorithm name optionally applied on the user secret.
+     * 
+     * @param secretDigestAlgorithm
+     *            The digest algorithm name optionally applied on the user
+     *            secret.
+     */
+    public void setSecretAlgorithm(String secretDigestAlgorithm) {
+        this.secretAlgorithm = secretDigestAlgorithm;
     }
 
     /**
