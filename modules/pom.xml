@@ -29,8 +29,8 @@
 		<lib-gwt-version>2.2.0</lib-gwt-version>
 		<lib-gwt-server-version>2.3.0</lib-gwt-server-version>
 		<lib-httpclient-version>4.1.2</lib-httpclient-version>
-		<lib-httpcore-version>4.1.2</lib-httpcore-version>
-		<lib-httpmime-version>4.1.2</lib-httpmime-version>
+		<lib-httpcore-version>4.1</lib-httpcore-version>
+		<lib-httpmime-version>4.1.1</lib-httpmime-version>
 		<lib-io-version>2.0.1</lib-io-version>
 		<lib-jackson-core-version>1.8.5</lib-jackson-core-version>
 		<lib-jackson-mapper-version>1.8.5</lib-jackson-mapper-version>

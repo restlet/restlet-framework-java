@@ -670,7 +670,7 @@ public class ReferenceTestCase extends RestletTestCase {
     public void testValidity() {
         String uri = "http ://domain.tld/whatever/";
         Reference ref = new Reference(uri);
-        assertEquals("http+://domain.tld/whatever/", ref.toString());
+        assertEquals("http%20://domain.tld/whatever/", ref.toString());
 
         uri = "file:///C|/wherever\\whatever.swf";
         ref = new Reference(uri);

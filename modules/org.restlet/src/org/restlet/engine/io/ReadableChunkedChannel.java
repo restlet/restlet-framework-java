@@ -149,7 +149,7 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
         while (doLoop) {
             if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
                 Context.getCurrentLogger().log(Level.FINER,
-                        "Chunk state: " + getChunkState());
+                        "Readable chunk state: " + getChunkState());
             }
 
             switch (getChunkState()) {
@@ -177,7 +177,7 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
                         if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
                             Context.getCurrentLogger().log(
                                     Level.FINER,
-                                    "New chunk detected. Size: "
+                                    "New readable chunk detected. Size: "
                                             + this.remainingChunkSize);
                         }
                     } catch (NumberFormatException ex) {
@@ -212,7 +212,7 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
                     } else {
                         if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
                             Context.getCurrentLogger().finer(
-                                    "No chunk data read");
+                                    "No readable chunk data found");
                         }
                     }
                 }
@@ -248,8 +248,9 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
 
                 if (getLineBuilderState() == BufferState.DRAINING) {
                     if (getLineBuilder().length() != 0) {
-                        Context.getCurrentLogger().log(Level.FINE,
-                                "The last chunk line had a non empty line");
+                        Context.getCurrentLogger()
+                                .log(Level.FINE,
+                                        "The last readable chunk line had a non empty line");
                     }
 
                     setEndReached(true);

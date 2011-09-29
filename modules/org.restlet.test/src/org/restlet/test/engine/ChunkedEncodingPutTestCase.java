@@ -79,13 +79,13 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
      * @return A DomRepresentation.
      */
     private static Representation createChunkedRepresentation(int size) {
-        final StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < size; i++) {
             builder.append("a");
         }
 
-        final Representation rep = new StringRepresentation(builder.toString(),
+        Representation rep = new StringRepresentation(builder.toString(),
                 MediaType.TEXT_PLAIN);
         rep.setSize(Representation.UNKNOWN_SIZE);
         return rep;

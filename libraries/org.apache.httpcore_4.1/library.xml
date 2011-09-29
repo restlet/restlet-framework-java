@@ -2,7 +2,6 @@
 	<name>Apache HTTP Components Core</name>
 	<description>Apache HTTP Components Core</description>
 	<version>4.1</version>
-	<release>2</release>
 	<homeUri>http://hc.apache.org/httpcomponents-core/</homeUri>
 	<downloadUri>http://hc.apache.org/httpcomponents-core/download.html</downloadUri>
 	<provider>Apache Software Foundation</provider>

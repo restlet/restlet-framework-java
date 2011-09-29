@@ -732,7 +732,7 @@ public class Connection<T extends Connector> implements SelectionListener {
     @Override
     public String toString() {
         return getState() + " | " + getInboundWay() + " | " + getOutboundWay()
-                + " | " + isEmpty();
+                + " | " + isEmpty() + "|" + getRegistration();
     }
 
     /**
@@ -742,6 +742,11 @@ public class Connection<T extends Connector> implements SelectionListener {
         boolean result = true;
 
         if (getState() != ConnectionState.CLOSED) {
+            if (getHelper().getLogger().isLoggable(Level.FINEST)) {
+                getHelper().getLogger().log(Level.FINEST,
+                        "Old connection NIO interest: " + getRegistration());
+            }
+
             getInboundWay().updateState();
             getOutboundWay().updateState();
 
@@ -750,6 +755,11 @@ public class Connection<T extends Connector> implements SelectionListener {
                     getInboundWay().getRegistration().getInterestOperations()
                             | getOutboundWay().getRegistration()
                                     .getInterestOperations());
+
+            if (getHelper().getLogger().isLoggable(Level.FINEST)) {
+                getHelper().getLogger().log(Level.FINEST,
+                        "New connection NIO interest: " + getRegistration());
+            }
         }
 
         return result;

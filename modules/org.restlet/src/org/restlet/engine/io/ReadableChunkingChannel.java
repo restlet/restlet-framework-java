@@ -126,7 +126,7 @@ public class ReadableChunkingChannel extends
 
                     if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
                         Context.getCurrentLogger().finer(
-                                "Position before read | Limit | MaxChunkDataSize : "
+                                "Position in destination buffer before chunking | Limit | MaxChunkDataSize : "
                                         + dst.position() + " | " + dst.limit()
                                         + " | " + maxChunkDataSize);
                     }
@@ -156,19 +156,29 @@ public class ReadableChunkingChannel extends
 
                         // Restore buffer state
                         if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
-                            Context.getCurrentLogger().finer(
-                                    "Old position | Limit | MaxChunkDataSize | ChunkDataSize : "
-                                            + dst.position() + " | "
-                                            + dst.limit() + " | "
-                                            + maxChunkDataSize + " | "
+                            Context.getCurrentLogger()
+                                    .finer("Old chunking position in destination buffer | Limit | MaxChunkDataSize | ChunkDataSize : "
+                                            + dst.position()
+                                            + " | "
+                                            + dst.limit()
+                                            + " | "
+                                            + maxChunkDataSize
+                                            + " | "
                                             + chunkDataSize);
                         }
 
                         dst.position(dst.position() + chunkDataSize + 2);
 
                         if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
-                            Context.getCurrentLogger().finer(
-                                    "New position : " + dst.position());
+                            Context.getCurrentLogger()
+                                    .finer("New chunking position in destination buffer | Limit | MaxChunkDataSize | ChunkDataSize : "
+                                            + dst.position()
+                                            + " | "
+                                            + dst.limit()
+                                            + " | "
+                                            + maxChunkDataSize
+                                            + " | "
+                                            + chunkDataSize);
                         }
 
                         result += dst.position() - chunkStart;

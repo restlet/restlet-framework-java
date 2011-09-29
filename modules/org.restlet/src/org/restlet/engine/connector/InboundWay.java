@@ -387,6 +387,15 @@ public abstract class InboundWay extends Way {
 
     @Override
     public void updateState() {
+        if (getHelper().getLogger().isLoggable(Level.FINEST)) {
+            getHelper().getLogger().log(Level.FINEST,
+                    "Old inbound way NIO interest: " + getRegistration());
+            getHelper().getLogger().log(
+                    Level.FINEST,
+                    "Old inbound entity NIO interest: "
+                            + getEntityRegistration());
+        }
+
         if (getMessageState() == MessageState.BODY) {
             if ((getEntityRegistration() != null)
                     && (getEntityRegistration().getListener() != null)) {
@@ -397,6 +406,15 @@ public abstract class InboundWay extends Way {
             }
         } else {
             super.updateState();
+        }
+
+        if (getHelper().getLogger().isLoggable(Level.FINEST)) {
+            getHelper().getLogger().log(
+                    Level.FINEST,
+                    "New inbound entity NIO interest: "
+                            + getEntityRegistration());
+            getHelper().getLogger().log(Level.FINEST,
+                    "New inbound way NIO interest: " + getRegistration());
         }
     }
 }

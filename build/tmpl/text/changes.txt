@@ -65,9 +65,9 @@ Changes log
        - Updated Apache Commons IO to version 2.0.1
        - Updated Apache Commons Lang to version 2.6
        - Updated Apache Commons Pool to version 1.5.6
-       - Updated Apache HTTP Client to version 4.1.2
-       - Updated Apache HTTP Core to version 4.1.2
-       - Updated Apache HTTP MIME to version 4.1.2
+       - Updated Apache HTTP Client to version 4.1.1
+       - Updated Apache HTTP Core to version 4.1
+       - Updated Apache HTTP MIME to version 4.1.1
        - Updated Jackson to version 1.8.5
 
 - 2.1 Milestone 7 (08/24/2011)

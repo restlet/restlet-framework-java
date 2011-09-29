@@ -70,6 +70,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     // Helper methods
     protected void runTest(ConnectorHelper<Server> server,
             ConnectorHelper<Client> client) throws Exception {
+        // Engine.setLogLevel(Level.FINE);
         Engine nre = Engine.register(false);
         nre.getRegisteredServers().add(server);
         nre.getRegisteredClients().add(client);
@@ -86,9 +87,9 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
 
     protected String start() throws Exception {
         this.component = new Component();
-        final Server server = this.component.getServers().add(Protocol.HTTP, 0);
+        Server server = this.component.getServers().add(Protocol.HTTP, 0);
         // server.getContext().getParameters().add("tracing", "true");
-        final Application application = createApplication(this.component);
+        Application application = createApplication(this.component);
 
         this.component.getDefaultHost().attach(application);
         this.component.start();
