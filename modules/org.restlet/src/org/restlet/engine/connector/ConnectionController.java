@@ -82,6 +82,11 @@ public class ConnectionController extends Controller implements Runnable {
     protected void controlConnections() throws IOException {
         // Close connections or register interest in NIO operations
         for (Connection<?> conn : getHelper().getConnections()) {
+            if (getHelper().getLogger().isLoggable(Level.FINEST)) {
+                getHelper().getLogger().log(Level.FINEST,
+                        "Connection status: " + conn);
+            }
+
             if (conn.getState() == ConnectionState.CLOSED) {
                 // Detach the connection and collect it
                 getHelper().getConnections().remove(conn);
@@ -183,6 +188,11 @@ public class ConnectionController extends Controller implements Runnable {
             throws ClosedByInterruptException {
         // Notify the selected way
         try {
+            if (getHelper().getLogger().isLoggable(Level.FINEST)) {
+                getHelper().getLogger().log(Level.FINEST,
+                        "NIO selection detected for key: " + selectedKey);
+            }
+
             if (selectedKey.attachment() != null) {
                 ((SelectionRegistration) selectedKey.attachment())
                         .onSelected(selectedKey.readyOps());
@@ -260,6 +270,8 @@ public class ConnectionController extends Controller implements Runnable {
                 onSelected(keys.next());
                 keys.remove();
             }
+        } else if (getHelper().getLogger().isLoggable(Level.FINEST)) {
+            getHelper().getLogger().log(Level.FINEST, "No NIO key selected");
         }
     }
 
