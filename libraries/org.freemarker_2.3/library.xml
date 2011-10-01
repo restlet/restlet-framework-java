@@ -2,7 +2,7 @@
 	<name>FreeMarker template engine</name>
 	<description>FreeMarker template engine</description>
 	<version>2.3</version>
-	<release>16</release>
+	<release>18</release>
 	<homeUri>http://freemarker.org/</homeUri>
 	<downloadUri>http://freemarker.org/freemarkerdownload.html</downloadUri>
 	<provider>FreeMarker project</provider>

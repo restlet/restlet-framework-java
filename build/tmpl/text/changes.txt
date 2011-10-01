@@ -75,6 +75,7 @@ Changes log
        - Updated Apache HTTP Core to version 4.1
        - Updated Apache HTTP MIME to version 4.1.1
        - Updated Jackson to version 1.8.5
+       - Updated FreeMarker to version 2.3.18
 
 - 2.1 Milestone 7 (08/24/2011)
     - Bug fixed
