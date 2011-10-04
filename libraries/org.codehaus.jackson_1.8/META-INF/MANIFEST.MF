@@ -6,8 +6,10 @@ Bundle-Version: 1.8
 Bundle-ClassPath: org.codehaus.jackson.core.jar,
  org.codehaus.jackson.mapper.jar
 Bundle-Vendor: Codehaus
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.codehaus.jackson,
  org.codehaus.jackson.annotate,
+ org.codehaus.jackson.format,
  org.codehaus.jackson.impl,
  org.codehaus.jackson.io,
  org.codehaus.jackson.map,
@@ -29,4 +31,3 @@ Export-Package: org.codehaus.jackson,
  org.codehaus.jackson.sym,
  org.codehaus.jackson.type,
  org.codehaus.jackson.util
-Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -30,6 +30,8 @@
 
 package org.restlet.util;
 
+import java.io.IOException;
+
 /**
  * Callback interface when a NIO selection occurs on the selectable object.
  * 
@@ -41,6 +43,6 @@ public interface SelectionListener {
      * Callback method invoked when the connection has been selected for IO
      * operations it registered interest in.
      */
-    public void onSelected();
+    public void onSelected() throws IOException;
 
 }

@@ -91,8 +91,7 @@ public class ServerConnectionController extends ConnectionController {
     }
 
     @Override
-    protected void onSelected(SelectionKey key)
-            throws ClosedByInterruptException {
+    protected void onSelected(SelectionKey key) throws IOException {
         if (!key.isAcceptable()) {
             super.onSelected(key);
         } else if (!isOverloaded()) {

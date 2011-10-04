@@ -183,9 +183,9 @@ public class ConnectionController extends Controller implements Runnable {
      * 
      * @param selectedKey
      *            The selected key selected.
+     * @throws IOException
      */
-    protected void onSelected(SelectionKey selectedKey)
-            throws ClosedByInterruptException {
+    protected void onSelected(SelectionKey selectedKey) throws IOException {
         // Notify the selected way
         try {
             if (getHelper().getLogger().isLoggable(Level.FINEST)) {

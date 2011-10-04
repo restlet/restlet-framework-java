@@ -30,6 +30,7 @@
 
 package org.restlet.util;
 
+import java.io.IOException;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectableChannel;
@@ -156,9 +157,11 @@ public class SelectionRegistration {
     /**
      * Blocks the calling thread.
      * 
+     * @throws IOException
+     * 
      * @see #block()
      */
-    public void block() {
+    public void block() throws IOException {
         try {
             if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
                 Context.getCurrentLogger().log(
@@ -174,6 +177,10 @@ public class SelectionRegistration {
         } catch (Exception e) {
             Context.getCurrentLogger().log(Level.WARNING,
                     "Unable to block the thread at the cyclic barrier", e);
+            IOException ioe = new IOException(
+                    "Unable to block the thread at the cyclic barrier.");
+            ioe.initCause(e);
+            throw ioe;
         }
     }
 
@@ -276,8 +283,9 @@ public class SelectionRegistration {
      * 
      * @param readyOperations
      *            The ready operations.
+     * @throws IOException
      */
-    public void onSelected(int readyOperations) {
+    public void onSelected(int readyOperations) throws IOException {
         this.readyOperations = readyOperations;
 
         if ((getListener() != null) && isInterestReady()) {
@@ -408,9 +416,11 @@ public class SelectionRegistration {
     /**
      * Unblocks the optionally blocked thread.
      * 
+     * @throws IOException
+     * 
      * @see #block()
      */
-    public void unblock() {
+    public void unblock() throws IOException {
         if (Context.getCurrentLogger().isLoggable(Level.FINEST)) {
             Context.getCurrentLogger().log(
                     Level.FINEST,
@@ -428,6 +438,10 @@ public class SelectionRegistration {
                     .log(Level.WARNING,
                             "Unable to unblock the waiting thread at the cyclic barrier",
                             e);
+            IOException ioe = new IOException(
+                    "Unable to unblock the waiting thread at the cyclic barrier.");
+            ioe.initCause(e);
+            throw ioe;
         }
     }
 

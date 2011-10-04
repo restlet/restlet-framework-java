@@ -203,7 +203,7 @@ public class NbChannelInputStream extends InputStream implements
                                 .setInterestOperations(SelectionKey.OP_READ);
                         this.selectionRegistration
                                 .setListener(new SelectionListener() {
-                                    public void onSelected() {
+                                    public void onSelected() throws IOException {
                                         if (Context.getCurrentLogger()
                                                 .isLoggable(Level.FINER)) {
                                             Context.getCurrentLogger()

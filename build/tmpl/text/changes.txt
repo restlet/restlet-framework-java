@@ -19,6 +19,8 @@ Changes log
          30s announced in the Javadocs. Now using 30s.
        - Removed extra empty line in XML documents added by the
          XmlWriter class.
+       - Fixed potential loops due to BrokenCyclicBarrier in internal
+         NIO connector.
     - API changes
        - Added Authenticator#multiAuthenticating to better control
          optional authenticators and ensure we don't attempt 
