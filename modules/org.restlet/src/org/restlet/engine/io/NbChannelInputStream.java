@@ -195,44 +195,37 @@ public class NbChannelInputStream extends InputStream implements
             }
 
             if (selectionChannel != null) {
-                try {
-                    if (this.selectionRegistration == null) {
-                        this.selectionRegistration = this.selectionChannel
-                                .getRegistration();
-                        this.selectionRegistration
-                                .setInterestOperations(SelectionKey.OP_READ);
-                        this.selectionRegistration
-                                .setListener(new SelectionListener() {
-                                    public void onSelected() throws IOException {
-                                        if (Context.getCurrentLogger()
-                                                .isLoggable(Level.FINER)) {
-                                            Context.getCurrentLogger()
-                                                    .log(Level.FINER,
-                                                            "NbChannelInputStream selected");
-                                        }
-
-                                        // Stop listening at this point
-                                        selectionRegistration.suspend();
-
-                                        // Unblock the user thread
-                                        selectionRegistration.unblock();
+                if (this.selectionRegistration == null) {
+                    this.selectionRegistration = this.selectionChannel
+                            .getRegistration();
+                    this.selectionRegistration
+                            .setInterestOperations(SelectionKey.OP_READ);
+                    this.selectionRegistration
+                            .setListener(new SelectionListener() {
+                                public void onSelected() throws IOException {
+                                    if (Context.getCurrentLogger().isLoggable(
+                                            Level.FINER)) {
+                                        Context.getCurrentLogger()
+                                                .log(Level.FINER,
+                                                        "NbChannelInputStream selected");
                                     }
-                                });
-                    } else {
-                        this.selectionRegistration.resume();
-                    }
 
-                    // Block until new content arrives or a timeout occurs
-                    this.selectionRegistration.block();
+                                    // Stop listening at this point
+                                    selectionRegistration.suspend();
 
-                    // Attempt to read more content
-                    result = buffer.fill(this.channel);
-                } catch (Exception e) {
-                    Context.getCurrentLogger()
-                            .log(Level.FINE,
-                                    "Exception while registering or waiting for new content",
-                                    e);
+                                    // Unblock the user thread
+                                    selectionRegistration.unblock();
+                                }
+                            });
+                } else {
+                    this.selectionRegistration.resume();
                 }
+
+                // Block until new content arrives or a timeout occurs
+                this.selectionRegistration.block();
+
+                // Attempt to read more content
+                result = buffer.fill(this.channel);
             } else if (selectableChannel != null) {
                 Selector selector = null;
                 SelectionKey selectionKey = null;
