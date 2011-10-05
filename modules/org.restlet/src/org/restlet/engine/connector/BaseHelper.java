@@ -115,14 +115,14 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>maxIoIdleTimeMs</td>
  * <td>int</td>
- * <td>30000</td>
+ * <td>60 000</td>
  * <td>Maximum time for an idle IO connection or request to wait for an
  * operation before being closed. For an unlimited wait, use '0' as value.</td>
  * </tr>
  * <tr>
  * <td>maxThreadIdleTimeMs</td>
  * <td>int</td>
- * <td>60000</td>
+ * <td>300 000</td>
  * <td>Time for an idle thread to wait for an operation before being collected.</td>
  * </tr>
  * <tr>
@@ -436,7 +436,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getMaxIoIdleTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxIoIdleTimeMs", "30000"));
+                "maxIoIdleTimeMs", "60000"));
     }
 
     /**
@@ -466,7 +466,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getMaxThreadIdleTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxThreadIdleTimeMs", "60000"));
+                "maxThreadIdleTimeMs", "300000"));
     }
 
     /**
