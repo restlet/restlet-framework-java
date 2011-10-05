@@ -194,8 +194,9 @@ public class ServletCall extends ServerCall {
     public Representation getRequestEntity() {
         Representation result = null;
 
-        if (MediaType.APPLICATION_WWW_FORM.isCompatible(new MediaType(
-                getRequest().getContentType()))) {
+        if (getRequest().getContentType() != null
+                && MediaType.APPLICATION_WWW_FORM.isCompatible(new MediaType(
+                        getRequest().getContentType()))) {
             Form form = new Form();
             Map<String, String[]> map = request.getParameterMap();
 
