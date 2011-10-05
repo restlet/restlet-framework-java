@@ -1,0 +1,17 @@
+<library id="gwt" symbolicName="com.google.gwt">
+	<name>Google Web Toolkit</name>
+	<description>Google Web Toolkit</description>
+	<version>2.0</version>
+	<release>3</release>
+	<homeUri>http://code.google.com/webtoolkit/</homeUri>
+	<downloadUri>http://code.google.com/webtoolkit/download.html
+	</downloadUri>
+	<provider>Google Inc.</provider>
+
+	<package name="com.google.gwt">
+		<maven>
+			<artifactId>gwt-servlet</artifactId>
+		</maven>
+	</package>
+
+</library>

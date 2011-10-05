@@ -1,0 +1,23 @@
+<library id="tika" symbolicName="org.apache.tika">
+	<name>Apache Lucene Tika</name>
+	<description>Apache Lucene Tika</description>
+	<version>0.6</version>
+	<homeUri>http://lucene.apache.org/tika/</homeUri>
+	<downloadUri>http://lucene.apache.org/tika/download.html</downloadUri>
+	<provider>Apache Software Foundation</provider>
+
+	<package id="tika" name="org.apache.tika">
+		<groupId>org.apache.tika</groupId>
+		<artifactId>tika-core</artifactId>
+	</package>
+	<package id="tika-parsers" name="org.apache.tika.parsers">
+		<groupId>org.apache.tika</groupId>
+		<artifactId>tika-parsers</artifactId>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<javadocs>
+		<link href="http://lucene.apache.org/tika/0.6/api/" />
+	</javadocs>
+</library>

@@ -1,0 +1,13 @@
+<#list project.libraries?values as library>
+<@pp.nestOutputFile name="${library.rootDirectory}.bnd">
+-nouses: true
+-noextraheaders: true
+Export-Package: *
+Bundle-Name: ${library.name!"pouet"}
+Bundle-SymbolicName: ${library.manifestId}
+Bundle-Version: ${library.versionFull}
+Created-By: Restlet forge
+Bundle-ClassPath: <#list library.packages as package>${package.name}.jar<#if package_has_next>,</#if></#list>
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+</@pp.nestOutputFile>
+</#list>

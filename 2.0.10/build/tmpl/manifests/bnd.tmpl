@@ -1,0 +1,16 @@
+<#list project.libraries?values as library>
+  <#list library.packages as package>
+    <@pp.nestOutputFile name="${package.name}.bnd">
+-nouses: true
+-noextraheaders: true
+-debug: true
+Export-Package: *; provide:=true
+Import-Package: *; -remove-attribute: version
+Bundle-Name: ${package.name}
+Bundle-SymbolicName: ${package.name}
+Bundle-Version: ${library.versionFull}
+Created-By: Restlet forge
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+    </@pp.nestOutputFile>
+  </#list>  
+</#list>

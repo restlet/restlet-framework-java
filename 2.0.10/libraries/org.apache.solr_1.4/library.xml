@@ -1,0 +1,28 @@
+<library id="solr" symbolicName="org.apache.solr">
+	<name>Apache Lucene Solr</name>
+	<description>Apache Lucene Solr</description>
+	<version>1.4</version>
+	<release>0</release>
+	<homeUri>http://lucene.apache.org/solr/</homeUri>
+	<downloadUri>http://www.apache.org/dyn/closer.cgi/lucene/solr/</downloadUri>
+	<provider>Apache Software Foundation</provider>
+	
+	<package id="solr" name="org.apache.solr">
+		<maven>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-core</artifactId>
+		</maven>
+	</package>
+	<package id="solr-common" name="org.apache.solr.common">
+		<maven>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-solrj</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<javadocs>
+		<link href="http://lucene.apache.org/solr/api/" />
+	</javadocs>
+</library>

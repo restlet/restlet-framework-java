@@ -1,0 +1,21 @@
+<library id="netty" symbolicName="org.jboss.netty">
+	<name>Netty NIO framework</name>
+	<description>Netty NIO framework</description>
+	<version>3.2</version>
+	<release>2</release>
+	<homeUri>http://jboss.org/netty/</homeUri>
+	<downloadUri>http://jboss.org/netty/downloads.html</downloadUri>
+	<provider>JBoss Inc.</provider>
+
+	<package name="org.jboss.netty">
+		<maven>
+			<artifactId>netty</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<javadocs>
+		<link href="http://docs.jboss.org/netty/3.2/api/" />
+	</javadocs>
+</library>

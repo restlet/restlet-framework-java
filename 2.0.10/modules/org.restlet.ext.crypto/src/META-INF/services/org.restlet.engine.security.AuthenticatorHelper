@@ -1,0 +1,4 @@
+org.restlet.ext.crypto.internal.HttpAwsS3Helper
+org.restlet.ext.crypto.internal.HttpDigestHelper
+org.restlet.ext.crypto.internal.HttpSharedKeyHelper
+org.restlet.ext.crypto.internal.HttpSharedKeyLiteHelper
