@@ -21,6 +21,11 @@ Changes log
          XmlWriter class.
        - Fixed potential loops due to BrokenCyclicBarrier in internal
          NIO connector.
+       - Fixed issue regarding the posting of Web forms to the GAE 
+         platform (release 1.5.0 and higher) due to GAE misbehaviour 
+         that consumes streams when receiving Web forms.
+         Reported by Bjorn Roche.
+
     - API changes
        - Added Authenticator#multiAuthenticating to better control
          optional authenticators and ensure we don't attempt 

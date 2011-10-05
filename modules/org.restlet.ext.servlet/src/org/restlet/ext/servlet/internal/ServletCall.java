@@ -39,6 +39,8 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,13 +48,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.restlet.Response;
 import org.restlet.Server;
+import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.adapter.ServerCall;
 import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.header.LanguageReader;
 import org.restlet.engine.io.UnclosableInputStream;
 import org.restlet.engine.io.UnclosableOutputStream;
+import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 /**
@@ -180,6 +186,40 @@ public class ServletCall extends ServerCall {
      */
     public HttpServletRequest getRequest() {
         return this.request;
+    }
+
+    // [ifdef gae] method
+    @SuppressWarnings("unchecked")
+    @Override
+    public Representation getRequestEntity() {
+        Representation result = null;
+
+        if (MediaType.APPLICATION_WWW_FORM.isCompatible(new MediaType(
+                getRequest().getContentType()))) {
+            Form form = new Form();
+            Map<String, String[]> map = request.getParameterMap();
+
+            for (Entry<String, String[]> entry : map.entrySet()) {
+                for (int i = 0; i < entry.getValue().length; i++) {
+                    form.add(entry.getKey(), entry.getValue()[i]);
+                }
+            }
+
+            result = form.getWebRepresentation();
+
+            // Extract some interesting header values
+            Header header = getRequestHeaders().getFirst(
+                    HeaderConstants.HEADER_CONTENT_LANGUAGE, true);
+
+            if (header != null) {
+                new LanguageReader(header.getValue()).addValues(result
+                        .getLanguages());
+            }
+        } else {
+            result = super.getRequestEntity();
+        }
+
+        return result;
     }
 
     @Override
