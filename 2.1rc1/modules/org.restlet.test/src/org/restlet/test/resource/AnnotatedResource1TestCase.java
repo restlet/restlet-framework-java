@@ -107,7 +107,7 @@ public class AnnotatedResource1TestCase extends RestletTestCase {
         result = clientResource.get(MediaType.APPLICATION_JAVA_OBJECT_XML)
                 .getText();
         assertTrue(result
-                .startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n<java version=\""));
+                .startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<java version=\""));
     }
 
     public void testOptions() {
