@@ -1,0 +1,43 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - Jackson
+Bundle-SymbolicName: org.restlet.ext.jackson
+Bundle-Version: 2.1
+Bundle-Vendor: Noelios Technologies
+Export-Package: org.restlet.ext.jackson
+Import-Package: 
+ org.codehaus.jackson,
+ org.codehaus.jackson.annotate,
+ org.codehaus.jackson.format,
+ org.codehaus.jackson.impl,
+ org.codehaus.jackson.io,
+ org.codehaus.jackson.map,
+ org.codehaus.jackson.map.annotate,
+ org.codehaus.jackson.map.deser,
+ org.codehaus.jackson.map.deser.impl,
+ org.codehaus.jackson.map.exc,
+ org.codehaus.jackson.map.ext,
+ org.codehaus.jackson.map.introspect,
+ org.codehaus.jackson.map.jsontype,
+ org.codehaus.jackson.map.jsontype.impl,
+ org.codehaus.jackson.map.module,
+ org.codehaus.jackson.map.ser,
+ org.codehaus.jackson.map.ser.impl,
+ org.codehaus.jackson.map.type,
+ org.codehaus.jackson.map.util,
+ org.codehaus.jackson.node,
+ org.codehaus.jackson.schema,
+ org.codehaus.jackson.sym,
+ org.codehaus.jackson.type,
+ org.codehaus.jackson.util,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.engine,
+ org.restlet.engine.converter,
+ org.restlet.engine.resource,
+ org.restlet.representation,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Require-Bundle: org.codehaus.jackson

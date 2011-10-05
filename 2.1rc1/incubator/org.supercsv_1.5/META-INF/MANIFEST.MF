@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SuperCSV conversion library
+Bundle-SymbolicName: org.supercsv
+Bundle-Version: 1.5.2
+Bundle-ClassPath: org.supercsv.jar
+Bundle-Vendor: Kasper B. Graversen
+Export-Package: org.supercsv.cellprocessor,
+ org.supercsv.cellprocessor.constraint,
+ org.supercsv.cellprocessor.ift,
+ org.supercsv.exception,
+ org.supercsv.io,
+ org.supercsv.prefs,
+ org.supercsv.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

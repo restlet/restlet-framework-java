@@ -1,0 +1,21 @@
+<library id="codec" symbolicName="org.apache.commons.codec">
+	<name>Apache Commons Codec</name>
+	<description>Apache Commons Codec</description>
+	<version>1.5</version>
+	<homeUri>http://commons.apache.org/codec/</homeUri>
+	<downloadUri>http://commons.apache.org/downloads/download_codec.cgi</downloadUri>
+	<provider>Apache Software Foundation</provider>
+
+	<package name="org.apache.commons.codec">
+		<maven>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<javadocs>
+		<link href="http://commons.apache.org/codec/apidocs/" />
+	</javadocs>
+</library>

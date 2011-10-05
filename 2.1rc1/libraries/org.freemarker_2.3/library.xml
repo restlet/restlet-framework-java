@@ -1,0 +1,21 @@
+<library id="freemarker" symbolicName="org.freemarker">
+	<name>FreeMarker template engine</name>
+	<description>FreeMarker template engine</description>
+	<version>2.3</version>
+	<release>18</release>
+	<homeUri>http://freemarker.org/</homeUri>
+	<downloadUri>http://freemarker.org/freemarkerdownload.html</downloadUri>
+	<provider>FreeMarker project</provider>
+	
+	<package name="org.freemarker">
+		<maven>
+			<artifactId>freemarker</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<javadocs>
+		<link href="http://freemarker.sourceforge.net/docs/api/" />
+	</javadocs>
+</library>

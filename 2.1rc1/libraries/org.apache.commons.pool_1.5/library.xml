@@ -1,0 +1,19 @@
+<library id="pool" symbolicName="org.apache.commons.pool">
+	<name>Apache Commons Pool</name>
+	<description>Apache Commons Pool</description>
+	<version>1.5</version>
+    <release>6</release>
+	<homeUri>http://commons.apache.org/pool/</homeUri>
+	<downloadUri>http://commons.apache.org/downloads/download_pool.cgi</downloadUri>
+	<provider>Apache Software Foundation</provider>
+	
+	<package name="org.apache.commons.pool">
+		<maven>
+			<groupId>commons-pool</groupId>
+			<artifactId>commons-pool</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

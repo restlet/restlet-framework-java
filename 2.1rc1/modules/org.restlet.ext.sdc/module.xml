@@ -1,0 +1,22 @@
+<module id="sdc" excludes="android,gae,gwt" type="connector" package="org.restlet.ext.sdc">
+	<name>Restlet Extension - SDC</name>
+	<description>Integration with Google Secure Data Connector on the cloud side.</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+		<distribution id="p2" />
+	</distributions>
+	
+	<dependencies>
+		<dependency type="library" id="sdc" primary="true" />
+		<dependency type="library" id="guice" />
+		<dependency type="library" id="gdata" />
+		<dependency type="library" id="protobuf" />
+		<dependency type="library" id="gcollections" />
+		<dependency type="library" id="log4j" />
+		<dependency type="library" id="xstream" />
+		<dependency type="module" id="core" />
+		<dependency type="module" id="ssl" />
+	</dependencies>
+	<wikiUri>400-restlet</wikiUri>
+</module>

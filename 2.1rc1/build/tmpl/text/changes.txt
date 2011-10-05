@@ -1,0 +1,489 @@
+   
+===========
+Changes log  
+===========
+
+- @version-full@ (@release-date@)
+    - Bug fixed
+       - Potential NPE in ServerServlet#init(Application).
+         Reported by Bryan Hunt.
+       - The Application(Context) constructor now behaves like the
+         setContext(Context) method. Reported by Bryan Hunt.
+       - Fixed internal HTTPS server which wasn't creating an HTTPS
+         request with all SSL related properties. 
+         Reported by Henry Story.
+       - Fixed bug causing premature closing of connections managed
+         by the internal NIO/HTTP/SIP connector.
+         Reported by Cyril Lakech.
+       - The max IO idle time used in code was 60s instead of the
+         30s announced in the Javadocs. Now using 30s.
+       - Removed extra empty line in XML documents added by the
+         XmlWriter class.
+       - Fixed potential loops due to BrokenCyclicBarrier in internal
+         NIO connector.
+       - Fixed issue regarding the posting of Web forms to the GAE 
+         platform (release 1.5.0 and higher) due to GAE misbehaviour 
+         that consumes streams when receiving Web forms.
+         Reported by Bjorn Roche.
+
+    - API changes
+       - Added Authenticator#multiAuthenticating to better control
+         optional authenticators and ensure we don't attempt 
+         several authentications if not necessary.
+       - Added ClientInfo#certificates and cipherSuite properties
+         and deprecated related attributes.
+       - Added shortcut ClientResource#addQueryParameter and
+         addSegment methods, based on the "reference" property.
+       - Added WadlApplication#canDescribe() method to facilitate
+         customization.
+       - Added lower-level RedableListener providing a ByteBuffer
+         when new content is asynchronously provided.
+       - Added TransformRepresentation#errorListener to be able to
+         replace the default one. Suggested by Warren Janssens.
+       - Attempting to create a Form instance from an EmptyRepres.
+         doesn't throw an exception anymore, just a fine log trace.
+         Reported by George Calm.
+       - Added APPLICATION_XQUERY media type constant.
+         Suggested by Alex Milowski.
+       - Refactored internal DigestUtils to clearly separate HMac
+         variants SHA-1 and SHA-256, in crypto extension.
+       - Refactored internal AwsUtils to clearly separate HMac
+         variants SHA-1 and SHA-256, in crypto extension.
+       - Added Graph.add*() methods and Link constructors as syntaxic
+         sugar in RDF extension.
+       - Added Reference.encode(...) methods with a "queryString"
+         boolean parameter to ensure that spaces are encoded as %20
+         instead of '+'. Reported by Matt Stromske.
+       - Added Reference.getQueryAsForm(boolean decode) method to 
+         prevent decoding of form parameters in some cases.
+       - Added "lineWidth" and "usingEncodedAttributeStyle" properties
+         to EmfRepresentation to facilitate XMI writing configuration. 
+         Reported by Sebastien Schneider.
+       - Added ChallengeResponse.secretAlgorithm property in case the
+         password is only known and usable in a hashed form (like it 
+         can be the case for HTTP Digest). Added new constructors as 
+         well as on ChallengeMessage.
+       - Increased the default request and response buffer size of the
+         internal connector to 16 and 32 kb in order, similar to Jetty.
+    - New features
+       - Added ChallengeScheme.HTTP_AWS_QUERY constant and client-
+         side support for Amazon Web Services's SimpleDB special
+         authentication scheme (using URI query parameters).
+       - Added ISO 8601 date format in DateUtils class.
+    - Misc
+       - Updated SLF4j to version 1.6.2
+       - Updated Apache Commons Codec to version 1.5
+       - Updated Apache Commons Collection to version 3.2.1
+       - Updated Apache Commons FileUpload to version 1.2.2
+       - Updated Apache Commons IO to version 2.0.1
+       - Updated Apache Commons Lang to version 2.6
+       - Updated Apache Commons Pool to version 1.5.6
+       - Updated Apache HTTP Client to version 4.1.1
+       - Updated Apache HTTP Core to version 4.1
+       - Updated Apache HTTP MIME to version 4.1.1
+       - Updated Jackson to version 1.9.0
+       - Updated FreeMarker to version 2.3.18
+
+- 2.1 Milestone 7 (08/24/2011)
+    - Bug fixed
+       - Fixed blocking regression in the GWT edition that avoids to 
+         compile client proxies. Reported by Joscha Feth.
+      
+- 2.1 Milestone 6 (08/20/2011)
+    - Breaking change
+      - When retrieving or updating the raw headers in the Request or 
+        Response attributes, the type should now be Series<Header> 
+        instead of Series<Parameter>.
+      - The SecretVerifier.verify(identifier, secret) nows returns an
+        integer instead of a Boolean for more precise answers such as
+        for stale credentials (expired password).
+    - API changes
+      - Renamed UniformResource into Resource with proper deprecation.
+      - Added NamedValue interface to support common behavior in Series
+        instead of having to rely on the Parameter class as a base class.
+      - Updated the Series class to not need to use a subclass all the time
+        such as Form, CookieSeries and CookieSettingSeries. Now it is a 
+        concrete class, taking a Class parameter at construction time such 
+        as Parameter, Header, or any class implementing the NamedValue 
+        interface.
+      - Deprecated Couple, Triple, CookieSeries, CookieSettingSeries.
+        Will be removed in version 2.2.
+      - Added Reference.addQueryParameter(Parameter) and
+        addQueryParameters(Iterable<Parameter>) methods.
+      - ClientResource now uses GET as its default HTTP method instead 
+        of null.
+      - Added "timeIssued" property to ChallengeResponse, in order to 
+        support cookie based authentication.
+      - Deprecated ClientInfo.getPreferredVariant() methods in favor of
+        the new ConnegService.
+      - Deprecated ClientResource.createRequest(Request) in favor of a
+        new createRequest() method.
+      - Added Request.isSynchronous() and isAsynchronous() methods as
+        convenient shortcuts.
+      - Added ClientResource.handleInbound(...) and handleOutbound(...)
+        method to factorize even more logic.
+      - Added Representation.append(Appendable) method.
+      - Deprecated Series.createSeries(...) method. Use constructor
+        instead.
+      - Added SecretVerifier.createUser(identifier) to allow creation
+        of User subclasses if necessary.
+      - Renamed JaxRsApplication.guard into authenticator to match the
+        parameter Authenticator class.
+      - Factorized "finderClass" property from Application and Router
+        into parent Restlet class and added a createFinder(Class)
+        method to facilitate instantiation and overriding.
+        Reported by Tim Peierls.
+      - Deprecated ServerList.setNext(Class) as it isn't used and its
+        logic isn't consistent with similar methods in Filter/Router.        
+        Reported by Tim Peierls.
+      - Fix JaxRs extension when handling Web forms.
+      - Clarified exception thrown when the converter service is unable
+        to convert a representation to a given target class. Also, if 
+        the conversion fails, a null object is returned and can be passed
+        to an annotated Java method for example.
+      - In case of exception in the user code invoked by an onResponse
+        callback or a GWT client proxy, the callback was invoked again with
+        an error status which proved to be non intuitive. Now, we simply
+        log a warning and stop the processing.
+        Reported by Cyril Lakech.
+      - Added Protocol.valueOf(name, version) method.
+    - New features
+      - Added a CookieAuthenticator class in the org.restlet.ext.crypto
+        extension to provide customizable and secure authentication via
+        cookies, in a way that is as compatible as possible with HTTP
+        challenge based authentication.
+        Based on an initial contribution by Remi Dewitte.
+      - Added org.restlet.service.ConnegService to provide a way to 
+        control the content negotiation behavior at the application level.
+        It offers two modes: strict and flexible (default) by other algorithms
+        can be plugged by overriding this class and reusing the Conneg
+        subclasses in the engine package. Suggested by David Bordoley.        
+      - Improved Restlet annotation value syntax to support alternate 
+        variants using '|' and combination of several metadata for a 
+        single variant using '+' separator. Also, all metadata are now
+        supported, not just media types.
+      - Added support for URI query constraints in the value of Restlet
+        method annotations such as @Get("form:json?light") or 
+        @Get("?level=2"). This allows returning and serializing 
+        different representation beans based on those parameters.
+      - Added HTML extension that currently supports write HTML form
+        in URL encoded or multipart form data. As a future replacement for 
+        the org.restlet.data.Form class, it adds the ability to work with 
+        multipart forms (currently writing only) with the same Java API.
+        Some suggestions from John Logdson.
+      - Added MediaType.APPLICATION_ECORE and APPLICATION_XMI constants,
+        and deprecated APPLICATION_XMI_XML. Registered "ecore" extension
+        into the MetadataService common extensions.
+        Issue reported by Thomas Eskenazi.
+      - Added EMF extension that supports the conversion between EMF
+        generated beans and XML or XMI representations. It can also
+        automatically write simple HTML representations for navigating
+        your web API. Hyperlinks can be specified using EMF eAnnotations.
+        Key feed-back from Bryan Hunt, John Logdson and Thomas Eskenazi.
+      - Added new HTTPS server connector based on the internal non-blocking 
+        NIO connector. Co-developped with NetDev.
+    - Bug fixed
+      - Fixed potential NPE in the Authenticator when logging authentication 
+        failure. Reported by Martin Svensson.
+      - Fixed potential NPE in ClientAdapter#commit(...) and generated
+        GWT proxies when no entity is returned. Reported by Cyril Lakech.
+      - Fixed potential NPE in BioUtils#copy() with one of the stream is null.
+        Reported by Cyril Lakech.
+      - Fixed character encoding bug with internal HTTP connectors with 
+        2 bytes characters (accents, etc.). This might have caused troubles
+        in other parts of the framework as it was located inside the
+        BioUtils.getOutputStream(Writer) method. Reported by Laurent Rustruel.
+     - Misc
+      - Optimized the HeaderReader class beavhior in the engine.
+      - Optimized the processing of extra headers and challenge schemes. 
+        Contributed by Scott S. McCoy
+      - Updated GWT server library to version 2.3.0.
+      - GWT client proxy generator now uses "Impl" instead of "Proxy" for
+        the automatically generated class, preventing confusion when the
+        annotated interface already ends with "Proxy".
+        Suggested by Cyril Lakech.
+      - Generation of GWT client proxy now stops when it detects usage of 
+        annotations that don't come from the Restlet edition of GWT.
+        Suggested by Cyril Lakech.
+      - Clarified Redirector Javadocs to explain more clearly the differences
+        between various options. Suggested by Cyril Lakech.
+      
+- 2.1 Milestone 5 (06/21/2011)
+    - API changes
+      - Moved SslContextFactory and DefaultSslContextFactory classes from 
+        internal to public org.restlet.ext.ssl package.
+      - Renamed Status#getName() method to getReasonPhrase() for more clarity
+        regarding the purpose of the additional "description" property used
+        for lengthier explanations.
+      - Added Response#isFinal() and isProvisional() methods, based on
+        Status#isInformational().
+      - Added MediaType.MESSAGE_HTTP constant.        
+    - Enhancements
+      - Added OAuth 2.0 and OpenID 2.0 extensions that have been maturing
+        in the incubator for a while after a contribution by Ericsson Labs.
+        Contributed by Kristoffer Gronowski and Martin Svensson.
+      - Updated and consolidated the SSL/HTTPS configuration parameters
+        for all HTTPS connectors.
+      - Added a warning message to indicate that an application without a 
+        parent component can't handle outbound calls by default.
+        Reported by John Logsdon and Kristoffer Gronowski.
+      - Allowed change of the parent context of a VirtualHost via the
+        setContext() method.
+      - Allowed change of the parent context of a VirtualHost via the
+        setContext() method.
+    - Bug fixed
+      - Fixed compatibility issue with GWT 2.3.
+      - Fixed potential NPE in Restlet class when no context is available.
+      - Fixed potential NPE in LogFilter. Reported by Aaron Summers.
+      - Fixed parsing of HTTP requests with internal connector when the
+        Host header was missing. Now falling back to IP address.
+        Reported by Aaron Summers.
+      - Fixed misleading log message when response are manually ranged
+        (206 status and entity with range set). Reported by John Logsdon.
+      - Fixed issue causing blocking of internal HTTP/SIP connector when 
+        the entity was coming from Apache HTTP client.
+      - Fixed issue causing potential loop in internal HTTP/SIP client
+        when the response entity wasn't being consumed immediately.
+      - Fixed issue causing potential IndexOutOfBounds exceptions.
+      - The internal server (HTTP and SIP) now automatically exhausts the 
+        request entity if it hasn't been consumed after the writing of the 
+        final response.
+      - The internal connector now calls back the ConnectorService methods.
+      - The internal server now calls back Representation#release() method
+        after sending an entity.
+     - Misc
+      - Updated Jetty to version 7.4.2.
+      - Added Awaitility and Hamcrest libraries required by the OAuth 
+        extension.
+
+- 2.1 Milestone 4 (04/27/2011)
+    - API changes
+      - Added protected redirect(...) and retry(...) methods on on ClientResource
+        to facilitate extension of default behavior such as passing on cookies.
+        Suggested by Martin Svensson.
+      - ClientResource#entityBuffering now buffers non transient representations of
+        unknown size. Necessary for GAE chunked issue.
+      - Added Server#getActualPort() to return either the value of getPort()
+        or getEphemeralPort() is the listening port is '0'.
+      - Message#attributes is now a ConcurrentMap instead of a Map.
+        Suggested by Tal Liron.
+      - ClientResource now respects any change to the clientInfo preferences
+        when using dynamic proxies (via wrap() for example). It only overwrites
+        them if the default preferences state (empty lists) is found at invocation
+        time. Suggested by Christoph Dietze.
+      - The visibility of several methods on UniformResource and ClientResource
+        has been changed to public.
+      - Added Protocol#SDC and ChallengeScheme#SDC constants for the 
+        Secure Data Connector protocol.
+    - Enhancements
+      - Added new HTTPS client connector based on the internal non-blocking NIO
+        connector. Co-developped with NetDev.
+      - The SDC protocol to connect to intranets from the cloud is now also 
+        supported on the GAE edition via the org.restlet.ext.net extension. It 
+        automatically sets the "use_intranet" HTTP header and increases the
+        portability of your code between Restlet/GAE and other Restlet editions. 
+        As SDC is natively supported on GAE, it doesn't require the 
+        org.restlet.ext.sdc extension.
+      - Added a new GAE extension for the GAE edition. It provides a dedicated
+        authenticator based on the GAE UserService feature.
+        Contributed by Matt Kennedy.
+    - Bug fixed
+      - Throwing a ResourceException with a given status, was resulting in
+        500 status being returned to the client instead of the given status.
+        Reported by Avi Flax and Rhett Sutphin.
+      - Fixed bug with unlimited IO timeouts in internal HTTP connector.
+        Reported by Michael Guiral.
+    - Misc
+      - The simplified logging formatter (one line) is now available only in
+        the Java SE edition as it could cause troubles with Java EE container
+        and potentially GAE/Android as we reconfigure the default log manager
+        programmatically. Reported by Kristoffer Gronowski and Bo Xing.
+      - Moved all SSL dependencies from the engine into the "org.restlet.ext.ssl"
+        extension, forcing it as a new extension for several other ones such as
+        Jetty, Apache HTTP Client or Simple. This extension takes more importance
+        as it also contains the new scalable HTTPS/NIO internal connector just
+        added. Please ensure that your classpath is adjusted. This also helps
+        keeping core org.restlet.jar size small.
+
+- 2.1 Milestone 3 (03/31/2011)
+    - Breaking changes
+      - The new support of GWT 2.2 is not backward compatible with applications 
+        based on previous versions of GWT.
+    - API changes
+      - Deprecated the Client#connectTimeout property as it is hard to find
+        compared to other connector parameters. Also, it isn't available for
+        all connectors so it can be confusing to expose it.
+        Use the "socketConnectTimeoutMs" connector parameter instead or
+        the "maxIoIdleTimeMs" parameter for internal NIO connectors.
+      - Deprecated the Engine#setInstance() method to favor the 
+        Engine#register() ones which wrap logging initialization logic
+        and added an Engine#clear() method to discard it altogether.
+      - Added an getResponseLogMessage(request, response, duration) method to 
+        LogService class so it can be easily overridden/customized. Also
+        added a protected getDefaultResponseLogMessage(..) method returning the
+        default IIS log message.
+      - Added Representation#setReadListener() method to facilitate the setting
+        of listeners interested in new content available for reading for 
+        selectable representations.
+      - Added higher level NIO event listeners in org.restlet.util package:
+        InputListener, ReaderListener and StringListener.
+      - Created a com.google.gwt.server library dedicated to the 
+        org.restlet.gwt extension. This library will be shipped with the 
+        JSE, JEE, GAE editions.
+      - Added Message#onError callback invoked by the internal connector.
+        Especially useful to detect if an outbound response failed to be
+        written at the connector level.
+      - Deprecated TunnelService#setHeaderTunnel() in favor of the new
+        setHeadersTunnel() method.
+      - Fixed default value of "maxQueued" for the internal connector to ensure
+        threads are properly created up the the "maxThreads" value entered.
+        Reported by Kristoffer Gronowski
+      - Added new Series#getValuesArray(...) method variants.
+      - Added ClientResource#maxRedirects property to prevent infinite 
+        redirects, in addition to the existing infinite loop detection.
+        Suggested by Henry Story.
+      - Added ClientResource#requestEntityBuffering, responseEntityBuffering
+        Boolean properties and setEntityBuffering(boolean) method in order to
+        make transient entities reusable (retry attempts, chunk encoding issues
+        with GAE, response entity reuse).
+    - Enhancements
+      - Keep alive empty lines between messages in a persistent connections are
+        now eat silently. Reported by John Logsdon.
+      - Refactored the internal NIO connector to better support the differences
+        between HTTP and SIP protocols regarding transaction management.
+      - Added a new SDC extension providing a client connector for the 
+        Google Secure Data Connector protocol compatible with the official SDC 
+        agent.
+    - Bugs fixed
+      - Fixed bug preventing persistent connections reuse when an entity is
+        present. Reported by John Logsdon.
+      - Fixed potential issue with double consumption of SIP ACK messages. 
+        Reported by John Logsdon.
+      - Fixed issue with asynchronous responses and provisional responses
+        preventing the resue of persistent connections. 
+        Reported by Phil Dunks.
+      - Fixed NIO connector (HTTP and SIP) bug potentially causing infinite
+        loops. Reported by John Logsdon and Phil Dunks.
+      - Fixed SIP methods INFO, SUBSCRIBE and SUBSCRIBE to allow responses.
+        Reported by Phil Dunks.
+      - Fixed NIO connector regression potentially blocking a connection if 
+        all the entity couldn't be read from the socket in one shot.
+      - Fixed Directory bug when handling conditional requests.
+    - Misc
+      - If the Engine#logFormatter is set to null, the log formatter of the
+        console is not changed anymore.
+      - Updated Jackson library to version 1.7.1.
+      - Added an "org.restlet.engine.helper" attribute to expose the internal
+        helper instance used by a Client or Server instance. Could be 
+        leveraged in advanced cases for instrumentation purpose for example.
+        Suggested by John Logsdon.
+      - Updated Jetty library to version 7.3.0.
+      - Updated GWT library to version 2.2.0.
+      
+- 2.1 Milestone 2 (12/24/2010)
+    - API changes
+      - The org.restlet.service.TaskService is now a ScheduledExecutorService
+        capable of running delayed commands at fixed intervals for example.
+        Suggested by Kristoffer Gronowski.
+      - JsonRepresentation(Map<Object,Object>) signature changed to the more
+        precise JsonRepresentation(Map<String, Object) one.
+        Suggested by Tim Peierls.
+      - Facilitating the creation of ClientResource subclasses by changing
+        the visibility of handle(...) methods from private to protected.
+        Leveraged by the SipClientResource in the SIP extension.
+        Reported by Phil Dunks.
+    - Enhancements
+      - Added Request#loggable property, LogService#isLoggable(Request)
+        method and LogService#loggableTemplate to enable selective request 
+        logging. Suggested by John Logsdon.
+      - Added setters with String parameters in addition to Text ones to
+        the Feed and Entry classes.
+      - Added an EncoderService to automatically compress sent entities
+        on both client and server side. Disabled by default on Application.
+      - Added UniformResource#requestCacheDirectives and 
+        responseCacheDirectives properties.
+      - Added UniformResource#doError(Status) and doError(Status, msg)
+        methods to allow interception and customization of the default
+        behavior (such as throwing a ResourceException on the client-side).
+        Suggested by Florian Bucklers.
+      - Added a new SIP extension providing support for the Session 
+        Initiation Protocol, largely used for voice over IP. This new
+        extension ships both client and server SIP connectors over TCP,
+        reusing the 90% of the logic used by the new NIO/HTTP internal
+        connector, providing excellent scalability and performance.
+      - Simplified the default console logging by replacing Java's default
+        verbose log formatter by a single line formatter. This formatter
+        can be modified via the static Engine#logFormatter property.
+      - Added easy programmatic control of log configuration via 
+        Engine#logLevel and restletLogLevel static properties.
+        If regular log configuration is used via system properties, it 
+        is taking over for backward compatibility.
+      - In addition to java.util.logging.SimpleFormatter, two new ones are
+        added: org.restlet.engine.log.SimplerFormatter and the new default
+        org.restlet.engine.log.SimplestFormatter.
+      - Removed TraceHandler class, replaced by configurable ConsoleHander
+        formatters.
+      - Improved the precision of log messages, for example giving the list
+        of template variables matched and their value. 
+        Suggested by John Logsdon.
+      - Optimized routing when 0 characters are matched on an URI template.
+      - Added IoUtils.TIMEOUT_MS constant to globally configure I/O related
+        timeouts. Its value is 60 seconds by default, but can be configured
+        via the "org.restlet.engine.io.timeoutMs" system property. 
+      - Added server-side support for Amazon Web Services (S3) authentication.
+        Contributed by Jean-Philippe Steinmetz.
+      - Added support for DecoderService on the client-side as well.
+      - Implemented the automatic filtering of outbound services, via the
+        Application#outboundRoot property.
+      - Added ConfidentialAuthorizer to limit access to resource to secure
+        protocols such as HTTPS.
+    - Bugs fixed
+      - Fixed writing of big representations. Reported by Tom Andersson. 
+      - Fixed IoUtils.BUFFER_SIZE constant to be properly configurable via
+        the "org.restlet.engine.io.bufferSize" system property. 
+        Reported by Tom Andersson.
+      - Fixed auto-detection of XStream annotations. 
+        Contributed by Bruno Grieder.
+    - Misc
+      - Moved UniformResource#doCatch() logic down to ServerResource as it
+        was specific to server-side and kept a simpler log trace.
+      - Made TCP socket reuse active by default on internal connector.
+        Reported by John Logsdon.
+      - Lowered log traces for Directory. Suggested by Rickard Oberg.       
+      - Moved exception to status conversion logic from UniformResource and
+        ServerResource doCatch() methods to the StatusService.
+        Suggested by Rhett Sutphin.
+
+- 2.1 Milestone 1 (11/07/2010)
+    - API changes
+      - Removed deprecated classes and code.
+      - The Route class has been reintroduced with a lighter
+        behavior not depending on URI templates.
+      - Added an UniformResource#setApplication() setter to be able
+        to explicitly set the parent application used to pick up the
+        ConverterService or MetadataService. This property is also 
+        carried on by the copy constructor. Suggested by John Logsdon.
+      - Added UniformResource#toString() for easier debugging.
+      - Added Representation#isSelectable() and getRegistration() method
+        to manipulate the registration of the NIO channel with its 
+        associated selector and received asynchronous notifications
+        of available content.
+      - Deprecated Application#setClientRoot, renamed into a 
+        setOutboundRoot method.
+    - Enhancements
+      - Improved the naming of files created by the FILE local 
+        connector so that media type extension comes at the end.
+      - Added a fully new non-blocking NIO/HTTP connector in the engine, 
+        in replacement of the previous one based on blocking BIO. 
+        It has much better performance (latency, throughput and 
+        scalability) and supports persistent connections and chunked
+        encoding.
+    - Misc
+      - Removed the Grizzly and Netty extensions which were still 
+        considered experimental at this point. The new internal
+        connector based on non-blocking NIO now provides similar
+        advantages and is already more complete from a HTTP coverage
+        point of view. Users of these connectors are encouraged to
+        leverage the NIO internal connector or the two other extensions
+        that are still available in 2.1 (Jetty and Simple connectors).
+      - Added library GWT 2.1.0, removed support of GWT 2.0.

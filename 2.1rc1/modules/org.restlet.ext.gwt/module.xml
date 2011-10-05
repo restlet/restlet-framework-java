@@ -1,0 +1,24 @@
+<module includes="gae,jee,jse,osgi" id="gwt" type="integration" package="org.restlet.ext.gwt">
+   <name>Restlet Extension - GWT</name>
+   <description>Server-side integration with GWT.</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+		<distribution id="p2" />
+	</distributions>
+
+   <dependencies>
+      <dependency type="library" id="gwt-server" primary="true" />
+      <dependency type="library" id="servlet" includes="gae,jee,osgi" maven-scope="provided" />
+      <dependency type="module" id="core" />
+      <dependency type="module" id="servlet" includes="gae,jee,osgi" />
+   </dependencies>
+   <source edition="jse">
+		<files-sets>
+<![CDATA[
+         <exclude name="src/org/restlet/ext/gwt/GwtShellServletWrapper.java" />
+]]>
+      </files-sets>
+   </source>
+   <wikiUri>315-restlet</wikiUri>
+</module>

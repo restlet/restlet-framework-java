@@ -1,0 +1,21 @@
+<#list edition.distributions as distribution>
+<#if distribution.id == 'p2'>
+<#list distribution.modules as module>
+<@pp.nestOutputFile name="feature.${module.id}.xml">
+<?xml version="1.0" encoding="UTF-8"?>
+<feature id="${module.package}-${edition.id}" label="${module.name}" version="${ant["eclipse-version-full"]}" provider-name="Noelios Technologies">
+   <description>${module.description}</description>
+   <plugin id="${module.package}-${edition.id}" version="${ant["eclipse-version-full"]}" unpack="false" />
+   <plugin id="${module.package}-${edition.id}.source" version="${ant["eclipse-version-full"]}" />
+<#--
+	<#list module.neededLibraries as libdep>
+		<#list libdep.library.packages as package>
+   <plugin id="${package.name}" version="${ant["eclipse-version-full"]}" unpack="false" />
+		</#list>
+	</#list>
+-->
+</feature>
+</@pp.nestOutputFile>
+</#list>
+</#if>
+</#list>

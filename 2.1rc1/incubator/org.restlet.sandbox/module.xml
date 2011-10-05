@@ -1,0 +1,14 @@
+<module id="sandbox" type="standard"
+	package="org.restlet.sandbox">
+	<name>Restlet Incubator - Sandbox</name>
+	<description>
+		Sandbox to test new code in the incubator.
+	</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+	<dependencies>
+		<dependency type="module" id="core" />
+	</dependencies>
+</module>

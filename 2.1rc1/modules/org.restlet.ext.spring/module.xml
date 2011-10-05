@@ -1,0 +1,30 @@
+<module id="spring" includes="gae,jee,jse,osgi" type="integration" package="org.restlet.ext.spring">
+	<name>Restlet Extension - Spring Framework</name>
+	<description>Integration with Spring Framework.</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+		<distribution id="p2" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="library" id="cglib" />
+		<dependency type="library" id="logging" />
+		<dependency type="library" id="servlet" includes="gae,jee,osgi" maven-scope="provided" />
+		<dependency type="library" id="spring" primary="true" />
+		<dependency type="module" id="core" />
+		<dependency type="module" id="servlet" includes="gae,jee,osgi" />
+	</dependencies>
+	<source edition="jse">
+		<files-sets>
+<![CDATA[
+         <exclude name="src/org/restlet/ext/spring/*Servlet.java" />
+]]>
+		</files-sets>
+	</source>
+	<!-- <source edition="gae"> <files-mappers> <![CDATA[ <mapper classname="mapper.ReplaceStringMapper" 
+		classpathref="forge-path" from=".MF.gae" to=".MF" /> ]]> </files-mappers> 
+		<files-sets> <![CDATA[ <exclude name="META-INF/MANIFEST.MF" /> <exclude name="src/org/restlet/ext/spring/*Servlet.java" 
+		/> ]]> </files-sets> </source> -->
+	<wikiUri>70-restlet</wikiUri>
+</module>

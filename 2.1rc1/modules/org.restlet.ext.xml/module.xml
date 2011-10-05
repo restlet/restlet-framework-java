@@ -1,0 +1,46 @@
+<module id="xml" type="standard" package="org.restlet.ext.xml">
+	<name>Restlet Extension - XML</name>
+	<description>Support for the XML documents.</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+		<distribution id="p2" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="module" id="core" />
+	</dependencies>
+	<source edition="android">
+		<files-mappers>
+<![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".java.android" to=".java" />
+]]>
+		</files-mappers>
+		<files-sets>
+<![CDATA[
+         <exclude name="src/org/restlet/ext/xml/SaxRepresentation.java" />
+         <exclude name="src/org/restlet/ext/xml/Transformer.java" />
+         <exclude name="src/org/restlet/ext/xml/TransformRepresentation.java" />
+]]>
+		</files-sets>
+	</source>
+	<source edition="gwt">
+		<files-mappers>
+<![CDATA[
+      <mapper classname="mapper.ReplaceStringMapper" classpathref="forge-path" from=".java.gwt" to=".java" />
+]]>
+		</files-mappers>
+		<files-sets>
+<![CDATA[
+         <custom classname="selector.EditionFileSelector" classpathref="forge-path">
+            <param name="edition" value="gwt"/>
+         </custom>
+         <exclude name="src/org/restlet/ext/xml/*.java" />
+         <exclude name="src/org/restlet/ext/xml/internal/**" />
+         <exclude name="src/META-INF/**" />
+]]>
+		</files-sets>
+	</source>
+	<stage edition="gwt" includesource="true" />
+	<wikiUri>317-restlet</wikiUri>
+</module>

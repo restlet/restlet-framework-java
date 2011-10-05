@@ -1,0 +1,17 @@
+<library id="jaxb-api" symbolicName="javax.xml.bind">
+	<name>Java Architecture for XML Binding</name>
+	<description>Java Architecture for XML Binding</description>
+	<version>2.1</version>
+	<homeUri>https://jaxb.dev.java.net/</homeUri>
+	<downloadUri>https://jaxb.dev.java.net/servlets/ProjectDocumentList</downloadUri>
+	<provider>Sun Microsystems Inc.</provider>
+
+	<package name="javax.xml.bind">
+		<maven>
+			<artifactId>jaxb-api</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

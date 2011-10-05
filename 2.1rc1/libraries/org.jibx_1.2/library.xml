@@ -1,0 +1,22 @@
+<library id="jibx" symbolicName="org.jibx">
+	<name>JiBX: Binding XML to Java Code</name>
+	<description>JiBX: Binding XML to Java Code</description>
+	<version>1.2</version>
+	<release>2</release>
+	<homeUri>http://jibx.sourceforge.net/</homeUri>
+	<downloadUri>http://sourceforge.net/project/showfiles.php?group_id=69358</downloadUri>
+	<provider>Dennis M. Sosnoski</provider>
+	
+	<package name="org.jibx.runtime">
+		<maven>
+			<groupId>org.jibx</groupId>
+			<artifactId>jibx-run</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<javadocs>
+		<link href="http://jibx.sourceforge.net/api/" />
+	</javadocs>
+</library>

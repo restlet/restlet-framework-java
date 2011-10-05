@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - FOAF
+Bundle-SymbolicName: org.restlet.ext.foaf
+Bundle-Version: 2.1
+Bundle-Vendor: Noelios Technologies
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: org.restlet,
+ org.restlet.data,
+ org.restlet.ext.rdf,
+ org.restlet.representation,
+ org.restlet.resource,
+ org.restlet.routing,
+ org.restlet.security,
+ org.restlet.service,
+ org.restlet.util

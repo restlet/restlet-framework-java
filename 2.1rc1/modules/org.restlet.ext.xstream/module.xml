@@ -1,0 +1,17 @@
+<module id="xstream" excludes="android,gae,gwt" type="integration" package="org.restlet.ext.xstream">
+	<name>Restlet Extension - XStream</name>
+	<description>Integration with XStream.</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+		<distribution id="p2" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="library" id="jettison" />
+		<dependency type="library" id="stax" />
+		<dependency type="library" id="xstream" primary="true" />
+		<dependency type="module" id="core" />
+	</dependencies>
+	<wikiUri>264-restlet</wikiUri>
+</module>

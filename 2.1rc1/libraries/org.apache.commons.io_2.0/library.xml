@@ -1,0 +1,19 @@
+<library id="io" symbolicName="org.apache.commons.io">
+	<name>Apache Commons IO</name>
+	<description>Apache Commons IO</description>
+	<version>2.0</version>
+	<release>1</release>
+	<homeUri>http://commons.apache.org/io/</homeUri>
+	<downloadUri>http://commons.apache.org/downloads/download_io.cgi</downloadUri>
+	<provider>Apache Software Foundation</provider>
+
+	<package name="org.apache.commons.io">
+		<maven>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

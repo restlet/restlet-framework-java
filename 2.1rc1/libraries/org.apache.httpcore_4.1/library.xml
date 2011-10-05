@@ -1,0 +1,21 @@
+<library id="httpcore" symbolicName="org.apache.httpcore">
+	<name>Apache HTTP Components Core</name>
+	<description>Apache HTTP Components Core</description>
+	<version>4.1</version>
+	<homeUri>http://hc.apache.org/httpcomponents-core/</homeUri>
+	<downloadUri>http://hc.apache.org/httpcomponents-core/download.html</downloadUri>
+	<provider>Apache Software Foundation</provider>
+
+	<package name="org.apache.httpcore">
+		<maven>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+	<javadocs>
+		<link href="http://hc.apache.org/httpcomponents-core-ga/httpcore/apidocs/" />
+	</javadocs>
+</library>
