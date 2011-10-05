@@ -126,9 +126,6 @@ public class FormReader {
      *            data encoded.
      * @param separator
      *            The separator character used between parameters.
-     * @param decode
-     *            Indicates if the parameters should be decoded using the given
-     *            character set.
      */
     public FormReader(String parametersString, CharacterSet characterSet,
             char separator) {
