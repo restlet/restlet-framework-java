@@ -268,10 +268,10 @@ public class FormReader {
             try {
                 boolean readingName = true;
                 boolean readingValue = false;
-                final StringBuilder nameBuffer = new StringBuilder();
-                final StringBuilder valueBuffer = new StringBuilder();
-
+                StringBuilder nameBuffer = new StringBuilder();
+                StringBuilder valueBuffer = new StringBuilder();
                 int nextChar = 0;
+
                 while ((result == null) && (nextChar != -1)) {
                     nextChar = this.stream.read();
 
@@ -300,14 +300,8 @@ public class FormReader {
                         }
                     } else if (readingValue) {
                         if ((nextChar == this.separator) || (nextChar == -1)) {
-                            if (valueBuffer.length() > 0) {
-                                result = FormUtils.create(nameBuffer,
-                                        valueBuffer, this.decode,
-                                        this.characterSet);
-                            } else {
-                                result = FormUtils.create(nameBuffer, null,
-                                        this.decode, this.characterSet);
-                            }
+                            result = FormUtils.create(nameBuffer, valueBuffer,
+                                    this.decode, this.characterSet);
                         } else {
                             valueBuffer.append((char) nextChar);
                         }

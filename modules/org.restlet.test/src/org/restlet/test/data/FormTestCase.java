@@ -57,15 +57,26 @@ public class FormTestCase extends RestletTestCase {
         assertEquals(query, newQuery);
     }
 
-    public void testEmptyParameter() {
+    public void testEmptyParameter() throws IOException {
+        // Manual construction of form
         Form form = new Form();
         form.add("normalParam", "abcd");
         form.add("emptyParam", "");
         form.add("nullParam", null);
 
+        assertEquals(3, form.size());
         assertEquals("abcd", form.getFirstValue("normalParam"));
         assertEquals("", form.getFirstValue("emptyParam"));
         assertNull(form.getFirstValue("nullParam"));
+        assertNull(form.getFirstValue("unknownParam"));
+
+        // Construction of form via URI query parsing
+        form = new Form("normalParam=abcd&emptyParam=&nullParam");
+        assertEquals(3, form.size());
+        assertEquals("abcd", form.getFirstValue("normalParam"));
+        assertEquals("", form.getFirstValue("emptyParam"));
+        assertNull(form.getFirstValue("nullParam"));
+        assertNull(form.getFirstValue("unknownParam"));
     }
 
 }
