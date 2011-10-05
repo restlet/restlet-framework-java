@@ -271,7 +271,7 @@ public class ConnectionController extends Controller implements Runnable {
                 keys.remove();
             }
         } else if (getHelper().getLogger().isLoggable(Level.FINEST)) {
-            getHelper().getLogger().log(Level.FINEST, "No NIO key selected");
+            // getHelper().getLogger().log(Level.FINEST, "No NIO key selected");
         }
     }
 

@@ -38,14 +38,12 @@ import org.restlet.engine.util.FormReader;
 import org.restlet.test.RestletTestCase;
 
 /**
- * Unit tests for the Form class.
+ * Unit tests for the {@link Form} class.
  * 
  * @author Jerome Louvel
  */
 public class FormTestCase extends RestletTestCase {
-    /**
-     * Tests the cookies parsing.
-     */
+
     public void testParsing() throws IOException {
         Form form = new Form();
         form.add("name", "John D. Mitchell");
@@ -58,4 +56,16 @@ public class FormTestCase extends RestletTestCase {
 
         assertEquals(query, newQuery);
     }
+
+    public void testEmptyParameter() {
+        Form form = new Form();
+        form.add("normalParam", "abcd");
+        form.add("emptyParam", "");
+        form.add("nullParam", null);
+
+        assertEquals("abcd", form.getFirstValue("normalParam"));
+        assertEquals("", form.getFirstValue("emptyParam"));
+        assertNull(form.getFirstValue("nullParam"));
+    }
+
 }

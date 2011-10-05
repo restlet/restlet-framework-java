@@ -120,7 +120,7 @@ public abstract class ServerOutboundWay extends OutboundWay {
         } else if (Status.SUCCESS_NO_CONTENT.equals(response.getStatus())
                 && response.isEntityAvailable()) {
             getLogger()
-                    .fine("Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
+                    .fine("Responses with a 204 (No content) status generally don't have an entity available. Only adding entity headers for resource \""
                             + request.getResourceRef() + "\".");
             response.setEntity(null);
         }

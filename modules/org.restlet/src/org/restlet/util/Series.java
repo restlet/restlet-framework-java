@@ -284,7 +284,7 @@ public class Series<E extends NamedValue> extends WrapperList<E> {
      * @return The first parameter found with the given name.
      */
     public E getFirst(String name, boolean ignoreCase) {
-        for (final E param : this) {
+        for (E param : this) {
             if (equals(param.getName(), name, ignoreCase)) {
                 return param;
             }
