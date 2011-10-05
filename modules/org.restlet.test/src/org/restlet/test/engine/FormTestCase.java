@@ -37,16 +37,13 @@ import org.restlet.data.Form;
 import org.restlet.engine.util.FormReader;
 import org.restlet.test.RestletTestCase;
 
-
 /**
- * Unit tests for the Form class.
+ * Unit tests for the {@link Form} class.
  * 
  * @author Jerome Louvel
  */
 public class FormTestCase extends RestletTestCase {
-    /**
-     * Tests the cookies parsing.
-     */
+
     public void testParsing() throws IOException {
         final Form form = new Form();
         form.add("name", "John D. Mitchell");
@@ -59,4 +56,27 @@ public class FormTestCase extends RestletTestCase {
         final String newQuery = newForm.encode(CharacterSet.UTF_8);
         assertEquals(query, newQuery);
     }
+
+    public void testEmptyParameter() throws IOException {
+        // Manual construction of form
+        Form form = new Form();
+        form.add("normalParam", "abcd");
+        form.add("emptyParam", "");
+        form.add("nullParam", null);
+
+        assertEquals(3, form.size());
+        assertEquals("abcd", form.getFirstValue("normalParam"));
+        assertEquals("", form.getFirstValue("emptyParam"));
+        assertNull(form.getFirstValue("nullParam"));
+        assertNull(form.getFirstValue("unknownParam"));
+
+        // Construction of form via URI query parsing
+        form = new Form("normalParam=abcd&emptyParam=&nullParam");
+        assertEquals(3, form.size());
+        assertEquals("abcd", form.getFirstValue("normalParam"));
+        assertEquals("", form.getFirstValue("emptyParam"));
+        assertNull(form.getFirstValue("nullParam"));
+        assertNull(form.getFirstValue("unknownParam"));
+    }
+
 }

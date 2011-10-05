@@ -250,13 +250,8 @@ public class FormReader {
                     }
                 } else if (readingValue) {
                     if ((nextChar == this.separator) || (nextChar == -1)) {
-                        if (valueBuffer.length() > 0) {
-                            result = FormUtils.create(nameBuffer, valueBuffer,
-                                    this.decoding, this.characterSet);
-                        } else {
-                            result = FormUtils.create(nameBuffer, null,
-                                    this.decoding, this.characterSet);
-                        }
+                        result = FormUtils.create(nameBuffer, valueBuffer,
+                                this.decoding, this.characterSet);
                     } else {
                         valueBuffer.append((char) nextChar);
                     }
