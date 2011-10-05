@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.0.10 (2011-09-05)
     - Bugs fixed
        - RDF/XML writing wasn't properly factoring statements from the same
          source reference.
@@ -29,8 +29,7 @@ Changes log
        - Fixed parsing of form with empty parameters. Now their value is ""
          instead of null. Reported by Arjohn Kampman
     
-    
-    - 2.0.9 (2011-08-20)
+- 2.0.9 (2011-08-20)
     - Bugs fixed
        - Fixed severe log messages produced by the Component class due to 
          lack of child context usage.
