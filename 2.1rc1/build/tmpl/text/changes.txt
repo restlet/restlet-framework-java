@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.1 Release Candidate 1 (09/05/2011)
     - Bug fixed
        - Potential NPE in ServerServlet#init(Application).
          Reported by Bryan Hunt.
