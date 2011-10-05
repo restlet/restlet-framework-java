@@ -21,7 +21,7 @@
 		<lib-emf-ecore-version>2.6.0.v20100614-1136</lib-emf-ecore-version>
 		<lib-emf-ecore-xmi-version>2.5.0.v20100521-1846</lib-emf-ecore-xmi-version>
 		<lib-fileupload-version>1.2.2</lib-fileupload-version>
-		<lib-freemarker-version>2.3.16</lib-freemarker-version>
+		<lib-freemarker-version>2.3.18</lib-freemarker-version>
 		<lib-gcollections-version>1.0</lib-gcollections-version>
 		<lib-gdata-version>1.0</lib-gdata-version>
 		<lib-gdata-client-version>1.0</lib-gdata-client-version>
