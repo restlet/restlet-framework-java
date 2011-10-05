@@ -37,8 +37,10 @@ import org.restlet.Request;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Digest;
 import org.restlet.data.Form;
 import org.restlet.data.Method;
+import org.restlet.data.Reference;
 import org.restlet.engine.http.header.ChallengeWriter;
 import org.restlet.engine.http.header.HeaderConstants;
 import org.restlet.engine.security.AuthenticatorUtils;
@@ -76,8 +78,8 @@ public class AuthenticationTestCase extends RestletTestCase {
                 "Tue, 27 Mar 2007 19:36:42 +0000");
 
         helper.formatRawResponse(cw, challenge, request, httpHeaders);
-        assertEquals("0PN5J17HBGZHT7JJ3X82:xXjDGYUmKxnwqr5KXNPGldn5LbA=", cw
-                .toString());
+        assertEquals("0PN5J17HBGZHT7JJ3X82:xXjDGYUmKxnwqr5KXNPGldn5LbA=",
+                cw.toString());
 
         // Example Object PUT
         cw = new ChallengeWriter();
@@ -87,8 +89,8 @@ public class AuthenticationTestCase extends RestletTestCase {
         httpHeaders.add(HeaderConstants.HEADER_CONTENT_LENGTH, "94328");
         httpHeaders.add(HeaderConstants.HEADER_CONTENT_TYPE, "image/jpeg");
         helper.formatRawResponse(cw, challenge, request, httpHeaders);
-        assertEquals("0PN5J17HBGZHT7JJ3X82:hcicpDDvL9SsO6AkvxqmIWkmOuQ=", cw
-                .toString());
+        assertEquals("0PN5J17HBGZHT7JJ3X82:hcicpDDvL9SsO6AkvxqmIWkmOuQ=",
+                cw.toString());
     }
 
     /**
@@ -106,8 +108,8 @@ public class AuthenticationTestCase extends RestletTestCase {
         List<ChallengeRequest> creq = AuthenticatorUtils.parseRequest(null,
                 authenticate1, null);
         assertEquals(creq.size(), 1);
-        assertEquals(authenticate1, AuthenticatorUtils.formatRequest(creq
-                .get(0), null, null));
+        assertEquals(authenticate1,
+                AuthenticatorUtils.formatRequest(creq.get(0), null, null));
     }
 
     /**
@@ -116,20 +118,34 @@ public class AuthenticationTestCase extends RestletTestCase {
      * @throws IOException
      */
     public void testParsingDigest() throws IOException {
-        String authorization1 = "Digest username=\"admin\", nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\", uri=\"/protected/asdass\", response=\"a891ebedebb2046b83a9b7540f4e9554\", cnonce=\"MTE3NzEwMzIwMjkwMDoxNmMzODFiYzRjNWRjMmMyOTVkMWFhNDdkMTQ4OGFlMw==\", qop=auth, nc=00000001";
+        ChallengeResponse cres1 = new ChallengeResponse(
+                ChallengeScheme.HTTP_DIGEST,
+                "admin",
+                "12345".toCharArray());
+        cres1.setDigestAlgorithm(Digest.ALGORITHM_NONE);
+        cres1.setQuality("qop");
+        cres1.setDigestRef(new Reference("/protected/asdass"));
+        cres1.setClientNonce("MTE3NzEwMzIwMjkwMDoxNmMzODFiYzRjNWRjMmMyOTVkMWFhNDdkMTQ4OGFlMw==");
+        cres1.setServerNonce("MTE3NzEwMzIwMjkwMDoxNmMzODFiYzRjNWRjMmMyOTVkMWFhNDdkMTQ4OGFlMw==");
+        cres1.setServerNounceCount(1);
+
+        Request request = new Request(Method.GET,
+                "http://remote.com/protected/asdass");
+        String authorization1 = AuthenticatorUtils.formatResponse(cres1,
+                request, null);
         String authenticate1 = "Digest realm=realm, domain=\"/protected/ /alsoProtected/\", qop=auth, algorithm=MD5, nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\"";
 
         ChallengeResponse cres = AuthenticatorUtils.parseResponse(null,
                 authorization1, null);
         cres.setRawValue(null);
-        assertEquals(authorization1, AuthenticatorUtils.formatResponse(cres,
-                null, null));
+        assertEquals(authorization1,
+                AuthenticatorUtils.formatResponse(cres, request, null));
 
         List<ChallengeRequest> creq = AuthenticatorUtils.parseRequest(null,
                 authenticate1, null);
         assertEquals(creq.size(), 1);
-        assertEquals(authenticate1, AuthenticatorUtils.formatRequest(creq
-                .get(0), null, null));
+        assertEquals(authenticate1,
+                AuthenticatorUtils.formatRequest(creq.get(0), null, null));
     }
 
     /**
@@ -145,10 +161,10 @@ public class AuthenticationTestCase extends RestletTestCase {
         List<ChallengeRequest> creq = AuthenticatorUtils.parseRequest(null,
                 authenticate, null);
         assertEquals(creq.size(), 2);
-        assertEquals(authenticate0, AuthenticatorUtils.formatRequest(creq
-                .get(0), null, null));
-        assertEquals(authenticate1, AuthenticatorUtils.formatRequest(creq
-                .get(1), null, null));
+        assertEquals(authenticate0,
+                AuthenticatorUtils.formatRequest(creq.get(0), null, null));
+        assertEquals(authenticate1,
+                AuthenticatorUtils.formatRequest(creq.get(1), null, null));
 
     }
 }
