@@ -204,7 +204,7 @@ public class ClientAdapter extends Adapter {
 
         // Release the representation's content for some obvious cases
         if (response.getEntity() != null) {
-            if (response.getEntity().getSize() == 0) {
+            if (response.getEntity().isEmpty()) {
                 response.getEntity().release();
             } else if (response.getRequest().getMethod().equals(Method.HEAD)) {
                 response.getEntity().release();

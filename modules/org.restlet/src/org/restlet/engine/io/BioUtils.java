@@ -267,10 +267,10 @@ public final class BioUtils {
             return representation.getSize();
         } else if (representation.getRange().getSize() != Range.SIZE_MAX) {
             return representation.getRange().getSize();
-        } else if (representation.getSize() != Representation.UNKNOWN_SIZE) {
+        } else if (representation.hasKnownSize()) {
             if (representation.getRange().getIndex() != Range.INDEX_LAST) {
-                return (representation.getSize() == -1) ? -1 : (representation
-                        .getSize() - representation.getRange().getIndex());
+                return representation.getSize()
+                        - representation.getRange().getIndex();
             }
 
             return representation.getSize();
@@ -280,97 +280,6 @@ public final class BioUtils {
         // [enddef]
         // [ifdef gwt] line uncomment
         // return representation.getSize();
-    }
-
-    /**
-     * Returns a reader from an input stream and a character set.
-     * 
-     * @param stream
-     *            The input stream.
-     * @param characterSet
-     *            The character set. May be null.
-     * @return The equivalent reader.
-     * @throws UnsupportedEncodingException
-     *             if a character set is given, but not supported
-     */
-    public static Reader getReader(InputStream stream, CharacterSet characterSet)
-            throws UnsupportedEncodingException {
-        if (characterSet != null) {
-            return new InputStreamReader(stream, characterSet.getName());
-        }
-
-        return new InputStreamReader(stream);
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Returns a reader from a writer representation.Internally, it uses a
-     * writer thread and a pipe stream.
-     * 
-     * @param representation
-     *            The representation to read from.
-     * @return The character reader.
-     * @throws IOException
-     */
-    public static Reader getReader(
-            final org.restlet.representation.WriterRepresentation representation)
-            throws IOException {
-        Reader result = null;
-        if (Edition.CURRENT != Edition.GAE) {
-            // [ifndef gae]
-            final java.io.PipedWriter pipedWriter = new java.io.PipedWriter();
-            java.io.PipedReader pipedReader = new java.io.PipedReader(
-                    pipedWriter);
-            org.restlet.Application application = org.restlet.Application
-                    .getCurrent();
-
-            // Gets a thread that will handle the task of continuously
-            // writing the representation into the input side of the pipe
-            Runnable task = new Runnable() {
-                public void run() {
-                    try {
-                        representation.write(pipedWriter);
-                        pipedWriter.flush();
-                        pipedWriter.close();
-                    } catch (IOException ioe) {
-                        Context.getCurrentLogger()
-                                .log(Level.FINE,
-                                        "Error while writing to the piped reader.",
-                                        ioe);
-                    }
-                }
-            };
-
-            if (application != null && application.getTaskService() != null) {
-                application.getTaskService().execute(task);
-            } else {
-                new Thread(task, "Restlet-PipeWriter").start();
-            }
-
-            result = pipedReader;
-            // [enddef]
-        } else {
-            Context.getCurrentLogger()
-                    .log(Level.WARNING,
-                            "The GAE edition is unable to return a reader for a writer representation.");
-        }
-        return result;
-
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Returns an output stream based on a given writer.
-     * 
-     * @param writer
-     *            The writer.
-     * @param characterSet
-     *            The character set used to write on the output stream.
-     * @return the output stream of the writer
-     */
-    public static java.io.OutputStream getOutputStream(java.io.Writer writer,
-            CharacterSet characterSet) {
-        return new WriterOutputStream(writer, characterSet);
     }
 
     // [ifndef gwt] method
@@ -454,6 +363,97 @@ public final class BioUtils {
         }
 
         return result;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns an output stream based on a given writer.
+     * 
+     * @param writer
+     *            The writer.
+     * @param characterSet
+     *            The character set used to write on the output stream.
+     * @return the output stream of the writer
+     */
+    public static java.io.OutputStream getOutputStream(java.io.Writer writer,
+            CharacterSet characterSet) {
+        return new WriterOutputStream(writer, characterSet);
+    }
+
+    /**
+     * Returns a reader from an input stream and a character set.
+     * 
+     * @param stream
+     *            The input stream.
+     * @param characterSet
+     *            The character set. May be null.
+     * @return The equivalent reader.
+     * @throws UnsupportedEncodingException
+     *             if a character set is given, but not supported
+     */
+    public static Reader getReader(InputStream stream, CharacterSet characterSet)
+            throws UnsupportedEncodingException {
+        if (characterSet != null) {
+            return new InputStreamReader(stream, characterSet.getName());
+        }
+
+        return new InputStreamReader(stream);
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns a reader from a writer representation.Internally, it uses a
+     * writer thread and a pipe stream.
+     * 
+     * @param representation
+     *            The representation to read from.
+     * @return The character reader.
+     * @throws IOException
+     */
+    public static Reader getReader(
+            final org.restlet.representation.WriterRepresentation representation)
+            throws IOException {
+        Reader result = null;
+        if (Edition.CURRENT != Edition.GAE) {
+            // [ifndef gae]
+            final java.io.PipedWriter pipedWriter = new java.io.PipedWriter();
+            java.io.PipedReader pipedReader = new java.io.PipedReader(
+                    pipedWriter);
+            org.restlet.Application application = org.restlet.Application
+                    .getCurrent();
+
+            // Gets a thread that will handle the task of continuously
+            // writing the representation into the input side of the pipe
+            Runnable task = new Runnable() {
+                public void run() {
+                    try {
+                        representation.write(pipedWriter);
+                        pipedWriter.flush();
+                        pipedWriter.close();
+                    } catch (IOException ioe) {
+                        Context.getCurrentLogger()
+                                .log(Level.FINE,
+                                        "Error while writing to the piped reader.",
+                                        ioe);
+                    }
+                }
+            };
+
+            if (application != null && application.getTaskService() != null) {
+                application.getTaskService().execute(task);
+            } else {
+                new Thread(task, "Restlet-PipeWriter").start();
+            }
+
+            result = pipedReader;
+            // [enddef]
+        } else {
+            Context.getCurrentLogger()
+                    .log(Level.WARNING,
+                            "The GAE edition is unable to return a reader for a writer representation.");
+        }
+        return result;
+
     }
 
     // [ifndef gwt] method

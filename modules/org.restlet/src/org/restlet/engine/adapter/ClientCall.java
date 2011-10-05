@@ -359,8 +359,7 @@ public abstract class ClientCall extends Call {
      * @return True if the request should be chunked
      */
     protected boolean shouldRequestBeChunked(Request request) {
-        return request.isEntityAvailable()
-                && (request.getEntity() != null)
-                && (request.getEntity().getSize() == Representation.UNKNOWN_SIZE);
+        return request.isEntityAvailable() && (request.getEntity() != null)
+                && !request.getEntity().hasKnownSize();
     }
 }

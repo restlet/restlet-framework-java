@@ -35,7 +35,6 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Range;
 import org.restlet.data.Status;
-import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
 import org.restlet.service.RangeService;
 
@@ -86,7 +85,7 @@ public class RangeFilter extends Filter {
                                         .isSuccess())) {
                             Range requestedRange = request.getRanges().get(0);
 
-                            if (response.getEntity().getSize() == Representation.UNKNOWN_SIZE) {
+                            if (!response.getEntity().hasKnownSize()) {
                                 if ((requestedRange.getIndex() == Range.INDEX_LAST || requestedRange
                                         .getSize() == Range.SIZE_MAX)
                                         && !(requestedRange.getIndex() == Range.INDEX_LAST && requestedRange

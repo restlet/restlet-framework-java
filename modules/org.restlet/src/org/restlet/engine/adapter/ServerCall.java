@@ -485,7 +485,7 @@ public abstract class ServerCall extends Call {
      */
     public boolean shouldResponseBeChunked(Response response) {
         return (response.getEntity() != null)
-                && (response.getEntity().getSize() == Representation.UNKNOWN_SIZE);
+                && !response.getEntity().hasKnownSize();
     }
 
     /**

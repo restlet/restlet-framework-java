@@ -66,6 +66,7 @@ Changes log
          internal connector to 16 and 32 kb in order, similar to Jetty.
        - Increased default timeouts for internal connector. 5 mn for 
          idle thread and 1 mn for idle IO connection.
+       - Added Representation#isEmpty() and hasKnownSize() methods.
     - New features
        - Added ChallengeScheme.HTTP_AWS_QUERY constant and client-
          side support for Amazon Web Services's SimpleDB special

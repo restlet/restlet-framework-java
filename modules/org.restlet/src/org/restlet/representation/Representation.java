@@ -369,6 +369,7 @@ public abstract class Representation extends RepresentationInfo {
      * "Content-Length" header.
      * 
      * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+     * @see #isEmpty()
      */
     public long getSize() {
         return this.size;
@@ -395,18 +396,26 @@ public abstract class Representation extends RepresentationInfo {
     public String getText() throws IOException {
         String result = null;
 
-        if (isAvailable()) {
-            if (getSize() == 0) {
-                result = "";
-            } else {
-                java.io.StringWriter sw = new java.io.StringWriter();
-                write(sw);
-                sw.flush();
-                result = sw.toString();
-            }
+        if (isEmpty()) {
+            result = "";
+        } else if (isAvailable()) {
+            java.io.StringWriter sw = new java.io.StringWriter();
+            write(sw);
+            sw.flush();
+            result = sw.toString();
         }
 
         return result;
+    }
+
+    /**
+     * Indicates if the size of representation is known. It basically means that
+     * its size 0 or superior.
+     * 
+     * @return True if the representation has content.
+     */
+    public boolean hasKnownSize() {
+        return getSize() >= 0;
     }
 
     /**
@@ -425,6 +434,16 @@ public abstract class Representation extends RepresentationInfo {
      */
     public boolean isAvailable() {
         return this.available && (getSize() != 0);
+    }
+
+    /**
+     * Indicates if the representation is empty. It basically means that its
+     * size is 0.
+     * 
+     * @return True if the representation has no content.
+     */
+    public boolean isEmpty() {
+        return getSize() == 0;
     }
 
     // [ifdef gwt] method uncomment
