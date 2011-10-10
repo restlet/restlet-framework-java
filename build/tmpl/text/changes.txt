@@ -5,6 +5,13 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
+    - API changes
+    - Misc
+       - Updated XStream to version 1.4.1
+       - Updated Jettison to version 1.3
+       
+- 2.1 Release Candidate 1 (10/06/2011)
+    - Bug fixed
        - Potential NPE in ServerServlet#init(Application).
          Reported by Bryan Hunt.
        - The Application(Context) constructor now behaves like the

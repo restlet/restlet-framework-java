@@ -1,7 +1,7 @@
 <library id="xstream" symbolicName="com.thoughtworks.xstream" >
 	<name>XStream</name>
 	<description>XStream serialization library.</description>
-	<version>1.3</version>
+	<version>1.4</version>
 	<release>1</release>
 	<homeUri>http://xstream.codehaus.org/</homeUri>
 	<downloadUri>http://xstream.codehaus.org/download.html</downloadUri>
