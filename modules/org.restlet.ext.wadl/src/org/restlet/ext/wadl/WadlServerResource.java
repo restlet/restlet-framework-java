@@ -407,9 +407,9 @@ public class WadlServerResource extends ServerResource {
      *            The parameter name.
      * @return The first parameter found with the given name.
      */
-    protected NamedValue getParameter(String name) {
-        NamedValue result = null;
-        Series<? extends NamedValue> set = getParameters(name);
+    protected NamedValue<String> getParameter(String name) {
+        NamedValue<String> result = null;
+        Series<? extends NamedValue<String>> set = getParameters(name);
 
         if (set != null) {
             result = set.getFirst(name);
@@ -426,9 +426,9 @@ public class WadlServerResource extends ServerResource {
      *            The ParameterInfo instance.
      * @return A collection of parameters objects
      */
-    private Series<? extends NamedValue> getParameters(
+    private Series<? extends NamedValue<String>> getParameters(
             ParameterInfo parameterInfo) {
-        Series<? extends NamedValue> result = null;
+        Series<? extends NamedValue<String>> result = null;
 
         if (parameterInfo.getFixed() != null) {
             result = new Series<Parameter>(Parameter.class);
@@ -469,8 +469,8 @@ public class WadlServerResource extends ServerResource {
      *            The name of the parameter.
      * @return A collection of parameters.
      */
-    protected Series<? extends NamedValue> getParameters(String name) {
-        Series<? extends NamedValue> result = null;
+    protected Series<? extends NamedValue<String>> getParameters(String name) {
+        Series<? extends NamedValue<String>> result = null;
 
         if (describeParameters() != null) {
             for (ParameterInfo parameter : describeParameters()) {

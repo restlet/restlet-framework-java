@@ -48,7 +48,7 @@ import org.restlet.util.NamedValue;
  * 
  * @author Jerome Louvel
  */
-public class FormData implements NamedValue {
+public class FormData implements NamedValue<String> {
 
     /** The name of the associated form control. */
     private volatile String name;
@@ -64,7 +64,7 @@ public class FormData implements NamedValue {
      * 
      * @param namedValue
      */
-    public FormData(NamedValue namedValue) {
+    public FormData(NamedValue<String> namedValue) {
         this(namedValue.getName(), namedValue.getValue());
     }
 

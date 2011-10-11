@@ -37,9 +37,9 @@ import org.restlet.util.NamedValue;
 
 class NamedValuesIter implements Iterator<String> {
 
-    private final Iterator<? extends NamedValue> namedValuesIter;
+    private final Iterator<? extends NamedValue<String>> namedValuesIter;
 
-    NamedValuesIter(Iterable<? extends NamedValue> namedValues) {
+    NamedValuesIter(Iterable<? extends NamedValue<String>> namedValues) {
         this.namedValuesIter = namedValues.iterator();
     }
 

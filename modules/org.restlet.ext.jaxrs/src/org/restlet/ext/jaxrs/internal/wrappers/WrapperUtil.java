@@ -275,7 +275,7 @@ public class WrapperUtil {
      *         null, null will returned. If the parameter is not null, but it's
      *         value, "" is returned.
      */
-    public static String getValue(NamedValue namedValue) {
+    public static String getValue(NamedValue<String> namedValue) {
         if (namedValue == null) {
             return null;
         }

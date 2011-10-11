@@ -58,7 +58,7 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
             Series<?> series, boolean caseInsensitive) {
         MultivaluedMapImpl<String, String> mmap = new MultivaluedMapImpl<String, String>();
 
-        for (NamedValue namedValue : series) {
+        for (NamedValue<String> namedValue : series) {
             String key = caseInsensitive ? namedValue.getName().toLowerCase()
                     : namedValue.getName();
             mmap.add(key, namedValue.getValue());
