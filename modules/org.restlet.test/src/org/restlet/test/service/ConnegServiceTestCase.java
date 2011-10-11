@@ -46,7 +46,7 @@ import org.restlet.test.RestletTestCase;
  * 
  * @author Jerome Louvel
  */
-public class ConnegTestCase extends RestletTestCase {
+public class ConnegServiceTestCase extends RestletTestCase {
 
     public void testStrict() {
         List<Variant> variants = new ArrayList<Variant>();

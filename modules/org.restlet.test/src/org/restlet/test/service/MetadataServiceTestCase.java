@@ -30,20 +30,20 @@
 
 package org.restlet.test.service;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.restlet.data.MediaType;
+import org.restlet.service.MetadataService;
+import org.restlet.test.RestletTestCase;
 
-public class ServiceTestSuite {
+/**
+ * Unit tests for the metadata service.
+ * 
+ * @author Jerome Louvel
+ */
+public class MetadataServiceTestCase extends RestletTestCase {
 
-    public static Test suite() {
-        TestSuite suite = new TestSuite("Service package");
-
-        // $JUnit-BEGIN$
-        suite.addTestSuite(ConnegServiceTestCase.class);
-        suite.addTestSuite(MetadataServiceTestCase.class);
-        // $JUnit-END$
-
-        return suite;
+    public void testStrict() {
+        MetadataService ms = new MetadataService();
+        MediaType ma = ms.getMediaType("ma");
+        assertNull(ma);
     }
-
 }

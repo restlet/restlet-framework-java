@@ -125,7 +125,6 @@ public class MediaTypeTestCase extends RestletTestCase {
         mt2 = MediaType.APPLICATION_ALL;
         assertTrue(mt1.equals(mt2));
         assertEquals(mt1, mt2);
-
     }
 
     /**
@@ -152,6 +151,13 @@ public class MediaTypeTestCase extends RestletTestCase {
         assertTrue(mt2.includes(mt2));
         assertTrue(mt1.includes(mt2));
         assertFalse(mt2.includes(mt1));
+
+        mt1 = MediaType.IMAGE_ALL;
+        mt2 = MediaType.APPLICATION_OCTET_STREAM;
+        assertFalse(mt1.includes(mt2));
+        assertFalse(mt2.includes(mt1));
+
+        assertFalse(mt1.includes(null));
     }
 
     public void testMostSpecificMediaType() {
