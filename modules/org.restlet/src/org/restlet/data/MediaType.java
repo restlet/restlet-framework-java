@@ -1111,7 +1111,7 @@ public final class MediaType extends Metadata {
      * @see #isCompatible(Metadata)
      */
     public boolean includes(Metadata included) {
-        boolean result = equals(ALL) || (included == null) || equals(included);
+        boolean result = equals(ALL) || equals(included);
 
         if (!result && (included instanceof MediaType)) {
             MediaType includedMediaType = (MediaType) included;

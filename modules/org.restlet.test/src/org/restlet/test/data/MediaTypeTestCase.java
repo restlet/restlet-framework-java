@@ -152,6 +152,8 @@ public class MediaTypeTestCase extends RestletTestCase {
         assertTrue(mt2.includes(mt2));
         assertTrue(mt1.includes(mt2));
         assertFalse(mt2.includes(mt1));
+        
+        assertFalse(mt1.includes(null));
     }
 
     public void testMostSpecificMediaType() {
