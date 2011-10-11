@@ -6,7 +6,7 @@ Changes log
 - @version-full@ (@release-date@)
     - Bugs fixed
        - Fixed MediaType.includes(MediaType) which returned true with the
-         other type was null.
+         other type was null. Reported by Try Lam.
 
 - 2.0.10 (2011-10-05)
     - Bugs fixed
