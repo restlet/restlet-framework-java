@@ -45,7 +45,7 @@ import org.restlet.util.NamedValue;
  * 
  * @author Jerome Louvel
  */
-public final class CacheDirective implements NamedValue {
+public final class CacheDirective implements NamedValue<String> {
 
     /**
      * Creates a "max-age" directive. Indicates that the client is willing to

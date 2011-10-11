@@ -75,7 +75,7 @@ public class HeaderReader<V> {
      *            The named value class to return.
      * @return The new named value.
      */
-    private static final <NV extends NamedValue> NV createNamedValue(
+    private static final <NV extends NamedValue<String>> NV createNamedValue(
             Class<NV> resultClass, String name) {
         return createNamedValue(resultClass, name, null);
     }
@@ -91,7 +91,7 @@ public class HeaderReader<V> {
      *            The named value class to return.
      * @return The new named value.
      */
-    private static <NV extends NamedValue> NV createNamedValue(
+    private static <NV extends NamedValue<String>> NV createNamedValue(
             Class<NV> resultClass, String name, String value) {
         // [ifndef gwt]
         try {
@@ -494,7 +494,7 @@ public class HeaderReader<V> {
      * @return The next pair as a parameter.
      * @throws IOException
      */
-    public <NV extends NamedValue> NV readNamedValue(Class<NV> resultClass)
+    public <NV extends NamedValue<String>> NV readNamedValue(Class<NV> resultClass)
             throws IOException {
         NV result = null;
         String name = readToken();

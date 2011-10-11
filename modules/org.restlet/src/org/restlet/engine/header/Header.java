@@ -38,7 +38,7 @@ import org.restlet.util.NamedValue;
  * 
  * @author Jerome Louvel
  */
-public class Header implements NamedValue {
+public class Header implements NamedValue<String> {
 
     /** The name. */
     private volatile String name;

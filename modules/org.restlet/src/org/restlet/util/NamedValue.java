@@ -35,28 +35,28 @@ package org.restlet.util;
  * 
  * @author Jerome Louvel
  */
-public interface NamedValue {
-    
-    /**
-     * Returns the name of this parameter.
-     * 
-     * @return The name of this parameter.
-     */
-    public abstract String getName();
+public interface NamedValue<V> {
 
-    /**
-     * Returns the value.
-     * 
-     * @return The value.
-     */
-    public abstract String getValue();
+	/**
+	 * Returns the name of this parameter.
+	 * 
+	 * @return The name of this parameter.
+	 */
+	public abstract String getName();
 
-    /**
-     * Sets the value.
-     * 
-     * @param value
-     *            The value.
-     */
-    public abstract void setValue(String value);
+	/**
+	 * Returns the value.
+	 * 
+	 * @return The value.
+	 */
+	public abstract V getValue();
+
+	/**
+	 * Sets the value.
+	 * 
+	 * @param value
+	 *            The value.
+	 */
+	public abstract void setValue(V value);
 
 }

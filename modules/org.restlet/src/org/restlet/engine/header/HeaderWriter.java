@@ -167,7 +167,7 @@ public abstract class HeaderWriter<V> extends StringWriter {
      *            The parameter to format as an extension.
      * @return This writer.
      */
-    public HeaderWriter<V> appendExtension(NamedValue extension) {
+    public HeaderWriter<V> appendExtension(NamedValue<String> extension) {
         if (extension != null) {
             return appendExtension(extension.getName(), extension.getValue());
         } else {

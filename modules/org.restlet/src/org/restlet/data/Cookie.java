@@ -49,7 +49,7 @@ import org.restlet.util.NamedValue;
  *      Getting parameter values</a>
  * @author Jerome Louvel
  */
-public class Cookie implements NamedValue {
+public class Cookie implements NamedValue<String> {
 
     /** The domain name. */
     private volatile String domain;

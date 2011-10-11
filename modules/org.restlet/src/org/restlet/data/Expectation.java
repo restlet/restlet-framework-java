@@ -43,7 +43,7 @@ import org.restlet.util.NamedValue;
  * 
  * @author Jerome Louvel
  */
-public final class Expectation implements NamedValue {
+public final class Expectation implements NamedValue<String> {
 
     /**
      * Creates a "100-continue" expectation. If a client will wait for a 100

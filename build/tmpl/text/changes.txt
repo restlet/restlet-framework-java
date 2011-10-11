@@ -6,6 +6,7 @@ Changes log
 - @version-full@ (@release-date@)
     - Bug fixed
     - API changes
+       - Added generic value type to NamedValue interface.
     - Misc
        - Updated XStream to version 1.4.1
        - Updated Jettison to version 1.3

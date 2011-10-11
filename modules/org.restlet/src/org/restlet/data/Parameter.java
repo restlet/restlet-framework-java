@@ -44,7 +44,7 @@ import org.restlet.util.NamedValue;
  */
 @SuppressWarnings("deprecation")
 public class Parameter extends Couple<String, String> implements
-        Comparable<Parameter>, NamedValue {
+        Comparable<Parameter>, NamedValue<String> {
 
     /**
      * Creates a parameter.
