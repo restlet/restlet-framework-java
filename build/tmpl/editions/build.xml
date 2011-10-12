@@ -182,14 +182,18 @@
 
 	<!-- Set the property that will enable the stage-p2 target -->
 	<condition property="do-p2">
-		<istrue value="${p2}" />
+		<and>
+			<istrue value="${p2}" />
+			<isset property="modules-p2" />
+			<isset property="libraries-p2" />
+		</and>
 	</condition>
 
 	
 	<!-- Set the property that will enable the package target -->
 	<condition property="do-package-p2">
 		<and>
-			<istrue value="${p2}" />
+			<istrue value="${do-p2}" />
 			<istrue value="${package}" />
 		</and>
 	</condition>
