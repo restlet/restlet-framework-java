@@ -59,6 +59,17 @@ public class StringRepresentation extends CharacterRepresentation {
      * Constructor. The following metadata are used by default: "text/plain"
      * media type, no language and the UTF-8 character set.
      * 
+     * @param chars
+     *            The characters array.
+     */
+    public StringRepresentation(char[] chars) {
+        this(new String(chars), MediaType.TEXT_PLAIN);
+    }
+
+    /**
+     * Constructor. The following metadata are used by default: "text/plain"
+     * media type, no language and the UTF-8 character set.
+     * 
      * @param text
      *            The string value.
      */

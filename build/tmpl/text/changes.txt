@@ -7,6 +7,10 @@ Changes log
     - Bug fixed
     - API changes
        - Added generic value type to NamedValue interface.
+       - Added ByteArrayRepresentation to org.restlet.representation
+         Suggested by Jerome Idylle.
+       - Added constructor from characters arrays in the
+         StringRepresentation class.
     - Misc
        - Updated XStream to version 1.4.1
        - Updated Jettison to version 1.3
