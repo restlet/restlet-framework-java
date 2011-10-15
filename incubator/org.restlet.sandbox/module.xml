@@ -10,5 +10,6 @@
 	</distributions>
 	<dependencies>
 		<dependency type="module" id="core" />
+		<dependency type="module" id="crypto" />
 	</dependencies>
 </module>

@@ -17,5 +17,10 @@
 			<artifactId>org.restlet</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.restlet.dev</groupId>
+			<artifactId>org.restlet.ext.crypto</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>
