@@ -54,8 +54,12 @@ import org.restlet.Context;
  * @see java.util.Collections
  * @see java.util.List
  */
+// [ifndef gwt] line
 public class Series<T extends NamedValue<String>> extends WrapperList<T> {
-
+	// [ifdef gwt] uncomment
+	// public abstract class Series<T extends NamedValue<String>> extends WrapperList<T>
+	// {
+	// [enddef]
 	/**
 	 * A marker for empty values to differentiate from non existing values
 	 * (null).
