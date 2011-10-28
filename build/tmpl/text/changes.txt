@@ -5,6 +5,11 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
+       - On the client-side, a challenge response with a raw value 
+         defined wasn't taken into account if a helper was missing.
+         Refactored engine's AuthenticatorHelper to move common 
+         logic to the AuthenticatorUtils class.
+         Reported by Alex Milowski.
     - API changes
        - Added generic value type to NamedValue interface.
        - Added ByteArrayRepresentation to org.restlet.representation

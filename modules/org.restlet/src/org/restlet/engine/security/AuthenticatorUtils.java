@@ -148,7 +148,10 @@ public class AuthenticatorUtils {
 
     /**
      * Formats a challenge request as a HTTP header value. The header is
-     * {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}.
+     * {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}. The default
+     * implementation relies on
+     * {@link #formatRequest(ChallengeWriter, ChallengeRequest, Response, Series)}
+     * to append all parameters from {@link ChallengeRequest#getParameters()}.
      * 
      * @param challenge
      *            The challenge request to format.
@@ -162,26 +165,46 @@ public class AuthenticatorUtils {
             Response response, Series<Header> httpHeaders) {
         String result = null;
 
-        if (challenge != null) {
-            AuthenticatorHelper helper = Engine.getInstance().findHelper(
-                    challenge.getScheme(), false, true);
+        if (challenge == null) {
+            Context.getCurrentLogger().warning(
+                    "No challenge response to format.");
+        } else if (challenge.getScheme() == null) {
+            Context.getCurrentLogger().warning(
+                    "A challenge response must have a scheme defined.");
+        } else if (challenge.getScheme().getTechnicalName() == null) {
+            Context.getCurrentLogger().warning(
+                    "A challenge scheme must have a technical name defined.");
+        } else {
+            ChallengeWriter cw = new ChallengeWriter();
+            cw.append(challenge.getScheme().getTechnicalName()).appendSpace();
+            int cwInitialLength = cw.getBuffer().length();
 
-            if (helper != null) {
-                try {
-                    result = helper.formatRequest(challenge, response,
-                            httpHeaders);
-                } catch (IOException e) {
-                    Context.getCurrentLogger().log(
-                            Level.WARNING,
-                            "Unable to format the challenge request: "
-                                    + challenge, e);
-                }
+            if (challenge.getRawValue() != null) {
+                cw.append(challenge.getRawValue());
             } else {
-                result = "?";
-                Context.getCurrentLogger().warning(
-                        "Challenge scheme " + challenge.getScheme()
-                                + " not supported by the Restlet engine.");
+                AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                        challenge.getScheme(), false, true);
+
+                if (helper != null) {
+                    try {
+                        helper.formatRequest(cw, challenge, response,
+                                httpHeaders);
+                    } catch (Exception e) {
+                        Context.getCurrentLogger().log(
+                                Level.WARNING,
+                                "Unable to format the challenge request: "
+                                        + challenge, e);
+                    }
+                } else {
+                    result = "?";
+                    Context.getCurrentLogger().warning(
+                            "Challenge scheme " + challenge.getScheme()
+                                    + " not supported by the Restlet engine.");
+                }
             }
+
+            result = (cw.getBuffer().length() > cwInitialLength) ? cw
+                    .toString() : null;
         }
 
         return result;
@@ -189,7 +212,10 @@ public class AuthenticatorUtils {
 
     /**
      * Formats a challenge response as a HTTP header value. The header is
-     * {@link HeaderConstants#HEADER_AUTHORIZATION}.
+     * {@link HeaderConstants#HEADER_AUTHORIZATION}. The default implementation
+     * relies on
+     * {@link #formatResponse(ChallengeWriter, ChallengeResponse, Request, Series)}
+     * unless some custom credentials are provided via
      * 
      * @param challenge
      *            The challenge response to format.
@@ -199,55 +225,54 @@ public class AuthenticatorUtils {
      *            The current request HTTP headers.
      * @return The {@link HeaderConstants#HEADER_AUTHORIZATION} header value.
      * @throws IOException
+     * @link ChallengeResponse#getCredentials()}.
      */
     public static String formatResponse(ChallengeResponse challenge,
             Request request, Series<Header> httpHeaders) {
         String result = null;
-        AuthenticatorHelper helper = Engine.getInstance().findHelper(
-                challenge.getScheme(), true, false);
 
-        if (helper != null) {
-            result = helper.formatResponse(challenge, request, httpHeaders);
-        } else {
+        if (challenge == null) {
             Context.getCurrentLogger().warning(
-                    "Challenge scheme " + challenge.getScheme()
-                            + " not supported by the Restlet engine.");
+                    "No challenge response to format.");
+        } else if (challenge.getScheme() == null) {
+            Context.getCurrentLogger().warning(
+                    "A challenge response must have a scheme defined.");
+        } else if (challenge.getScheme().getTechnicalName() == null) {
+            Context.getCurrentLogger().warning(
+                    "A challenge scheme must have a technical name defined.");
+        } else {
+            ChallengeWriter cw = new ChallengeWriter();
+            cw.append(challenge.getScheme().getTechnicalName()).appendSpace();
+            int cwInitialLength = cw.getBuffer().length();
+
+            if (challenge.getRawValue() != null) {
+                cw.append(challenge.getRawValue());
+            } else {
+                AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                        challenge.getScheme(), true, false);
+
+                if (helper != null) {
+                    try {
+                        helper.formatResponse(cw, challenge, request,
+                                httpHeaders);
+                    } catch (Exception e) {
+                        Context.getCurrentLogger().log(
+                                Level.WARNING,
+                                "Unable to format the challenge response: "
+                                        + challenge, e);
+                    }
+                } else {
+                    Context.getCurrentLogger().warning(
+                            "Challenge scheme " + challenge.getScheme()
+                                    + " not supported by the Restlet engine.");
+                }
+            }
+
+            result = (cw.getBuffer().length() > cwInitialLength) ? cw
+                    .toString() : null;
         }
 
         return result;
-    }
-
-    /**
-     * Optionally updates the request with a challenge response before sending
-     * it. This is sometimes useful for authentication schemes that aren't based
-     * on the Authorization header but instead on URI query parameters or other
-     * headers. By default it returns the resource URI reference unchanged.
-     * 
-     * @param resourceRef
-     *            The resource URI reference to update.
-     * @param challengeResponse
-     *            The challenge response provided.
-     * @param request
-     *            The request to update.
-     * @return The original URI reference if unchanged or a new one if updated.
-     */
-    public static Reference updateReference(Reference resourceRef,
-            ChallengeResponse challengeResponse, Request request) {
-        if (challengeResponse != null) {
-            AuthenticatorHelper helper = Engine.getInstance().findHelper(
-                    challengeResponse.getScheme(), true, false);
-
-            if (helper != null) {
-                resourceRef = helper.updateReference(resourceRef,
-                        challengeResponse, request);
-            } else {
-                Context.getCurrentLogger().warning(
-                        "Challenge scheme " + challengeResponse.getScheme()
-                                + " not supported by the Restlet engine.");
-            }
-        }
-
-        return resourceRef;
     }
 
     /**
@@ -427,6 +452,39 @@ public class AuthenticatorUtils {
 
         challengeResponse.setDigestRef(new Reference(request.getResourceRef()
                 .getPath()));
+    }
+
+    /**
+     * Optionally updates the request with a challenge response before sending
+     * it. This is sometimes useful for authentication schemes that aren't based
+     * on the Authorization header but instead on URI query parameters or other
+     * headers. By default it returns the resource URI reference unchanged.
+     * 
+     * @param resourceRef
+     *            The resource URI reference to update.
+     * @param challengeResponse
+     *            The challenge response provided.
+     * @param request
+     *            The request to update.
+     * @return The original URI reference if unchanged or a new one if updated.
+     */
+    public static Reference updateReference(Reference resourceRef,
+            ChallengeResponse challengeResponse, Request request) {
+        if (challengeResponse != null) {
+            AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                    challengeResponse.getScheme(), true, false);
+
+            if (helper != null) {
+                resourceRef = helper.updateReference(resourceRef,
+                        challengeResponse, request);
+            } else {
+                Context.getCurrentLogger().warning(
+                        "Challenge scheme " + challengeResponse.getScheme()
+                                + " not supported by the Restlet engine.");
+            }
+        }
+
+        return resourceRef;
     }
 
     /**

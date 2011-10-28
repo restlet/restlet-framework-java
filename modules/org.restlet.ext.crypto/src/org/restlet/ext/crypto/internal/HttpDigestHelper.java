@@ -104,7 +104,7 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawRequest(ChallengeWriter cw,
+    public void formatRequest(ChallengeWriter cw,
             ChallengeRequest challenge, Response response,
             Series<Header> httpHeaders) throws IOException {
 
@@ -168,7 +168,7 @@ public class HttpDigestHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawResponse(ChallengeWriter cw,
+    public void formatResponse(ChallengeWriter cw,
             ChallengeResponse challenge, Request request,
             Series<Header> httpHeaders) {
 

@@ -91,9 +91,8 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      */
-    public void formatRawRequest(ChallengeWriter cw,
-            ChallengeRequest challenge, Response response,
-            Series<Header> httpHeaders) throws IOException {
+    public void formatRequest(ChallengeWriter cw, ChallengeRequest challenge,
+            Response response, Series<Header> httpHeaders) throws IOException {
     }
 
     /**
@@ -108,72 +107,8 @@ public abstract class AuthenticatorHelper extends Helper {
      * @param httpHeaders
      *            The current request HTTP headers.
      */
-    public void formatRawResponse(ChallengeWriter cw,
-            ChallengeResponse challenge, Request request,
-            Series<Header> httpHeaders) {
-    }
-
-    /**
-     * Formats a challenge request as a HTTP header value. The header is
-     * {@link HeaderConstants#HEADER_WWW_AUTHENTICATE}. The default
-     * implementation relies on
-     * {@link #formatRawRequest(ChallengeWriter, ChallengeRequest, Response, Series)}
-     * to append all parameters from {@link ChallengeRequest#getParameters()}.
-     * 
-     * @param challenge
-     *            The challenge request to format.
-     * @param response
-     *            The parent response.
-     * @param httpHeaders
-     *            The current response HTTP headers.
-     * @return The {@link HeaderConstants#HEADER_WWW_AUTHENTICATE} header value.
-     * @throws IOException
-     */
-    public String formatRequest(ChallengeRequest challenge, Response response,
-            Series<Header> httpHeaders) throws IOException {
-        ChallengeWriter cw = new ChallengeWriter();
-        cw.append(challenge.getScheme().getTechnicalName()).appendSpace();
-
-        if (challenge.getRawValue() != null) {
-            cw.append(challenge.getRawValue());
-        } else {
-            formatRawRequest(cw, challenge, response, httpHeaders);
-        }
-
-        return cw.toString();
-    }
-
-    /**
-     * Formats a challenge response as a HTTP header value. The header is
-     * {@link HeaderConstants#HEADER_AUTHORIZATION}. The default implementation
-     * relies on
-     * {@link #formatRawResponse(ChallengeWriter, ChallengeResponse, Request, Series)}
-     * unless some custom credentials are provided via
-     * 
-     * @link ChallengeResponse#getCredentials()}.
-     * 
-     * @param challenge
-     *            The challenge response to format.
-     * @param request
-     *            The parent request.
-     * @param httpHeaders
-     *            The current request HTTP headers.
-     * @return The {@link HeaderConstants#HEADER_AUTHORIZATION} header value.
-     */
-    public String formatResponse(ChallengeResponse challenge, Request request,
-            Series<Header> httpHeaders) {
-        ChallengeWriter cw = new ChallengeWriter();
-        cw.append(challenge.getScheme().getTechnicalName()).appendSpace();
-        int cwInitialLength = cw.getBuffer().length();
-
-        if (challenge.getRawValue() != null) {
-            cw.append(challenge.getRawValue());
-        } else {
-            formatRawResponse(cw, challenge, request, httpHeaders);
-        }
-
-        return (cw.getBuffer().length() > cwInitialLength) ? cw.toString()
-                : null;
+    public void formatResponse(ChallengeWriter cw, ChallengeResponse challenge,
+            Request request, Series<Header> httpHeaders) {
     }
 
     /**

@@ -129,7 +129,7 @@ public class HttpAzureSharedKeyHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawResponse(ChallengeWriter cw,
+    public void formatResponse(ChallengeWriter cw,
             ChallengeResponse challenge, Request request,
             Series<Header> httpHeaders) {
 

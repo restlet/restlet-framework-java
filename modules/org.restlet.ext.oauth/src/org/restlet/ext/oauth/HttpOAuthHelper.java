@@ -193,7 +193,7 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawRequest(ChallengeWriter cw,
+    public void formatRequest(ChallengeWriter cw,
             ChallengeRequest challenge, Response response,
             Series<Header> httpHeaders) throws IOException {
         // Format the parameters WWW-Authenticate: OAuth realm='Example

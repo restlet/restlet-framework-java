@@ -78,7 +78,7 @@ public class AuthenticationTestCase extends RestletTestCase {
         httpHeaders.add(HeaderConstants.HEADER_DATE,
                 "Tue, 27 Mar 2007 19:36:42 +0000");
 
-        helper.formatRawResponse(cw, challenge, request, httpHeaders);
+        helper.formatResponse(cw, challenge, request, httpHeaders);
         assertEquals("0PN5J17HBGZHT7JJ3X82:xXjDGYUmKxnwqr5KXNPGldn5LbA=",
                 cw.toString());
 
@@ -89,7 +89,7 @@ public class AuthenticationTestCase extends RestletTestCase {
                 "Tue, 27 Mar 2007 21:15:45 +0000", true);
         httpHeaders.add(HeaderConstants.HEADER_CONTENT_LENGTH, "94328");
         httpHeaders.add(HeaderConstants.HEADER_CONTENT_TYPE, "image/jpeg");
-        helper.formatRawResponse(cw, challenge, request, httpHeaders);
+        helper.formatResponse(cw, challenge, request, httpHeaders);
         assertEquals("0PN5J17HBGZHT7JJ3X82:hcicpDDvL9SsO6AkvxqmIWkmOuQ=",
                 cw.toString());
     }

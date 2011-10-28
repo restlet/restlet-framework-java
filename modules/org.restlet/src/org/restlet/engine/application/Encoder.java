@@ -145,7 +145,7 @@ public class Encoder extends Filter {
     public Representation encode(ClientInfo client,
             Representation representation) {
         Representation result = representation;
-        final Encoding bestEncoding = getBestEncoding(client);
+        Encoding bestEncoding = getBestEncoding(client);
 
         if (bestEncoding != null) {
             result = new EncodeRepresentation(bestEncoding, representation);

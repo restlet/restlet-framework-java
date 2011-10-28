@@ -63,7 +63,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawRequest(ChallengeWriter cw,
+    public void formatRequest(ChallengeWriter cw,
             ChallengeRequest challenge, Response response,
             Series<Header> httpHeaders) throws IOException {
         if (challenge.getRealm() != null) {
@@ -72,7 +72,7 @@ public class HttpBasicHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRawResponse(ChallengeWriter cw,
+    public void formatResponse(ChallengeWriter cw,
             ChallengeResponse challenge, Request request,
             Series<Header> httpHeaders) {
         try {
