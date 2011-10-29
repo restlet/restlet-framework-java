@@ -39,16 +39,16 @@ import org.restlet.data.CookieSetting;
 
 /**
  * @author msvens
- *
+ * 
  */
-public class RedirectAuthenticator extends CookieAuthenticator{
-    
+public class RedirectAuthenticator extends CookieAuthenticator {
+
     /**
      * The default name of the cookie that contains the original request's
      * reference.
      */
     public final static String DEFAULT_ORIGINAL_REF_COOKIE = "original_ref";
-    
+
     /**
      * The current name of the cookie that contains the original request's
      * reference.
@@ -60,25 +60,24 @@ public class RedirectAuthenticator extends CookieAuthenticator{
         super(context, optional, challengeScheme, realm);
         this.origRefCookie = DEFAULT_ORIGINAL_REF_COOKIE;
     }
-    
+
     @Override
     protected int authenticated(Request request, Response response) {
         int ret = super.authenticated(request, response);
         Cookie redir = this.getOriginalRefCookie(request);
         String ref = redir != null ? redir.getValue() : null;
         clearCookie(origRefCookie, request, response);
-        if(ref != null && response != null)
-           response.redirectPermanent(ref);
-        if( response != null && response.getStatus().isRedirection() )
+        if (ref != null && response != null)
+            response.redirectPermanent(ref);
+        if (response != null && response.getStatus().isRedirection())
             return STOP;
         return ret;
     }
-    
-    public static void clearCookie(String cookieId, Request req,
-            Response res) {
+
+    public static void clearCookie(String cookieId, Request req, Response res) {
         Cookie cookie = req.getCookies().getFirst(cookieId);
-        CookieSetting cookieSetting = res.getCookieSettings().getFirst(
-                cookieId);
+        CookieSetting cookieSetting = res.getCookieSettings()
+                .getFirst(cookieId);
         if (cookieSetting == null && cookie != null) {
             cookieSetting = new CookieSetting(cookieId, null);
             res.getCookieSettings().add(cookieSetting);
@@ -86,26 +85,23 @@ public class RedirectAuthenticator extends CookieAuthenticator{
         if (cookieSetting != null)
             cookieSetting.setMaxAge(0);
     }
-    
-    public Cookie getOriginalRefCookie(Request request){
-      return request.getCookies().getFirst(origRefCookie);
+
+    public Cookie getOriginalRefCookie(Request request) {
+        return request.getCookies().getFirst(origRefCookie);
     }
 
     @Override
     public boolean isLoggingOut(Request request, Response response) {
         return false;
     }
-    
-    
 
     @Override
     public void login(Request request, Response response) {
         String origRef = request.getResourceRef().toString();
-        response.getCookieSettings().add(origRefCookie,
-                request.getResourceRef().toString());
+        response.getCookieSettings().add(origRefCookie, origRef);
     }
-    
-    public boolean isLoggingIn(Request request, Response response){
+
+    public boolean isLoggingIn(Request request, Response response) {
         // Restore credentials from the cookie
         Cookie credentialsCookie = request.getCookies().getFirst(
                 getCookieName());
@@ -114,7 +110,5 @@ public class RedirectAuthenticator extends CookieAuthenticator{
         }
         return true;
     }
-    
-    
 
 }
