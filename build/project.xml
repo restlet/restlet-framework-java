@@ -36,11 +36,11 @@
 	</edition>
 	<edition id="osgi">
 		<label>
-			<full>OSGi</full>
+			<full>OSGi Environments</full>
 			<medium>OSGi</medium>
 			<short>OSGi</short>
 		</label>
-		<description>Restlet Edition for OSGi.</description>
+		<description>Restlet Edition for OSGi Environments.</description>
 		<javadocs>
 			<link href="http://download.oracle.com/javase/1.5.0/docs/api/" />
 		</javadocs>
