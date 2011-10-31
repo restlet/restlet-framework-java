@@ -84,7 +84,7 @@ import com.sun.mail.pop3.POP3Folder;
  *  &lt;to&gt;user@domain.com&lt;/to&gt;
  *  &lt;cc&gt;log@restlet.org&lt;/cc&gt;
  *  &lt;/head&gt;
- *  &lt;body&gt;&lt;![CDATA[Your account was sucessfully created!]]&gt;&lt;/body&gt;
+ *  &lt;body&gt;&lt;![CDATA[Your account was successfully created!]]&gt;&lt;/body&gt;
  *  &lt;/email&gt;
  * </pre>
  * 

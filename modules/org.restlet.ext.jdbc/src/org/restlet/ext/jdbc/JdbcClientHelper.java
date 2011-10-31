@@ -100,8 +100,9 @@ import org.xml.sax.SAXException;
  * name="...">true</property >}<br>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code </connection>}<br>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code <start>10</start>}<br>
- * <limit>20</limit>}<br>
- * <returnGeneratedKeys>true</returnGeneratedKeys>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code <limit>20</limit>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;
+ * {@code <returnGeneratedKeys>true</returnGeneratedKeys>}<br>
  * &nbsp;&nbsp;{@code </header>}<br>
  * &nbsp;&nbsp;{@code <body>}<br>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code <statement>UPDATE myTable SET
@@ -111,8 +112,8 @@ import org.xml.sax.SAXException;
  * &nbsp;&nbsp;{@code </body>}<br>
  * {@code </request>}
  * <p>
- * Several SQL Statements can be specified. A RowSetRepresentation of the last
- * correctly executed SQL request is returned to the Client.
+ * Several SQL Statements can be specified. A {@link RowSetRepresentation} of
+ * the last correctly executed SQL request is returned to the Client.
  * 
  * @see org.restlet.ext.jdbc.RowSetRepresentation
  * 
