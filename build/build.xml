@@ -44,7 +44,7 @@
 	<property name="parent-maven-artifactId" value="org.restlet.parent" />
 	<property name="parent-maven-version" value="${version-maven}" />
 	<property name="eclipse-version-suffix" value="v${build.date}" />
-	<property name="eclipse-version-full" value="${version-manifest}${eclipse-version-suffix}" />
+	<property name="eclipse-version-full" value="${version-manifest-prefix}${eclipse-version-suffix}" />
 
 	<!-- Set the property that will enable the generation of eclipse project -->
 	<condition property="do-eclipsegeneration">

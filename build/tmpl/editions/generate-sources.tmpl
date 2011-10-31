@@ -40,7 +40,7 @@
    <#if edition.postSource??>${edition.postSource?replace("\\$\\{module\\.package\\}", module.package, "r")}</#if>
 </#list>
 <#noparse>
-      <replace dir="${mod}" includes="**/MANIFEST.MF*" token="Bundle-Version: ${version-minor}" value="Bundle-Version: ${version-manifest}" />
+      <replace dir="${mod}" includes="**/MANIFEST.MF*" token="Bundle-Version: ${version-minor}" value="Bundle-Version: ${eclipse-version-full}" />
       <replace dir="${mod}" includes="**/Engine.java" token="@major-number@" value="${major-number}" />
       <replace dir="${mod}" includes="**/Engine.java" token="@minor-number@" value="${minor-number}" />
       <replace dir="${mod}" includes="**/Engine.java" token="@release-type@" value="${release-type}" />
