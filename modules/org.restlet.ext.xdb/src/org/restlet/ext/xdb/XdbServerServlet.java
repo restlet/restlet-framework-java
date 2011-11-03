@@ -60,10 +60,8 @@ import org.restlet.ext.xdb.internal.XdbServletCall;
 import org.restlet.ext.xdb.internal.XdbServletWarClient;
 
 /**
- * Servlet acting like an HTTP server connector. See <a
- * href="/documentation/1.1/faq#02">Developper FAQ #2</a> for details on how to
- * integrate a Restlet application into a Servlet container.<br/>
- * Here is a sample configuration for your Restlet webapp:
+ * Servlet acting like an HTTP server connector. Here is a sample configuration
+ * for your Restlet webapp:
  * 
  * <pre>
  * &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
@@ -76,9 +74,9 @@ import org.restlet.ext.xdb.internal.XdbServletWarClient;
  * 
  *       &lt;!-- Restlet adapter --&gt;
  *       &lt;servlet&gt;
- *        &lt;servlet-name&gt;XDBServerServlet&lt;/servlet-name&gt;
+ *        &lt;servlet-name&gt;XdbServerServlet&lt;/servlet-name&gt;
  *          &lt;servlet-class&gt;
- *              org.restlet.ext.xdb.XDBServerServlet
+ *              org.restlet.ext.xdb.XdbServerServlet
  *          &lt;/servlet-class&gt;
  *          &lt;!-- Your application class name --&gt;
  *          &lt;init-param
@@ -93,7 +91,7 @@ import org.restlet.ext.xdb.internal.XdbServletWarClient;
  * 
  *       &lt;!-- Catch all requests --&gt;
  *       &lt;servlet-mapping&gt;
- *         &lt;servlet-name&gt;XDBServerServlet&lt;/servlet-name&gt;
+ *         &lt;servlet-name&gt;XdbServerServlet&lt;/servlet-name&gt;
  *         &lt;url-pattern&gt;/userapp/*&lt;/url-pattern&gt;
  *       &lt;/servlet-mapping&gt;
  * &lt;/web-app&gt;
@@ -164,10 +162,11 @@ public class XdbServerServlet extends ServerServlet {
                         .loadClass("oracle.jdbc.driver.OracleDriver");
                 final Driver drv = (Driver) targetClass.newInstance();
                 DriverManager.registerDriver(drv);
-                conn = DriverManager.getConnection("jdbc:oracle:oci:@"
-                        + System.getProperty("db.str", "orcl"), System
-                        .getProperty("db.usr", "lucene"), System.getProperty(
-                        "db.pwd", "lucene"));
+                conn = DriverManager.getConnection(
+                        "jdbc:oracle:oci:@"
+                                + System.getProperty("db.str", "orcl"),
+                        System.getProperty("db.usr", "lucene"),
+                        System.getProperty("db.pwd", "lucene"));
             } catch (SQLException s) {
                 System.err.println("Exception getting SQL Connection: "
                         + s.getLocalizedMessage());
@@ -242,57 +241,8 @@ public class XdbServerServlet extends ServerServlet {
     }
 
     @Override
-    protected Class<?> loadClass(String className)
-            throws ClassNotFoundException {
-        final int doubleDotPos = className.indexOf(':');
-        Class<?> targetClass;
-
-        if (doubleDotPos > 0) {
-            final String sch = className.substring(0, doubleDotPos)
-                    .toUpperCase();
-            final String cName = className.substring(doubleDotPos + 1);
-            if (System.getProperty("java.vm.name").equals("JServer VM")) {
-                // Use DbmsJava by reflection to avoid dependency to Oracle libs
-                // at compiling time
-                try {
-                    final Class<?> loaderClass = Engine
-                            .loadClass("oracle.aurora.rdbms.DbmsJava");
-                    final Method meth = loaderClass.getMethod(
-                            "classForNameAndSchema", new Class[] {
-                                    String.class, String.class });
-                    log("[Restlet Framework] - Schema: " + sch + " class: "
-                            + cName + " loader: " + loaderClass);
-                    targetClass = (Class<?>) meth.invoke(null, new Object[] {
-                            cName, sch });
-                } catch (NoSuchMethodException nse) {
-                    log(
-                            "[Restlet Framework] - Could not instantiate a class using SCHEMA: "
-                                    + sch + " and class: " + cName, nse);
-                    targetClass = Engine.loadClass(className);
-                } catch (IllegalAccessException iae) {
-                    log(
-                            "[Restlet Framework] - Could not instantiate a class using SCHEMA: "
-                                    + sch + " and class: " + cName, iae);
-                    targetClass = Engine.loadClass(className);
-                } catch (InvocationTargetException ite) {
-                    log(
-                            "[Restlet Framework] - Could not instantiate a class using SCHEMA: "
-                                    + sch + " and class: " + cName, ite);
-                    targetClass = Engine.loadClass(className);
-                } catch (AccessControlException ace) {
-                    log(
-                            "[Restlet Framework] - Could not instantiate a class using oracle.aurora.rdbms.DbmsJava "
-                                    + sch + " and class: " + cName, ace);
-                    targetClass = Engine.loadClass(className);
-                }
-            } else {
-                targetClass = Engine.loadClass(className);
-            }
-        } else { // Not running inside OJVM, may be outside testing
-            targetClass = Engine.loadClass(className);
-        }
-
-        return targetClass;
+    protected String getContextPath(HttpServletRequest request) {
+        return "";
     }
 
     @Override
@@ -308,6 +258,16 @@ public class XdbServerServlet extends ServerServlet {
         }
 
         return result;
+    }
+
+    @Override
+    protected String getLocalAddr(HttpServletRequest request) {
+        return this.localAddress;
+    }
+
+    @Override
+    protected int getLocalPort(HttpServletRequest request) {
+        return this.localPort;
     }
 
     @Override
@@ -332,12 +292,9 @@ public class XdbServerServlet extends ServerServlet {
             this.localPort = preparedstatement.getInt(2);
             endPoint = preparedstatement.getInt(3);
 
-            log("[Noelios Restlet Engine] - The ServerServlet address = "
-                    + this.localAddress);
-            log("[Noelios Restlet Engine] - The ServerServlet port = "
-                    + this.localPort);
-            log("[Noelios Restlet Engine] - The ServerServlet endpoint = "
-                    + endPoint);
+            log("The ServerServlet address = " + this.localAddress);
+            log("The ServerServlet port = " + this.localPort);
+            log("The ServerServlet endpoint = " + endPoint);
         } catch (SQLException e) {
             log(e.getLocalizedMessage(), e);
         } finally {
@@ -384,17 +341,52 @@ public class XdbServerServlet extends ServerServlet {
     }
 
     @Override
-    protected String getContextPath(HttpServletRequest request) {
-        return "";
-    }
+    protected Class<?> loadClass(String className)
+            throws ClassNotFoundException {
+        final int doubleDotPos = className.indexOf(':');
+        Class<?> targetClass;
 
-    @Override
-    protected String getLocalAddr(HttpServletRequest request) {
-        return this.localAddress;
-    }
+        if (doubleDotPos > 0) {
+            final String sch = className.substring(0, doubleDotPos)
+                    .toUpperCase();
+            final String cName = className.substring(doubleDotPos + 1);
+            if (System.getProperty("java.vm.name").equals("JServer VM")) {
+                // Use DbmsJava by reflection to avoid dependency to Oracle libs
+                // at compiling time
+                try {
+                    Class<?> loaderClass = Engine
+                            .loadClass("oracle.aurora.rdbms.DbmsJava");
+                    Method meth = loaderClass.getMethod(
+                            "classForNameAndSchema", new Class[] {
+                                    String.class, String.class });
+                    log("Schema: " + sch + " class: " + cName + " loader: "
+                            + loaderClass);
+                    targetClass = (Class<?>) meth.invoke(null, new Object[] {
+                            cName, sch });
+                } catch (NoSuchMethodException nse) {
+                    log("Could not instantiate a class using SCHEMA: " + sch
+                            + " and class: " + cName, nse);
+                    targetClass = Engine.loadClass(className);
+                } catch (IllegalAccessException iae) {
+                    log("Could not instantiate a class using SCHEMA: " + sch
+                            + " and class: " + cName, iae);
+                    targetClass = Engine.loadClass(className);
+                } catch (InvocationTargetException ite) {
+                    log("Could not instantiate a class using SCHEMA: " + sch
+                            + " and class: " + cName, ite);
+                    targetClass = Engine.loadClass(className);
+                } catch (AccessControlException ace) {
+                    log("Could not instantiate a class using oracle.aurora.rdbms.DbmsJava "
+                            + sch + " and class: " + cName, ace);
+                    targetClass = Engine.loadClass(className);
+                }
+            } else {
+                targetClass = Engine.loadClass(className);
+            }
+        } else { // Not running inside OJVM, may be outside testing
+            targetClass = Engine.loadClass(className);
+        }
 
-    @Override
-    protected int getLocalPort(HttpServletRequest request) {
-        return this.localPort;
+        return targetClass;
     }
 }

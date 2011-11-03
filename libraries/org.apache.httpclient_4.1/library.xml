@@ -2,7 +2,7 @@
 	<name>Apache HTTP Components Client</name>
 	<description>Apache HTTP Components Client</description>
 	<version>4.1</version>
-    <release>2</release>
+    <release>1</release>
 	<homeUri>http://hc.apache.org/httpcomponents-client/</homeUri>
 	<downloadUri>http://hc.apache.org/httpcomponents-client/download.html</downloadUri>
 	<provider>Apache Software Foundation</provider>

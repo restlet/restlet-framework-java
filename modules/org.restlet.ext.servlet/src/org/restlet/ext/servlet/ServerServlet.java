@@ -61,14 +61,11 @@ import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.VirtualHost;
 
 /**
- * Servlet acting like an HTTP server connector. See <a
- * href="/documentation/1.1/faq#02">Developer FAQ #2</a> for details on how to
- * integrate a Restlet application into a servlet container.<br>
- * <br>
- * This Servlet can deploy multiple Restlet applications or components. This
- * allows you to reuse an existing standalone Restlet Component, potentially
- * containing several applications, and declaring client connectors, for example
- * for the CLAP, FILE or HTTP protocols.<br>
+ * Servlet acting like an HTTP server connector. This Servlet can deploy
+ * multiple Restlet applications or components. This allows you to reuse an
+ * existing standalone Restlet Component, potentially containing several
+ * applications, and declaring client connectors, for example for the CLAP, FILE
+ * or HTTP protocols.<br>
  * <br>
  * There are three separate ways to configure the deployment using this Servlet.
  * They are described below by order of priority:

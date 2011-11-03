@@ -10,6 +10,8 @@ Changes log
          Refactored engine's AuthenticatorHelper to move common 
          logic to the AuthenticatorUtils class.
          Reported by Alex Milowski.
+       - Fixed POM dependency on Apache HTTP Client 4.1.1.
+         Reported by Dejan Lozanovic.
     - API changes
        - Added generic value type to NamedValue interface.
        - Added ByteArrayRepresentation to org.restlet.representation
