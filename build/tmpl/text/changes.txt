@@ -21,6 +21,8 @@ Changes log
     - Misc
        - Updated XStream to version 1.4.1
        - Updated Jettison to version 1.3
+       - Lowered level of log messages when socket shutdown and close
+         is throwing exception. Suggested by John Logdson.
        
 - 2.1 Release Candidate 1 (10/06/2011)
     - Bug fixed

@@ -3,8 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: High-performance JSON processor
 Bundle-SymbolicName: org.codehaus.jackson
 Bundle-Version: 1.9
-Bundle-ClassPath: org.codehaus.jackson.core.jar,
- org.codehaus.jackson.mapper.jar
 Bundle-Vendor: Codehaus
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.codehaus.jackson,
@@ -33,3 +31,5 @@ Export-Package: org.codehaus.jackson,
  org.codehaus.jackson.sym,
  org.codehaus.jackson.type,
  org.codehaus.jackson.util
+Bundle-ClassPath: org.codehaus.jackson.core.jar,
+ org.codehaus.jackson.mapper.jar

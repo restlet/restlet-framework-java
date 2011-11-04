@@ -175,7 +175,7 @@ public class Connection<T extends Connector> implements SelectionListener {
                     shutdown(socket);
                 }
             } catch (IOException ex) {
-                getLogger().log(Level.FINE,
+                getLogger().log(Level.FINEST,
                         "Unable to properly shutdown socket", ex);
             }
 
@@ -185,8 +185,8 @@ public class Connection<T extends Connector> implements SelectionListener {
                     socket.close();
                 }
             } catch (IOException ex) {
-                getLogger().log(Level.FINE, "Unable to properly close socket",
-                        ex);
+                getLogger().log(Level.FINEST,
+                        "Unable to properly close socket", ex);
             } finally {
                 getInboundWay().onClosed();
                 getOutboundWay().onClosed();
