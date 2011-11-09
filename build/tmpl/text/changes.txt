@@ -7,6 +7,8 @@ Changes log
     - Bugs fixed
        - Fixed MediaType.includes(MediaType) which returned true with the
          other type was null. Reported by Try Lam.
+       - Improved OData client speed by caching costly reflection calls,
+         especially on Android. Contributed by Nikhil Purushe.
 
 - 2.0.10 (2011-10-05)
     - Bugs fixed

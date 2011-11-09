@@ -60,14 +60,11 @@ import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.VirtualHost;
 
 /**
- * Servlet acting like an HTTP server connector. See <a
- * href="/documentation/1.1/faq#02">Developer FAQ #2</a> for details on how to
- * integrate a Restlet application into a servlet container.<br>
- * <br>
- * This Servlet can deploy multiple Restlet applications or components. This
- * allows you to reuse an existing standalone Restlet Component, potentially
- * containing several applications, and declaring client connectors, for example
- * for the CLAP, FILE or HTTP protocols.<br>
+ * Servlet acting like an HTTP server connector. This Servlet can deploy
+ * multiple Restlet applications or components. This allows you to reuse an
+ * existing standalone Restlet Component, potentially containing several
+ * applications, and declaring client connectors, for example for the CLAP, FILE
+ * or HTTP protocols.<br>
  * <br>
  * There are three separate ways to configure the deployment using this Servlet.
  * They are described below by order of priority:
@@ -367,26 +364,21 @@ public class ServerServlet extends HttpServlet {
                             parentContext.createChildContext());
                 }
             } catch (ClassNotFoundException e) {
-                log(
-                        "[Restlet] ServerServlet couldn't find the target class. Please check that your classpath includes "
-                                + applicationClassName, e);
+                log("[Restlet] ServerServlet couldn't find the target class. Please check that your classpath includes "
+                        + applicationClassName, e);
 
             } catch (InstantiationException e) {
-                log(
-                        "[Restlet] ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
-                                + applicationClassName, e);
+                log("[Restlet] ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
+                        + applicationClassName, e);
             } catch (IllegalAccessException e) {
-                log(
-                        "[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
-                                + applicationClassName, e);
+                log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
+                        + applicationClassName, e);
             } catch (NoSuchMethodException e) {
-                log(
-                        "[Restlet] ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
-                                + applicationClassName, e);
+                log("[Restlet] ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
+                        + applicationClassName, e);
             } catch (InvocationTargetException e) {
-                log(
-                        "[Restlet] ServerServlet couldn't instantiate the target class. An exception was thrown while creating "
-                                + applicationClassName, e);
+                log("[Restlet] ServerServlet couldn't instantiate the target class. An exception was thrown while creating "
+                        + applicationClassName, e);
             }
         }
 
@@ -420,7 +412,8 @@ public class ServerServlet extends HttpServlet {
 
         // Look for the Component XML configuration file.
         Client warClient = createWarClient(new Context(), getServletConfig());
-        Response response = warClient.handle(new Request(Method.GET, "war:///WEB-INF/restlet.xml"));
+        Response response = warClient.handle(new Request(Method.GET,
+                "war:///WEB-INF/restlet.xml"));
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             component = new Component(response.getEntity());
         }
@@ -440,17 +433,14 @@ public class ServerServlet extends HttpServlet {
                     // invoking the constructor with the Context parameter.
                     component = (Component) targetClass.newInstance();
                 } catch (ClassNotFoundException e) {
-                    log(
-                            "[Restlet] ServerServlet couldn't find the target class. Please check that your classpath includes "
-                                    + componentClassName, e);
+                    log("[Restlet] ServerServlet couldn't find the target class. Please check that your classpath includes "
+                            + componentClassName, e);
                 } catch (InstantiationException e) {
-                    log(
-                            "[Restlet] ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
-                                    + componentClassName, e);
+                    log("[Restlet] ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
+                            + componentClassName, e);
                 } catch (IllegalAccessException e) {
-                    log(
-                            "[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
-                                    + componentClassName, e);
+                    log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
+                            + componentClassName, e);
                 }
             }
         }
@@ -500,8 +490,8 @@ public class ServerServlet extends HttpServlet {
         if (component != null) {
             // First, let's create a pseudo server
             Server server = new Server(component.getContext()
-                    .createChildContext(), (List<Protocol>) null, this
-                    .getLocalAddr(request), this.getLocalPort(request),
+                    .createChildContext(), (List<Protocol>) null,
+                    this.getLocalAddr(request), this.getLocalPort(request),
                     component);
             result = new HttpServerHelper(server);
 
@@ -541,8 +531,8 @@ public class ServerServlet extends HttpServlet {
                                 continue;
                             }
 
-                            if (!route.getTemplate().getPattern().startsWith(
-                                    uriPattern)) {
+                            if (!route.getTemplate().getPattern()
+                                    .startsWith(uriPattern)) {
                                 if (!route.getTemplate().getPattern()
                                         .startsWith(request.getServletPath())) {
                                     addFullServletPath = true;
@@ -574,8 +564,7 @@ public class ServerServlet extends HttpServlet {
                                                 .getTemplate()
                                                 .getPattern()
                                                 .startsWith(
-                                                        request
-                                                                .getServletPath())) {
+                                                        request.getServletPath())) {
                                             addFullServletPath = true;
                                         } else {
                                             addContextPath = true;
@@ -601,8 +590,10 @@ public class ServerServlet extends HttpServlet {
                         }
 
                         if (offsetPath != null) {
-                            getComponent().getContext().getAttributes().put(
-                                    NAME_OFFSET_PATH_ATTRIBUTE, offsetPath);
+                            getComponent()
+                                    .getContext()
+                                    .getAttributes()
+                                    .put(NAME_OFFSET_PATH_ATTRIBUTE, offsetPath);
                         }
 
                         // Shift the default route (if any) of the default host
@@ -941,9 +932,8 @@ public class ServerServlet extends HttpServlet {
             // Complete the configuration of the Component
             // Add the WAR client
             component.getClients()
-                    .add(
-                            createWarClient(component.getContext(),
-                                    getServletConfig()));
+                    .add(createWarClient(component.getContext(),
+                            getServletConfig()));
 
             // Copy all the servlet parameters into the context
             ComponentContext componentContext = (ComponentContext) component
@@ -992,7 +982,8 @@ public class ServerServlet extends HttpServlet {
     private boolean isDefaultComponent() {
         // The Component is provided via an XML configuration file.
         Client client = createWarClient(new Context(), getServletConfig());
-        Response response = client.handle(new Request(Method.GET, "war:///WEB-INF/restlet.xml"));
+        Response response = client.handle(new Request(Method.GET,
+                "war:///WEB-INF/restlet.xml"));
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             return false;
         }
