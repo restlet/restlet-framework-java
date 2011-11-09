@@ -108,7 +108,7 @@ public class Router extends Restlet {
     public static final int MODE_LAST_MATCH = 3;
 
     /**
-     * Each call is be routed to the next route target if the required score is
+     * Each call is routed to the next route target if the required score is
      * reached. The next route is relative to the previous call routed (round
      * robin mode). If the required score is not reached, then the route is
      * skipped and the next one is considered. If the last route is reached, the
@@ -124,7 +124,7 @@ public class Router extends Restlet {
      * immediate next route is evaluated until one matching route is found. If
      * we get back to the initial random route selected with no match, then we
      * return null. Unless all the routes score above the required score, this
-     * mode will result in non uniform distribution of calls. See
+     * mode will result in non-uniform distribution of calls. See
      * {@link RouteList#getRandom(Request, Response, float)} method for
      * implementation details.
      */

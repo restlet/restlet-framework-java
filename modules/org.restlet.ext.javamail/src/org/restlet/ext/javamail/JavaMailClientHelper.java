@@ -151,15 +151,6 @@ import com.sun.mail.pop3.POP3Folder;
  */
 public class JavaMailClientHelper extends ClientHelper {
 
-    /** Basic POP scheme. Based on the USER/PASS commands. */
-    public static final ChallengeScheme POP_BASIC = new ChallengeScheme(
-            "POP_BASIC", "Basic",
-            "Basic POP authentication (USER/PASS commands)");
-
-    /** Digest POP scheme. Based on the APOP command. */
-    public static final ChallengeScheme POP_DIGEST = new ChallengeScheme(
-            "POP_DIGEST", "Digest", "Digest POP authentication (APOP command)");
-
     /**
      * Constructor.
      * 
@@ -338,7 +329,7 @@ public class JavaMailClientHelper extends ClientHelper {
         // Check if authentication required
         final boolean authenticate = ((getLogin(request) != null) && (getPassword(request) != null));
         final boolean apop = authenticate
-                && (POP_DIGEST.equals(request.getChallengeResponse()
+                && (ChallengeScheme.POP_DIGEST.equals(request.getChallengeResponse()
                         .getScheme()));
 
         String transport = null;
