@@ -85,12 +85,18 @@ public class MetadataService extends Service {
     }
 
     /**
-     * Adds a common list of associations from extensions to metadata. The list
-     * of languages extensions:<br>
+     * Adds a common list of associations from extensions to metadata.<br>
+     * 
+     * The list of languages extensions:<br>
      * <ul>
      * <li>en: English</li>
      * <li>es: Spanish</li>
      * <li>fr: French</li>
+     * </ul>
+     * <br>
+     * The list of character set extensions:<br>
+     * <ul>
+     * <li>ascii: US-ASCII</li>
      * </ul>
      * <br>
      * The list of media type extensions:<br>
@@ -219,8 +225,9 @@ public class MetadataService extends Service {
         ext(dm, "fr", Language.FRENCH);
 
         // [ifndef gwt]
-        ext(dm, "ai", MediaType.APPLICATION_POSTSCRIPT);
         ext(dm, "ascii", CharacterSet.US_ASCII);
+
+        ext(dm, "ai", MediaType.APPLICATION_POSTSCRIPT);
         ext(dm, "atom", MediaType.APPLICATION_ATOM);
         ext(dm, "atomcat", MediaType.APPLICATION_ATOMPUB_CATEGORY);
         ext(dm, "atomsvc", MediaType.APPLICATION_ATOMPUB_SERVICE);
