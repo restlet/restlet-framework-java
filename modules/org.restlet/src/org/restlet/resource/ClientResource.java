@@ -276,6 +276,18 @@ public class ClientResource extends UniformResource {
      *            The current context.
      * @param request
      *            The handled request.
+     */
+    public ClientResource(Context context, Request request) {
+        this(context, request, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The current context.
+     * @param request
+     *            The handled request.
      * @param response
      *            The handled response.
      */
@@ -368,6 +380,16 @@ public class ClientResource extends UniformResource {
      */
     public ClientResource(Reference reference) {
         this(Context.getCurrent(), null, reference);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param request
+     *            The handled request.
+     */
+    public ClientResource(Request request) {
+        this(request, null);
     }
 
     /**

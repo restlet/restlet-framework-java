@@ -18,6 +18,8 @@ Changes log
          Suggested by Jerome Idylle.
        - Added constructor from characters arrays in the
          StringRepresentation class.
+       - Added constructors to ClientResource taking only a request
+         object (prototype) and no (last) response.
     - Misc
        - Updated XStream to version 1.4.1
        - Updated Jettison to version 1.3
