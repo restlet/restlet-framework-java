@@ -191,7 +191,7 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
                 result = (T) emfResource.getContents().get(0);
             } catch (IOException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to parse the object with XStream.", e);
+                        "Unable to parse the object with an EMF resource.", e);
             }
         }
 
