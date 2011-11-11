@@ -170,7 +170,7 @@ public class JibxConverter extends ConverterHelper {
                 result = new JibxRepresentation<T>(source, target).getObject();
             } catch (JiBXException e) {
                 throw new IOException(
-                        "Cannot convert the given representation to  an object of this class using Jibx converter "
+                        "Cannot convert the given representation to an object of this class using Jibx converter "
                                 + target + " due to " + e.getMessage());
             }
         } else if (target == null) {
