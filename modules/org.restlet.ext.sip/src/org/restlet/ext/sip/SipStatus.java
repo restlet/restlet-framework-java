@@ -218,7 +218,10 @@ public final class SipStatus {
             BASE_SIP + ".4.4");
 
     /**
-     * 
+     * The server has definitive information that the user does not exist at the
+     * domain specified in the Request-URI. This status is also returned if the
+     * domain in the Request-URI does not match any of the domains handled by
+     * the recipient of the request.
      * 
      * @see <a href="http://tools.ietf.org/html/rfc3261#section-21.4.5">SIP RFC
      *      - 21.4.5 404 Not Found</a>
