@@ -44,7 +44,7 @@ public class MailServerSpring {
     public static void main(String[] args) throws Exception {
         // Load the Spring container
         ClassPathResource resource = new ClassPathResource(
-                "org/restlet/example/book/restlet/ch04/sec3/server/component-spring.xml");
+                "org/restlet/example/book/restlet/ch03/sec3/server/component-spring.xml");
         BeanFactory factory = new XmlBeanFactory(resource);
 
         // Start the Restlet component

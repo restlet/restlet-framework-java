@@ -17,7 +17,7 @@
 		<init-param>
 			<param-name>org.restlet.component</param-name>
 			<param-value>
-				org.restlet.example.book.restlet.ch04.sec3.server.MailServerComponent
+				org.restlet.example.book.restlet.ch03.sec3.server.MailServerComponent
 			</param-value>
 		</init-param>
 	</servlet>

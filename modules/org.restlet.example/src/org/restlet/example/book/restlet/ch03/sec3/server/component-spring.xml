@@ -59,11 +59,11 @@
 				<property name="attachments">
 					<map>
 						<entry key="/"
-							value="org.restlet.example.book.restlet.ch04.sec3.server.RootServerResource" />
+							value="org.restlet.example.book.restlet.ch03.sec3.server.RootServerResource" />
 						<entry key="/accounts/"
-							value="org.restlet.example.book.restlet.ch04.sec3.server.AccountsServerResource" />
+							value="org.restlet.example.book.restlet.ch03.sec3.server.AccountsServerResource" />
 						<entry key="/accounts/{accountId}"
-							value="org.restlet.example.book.restlet.ch04.sec3.server.AccountServerResource" />
+							value="org.restlet.example.book.restlet.ch03.sec3.server.AccountServerResource" />
 					</map>
 				</property>
 			</bean>

@@ -66,7 +66,7 @@ public class MailClient {
         String list = mailAccounts.represent();
         System.out.println(list == null ? "<empty>\n" : list);
 
-        System.out.println("4) Adds new accounts\n");
+        System.out.println("\n4) Adds new accounts\n");
         mailAccounts.add("Tim Berners-Lee");
         mailAccounts.add("Roy Fielding");
         mailAccounts.add("Mark Baker");
@@ -75,7 +75,7 @@ public class MailClient {
         System.out.println("\n5) Display the updated list of accounts\n");
         System.out.println(mailAccounts.represent());
 
-        System.out.println("6) Display the second account\n");
+        System.out.println("\n6) Display the second account\n");
         AccountResource mailAccount = service.getChild("/accounts/2",
                 AccountResource.class);
         System.out.println(mailAccount.represent());

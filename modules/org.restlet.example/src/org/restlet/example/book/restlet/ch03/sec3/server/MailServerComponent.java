@@ -82,6 +82,6 @@ public class MailServerComponent extends Component {
         getLogService().setLoggerName("MailServer.AccessLog");
         getLogService()
                 .setLogPropertiesRef(
-                        "clap://system/org/restlet/example/book/restlet/ch04/sec3/server/log.properties");
+                        "clap://system/org/restlet/example/book/restlet/ch03/sec3/server/log.properties");
     }
 }
