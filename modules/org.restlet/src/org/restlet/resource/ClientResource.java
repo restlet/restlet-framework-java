@@ -1646,8 +1646,7 @@ public class ClientResource extends UniformResource {
                                                     rCallback
                                                             .onSuccess(toObject(
                                                                     response.getEntity(),
-                                                                    actualType
-                                                                            .getClass()));
+                                                                    actualType));
                                                 } else {
                                                     rCallback.onSuccess(null);
                                                 }

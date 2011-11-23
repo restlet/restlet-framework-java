@@ -9,6 +9,8 @@ Changes log
          other type was null. Reported by Try Lam.
        - Improved OData client speed by caching costly reflection calls,
          especially on Android. Contributed by Nikhil Purushe.
+       - Fixed conversion bug with asynchronous annotated interfaces
+         when a Result parameter is declared. Reported by Bill Claypool.
 
 - 2.0.10 (2011-10-05)
     - Bugs fixed
