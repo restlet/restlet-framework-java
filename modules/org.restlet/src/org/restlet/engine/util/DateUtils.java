@@ -271,16 +271,17 @@ public final class DateUtils {
      * @param <T>
      *            Any valid java object
      * @param array
-     *            to be convereted into an unmodifiable list
+     *            to be converted into an unmodifiable list
      * @return unmodifiable list based on the provided array
      */
+    @SuppressWarnings("unchecked")
     private static <T> List<T> unmodifiableList(final T... array) {
         return Collections.unmodifiableList(Arrays.asList(array));
     }
 
     /**
      * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instatiable and extensible.
+     * i.e. it isn't instantiable and extensible.
      */
     private DateUtils() {
 

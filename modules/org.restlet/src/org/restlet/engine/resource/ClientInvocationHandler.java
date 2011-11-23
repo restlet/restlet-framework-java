@@ -158,20 +158,19 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                                         if (actualType != null) {
                                             Object result = null;
                                             boolean serializationError = false;
-                                            
+
                                             try {
                                                 result = getClientResource()
                                                         .toObject(
                                                                 response.getEntity(),
-                                                                actualType
-                                                                        .getClass());
+                                                                actualType);
                                             } catch (Exception e) {
                                                 serializationError = true;
                                                 rCallback
                                                         .onFailure(new ResourceException(
                                                                 e));
                                             }
-                                            
+
                                             if (!serializationError) {
                                                 rCallback.onSuccess(result);
                                             }

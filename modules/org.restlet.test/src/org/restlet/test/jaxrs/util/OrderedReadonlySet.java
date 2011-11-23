@@ -37,21 +37,22 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author Stephan
- *
+ * @author Stephan Koops
  */
 public class OrderedReadonlySet<E> implements Set<E> {
 
     private final List<E> elements;
-    
+
     /**
      * 
-     * @param data will not check, if no duplicates are in the data
+     * @param data
+     *            will not check, if no duplicates are in the data
      */
+    @SuppressWarnings("unchecked")
     public OrderedReadonlySet(E... data) {
         this.elements = Arrays.asList(data);
     }
-    
+
     /**
      * @see java.util.Set#add(java.lang.Object)
      */
