@@ -120,7 +120,8 @@ public class StrictConneg extends Conneg {
 
         if (annotation != null) {
             if (annotation.getQuery() != null) {
-                if (getRequest().getResourceRef().getQuery() == null) {
+                if ((getRequest().getResourceRef() == null)
+                        || (getRequest().getResourceRef().getQuery() == null)) {
                     // Query constraint defined, but no query provided, no fit
                     result = -1.0F;
                 } else {
@@ -182,7 +183,8 @@ public class StrictConneg extends Conneg {
                     }
                 }
             } else {
-                if (getRequest().getResourceRef().getQuery() == null) {
+                if ((getRequest().getResourceRef() == null)
+                        || (getRequest().getResourceRef().getQuery() == null)) {
                     // No query filter, but no query provided, average fit
                     result = 0.5F;
                 } else {

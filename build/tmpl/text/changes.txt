@@ -12,6 +12,7 @@ Changes log
          Reported by Alex Milowski.
        - Fixed POM dependency on Apache HTTP Client 4.1.1.
          Reported by Dejan Lozanovic.
+       - Fixed potential NPE in StrictConneg.
     - API changes
        - Added generic value type to NamedValue interface.
        - Added ByteArrayRepresentation to org.restlet.representation
