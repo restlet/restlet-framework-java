@@ -52,8 +52,8 @@ import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 
 /**
- * Representation based on the EMF library. It can serialize and deserialize
- * automatically in either XML or XMI.
+ * Representation based on the EMF library. By default, it can serialize and
+ * deserialize automatically in either XML, XMI or ECore.
  * 
  * @see <a href="http://www.eclipse.org/modeling/emf/">EMF project</a>
  * @author Jerome Louvel
@@ -106,13 +106,25 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
 
     /**
      * Creates and configure an EMF resource. Not to be confused with a Restlet
+     * resource. By default, it calls {@link #createEmfXmlResource(MediaType)}.
+     * 
+     * @param mediaType
+     *            The associated media type.
+     * @return A new configured EMF resource.
+     */
+    protected Resource createEmfResource(MediaType mediaType) {
+        return createEmfResource(mediaType);
+    }
+
+    /**
+     * Creates and configure an EMF resource. Not to be confused with a Restlet
      * resource.
      * 
      * @param mediaType
      *            The associated media type (ECore, XMI or XML).
      * @return A new configured EMF resource.
      */
-    protected XMLResource createEmfResource(MediaType mediaType) {
+    protected XMLResource createEmfXmlResource(MediaType mediaType) {
         XMLResource result = null;
 
         if (MediaType.APPLICATION_ECORE.isCompatible(getMediaType())) {
@@ -237,6 +249,32 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
     }
 
     /**
+     * Writes the representation based on a given EMF object.
+     * 
+     * @param object
+     *            The EMF object to serialize.
+     * @param outputStream
+     *            The target output stream.
+     * @throws IOException
+     */
+    public void write(EObject object, OutputStream outputStream)
+            throws IOException {
+        if (MediaType.APPLICATION_ALL_XML.isCompatible(getMediaType())
+                || MediaType.TEXT_XML.isCompatible(getMediaType())
+                || MediaType.APPLICATION_XMI.isCompatible(getMediaType())
+                || MediaType.APPLICATION_ECORE.isCompatible(getMediaType())) {
+            Resource emfResource = createEmfResource(getMediaType());
+            emfResource.getContents().add(object);
+            emfResource.save(outputStream, getSaveOptions());
+        } else if (MediaType.TEXT_HTML.isCompatible(getMediaType())) {
+            EmfHtmlWriter htmlWriter = new EmfHtmlWriter(object);
+            htmlWriter.write(new OutputStreamWriter(outputStream,
+                    ((getCharacterSet() == null) ? CharacterSet.ISO_8859_1
+                            .getName() : getCharacterSet().getName())));
+        }
+    }
+
+    /**
      * If this representation wraps an {@link EObject}, then it tries to write
      * it as either XML, XMI or ECore/EMOF depending on the media type set.
      * 
@@ -250,19 +288,7 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
         if (this.representation != null) {
             this.representation.write(outputStream);
         } else if (object != null) {
-            if (MediaType.APPLICATION_ALL_XML.isCompatible(getMediaType())
-                    || MediaType.TEXT_XML.isCompatible(getMediaType())
-                    || MediaType.APPLICATION_XMI.isCompatible(getMediaType())
-                    || MediaType.APPLICATION_ECORE.isCompatible(getMediaType())) {
-                Resource emfResource = createEmfResource(getMediaType());
-                emfResource.getContents().add((EObject) this.object);
-                emfResource.save(outputStream, getSaveOptions());
-            } else if (MediaType.TEXT_HTML.isCompatible(getMediaType())) {
-                EmfHtmlWriter htmlWriter = new EmfHtmlWriter(getObject());
-                htmlWriter.write(new OutputStreamWriter(outputStream,
-                        ((getCharacterSet() == null) ? CharacterSet.ISO_8859_1
-                                .getName() : getCharacterSet().getName())));
-            }
+            write(this.object, outputStream);
         }
     }
 }
