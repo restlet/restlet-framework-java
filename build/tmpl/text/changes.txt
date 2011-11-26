@@ -23,6 +23,7 @@ Changes log
          object (prototype) and no (last) response.
        - Added EmfRepresentation#createEmfXmlResource(...) method
          and write(EObject, OutputStream) method.
+         Suggested in part by Bryan Hunt.
     - Misc
        - Updated XStream to version 1.4.1
        - Updated Jettison to version 1.3

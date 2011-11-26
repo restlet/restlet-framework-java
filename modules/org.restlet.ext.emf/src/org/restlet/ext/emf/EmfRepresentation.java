@@ -113,7 +113,7 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
      * @return A new configured EMF resource.
      */
     protected Resource createEmfResource(MediaType mediaType) {
-        return createEmfResource(mediaType);
+        return createEmfXmlResource(mediaType);
     }
 
     /**
@@ -259,18 +259,15 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
      */
     public void write(EObject object, OutputStream outputStream)
             throws IOException {
-        if (MediaType.APPLICATION_ALL_XML.isCompatible(getMediaType())
-                || MediaType.TEXT_XML.isCompatible(getMediaType())
-                || MediaType.APPLICATION_XMI.isCompatible(getMediaType())
-                || MediaType.APPLICATION_ECORE.isCompatible(getMediaType())) {
-            Resource emfResource = createEmfResource(getMediaType());
-            emfResource.getContents().add(object);
-            emfResource.save(outputStream, getSaveOptions());
-        } else if (MediaType.TEXT_HTML.isCompatible(getMediaType())) {
+        if (MediaType.TEXT_HTML.isCompatible(getMediaType())) {
             EmfHtmlWriter htmlWriter = new EmfHtmlWriter(object);
             htmlWriter.write(new OutputStreamWriter(outputStream,
                     ((getCharacterSet() == null) ? CharacterSet.ISO_8859_1
                             .getName() : getCharacterSet().getName())));
+        } else {
+            Resource emfResource = createEmfResource(getMediaType());
+            emfResource.getContents().add(object);
+            emfResource.save(outputStream, getSaveOptions());
         }
     }
 
