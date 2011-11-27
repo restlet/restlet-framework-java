@@ -29,7 +29,7 @@ public class RestletGuice {
     /**
      * Creates an injector from the given modules with FinderFactory
      * bound to an implementation that uses the injector's bindings to create
-     * Finder instances and handle calls to attach and setNext.
+     * Finder instances.
      */
     public static Injector createInjector(com.google.inject.Module... modules) {
         return injectorFor(null, new Module(modules));
@@ -38,7 +38,7 @@ public class RestletGuice {
     /**
      * Creates an injector in the given Stage from the given modules with FinderFactory
      * bound to an implementation that uses the injector's bindings to create
-     * Finder instances and handle calls to attach and setNext.
+     * Finder instances.
      */
     public static Injector createInjector(Stage stage, com.google.inject.Module... modules) {
         return injectorFor(stage, new Module(modules));
@@ -47,7 +47,7 @@ public class RestletGuice {
     /**
      * Creates an injector from the given modules with FinderFactory
      * bound to an implementation that uses the injector's bindings to create
-     * Finder instances and handle calls to attach and setNext.
+     * Finder instances.
      */
     public static Injector createInjector(Iterable<com.google.inject.Module> modules) {
         return injectorFor(null, new Module(modules));
@@ -56,7 +56,7 @@ public class RestletGuice {
     /**
      * Creates an injector in the given Stage from the given modules with FinderFactory
      * bound to an implementation that uses the injector's bindings to create
-     * Finder instances and handle calls to attach and setNext.
+     * Finder instances.
      */
     public static Injector createInjector(Stage stage, Iterable<com.google.inject.Module> modules) {
         return injectorFor(stage, new Module(modules));
@@ -224,7 +224,7 @@ public class RestletGuice {
                     synchronized (RestletGuice.Module.this) {
                         inj = injector;
                         if (inj == null) {
-                            System.err.println("Automatically creating injector.");
+                            //System.err.println("Automatically creating injector.");
                             injector = inj = Guice.createInjector(RestletGuice.Module.this);
                         }
                     }

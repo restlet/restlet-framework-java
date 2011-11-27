@@ -9,6 +9,10 @@ import java.lang.annotation.Target;
 
 import com.google.inject.BindingAnnotation;
 
+
+/**
+ * Qualifier for demonstrating use of FinderFactory with qualifiers.
+ */
 @Retention(RUNTIME)
 @Target( { FIELD, PARAMETER })
 @BindingAnnotation

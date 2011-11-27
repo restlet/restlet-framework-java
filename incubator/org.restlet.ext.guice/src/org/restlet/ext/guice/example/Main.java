@@ -14,87 +14,117 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.name.Named;
+import com.google.inject.Module;
 
-public class Main {
 
+/**
+ * Demonstrates trivial use of FinderFactory and RestletGuice
+ * by starting a component on port 8182 with a single application
+ * that routes to Finder instances obtained from a FinderFactory.
+ * A command line argument controls whether the Injector behind
+ * the FinderFactory is created explicitly with RestletGuice or
+ * implicitly from the first use of RestletGuice.Module as a
+ * FinderFactory.
+ */
+public class Main extends Application {
+
+    enum Mode {
+        /**
+         * Injector is created explicitly with RestletGuice.
+         */
+        EXPLICIT_INJECTOR,
+
+        /**
+         * Injector is created implicitly by first use of
+         * RestletGuice.Module as FinderFactory.
+         */
+        AUTO_INJECTOR
+    }
+
+    /**
+     * Whether to create Injector explicitly or automatically.
+     */
+    static volatile Mode mode = Mode.AUTO_INJECTOR;
+
+    /**
+     * Creates and starts component. Pass 'auto' or 'explicit'
+     * (or a prefix of either) to control how the Injector is
+     * created. Default is auto.
+     */
     public static void main(String[] args) throws Exception {
+        if (args.length > 0) {
+            if ("explicit".startsWith(args[0])) {
+                mode = Mode.EXPLICIT_INJECTOR;
+            } else if (!"auto".startsWith(args[0])) {
+                System.out.println(
+                    "Call with prefix of 'auto' (default) or 'explicit'");
+                System.exit(1);
+            }
+        }
+
         Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
-        component.getDefaultHost().attach(new MainApp());
+        component.getDefaultHost().attach(new Main());
         component.start();
     }
 
-    static class MainApp extends Application {
+    @Override
+    public Restlet createInboundRoot() {
 
-        enum Mode {
-            EXPLICIT_INJECTOR, AUTO_INJECTOR
-        }
+        Module bindings = new AbstractModule() {
+            protected void configure() {
 
-        final Mode mode = Mode.EXPLICIT_INJECTOR;
+                bind(ServerResource.class)
+                    .annotatedWith(HelloWorld.class)
+                    .to(HelloServerResource.class);
 
-        final MainModule mainModule = new MainModule();
+                bindConstant()
+                    .annotatedWith(named(MSG_QUALIFIER))
+                    .to(HELLO_MSG);
 
-        @Override
-        public Restlet createInboundRoot() {
+                bindConstant()
+                    .annotatedWith(named(PATH_QUALIFIER))
+                    .to(HELLO_PATH);
+            }
+        };
 
-            FinderFactory di = null;
-            switch (mode) {
-
-            case EXPLICIT_INJECTOR: // (1) Use explicit Injector creation.
-
-                Injector injector = RestletGuice.createInjector(mainModule);
-                di = injector.getInstance(FinderFactory.class);
+        FinderFactory ff = null;
+        switch (mode) {
+            case EXPLICIT_INJECTOR:
+                Injector injector = RestletGuice.createInjector(bindings);
+                ff = injector.getInstance(FinderFactory.class);
                 break;
 
-            case AUTO_INJECTOR: // (2) Use a special module that is also a
-                                // DependencyInjection
-                // and that automatically creates the Injector when needed.
-                di = new RestletGuice.Module(mainModule);
+            case AUTO_INJECTOR:
+            default:
+                ff = new RestletGuice.Module(bindings);
                 break;
-            }
-
-            if (di == null) {
-                throw new IllegalStateException(
-                        "No Injector creation mode specified.");
-            }
-
-            Router router = new Router(getContext());
-
-            // Route HELLO_PATH to whatever is bound to ServerResource annotated
-            // with @HelloWorld.
-            router.attach(HELLO_PATH, di.finder(ServerResource.class,
-                    HelloWorld.class));
-
-            // Everything else goes to DefaultResource.
-            router.attachDefault(di.finder(DefaultResource.class));
-
-            return router;
-        }
-    }
-
-    public static class DefaultResource extends ServerResource {
-
-        @Inject
-        DefaultResource(@Named(HELLO_PATH_Q) String path) {
-            this.path = path;
         }
 
-        @Get
-        public String represent() {
-            return "Default resource, try " + path;
-        }
+        assert ff != null : "Must specify Injector creation mode.";
 
-        private final String path;
+        Router router = new Router(getContext());
+
+        // Route HELLO_PATH to whatever is bound to ServerResource
+        // annotated with @HelloWorld.
+        router.attach(HELLO_PATH, ff.finder(ServerResource.class,
+                HelloWorld.class));
+
+        // Everything else goes to DefaultResource.
+        router.attachDefault(ff.finder(DefaultResource.class));
+
+        return router;
     }
 
     public static class HelloServerResource extends ServerResource {
 
         @Inject
-        public HelloServerResource(@Named(HELLO_MSG_Q) String msg) {
+        public HelloServerResource(@Named(MSG_QUALIFIER) String msg) {
             this.msg = msg;
         }
 
@@ -108,21 +138,26 @@ public class Main {
         private static final AtomicInteger count = new AtomicInteger();
     }
 
-    static final String HELLO_PATH = "/hello";
+    public static class DefaultResource extends ServerResource {
 
-    static final String HELLO_PATH_Q = "hello.path";
-
-    static final String HELLO_MSG_Q = "hello.message";
-
-    static class MainModule extends AbstractModule {
-        protected void configure() {
-            bind(ServerResource.class).annotatedWith(HelloWorld.class).to(
-                    HelloServerResource.class);
-
-            bindConstant().annotatedWith(named(HELLO_MSG_Q)).to(
-                    "Hello, Restlet 2.0 - Guice 2.0!");
-
-            bindConstant().annotatedWith(named(HELLO_PATH_Q)).to(HELLO_PATH);
+        @Inject
+        DefaultResource(@Named(PATH_QUALIFIER) String path) {
+            this.path = path;
         }
+
+        @Get
+        public String represent() {
+            return String.format(
+                "Default resource, try %s -- mode is %s",
+                path, mode);
+        }
+
+        private final String path;
     }
+
+    static final String MSG_QUALIFIER   = "hello.message";
+    static final String HELLO_MSG       = "Hello, Restlet 2.0 - Guice 2.0!";
+
+    static final String PATH_QUALIFIER  = "hello.path";
+    static final String HELLO_PATH      = "/hello";
 }
