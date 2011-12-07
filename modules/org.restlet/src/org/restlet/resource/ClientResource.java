@@ -980,7 +980,6 @@ public class ClientResource extends UniformResource {
     protected <T> T handle(Method method, Object entity, Class<T> resultClass)
             throws ResourceException {
         org.restlet.service.ConverterService cs = getConverterService();
-        List<? extends Variant> variants = cs.getVariants(resultClass, null);
         ClientInfo clientInfo = getClientInfo();
 
         if (clientInfo.getAcceptedMediaTypes().isEmpty()) {
@@ -993,11 +992,17 @@ public class ClientResource extends UniformResource {
         request.setMethod(method);
         request.setClientInfo(clientInfo);
 
-        Representation requestEntity = (entity == null) ? null
-                : toRepresentation(
-                        entity,
-                        getConnegService().getPreferredVariant(variants,
-                                request, getMetadataService()));
+        Representation requestEntity = null;
+        
+        if (entity != null) {
+            List<? extends Variant> entityVariants = cs.getVariants(
+                    entity.getClass(), null);
+            toRepresentation(
+                    entity,
+                    getConnegService().getPreferredVariant(entityVariants,
+                            request, getMetadataService()));
+        }
+        
         request.setEntity(requestEntity);
 
         // Actually handle the call
