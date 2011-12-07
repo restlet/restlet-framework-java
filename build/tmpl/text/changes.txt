@@ -11,6 +11,8 @@ Changes log
          especially on Android. Contributed by Nikhil Purushe.
        - Fixed conversion bug with asynchronous annotated interfaces
          when a Result parameter is declared. Reported by Bill Claypool.
+       - Fixed conversion of request entities by ClientResource using response 
+         variants. Reported by Arjohn Kampman.
 
 - 2.0.10 (2011-10-05)
     - Bugs fixed

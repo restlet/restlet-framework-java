@@ -838,7 +838,7 @@ public class ClientResource extends UniformResource {
             throws ResourceException {
         T result = null;
         org.restlet.service.ConverterService cs = getConverterService();
-        List<? extends Variant> variants = cs.getVariants(resultClass, null);
+
         ClientInfo clientInfo = getClientInfo();
 
         if (clientInfo.getAcceptedMediaTypes().isEmpty()) {
@@ -846,11 +846,17 @@ public class ClientResource extends UniformResource {
                     resultClass);
         }
 
-        result = toObject(
-                handle(method,
-                        (entity == null) ? null : toRepresentation(entity,
-                                clientInfo.getPreferredVariant(variants,
-                                        getMetadataService())), clientInfo),
+        Representation requestEntity = null;
+
+        if (entity != null) {
+            List<? extends Variant> variants = cs.getVariants(
+                    entity.getClass(), null);
+            requestEntity = toRepresentation(entity,
+                    clientInfo.getPreferredVariant(variants,
+                            getMetadataService()));
+        }
+
+        result = toObject(handle(method, requestEntity, clientInfo),
                 resultClass);
         return result;
     }
