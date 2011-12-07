@@ -13,6 +13,9 @@ Changes log
        - Fixed POM dependency on Apache HTTP Client 4.1.1.
          Reported by Dejan Lozanovic.
        - Fixed potential NPE in StrictConneg.
+       - Fixed configuration of the default application's outbound, 
+         when the application is not hosted by a Component.
+         Reported by Klaus-Peter Schlotter.
     - API changes
        - Added generic value type to NamedValue interface.
        - Added ByteArrayRepresentation to org.restlet.representation

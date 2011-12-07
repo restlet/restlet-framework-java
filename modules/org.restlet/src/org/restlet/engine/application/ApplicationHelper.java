@@ -30,11 +30,17 @@
 
 package org.restlet.engine.application;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.restlet.Application;
+import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.CompositeHelper;
 import org.restlet.routing.Filter;
@@ -119,14 +125,46 @@ public class ApplicationHelper extends CompositeHelper<Application> {
 
         if (getOutboundNext() == null) {
             // Warn about chaining problem
+            getLogger()
+                    .fine("By default, an application should be attached to a parent component in order to let application's outbound root handle calls properly.");
             setOutboundNext(new Restlet() {
+                Map<Protocol, Client> clients = new ConcurrentHashMap<Protocol, Client>();
+
                 @Override
                 public void handle(Request request, Response response) {
-                    response.setStatus(Status.SERVER_ERROR_INTERNAL,
-                            "The server isn't properly configured to handle client calls.");
-                    getLogger()
-                            .warning(
-                                    "By default, the outbound root of an application can't handle calls without being attached to a parent component.");
+                    Protocol rProtocol = request.getProtocol();
+                    Reference rReference = request.getResourceRef();
+                    Protocol protocol = (rProtocol != null) ? rProtocol
+                            : (rReference != null) ? rReference
+                                    .getSchemeProtocol() : null;
+
+                    if (protocol != null) {
+                        Client c = clients.get(protocol);
+
+                        if (c == null) {
+                            c = new Client(protocol);
+                            clients.put(protocol, c);
+                            getLogger().fine(
+                                    "Added runtime client for protocol: "
+                                            + protocol.getName());
+                        }
+
+                        c.handle(request, response);
+                    } else {
+                        response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                                "The server isn't properly configured to handle client calls.");
+                        getLogger().warning(
+                                "There is no protocol detected for this request: "
+                                        + request.getResourceRef());
+                    }
+                }
+
+                @Override
+                public synchronized void stop() throws Exception {
+                    super.stop();
+                    for (Client client : clients.values()) {
+                        client.stop();
+                    }
                 }
             });
         }
