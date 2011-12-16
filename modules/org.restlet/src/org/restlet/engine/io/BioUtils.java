@@ -527,7 +527,7 @@ public final class BioUtils {
 
     // [ifndef gwt] method
     /**
-     * Converts a char array into a byte array using the default character set.
+     * Converts a char array into a byte array using the provided character set.
      * 
      * @param chars
      *            The source characters.
