@@ -232,7 +232,8 @@ public class Base64 {
         }
         return new String(output, 0, pos);
     }
-
+    
+    // [ifndef gwt] method
     /**
      * Encodes an entire chars array into a Base64 string, with optional
      * newlines after every 76 characters.
@@ -247,6 +248,7 @@ public class Base64 {
         return encode(BioUtils.toByteArray(chars), newlines);
     }
 
+    // [ifndef gwt] method
     /**
      * Encodes an entire chars array into a Base64 string, with optional
      * newlines after every 76 characters.

@@ -84,14 +84,29 @@ public class GwtHttpClientHelper extends HttpClientHelper {
                     request.getResourceRef().toString(), request
                             .isEntityAvailable());
 
-            // If a challenge response is provided,
-            // update the GWT request builder
+            // If a challenge response is provided, update the GWT request 
+            // builder
             if (request.getChallengeResponse() != null) {
-                result.getRequestBuilder().setUser(
-                        request.getChallengeResponse().getIdentifier());
-                result.getRequestBuilder().setPassword(
-                        String.valueOf(request.getChallengeResponse()
-                                .getSecret()));
+                if (ChallengeScheme.HTTP_BASIC.equals(request
+                        .getChallengeResponse().getScheme())) {
+                    // Handle manually the generation of the "Authorization"
+                    // header, since the browser does not cope with that.
+                    byte[] bytes = (request.getChallengeResponse()
+                            .getIdentifier() + ":" + String.valueOf(request
+                            .getChallengeResponse().getSecret()))
+                            .getBytes(CharacterSet.ISO_8859_1.getName());
+                    result.getRequestBuilder().setHeader(
+                            HeaderConstants.HEADER_AUTHORIZATION,
+                            "Basic " + Base64.encode(bytes, false));
+                } else {
+                    // In this case the login and password are simply
+                    // concatenated to the URL.
+                    result.getRequestBuilder().setUser(
+                            request.getChallengeResponse().getIdentifier());
+                    result.getRequestBuilder().setPassword(
+                            String.valueOf(request.getChallengeResponse()
+                                    .getSecret()));
+                }
             }
 
         } catch (Exception ioe) {

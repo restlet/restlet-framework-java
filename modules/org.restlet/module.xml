@@ -139,7 +139,6 @@
          <exclude name="src/org/restlet/engine/security/**" />
          <exclude name="src/org/restlet/engine/util/AlphabeticalComparator.java" />
          <exclude name="src/org/restlet/engine/util/AlphaNumericComparator.java" />
-         <exclude name="src/org/restlet/engine/util/Base64.java" />
          <exclude name="src/org/restlet/engine/util/CallResolver.java" />
          <exclude name="src/org/restlet/engine/util/Conneg.java" />
          <exclude name="src/org/restlet/engine/util/ConnegUtils.java" />
