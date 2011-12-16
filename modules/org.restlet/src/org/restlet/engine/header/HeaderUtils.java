@@ -268,7 +268,7 @@ public class HeaderUtils {
     }
 
     /**
-     * Adds a header to the given list. Check for exceptions and logs them.
+     * Adds a header to the given list. Checks for exceptions and logs them.
      * 
      * @param headerName
      *            The header name.
