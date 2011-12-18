@@ -64,6 +64,17 @@ public class Base64 {
         DECODER_RING['='] = 0;
     }
 
+    /**
+     * Returns the byte value at a given position in a bytes array.
+     * 
+     * @param data
+     *            The bytes array.
+     * @param block
+     *            The block size.
+     * @param off
+     *            The offset value.
+     * @return The extracted byte.
+     */
     private final static int byteAt(byte[] data, int block, int off) {
         return unsign(data[(block * 3) + off]);
     }
@@ -198,14 +209,14 @@ public class Base64 {
      * @return The encoded string.
      */
     public static String encode(byte[] bytes, int off, int len, boolean newlines) {
-        final char[] output = new char[(((len + 2) / 3) * 4)
+        char[] output = new char[(((len + 2) / 3) * 4)
                 + (newlines ? len / 43 : 0)];
         int pos = 0;
 
         // encode each block of 3 bytes into 4 chars
         for (int i = 0; i < (len + 2) / 3; ++i) {
-
             int pad = 0;
+
             if (len + 1 < (i + 1) * 3) {
                 // two trailing '='s
                 pad = 2;
@@ -215,7 +226,7 @@ public class Base64 {
             }
 
             // pack
-            final int x = (byteAt(bytes, i, off) << 16)
+            int x = (byteAt(bytes, i, off) << 16)
                     | (pad > 1 ? 0 : (byteAt(bytes, i, off + 1) << 8))
                     | (pad > 0 ? 0 : (byteAt(bytes, i, off + 2)));
 
