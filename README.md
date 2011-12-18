@@ -9,4 +9,4 @@ http://www.restlet.org
 
 ## Copyright
 
-Copyright © 2005-2011 Noelios Technologies
+Copyright 2005-2011 Noelios Technologies
