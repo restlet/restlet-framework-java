@@ -47,6 +47,7 @@ import org.restlet.ext.jaxb.internal.Marshaller;
 import org.restlet.ext.jaxb.internal.Unmarshaller;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
 /**
  * An XML representation based on JAXB that provides easy translation between
@@ -140,6 +141,9 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
 
     /** The source XML representation. */
     private volatile Representation xmlRepresentation;
+    
+    /** The source NamespacePrefixMapper. */
+    private volatile NamespacePrefixMapper namespacePrefixMapper;
 
     /**
      * Creates a JAXB representation from an existing JAXB content tree.
@@ -351,6 +355,10 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
         return noNamespaceSchemaLocation;
     }
 
+    public NamespacePrefixMapper getNamespacePrefixMapper() {
+        return namespacePrefixMapper;
+    }
+    
     /**
      * Returns the wrapped Java object.
      * 
@@ -483,6 +491,10 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
         this.noNamespaceSchemaLocation = noNamespaceSchemaLocation;
     }
 
+    public void setNamespacePrefixMapper( NamespacePrefixMapper namespacePrefixMapper ) {
+      this.namespacePrefixMapper = namespacePrefixMapper;
+    }
+    
     /**
      * Sets the wrapped Java object.
      * 
