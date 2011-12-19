@@ -142,7 +142,7 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     /** The source XML representation. */
     private volatile Representation xmlRepresentation;
     
-    /** The source NamespacePrefixMapper. */
+    /** An optional namespace prefix mapper for marshalling. */
     private volatile NamespacePrefixMapper namespacePrefixMapper;
 
     /**
@@ -355,6 +355,11 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
         return noNamespaceSchemaLocation;
     }
 
+    /**
+     * Returns the optional namespace prefix mapper for marshalling. 
+     * 
+     * @return The optional namespace prefix mapper for marshalling.
+     */
     public NamespacePrefixMapper getNamespacePrefixMapper() {
         return namespacePrefixMapper;
     }
@@ -491,6 +496,12 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
         this.noNamespaceSchemaLocation = noNamespaceSchemaLocation;
     }
 
+    /**
+     * Sets the optional namespace prefix mapper for marshalling. 
+     * 
+     * @param namespacePrefixMapper
+     *            The optional namespace prefix mapper. 
+     */
     public void setNamespacePrefixMapper( NamespacePrefixMapper namespacePrefixMapper ) {
       this.namespacePrefixMapper = namespacePrefixMapper;
     }
