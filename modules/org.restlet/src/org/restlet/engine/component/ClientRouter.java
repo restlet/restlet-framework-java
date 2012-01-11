@@ -89,7 +89,7 @@ public class ClientRouter extends Router {
                     .warning(
                             "The protocol used by this request is not declared in the list of client connectors. ("
                                     + request.getResourceRef()
-                                            .getSchemeProtocol() + ")");
+                                            .getSchemeProtocol() + "). In case you are using an instance of the Component class, check its \"clients\" property.");
         }
         return result;
     }
