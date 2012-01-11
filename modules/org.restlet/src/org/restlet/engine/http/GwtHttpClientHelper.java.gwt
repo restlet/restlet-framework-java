@@ -31,7 +31,11 @@
 package org.restlet.engine.http;
 
 import org.restlet.Client;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Protocol;
+import org.restlet.engine.http.header.HeaderConstants;
+import org.restlet.engine.util.Base64;
 import org.restlet.Request;
 
 /**
