@@ -105,6 +105,16 @@ public class AttributeExchange extends Metadata {
         }
         return result;
     }
+    
+    public static AttributeExchange valueOfType(String schema){
+        if(schema != null && !schema.equals("")){
+            for(AttributeExchange ax : getAttributes().values()){
+                if(ax.getSchema().equals(schema))
+                    return ax;
+            }
+        }
+        return null;
+    }
 
     private volatile String schema;
 
