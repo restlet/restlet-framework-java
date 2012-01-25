@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - Oracle XML DB
 Bundle-SymbolicName: org.restlet.ext.xdb
 Bundle-Version: 2.1
-Bundle-Vendor: Noelios Technologies
+Bundle-Vendor: Restlet S.A.S.
 Export-Package: org.restlet.ext.xdb,
  org.restlet.ext.xdb.internal
 Import-Package: javax.servlet,

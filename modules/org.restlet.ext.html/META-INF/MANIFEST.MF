@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - HTML
 Bundle-SymbolicName: org.restlet.ext.html
 Bundle-Version: 2.1
-Bundle-Vendor: Noelios Technologies
+Bundle-Vendor: Restlet S.A.S.
 Import-Package: org.restlet,
  org.restlet.data,
  org.restlet.engine.converter,
