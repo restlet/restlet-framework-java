@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <profiles version="2">
-<profile kind="CleanUpProfile" name="Noelios" version="2">
+<profile kind="CleanUpProfile" name="Restlet" version="2">
 <setting id="cleanup.use_this_for_non_static_field_access_only_if_necessary" value="false"/>
 <setting id="cleanup.always_use_blocks" value="true"/>
 <setting id="cleanup.qualify_static_method_accesses_with_declaring_class" value="false"/>
