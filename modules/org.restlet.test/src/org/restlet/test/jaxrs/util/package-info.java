@@ -31,4 +31,15 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
+/**
+ * <p>
+ * Tests for the classes of package {@link org.restlet.ext.jaxrs.internal.util}.
+ * </p>
+ * <p>
+ * This extension as well as the JAX-RS specification are currently under
+ * development. You should only use this extension for experimental purpose.
+ * </p>
+ * 
+ * @author Stephan Koops
+ */
 package org.restlet.test.jaxrs.util;
