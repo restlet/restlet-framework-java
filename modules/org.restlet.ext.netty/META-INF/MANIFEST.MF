@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - Netty
 Bundle-SymbolicName: org.restlet.ext.netty
 Bundle-Version: 2.0
-Bundle-Vendor: Noelios Technologies
+Bundle-Vendor: Restlet S.A.S.
 Import-Package: org.jboss.netty.bootstrap,
  org.jboss.netty.buffer,
  org.jboss.netty.channel,

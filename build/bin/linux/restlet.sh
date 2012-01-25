@@ -12,7 +12,7 @@
 
 # Application
 APP_NAME="restlet"
-APP_LONG_NAME="Noelios Restlet Engine"
+APP_LONG_NAME="Restlet site"
 
 # Wrapper
 WRAPPER_CMD="./wrapper"
@@ -43,7 +43,7 @@ PIDDIR="."
 # The following two lines are used by the chkconfig command. Change as is
 #  appropriate for your application.  They should remain commented.
 # chkconfig: 2345 20 80
-# description: Noelios Restlet Engine
+# description: Restlet site
 
 # Do not modify anything beyond this point
 #-----------------------------------------------------------------------------
