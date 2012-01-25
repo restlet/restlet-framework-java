@@ -43,7 +43,7 @@ import org.restlet.test.engine.io.ReaderInputStreamTestCase;
 import org.restlet.test.engine.util.Base64TestCase;
 
 /**
- * Suite of unit tests for the Noelios Restlet Engine.
+ * Suite of unit tests for the Restlet Framework.
  * 
  * @author Jerome Louvel
  */

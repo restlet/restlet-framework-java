@@ -144,7 +144,7 @@ public class XdbServletAdapter extends ServerAdapter {
             this.localPort = preparedstatement.getInt(2);
             endPoint = preparedstatement.getInt(3);
             getLogger().info(
-                    "[Noelios Restlet Engine] - The ServerServlet address = "
+                    "[Restlet Framework] - The ServerServlet address = "
                             + this.localAddress + " port = " + this.localPort
                             + " endPoint = " + endPoint);
         } catch (ServletException e) {

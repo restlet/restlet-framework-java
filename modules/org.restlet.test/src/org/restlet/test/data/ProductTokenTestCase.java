@@ -62,7 +62,7 @@ public class ProductTokenTestCase extends RestletTestCase {
         final String userAgent8 = "Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/521.25 (KHTML, like Gecko) Safari/521.24";
         final String userAgent9 = "Opera/9.00 (Macintosh; PPC Mac OS X; U; en)";
         final String userAgent10 = "Wget/1.9";
-        final String userAgent11 = "Noelios-Restlet-Engine/1.9-SNAPSHOT";
+        final String userAgent11 = "Restlet-Framework/2.1-SNAPSHOT";
 
         ClientInfo clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent1);
@@ -128,8 +128,8 @@ public class ProductTokenTestCase extends RestletTestCase {
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent11);
         product = clientInfo.getMainAgentProduct();
-        assertEquals("Noelios-Restlet-Engine", product.getName());
-        assertEquals("1.9-SNAPSHOT", product.getVersion());
+        assertEquals("Restlet-Framework", product.getName());
+        assertEquals("2.1-SNAPSHOT", product.getVersion());
 
         clientInfo = new ClientInfo();
         clientInfo.setAgent(userAgent7);

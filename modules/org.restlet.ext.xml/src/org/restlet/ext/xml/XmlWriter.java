@@ -358,7 +358,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * 
  * @see org.xml.sax.XMLFilter
  * @see org.xml.sax.ContentHandler
- * @author David Megginson, Jerome Louvel (contact@noelios.com)
+ * @author David Megginson, Jerome Louvel (contact@restlet.com)
  */
 public final class XmlWriter extends XMLFilterImpl {
     private static final Object SEEN_NOTHING = new Object();

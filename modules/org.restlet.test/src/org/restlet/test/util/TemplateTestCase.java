@@ -92,7 +92,7 @@ public class TemplateTestCase extends RestletTestCase {
 
     public void testVariableNames() throws Exception {
         Template tpl = new Template(
-                "http://{userId}.noelios.com/invoices/{invoiceId}");
+                "http://{userId}.restlet.com/invoices/{invoiceId}");
         tpl.setLogger(Engine.getAnonymousLogger());
         List<String> names = tpl.getVariableNames();
 

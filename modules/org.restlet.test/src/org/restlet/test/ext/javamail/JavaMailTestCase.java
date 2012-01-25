@@ -80,13 +80,13 @@ public class JavaMailTestCase extends RestletTestCase {
             + "</head>"
             + "<body><![CDATA[Hi, this is a test.]]></body>" + "</email>";
 
-    private static final String NOELIOS_LOGIN = "XXX";
+    private static final String MAIL_LOGIN = "XXX";
 
-    private static final String NOELIOS_PASSWORD = "XXX";
+    private static final String MAIL_PASSWORD = "XXX";
 
-    private static final String NOELIOS_POPS = "pops://alaska.noelios.com";
+    private static final String MAIL_POPS = "pops://alaska.restlet.com";
 
-    private static final String NOELIOS_SMTP = "smtp://alaska.noelios.com";
+    private static final String MAIL_SMTP = "smtp://alaska.restlet.com";
 
     private static final String YAHOO_ID = "XXX";
 
@@ -100,7 +100,7 @@ public class JavaMailTestCase extends RestletTestCase {
             throws IOException {
         final Request request = new Request(Method.GET, baseUri + href);
         request.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.POP_BASIC, NOELIOS_LOGIN, NOELIOS_PASSWORD));
+                ChallengeScheme.POP_BASIC, MAIL_LOGIN, MAIL_PASSWORD));
 
         final Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -176,10 +176,10 @@ public class JavaMailTestCase extends RestletTestCase {
         final Client client = new Client(Protocol.POPS);
         client.getContext().getParameters().add("debug", DEBUG);
 
-        final String baseUri = NOELIOS_POPS;
+        final String baseUri = MAIL_POPS;
         final Request request = new Request(Method.GET, baseUri);
         request.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.POP_BASIC, NOELIOS_LOGIN, NOELIOS_PASSWORD));
+                ChallengeScheme.POP_BASIC, MAIL_LOGIN, MAIL_PASSWORD));
 
         final Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -212,9 +212,9 @@ public class JavaMailTestCase extends RestletTestCase {
     }
 
     public void testSmtpStartTls() throws Exception {
-        final Request request = new Request(Method.POST, NOELIOS_SMTP);
+        final Request request = new Request(Method.POST, MAIL_SMTP);
         request.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.SMTP_PLAIN, NOELIOS_LOGIN, NOELIOS_PASSWORD));
+                ChallengeScheme.SMTP_PLAIN, MAIL_LOGIN, MAIL_PASSWORD));
         sendMail(Protocol.SMTP, request, true);
     }
 
