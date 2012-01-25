@@ -38,12 +38,28 @@ import org.openid4java.message.ParameterList;
  */
 public class UserSession {
 
-    ParameterList pl;
+    private volatile ParameterList pl;
 
-    OpenIdUser user;
+    private volatile OpenIdUser user;
 
     public UserSession(ParameterList pl) {
         this.pl = pl;
+    }
+    
+    public void setParameterList(ParameterList pl){
+        this.pl = pl;
+    }
+    
+    public void setUser(OpenIdUser user){
+        this.user = user;
+    }
+    
+    public ParameterList getParameterList(){
+        return pl;
+    }
+    
+    public OpenIdUser getUser(){
+        return user;
     }
 
 }
