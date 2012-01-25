@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0"?>
 
-<!-- ===============================================================
-     Restlet build script - Copyright 2005-2009 Noelios Technologies
-     =============================================================== -->
+<!-- =========================================================
+     Restlet build script - Copyright 2005-2012 Restlet S.A.S.
+     ========================================================= -->
 
 <project name="Restlet" default="rebuild">
 	<!-- ============================ -->
@@ -26,7 +26,7 @@
 
 	<!-- General properties -->
 	<property name="author" value="Jerome Louvel" />
-	<property name="vendor" value="Noelios Technologies" />
+	<property name="vendor" value="Restlet S.A.S." />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
 	<property name="mod-maven-groupId" value="org.restlet.${edition}" />
 
@@ -662,7 +662,7 @@
 				<pathelement path="${mod}/${mod-core-id}/src/" />
 			</sourcepath>
 
-			<bottom>Copyright &#169; 2005-2009 Noelios Technologies</bottom>
+			<bottom>Copyright &#169; 2005-2012 Restlet S.A.S.</bottom>
 
 			<group title="Restlet API">
 				<package name="org.restlet*" />

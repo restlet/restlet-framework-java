@@ -20,8 +20,8 @@
          </div>
       </div>
       <div id="footer">
-         <a href="http://www.noelios.com" title="Noelios Technologies site"><img src="${rootRef}/images/logoNoelios.png" alt="Logo Noelios" /></a>
-         <small>Copyright &copy; 2011 <a href="http://www.noelios.com" title="Noelios Technologies site">Noelios Technologies</a></small>
+         <a href="http://www.restlet.com" title="Restlet S.A.S. site"><img src="${rootRef}/images/logos/logo100" alt="Logo Restlet S.A.S." /></a>
+         <small>Copyright &copy; 2012 <a href="http://www.restlet.com" title="Restlet S.A.S. site">Restlet S.A.S.</a></small>
       </div>	
    </body>
 </html>

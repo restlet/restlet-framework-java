@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - Secure Data Connector
 Bundle-SymbolicName: org.restlet.ext.sdc
 Bundle-Version: 2.1
-Bundle-Vendor: Noelios Technologies
+Bundle-Vendor: Restlet S.A.S.
 Import-Package: com.google.dataconnector.protocol,
  com.google.dataconnector.protocol.proto,
  com.google.dataconnector.util,

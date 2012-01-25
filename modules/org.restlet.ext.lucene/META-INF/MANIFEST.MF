@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - Lucene
 Bundle-SymbolicName: org.restlet.ext.lucene
 Bundle-Version: 2.1
-Bundle-Vendor: Noelios Technologies
+Bundle-Vendor: Restlet S.A.S.
 Export-Package: org.restlet.ext.lucene,
  org.restlet.ext.lucene.internal
 Import-Package: org.apache.commons.io,

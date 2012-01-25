@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - Crypto
 Bundle-SymbolicName: org.restlet.ext.crypto
 Bundle-Version: 2.1
-Bundle-Vendor: Noelios Technologies
+Bundle-Vendor: Restlet S.A.S.
 Import-Package: javax.crypto,
  javax.crypto.interfaces,
  javax.crypto.spec,

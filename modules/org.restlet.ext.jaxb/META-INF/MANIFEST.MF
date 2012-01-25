@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - JAXB
 Bundle-SymbolicName: org.restlet.ext.jaxb
 Bundle-Version: 2.1
-Bundle-Vendor: Noelios Technologies
+Bundle-Vendor: Restlet S.A.S.
 Import-Package: javax.xml.bind;version="2.1.0",
  javax.xml.bind.annotation,
  javax.xml.bind.util;version="2.1.0",

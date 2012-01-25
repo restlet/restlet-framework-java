@@ -4,7 +4,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet API
 Bundle-SymbolicName: org.restlet
 Bundle-Version: 2.1
-Bundle-Vendor: Noelios Technologies
+Bundle-Vendor: Restlet S.A.S.
 Export-Package: org.restlet,
  org.restlet.data,
  org.restlet.engine,
