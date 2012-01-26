@@ -174,6 +174,7 @@ public class RedirectAuthenticator extends Authenticator {
         if (identifier != null) {
             u = new User(identifier);
             request.getClientInfo().setUser(u);
+            handleUser(u, true);
             return true;
         }
 
@@ -192,7 +193,7 @@ public class RedirectAuthenticator extends Authenticator {
             response.getCookieSettings().removeAll(identifierCookie);
             response.getCookieSettings().add(identifierCookie,
                     request.getClientInfo().getUser().getIdentifier());
-            handleUser(request.getClientInfo().getUser());
+            handleUser(request.getClientInfo().getUser(), false);
             // String origRef =
             // request.getCookies().getFirstValue(origRefCookie);
             request.getCookies().removeAll(origRefCookie);
@@ -255,7 +256,7 @@ public class RedirectAuthenticator extends Authenticator {
      * @param user
      *            The user.
      */
-    protected void handleUser(User user) {
+    protected void handleUser(User user, boolean cached) {
         getLogger().info(
                 "Handle User: " + user.getIdentifier() + " " + user.getEmail());
         ;

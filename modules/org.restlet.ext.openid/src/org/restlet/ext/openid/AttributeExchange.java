@@ -41,7 +41,7 @@ import org.restlet.engine.util.SystemUtils;
  * 
  * @author Martin Svensson
  */
-public class AttributeExchange extends Metadata {
+public class AttributeExchange extends Metadata implements Comparable <AttributeExchange>{
 
     private static volatile Map<String, AttributeExchange> _attributes;
 
@@ -153,6 +153,11 @@ public class AttributeExchange extends Metadata {
 
     public void setSchema(String schema) {
         this.schema = schema;
+    }
+
+    public int compareTo(AttributeExchange o) {
+        return this.schema.compareTo(o.getSchema());
+        //return 0;
     }
 
 }
