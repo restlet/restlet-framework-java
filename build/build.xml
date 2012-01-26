@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0"?>
 
-<!-- ===============================================================
-     Restlet build script - Copyright 2005-2011 Noelios Technologies
-     =============================================================== -->
+<!-- =========================================================
+     Restlet build script - Copyright 2005-2012 Restlet S.A.S.
+     ========================================================= -->
 
 <project name="Restlet" default="build">
 	<!-- ============================ -->
@@ -335,7 +335,7 @@
 	<target name="generate-artifacts" depends="generate-misc, generate-poms, generate-manifests, copy-eclipse" description="Generates artifacts for the unique source code" />
 
 	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
-		<!-- Svn revision number -->
+		<!-- Revision number -->
 		<mkdir dir="${temp}" />
 		<!-- Snapshot? -->
 		<condition property="is.snapshot" else="false">
@@ -348,7 +348,6 @@
 		</exec>
 		<echo message="${line.separator}" file="${temp}/snapshot.properties" append="true" />
 	</target>
-
 
 	<!-- CLEAN target -->
 	<target name="clean" depends="clean-temp, clean-dist" description="Clean the staging area." />

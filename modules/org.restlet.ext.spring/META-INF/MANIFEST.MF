@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - Spring Framework
 Bundle-SymbolicName: org.restlet.ext.spring
 Bundle-Version: 2.1
-Bundle-Vendor: Noelios Technologies
+Bundle-Vendor: Restlet S.A.S.
 Export-Package: org.restlet.ext.spring
 Import-Package: javax.servlet,
  javax.servlet.http,

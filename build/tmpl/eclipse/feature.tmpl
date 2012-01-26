@@ -3,7 +3,7 @@
 <#list distribution.modules as module>
 <@pp.nestOutputFile name="feature.${module.id}.xml">
 <?xml version="1.0" encoding="UTF-8"?>
-<feature id="${module.package}" label="${module.name}" version="${ant["eclipse-version-full"]}" provider-name="Noelios Technologies">
+<feature id="${module.package}" label="${module.name}" version="${ant["eclipse-version-full"]}" provider-name="Restlet S.A.S.">
    <description>${module.description}</description>
    <plugin id="${module.package}" version="${ant["eclipse-version-full"]}" unpack="false" />
    <plugin id="${module.package}.source" version="${ant["eclipse-version-full"]}" />

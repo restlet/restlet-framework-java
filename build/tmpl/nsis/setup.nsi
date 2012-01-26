@@ -9,7 +9,7 @@ SetCompressor lzma
 !define RESTLETREGKEY "SOFTWARE\Restlet Framework"
 !define BASEREGKEY "SOFTWARE\Restlet Framework\Edition @edition-medium-label@"
 !define REGKEY "SOFTWARE\Restlet Framework\Edition @edition-medium-label@\@version-full@"
-!define COMPANY "Noelios Technologies"
+!define COMPANY "Restlet S.A.S."
 !define URL http://www.restlet.org
 
 Caption "Restlet Framework - Edition @edition-medium-label@ - Version @version-full@"
@@ -216,7 +216,7 @@ Section un.post UNSEC0001
       ; Remove the installation directory if it is empty
        ${RemoveDir} "$INSTDIR"
 
-       ;Remove the Noelios directory (if so) if it is empty
+       ;Remove the Restlet directory (if so) if it is empty
        StrCmp "$INSTDIR" "$PROGRAMFILES\Restlet Framework\Edition @edition-medium-label@ @version-full@" 0 +2
        ${RemoveDir} "$PROGRAMFILES\Restlet Framework"
        

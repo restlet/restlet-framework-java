@@ -2,7 +2,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - SIP
 Bundle-SymbolicName: org.restlet.ext.sip
 Bundle-Version: 2.1
-Bundle-Vendor: Noelios Technologies
+Bundle-Vendor: Restlet S.A.S.
 Export-Package: org.restlet.ext.sip,
  org.restlet.ext.sip.internal
 Import-Package: org.junit,
