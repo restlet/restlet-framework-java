@@ -120,13 +120,13 @@ public class ResourceClasses {
         } catch (IllegalArgumentException e) {
             this.logger.log(Level.WARNING, "The root resource class "
                     + rootResourceClass.getName()
-                    + " is not a valud root resource class: " + e.getMessage(),
+                    + " is not a valid root resource class: " + e.getMessage(),
                     e);
             return false;
         } catch (MissingAnnotationException e) {
             this.logger.log(Level.WARNING, "The root resource class "
                     + rootResourceClass.getName()
-                    + " is not a valud root resource class: " + e.getMessage(),
+                    + " is not a valid root resource class: " + e.getMessage(),
                     e);
             return false;
         } catch (MissingConstructorException e) {
@@ -194,13 +194,13 @@ public class ResourceClasses {
         } catch (IllegalArgumentException e) {
             this.logger.log(Level.WARNING, "The root resource class "
                     + rootResourceClass.getName()
-                    + " is not a valud root resource class: " + e.getMessage(),
+                    + " is not a valid root resource class: " + e.getMessage(),
                     e);
             return false;
         } catch (MissingAnnotationException e) {
             this.logger.log(Level.WARNING, "The root resource class "
                     + rootResourceClass.getName()
-                    + " is not a valud root resource class: " + e.getMessage(),
+                    + " is not a valid root resource class: " + e.getMessage(),
                     e);
             return false;
         } catch (MissingConstructorException e) {
