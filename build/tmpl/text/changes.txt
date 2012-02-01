@@ -5,6 +5,12 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
+       - Fixed the JAX-RS extension that did not introspect the 
+         interfaces and parent classes of resource classes.
+         Reported and contributed by Shaun Elliott.
+         
+- 2.1 Release Candidate 2 (01/25/2011)
+    - Bug fixed
        - On the client-side, a challenge response with a raw value 
          defined wasn't taken into account if a helper was missing.
          Refactored engine's AuthenticatorHelper to move common 
