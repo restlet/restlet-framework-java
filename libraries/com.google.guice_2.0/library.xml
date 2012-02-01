@@ -8,6 +8,7 @@
 
 	<package name="com.google.guice">
 		<maven>
+                        <groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
 		</maven>
 	</package>

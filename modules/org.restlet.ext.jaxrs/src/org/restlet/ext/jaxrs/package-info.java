@@ -1,54 +1,45 @@
 /**
- * Copyright 2005-2011 Noelios Technologies.
+ * Copyright 2005-2012 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
- * "Licenses"). You can select the license that you prefer but you may not use
- * this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
+ * 1.0 (the "Licenses"). You can select the license that you prefer but you may
+ * not use this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the Apache 2.0 license at
+ * http://www.opensource.org/licenses/apache-2.0
  * 
  * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0.html
+ * http://www.opensource.org/licenses/lgpl-3.0
  * 
  * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1.php
+ * http://www.opensource.org/licenses/lgpl-2.1
  * 
  * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1.php
+ * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
- * http://www.opensource.org/licenses/eclipse-1.0.php
+ * http://www.opensource.org/licenses/eclipse-1.0
  * 
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.noelios.com/products/restlet-engine
+ * http://www.restlet.com/products/restlet-framework
  * 
- * Restlet is a registered trademark of Noelios Technologies.
+ * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 /**
  * <p>
- * Implementation of JAX-RS 1.0 (JSR-311). This is the API developed by the
- * JSR-311 expert group. The main class is <a
- * href="JaxRsApplication.html">JaxRsApplication</a>.
+ * Implementations of package javax.ws.rs.core.
  * </p>
  * <p>
- * <i>This extension doesn't pretend to be fully compliant with the
- * specification but it is close to completion. We are looking forward to
- * getting access to the TCK in order to validate our compatibility.</i>
+ * This extension as well as the JAX-RS specification are currently under
+ * development. You should only use this extension for experimental purpose.
  * </p>
  * 
- * @since Restlet 1.1
- * @see <a
- *      href="http://jcp.org/aboutJava/communityprocess/final/jsr311/index.html"
- *      >Specification: PDF (normative)</a>
- * @see <a
- *      href="https://jsr311.dev.java.net/nonav/releases/1.0/spec/index.html">
- *      HTML (non normative)</a>
- * @see <a href="https://jsr311.dev.java.net/">JSR-311 Web site</a>
- * @see <a href="http://wiki.restlet.org/docs_2.1/57-restlet.html">User Guide - JAX-RS extension</a>
  * @author Stephan Koops
  */
 package org.restlet.ext.jaxrs;

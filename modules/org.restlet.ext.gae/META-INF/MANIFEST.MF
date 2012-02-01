@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - GAE
 Bundle-SymbolicName: org.restlet.ext.gae
 Bundle-Version: 2.1
-Bundle-Vendor: Noelios Technologies
+Bundle-Vendor: Restlet S.A.S.
 Export-Package: org.restlet.ext.gae
 Import-Package: com.google.appengine.api.urlfetch,
  com.google.appengine.api.users,

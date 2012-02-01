@@ -1,31 +1,34 @@
 /**
- * Copyright 2005-2011 Noelios Technologies.
+ * Copyright 2005-2012 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
- * "Licenses"). You can select the license that you prefer but you may not use
- * this file except in compliance with one of these Licenses.
+ * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
+ * 1.0 (the "Licenses"). You can select the license that you prefer but you may
+ * not use this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the Apache 2.0 license at
+ * http://www.opensource.org/licenses/apache-2.0
  * 
  * You can obtain a copy of the LGPL 3.0 license at
- * http://www.opensource.org/licenses/lgpl-3.0.html
+ * http://www.opensource.org/licenses/lgpl-3.0
  * 
  * You can obtain a copy of the LGPL 2.1 license at
- * http://www.opensource.org/licenses/lgpl-2.1.php
+ * http://www.opensource.org/licenses/lgpl-2.1
  * 
  * You can obtain a copy of the CDDL 1.0 license at
- * http://www.opensource.org/licenses/cddl1.php
+ * http://www.opensource.org/licenses/cddl1
  * 
  * You can obtain a copy of the EPL 1.0 license at
- * http://www.opensource.org/licenses/eclipse-1.0.php
+ * http://www.opensource.org/licenses/eclipse-1.0
  * 
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.noelios.com/products/restlet-engine
+ * http://www.restlet.com/products/restlet-framework
  * 
- * Restlet is a registered trademark of Noelios Technologies.
+ * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.ext.jaxrs.internal.util;
@@ -34,6 +37,7 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static org.restlet.data.CharacterSet.UTF_8;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -241,6 +245,30 @@ public class Util {
             stb.append(", ");
             stb.append(array[i]);
         }
+    }
+
+    /**
+     * Indicates if the given class (and its implemented interfaces) are
+     * annotated with the given annotation.
+     * 
+     * @param jaxRsClass
+     *            The class to check.
+     * @param annotationClass
+     *            The class of the annotation .
+     * @return True if the given class (and its implemented interfaces) are
+     *         annotated with the given annotation.
+     */
+    private static boolean checkClassAndInterfacesForAnnotation(
+            Class<?> jaxRsClass, Class<? extends Annotation> annotationClass) {
+        boolean found = jaxRsClass.isAnnotationPresent(annotationClass);
+        if (!found) {
+            Class<?>[] interfaces = jaxRsClass.getInterfaces();
+            for (int i = 0; !found && i < interfaces.length; i++) {
+                found = interfaces[i].isAnnotationPresent(annotationClass);
+            }
+        }
+
+        return found;
     }
 
     /**
@@ -1171,11 +1199,19 @@ public class Util {
             throw new IllegalArgumentException(
                     "The jaxRsClass must not be null");
         }
-        final Path path = jaxRsClass.getAnnotation(Path.class);
+        Path path = jaxRsClass.getAnnotation(Path.class);
+        if (path == null) {
+            Class<?>[] interfaces = jaxRsClass.getInterfaces();
+            for (int i = 0; (path == null) && i < interfaces.length; i++) {
+                path = interfaces[i].getAnnotation(Path.class);
+            }
+        }
+
         if (path == null) {
             throw new MissingAnnotationException(
                     "The root resource class does not have a @Path annotation");
         }
+
         return path;
     }
 
@@ -1609,7 +1645,8 @@ public class Util {
      * @return true, if the class is a JAX-RS provider, otherwise false.
      */
     public static boolean isProvider(Class<?> jaxRsClass) {
-        return jaxRsClass.isAnnotationPresent(javax.ws.rs.ext.Provider.class);
+        return checkClassAndInterfacesForAnnotation(jaxRsClass,
+                javax.ws.rs.ext.Provider.class);
     }
 
     /**
@@ -1621,7 +1658,8 @@ public class Util {
      *         false.
      */
     public static boolean isRootResourceClass(Class<?> jaxRsClass) {
-        return jaxRsClass.isAnnotationPresent(javax.ws.rs.Path.class);
+        return checkClassAndInterfacesForAnnotation(jaxRsClass,
+                javax.ws.rs.Path.class);
     }
 
     /**

@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0"?>
 
-<!-- ===============================================================
-     Restlet build script - Copyright 2005-2011 Noelios Technologies
-     =============================================================== -->
+<!-- =========================================================
+     Restlet build script - Copyright 2005-2012 Restlet S.A.S.
+     ========================================================= -->
 
 <project name="Restlet" default="build">
 	<!-- ============================ -->
@@ -335,22 +335,19 @@
 	<target name="generate-artifacts" depends="generate-misc, generate-poms, generate-manifests, copy-eclipse" description="Generates artifacts for the unique source code" />
 
 	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
-		<!-- Svn revision number -->
+		<!-- Revision number -->
 		<mkdir dir="${temp}" />
-		<exec executable="svn" output="${temp}/svninfo.xml">
-			<arg line="info --xml" />
-		</exec>
-		<xmlproperty file="${temp}/svninfo.xml" collapseattributes="true" />
-		<property name="svn.revision" value="${info.entry.revision}" />
-
 		<!-- Snapshot? -->
 		<condition property="is.snapshot" else="false">
 			<contains string="${version-maven}" substring="-SNAPSHOT" />
 		</condition>
 		<echo message="maven-timestamp:${maven-snapshot-timestamp}${line.separator}" file="${temp}/snapshot.properties" append="false" />
-		<echo message="svn-revision:${svn.revision}${line.separator}" file="${temp}/snapshot.properties" append="true" />
+		<echo message="svn-revision:" file="${temp}/snapshot.properties" append="true" />
+		<exec executable="git" output="${temp}/snapshot.properties" append="true">
+			<arg line="rev-list --max-count=1 HEAD" />
+		</exec>
+		<echo message="${line.separator}" file="${temp}/snapshot.properties" append="true" />
 	</target>
-
 
 	<!-- CLEAN target -->
 	<target name="clean" depends="clean-temp, clean-dist" description="Clean the staging area." />

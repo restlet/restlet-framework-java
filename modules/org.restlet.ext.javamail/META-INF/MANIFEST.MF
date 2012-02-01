@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - JavaMail
 Bundle-SymbolicName: org.restlet.ext.javamail
 Bundle-Version: 2.1
-Bundle-Vendor: Noelios Technologies
+Bundle-Vendor: Restlet S.A.S.
 Export-Package: org.restlet.ext.javamail
 Import-Package: com.sun.mail.handlers,
  com.sun.mail.pop3,
