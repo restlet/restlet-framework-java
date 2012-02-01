@@ -37,6 +37,7 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static org.restlet.data.CharacterSet.UTF_8;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -256,6 +257,30 @@ public class Util {
     }
 
     /**
+     * Indicates if the given class (and its implemented interfaces) are
+     * annotated with the given annotation.
+     * 
+     * @param jaxRsClass
+     *            The class to check.
+     * @param annotationClass
+     *            The class of the annotation .
+     * @return True if the given class (and its implemented interfaces) are
+     *         annotated with the given annotation.
+     */
+    private static boolean checkClassAndInterfacesForAnnotation(
+            Class<?> jaxRsClass, Class<? extends Annotation> annotationClass) {
+        boolean found = jaxRsClass.isAnnotationPresent(annotationClass);
+        if (!found) {
+            Class<?>[] interfaces = jaxRsClass.getInterfaces();
+            for (int i = 0; !found && i < interfaces.length; i++) {
+                found = interfaces[i].isAnnotationPresent(annotationClass);
+            }
+        }
+
+        return found;
+    }
+
+    /**
      * Checks, if the class is concrete.
      * 
      * @param jaxRsClass
@@ -311,8 +336,7 @@ public class Util {
         }
 
         HeaderUtils.copyResponseTransportHeaders(headers, restletResponse);
-        HeaderUtils.extractEntityHeaders(headers, restletResponse
-                .getEntity());
+        HeaderUtils.extractEntityHeaders(headers, restletResponse.getEntity());
 
         // Copy extension headers
         @SuppressWarnings("unchecked")
@@ -1169,11 +1193,19 @@ public class Util {
             throw new IllegalArgumentException(
                     "The jaxRsClass must not be null");
         }
-        final Path path = jaxRsClass.getAnnotation(Path.class);
+        Path path = jaxRsClass.getAnnotation(Path.class);
+        if (path == null) {
+            Class<?>[] interfaces = jaxRsClass.getInterfaces();
+            for (int i = 0; (path == null) && i < interfaces.length; i++) {
+                path = interfaces[i].getAnnotation(Path.class);
+            }
+        }
+        
         if (path == null) {
             throw new MissingAnnotationException(
                     "The root resource class does not have a @Path annotation");
         }
+        
         return path;
     }
 
@@ -1607,7 +1639,8 @@ public class Util {
      * @return true, if the class is a JAX-RS provider, otherwise false.
      */
     public static boolean isProvider(Class<?> jaxRsClass) {
-        return jaxRsClass.isAnnotationPresent(javax.ws.rs.ext.Provider.class);
+        return checkClassAndInterfacesForAnnotation(jaxRsClass,
+                javax.ws.rs.ext.Provider.class);
     }
 
     /**
@@ -1619,7 +1652,8 @@ public class Util {
      *         false.
      */
     public static boolean isRootResourceClass(Class<?> jaxRsClass) {
-        return jaxRsClass.isAnnotationPresent(javax.ws.rs.Path.class);
+        return checkClassAndInterfacesForAnnotation(jaxRsClass,
+                javax.ws.rs.Path.class);
     }
 
     /**

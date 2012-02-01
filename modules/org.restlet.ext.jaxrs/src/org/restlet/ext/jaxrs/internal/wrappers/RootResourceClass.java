@@ -80,7 +80,15 @@ public abstract class RootResourceClass extends ResourceClass implements
      */
     private static void checkClassForPathAnnot(Class<?> jaxRsClass,
             String typeName) throws MissingAnnotationException {
-        if (!jaxRsClass.isAnnotationPresent(Path.class)) {
+        boolean found = jaxRsClass.isAnnotationPresent(Path.class);
+        if (!found) {
+            Class<?>[] interfaces = jaxRsClass.getInterfaces();
+            for (int i = 0; !found && i < interfaces.length; i++) {
+                    found = (interfaces[i].isAnnotationPresent(Path.class));
+            }
+        }
+
+        if (!found) {
             final String msg = "The "
                     + typeName
                     + " "
