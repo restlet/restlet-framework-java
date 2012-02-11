@@ -159,6 +159,9 @@ public class ContentTypeReader extends HeaderReader<ContentType> {
                                     null));
                             result = createContentType(mediaTypeBuffer,
                                     parameters);
+                        } else if (paramNameBuffer.length() == 0) {
+                            result = createContentType(mediaTypeBuffer,
+                                    parameters);
                         } else {
                             throw new IOException(
                                     "Empty parameter name detected.");
