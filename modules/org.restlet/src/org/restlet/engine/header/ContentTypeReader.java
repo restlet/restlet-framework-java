@@ -126,7 +126,8 @@ public class ContentTypeReader extends HeaderReader<ContentType> {
                             // [ifndef gwt] instruction
                             parameters = new Series<Parameter>(Parameter.class);
                             // [ifdef gwt] instruction uncomment
-                            // parameters = new org.restlet.engine.util.ParameterSeries();
+                            // parameters = new
+                            // org.restlet.engine.util.ParameterSeries();
                         } else {
                             throw new IOException(
                                     "Empty mediaType name detected.");
@@ -157,6 +158,9 @@ public class ContentTypeReader extends HeaderReader<ContentType> {
                             // End of parameters section
                             parameters.add(Parameter.create(paramNameBuffer,
                                     null));
+                            result = createContentType(mediaTypeBuffer,
+                                    parameters);
+                        } else if (paramNameBuffer.length() == 0) {
                             result = createContentType(mediaTypeBuffer,
                                     parameters);
                         } else {
