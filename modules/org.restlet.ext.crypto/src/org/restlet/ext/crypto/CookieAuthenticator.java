@@ -487,6 +487,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     protected void login(Request request, Response response) {
         // Login detected
         Form form = new Form(request.getEntity());
+        request.setEntity(form.getWebRepresentation());
         Parameter identifier = form.getFirst(getIdentifierFormName());
         Parameter secret = form.getFirst(getSecretFormName());
 
@@ -496,8 +497,19 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
                 secret != null ? secret.getValue() : null);
         request.setChallengeResponse(cr);
 
-        // Attempt to redirect
-        attemptRedirect(request, response);
+        if (super.authenticate(request, response)) {
+        	try {
+	        	request.getCookies().set(getCookieName(), formatCredentials(cr));
+	        } catch (GeneralSecurityException e) {
+	            getLogger().log(Level.SEVERE,
+	                    "Could not format credentials cookie", e);
+	        }
+
+            // Attempt to redirect
+            attemptRedirect(request, response);
+        } else {
+            this.logout(request, response);
+        }
     }
 
     /**
@@ -514,7 +526,10 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
         CookieSetting credentialsCookie = getCredentialsCookie(request,
                 response);
         credentialsCookie.setMaxAge(0);
-
+        
+        // Clear for next restlet
+    	request.getCookies().removeAll(getCookieName());
+    	
         // Attempt to redirect
         attemptRedirect(request, response);
 
