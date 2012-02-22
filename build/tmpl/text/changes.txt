@@ -4,11 +4,12 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bug fixed
 
 
 - 2.1 Release Candidate 3 (02/15/2012)
     - Bug fixed
-       - Fixed guice groupId. Reported by kristoffer Gronowski.
+       - Fixed guice groupId. Reported by Kristoffer Gronowski.
        - Relaxed content type header parsing in case of a trailing 
          semicolon. Reported by Jean-Baptiste Dusseaut.
 
