@@ -5,7 +5,7 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
-
+       - 
 
 - 2.1 Release Candidate 3 (02/15/2012)
     - Bug fixed
