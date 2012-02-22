@@ -995,18 +995,16 @@ public class ClientResource extends UniformResource {
         request.setMethod(method);
         request.setClientInfo(clientInfo);
 
-        Representation requestEntity = null;
-        
         if (entity != null) {
             List<? extends Variant> entityVariants = cs.getVariants(
                     entity.getClass(), null);
-            toRepresentation(
+            request.setEntity(toRepresentation(
                     entity,
                     getConnegService().getPreferredVariant(entityVariants,
-                            request, getMetadataService()));
+                            request, getMetadataService())));
+        } else {
+            request.setEntity(null);
         }
-        
-        request.setEntity(requestEntity);
 
         // Actually handle the call
         Response response = handleOutbound(request);
