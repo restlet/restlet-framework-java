@@ -117,7 +117,7 @@ public class CookieSettingWriter extends HeaderWriter<CookieSetting> {
                 Date expires = new Date(expiresTime);
 
                 append("; Expires=");
-                appendValue(DateUtils.format(expires, DateUtils.FORMAT_RFC_1036
+                appendValue(DateUtils.format(expires, DateUtils.FORMAT_RFC_1123
                         .get(0)), version);
             } else {
                 append("; Max-Age=");
