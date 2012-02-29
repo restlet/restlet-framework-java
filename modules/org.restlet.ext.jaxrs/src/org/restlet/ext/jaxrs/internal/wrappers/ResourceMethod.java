@@ -162,8 +162,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * instance variable {@link #consumedMimes}.
      */
     private List<MediaType> createConsumedMimes() {
-        Consumes consumes;
-        consumes = this.annotatedMethod.getAnnotation(Consumes.class);
+        Consumes consumes = this.annotatedMethod.getAnnotation(Consumes.class);
         if (consumes == null) {
             consumes = this.executeMethod.getDeclaringClass().getAnnotation(
                     Consumes.class);
