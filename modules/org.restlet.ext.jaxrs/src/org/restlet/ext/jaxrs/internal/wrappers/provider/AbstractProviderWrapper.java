@@ -159,8 +159,9 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
             ExtensionBackwardMapping extensionBackwardMapping)
             throws IllegalFieldTypeException, IllegalBeanSetterTypeException,
             InjectException, InvocationTargetException {
-        final ContextInjector iph = new ContextInjector(jaxRsProvider.getClass(),
-                tlContext, allProviders, extensionBackwardMapping);
+        final ContextInjector iph = new ContextInjector(
+                jaxRsProvider.getClass(), tlContext, allProviders,
+                extensionBackwardMapping);
         iph.injectInto(jaxRsProvider, false);
     }
 
@@ -258,12 +259,12 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
      * @param mediaType
      */
     public boolean supportsRead(MediaType mediaType) {
-        for (final MediaType cm : getConsumedMimes()) {
-            if (cm.isCompatible(mediaType)) {
-                return true;
-            }
+        boolean result = false;
+        for (int i = 0; !result && i < getConsumedMimes().size(); i++) {
+            result = getConsumedMimes().get(i).isCompatible(mediaType)
+                    || (mediaType == null);
         }
-        return false;
+        return result;
     }
 
     /**

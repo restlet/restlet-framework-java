@@ -39,6 +39,7 @@ import java.util.Set;
 import javax.ws.rs.core.Application;
 
 import org.restlet.Response;
+import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.jaxrs.services.providers.BooleanEntityProvider;
@@ -60,12 +61,14 @@ public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
             @Override
             public Set<Object> getSingletons() {
                 return (Set) TestUtils.createSet(new IntegerEntityProvider(),
-                        new CharacterEntityProvider(), new BooleanEntityProvider());
+                        new CharacterEntityProvider(),
+                        new BooleanEntityProvider());
             }
-    
+
             @Override
             public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(PrimitiveWrapperEntityResource.class);
+                return (Set) Collections
+                        .singleton(PrimitiveWrapperEntityResource.class);
             }
         };
         return appConfig;
@@ -75,8 +78,8 @@ public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
         final Response response = put("intReturnInt", new StringRepresentation(
                 "47"));
         sysOutEntityIfError(response);
-        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response
-                .getStatus());
+        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
+                response.getStatus());
     }
 
     /**
@@ -86,8 +89,8 @@ public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
         final Response response = put("charReturnCharacter",
                 new StringRepresentation("x"));
         sysOutEntityIfError(response);
-        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response
-                .getStatus());
+        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
+                response.getStatus());
     }
 
     /**
@@ -119,6 +122,14 @@ public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
         assertEmptyEntity(response);
+    }
+
+    public void test5() throws Exception {
+        Response response = put("byteArrayReturnByteArray",
+                new StringRepresentation("test", (MediaType) null));
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("test", response.getEntity().getText());
     }
 
 }
