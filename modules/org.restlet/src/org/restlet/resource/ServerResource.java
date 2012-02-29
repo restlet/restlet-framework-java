@@ -50,6 +50,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
@@ -858,8 +859,32 @@ public abstract class ServerResource extends UniformResource {
                                 getMetadataService(), getConverterService());
 
                         if (annoVariants != null) {
+                            // Compute an affinity score between this annotation
+                            // and the input entity.
+                            float score = 0.5f;
+                            if ((getRequest().getEntity() != null)
+                                    && getRequest().getEntity().isAvailable()) {
+                                MediaType emt = getRequest().getEntity()
+                                        .getMediaType();
+                                MediaType amt = getMetadataService()
+                                        .getMediaType(annotationInfo.getInput());
+                                if (amt != null && amt.equals(amt)) {
+                                    score = 1.0f;
+                                } else if (amt != null && amt.includes(emt)) {
+                                    score = 0.4f;
+                                } else if (amt != null && amt.isCompatible(emt)) {
+                                    score = 0.4f;
+                                } else if (emt == null) {
+                                    score = 0.4f;
+                                } else if (amt == null) {
+                                    score = 0.3f;
+                                }
+                            }
                             for (Variant v : annoVariants) {
-                                result.add(new VariantInfo(v, annotationInfo));
+                                VariantInfo vi = new VariantInfo(v,
+                                        annotationInfo);
+                                vi.setInputScore(score);
+                                result.add(vi);
                             }
                         }
                     }
