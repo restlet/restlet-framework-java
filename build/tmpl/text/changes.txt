@@ -5,6 +5,8 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
+       - Basic Fix for content negotiation regarding input entities.
+         Reported by Thierry Templier.
 
 
 - 2.1 Release Candidate 3 (02/15/2012)
