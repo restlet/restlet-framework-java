@@ -76,4 +76,10 @@ public class PrimitiveWrapperEntityResource {
     public int intReturnInt(int i) {
         return i;
     }
+    
+    @PUT
+    @Path("byteArrayReturnByteArray")
+    public byte[] byteArrayReturnByteArray(byte[] array) {
+        return array;
+    }
 }

@@ -39,6 +39,7 @@ import java.util.Set;
 import javax.ws.rs.core.Application;
 
 import org.restlet.Response;
+import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.jaxrs.services.providers.BooleanEntityProvider;
@@ -119,6 +120,14 @@ public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
         assertEmptyEntity(response);
+    }
+    
+    public void test5() throws Exception {
+        Response response = put("byteArrayReturnByteArray",
+                new StringRepresentation("test", (MediaType) null));
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("test", response.getEntity().getText());
     }
 
 }
