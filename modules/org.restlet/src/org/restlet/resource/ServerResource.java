@@ -871,13 +871,9 @@ public abstract class ServerResource extends UniformResource {
                                 if (amt != null && amt.equals(amt)) {
                                     score = 1.0f;
                                 } else if (amt != null && amt.includes(emt)) {
-                                    score = 0.4f;
+                                    score = 0.8f;
                                 } else if (amt != null && amt.isCompatible(emt)) {
-                                    score = 0.4f;
-                                } else if (emt == null) {
-                                    score = 0.4f;
-                                } else if (amt == null) {
-                                    score = 0.3f;
+                                    score = 0.6f;
                                 }
                             }
                             for (Variant v : annoVariants) {
