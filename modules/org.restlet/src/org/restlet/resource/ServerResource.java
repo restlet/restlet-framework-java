@@ -730,8 +730,9 @@ public abstract class ServerResource extends UniformResource {
     private AnnotationInfo getAnnotation(Method method, Form query,
             Representation entity) {
         if (isAnnotated()) {
-            return AnnotationUtils.getAnnotation(getAnnotations(), method,
-                    query, entity, getMetadataService(), getConverterService());
+            return AnnotationUtils.getInstance().getAnnotation(
+                    getAnnotations(), method, query, entity,
+                    getMetadataService(), getConverterService());
         }
 
         return null;
@@ -743,8 +744,8 @@ public abstract class ServerResource extends UniformResource {
      * @return The annotation descriptors.
      */
     private List<AnnotationInfo> getAnnotations() {
-        return isAnnotated() ? AnnotationUtils.getAnnotations(getClass())
-                : null;
+        return isAnnotated() ? AnnotationUtils.getInstance().getAnnotations(
+                getClass()) : null;
     }
 
     /**
@@ -859,7 +860,7 @@ public abstract class ServerResource extends UniformResource {
                                 getMetadataService(), getConverterService());
 
                         if (annoVariants != null) {
-                         // Compute an affinity score between this annotation
+                            // Compute an affinity score between this annotation
                             // and the input entity.
                             float score = 0.5f;
                             if ((getRequest().getEntity() != null)

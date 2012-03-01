@@ -623,7 +623,7 @@ public class Application extends Restlet {
             }
 
             // Clear the annotations cache
-            AnnotationUtils.clearCache();
+            AnnotationUtils.getInstance().clearCache();
 
             super.stop();
         }
