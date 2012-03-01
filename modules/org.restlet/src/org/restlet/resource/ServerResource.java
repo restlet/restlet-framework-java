@@ -868,7 +868,7 @@ public abstract class ServerResource extends UniformResource {
                                         .getMediaType();
                                 MediaType amt = getMetadataService()
                                         .getMediaType(annotationInfo.getInput());
-                                if (amt != null && amt.equals(amt)) {
+                                if (amt != null && amt.equals(emt)) {
                                     score = 1.0f;
                                 } else if (amt != null && amt.includes(emt)) {
                                     score = 0.8f;
