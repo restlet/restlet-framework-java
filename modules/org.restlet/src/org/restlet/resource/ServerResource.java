@@ -867,14 +867,21 @@ public abstract class ServerResource extends UniformResource {
                                     && getRequest().getEntity().isAvailable()) {
                                 MediaType emt = getRequest().getEntity()
                                         .getMediaType();
-                                MediaType amt = getMetadataService()
-                                        .getMediaType(annotationInfo.getInput());
-                                if (amt != null && amt.equals(amt)) {
-                                    score = 1.0f;
-                                } else if (amt != null && amt.includes(emt)) {
-                                    score = 0.8f;
-                                } else if (amt != null && amt.isCompatible(emt)) {
-                                    score = 0.6f;
+                                List<MediaType> amts = getMetadataService()
+                                        .getAllMediaTypes(
+                                                annotationInfo.getInput());
+                                if (amts != null) {
+                                    float scoreMax = score;
+                                    for (MediaType amt : amts) {
+                                        if (amt.equals(emt)) {
+                                            scoreMax = 1.0f;
+                                        } else if (amt.includes(emt)) {
+                                            score = Math.max(0.8f, scoreMax);
+                                        } else if (amt.isCompatible(emt)) {
+                                            score = Math.max(0.6f, scoreMax);
+                                        }
+                                    }
+                                    score = scoreMax;
                                 }
                             }
                             for (Variant v : annoVariants) {
