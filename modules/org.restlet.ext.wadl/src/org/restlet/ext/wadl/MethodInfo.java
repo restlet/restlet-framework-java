@@ -71,7 +71,7 @@ public class MethodInfo extends DocumentedInfo {
         // Loop over the annotated Java methods
         MetadataService metadataService = resource.getMetadataService();
         List<AnnotationInfo> annotations = resource.isAnnotated() ? AnnotationUtils
-                .getAnnotations(resource.getClass()) : null;
+                .getInstance().getAnnotations(resource.getClass()) : null;
 
         if (annotations != null && metadataService != null) {
             for (AnnotationInfo annotationInfo : annotations) {

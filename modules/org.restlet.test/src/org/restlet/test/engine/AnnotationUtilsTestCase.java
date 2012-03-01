@@ -66,7 +66,7 @@ public class AnnotationUtilsTestCase extends RestletTestCase {
     }
 
     public void testGetAnnotationsWithGenericParameterType() {
-        List<AnnotationInfo> infos = AnnotationUtils
+        List<AnnotationInfo> infos = AnnotationUtils.getInstance()
                 .getAnnotations(IChild.class);
         Assert.assertEquals("Wrong count: " + infos, 4, infos.size());
         boolean found = false;
@@ -83,7 +83,7 @@ public class AnnotationUtilsTestCase extends RestletTestCase {
     }
 
     public void testGetAnnotationsWithGenericReturnType() {
-        List<AnnotationInfo> infos = AnnotationUtils
+        List<AnnotationInfo> infos = AnnotationUtils.getInstance()
                 .getAnnotations(IChild.class);
         Assert.assertEquals("Wrong count: " + infos, 4, infos.size());
         boolean found = false;
