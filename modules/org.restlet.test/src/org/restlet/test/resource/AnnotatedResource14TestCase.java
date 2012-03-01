@@ -73,7 +73,6 @@ public class AnnotatedResource14TestCase extends RestletTestCase {
         assertNotNull(rep);
         assertEquals(MediaType.APPLICATION_JSON, rep.getMediaType());
         assertEquals("json", rep.getText());
-        
 
         rep = clientResource.put(new StringRepresentation("test", MediaType.APPLICATION_XML), MediaType.APPLICATION_JSON);
         assertNotNull(rep);
