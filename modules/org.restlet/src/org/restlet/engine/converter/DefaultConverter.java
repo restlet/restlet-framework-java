@@ -104,25 +104,27 @@ public class DefaultConverter extends ConverterHelper {
     public List<VariantInfo> getVariants(Class<?> source) {
         List<VariantInfo> result = null;
 
-        if (String.class.isAssignableFrom(source)
-                || StringRepresentation.class.isAssignableFrom(source)) {
-            result = addVariant(result, VARIANT_ALL);
-        } else if (File.class.isAssignableFrom(source)
-                || FileRepresentation.class.isAssignableFrom(source)) {
-            result = addVariant(result, VARIANT_ALL);
-        } else if (InputStream.class.isAssignableFrom(source)
-                || InputRepresentation.class.isAssignableFrom(source)) {
-            result = addVariant(result, VARIANT_ALL);
-        } else if (Reader.class.isAssignableFrom(source)
-                || ReaderRepresentation.class.isAssignableFrom(source)) {
-            result = addVariant(result, VARIANT_ALL);
-        } else if (Representation.class.isAssignableFrom(source)) {
-            result = addVariant(result, VARIANT_ALL);
-        } else if (Form.class.isAssignableFrom(source)) {
-            result = addVariant(result, VARIANT_FORM);
-        } else if (Serializable.class.isAssignableFrom(source)) {
-            result = addVariant(result, VARIANT_OBJECT);
-            result = addVariant(result, VARIANT_OBJECT_XML);
+        if (source != null) {
+            if (String.class.isAssignableFrom(source)
+                    || StringRepresentation.class.isAssignableFrom(source)) {
+                result = addVariant(result, VARIANT_ALL);
+            } else if (File.class.isAssignableFrom(source)
+                    || FileRepresentation.class.isAssignableFrom(source)) {
+                result = addVariant(result, VARIANT_ALL);
+            } else if (InputStream.class.isAssignableFrom(source)
+                    || InputRepresentation.class.isAssignableFrom(source)) {
+                result = addVariant(result, VARIANT_ALL);
+            } else if (Reader.class.isAssignableFrom(source)
+                    || ReaderRepresentation.class.isAssignableFrom(source)) {
+                result = addVariant(result, VARIANT_ALL);
+            } else if (Representation.class.isAssignableFrom(source)) {
+                result = addVariant(result, VARIANT_ALL);
+            } else if (Form.class.isAssignableFrom(source)) {
+                result = addVariant(result, VARIANT_FORM);
+            } else if (Serializable.class.isAssignableFrom(source)) {
+                result = addVariant(result, VARIANT_OBJECT);
+                result = addVariant(result, VARIANT_OBJECT_XML);
+            }
         }
 
         return result;
@@ -275,7 +277,7 @@ public class DefaultConverter extends ConverterHelper {
                         IOException ioe = new IOException(
                                 "Unable to create the Object representation");
                         ioe.initCause(e);
-                        result = null;
+                        throw ioe;
                     }
                 }
             }

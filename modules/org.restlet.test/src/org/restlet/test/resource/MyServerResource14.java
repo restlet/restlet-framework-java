@@ -31,55 +31,38 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.jaxrs.services.resources;
+package org.restlet.test.resource;
 
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-
-import org.restlet.test.jaxrs.services.tests.PrimitiveWrapperEntityTest;
+import org.restlet.data.MediaType;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.Put;
+import org.restlet.resource.ServerResource;
 
 /**
- * This resource is to test, what happens, if a primitive and a primitive
- * wrapper is required, also if nothing is given
+ * Sample server resource for testing annotated PUT methods.
  * 
- * @author Stephan Koops
- * @see PrimitiveWrapperEntityTest
+ * @author Jerome Louvel
  */
-@Path("PrimitiveWrapperEntity")
-@Produces("text/plain")
-public class PrimitiveWrapperEntityResource {
+public class MyServerResource14 extends ServerResource {
 
-    @PUT
-    @Path("BooleanReturnboolean")
-    public boolean BooleanReturnboolean(Boolean b) {
-        if (b == null) {
-            return false;
-        }
-        return b;
+    @Put
+    public Representation store1(Representation rep) {
+        return new StringRepresentation("*", MediaType.TEXT_PLAIN);
     }
 
-    @PUT
-    @Path("charReturnCharacter")
-    public Character charReturnCharacter(char c) {
-        return c;
+    @Put("xml")
+    public Representation store2(Representation rep) {
+        return new StringRepresentation("xml", MediaType.APPLICATION_XML);
     }
 
-    @PUT
-    @Path("integerReturnInteger")
-    public Integer integerReturnInteger(Integer i) {
-        return i;
+    @Put("xml:json")
+    public Representation store3(Representation rep) {
+        return new StringRepresentation("xml:json", MediaType.APPLICATION_JSON);
     }
 
-    @PUT
-    @Path("intReturnInt")
-    public int intReturnInt(int i) {
-        return i;
-    }
-    
-    @PUT
-    @Path("byteArrayReturnByteArray")
-    public byte[] byteArrayReturnByteArray(byte[] array) {
-        return array;
+    @Put("json")
+    public Representation store4(Representation rep) {
+        return new StringRepresentation("json", MediaType.APPLICATION_JSON);
     }
 }

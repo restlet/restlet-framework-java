@@ -40,6 +40,8 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.ext.xstream.XstreamConverter;
+import org.restlet.representation.ObjectRepresentation;
+import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
@@ -60,8 +62,10 @@ public class AnnotatedResource1TestCase extends RestletTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         Engine.getInstance().getRegisteredConverters().clear();
-        Engine.getInstance().getRegisteredConverters().add(new JacksonConverter());
-        Engine.getInstance().getRegisteredConverters().add(new XstreamConverter());
+        Engine.getInstance().getRegisteredConverters()
+                .add(new JacksonConverter());
+        Engine.getInstance().getRegisteredConverters()
+                .add(new XstreamConverter());
         Engine.getInstance().registerDefaultConverters();
         Finder finder = new Finder();
         finder.setTargetClass(MyServerResource1.class);
@@ -111,7 +115,7 @@ public class AnnotatedResource1TestCase extends RestletTestCase {
                 .getText();
         System.out.println(result);
         assertTrue(result
-                .startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<java version=\""));
+                .startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n<java version=\""));
     }
 
     public void testOptions() {
@@ -138,7 +142,8 @@ public class AnnotatedResource1TestCase extends RestletTestCase {
             clientResource.put(new StringRepresentation("wxyz",
                     MediaType.APPLICATION_GNU_ZIP));
         } catch (ResourceException re) {
-            assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, re.getStatus());
+            assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
+                    re.getStatus());
         }
     }
 
