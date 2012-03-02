@@ -5,3 +5,6 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
+    - Enhancements
+	- Misc
+	
