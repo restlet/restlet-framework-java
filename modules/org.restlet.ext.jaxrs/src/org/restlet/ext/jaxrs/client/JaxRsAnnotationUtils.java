@@ -31,55 +31,45 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.jaxrs.services.resources;
+package org.restlet.ext.jaxrs.client;
 
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import java.lang.annotation.Annotation;
 
-import org.restlet.test.jaxrs.services.tests.PrimitiveWrapperEntityTest;
+import org.restlet.data.Method;
+import org.restlet.engine.resource.AnnotationUtils;
 
 /**
- * This resource is to test, what happens, if a primitive and a primitive
- * wrapper is required, also if nothing is given
+ * JAX-RS specific Utilities to manipulate Restlet annotations.
  * 
- * @author Stephan Koops
- * @see PrimitiveWrapperEntityTest
+ * @author Shaun Elliott
  */
-@Path("PrimitiveWrapperEntity")
-@Produces("text/plain")
-public class PrimitiveWrapperEntityResource {
+public class JaxRsAnnotationUtils extends AnnotationUtils {
+    /** Current instance. */
+    private static JaxRsAnnotationUtils instance = new JaxRsAnnotationUtils();
 
-    @PUT
-    @Path("BooleanReturnboolean")
-    public boolean BooleanReturnboolean(Boolean b) {
-        if (b == null) {
-            return false;
+    /**
+     * Returns the current instance.
+     * 
+     * @return The current instance.
+     */
+    public static JaxRsAnnotationUtils getInstance() {
+        return instance;
+    }
+
+    private JaxRsAnnotationUtils() {
+    }
+
+    @Override
+    protected Method getRestletMethod(Annotation annotation,
+            Annotation methodAnnotation) {
+        // try to get the method from the Annotation name itself, as JAX-RS
+        // annotations map exactly to this
+        Method restletMethod = Method.valueOf(annotation.annotationType()
+                .getSimpleName());
+        if (restletMethod == null) {
+            super.getRestletMethod(annotation, methodAnnotation);
         }
-        return b;
-    }
 
-    @PUT
-    @Path("charReturnCharacter")
-    public Character charReturnCharacter(char c) {
-        return c;
-    }
-
-    @PUT
-    @Path("integerReturnInteger")
-    public Integer integerReturnInteger(Integer i) {
-        return i;
-    }
-
-    @PUT
-    @Path("intReturnInt")
-    public int intReturnInt(int i) {
-        return i;
-    }
-
-    @PUT
-    @Path("byteArrayReturnByteArray")
-    public byte[] byteArrayReturnByteArray(byte[] array) {
-        return array;
+        return restletMethod;
     }
 }

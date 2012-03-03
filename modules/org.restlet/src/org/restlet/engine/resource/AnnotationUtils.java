@@ -54,7 +54,21 @@ import org.restlet.service.MetadataService;
 public class AnnotationUtils {
 
     /** Annotation info cache. */
-    private static final ConcurrentMap<Class<?>, List<AnnotationInfo>> cache = new ConcurrentHashMap<Class<?>, List<AnnotationInfo>>();
+    private final ConcurrentMap<Class<?>, List<AnnotationInfo>> cache = new ConcurrentHashMap<Class<?>, List<AnnotationInfo>>();
+
+    /** Current instance. */
+    private static AnnotationUtils instance = new AnnotationUtils();
+
+    /** Returns the current instance of AnnotationUtils. */
+    public static AnnotationUtils getInstance() {
+        return instance;
+    }
+
+    /**
+     * Protected constructor.
+     */
+    protected AnnotationUtils() {
+    }
 
     /**
      * Computes the annotation descriptors for the given Java method.
@@ -68,7 +82,7 @@ public class AnnotationUtils {
      *            The Java method to inspect.
      * @return The annotation descriptors.
      */
-    private static List<AnnotationInfo> addAnnotationDescriptors(
+    private List<AnnotationInfo> addAnnotationDescriptors(
             List<AnnotationInfo> descriptors, Class<?> resourceClass,
             java.lang.reflect.Method javaMethod) {
         List<AnnotationInfo> result = descriptors;
@@ -82,10 +96,9 @@ public class AnnotationUtils {
             Annotation methodAnnotation = annotation.annotationType()
                     .getAnnotation(org.restlet.engine.Method.class);
 
-            if (methodAnnotation != null) {
-                Method restletMethod = Method
-                        .valueOf(((org.restlet.engine.Method) methodAnnotation)
-                                .value());
+            Method restletMethod = getRestletMethod(annotation,
+                    methodAnnotation);
+            if (restletMethod != null) {
 
                 String toString = annotation.toString();
                 int startIndex = annotation.annotationType().getCanonicalName()
@@ -120,7 +133,7 @@ public class AnnotationUtils {
      *            The class or interface to introspect.
      * @return The annotation descriptors.
      */
-    private static List<AnnotationInfo> addAnnotations(
+    private List<AnnotationInfo> addAnnotations(
             List<AnnotationInfo> descriptors, Class<?> clazz) {
         List<AnnotationInfo> result = descriptors;
 
@@ -161,7 +174,7 @@ public class AnnotationUtils {
     /**
      * Clears the annotation descriptors cache.
      */
-    public static void clearCache() {
+    public void clearCache() {
         cache.clear();
     }
 
@@ -174,8 +187,7 @@ public class AnnotationUtils {
      *            The method to match.
      * @return The annotation descriptor.
      */
-    public static AnnotationInfo getAnnotation(
-            List<AnnotationInfo> annotations,
+    public AnnotationInfo getAnnotation(List<AnnotationInfo> annotations,
             java.lang.reflect.Method javaMethod) {
         if (annotations != null) {
             for (AnnotationInfo annotationInfo : annotations) {
@@ -206,9 +218,9 @@ public class AnnotationUtils {
      *            The converter service to use.
      * @return The annotation descriptor.
      */
-    public static AnnotationInfo getAnnotation(
-            List<AnnotationInfo> annotations, Method restletMethod, Form query,
-            Representation entity, MetadataService metadataService,
+    public AnnotationInfo getAnnotation(List<AnnotationInfo> annotations,
+            Method restletMethod, Form query, Representation entity,
+            MetadataService metadataService,
             org.restlet.service.ConverterService converterService) {
         if (annotations != null) {
             for (AnnotationInfo annotationInfo : annotations) {
@@ -229,7 +241,7 @@ public class AnnotationUtils {
      *            The resource class to introspect.
      * @return The list of annotation descriptors.
      */
-    public static List<AnnotationInfo> getAnnotations(Class<?> clazz) {
+    public List<AnnotationInfo> getAnnotations(Class<?> clazz) {
         List<AnnotationInfo> result = cache.get(clazz);
 
         if (result == null) {
@@ -255,16 +267,25 @@ public class AnnotationUtils {
      *            The Java method.
      * @return The list of annotation descriptors.
      */
-    public static List<AnnotationInfo> getAnnotations(Class<?> clazz,
+    public List<AnnotationInfo> getAnnotations(Class<?> clazz,
             java.lang.reflect.Method javaMethod) {
         return addAnnotationDescriptors(null, clazz, javaMethod);
     }
 
     /**
-     * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instantiable and extensible.
+     * Returns an instance of {@link Method} according to the given annotations.
+     * 
+     * @param annotation
+     *            Java annotation.
+     * @param methodAnnotation
+     *            Annotation that corresponds to a Restlet method.
+     * @return
      */
-    private AnnotationUtils() {
+    protected Method getRestletMethod(Annotation annotation,
+            Annotation methodAnnotation) {
+        return methodAnnotation == null ? null
+                : Method.valueOf(((org.restlet.engine.Method) methodAnnotation)
+                        .value());
     }
 
 }

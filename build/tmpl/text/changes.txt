@@ -8,3 +8,7 @@ Changes log
     - Enhancements
 	- Misc
 	
+
+    - API changes
+      - Added a resource client to the JAX-RS extension.
+        Contributed by Shaun Elliott.
