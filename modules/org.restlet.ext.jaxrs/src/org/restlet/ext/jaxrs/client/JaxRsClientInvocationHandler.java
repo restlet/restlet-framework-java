@@ -72,8 +72,6 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
     protected Request getRequest(Method javaMethod) {
         Request request = super.getRequest(javaMethod);
         
-        //TODO - add in non-primative object param handling
-
         Path methodPathAnnotation = javaMethod.getAnnotation(Path.class);
         if (methodPathAnnotation != null) {
             String methodPath = methodPathAnnotation.value();
