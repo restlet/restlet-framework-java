@@ -89,6 +89,11 @@ public class Marshaller<T> {
                                     .getCharacterSet().getName());
                 }
 
+                if (getJaxbRepresentation().getNamespacePrefixMapper() != null) {
+                    m.setProperty("com.sun.xml.bind.namespacePrefixMapper",
+                            getJaxbRepresentation().getNamespacePrefixMapper());
+                }
+
                 m.setProperty("jaxb.fragment", getJaxbRepresentation()
                         .isFragment());
             } catch (Exception e) {

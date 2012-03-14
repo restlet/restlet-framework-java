@@ -7,8 +7,9 @@ Changes log
     - Bug fixed
     - Enhancements
 	- Misc
-	
-
     - API changes
       - Added a resource client to the JAX-RS extension.
         Contributed by Shaun Elliott.
+      - Added an optional namespace prefix mapper for JAXB representations when
+        marshalling Java content into XML.
+        Contributed by Emanuele Ziglioli.
