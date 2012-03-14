@@ -7,6 +7,8 @@ Changes log
     - Bug fixed
        - Basic Fix for content negotiation regarding input entities.
          Reported by Thierry Templier.
+       - Removed useless reverse DNS lookup when creating a client socket 
+         channel. Reported and contributed by Alessandro Pacifici.
 
 
 - 2.1 Release Candidate 3 (02/15/2012)
