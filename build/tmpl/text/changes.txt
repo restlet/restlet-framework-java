@@ -12,6 +12,8 @@ Changes log
          semicolon. Reported by Jean-Baptiste Dusseaut.
        - Fixed handling of Put requests with Jax-Rs extension without any 
          mime type. Reported by Thomas Mortagne.
+       - Fixed NPE when setting last segment on Reference.
+         Reported by Laszlo Hordos.
 
 - 2.0.11 (2012-01-25)
     - Bugs fixed
