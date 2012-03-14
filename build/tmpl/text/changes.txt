@@ -11,6 +11,8 @@ Changes log
          channel. Reported and contributed by Alessandro Pacifici.
        - Fixed NPE when setting last segment on Reference.
          Reported by Laszlo Hordos.
+    - Misc
+        - Updated FreeMarker library to version 2.3.19.
 
 - 2.1 Release Candidate 3 (02/15/2012)
     - Bug fixed
