@@ -167,8 +167,23 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     protected SocketChannel createSocketChannel(boolean secure,
             InetSocketAddress socketAddress) throws UnknownHostException,
             IOException {
-        return createSocketChannel(secure, socketAddress.getHostName(),
-                socketAddress.getPort());
+        SocketChannel result = SocketChannel.open();
+        result.configureBlocking(false);
+
+        // Configure socket
+        Socket socket = result.socket();
+        socket.setKeepAlive(isSocketKeepAlive());
+        socket.setOOBInline(isSocketOobInline());
+        socket.setReceiveBufferSize(getSocketReceiveBufferSize());
+        socket.setReuseAddress(isSocketReuseAddress());
+        socket.setSoLinger(getSocketLingerTimeMs() > 0, getSocketLingerTimeMs());
+        socket.setSendBufferSize(getSocketSendBufferSize());
+        socket.setSoTimeout(getMaxIoIdleTimeMs());
+        socket.setTcpNoDelay(isSocketNoDelay());
+        socket.setTrafficClass(getSocketTrafficClass());
+
+        result.connect(socketAddress);
+        return result;
     }
 
     /**
@@ -189,24 +204,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     protected SocketChannel createSocketChannel(boolean secure,
             String hostDomain, int hostPort) throws UnknownHostException,
             IOException {
-        SocketChannel result = SocketChannel.open();
-        result.configureBlocking(false);
-
-        // Configure socket
-        Socket socket = result.socket();
-        socket.setKeepAlive(isSocketKeepAlive());
-        socket.setOOBInline(isSocketOobInline());
-        socket.setReceiveBufferSize(getSocketReceiveBufferSize());
-        socket.setReuseAddress(isSocketReuseAddress());
-        socket.setSoLinger(getSocketLingerTimeMs() > 0, getSocketLingerTimeMs());
-        socket.setSendBufferSize(getSocketSendBufferSize());
-        socket.setSoTimeout(getMaxIoIdleTimeMs());
-        socket.setTcpNoDelay(isSocketNoDelay());
-        socket.setTrafficClass(getSocketTrafficClass());
-
-        InetSocketAddress address = new InetSocketAddress(hostDomain, hostPort);
-        result.connect(address);
-        return result;
+        return createSocketChannel(secure, new InetSocketAddress(hostDomain, hostPort));
     }
 
     @Override
