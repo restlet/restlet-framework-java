@@ -105,6 +105,7 @@ public class DefaultConverter extends ConverterHelper {
         List<VariantInfo> result = null;
 
         if (source != null) {
+
             if (String.class.isAssignableFrom(source)
                     || StringRepresentation.class.isAssignableFrom(source)) {
                 result = addVariant(result, VARIANT_ALL);

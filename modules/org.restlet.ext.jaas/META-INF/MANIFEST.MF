@@ -21,5 +21,4 @@ Import-Package: javax.security.auth,
  org.restlet.service,
  org.restlet.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.restlet
 Export-Package: org.restlet.ext.jaas

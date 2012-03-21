@@ -13,7 +13,6 @@ Import-Package:
  org.codehaus.jackson.map,
  org.codehaus.jackson.map.annotate,
  org.codehaus.jackson.map.deser,
- org.codehaus.jackson.map.ext,
  org.codehaus.jackson.map.introspect,
  org.codehaus.jackson.map.ser,
  org.codehaus.jackson.map.type,
@@ -33,4 +32,3 @@ Import-Package:
  org.restlet.service,
  org.restlet.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.codehaus.jackson;bundle-version="1.4.0"

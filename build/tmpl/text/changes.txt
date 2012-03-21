@@ -14,6 +14,8 @@ Changes log
          mime type. Reported by Thomas Mortagne.
        - Fixed NPE when setting last segment on Reference.
          Reported by Laszlo Hordos.
+       - Fixed OSGi manifest file for the jackson library that exposes a 
+         private package. Reported by Laszlo Hordos.
     - Misc
         - Updated FreeMarker library to version 2.3.19.
 
