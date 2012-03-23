@@ -129,7 +129,7 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
      * 
      * @return The wrapped object.
      */
-    public T getObject() {
+    public T getObject() throws IOException {
         T result = null;
 
         if (this.object != null) {
@@ -141,6 +141,7 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
             } catch (IOException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to parse the object with Jackson.", e);
+                throw e;
             }
         }
 
