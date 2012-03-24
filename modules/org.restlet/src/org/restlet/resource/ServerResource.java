@@ -871,19 +871,18 @@ public abstract class ServerResource extends UniformResource {
                                         .getAllMediaTypes(
                                                 annotationInfo.getInput());
                                 if (amts != null) {
-                                    float scoreMax = score;
                                     for (MediaType amt : amts) {
                                         if (amt.equals(emt)) {
-                                            scoreMax = 1.0f;
+                                            score = 1.0f;
                                         } else if (amt.includes(emt)) {
-                                            score = Math.max(0.8f, scoreMax);
+                                            score = Math.max(0.8f, score);
                                         } else if (amt.isCompatible(emt)) {
-                                            score = Math.max(0.6f, scoreMax);
+                                            score = Math.max(0.6f, score);
                                         }
                                     }
-                                    score = scoreMax;
                                 }
                             }
+
                             for (Variant v : annoVariants) {
                                 VariantInfo vi = new VariantInfo(v,
                                         annotationInfo);

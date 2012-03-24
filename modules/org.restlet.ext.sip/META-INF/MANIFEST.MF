@@ -24,4 +24,3 @@ Import-Package: org.junit,
  org.restlet.service,
  org.restlet.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.junit4;bundle-version="4.8.0"
