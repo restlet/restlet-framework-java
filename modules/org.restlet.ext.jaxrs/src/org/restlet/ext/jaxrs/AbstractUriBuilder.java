@@ -516,7 +516,7 @@ public abstract class AbstractUriBuilder extends UriBuilder {
     @Override
     public UriBuilder path(Class rootResource, String methodName)
             throws IllegalArgumentException {
-        if (methodName == null) {
+    	if (methodName == null) {
             throw new IllegalArgumentException(
                     "The method name must not be null");
         }

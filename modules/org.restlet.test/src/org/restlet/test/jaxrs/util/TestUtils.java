@@ -41,6 +41,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 
+import org.junit.Ignore;
 import org.restlet.engine.io.BioUtils;
 import org.restlet.ext.jaxrs.internal.util.Util;
 
@@ -49,6 +50,7 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * 
  * @author Stephan Koops
  */
+@Ignore
 @SuppressWarnings("all")
 public class TestUtils {
     /**

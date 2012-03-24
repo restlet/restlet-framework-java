@@ -86,7 +86,7 @@ public class JsonTest extends JaxRsTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        // Explicitely promote the Jackson converter
+        // Explicitly promote the Jackson converter
         Engine.getInstance().getRegisteredConverters()
                 .add(0, new JacksonConverter());
     }
@@ -147,6 +147,8 @@ public class JsonTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         final JaxbRepresentation<Person> jaxbReprs = new JaxbRepresentation<Person>(
                 response.getEntity(), Person.class);
+        
+        
         final Person person = jaxbReprs.getObject();
         assertEquals("Angela", person.getFirstname());
         assertEquals("Merkel", person.getLastname());

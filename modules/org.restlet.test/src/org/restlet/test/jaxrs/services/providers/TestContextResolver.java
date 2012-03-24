@@ -36,6 +36,7 @@ package org.restlet.test.jaxrs.services.providers;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
+import org.junit.Ignore;
 import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.test.jaxrs.services.tests.ContextResolverTest;
 
@@ -43,6 +44,7 @@ import org.restlet.test.jaxrs.services.tests.ContextResolverTest;
  * @author Stephan Koops
  * @see ContextResolverTest
  */
+@Ignore
 @Provider
 public class TestContextResolver implements ContextResolver<BaseUriContext> {
 

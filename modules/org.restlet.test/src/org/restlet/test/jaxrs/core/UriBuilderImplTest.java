@@ -81,7 +81,7 @@ public class UriBuilderImplTest extends TestCase {
     static void assertEqualsURI(String expectedUri, URI actualUri)
             throws URISyntaxException {
         assertEquals(expectedUri, actualUri.toString());
-        assertEquals(new URI(expectedUri), actualUri);
+        assertEquals(new URI(expectedUri).toString(), actualUri.toString());
     }
 
     static void assertEqualsURI(String expectedUri, UriBuilder actualBuilder)
