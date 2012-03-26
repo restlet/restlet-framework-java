@@ -172,20 +172,6 @@ public class Client extends Connector {
         return this.helper;
     }
 
-    // [ifndef gwt] method
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @return The returned response.
-     */
-    public final Response handle(Request request) {
-        Response response = new Response(request);
-        handle(request, response);
-        return response;
-    }
-
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);

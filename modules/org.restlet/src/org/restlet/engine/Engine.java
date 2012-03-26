@@ -1035,7 +1035,7 @@ public class Engine {
                                                 .getCurrent();
 
                                         if (context != null) {
-                                            final Response response = context
+                                            Response response = context
                                                     .getClientDispatcher()
                                                     .handle(new Request(
                                                             Method.GET,

@@ -130,7 +130,8 @@ public class Reference {
         // Initialize the map of valid characters.
         for (int character = 0; character < 127; character++) {
             charValidityMap[character] = isReserved(character)
-                    || isUnreserved(character) || (character == '%');
+                    || isUnreserved(character) || (character == '%')
+                    || (character == '{') || (character == '}');
         }
     }
 
