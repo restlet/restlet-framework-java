@@ -70,9 +70,10 @@ public class ThrowWebAppExcProviderTest extends JaxRsTestCase {
     }
 
     public void testPost() {
-        final Response response = post(new StringRepresentation("jgjhsdhbf"));
+        Response response = post(new StringRepresentation("jgjhsdhbf"));
         sysOutEntityIfError(response);
-        final int statusCode = response.getStatus().getCode();
+        int statusCode = response.getStatus().getCode();
+        
         assertEquals(ThrowWebAppExcProvider.STATUS_READ, statusCode);
     }
 }
