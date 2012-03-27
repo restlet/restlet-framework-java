@@ -742,6 +742,19 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Returns the attribute value by looking up the given name in the request
+     * attributes maps. This is typically used for variables that are declared
+     * in the URI template used to route the call to this resource.
+     * 
+     * @param name
+     *            The attribute name.
+     * @return The request attribute value.
+     */
+    public String getAttribute(String name) {
+        return (String) getRequestAttributes().get(name);
+    }
+
+    /**
      * Returns the child resource defined by its URI relatively to the current
      * resource. The child resource is defined in the sense of hierarchical
      * URIs. If the resource URI is not hierarchical, then an exception is

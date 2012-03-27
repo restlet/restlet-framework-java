@@ -214,23 +214,14 @@ public abstract class Resource {
 
     /**
      * Returns the attribute value by looking up the given name in the request
-     * and response attributes maps. This is typically used for variables that
+     * or response attributes maps. This is typically used for variables that
      * are declared in the URI template used to route the call to this resource.
      * 
      * @param name
      *            The attribute name.
-     * @return The request attribute value or the response attribute if not
-     *         present.
+     * @return The matching request or response attribute value.
      */
-    public String getAttribute(String name) {
-        String result = (String) getRequestAttributes().get(name);
-
-        if (result == null) {
-            result = (String) getResponseAttributes().get(name);
-        }
-
-        return result;
-    }
+    public abstract String getAttribute(String name);
 
     /**
      * Returns the list of authentication requests sent by an origin server to a

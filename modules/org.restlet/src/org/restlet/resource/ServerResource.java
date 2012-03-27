@@ -748,6 +748,18 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
+     * Returns the attribute value by looking up the given name in the response
+     * attributes maps.
+     * 
+     * @param name
+     *            The attribute name.
+     * @return The response attribute value.
+     */
+    public String getAttribute(String name) {
+        return (String) getResponseAttributes().get(name);
+    }
+
+    /**
      * Returns information about the resource's representation. Those metadata
      * are important for conditional method processing. The advantage over the
      * complete {@link Representation} class is that it is much lighter to
@@ -1371,6 +1383,18 @@ public abstract class ServerResource extends UniformResource {
      */
     public void setAnnotated(boolean annotated) {
         this.annotated = annotated;
+    }
+
+    /**
+     * Sets the response attribute value.
+     * 
+     * @param name
+     *            The attribute name.
+     * @param value
+     *            The attribute to set.
+     */
+    public void setAttribute(String name, String value) {
+        getResponseAttributes().put(name, value);
     }
 
     /**
