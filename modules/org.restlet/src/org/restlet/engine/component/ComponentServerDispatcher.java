@@ -47,6 +47,10 @@ import org.restlet.engine.TemplateDispatcher;
  * @author Jerome Louvel
  */
 public class ComponentServerDispatcher extends TemplateDispatcher {
+
+    /** The component context. */
+    private ComponentContext componentContext;
+
     /**
      * Constructor.
      * 
@@ -54,12 +58,12 @@ public class ComponentServerDispatcher extends TemplateDispatcher {
      *            The component context.
      */
     public ComponentServerDispatcher(ComponentContext componentContext) {
-        super(componentContext);
+        this.componentContext = componentContext;
     }
 
     @Override
-    protected void doHandle(Request request, Response response) {
-        super.doHandle(request, response);
+    public int beforeHandle(Request request, Response response) {
+        int result = super.beforeHandle(request, response);
 
         // This causes the baseRef of the resource reference to be set
         // as if it had actually arrived from a server connector.
@@ -67,8 +71,10 @@ public class ComponentServerDispatcher extends TemplateDispatcher {
                 request.getResourceRef().getHostIdentifier());
 
         // Ask the server router to actually handle the call
-        getComponentContext().getComponentHelper().getServerRouter().handle(
-                request, response);
+        getComponentContext().getComponentHelper().getServerRouter()
+                .handle(request, response);
+
+        return result;
     }
 
     /**
@@ -77,7 +83,7 @@ public class ComponentServerDispatcher extends TemplateDispatcher {
      * @return The component context.
      */
     private ComponentContext getComponentContext() {
-        return (ComponentContext) getContext();
+        return componentContext;
     }
 
 }

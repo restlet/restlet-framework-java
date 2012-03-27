@@ -53,6 +53,10 @@ import org.restlet.routing.VirtualHost;
  * @author Jerome Louvel
  */
 public class ComponentClientDispatcher extends TemplateDispatcher {
+
+    /** The component context. */
+    private ComponentContext componentContext;
+
     /**
      * Constructor.
      * 
@@ -60,19 +64,18 @@ public class ComponentClientDispatcher extends TemplateDispatcher {
      *            The component context.
      */
     public ComponentClientDispatcher(ComponentContext componentContext) {
-        super(componentContext);
+        this.componentContext = componentContext;
     }
 
     @Override
-    protected void doHandle(Request request, Response response) {
-        super.doHandle(request, response);
+    public int beforeHandle(Request request, Response response) {
+        int result = super.beforeHandle(request, response);
         Protocol protocol = request.getProtocol();
 
         if (protocol.equals(Protocol.RIAP)) {
             // Let's dispatch it
-            final LocalReference cr = new LocalReference(request
-                    .getResourceRef());
-            final Component component = getComponent();
+            LocalReference cr = new LocalReference(request.getResourceRef());
+            Component component = getComponent();
 
             if (component != null) {
                 if (cr.getRiapAuthorityType() == LocalReference.RIAP_COMPONENT) {
@@ -119,20 +122,25 @@ public class ComponentClientDispatcher extends TemplateDispatcher {
                         getLogger()
                                 .warning(
                                         "No virtual host is available to route the RIAP Host request.");
+                        result = STOP;
                     }
                 } else {
                     getLogger()
                             .warning(
                                     "Unknown RIAP authority. Only \"component\" is supported.");
+                    result = STOP;
                 }
             } else {
                 getLogger().warning(
                         "No component is available to route the RIAP request.");
+                result = STOP;
             }
         } else {
             getComponentContext().getComponentHelper().getClientRouter()
                     .handle(request, response);
         }
+
+        return result;
     }
 
     /**
@@ -158,6 +166,6 @@ public class ComponentClientDispatcher extends TemplateDispatcher {
      * @return The component context.
      */
     private ComponentContext getComponentContext() {
-        return (ComponentContext) getContext();
+        return componentContext;
     }
 }

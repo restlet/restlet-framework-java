@@ -50,6 +50,10 @@ import org.restlet.engine.TemplateDispatcher;
  * @author Jerome Louvel
  */
 public class ChildClientDispatcher extends TemplateDispatcher {
+
+    /** The child context. */
+    private ChildContext childContext;
+
     /**
      * Constructor.
      * 
@@ -57,7 +61,7 @@ public class ChildClientDispatcher extends TemplateDispatcher {
      *            The child context.
      */
     public ChildClientDispatcher(ChildContext childContext) {
-        super(childContext);
+        this.childContext = childContext;
     }
 
     /**
@@ -72,8 +76,8 @@ public class ChildClientDispatcher extends TemplateDispatcher {
      *            The response to update.
      */
     @Override
-    public void doHandle(Request request, Response response) {
-        super.doHandle(request, response);
+    public int beforeHandle(Request request, Response response) {
+        int result = super.doHandle(request, response);
         Protocol protocol = request.getProtocol();
 
         if (protocol.equals(Protocol.RIAP)) {
@@ -97,6 +101,7 @@ public class ChildClientDispatcher extends TemplateDispatcher {
                 getLogger()
                         .warning(
                                 "Unknown RIAP authority. Only \"component\", \"host\" and \"application\" are supported.");
+                result = STOP;
             }
         } else {
             if ((getChildContext() != null)
@@ -114,6 +119,8 @@ public class ChildClientDispatcher extends TemplateDispatcher {
 
             parentHandle(request, response);
         }
+
+        return result;
     }
 
     /**
@@ -122,7 +129,7 @@ public class ChildClientDispatcher extends TemplateDispatcher {
      * @return The child context.
      */
     private ChildContext getChildContext() {
-        return (ChildContext) getContext();
+        return this.childContext;
     }
 
     /**

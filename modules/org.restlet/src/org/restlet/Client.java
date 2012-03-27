@@ -188,35 +188,6 @@ public class Client extends Connector {
     }
 
     /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @param onResponseCallback
-     *            The callback invoked upon response reception.
-     */
-    public void handle(Request request, Response response,
-            Uniform onResponseCallback) {
-        request.setOnResponse(onResponseCallback);
-        handle(request, response);
-    }
-
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param onReceivedCallback
-     *            The callback invoked upon request reception.
-     */
-    public final void handle(Request request, Uniform onReceivedCallback) {
-        Response response = new Response(request);
-        handle(request, response, onReceivedCallback);
-    }
-
-    /**
      * Indicates the underlying connector helper is available.
      * 
      * @return True if the underlying connector helper is available.

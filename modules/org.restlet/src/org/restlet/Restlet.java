@@ -349,6 +349,35 @@ public abstract class Restlet implements Uniform {
     }
 
     /**
+     * Handles a call.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @param onResponseCallback
+     *            The callback invoked upon response reception.
+     */
+    public final void handle(Request request, Response response,
+            Uniform onResponseCallback) {
+        request.setOnResponse(onResponseCallback);
+        handle(request, response);
+    }
+
+    /**
+     * Handles a call.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param onReceivedCallback
+     *            The callback invoked upon request reception.
+     */
+    public final void handle(Request request, Uniform onReceivedCallback) {
+        Response response = new Response(request);
+        handle(request, response, onReceivedCallback);
+    }
+
+    /**
      * Indicates if the Restlet is started.
      * 
      * @return True if the Restlet is started.

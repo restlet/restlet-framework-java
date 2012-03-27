@@ -39,3 +39,4 @@
 /modules/org.restlet.ext.xstream/bin
 /modules/org.restlet.test/bin
 /modules/org.restlet.ext.oauth/target
+/modules/org.restlet.test/velocity.log

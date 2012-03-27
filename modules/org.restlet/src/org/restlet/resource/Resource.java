@@ -213,6 +213,26 @@ public abstract class Resource {
     }
 
     /**
+     * Returns the attribute value by looking up the given name in the request
+     * and response attributes maps. This is typically used for variables that
+     * are declared in the URI template used to route the call to this resource.
+     * 
+     * @param name
+     *            The attribute name.
+     * @return The request attribute value or the response attribute if not
+     *         present.
+     */
+    public String getAttribute(String name) {
+        String result = (String) getRequestAttributes().get(name);
+
+        if (result == null) {
+            result = (String) getResponseAttributes().get(name);
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the list of authentication requests sent by an origin server to a
      * client. If none is available, an empty list is returned.
      * 
@@ -703,6 +723,16 @@ public abstract class Resource {
     public void setApplication(org.restlet.Application application) {
         this.application = application;
     }
+
+    /**
+     * Sets the request or response attribute value.
+     * 
+     * @param name
+     *            The attribute name.
+     * @param value
+     *            The attribute to set.
+     */
+    public abstract void setAttribute(String name, String value);
 
     /**
      * Sets the query value for the named parameter. If no query is defined, it

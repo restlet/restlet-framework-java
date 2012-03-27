@@ -41,9 +41,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
-import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -458,7 +458,7 @@ public class DirectoryServerResource extends ServerResource {
      * 
      * @return A client dispatcher.
      */
-    protected Client getClientDispatcher() {
+    protected Restlet getClientDispatcher() {
         return getDirectory().getContext() == null ? null : getDirectory()
                 .getContext().getClientDispatcher();
     }

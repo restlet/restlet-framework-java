@@ -11,9 +11,14 @@ Changes log
          allowing resolution of URI templates on the client-side.
          Reported by Andrei Pozolotin.
     - API changes
-       - Added Resource#getQueryValue(String) and setQueryValue(String,
-         String) shortcut methods.
-       - Moved Client#handle(Request) method to Restlet class.
+       - Added Resource#getQueryValue(String), getAttribute(String),
+         setQueryValue(String, String) and setAttribute(String, String)
+         shortcut methods.
+       - Moved Client#handle(...) methods to parent Restlet class.
+       - Context#clientDispatcher and serverDispatcher are now Restlet
+         instead of Client. Needed to fix URI template resolution
+         in simple ClientResource instances.
+       - Added ClientResource#accept(...) shortcut methods.
 
 - 2.1 Release Candidate 3 (02/15/2012)
     - Bug fixed
