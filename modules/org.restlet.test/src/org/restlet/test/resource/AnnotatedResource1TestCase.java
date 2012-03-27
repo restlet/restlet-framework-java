@@ -40,8 +40,6 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.ext.xstream.XstreamConverter;
-import org.restlet.representation.ObjectRepresentation;
-import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
@@ -94,26 +92,25 @@ public class AnnotatedResource1TestCase extends RestletTestCase {
 
         String result = clientResource.get(MediaType.TEXT_XML).getText();
         assertEquals(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <name>myName</name>\n  <description>myDescription</description>\n</org.restlet.test.resource.MyBean>",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <description>myDescription</description>\n  <name>myName</name>\n</org.restlet.test.resource.MyBean>",
                 result);
 
         result = clientResource.get(MediaType.APPLICATION_XML).getText();
         assertEquals(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <name>myName</name>\n  <description>myDescription</description>\n</org.restlet.test.resource.MyBean>",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <description>myDescription</description>\n  <name>myName</name>\n</org.restlet.test.resource.MyBean>",
                 result);
 
         result = clientResource.get(MediaType.APPLICATION_ALL_XML).getText();
         assertEquals(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <name>myName</name>\n  <description>myDescription</description>\n</org.restlet.test.resource.MyBean>",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <description>myDescription</description>\n  <name>myName</name>\n</org.restlet.test.resource.MyBean>",
                 result);
 
         result = clientResource.get(MediaType.APPLICATION_JSON).getText();
-        assertEquals("{\"name\":\"myName\",\"description\":\"myDescription\"}",
+        assertEquals("{\"description\":\"myDescription\",\"name\":\"myName\"}",
                 result);
 
         result = clientResource.get(MediaType.APPLICATION_JAVA_OBJECT_XML)
                 .getText();
-        System.out.println(result);
         assertTrue(result
                 .startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n<java version=\""));
     }

@@ -13,6 +13,8 @@ Changes log
          Reported by Laszlo Hordos.
        - Fixed OSGi manifest file for the jackson library that exposes a 
          private package. Reported by Laszlo Hordos.
+       - Enhanced support of ServerResource that inherits from generic classes.
+         Reported by Thierry Templier.
     - Misc
         - Updated FreeMarker library to version 2.3.19.
 

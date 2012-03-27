@@ -66,7 +66,7 @@ public class AnnotatedResource5TestCase extends RestletTestCase {
         super.tearDown();
     }
 
-    public void testGet() throws IOException, ResourceException {
+    public void testPost() throws IOException, ResourceException {
         Representation result = clientResource.post("[\"root\"]",
                 MediaType.APPLICATION_JSON);
         assertNotNull(result);
