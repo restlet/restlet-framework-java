@@ -60,8 +60,10 @@ public class AnnotatedResource1TestCase extends RestletTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         Engine.getInstance().getRegisteredConverters().clear();
-        Engine.getInstance().getRegisteredConverters().add(new JacksonConverter());
-        Engine.getInstance().getRegisteredConverters().add(new XstreamConverter());
+        Engine.getInstance().getRegisteredConverters()
+                .add(new JacksonConverter());
+        Engine.getInstance().getRegisteredConverters()
+                .add(new XstreamConverter());
         Engine.getInstance().registerDefaultConverters();
         Finder finder = new Finder();
         finder.setTargetClass(MyServerResource1.class);
@@ -90,26 +92,25 @@ public class AnnotatedResource1TestCase extends RestletTestCase {
 
         String result = clientResource.get(MediaType.TEXT_XML).getText();
         assertEquals(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <name>myName</name>\n  <description>myDescription</description>\n</org.restlet.test.resource.MyBean>",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <description>myDescription</description>\n  <name>myName</name>\n</org.restlet.test.resource.MyBean>",
                 result);
 
         result = clientResource.get(MediaType.APPLICATION_XML).getText();
         assertEquals(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <name>myName</name>\n  <description>myDescription</description>\n</org.restlet.test.resource.MyBean>",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <description>myDescription</description>\n  <name>myName</name>\n</org.restlet.test.resource.MyBean>",
                 result);
 
         result = clientResource.get(MediaType.APPLICATION_ALL_XML).getText();
         assertEquals(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <name>myName</name>\n  <description>myDescription</description>\n</org.restlet.test.resource.MyBean>",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <description>myDescription</description>\n  <name>myName</name>\n</org.restlet.test.resource.MyBean>",
                 result);
 
         result = clientResource.get(MediaType.APPLICATION_JSON).getText();
-        assertEquals("{\"name\":\"myName\",\"description\":\"myDescription\"}",
+        assertEquals("{\"description\":\"myDescription\",\"name\":\"myName\"}",
                 result);
 
         result = clientResource.get(MediaType.APPLICATION_JAVA_OBJECT_XML)
                 .getText();
-        System.out.println(result);
         assertTrue(result
                 .startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n<java version=\""));
     }
@@ -138,7 +139,8 @@ public class AnnotatedResource1TestCase extends RestletTestCase {
             clientResource.put(new StringRepresentation("wxyz",
                     MediaType.APPLICATION_GNU_ZIP));
         } catch (ResourceException re) {
-            assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, re.getStatus());
+            assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
+                    re.getStatus());
         }
     }
 

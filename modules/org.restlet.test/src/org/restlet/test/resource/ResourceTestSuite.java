@@ -41,7 +41,7 @@ public class ResourceTestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite("Resource package");
         // $JUnit-BEGIN$
-        suite.addTestSuite(DirectoryTestCase.class);
+        //suite.addTestSuite(DirectoryTestCase.class);
 
         suite.addTestSuite(AnnotatedResource1TestCase.class);
         suite.addTestSuite(AnnotatedResource2TestCase.class);
@@ -57,12 +57,15 @@ public class ResourceTestSuite {
         suite.addTestSuite(AnnotatedResource12TestCase.class);
         suite.addTestSuite(AnnotatedResource13TestCase.class);
         suite.addTestSuite(AnnotatedResource14TestCase.class);
-        
+        suite.addTestSuite(AnnotatedResource15TestCase.class);
+        suite.addTestSuite(AnnotatedResource16TestCase.class);
+        suite.addTestSuite(AnnotatedResource17TestCase.class);
+        suite.addTestSuite(AnnotatedResource18TestCase.class);
 
         // Tests based on HTTP client connectors are not supported by the GAE
         // edition.
         // [ifndef gae]
-        suite.addTestSuite(FileRepresentationTestCase.class);
+        //suite.addTestSuite(FileRepresentationTestCase.class);
         // [enddef]
         // $JUnit-END$
 
