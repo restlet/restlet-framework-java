@@ -281,6 +281,21 @@ public abstract class Restlet implements Uniform {
         return this.owner;
     }
 
+    // [ifndef gwt] method
+    /**
+     * Handles a call. Creates an empty {@link Response} object and then invokes
+     * {@link #handle(Request, Response)}.
+     * 
+     * @param request
+     *            The request to handle.
+     * @return The returned response.
+     */
+    public final Response handle(Request request) {
+        Response response = new Response(request);
+        handle(request, response);
+        return response;
+    }
+
     /**
      * Handles a call. The default behavior is to initialize the Restlet by
      * setting the current context using the {@link Context#setCurrent(Context)}
@@ -331,6 +346,35 @@ public abstract class Restlet implements Uniform {
                 response.setStatus(Status.SERVER_ERROR_INTERNAL);
             }
         }
+    }
+
+    /**
+     * Handles a call.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @param onResponseCallback
+     *            The callback invoked upon response reception.
+     */
+    public final void handle(Request request, Response response,
+            Uniform onResponseCallback) {
+        request.setOnResponse(onResponseCallback);
+        handle(request, response);
+    }
+
+    /**
+     * Handles a call.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param onReceivedCallback
+     *            The callback invoked upon request reception.
+     */
+    public final void handle(Request request, Uniform onReceivedCallback) {
+        Response response = new Response(request);
+        handle(request, response, onReceivedCallback);
     }
 
     /**

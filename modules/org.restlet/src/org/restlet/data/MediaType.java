@@ -148,6 +148,9 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_JSON = register(
             "application/json", "JavaScript Object Notation document");
 
+    public static final MediaType APPLICATION_JSON_SMILE = register(
+            "application/x-json-smile", "JavaScript Object Notation smile document");
+    
     // [ifndef gwt] member
     public static final MediaType APPLICATION_KML = register(
             "application/vnd.google-earth.kml+xml",

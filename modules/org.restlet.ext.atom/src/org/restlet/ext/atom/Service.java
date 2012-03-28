@@ -42,6 +42,7 @@ import java.util.List;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
+import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -70,7 +71,7 @@ public class Service extends SaxRepresentation {
     /**
      * The client HTTP dispatcher.
      */
-    private volatile Client clientDispatcher;
+    private volatile Restlet clientDispatcher;
 
     /**
      * The reference.
@@ -119,7 +120,7 @@ public class Service extends SaxRepresentation {
      *            The XML introspection document.
      * @throws IOException
      */
-    public Service(Client clientDispatcher, String serviceUri,
+    public Service(Restlet clientDispatcher, String serviceUri,
             Representation xmlService) throws IOException {
         super(xmlService);
         this.clientDispatcher = clientDispatcher;
@@ -210,7 +211,7 @@ public class Service extends SaxRepresentation {
      * 
      * @return The client HTTP dispatcher.
      */
-    public Client getClientDispatcher() {
+    public Restlet getClientDispatcher() {
         return this.clientDispatcher;
     }
 

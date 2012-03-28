@@ -36,7 +36,6 @@ package org.restlet.test.connector;
 import java.io.Serializable;
 
 import org.restlet.Application;
-import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -122,7 +121,7 @@ public class RiapTestCase extends RestletTestCase {
         comp.getInternalRouter().attach("/local", localOnly);
         String localBase = "riap://component/local";
 
-        Client dispatcher = comp.getContext().getClientDispatcher();
+        Restlet dispatcher = comp.getContext().getClientDispatcher();
 
         String msg = "this%20message";
         String echoURI = localBase + "/echo/" + msg;

@@ -33,6 +33,7 @@
 
 package org.restlet.resource;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -186,7 +187,7 @@ public abstract class Resource {
     public Set<Method> getAllowedMethods() {
         return getResponse() == null ? null : getResponse().getAllowedMethods();
     }
-
+    
     // [ifndef gwt] method
     /**
      * Returns the parent application. If it wasn't set, it attempts to retrieve
@@ -210,6 +211,17 @@ public abstract class Resource {
 
         return result;
     }
+
+    /**
+     * Returns the attribute value by looking up the given name in the request
+     * or response attributes maps. This is typically used for variables that
+     * are declared in the URI template used to route the call to this resource.
+     * 
+     * @param name
+     *            The attribute name.
+     * @return The matching request or response attribute value.
+     */
+    public abstract String getAttribute(String name);
 
     /**
      * Returns the list of authentication requests sent by an origin server to a
@@ -256,15 +268,6 @@ public abstract class Resource {
         return getRequest() == null ? null : getRequest().getConditions();
     }
 
-    /**
-     * Returns the current context.
-     * 
-     * @return The current context.
-     */
-    public Context getContext() {
-        return context;
-    }
-
     // [ifndef gwt] method
     /**
      * Returns the application's content negotiation service or create a new
@@ -283,6 +286,15 @@ public abstract class Resource {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the current context.
+     * 
+     * @return The current context.
+     */
+    public Context getContext() {
+        return context;
     }
 
     // [ifndef gwt] method
@@ -451,6 +463,25 @@ public abstract class Resource {
      */
     public Form getQuery() {
         return getReference() == null ? null : getReference().getQueryAsForm();
+    }
+
+    /**
+     * Returns the first value of the query parameter given its name if
+     * existing, or null.
+     * 
+     * @param name
+     *            The query parameter name.
+     * @return The first value of the query parameter.
+     */
+    public String getQueryValue(String name) {
+        String result = null;
+        Form query = getQuery();
+
+        if (query != null) {
+            result = query.getFirstValue(name);
+        }
+
+        return result;
     }
 
     /**
@@ -682,6 +713,41 @@ public abstract class Resource {
      */
     public void setApplication(org.restlet.Application application) {
         this.application = application;
+    }
+
+    /**
+     * Sets the request or response attribute value.
+     * 
+     * @param name
+     *            The attribute name.
+     * @param value
+     *            The attribute to set.
+     */
+    public abstract void setAttribute(String name, String value);
+
+    /**
+     * Sets the query value for the named parameter. If no query is defined, it
+     * creates one. If the same parameter exists, it replaces it altogether.
+     * 
+     * @param name
+     *            The query parameter name.
+     * @param value
+     *            The query parameter value.
+     */
+    public void setQueryValue(String name, String value) {
+        Form query = getQuery();
+
+        if (query == null) {
+            query = new Form();
+        }
+
+        query.set(name, value);
+
+        try {
+            getReference().setQuery(query.encode());
+        } catch (IOException e) {
+            getLogger().fine("Unable to set the query value");
+        }
     }
 
     /**

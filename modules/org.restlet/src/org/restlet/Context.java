@@ -110,11 +110,11 @@ public class Context {
     }
 
     /** The client dispatcher. */
-    private volatile Client clientDispatcher;
+    private volatile Restlet clientDispatcher;
 
     // [ifndef gwt] member
     /** The server dispatcher. */
-    private volatile Client serverDispatcher;
+    private volatile Restlet serverDispatcher;
 
     /** The modifiable attributes map. */
     private final ConcurrentMap<String, Object> attributes;
@@ -236,7 +236,7 @@ public class Context {
      * 
      * @return A request dispatcher to available client connectors.
      */
-    public Client getClientDispatcher() {
+    public Restlet getClientDispatcher() {
         return this.clientDispatcher;
     }
 
@@ -299,7 +299,7 @@ public class Context {
      * 
      * @return A request dispatcher to the server connectors' router.
      */
-    public Client getServerDispatcher() {
+    public Restlet getServerDispatcher() {
         return this.serverDispatcher;
     }
 
@@ -328,7 +328,7 @@ public class Context {
      * @param clientDispatcher
      *            The new client dispatcher.
      */
-    public void setClientDispatcher(Client clientDispatcher) {
+    public void setClientDispatcher(Restlet clientDispatcher) {
         this.clientDispatcher = clientDispatcher;
     }
 
@@ -402,7 +402,7 @@ public class Context {
      * @param serverDispatcher
      *            The new server dispatcher.
      */
-    public void setServerDispatcher(Client serverDispatcher) {
+    public void setServerDispatcher(Restlet serverDispatcher) {
         this.serverDispatcher = serverDispatcher;
     }
 
