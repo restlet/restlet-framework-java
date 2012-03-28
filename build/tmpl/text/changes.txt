@@ -15,12 +15,29 @@ Changes log
          private package. Reported by Laszlo Hordos.
        - Enhanced support of ServerResource that inherits from generic classes.
          Reported by Thierry Templier.
+       - Fixed content negotiation regarding request entities
+         to ensure a better annotated method dispatching.
+       - Reference doesn't consider '{' and '}' as invalid characters
+         allowing resolution of URI templates on the client-side.
+         Reported by Andrei Pozolotin.
+    - API changes
+       - Added Resource#getQueryValue(String) and setQueryValue(String,
+         String) shortcut methods.
+       - Moved Client#handle(Request) method to Restlet class.
+       - Added Resource#getQueryValue(String), getAttribute(String),
+         setQueryValue(String, String) and setAttribute(String, String)
+         shortcut methods.
+       - Moved Client#handle(...) methods to parent Restlet class.
+       - Context#clientDispatcher and serverDispatcher are now Restlet
+         instead of Client. Needed to fix URI template resolution
+         in simple ClientResource instances.
+       - Added ClientResource#accept(...) shortcut methods.
     - Misc
         - Updated FreeMarker library to version 2.3.19.
 
 - 2.1 Release Candidate 3 (02/15/2012)
     - Bug fixed
-       - Fixed guice groupId. Reported by Kristoffer Gronowski.
+       - Fixed Guice Maven group ID. Reported by Kristoffer Gronowski.
        - Relaxed content type header parsing in case of a trailing 
          semicolon. Reported by Jean-Baptiste Dusseaut.
 
@@ -283,8 +300,6 @@ Changes log
       - Added a warning message to indicate that an application without a 
         parent component can't handle outbound calls by default.
         Reported by John Logsdon and Kristoffer Gronowski.
-      - Allowed change of the parent context of a VirtualHost via the
-        setContext() method.
       - Allowed change of the parent context of a VirtualHost via the
         setContext() method.
     - Bug fixed
