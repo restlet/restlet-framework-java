@@ -33,16 +33,15 @@
 
 package org.restlet.engine;
 
-import org.restlet.Client;
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.Restlet;
 import org.restlet.data.Protocol;
+import org.restlet.routing.Filter;
 import org.restlet.routing.Template;
 
 /**
- * Base call dispatcher capable of resolving target resource URI templates.
+ * Filter that resolves URI templates in the target resource URI reference using
+ * the request attributes.
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
@@ -50,45 +49,20 @@ import org.restlet.routing.Template;
  * 
  * @author Jerome Louvel
  */
-public class TemplateDispatcher extends Client {
-
-    /** The context. */
-    private volatile Context context;
+public class TemplateDispatcher extends Filter {
 
     /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     */
-    public TemplateDispatcher(Context context) {
-        super(null, (Protocol) null);
-        this.context = context;
-    }
-
-    /**
-     * Actually handles the call. Since this method only sets the request's
-     * original reference ({@link Request#getOriginalRef()} with the the
-     * targeted one, it must be overridden by subclasses.
-     * 
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    protected void doHandle(Request request, Response response) {
-        request.setOriginalRef(request.getResourceRef().getTargetRef());
-    }
-
-    /**
-     * Returns the context. Override default behavior from {@link Restlet}.
-     * 
-     * @return The context.
+     * If the response entity comes back with no identifier, automatically set
+     * the request's resource reference's identifier. This is very useful to
+     * resolve relative references in XSLT for example.
      */
     @Override
-    public Context getContext() {
-        return context;
+    protected void afterHandle(Request request, Response response) {
+        if ((response.getEntity() != null)
+                && (response.getEntity().getLocationRef() == null)) {
+            response.getEntity().setLocationRef(
+                    request.getResourceRef().getTargetRef().toString());
+        }
     }
 
     /**
@@ -100,9 +74,8 @@ public class TemplateDispatcher extends Client {
      * @param response
      *            The response to update.
      */
-    public void handle(Request request, Response response) {
+    public int beforeHandle(Request request, Response response) {
         // Associate the response to the current thread
-        Response.setCurrent(response);
         Protocol protocol = request.getProtocol();
 
         if (protocol == null) {
@@ -120,28 +93,8 @@ public class TemplateDispatcher extends Client {
             request.setResourceRef(template.format(request, response));
         }
 
-        // Actually handle the formatted URI
-        doHandle(request, response);
-
-        // If the response entity comes back with no identifier,
-        // automatically set the request's resource reference's identifier.
-        // This is very useful to resolve relative references in XSLT for
-        // example.
-        if ((response.getEntity() != null)
-                && (response.getEntity().getLocationRef() == null)) {
-            response.getEntity().setLocationRef(
-                    request.getResourceRef().getTargetRef().toString());
-        }
+        request.setOriginalRef(request.getResourceRef().getTargetRef());
+        return CONTINUE;
     }
 
-    /**
-     * Sets the context. Override default behavior from {@link Restlet}.
-     * 
-     * @param context
-     *            The context to set.
-     */
-    @Override
-    public void setContext(Context context) {
-        this.context = context;
-    }
 }
