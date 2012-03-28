@@ -51,7 +51,6 @@ public class OrderedReadonlySet<E> implements Set<E> {
      * @param data
      *            will not check, if no duplicates are in the data
      */
-    @SuppressWarnings("unchecked")
     public OrderedReadonlySet(E... data) {
         this.elements = Arrays.asList(data);
     }
