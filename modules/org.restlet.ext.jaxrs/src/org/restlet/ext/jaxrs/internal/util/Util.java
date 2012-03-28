@@ -366,7 +366,6 @@ public class Util {
      * @param <A>
      * @return Returns the created list with the given objects in it.
      */
-    @SuppressWarnings("unchecked")
     public static <A> Collection<A> createColl(A... objects) {
         return createList(objects);
     }
@@ -380,7 +379,6 @@ public class Util {
      * @return Returns the created list with the given object in it or an empty
      *         list, if the given object is null.
      */
-    @SuppressWarnings("unchecked")
     public static <A> List<A> createList(A... objects) {
         final List<A> list = new ArrayList<A>();
         final int l = objects.length;
@@ -417,7 +415,6 @@ public class Util {
      * @param objects
      * @return the created Set
      */
-    @SuppressWarnings("unchecked")
     public static <A> Set<A> createSet(A... objects) {
         final Set<A> set = new HashSet<A>();
         final int l = objects.length;
