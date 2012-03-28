@@ -171,8 +171,8 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Attempts to redirect the user's browser can be redirected to the URI
-     * provided in a query parameter named by {@link #getRedirectQueryName()}.
+     * Attempts to redirect the user's browser to the URI provided in a query
+     * parameter named by {@link #getRedirectQueryName()}.
      * 
      * @param request
      *            The current request.
@@ -207,7 +207,7 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
     }
 
     /**
-     * Sets or update the credentials cookie.
+     * Sets or updates the credentials cookie.
      */
     @Override
     protected int authenticated(Request request, Response response) {
