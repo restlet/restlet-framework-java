@@ -51,10 +51,12 @@ import org.restlet.data.Cookie;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.TemplateDispatcher;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -418,6 +420,48 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Updates the client preferences to accept the given media type with a 1.0
+     * quality.
+     * 
+     * @param mediaType
+     *            The media type to accept.
+     */
+    public void accept(MediaType mediaType) {
+        getClientInfo().getAcceptedMediaTypes().add(
+                new Preference<MediaType>(mediaType));
+    }
+
+    /**
+     * Updates the client preferences to accept the given media types with a 1.0
+     * quality.
+     * 
+     * @param mediaTypes
+     *            The media type to accept.
+     */
+    public void accept(MediaType... mediaTypes) {
+        if (mediaTypes != null) {
+            for (MediaType mediaType : mediaTypes) {
+                getClientInfo().getAcceptedMediaTypes().add(
+                        new Preference<MediaType>(mediaType));
+            }
+        }
+    }
+
+    /**
+     * Updates the client preferences to accept the given media type with a
+     * given quality.
+     * 
+     * @param mediaType
+     *            The media type to accept.
+     * @param quality
+     *            The quality to set.
+     */
+    public void accept(MediaType mediaType, float quality) {
+        getClientInfo().getAcceptedMediaTypes().add(
+                new Preference<MediaType>(mediaType, quality));
+    }
+
+    /**
      * Adds a parameter to the query component. The name and value are
      * automatically encoded if necessary.
      * 
@@ -508,7 +552,10 @@ public class ClientResource extends UniformResource {
                             : null;
 
             if (protocol != null) {
-                result = new Client(protocol);
+                Client client = new Client(protocol);
+                TemplateDispatcher dispatcher = new TemplateDispatcher();
+                dispatcher.setNext(client);
+                result = dispatcher;
             }
         }
 
@@ -692,6 +739,19 @@ public class ClientResource extends UniformResource {
      */
     public Representation get(MediaType mediaType) throws ResourceException {
         return handle(Method.GET, mediaType);
+    }
+
+    /**
+     * Returns the attribute value by looking up the given name in the request
+     * attributes maps. This is typically used for variables that are declared
+     * in the URI template used to route the call to this resource.
+     * 
+     * @param name
+     *            The attribute name.
+     * @return The request attribute value.
+     */
+    public String getAttribute(String name) {
+        return (String) getRequestAttributes().get(name);
     }
 
     /**
@@ -1611,6 +1671,18 @@ public class ClientResource extends UniformResource {
 
         // Retry the call
         handle(request, response, references, ++retryAttempt, next);
+    }
+
+    /**
+     * Sets the request attribute value.
+     * 
+     * @param name
+     *            The attribute name.
+     * @param value
+     *            The attribute to set.
+     */
+    public void setAttribute(String name, String value) {
+        getRequestAttributes().put(name, value);
     }
 
     /**

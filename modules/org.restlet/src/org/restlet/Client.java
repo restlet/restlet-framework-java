@@ -172,20 +172,6 @@ public class Client extends Connector {
         return this.helper;
     }
 
-    // [ifndef gwt] method
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @return The returned response.
-     */
-    public final Response handle(Request request) {
-        Response response = new Response(request);
-        handle(request, response);
-        return response;
-    }
-
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
@@ -199,35 +185,6 @@ public class Client extends Connector {
             sb.append(" Please add the JAR of a matching connector to your classpath.");
             response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, sb.toString());
         }
-    }
-
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @param onResponseCallback
-     *            The callback invoked upon response reception.
-     */
-    public void handle(Request request, Response response,
-            Uniform onResponseCallback) {
-        request.setOnResponse(onResponseCallback);
-        handle(request, response);
-    }
-
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param onReceivedCallback
-     *            The callback invoked upon request reception.
-     */
-    public final void handle(Request request, Uniform onReceivedCallback) {
-        Response response = new Response(request);
-        handle(request, response, onReceivedCallback);
     }
 
     /**
