@@ -20,6 +20,8 @@ Changes log
        - Reference doesn't consider '{' and '}' as invalid characters
          allowing resolution of URI templates on the client-side.
          Reported by Andrei Pozolotin.
+       - Fixed OutputRepresentation with negative int that can't be serialized 
+         on client side. Rzported by Gabriel Pulido.
     - API changes
        - Added Resource#getQueryValue(String) and setQueryValue(String,
          String) shortcut methods.

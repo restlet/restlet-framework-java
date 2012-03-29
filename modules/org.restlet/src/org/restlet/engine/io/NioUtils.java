@@ -199,8 +199,6 @@ public class NioUtils {
         if (Edition.CURRENT != Edition.GAE) {
             // [ifndef gae]
             final java.nio.channels.Pipe pipe = java.nio.channels.Pipe.open();
-            org.restlet.Application application = org.restlet.Application
-                    .getCurrent();
 
             // Get a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
@@ -218,6 +216,8 @@ public class NioUtils {
                 }
             };
 
+            org.restlet.Application application = org.restlet.Application
+            .getCurrent();
             if (application != null && application.getTaskService() != null) {
                 application.getTaskService().execute(task);
             } else {
