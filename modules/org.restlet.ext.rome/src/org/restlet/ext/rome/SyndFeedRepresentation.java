@@ -44,6 +44,7 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
+import org.xml.sax.InputSource;
 
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
@@ -99,8 +100,8 @@ public class SyndFeedRepresentation extends WriterRepresentation {
         super(null);
 
         try {
-            this.feed = new SyndFeedInput().build(feedRepresentation
-                    .getReader());
+            InputSource source = new InputSource(feedRepresentation.getStream());
+            this.feed = new SyndFeedInput().build(source);
             setMediaType(getMediaType(this.feed.getFeedType()));
         } catch (Exception e) {
             Context.getCurrentLogger().log(Level.WARNING,
