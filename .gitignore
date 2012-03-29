@@ -5,6 +5,9 @@ velocity.log
 pom.xml
 *.launch
 target/
+*.classpath
+*.project
+*.prefs
 /modules/org.restlet/bin
 /modules/org.restlet.example/bin
 /modules/org.restlet.ext.atom/bin
