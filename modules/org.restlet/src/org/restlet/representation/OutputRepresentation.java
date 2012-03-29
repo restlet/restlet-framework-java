@@ -35,9 +35,11 @@ package org.restlet.representation;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.ReadableByteChannel;
 
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.NioUtils;
 
 /**
  * Representation based on a BIO output stream. This class is a good basis to
@@ -71,6 +73,11 @@ public abstract class OutputRepresentation extends StreamRepresentation {
     public OutputRepresentation(MediaType mediaType, long expectedSize) {
         super(mediaType);
         setSize(expectedSize);
+    }
+    
+    @Override
+    public ReadableByteChannel getChannel() throws IOException {
+        return NioUtils.getReadableByteChannel(this);
     }
 
     /**
