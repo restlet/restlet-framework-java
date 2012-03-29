@@ -16,6 +16,8 @@ Changes log
          Reported by Laszlo Hordos.
        - Fixed OSGi manifest file for the jackson library that exposes a 
          private package. Reported by Laszlo Hordos.
+       - Fixed parsing of Feed using the Rome extension.
+         Reported by Andy Dennie.
     - Misc
         - Updated FreeMarker library to version 2.3.19.
 
