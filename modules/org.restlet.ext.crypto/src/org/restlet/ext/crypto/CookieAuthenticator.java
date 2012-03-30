@@ -452,8 +452,9 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
      */
     protected boolean isLoggingIn(Request request, Response response) {
         return isInterceptingLogin()
-                && getLoginPath().equals(
-                        request.getResourceRef().getRemainingPart())
+                && getLoginPath()
+                        .equals(request.getResourceRef().getRemainingPart(
+                                false, false))
                 && Method.POST.equals(request.getMethod());
     }
 
@@ -470,8 +471,9 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
      */
     protected boolean isLoggingOut(Request request, Response response) {
         return isInterceptingLogout()
-                && getLogoutPath().equals(
-                        request.getResourceRef().getRemainingPart())
+                && getLogoutPath()
+                        .equals(request.getResourceRef().getRemainingPart(
+                                false, false))
                 && (Method.GET.equals(request.getMethod()) || Method.POST
                         .equals(request.getMethod()));
     }
