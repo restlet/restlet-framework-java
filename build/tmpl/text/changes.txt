@@ -18,6 +18,8 @@ Changes log
          private package. Reported by Laszlo Hordos.
        - Fixed parsing of Feed using the Rome extension.
          Reported by Andy Dennie.
+       - Allowed multiple cookies set at once for JAX-RS.
+         Reported and contributed by Grzegorz Godlewski.
     - Misc
         - Updated FreeMarker library to version 2.3.19.
 
