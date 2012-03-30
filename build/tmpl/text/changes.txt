@@ -21,8 +21,13 @@ Changes log
          allowing resolution of URI templates on the client-side.
          Reported by Andrei Pozolotin.
        - Fixed OutputRepresentation with negative int that can't be serialized 
-         on client side. Reported by Gabriel Pulido.
-       - Fixed parsing of Feed using the Rome extension. Reported by Andy Dennie.
+         on client side.
+         Reported by Gabriel Pulido.
+       - Fixed parsing of Feed using the Rome extension.
+         Reported by Andy Dennie.
+       - Allowed multiple cookies set at once for JAX-RS .
+         Reported by Grzegorz Godlewski.
+              
     - API changes
        - Added Resource#getQueryValue(String) and setQueryValue(String,
          String) shortcut methods.
