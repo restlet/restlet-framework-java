@@ -29,6 +29,8 @@ Changes log
          Reported and contributed by Grzegorz Godlewski.
        - Fixed formatting of expires cookie setting value.
          Reported and contributed by Grzegorz Godlewski.
+       - Fixed CookieAuthenticator wrong login/logout intercept comparison.
+         Reported and contributed by Martin Svensson.
               
     - API changes
        - Added Resource#getQueryValue(String) and setQueryValue(String,
