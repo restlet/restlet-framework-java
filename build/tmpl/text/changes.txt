@@ -25,8 +25,10 @@ Changes log
          Reported by Gabriel Pulido.
        - Fixed parsing of Feed using the Rome extension.
          Reported by Andy Dennie.
-       - Allowed multiple cookies set at once for JAX-RS .
-         Reported by Grzegorz Godlewski.
+       - Allowed multiple cookies set at once for JAX-RS.
+         Reported and contributed by Grzegorz Godlewski.
+       - Fixed formatting of expires cookie setting value.
+         Reported and contributed by Grzegorz Godlewski.
               
     - API changes
        - Added Resource#getQueryValue(String) and setQueryValue(String,
