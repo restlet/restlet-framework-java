@@ -33,6 +33,8 @@
 
 package org.restlet.test.ext.emf;
 
+import java.io.IOException;
+
 import org.eclipse.emf.ecore.EObject;
 import org.restlet.ext.emf.EmfRepresentation;
 import org.restlet.representation.Representation;
@@ -46,7 +48,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class EmfRepresentationTestCase extends RestletTestCase {
 
-    public void testParsing() {
+    public void testParsing() throws IOException {
         ClientResource cr = new ClientResource(
                 "clap://class/org/restlet/test/ext/emf/Test.ecore");
         Representation emfFile = cr.get();

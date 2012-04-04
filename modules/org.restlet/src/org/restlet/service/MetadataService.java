@@ -138,6 +138,7 @@ public class MetadataService extends Service {
      * <li>js: JavaScript document</li>
      * <li>jsf: Java Server Faces file</li>
      * <li>json: JavaScript Object Notation document</li>
+     * <li>jsonsmile: JavaScript Object Notation smile document</li>
      * <li>kar: Karaoke MIDI file</li>
      * <li>latex: LaTeX document</li>
      * <li>man: Manual file</li>
@@ -267,6 +268,7 @@ public class MetadataService extends Service {
         ext(dm, "jpg", MediaType.IMAGE_JPEG);
         ext(dm, "js", MediaType.APPLICATION_JAVASCRIPT);
         ext(dm, "jsf", MediaType.TEXT_PLAIN);
+        ext(dm, "jsonsmile", MediaType.APPLICATION_JSON_SMILE);
         ext(dm, "kar", MediaType.AUDIO_MIDI);
         ext(dm, "latex", MediaType.APPLICATION_LATEX);
         ext(dm, "latin1", CharacterSet.ISO_8859_1);

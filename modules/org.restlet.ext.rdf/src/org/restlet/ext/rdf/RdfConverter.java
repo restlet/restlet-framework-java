@@ -36,7 +36,6 @@ package org.restlet.ext.rdf;
 import java.io.IOException;
 import java.util.List;
 
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
@@ -131,16 +130,10 @@ public class RdfConverter extends ConverterHelper {
             Resource resource) throws IOException {
         Object result = null;
 
-        try {
-            if (source instanceof RdfRepresentation) {
-                result = ((RdfRepresentation) source).getGraph();
-            } else {
-                result = (new RdfRepresentation(source)).getGraph();
-            }
-        } catch (Exception e) {
-            Context.getCurrentLogger()
-                    .warning(
-                            "Cannot convert a source representation into a Graph object.");
+        if (source instanceof RdfRepresentation) {
+            result = ((RdfRepresentation) source).getGraph();
+        } else {
+            result = (new RdfRepresentation(source)).getGraph();
         }
 
         return target.cast(result);

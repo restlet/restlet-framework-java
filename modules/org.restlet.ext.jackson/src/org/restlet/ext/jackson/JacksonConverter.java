@@ -50,9 +50,13 @@ import org.restlet.resource.Resource;
  * @author Jerome Louvel
  */
 public class JacksonConverter extends ConverterHelper {
-
+    /** Variant with media type application/json. */
     private static final VariantInfo VARIANT_JSON = new VariantInfo(
             MediaType.APPLICATION_JSON);
+
+    /** Variant with media type application/x-json-smile. */
+    private static final VariantInfo VARIANT_JSON_SMILE = new VariantInfo(
+            MediaType.APPLICATION_JSON_SMILE);
 
     /**
      * Creates the marshaling {@link JacksonRepresentation}.
@@ -69,6 +73,20 @@ public class JacksonConverter extends ConverterHelper {
     }
 
     /**
+     * Creates the marshaling {@link JacksonSmileRepresentation}.
+     * 
+     * @param <T>
+     * @param mediaType
+     *            The target media type.
+     * @param source
+     *            The source object to marshal.
+     * @return The marshaling {@link JacksonSmileRepresentation}.
+     */
+    protected <T> JacksonSmileRepresentation<T> createBinary(MediaType mediaType, T source) {
+        return new JacksonSmileRepresentation<T>(mediaType, source);
+    }
+    
+    /**
      * Creates the unmarshaling {@link JacksonRepresentation}.
      * 
      * @param <T>
@@ -83,13 +101,30 @@ public class JacksonConverter extends ConverterHelper {
         return new JacksonRepresentation<T>(source, objectClass);
     }
 
+    /**
+     * Creates the unmarshaling {@link JacksonSmileRepresentation}.
+     * 
+     * @param <T>
+     * @param source
+     *            The source representation to unmarshal.
+     * @param objectClass
+     *            The object class to instantiate.
+     * @return The unmarshaling {@link JacksonSmileRepresentation}.
+     */
+    protected <T> JacksonSmileRepresentation<T> createBinary(Representation source,
+            Class<T> objectClass) {
+        return new JacksonSmileRepresentation<T>(source, objectClass);
+    }
+    
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (VARIANT_JSON.isCompatible(source)) {
+        if (VARIANT_JSON.isCompatible(source)
+                || VARIANT_JSON_SMILE.isCompatible(source)) {
             result = addObjectClass(result, Object.class);
             result = addObjectClass(result, JacksonRepresentation.class);
+            result = addObjectClass(result, JacksonSmileRepresentation.class);
         }
 
         return result;
@@ -101,6 +136,7 @@ public class JacksonConverter extends ConverterHelper {
 
         if (source != null) {
             result = addVariant(result, VARIANT_JSON);
+            result = addVariant(result, VARIANT_JSON_SMILE);
         }
 
         return result;
@@ -112,10 +148,14 @@ public class JacksonConverter extends ConverterHelper {
 
         if (source instanceof JacksonRepresentation<?>) {
             result = 1.0F;
+        } else if (source instanceof JacksonSmileRepresentation<?>) {
+            result = 1.0F;
         } else {
             if (target == null) {
                 result = 0.5F;
             } else if (VARIANT_JSON.isCompatible(target)) {
+                result = 0.8F;
+            } else if (VARIANT_JSON_SMILE.isCompatible(target)) {
                 result = 0.8F;
             } else {
                 result = 0.5F;
@@ -132,10 +172,17 @@ public class JacksonConverter extends ConverterHelper {
 
         if (source instanceof JacksonRepresentation<?>) {
             result = 1.0F;
+        } else if (source instanceof JacksonSmileRepresentation<?>) {
+            result = 1.0F;
         } else if ((target != null)
                 && JacksonRepresentation.class.isAssignableFrom(target)) {
             result = 1.0F;
+        } else if ((target != null)
+                && JacksonSmileRepresentation.class.isAssignableFrom(target)) {
+            result = 1.0F;
         } else if (VARIANT_JSON.isCompatible(source)) {
+            result = 0.8F;
+        } else if (VARIANT_JSON_SMILE.isCompatible(source)) {
             result = 0.8F;
         }
 
@@ -148,9 +195,24 @@ public class JacksonConverter extends ConverterHelper {
             Resource resource) throws IOException {
         Object result = null;
 
+        JacksonSmileRepresentation<?> bSource = null;
+        if (source instanceof JacksonSmileRepresentation) {
+            bSource = (JacksonSmileRepresentation<?>) source;
+        } else if (VARIANT_JSON_SMILE.isCompatible(source)) {
+            bSource = createBinary(source, target);
+        }
+        if (bSource != null) {
+            // Handle the conversion
+            if ((target != null)
+                    && JacksonSmileRepresentation.class.isAssignableFrom(target)) {
+                result = bSource;
+            } else {
+                result = bSource.getObject();
+            }
+        }
+        
         // The source for the Jackson conversion
         JacksonRepresentation<?> jacksonSource = null;
-
         if (source instanceof JacksonRepresentation) {
             jacksonSource = (JacksonRepresentation<?>) source;
         } else if (VARIANT_JSON.isCompatible(source)) {
@@ -177,15 +239,17 @@ public class JacksonConverter extends ConverterHelper {
 
         if (source instanceof JacksonRepresentation) {
             result = (JacksonRepresentation<?>) source;
+        } else if (source instanceof JacksonSmileRepresentation) {
+            result = (JacksonSmileRepresentation<?>) source;
         } else {
             if (target.getMediaType() == null) {
                 target.setMediaType(MediaType.APPLICATION_JSON);
             }
 
-            if (VARIANT_JSON.isCompatible(target)) {
-                JacksonRepresentation<Object> jacksonRepresentation = create(
-                        target.getMediaType(), source);
-                result = jacksonRepresentation;
+            if (VARIANT_JSON_SMILE.isCompatible(target)) {
+                result = createBinary(target.getMediaType(), source);
+            } else if (VARIANT_JSON.isCompatible(target)) {
+                result = create(target.getMediaType(), source);
             }
         }
 
@@ -196,6 +260,7 @@ public class JacksonConverter extends ConverterHelper {
     public <T> void updatePreferences(List<Preference<MediaType>> preferences,
             Class<T> entity) {
         updatePreferences(preferences, MediaType.APPLICATION_JSON, 1.0F);
+        updatePreferences(preferences, MediaType.APPLICATION_JSON_SMILE, 1.0F);
     }
 
 }

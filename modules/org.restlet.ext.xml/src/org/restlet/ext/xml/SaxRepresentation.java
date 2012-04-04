@@ -132,26 +132,23 @@ public class SaxRepresentation extends XmlRepresentation {
      *            A source XML representation to parse.
      * @throws IOException
      */
-    public SaxRepresentation(Representation xmlRepresentation) {
+    public SaxRepresentation(Representation xmlRepresentation) throws IOException {
         super((xmlRepresentation == null) ? null : xmlRepresentation
                 .getMediaType());
 
-        try {
-            if (xmlRepresentation instanceof XmlRepresentation) {
-                this.source = ((XmlRepresentation) xmlRepresentation)
-                        .getSaxSource();
-            } else {
-                this.source = new SAXSource(new InputSource(
-                        xmlRepresentation.getReader()));
-            }
-
-            if (xmlRepresentation.getLocationRef() != null) {
-                this.source.setSystemId(xmlRepresentation.getLocationRef()
-                        .getTargetRef().toString());
-            }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+        if (xmlRepresentation instanceof XmlRepresentation) {
+            this.source = ((XmlRepresentation) xmlRepresentation)
+                    .getSaxSource();
+        } else {
+            this.source = new SAXSource(new InputSource(
+                    xmlRepresentation.getReader()));
         }
+
+        if (xmlRepresentation.getLocationRef() != null) {
+            this.source.setSystemId(xmlRepresentation.getLocationRef()
+                    .getTargetRef().toString());
+        }
+        
     }
 
     @Override

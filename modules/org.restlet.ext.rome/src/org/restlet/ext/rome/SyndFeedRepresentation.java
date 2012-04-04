@@ -37,9 +37,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
@@ -95,18 +93,23 @@ public class SyndFeedRepresentation extends WriterRepresentation {
      * 
      * @param feedRepresentation
      *            The feed representation to parse.
+     * @throws IOException
      */
-    public SyndFeedRepresentation(Representation feedRepresentation) {
+    public SyndFeedRepresentation(Representation feedRepresentation)
+            throws IOException {
         super(null);
 
+        InputSource source = new InputSource(feedRepresentation.getStream());
         try {
-            InputSource source = new InputSource(feedRepresentation.getStream());
             this.feed = new SyndFeedInput().build(source);
-            setMediaType(getMediaType(this.feed.getFeedType()));
-        } catch (Exception e) {
-            Context.getCurrentLogger().log(Level.WARNING,
-                    "Unable to parse feed", e);
+        } catch (IllegalArgumentException e) {
+            throw new IOException("Couldn't read the feed representation. "
+                    + e.getMessage());
+        } catch (FeedException e) {
+            throw new IOException("Couldn't read the feed representation. "
+                    + e.getMessage());
         }
+        setMediaType(getMediaType(this.feed.getFeedType()));
     }
 
     /**

@@ -12,13 +12,19 @@
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-core-asl</artifactId>
 		</maven>
-    </package>
+	</package>
 	<package id="jackson-mapper" name="org.codehaus.jackson.mapper">
 		<maven>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 		</maven>
-    </package>
+	</package>
+	<package id="jackson-smile" name="org.codehaus.jackson.smile">
+		<maven>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-smile</artifactId>
+		</maven>
+	</package>
 	<distributions>
 		<distribution id="classic" />
 	</distributions>
