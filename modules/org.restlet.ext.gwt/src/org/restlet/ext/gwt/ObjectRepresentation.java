@@ -123,9 +123,11 @@ public class ObjectRepresentation<T> extends StringRepresentation {
                         .deserializeValue(this.targetClass);
             } catch (Exception e) {
                 this.object = null;
-                throw new IOException(
+                IOException ioe = new IOException(
                         "Couldn't read the GWT object representation: "
                                 + e.getMessage());
+                ioe.initCause(e);
+                throw ioe;
             }
 
         }

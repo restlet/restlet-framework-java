@@ -157,8 +157,10 @@ public class XstreamRepresentation<T> extends WriterRepresentation {
 
             result.autodetectAnnotations(true);
         } catch (Exception e) {
-            throw new IOException("Unable to create the XStream driver: "
-                    + e.getMessage());
+            IOException ioe = new IOException(
+                    "Unable to create the XStream driver: " + e.getMessage());
+            ioe.initCause(e);
+            throw ioe;
         }
 
         return result;
