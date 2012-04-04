@@ -27,8 +27,10 @@ Export-Package: org.codehaus.jackson,
  org.codehaus.jackson.map.util,
  org.codehaus.jackson.node,
  org.codehaus.jackson.schema,
+ org.codehaus.jackson.smile,
  org.codehaus.jackson.sym,
  org.codehaus.jackson.type,
  org.codehaus.jackson.util
 Bundle-ClassPath: org.codehaus.jackson.core.jar,
- org.codehaus.jackson.mapper.jar
+ org.codehaus.jackson.mapper.jar,
+ org.codehaus.jackson.smile.jar

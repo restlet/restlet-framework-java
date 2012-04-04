@@ -26,6 +26,7 @@ Import-Package:
  org.codehaus.jackson.map.util,
  org.codehaus.jackson.node,
  org.codehaus.jackson.schema,
+ org.codehaus.jackson.smile,
  org.codehaus.jackson.sym,
  org.codehaus.jackson.type,
  org.codehaus.jackson.util,
