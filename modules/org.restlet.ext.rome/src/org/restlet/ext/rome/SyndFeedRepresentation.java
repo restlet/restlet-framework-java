@@ -103,11 +103,15 @@ public class SyndFeedRepresentation extends WriterRepresentation {
         try {
             this.feed = new SyndFeedInput().build(source);
         } catch (IllegalArgumentException e) {
-            throw new IOException("Couldn't read the feed representation. "
-                    + e.getMessage());
+            IOException ioe = new IOException(
+                    "Couldn't read the feed representation. " + e.getMessage());
+            ioe.initCause(e);
+            throw ioe;
         } catch (FeedException e) {
-            throw new IOException("Couldn't read the feed representation. "
-                    + e.getMessage());
+            IOException ioe = new IOException(
+                    "Couldn't read the feed representation. " + e.getMessage());
+            ioe.initCause(e);
+            throw ioe;
         }
         setMediaType(getMediaType(this.feed.getFeedType()));
 
