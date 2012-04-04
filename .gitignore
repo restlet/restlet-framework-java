@@ -1,5 +1,6 @@
 
 /modules/org.restlet/bin
+/modules/org.restlet/target
 /modules/org.restlet.example/bin
 /modules/org.restlet.ext.atom/bin
 /modules/org.restlet.ext.crypto/bin
