@@ -195,6 +195,7 @@ public class JacksonConverter extends ConverterHelper {
             Resource resource) throws IOException {
         Object result = null;
 
+
         JacksonSmileRepresentation<?> bSource = null;
         if (source instanceof JacksonSmileRepresentation) {
             bSource = (JacksonSmileRepresentation<?>) source;
@@ -209,23 +210,23 @@ public class JacksonConverter extends ConverterHelper {
             } else {
                 result = bSource.getObject();
             }
-        }
-        
-        // The source for the Jackson conversion
-        JacksonRepresentation<?> jacksonSource = null;
-        if (source instanceof JacksonRepresentation) {
-            jacksonSource = (JacksonRepresentation<?>) source;
-        } else if (VARIANT_JSON.isCompatible(source)) {
-            jacksonSource = create(source, target);
-        }
+        } else {
+            // The source for the Jackson conversion
+            JacksonRepresentation<?> jacksonSource = null;
+            if (source instanceof JacksonRepresentation) {
+                jacksonSource = (JacksonRepresentation<?>) source;
+            } else if (VARIANT_JSON.isCompatible(source)) {
+                jacksonSource = create(source, target);
+            }
 
-        if (jacksonSource != null) {
-            // Handle the conversion
-            if ((target != null)
-                    && JacksonRepresentation.class.isAssignableFrom(target)) {
-                result = jacksonSource;
-            } else {
-                result = jacksonSource.getObject();
+            if (jacksonSource != null) {
+                // Handle the conversion
+                if ((target != null)
+                        && JacksonRepresentation.class.isAssignableFrom(target)) {
+                    result = jacksonSource;
+                } else {
+                    result = jacksonSource.getObject();
+                }
             }
         }
 
