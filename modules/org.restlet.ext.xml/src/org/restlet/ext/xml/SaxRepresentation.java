@@ -181,7 +181,7 @@ public class SaxRepresentation extends XmlRepresentation {
             try {
                 Result result = new SAXResult(contentHandler);
                 TransformerFactory.newInstance().newTransformer()
-                        .transform(this.source, result);
+                        .transform(getSaxSource(), result);
             } catch (TransformerConfigurationException tce) {
                 throw new IOException(
                         "Couldn't parse the source representation: "
