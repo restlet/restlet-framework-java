@@ -35,12 +35,10 @@ package org.restlet.ext.jackson;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.logging.Level;
 
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator.Feature;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
@@ -128,20 +126,16 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
      * if necessary.
      * 
      * @return The wrapped object.
+     * @throws IOException 
      */
-    public T getObject() {
+    public T getObject() throws IOException {
         T result = null;
 
         if (this.object != null) {
             result = this.object;
         } else if (this.jsonRepresentation != null) {
-            try {
-                result = getObjectMapper().readValue(
-                        this.jsonRepresentation.getStream(), this.objectClass);
-            } catch (IOException e) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to parse the object with Jackson.", e);
-            }
+            result = getObjectMapper().readValue(
+                    this.jsonRepresentation.getStream(), this.objectClass);
         }
 
         return result;
@@ -181,7 +175,7 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
     }
 
     /**
-     *Sets the object class to instantiate.
+     * Sets the object class to instantiate.
      * 
      * @param objectClass
      *            The object class to instantiate.

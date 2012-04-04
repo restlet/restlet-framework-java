@@ -164,6 +164,7 @@ public class JsonConverter extends ConverterHelper {
                 IOException ioe = new IOException(
                         "Unable to convert to JSON object");
                 ioe.initCause(e);
+                throw ioe;
             }
         } else if (JSONTokener.class.isAssignableFrom(target)) {
             result = new JSONTokener(source.getText());

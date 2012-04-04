@@ -31,6 +31,9 @@ Changes log
          Reported and contributed by Grzegorz Godlewski.
        - Fixed CookieAuthenticator wrong login/logout intercept comparison.
          Reported and contributed by Martin Svensson.
+       - Fix representations and converters that swallow exceptions whereas the 
+         ConverterHelper#toObject throws IOException.
+         Reported by gavares.
               
     - API changes
        - Added Resource#getQueryValue(String) and setQueryValue(String,
