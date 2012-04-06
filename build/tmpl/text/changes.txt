@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.1 Release Candidate 4 (04/06/2012)
     - Bug fixed
        - Basic Fix for content negotiation regarding input entities.
          Reported by Thierry Templier.
