@@ -36,6 +36,9 @@ Changes log
          Reported by gavares.
        - Fixed namespaces declaration using SaxRepresentation.
          Reported by Nicholas Waltham.
+       - Fixed scoring algorithm of the JaxbConverter, detected when used in 
+         conjunction with JacksonConverter.
+         Reported by Michael Henderson.
               
     - API changes
        - Added Resource#getQueryValue(String) and setQueryValue(String,
