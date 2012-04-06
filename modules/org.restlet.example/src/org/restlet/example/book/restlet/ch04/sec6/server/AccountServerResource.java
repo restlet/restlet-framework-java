@@ -63,14 +63,14 @@ public class AccountServerResource extends ServerResource implements
     }
 
     public String represent() {
-        return AccountsServerResource.getAccounts().get(this.accountId - 1);
+        return AccountsServerResource.getAccounts().get(this.accountId);
     }
 
     public void store(String account) {
-        AccountsServerResource.getAccounts().set(this.accountId - 1, account);
+        AccountsServerResource.getAccounts().set(this.accountId, account);
     }
 
     public void remove() {
-        AccountsServerResource.getAccounts().remove(this.accountId - 1);
+        AccountsServerResource.getAccounts().remove(this.accountId);
     }
 }
