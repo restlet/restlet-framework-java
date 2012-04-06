@@ -20,6 +20,8 @@ Changes log
          Reported by Andy Dennie.
        - Allowed multiple cookies set at once for JAX-RS.
          Reported and contributed by Grzegorz Godlewski.
+       - Fixed namespaces declaration using SaxRepresentation.
+         Reported by Nicholas Waltham.
     - Misc
         - Updated FreeMarker library to version 2.3.19.
 
