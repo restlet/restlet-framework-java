@@ -1416,6 +1416,7 @@ public final class XmlWriter extends XMLFilterImpl {
                 forceNSDecl(atts.getValue(i));
             } else if (atts.getQName(i) != null
                     && atts.getQName(i).startsWith("xmlns")) {
+                // Defines the namespace using its prefix.
                 forceNSDecl(atts.getValue(i), atts.getLocalName(i));
             } else {
                 final char ch[] = atts.getValue(i).toCharArray();
