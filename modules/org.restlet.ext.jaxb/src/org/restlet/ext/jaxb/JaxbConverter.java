@@ -136,11 +136,25 @@ public class JaxbConverter extends ConverterHelper {
         if (source != null) {
             if (source instanceof JaxbRepresentation<?>) {
                 result = 1.0F;
-            } else if (JaxbRepresentation.class.isAssignableFrom(target)
-                    || isJaxbRootElementClass(target)
-                    || JaxbRepresentation.class.isAssignableFrom(source
-                            .getClass())) {
+            } else if (JaxbRepresentation.class.isAssignableFrom(source
+                    .getClass())) {
                 result = 1.0F;
+            } else if (isJaxbRootElementClass(target)
+                    || JaxbRepresentation.class.isAssignableFrom(target)) {
+                if (MediaType.APPLICATION_ALL_XML.isCompatible(source
+                        .getMediaType())) {
+                    result = 1.0F;
+                } else if (MediaType.APPLICATION_XML.isCompatible(source
+                        .getMediaType())) {
+                    result = 1.0F;
+                } else if (MediaType.TEXT_XML.isCompatible(source
+                        .getMediaType())) {
+                    result = 1.0F;
+                } else {
+                    // Allow for JAXB object to be used for JSON and other
+                    // representations
+                    result = 0.7F;
+                }
             }
         }
 
