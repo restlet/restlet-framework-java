@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.0.12 (2012-04-06)
     - Bug fixed
        - Fixed the JAX-RS extension that did not introspect the 
          interfaces and parent classes of resource classes.
