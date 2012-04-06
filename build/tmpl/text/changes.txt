@@ -34,6 +34,8 @@ Changes log
        - Fix representations and converters that swallow exceptions whereas the 
          ConverterHelper#toObject throws IOException.
          Reported by gavares.
+       - Fixed namespaces declaration using SaxRepresentation.
+         Reported by Nicholas Waltham.
               
     - API changes
        - Added Resource#getQueryValue(String) and setQueryValue(String,

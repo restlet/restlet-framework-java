@@ -1411,7 +1411,14 @@ public final class XmlWriter extends XMLFilterImpl {
     private void writeAttributes(Attributes atts) throws SAXException {
         final int len = atts.getLength();
         for (int i = 0; i < len; i++) {
-            if (!"xmlns".equals(atts.getQName(i))) {
+            if ("xmlns".equals(atts.getQName(i))) {
+                // Redefines the default namespace.
+                forceNSDecl(atts.getValue(i));
+            } else if (atts.getQName(i) != null
+                    && atts.getQName(i).startsWith("xmlns")) {
+                // Defines the namespace using its prefix.
+                forceNSDecl(atts.getValue(i), atts.getLocalName(i));
+            } else {
                 final char ch[] = atts.getValue(i).toCharArray();
                 write(' ');
                 writeName(atts.getURI(i), atts.getLocalName(i),
@@ -1419,9 +1426,6 @@ public final class XmlWriter extends XMLFilterImpl {
                 write("=\"");
                 writeEsc(ch, 0, ch.length, true);
                 write('"');
-            } else {
-                // Redefines the default namespace.
-                forceNSDecl(atts.getValue(i));
             }
         }
     }
