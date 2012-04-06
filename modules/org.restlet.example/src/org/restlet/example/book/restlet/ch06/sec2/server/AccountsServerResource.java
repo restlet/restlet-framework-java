@@ -104,6 +104,6 @@ public class AccountsServerResource extends WadlServerResource implements
 
     public String add(String account) {
         getAccounts().add(account);
-        return Integer.toString(getAccounts().indexOf(account) + 1);
+        return Integer.toString(getAccounts().indexOf(account));
     }
 }

@@ -80,14 +80,14 @@ public class AccountServerResource extends WadlServerResource implements
     }
 
     public void remove() {
-        AccountsServerResource.getAccounts().remove(this.accountId - 1);
+        AccountsServerResource.getAccounts().remove(this.accountId);
     }
 
     public AccountRepresentation represent() {
-        return AccountsServerResource.getAccounts().get(this.accountId - 1);
+        return AccountsServerResource.getAccounts().get(this.accountId);
     }
 
     public void store(AccountRepresentation account) {
-        AccountsServerResource.getAccounts().set(this.accountId - 1, account);
+        AccountsServerResource.getAccounts().set(this.accountId, account);
     }
 }
