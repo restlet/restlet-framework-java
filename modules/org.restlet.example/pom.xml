@@ -48,6 +48,11 @@
 			<artifactId>junit</artifactId>
 			<version>4.8.1</version>
 		</dependency>
+		<dependency>
+			<groupId>rome</groupId>
+			<artifactId>rome</artifactId>
+			<version>1.0</version>
+		</dependency>
 	
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
@@ -59,6 +64,13 @@
 		<dependency>
 			<groupId>org.restlet.dev</groupId>
 			<artifactId>org.restlet.ext.atom</artifactId>
+<!--			<version>2.1-SNAPSHOT</version> -->
+			<version>${version}</version>
+			
+		</dependency>
+		<dependency>
+			<groupId>org.restlet.dev</groupId>
+			<artifactId>org.restlet.ext.fileupload</artifactId>
 <!--			<version>2.1-SNAPSHOT</version> -->
 			<version>${version}</version>
 			
