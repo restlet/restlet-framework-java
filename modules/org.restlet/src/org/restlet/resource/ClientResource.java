@@ -56,7 +56,6 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.TemplateDispatcher;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -552,10 +551,14 @@ public class ClientResource extends UniformResource {
                             : null;
 
             if (protocol != null) {
-                Client client = new Client(protocol);
-                TemplateDispatcher dispatcher = new TemplateDispatcher();
-                dispatcher.setNext(client);
+                // [ifndef gwt]
+                org.restlet.engine.TemplateDispatcher dispatcher = new org.restlet.engine.TemplateDispatcher();
+                dispatcher.setNext(new Client(protocol));
                 result = dispatcher;
+                // [enddef]
+                // [ifdef gwt] uncomment
+                result = new Client(protocol);
+                // [enddef]
             }
         }
 
