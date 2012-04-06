@@ -19,7 +19,7 @@
 		<lib-db4o-tools-version>7.12.132</lib-db4o-tools-version>
 		<lib-dbcp-version>1.3</lib-dbcp-version>
 		<lib-fileupload-version>1.2.1</lib-fileupload-version>
-		<lib-freemarker-version>2.3.16</lib-freemarker-version>
+		<lib-freemarker-version>2.3.19</lib-freemarker-version>
 		<lib-grizzly-version>1.9.18-i</lib-grizzly-version>
 		<lib-grizzly-util-version>1.9.18-i</lib-grizzly-util-version>
 		<lib-groovy-version>1.7.1</lib-groovy-version>
