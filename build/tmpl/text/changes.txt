@@ -5,12 +5,48 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
+
+- 2.1 Release Candidate 4 (04/06/2012)
+    - Bug fixed
+       - Basic Fix for content negotiation regarding input entities.
+         Reported by Thierry Templier.
+       - Removed useless reverse DNS lookup when creating a client socket 
+         channel. Reported and contributed by Alessandro Pacifici.
+       - Fixed NPE when setting last segment on Reference.
+         Reported by Laszlo Hordos.
+       - Fixed OSGi manifest file for the jackson library that exposes a 
+         private package. Reported by Laszlo Hordos.
+       - Enhanced support of ServerResource that inherits from generic classes.
+         Reported by Thierry Templier.
        - Fixed content negotiation regarding request entities
          to ensure a better annotated method dispatching.
        - Reference doesn't consider '{' and '}' as invalid characters
          allowing resolution of URI templates on the client-side.
          Reported by Andrei Pozolotin.
+       - Fixed OutputRepresentation with negative int that can't be serialized 
+         on client side.
+         Reported by Gabriel Pulido.
+       - Fixed parsing of Feed using the Rome extension.
+         Reported by Andy Dennie.
+       - Allowed multiple cookies set at once for JAX-RS.
+         Reported and contributed by Grzegorz Godlewski.
+       - Fixed formatting of expires cookie setting value.
+         Reported and contributed by Grzegorz Godlewski.
+       - Fixed CookieAuthenticator wrong login/logout intercept comparison.
+         Reported and contributed by Martin Svensson.
+       - Fix representations and converters that swallow exceptions whereas the 
+         ConverterHelper#toObject throws IOException.
+         Reported by gavares.
+       - Fixed namespaces declaration using SaxRepresentation.
+         Reported by Nicholas Waltham.
+       - Fixed scoring algorithm of the JaxbConverter, detected when used in 
+         conjunction with JacksonConverter.
+         Reported by Michael Henderson.
+              
     - API changes
+       - Added Resource#getQueryValue(String) and setQueryValue(String,
+         String) shortcut methods.
+       - Moved Client#handle(Request) method to Restlet class.
        - Added Resource#getQueryValue(String), getAttribute(String),
          setQueryValue(String, String) and setAttribute(String, String)
          shortcut methods.
@@ -19,6 +55,8 @@ Changes log
          instead of Client. Needed to fix URI template resolution
          in simple ClientResource instances.
        - Added ClientResource#accept(...) shortcut methods.
+    - Misc
+        - Updated FreeMarker library to version 2.3.19.
 
 - 2.1 Release Candidate 3 (02/15/2012)
     - Bug fixed

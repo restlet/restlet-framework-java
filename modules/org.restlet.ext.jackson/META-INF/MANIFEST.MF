@@ -16,7 +16,6 @@ Import-Package:
  org.codehaus.jackson.map.deser,
  org.codehaus.jackson.map.deser.impl,
  org.codehaus.jackson.map.exc,
- org.codehaus.jackson.map.ext,
  org.codehaus.jackson.map.introspect,
  org.codehaus.jackson.map.jsontype,
  org.codehaus.jackson.map.jsontype.impl,
@@ -40,4 +39,3 @@ Import-Package:
  org.restlet.service,
  org.restlet.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Require-Bundle: org.codehaus.jackson

@@ -68,7 +68,7 @@ public class AnnotatedResource8TestCase extends RestletTestCase {
         super.tearDown();
     }
 
-    public void testGet() throws IOException, ResourceException {
+    public void testPost() throws IOException, ResourceException {
         Representation input = new StringRepresentation("<root/>",
                 MediaType.APPLICATION_XML);
         Representation result = clientResource.post(input,

@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -47,7 +46,6 @@ import org.eclipse.emf.ecore.xmi.impl.EMOFResourceImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLOptionsImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
-import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.ext.emf.internal.EmfHtmlWriter;
@@ -191,23 +189,24 @@ public class EmfRepresentation<T extends EObject> extends OutputRepresentation {
         return null;
     }
 
+    /**
+     * Returns the wrapped object either parsed from the representation or to be
+     * formatted.
+     * 
+     * @return The wrapped object.
+     * @throws IOException
+     */
     @SuppressWarnings("unchecked")
-    public T getObject() {
+    public T getObject() throws IOException {
         T result = null;
 
         if (this.object != null) {
             result = this.object;
         } else if (this.representation != null) {
-            try {
-                Resource emfResource = createEmfResource(this.representation
-                        .getMediaType());
-                emfResource.load(this.representation.getStream(),
-                        getLoadOptions());
-                result = (T) emfResource.getContents().get(0);
-            } catch (IOException e) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to parse the object with an EMF resource.", e);
-            }
+            Resource emfResource = createEmfResource(this.representation
+                    .getMediaType());
+            emfResource.load(this.representation.getStream(), getLoadOptions());
+            result = (T) emfResource.getContents().get(0);
         }
 
         return result;

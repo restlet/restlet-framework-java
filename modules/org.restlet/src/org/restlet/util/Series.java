@@ -628,7 +628,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
         T param = null;
         boolean found = false;
 
-        for (Iterator<T> iter = iterator(); iter.hasNext();) {
+        for (final Iterator<T> iter = iterator(); iter.hasNext();) {
             param = iter.next();
 
             if (equals(param.getName(), name, ignoreCase)) {

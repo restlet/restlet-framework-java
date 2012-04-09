@@ -68,8 +68,9 @@ public class ComponentClientDispatcher extends TemplateDispatcher {
     }
 
     @Override
-    public int beforeHandle(Request request, Response response) {
-        int result = super.beforeHandle(request, response);
+    public int doHandle(Request request, Response response) {
+        int result = CONTINUE;
+
         Protocol protocol = request.getProtocol();
 
         if (protocol.equals(Protocol.RIAP)) {

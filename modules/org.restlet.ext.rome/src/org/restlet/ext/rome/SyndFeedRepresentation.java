@@ -37,13 +37,12 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
+import org.xml.sax.InputSource;
 
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
@@ -94,18 +93,28 @@ public class SyndFeedRepresentation extends WriterRepresentation {
      * 
      * @param feedRepresentation
      *            The feed representation to parse.
+     * @throws IOException
      */
-    public SyndFeedRepresentation(Representation feedRepresentation) {
+    public SyndFeedRepresentation(Representation feedRepresentation)
+            throws IOException {
         super(null);
 
+        InputSource source = new InputSource(feedRepresentation.getStream());
         try {
-            this.feed = new SyndFeedInput().build(feedRepresentation
-                    .getReader());
-            setMediaType(getMediaType(this.feed.getFeedType()));
-        } catch (Exception e) {
-            Context.getCurrentLogger().log(Level.WARNING,
-                    "Unable to parse feed", e);
+            this.feed = new SyndFeedInput().build(source);
+        } catch (IllegalArgumentException e) {
+            IOException ioe = new IOException(
+                    "Couldn't read the feed representation. " + e.getMessage());
+            ioe.initCause(e);
+            throw ioe;
+        } catch (FeedException e) {
+            IOException ioe = new IOException(
+                    "Couldn't read the feed representation. " + e.getMessage());
+            ioe.initCause(e);
+            throw ioe;
         }
+        setMediaType(getMediaType(this.feed.getFeedType()));
+
     }
 
     /**

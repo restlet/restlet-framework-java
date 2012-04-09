@@ -47,9 +47,11 @@ import org.restlet.ext.spring.SpringBeanRouter;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Route;
+import org.restlet.routing.Template;
 import org.restlet.routing.TemplateRoute;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.test.RestletTestCase;
+import org.restlet.util.Resolver;
 import org.restlet.util.RouteList;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -104,7 +106,13 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
     }
 
     private TemplateRoute matchRouteFor(String uri) {
-        Request req = new Request(Method.GET, uri);
+        Request req = new Request(Method.GET,
+                new Template(uri).format(new Resolver<String>() {
+                    @Override
+                    public String resolve(String name) {
+                        return name;
+                    }
+                }));
         return (TemplateRoute) router.getNext(req, new Response(req));
     }
 

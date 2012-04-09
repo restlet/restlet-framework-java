@@ -79,12 +79,26 @@ public class FormDataSet extends OutputRepresentation {
     /** Indicates if the form is multipart encoded. */
     private volatile boolean multipart;
 
+    /** The boundary separating multipart entries. */
     private volatile String multipartBoundary;
 
+    /**
+     * Default constructor, creates a single part form.
+     */
     public FormDataSet() {
         this(null, false, DEFAULT_BOUNDARY);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The representation's mediaType.
+     * @param multipart
+     *            Indicates if the form is multipart encoded.
+     * @param multipartBoundary
+     *            The boundary separating multipart entries.
+     */
     private FormDataSet(MediaType mediaType, boolean multipart,
             String multipartBoundary) {
         super(mediaType);
@@ -93,6 +107,12 @@ public class FormDataSet extends OutputRepresentation {
         this.multipart = multipart;
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param formRepresentation
+     *            The representation to parse.
+     */
     public FormDataSet(Representation formRepresentation) {
         this();
 
@@ -103,6 +123,12 @@ public class FormDataSet extends OutputRepresentation {
         }
     }
 
+    /**
+     * Creates a multipart form.
+     * 
+     * @param multipartBoundary
+     *            The boundary separating multipart entries.
+     */
     public FormDataSet(String multipartBoundary) {
         this(createMultipartMediaType(multipartBoundary), true,
                 multipartBoundary);
@@ -197,6 +223,11 @@ public class FormDataSet extends OutputRepresentation {
         }
     }
 
+    /**
+     * Returns the boundary separating multipart entries.
+     * 
+     * @return The boundary separating multipart entries.
+     */
     public String getMultipartBoundary() {
         return multipartBoundary;
     }
@@ -215,15 +246,32 @@ public class FormDataSet extends OutputRepresentation {
         }
     }
 
+    /**
+     * Indicates if the form is multipart encoded.
+     * 
+     * @return True if the form is multipart encoded.
+     */
     public boolean isMultipart() {
         return this.multipart;
     }
 
+    /**
+     * Indicates if the form is multipart encoded.
+     * 
+     * @param multipart
+     *            True if the form is multipart encoded.
+     */
     public void setMultipart(boolean multipart) {
         this.multipart = multipart;
         setMediaType(createMultipartMediaType(getMultipartBoundary()));
     }
 
+    /**
+     * Sets the boundary separating multipart entries.
+     * 
+     * @param boundary
+     *            The boundary separating multipart entries.
+     */
     public void setMultipartBoundary(String boundary) {
         this.multipartBoundary = boundary;
     }

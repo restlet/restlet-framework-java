@@ -33,6 +33,8 @@
 
 package org.restlet.ext.gwt;
 
+import java.io.IOException;
+
 import org.restlet.data.MediaType;
 import org.restlet.engine.Engine;
 import org.restlet.representation.StringRepresentation;
@@ -100,9 +102,10 @@ public class ObjectRepresentation<T> extends StringRepresentation {
      * The wrapped object. Triggers the deserialization if necessary.
      * 
      * @return The wrapped object.
+     * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    public T getObject() {
+    public T getObject() throws IOException {
         if ((this.object == null) && (getText() != null)) {
             try {
                 ServerSerializationStreamReader objectReader = new ServerSerializationStreamReader(
@@ -120,7 +123,11 @@ public class ObjectRepresentation<T> extends StringRepresentation {
                         .deserializeValue(this.targetClass);
             } catch (Exception e) {
                 this.object = null;
-                e.printStackTrace();
+                IOException ioe = new IOException(
+                        "Couldn't read the GWT object representation: "
+                                + e.getMessage());
+                ioe.initCause(e);
+                throw ioe;
             }
 
         }

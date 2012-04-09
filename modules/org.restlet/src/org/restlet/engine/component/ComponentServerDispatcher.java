@@ -70,6 +70,12 @@ public class ComponentServerDispatcher extends TemplateDispatcher {
         request.getResourceRef().setBaseRef(
                 request.getResourceRef().getHostIdentifier());
 
+        return result;
+    }
+
+    @Override
+    protected int doHandle(Request request, Response response) {
+        int result = CONTINUE;
         // Ask the server router to actually handle the call
         getComponentContext().getComponentHelper().getServerRouter()
                 .handle(request, response);

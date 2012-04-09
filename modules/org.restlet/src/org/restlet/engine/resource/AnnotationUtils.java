@@ -64,13 +64,15 @@ public class AnnotationUtils {
      *            one.
      * @param resourceClass
      *            The class or interface that hosts the javaMethod.
+     * @param initialResourceClass
+     *            The class or interface that runs the javaMethod.
      * @param javaMethod
      *            The Java method to inspect.
      * @return The annotation descriptors.
      */
     private static List<AnnotationInfo> addAnnotationDescriptors(
             List<AnnotationInfo> descriptors, Class<?> resourceClass,
-            java.lang.reflect.Method javaMethod) {
+            Class<?> initialResourceClass, java.lang.reflect.Method javaMethod) {
         List<AnnotationInfo> result = descriptors;
 
         // Add the annotation descriptor
@@ -100,10 +102,8 @@ public class AnnotationUtils {
                         value = null;
                     }
                 }
-
-                result.add(new AnnotationInfo(resourceClass, restletMethod,
-                        javaMethod, value));
-
+                result.add(new AnnotationInfo(initialResourceClass,
+                        restletMethod, javaMethod, value));
             }
         }
 
@@ -118,10 +118,13 @@ public class AnnotationUtils {
      *            one.
      * @param clazz
      *            The class or interface to introspect.
+     * @param initialClass
+     *            The class or interface that runs the javaMethod.
      * @return The annotation descriptors.
      */
     private static List<AnnotationInfo> addAnnotations(
-            List<AnnotationInfo> descriptors, Class<?> clazz) {
+            List<AnnotationInfo> descriptors, Class<?> clazz,
+            Class<?> initialClass) {
         List<AnnotationInfo> result = descriptors;
 
         if (clazz != null && !ServerResource.class.equals(clazz)) {
@@ -133,12 +136,14 @@ public class AnnotationUtils {
             // Inspect the current class
             if (clazz.isInterface()) {
                 for (java.lang.reflect.Method javaMethod : clazz.getMethods()) {
-                    addAnnotationDescriptors(result, clazz, javaMethod);
+                    addAnnotationDescriptors(result, clazz, initialClass,
+                            javaMethod);
                 }
             } else {
                 for (java.lang.reflect.Method javaMethod : clazz
                         .getDeclaredMethods()) {
-                    addAnnotationDescriptors(result, clazz, javaMethod);
+                    addAnnotationDescriptors(result, clazz, initialClass,
+                            javaMethod);
                 }
             }
 
@@ -147,12 +152,13 @@ public class AnnotationUtils {
 
             if (interfaces != null) {
                 for (Class<?> interfaceClass : interfaces) {
-                    result = addAnnotations(result, interfaceClass);
+                    result = addAnnotations(result, interfaceClass,
+                            initialClass);
                 }
             }
 
             // Add the annotations from the super class.
-            addAnnotations(result, clazz.getSuperclass());
+            addAnnotations(result, clazz.getSuperclass(), initialClass);
         }
 
         return result;
@@ -234,7 +240,7 @@ public class AnnotationUtils {
 
         if (result == null) {
             // Inspect the class itself for annotations
-            result = addAnnotations(result, clazz);
+            result = addAnnotations(result, clazz, clazz);
 
             // Put the list in the cache if no one was previously present
             List<AnnotationInfo> prev = cache.putIfAbsent(clazz, result);
@@ -257,7 +263,7 @@ public class AnnotationUtils {
      */
     public static List<AnnotationInfo> getAnnotations(Class<?> clazz,
             java.lang.reflect.Method javaMethod) {
-        return addAnnotationDescriptors(null, clazz, javaMethod);
+        return addAnnotationDescriptors(null, clazz, clazz, javaMethod);
     }
 
     /**

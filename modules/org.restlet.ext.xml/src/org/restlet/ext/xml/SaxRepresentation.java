@@ -68,6 +68,9 @@ public class SaxRepresentation extends XmlRepresentation {
     /** The SAX source. */
     private volatile SAXSource source;
 
+    /** The source XML representation. */
+    private volatile Representation xmlRepresentation;
+
     /**
      * Default constructor. Uses the {@link MediaType#TEXT_XML} media type.
      */
@@ -130,28 +133,11 @@ public class SaxRepresentation extends XmlRepresentation {
      * 
      * @param xmlRepresentation
      *            A source XML representation to parse.
-     * @throws IOException
      */
     public SaxRepresentation(Representation xmlRepresentation) {
         super((xmlRepresentation == null) ? null : xmlRepresentation
                 .getMediaType());
-
-        try {
-            if (xmlRepresentation instanceof XmlRepresentation) {
-                this.source = ((XmlRepresentation) xmlRepresentation)
-                        .getSaxSource();
-            } else {
-                this.source = new SAXSource(new InputSource(
-                        xmlRepresentation.getReader()));
-            }
-
-            if (xmlRepresentation.getLocationRef() != null) {
-                this.source.setSystemId(xmlRepresentation.getLocationRef()
-                        .getTargetRef().toString());
-            }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
+        this.xmlRepresentation = xmlRepresentation;
     }
 
     @Override
@@ -166,6 +152,21 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     @Override
     public SAXSource getSaxSource() throws IOException {
+        if (this.source == null && this.xmlRepresentation != null) {
+            if (xmlRepresentation instanceof XmlRepresentation) {
+                this.source = ((XmlRepresentation) xmlRepresentation)
+                        .getSaxSource();
+            } else {
+                this.source = new SAXSource(new InputSource(
+                        xmlRepresentation.getReader()));
+            }
+
+            if (xmlRepresentation.getLocationRef() != null) {
+                this.source.setSystemId(xmlRepresentation.getLocationRef()
+                        .getTargetRef().toString());
+            }
+        }
+        
         return this.source;
     }
 
@@ -180,7 +181,7 @@ public class SaxRepresentation extends XmlRepresentation {
             try {
                 Result result = new SAXResult(contentHandler);
                 TransformerFactory.newInstance().newTransformer()
-                        .transform(this.source, result);
+                        .transform(getSaxSource(), result);
             } catch (TransformerConfigurationException tce) {
                 throw new IOException(
                         "Couldn't parse the source representation: "
@@ -208,6 +209,9 @@ public class SaxRepresentation extends XmlRepresentation {
     public void release() {
         if (this.source != null) {
             this.source = null;
+        }
+        if (this.xmlRepresentation != null) {
+            this.xmlRepresentation.release();
         }
 
         super.release();

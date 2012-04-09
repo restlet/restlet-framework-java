@@ -35,9 +35,7 @@ package org.restlet.ext.xstream;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.logging.Level;
 
-import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
@@ -144,8 +142,9 @@ public class XstreamRepresentation<T> extends WriterRepresentation {
      * @param mediaType
      *            The serialization media type.
      * @return The XStream object.
+     * @throws IOException
      */
-    protected XStream createXstream(MediaType mediaType) {
+    protected XStream createXstream(MediaType mediaType) throws IOException {
         XStream result = null;
 
         try {
@@ -158,8 +157,10 @@ public class XstreamRepresentation<T> extends WriterRepresentation {
 
             result.autodetectAnnotations(true);
         } catch (Exception e) {
-            Context.getCurrentLogger().log(Level.WARNING,
-                    "Unable to create the XStream driver.", e);
+            IOException ioe = new IOException(
+                    "Unable to create the XStream driver: " + e.getMessage());
+            ioe.initCause(e);
+            throw ioe;
         }
 
         return result;
@@ -174,25 +175,26 @@ public class XstreamRepresentation<T> extends WriterRepresentation {
         return jsonDriverClass;
     }
 
+    /**
+     * Returns the wrapped object, deserializing the representation with XStream
+     * if necessary.
+     * 
+     * @return The wrapped object.
+     * @throws IOException
+     */
     @SuppressWarnings("unchecked")
-    public T getObject() {
+    public T getObject() throws IOException {
         T result = null;
 
         if (this.object != null) {
             getXstream().processAnnotations(this.object.getClass());
             result = this.object;
         } else if (this.representation != null) {
-            try {
-                if (this.targetClass != null) {
-                    getXstream().processAnnotations(this.targetClass);
-                }
-
-                result = (T) getXstream().fromXML(
-                        this.representation.getStream());
-            } catch (IOException e) {
-                Context.getCurrentLogger().log(Level.WARNING,
-                        "Unable to parse the object with XStream.", e);
+            if (this.targetClass != null) {
+                getXstream().processAnnotations(this.targetClass);
             }
+
+            result = (T) getXstream().fromXML(this.representation.getStream());
         }
 
         return result;
@@ -211,8 +213,9 @@ public class XstreamRepresentation<T> extends WriterRepresentation {
      * Returns the modifiable XStream object. Useful to customize mappings.
      * 
      * @return The modifiable XStream object.
+     * @throws IOException
      */
-    public XStream getXstream() {
+    public XStream getXstream() throws IOException {
         if (this.xstream == null) {
             this.xstream = createXstream(getMediaType());
         }

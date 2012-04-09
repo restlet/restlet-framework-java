@@ -2623,8 +2623,13 @@ public class Reference {
      *            The last segment of a hierarchical path.
      */
     public void setLastSegment(String lastSegment) {
-        final String path = getPath();
-        final int lastSlashIndex = path.lastIndexOf('/');
+        String path = getPath();
+
+        int lastSlashIndex = -1;
+
+        if (path != null) {
+            lastSlashIndex = path.lastIndexOf('/');
+        }
 
         if (lastSlashIndex != -1) {
             setPath(path.substring(0, lastSlashIndex + 1) + lastSegment);

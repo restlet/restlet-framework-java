@@ -56,7 +56,6 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.TemplateDispatcher;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -552,10 +551,14 @@ public class ClientResource extends UniformResource {
                             : null;
 
             if (protocol != null) {
-                Client client = new Client(protocol);
-                TemplateDispatcher dispatcher = new TemplateDispatcher();
-                dispatcher.setNext(client);
+                // [ifndef gwt]
+                org.restlet.engine.TemplateDispatcher dispatcher = new org.restlet.engine.TemplateDispatcher();
+                dispatcher.setNext(new Client(protocol));
                 result = dispatcher;
+                // [enddef]
+                // [ifdef gwt] uncomment
+                result = new Client(protocol);
+                // [enddef]
             }
         }
 
@@ -1349,13 +1352,13 @@ public class ClientResource extends UniformResource {
 
     // [ifndef gwt] method
     /**
-     * Indicates if transient or unknown size request entities should be
-     * buffered before being sent. This is useful to increase the chance of
+     * Indicates if transient or unknown size response entities should be
+     * buffered after being received. This is useful to increase the chance of
      * being able to resubmit a failed request due to network error, or to
-     * prevent chunked encoding from being used with HTTP connectors.
+     * prevent chunked encoding from being used an HTTP connector.
      * 
-     * @return True if transient request entities should be buffered before
-     *         being sent.
+     * @return True if transient response entities should be buffered after
+     *         being received.
      */
     public boolean isRequestEntityBuffering() {
         return requestEntityBuffering;
@@ -1953,14 +1956,14 @@ public class ClientResource extends UniformResource {
 
     // [ifndef gwt] method
     /**
-     * Indicates if transient or unknown size request entities should be
-     * buffered before being sent. This is useful to increase the chance of
+     * Indicates if transient or unknown size response entities should be
+     * buffered after being received. This is useful to increase the chance of
      * being able to resubmit a failed request due to network error, or to
-     * prevent chunked encoding from being used with HTTP connectors.
+     * prevent chunked encoding from being used an HTTP connector.
      * 
      * @param requestEntityBuffering
-     *            True if transient request entities should be buffered before
-     *            being sent.
+     *            True if transient request entities should be buffered after
+     *            being received.
      */
     public void setRequestEntityBuffering(boolean requestEntityBuffering) {
         this.requestEntityBuffering = requestEntityBuffering;

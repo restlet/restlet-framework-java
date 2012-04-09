@@ -92,7 +92,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
         if (this.newCookies != null) {
             final MultivaluedMap<String, Object> metadata = getMetadata();
             for (final NewCookie cookie : this.newCookies.values()) {
-                metadata.putSingle(HttpHeaders.SET_COOKIE, cookie);
+                metadata.add(HttpHeaders.SET_COOKIE, cookie);
             }
             this.newCookies = null;
         }

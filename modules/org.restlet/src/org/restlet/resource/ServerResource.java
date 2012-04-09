@@ -100,6 +100,7 @@ import org.restlet.util.Series;
  */
 @SuppressWarnings("deprecation")
 public abstract class ServerResource extends UniformResource {
+
     /** Indicates if annotations are supported. */
     private volatile boolean annotated;
 
@@ -878,16 +879,22 @@ public abstract class ServerResource extends UniformResource {
                                     && getRequest().getEntity().isAvailable()) {
                                 MediaType emt = getRequest().getEntity()
                                         .getMediaType();
-                                MediaType amt = getMetadataService()
-                                        .getMediaType(annotationInfo.getInput());
-                                if (amt != null && amt.equals(amt)) {
-                                    score = 1.0f;
-                                } else if (amt != null && amt.includes(emt)) {
-                                    score = 0.8f;
-                                } else if (amt != null && amt.isCompatible(emt)) {
-                                    score = 0.6f;
+                                List<MediaType> amts = getMetadataService()
+                                        .getAllMediaTypes(
+                                                annotationInfo.getInput());
+                                if (amts != null) {
+                                    for (MediaType amt : amts) {
+                                        if (amt.equals(emt)) {
+                                            score = 1.0f;
+                                        } else if (amt.includes(emt)) {
+                                            score = Math.max(0.8f, score);
+                                        } else if (amt.isCompatible(emt)) {
+                                            score = Math.max(0.6f, score);
+                                        }
+                                    }
                                 }
                             }
+
                             for (Variant v : annoVariants) {
                                 VariantInfo vi = new VariantInfo(v,
                                         annotationInfo);

@@ -76,8 +76,9 @@ public class ChildClientDispatcher extends TemplateDispatcher {
      *            The response to update.
      */
     @Override
-    public int beforeHandle(Request request, Response response) {
-        int result = super.doHandle(request, response);
+    public int doHandle(Request request, Response response) {
+        int result = CONTINUE;
+
         Protocol protocol = request.getProtocol();
 
         if (protocol.equals(Protocol.RIAP)) {
@@ -119,7 +120,7 @@ public class ChildClientDispatcher extends TemplateDispatcher {
 
             parentHandle(request, response);
         }
-
+        
         return result;
     }
 
@@ -129,7 +130,7 @@ public class ChildClientDispatcher extends TemplateDispatcher {
      * @return The child context.
      */
     private ChildContext getChildContext() {
-        return this.childContext;
+        return childContext;
     }
 
     /**

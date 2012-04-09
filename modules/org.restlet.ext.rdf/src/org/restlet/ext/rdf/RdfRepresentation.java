@@ -214,9 +214,9 @@ public class RdfRepresentation extends WriterRepresentation {
      * Returns the graph of links.
      * 
      * @return The graph of links.
-     * @throws Exception
+     * @throws IOException
      */
-    public Graph getGraph() throws Exception {
+    public Graph getGraph() throws IOException {
         if (this.graph == null) {
             this.graph = new Graph();
             parse(createBuilder(this.graph));
@@ -230,9 +230,9 @@ public class RdfRepresentation extends WriterRepresentation {
      * 
      * @param graphHandler
      *            The graph handler.
-     * @throws Exception
+     * @throws IOException
      */
-    public void parse(GraphHandler graphHandler) throws Exception {
+    public void parse(GraphHandler graphHandler) throws IOException {
         if (rdfRepresentation != null) {
             if (MediaType.TEXT_RDF_N3.equals(rdfRepresentation.getMediaType())) {
                 new RdfN3Reader(rdfRepresentation, graphHandler).parse();

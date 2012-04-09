@@ -161,6 +161,9 @@ public class AnnotationInfo {
     /** The annotated Java method. */
     private final java.lang.reflect.Method javaMethod;
 
+    /** The upper implementation of the annotated Java method. */
+    private final java.lang.reflect.Method javaMethodImpl;
+
     /** The output part of the annotation value. */
     private final String output;
 
@@ -191,6 +194,18 @@ public class AnnotationInfo {
         this.resourceClass = resourceClass;
         this.restletMethod = restletMethod;
         this.javaMethod = javaMethod;
+        java.lang.reflect.Method m = null;
+        try {
+            m = resourceClass.getMethod(javaMethod.getName(),
+                    javaMethod.getParameterTypes());
+        } catch (Exception e) {
+            m = javaMethod;
+        }
+        if (m != null) {
+            this.javaMethodImpl = m;
+        } else {
+            this.javaMethodImpl = javaMethod;
+        }
 
         // Parse the main components of the annotation value
         if ((value != null) && !value.equals("")) {
@@ -325,9 +340,9 @@ public class AnnotationInfo {
      * 
      * @return The generic type.
      */
-    public Class<?> getJavaInputType(int index) {
-        return getJavaActualType(getJavaMethod().getParameterTypes()[index],
-                getJavaMethod().getGenericParameterTypes()[index]);
+    private Class<?> getJavaInputType(int index) {
+        return getJavaActualType(javaMethodImpl.getParameterTypes()[index],
+                javaMethodImpl.getGenericParameterTypes()[index]);
     }
 
     /**
@@ -361,8 +376,8 @@ public class AnnotationInfo {
      * @return The output type of the Java method.
      */
     public Class<?> getJavaOutputType() {
-        return getJavaActualType(getJavaMethod().getReturnType(),
-                getJavaMethod().getGenericReturnType());
+        return getJavaActualType(javaMethodImpl.getReturnType(),
+                javaMethodImpl.getGenericReturnType());
     }
 
     /**
@@ -402,8 +417,10 @@ public class AnnotationInfo {
 
             if (result == null) {
                 Class<?> inputClass = classes[0];
-                result = (List<Variant>) converterService.getVariants(
-                        inputClass, null);
+                if (inputClass != null) {
+                    result = (List<Variant>) converterService.getVariants(
+                            inputClass, null);
+                }
             }
         }
 

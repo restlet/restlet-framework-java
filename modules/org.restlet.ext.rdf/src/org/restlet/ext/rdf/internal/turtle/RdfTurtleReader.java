@@ -256,7 +256,7 @@ public class RdfTurtleReader extends RdfNTriplesReader {
      * @throws IOException
      */
     @Override
-    public void parse() throws Exception {
+    public void parse() throws IOException {
         // Init the reading.
         step();
         do {
