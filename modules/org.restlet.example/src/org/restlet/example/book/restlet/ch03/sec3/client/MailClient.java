@@ -54,7 +54,7 @@ public class MailClient {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        System.out.println("\n1) Set-up the service client resource\n");
+        System.out.println("\n1) Set up the service client resource\n");
         Client client = new Client(new Context(), Protocol.HTTP);
         ClientResource service = new ClientResource("http://localhost:8111");
         service.setNext(client);

@@ -20,7 +20,7 @@ Changes log
          Reported by Thierry Templier.
        - Fixed content negotiation regarding request entities
          to ensure a better annotated method dispatching.
-       - Reference doesn't consider '{' and '}' as invalid characters
+       - Reference doesn't consider '{' and '}' as invalid characters anymore,
          allowing resolution of URI templates on the client-side.
          Reported by Andrei Pozolotin.
        - Fixed OutputRepresentation with negative int that can't be serialized 
@@ -40,9 +40,7 @@ Changes log
        - Fixed namespaces declaration using SaxRepresentation.
          Reported by Nicholas Waltham.
        - Fixed scoring algorithm of the JaxbConverter, detected when used in 
-         conjunction with JacksonConverter.
-         Reported by Michael Henderson.
-              
+         conjunction with JacksonConverter. Reported by Michael Henderson.
     - API changes
        - Added Resource#getQueryValue(String) and setQueryValue(String,
          String) shortcut methods.
