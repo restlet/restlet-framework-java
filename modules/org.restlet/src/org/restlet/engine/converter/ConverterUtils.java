@@ -92,23 +92,27 @@ public class ConverterUtils {
 
         for (ConverterHelper ch : Engine.getInstance()
                 .getRegisteredConverters()) {
-            // List of variants that can be converted from the source class
-            helperVariants = ch.getVariants(sourceClass);
+            if (ch != null) {
+                // List of variants that can be converted from the source class
+                helperVariants = ch.getVariants(sourceClass);
 
-            if (helperVariants != null) {
-                // Loop over the variants list
-                for (VariantInfo helperVariant : helperVariants) {
-                    if (targetVariant == null) {
-                        result = addVariant(result, helperVariant);
-                    } else if (helperVariant.includes(targetVariant)) {
-                        // Detected a more generic variant, but still consider
-                        // the conversion is possible to the target variant.
-                        result = addVariant(result, new VariantInfo(
-                                targetVariant.getMediaType()));
-                    } else if (targetVariant.includes(helperVariant)) {
-                        // Detected a more specific variant, but still consider
-                        // the conversion is possible to the target variant.
-                        result = addVariant(result, helperVariant);
+                if (helperVariants != null) {
+                    // Loop over the variants list
+                    for (VariantInfo helperVariant : helperVariants) {
+                        if (targetVariant == null) {
+                            result = addVariant(result, helperVariant);
+                        } else if (helperVariant.includes(targetVariant)) {
+                            // Detected a more generic variant, but still
+                            // consider
+                            // the conversion is possible to the target variant.
+                            result = addVariant(result, new VariantInfo(
+                                    targetVariant.getMediaType()));
+                        } else if (targetVariant.includes(helperVariant)) {
+                            // Detected a more specific variant, but still
+                            // consider
+                            // the conversion is possible to the target variant.
+                            result = addVariant(result, helperVariant);
+                        }
                     }
                 }
             }
@@ -136,18 +140,20 @@ public class ConverterUtils {
 
         for (ConverterHelper ch : Engine.getInstance()
                 .getRegisteredConverters()) {
-            try {
-                currentScore = ch.score(source, target, resource);
+            if (ch != null) {
+                try {
+                    currentScore = ch.score(source, target, resource);
 
-                if (currentScore > bestScore) {
-                    bestScore = currentScore;
-                    result = ch;
+                    if (currentScore > bestScore) {
+                        bestScore = currentScore;
+                        result = ch;
+                    }
+                } catch (Exception e) {
+                    Context.getCurrentLogger().log(
+                            Level.SEVERE,
+                            "Unable get the score of the " + ch
+                                    + " converter helper.", e);
                 }
-            } catch (Exception e) {
-                Context.getCurrentLogger().log(
-                        Level.SEVERE,
-                        "Unable get the score of the " + ch
-                                + " converter helper.", e);
             }
         }
 
@@ -175,11 +181,13 @@ public class ConverterUtils {
 
         for (ConverterHelper ch : Engine.getInstance()
                 .getRegisteredConverters()) {
-            currentScore = ch.score(source, target, resource);
+            if (ch != null) {
+                currentScore = ch.score(source, target, resource);
 
-            if (currentScore > bestScore) {
-                bestScore = currentScore;
-                result = ch;
+                if (currentScore > bestScore) {
+                    bestScore = currentScore;
+                    result = ch;
+                }
             }
         }
 

@@ -34,7 +34,7 @@
 package org.restlet.data;
 
 /**
- * Representations metadata for content negotiation. Metadata is in the form of
+ * Representations metadata for content negotiation. "Metadata is in the form of
  * name-value pairs, where the name corresponds to a standard that defines the
  * value's structure and semantics. Response messages may include both
  * representation metadata and resource metadata: information about the resource
