@@ -1352,13 +1352,13 @@ public class ClientResource extends UniformResource {
 
     // [ifndef gwt] method
     /**
-     * Indicates if transient or unknown size response entities should be
-     * buffered after being received. This is useful to increase the chance of
+     * Indicates if transient or unknown size request entities should be
+     * buffered before being sent. This is useful to increase the chance of
      * being able to resubmit a failed request due to network error, or to
-     * prevent chunked encoding from being used an HTTP connector.
+     * prevent chunked encoding from being used with HTTP connectors.
      * 
-     * @return True if transient response entities should be buffered after
-     *         being received.
+     * @return True if transient request entities should be buffered before
+     *         being sent.
      */
     public boolean isRequestEntityBuffering() {
         return requestEntityBuffering;
@@ -1956,14 +1956,14 @@ public class ClientResource extends UniformResource {
 
     // [ifndef gwt] method
     /**
-     * Indicates if transient or unknown size response entities should be
-     * buffered after being received. This is useful to increase the chance of
+     * Indicates if transient or unknown size request entities should be
+     * buffered before being sent. This is useful to increase the chance of
      * being able to resubmit a failed request due to network error, or to
-     * prevent chunked encoding from being used an HTTP connector.
+     * prevent chunked encoding from being used with HTTP connectors.
      * 
      * @param requestEntityBuffering
-     *            True if transient request entities should be buffered after
-     *            being received.
+     *            True if transient request entities should be buffered before
+     *            being sent.
      */
     public void setRequestEntityBuffering(boolean requestEntityBuffering) {
         this.requestEntityBuffering = requestEntityBuffering;

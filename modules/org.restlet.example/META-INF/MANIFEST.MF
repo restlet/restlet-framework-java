@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Examples
 Bundle-SymbolicName: org.restlet.example
-Bundle-Version: 2.1
+Bundle-Version: 2.2
 Bundle-Vendor: Restlet S.A.S.
 Export-Package: org.restlet.example.book.rest.ch2,
  org.restlet.example.book.rest.ch3,
@@ -101,4 +101,4 @@ Import-Package: com.db4o,
  org.springframework.context.support,
  org.springframework.core.io,
  org.springmodules.db4o
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

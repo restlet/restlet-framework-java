@@ -3,7 +3,7 @@ Main-Class: org.restlet.Component
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet API
 Bundle-SymbolicName: org.restlet
-Bundle-Version: 2.1
+Bundle-Version: 2.2
 Bundle-Vendor: Restlet S.A.S.
 Export-Package: org.restlet,
  org.restlet.data,
@@ -31,5 +31,5 @@ Import-Package: javax.net,
  javax.net.ssl,
  javax.xml.parsers,
  org.osgi.framework
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Activator: org.restlet.engine.internal.Activator
