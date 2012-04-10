@@ -33,6 +33,8 @@
 
 package org.restlet.example.book.restlet.ch04.sec5.sub2;
 
+import java.io.IOException;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.ext.jackson.JacksonRepresentation;
@@ -84,26 +86,31 @@ public class MailServerResource extends ServerResource {
             throws ResourceException {
         Mail mail = null;
 
-        if (MediaType.APPLICATION_XML.isCompatible(representation
-                .getMediaType())) {
-            // Parse the XML representation to get the mail bean
-            mail = new XstreamRepresentation<Mail>(representation).getObject();
-            System.out.println("XML representation received");
-        } else if (MediaType.APPLICATION_JSON.isCompatible(representation
-                .getMediaType())) {
-            // Parse the JSON representation to get the mail bean
-            mail = new JacksonRepresentation<Mail>(representation, Mail.class)
-                    .getObject();
-            System.out.println("JSON representation received");
-        }
+        try {
+            if (MediaType.APPLICATION_XML.isCompatible(representation
+                    .getMediaType())) {
+                // Parse the XML representation to get the mail bean
+                mail = new XstreamRepresentation<Mail>(representation,
+                        Mail.class).getObject();
+                System.out.println("XML representation received");
+            } else if (MediaType.APPLICATION_JSON.isCompatible(representation
+                    .getMediaType())) {
+                // Parse the JSON representation to get the mail bean
+                mail = new JacksonRepresentation<Mail>(representation,
+                        Mail.class).getObject();
+                System.out.println("JSON representation received");
+            }
 
-        if (mail != null) {
-            // Output the mail bean
-            System.out.println("Status: " + mail.getStatus());
-            System.out.println("Subject: " + mail.getSubject());
-            System.out.println("Content: " + mail.getContent());
-            System.out.println("Account URI: " + mail.getAccountRef());
-            System.out.println();
+            if (mail != null) {
+                // Output the mail bean
+                System.out.println("Status: " + mail.getStatus());
+                System.out.println("Subject: " + mail.getSubject());
+                System.out.println("Content: " + mail.getContent());
+                System.out.println("Account URI: " + mail.getAccountRef());
+                System.out.println();
+            }
+        } catch (IOException e) {
+            throw new ResourceException(e);
         }
 
         return null;

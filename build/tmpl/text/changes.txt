@@ -19,7 +19,7 @@ Changes log
          mime type. Reported by Thomas Mortagne.
        - Fixed NPE when setting last segment on Reference.
          Reported by Laszlo Hordos.
-       - Fixed OSGi manifest file for the jackson library that exposes a 
+       - Fixed OSGi manifest file for the Jackson library that exposes a 
          private package. Reported by Laszlo Hordos.
        - Fixed parsing of Feed using the Rome extension.
          Reported by Andy Dennie.

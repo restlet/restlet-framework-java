@@ -51,7 +51,7 @@ public class MailServerSpring {
         BeanFactory factory = new XmlBeanFactory(resource);
 
         // Start the Restlet component
-        Component component = (Component) factory.getBean("component");
+        Component component = factory.getBean("component", Component.class);
         component.start();
     }
 
