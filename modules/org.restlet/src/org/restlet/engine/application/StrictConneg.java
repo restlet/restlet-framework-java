@@ -349,6 +349,9 @@ public class StrictConneg extends Conneg {
                                     + (mediaTypeScore * 3.0F)
                                     + (characterSetScore * 2.0F)
                                     + (encodingScore * 1.0F) + (annotationScore * 2.0F)) / 12.0F;
+                            // Take into account the affinity with the input entity
+                            result = result
+                                    * ((VariantInfo) variant).getInputScore();
                         } else {
                             // Return the weighted average score
                             result = ((languageScore * 4.0F)

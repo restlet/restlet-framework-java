@@ -7,6 +7,7 @@ Bundle-Vendor: Restlet S.A.S.
 Import-Package: javax.xml.bind;version="2.1.0",
  javax.xml.bind.annotation,
  javax.xml.bind.util;version="2.1.0",
+ com.sun.xml.bind.marshaller;version="2.1.0",
  javax.xml.stream,
  javax.xml.stream.events,
  javax.xml.stream.util,

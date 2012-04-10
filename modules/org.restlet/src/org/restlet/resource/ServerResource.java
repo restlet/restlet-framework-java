@@ -50,6 +50,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.ServerInfo;
@@ -729,8 +730,9 @@ public abstract class ServerResource extends UniformResource {
     private AnnotationInfo getAnnotation(Method method, Form query,
             Representation entity) {
         if (isAnnotated()) {
-            return AnnotationUtils.getAnnotation(getAnnotations(), method,
-                    query, entity, getMetadataService(), getConverterService());
+            return AnnotationUtils.getInstance().getAnnotation(
+                    getAnnotations(), method, query, entity,
+                    getMetadataService(), getConverterService());
         }
 
         return null;
@@ -742,8 +744,8 @@ public abstract class ServerResource extends UniformResource {
      * @return The annotation descriptors.
      */
     private List<AnnotationInfo> getAnnotations() {
-        return isAnnotated() ? AnnotationUtils.getAnnotations(getClass())
-                : null;
+        return isAnnotated() ? AnnotationUtils.getInstance().getAnnotations(
+                getClass()) : null;
     }
 
     /**
@@ -858,8 +860,34 @@ public abstract class ServerResource extends UniformResource {
                                 getMetadataService(), getConverterService());
 
                         if (annoVariants != null) {
+                            // Compute an affinity score between this annotation
+                            // and the input entity.
+                            float score = 0.5f;
+                            if ((getRequest().getEntity() != null)
+                                    && getRequest().getEntity().isAvailable()) {
+                                MediaType emt = getRequest().getEntity()
+                                        .getMediaType();
+                                List<MediaType> amts = getMetadataService()
+                                        .getAllMediaTypes(
+                                                annotationInfo.getInput());
+                                if (amts != null) {
+                                    for (MediaType amt : amts) {
+                                        if (amt.equals(emt)) {
+                                            score = 1.0f;
+                                        } else if (amt.includes(emt)) {
+                                            score = Math.max(0.8f, score);
+                                        } else if (amt.isCompatible(emt)) {
+                                            score = Math.max(0.6f, score);
+                                        }
+                                    }
+                                }
+                            }
+
                             for (Variant v : annoVariants) {
-                                result.add(new VariantInfo(v, annotationInfo));
+                                VariantInfo vi = new VariantInfo(v,
+                                        annotationInfo);
+                                vi.setInputScore(score);
+                                result.add(vi);
                             }
                         }
                     }

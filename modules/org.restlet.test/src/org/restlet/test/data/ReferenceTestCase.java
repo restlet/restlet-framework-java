@@ -620,12 +620,34 @@ public class ReferenceTestCase extends RestletTestCase {
      * Test scheme specific part getting/setting.
      */
     public void testSchemeSpecificPart() throws Exception {
-        final Reference ref = getDefaultReference();
+        Reference ref = getDefaultReference();
         String part = "//www.restlet.org";
         assertEquals(part, ref.getSchemeSpecificPart());
         part = "//www.restlet.net";
         ref.setSchemeSpecificPart(part);
         assertEquals(part, ref.getSchemeSpecificPart());
+    }
+    
+    /**
+     * Test setting of the last segment.
+     */
+    public void testSetLastSegment(){
+        Reference ref = new Reference("http://localhost:1234");
+        ref.addSegment("test");
+        assertEquals("http://localhost:1234/test", ref.toString());
+        
+        ref.setLastSegment("last");
+        assertEquals("http://localhost:1234/last", ref.toString());
+        
+        ref = new Reference("http://localhost:1234");
+        ref.setLastSegment("last");
+        assertEquals("http://localhost:1234/last", ref.toString());
+
+        ref.setLastSegment("test");
+        assertEquals("http://localhost:1234/test", ref.toString());
+        
+        ref.addSegment("last");
+        assertEquals("http://localhost:1234/test/last", ref.toString());
     }
 
     /**

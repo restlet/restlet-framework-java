@@ -34,6 +34,7 @@
 package org.restlet.engine.resource;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -68,6 +69,9 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
     /** The associated client resource. */
     private final ClientResource clientResource;
 
+    /** The associated annotation utils. */
+    private AnnotationUtils annotationUtils;
+
     /**
      * Constructor.
      * 
@@ -78,10 +82,27 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
      */
     public ClientInvocationHandler(ClientResource clientResource,
             Class<? extends T> resourceInterface) {
-        this.clientResource = clientResource;
+        this(clientResource, resourceInterface, AnnotationUtils.getInstance());
+    }
 
+    /**
+     * Constructor.
+     * 
+     * @param clientResource
+     *            The associated client resource.
+     * @param resourceInterface
+     *            The annotated resource interface.
+     * @param annotationUtils
+     *            The annotationUtils class.
+     */
+    public ClientInvocationHandler(ClientResource clientResource,
+            Class<? extends T> resourceInterface,
+            AnnotationUtils annotationUtils) {
+        this.clientResource = clientResource;
+        this.annotationUtils = annotationUtils;
         // Introspect the interface for Restlet annotations
-        this.annotations = AnnotationUtils.getAnnotations(resourceInterface);
+        this.annotations = this.annotationUtils
+                .getAnnotations(resourceInterface);
     }
 
     /**
@@ -103,6 +124,18 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
     }
 
     /**
+     * Returns a new instance of {@link Request} according to the given Java
+     * Method.
+     * 
+     * @param javaMethod
+     *            The Java method.
+     * @return A new instance of {@link Request}.
+     */
+    protected Request getRequest(Method javaMethod) {
+        return getClientResource().createRequest();
+    }
+
+    /**
      * Effectively invokes a Java method on the given proxy object.
      */
     @SuppressWarnings("rawtypes")
@@ -117,7 +150,7 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 .getMethod("getClientResource"))) {
             result = clientResource;
         } else {
-            AnnotationInfo annotationInfo = AnnotationUtils.getAnnotation(
+            AnnotationInfo annotationInfo = annotationUtils.getAnnotation(
                     annotations, javaMethod);
 
             if (annotationInfo != null) {
@@ -193,7 +226,7 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 }
 
                 // Clone the prototype request
-                Request request = getClientResource().createRequest();
+                Request request = getRequest(javaMethod);
 
                 // The Java method was annotated
                 request.setMethod(annotationInfo.getRestletMethod());

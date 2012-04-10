@@ -47,6 +47,9 @@ public class VariantInfo extends Variant {
     /** The optional annotation descriptor. */
     private final AnnotationInfo annotationInfo;
 
+    /** Affinity between this variant and an incoming representation. */
+    private float inputScore;
+
     /**
      * Constructor.
      * 
@@ -55,6 +58,35 @@ public class VariantInfo extends Variant {
      */
     public VariantInfo(MediaType mediaType) {
         this(mediaType, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The media type.
+     * @param annotationInfo
+     *            The optional annotation descriptor.
+     */
+    public VariantInfo(MediaType mediaType, AnnotationInfo annotationInfo) {
+        super(mediaType);
+        this.annotationInfo = annotationInfo;
+        inputScore = 1.0f;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param variant
+     *            The variant to enrich.
+     * @param annotationInfo
+     *            The optional annotation descriptor.
+     */
+    public VariantInfo(Variant variant, AnnotationInfo annotationInfo) {
+        this(variant.getMediaType(), annotationInfo);
+        setCharacterSet(variant.getCharacterSet());
+        setEncodings(variant.getEncodings());
+        setLanguages(variant.getLanguages());
     }
 
     /**
@@ -84,40 +116,32 @@ public class VariantInfo extends Variant {
     }
 
     /**
-     * Constructor.
-     * 
-     * @param mediaType
-     *            The media type.
-     * @param annotationInfo
-     *            The optional annotation descriptor.
-     */
-    public VariantInfo(MediaType mediaType, AnnotationInfo annotationInfo) {
-        super(mediaType);
-        this.annotationInfo = annotationInfo;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param variant
-     *            The variant to enrich.
-     * @param annotationInfo
-     *            The optional annotation descriptor.
-     */
-    public VariantInfo(Variant variant, AnnotationInfo annotationInfo) {
-        super(variant.getMediaType());
-        setCharacterSet(variant.getCharacterSet());
-        setEncodings(variant.getEncodings());
-        setLanguages(variant.getLanguages());
-        this.annotationInfo = annotationInfo;
-    }
-
-    /**
      * Returns the optional annotation descriptor.
      * 
      * @return The optional annotation descriptor.
      */
     public AnnotationInfo getAnnotationInfo() {
         return annotationInfo;
+    }
+    
+
+    /**
+     * Returns the affinity between this variant and an incoming representation.
+     * 
+     * @return The affinity between this variant and an incoming representation.
+     */
+    public float getInputScore() {
+        return inputScore;
+    }
+
+    /**
+     * Sets the affinity between this variant and an incoming representation.
+     * 
+     * @param inputScore
+     *            The affinity between this variant and an incoming
+     *            representation.
+     */
+    public void setInputScore(float inputScore) {
+        this.inputScore = inputScore;
     }
 }

@@ -51,6 +51,8 @@ import org.restlet.ext.jaxb.internal.Unmarshaller;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+
 /**
  * An XML representation based on JAXB that provides easy translation between
  * XML and JAXB element class trees.
@@ -107,15 +109,15 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     }
 
     /**
+     * The classloader to use for JAXB annotated classes.
+     */
+    private volatile ClassLoader classLoader;
+
+    /**
      * The list of Java package names that contain schema derived class and/or
      * Java to schema (JAXB-annotated) mapped classes.
      */
     private volatile String contextPath;
-
-    /**
-     * The classloader to use for JAXB annotated classes.
-     */
-    private volatile ClassLoader classLoader;
 
     /**
      * Indicates if the resulting XML data should be formatted with line breaks
@@ -128,6 +130,9 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
      * Marshaller.
      */
     private volatile boolean fragment;
+
+    /** An optional namespace prefix mapper for marshalling. */
+    private volatile NamespacePrefixMapper namespacePrefixMapper;
 
     /** The "xsi:noNamespaceSchemaLocation" attribute in the generated XML data. */
     private volatile String noNamespaceSchemaLocation;
@@ -344,6 +349,15 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     }
 
     /**
+     * Returns the optional namespace prefix mapper for marshalling.
+     * 
+     * @return The optional namespace prefix mapper for marshalling.
+     */
+    public NamespacePrefixMapper getNamespacePrefixMapper() {
+        return namespacePrefixMapper;
+    }
+
+    /**
      * Returns the "xsi:noNamespaceSchemaLocation" attribute in the generated
      * XML data.
      * 
@@ -472,6 +486,17 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
      */
     public void setFragment(boolean fragment) {
         this.fragment = fragment;
+    }
+
+    /**
+     * Sets the optional namespace prefix mapper for marshalling.
+     * 
+     * @param namespacePrefixMapper
+     *            The optional namespace prefix mapper for marshalling.
+     */
+    public void setNamespacePrefixMapper(
+            NamespacePrefixMapper namespacePrefixMapper) {
+        this.namespacePrefixMapper = namespacePrefixMapper;
     }
 
     /**

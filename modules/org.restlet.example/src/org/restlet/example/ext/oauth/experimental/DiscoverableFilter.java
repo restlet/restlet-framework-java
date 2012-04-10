@@ -160,8 +160,8 @@ public class DiscoverableFilter extends Filter {
 
                 if (sr instanceof DiscoverableResource) {
                     scoped = (DiscoverableResource) sr;
-                    List<AnnotationInfo> ai = AnnotationUtils.getAnnotations(sr
-                            .getClass());
+                    List<AnnotationInfo> ai = AnnotationUtils.getInstance()
+                            .getAnnotations(sr.getClass());
                     for (AnnotationInfo i : ai) {
                         methods.add(i.getRestletMethod());
                     }
