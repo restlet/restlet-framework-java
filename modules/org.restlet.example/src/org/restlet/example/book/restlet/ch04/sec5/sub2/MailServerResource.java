@@ -90,8 +90,8 @@ public class MailServerResource extends ServerResource {
             if (MediaType.APPLICATION_XML.isCompatible(representation
                     .getMediaType())) {
                 // Parse the XML representation to get the mail bean
-                mail = new XstreamRepresentation<Mail>(representation)
-                        .getObject();
+                mail = new XstreamRepresentation<Mail>(representation,
+                        Mail.class).getObject();
                 System.out.println("XML representation received");
             } else if (MediaType.APPLICATION_JSON.isCompatible(representation
                     .getMediaType())) {

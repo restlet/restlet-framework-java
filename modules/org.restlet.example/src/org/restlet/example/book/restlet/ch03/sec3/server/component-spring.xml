@@ -31,10 +31,9 @@
 		<constructor-arg ref="component" />
 
 		<!--
-			<property name="hostDomain"
-			value="www.rmep.com|www.rmep.net|www.rmep.org" /> <property
-			name="serverAddress" value="1.2.3.10|1.2.3.20" /> <property
-			name="serverPort" value="80" />
+			<property name="hostDomain" value="www\\.rmep\\.com|www\\.rmep\\.net|www\\.rmep\\.org" />
+			<property name="serverAddress" value="1\\.2\\.3\\.10|1\\.2\\.3\\.20" />
+			<property name="serverPort" value="80" />
 		-->
 
 		<property name="defaultAttachment" ref="mailServerApplication" />

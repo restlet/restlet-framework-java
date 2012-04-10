@@ -38,6 +38,7 @@ import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.routing.VirtualHost;
 
 /**
  * RESTful component containing the mail server application.
@@ -74,12 +75,13 @@ public class MailServerComponent extends Component {
         getServers().add(server);
 
         // Configure the default virtual host
-        // getDefaultHost().setHostDomain("www\\.rmep\\.com|www\\.rmep\\.net|www\\.rmep\\.org");
-        // getDefaultHost().setServerAddress("1\\.2\\.3\\.10|1\\.2\\.3\\.20");
-        // getDefaultHost().setServerPort("80");
+        VirtualHost host = getDefaultHost();
+        // host.setHostDomain("www\\.rmep\\.com|www\\.rmep\\.net|www\\.rmep\\.org");
+        // host.setServerAddress("1\\.2\\.3\\.10|1\\.2\\.3\\.20");
+        // host.setServerPort("80");
 
         // Attach the application to the default virtual host
-        getDefaultHost().attachDefault(new MailServerApplication());
+        host.attachDefault(new MailServerApplication());
 
         // Configure the log service
         getLogService().setLoggerName("MailServer.AccessLog");
