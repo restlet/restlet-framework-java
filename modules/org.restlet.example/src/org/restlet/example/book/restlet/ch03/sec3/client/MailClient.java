@@ -79,7 +79,7 @@ public class MailClient {
         System.out.println(mailAccounts.represent());
 
         System.out.println("\n6) Display the second account\n");
-        AccountResource mailAccount = service.getChild("/accounts/2",
+        AccountResource mailAccount = service.getChild("/accounts/1",
                 AccountResource.class);
         System.out.println(mailAccount.represent());
 
@@ -90,7 +90,7 @@ public class MailClient {
 
         System.out
                 .println("\n8) Delete the first account and display the list again\n");
-        mailAccount = service.getChild("/accounts/1", AccountResource.class);
+        mailAccount = service.getChild("/accounts/0", AccountResource.class);
         mailAccount.remove();
         System.out.println(mailAccounts.represent());
     }
