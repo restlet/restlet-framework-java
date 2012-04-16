@@ -43,17 +43,46 @@ import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 
 /**
- * Selection listener notifying new content as an {@link ByteBuffer}.
+ * Selection listener notifying new content is read into a {@link ByteBuffer}.
  * 
  * @author Jerome Louvel
  */
-public abstract class ReadableListener implements SelectionListener {
+public abstract class ReadingListener implements SelectionListener {
 
     /** The internal byte buffer. */
     private final ByteBuffer byteBuffer;
 
     /** The byte channel to read from when selected. */
     private final ReadableByteChannel byteChannel;
+
+    /**
+     * Constructor. Uses a byte buffer of a given size.
+     * 
+     * @param byteChannel
+     *            The source byte channel.
+     * @param byteBuffer
+     *            The byte buffer to use.
+     * @throws IOException
+     */
+    public ReadingListener(ReadableByteChannel byteChannel,
+            ByteBuffer byteBuffer) throws IOException {
+        this.byteBuffer = byteBuffer;
+        this.byteChannel = byteChannel;
+    }
+
+    /**
+     * Constructor. Uses a byte buffer of a given size.
+     * 
+     * @param byteChannel
+     *            The source byte channel.
+     * @param bufferSize
+     *            The size of the byte buffer to use.
+     * @throws IOException
+     */
+    public ReadingListener(ReadableByteChannel byteChannel, int bufferSize)
+            throws IOException {
+        this(byteChannel, ByteBuffer.allocate(bufferSize));
+    }
 
     /**
      * Default constructor. Uses a byte buffer of {@link IoUtils#BUFFER_SIZE}
@@ -63,7 +92,7 @@ public abstract class ReadableListener implements SelectionListener {
      *            The source representation.
      * @throws IOException
      */
-    public ReadableListener(Representation source) throws IOException {
+    public ReadingListener(Representation source) throws IOException {
         this(source, IoUtils.BUFFER_SIZE);
     }
 
@@ -73,13 +102,12 @@ public abstract class ReadableListener implements SelectionListener {
      * @param source
      *            The source byte channel.
      * @param bufferSize
-     *            The byte buffer to use.
+     *            The size of the byte buffer to use.
      * @throws IOException
      */
-    public ReadableListener(Representation source, int bufferSize)
+    public ReadingListener(Representation source, int bufferSize)
             throws IOException {
-        this.byteBuffer = ByteBuffer.allocate(bufferSize);
-        this.byteChannel = source.getChannel();
+        this(source.getChannel(), bufferSize);
     }
 
     /**
@@ -111,7 +139,8 @@ public abstract class ReadableListener implements SelectionListener {
     /**
      * Callback invoked when new content is available. It reads the available
      * bytes from the source channel into an internal buffer then calls
-     * {@link #onContent(ByteBuffer)}.
+     * {@link #onContent(ByteBuffer)} method or the {@link #onEnd()} method or
+     * the {@link #onError(IOException)} method.
      */
     public final void onSelected() {
         try {

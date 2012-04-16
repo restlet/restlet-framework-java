@@ -34,24 +34,17 @@
 package org.restlet.util;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.restlet.data.CharacterSet;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 
 /**
- * Selection listener notifying new content as a {@link Reader}. It relies on
- * the representation's character set for proper character decoding.
+ * Selection listener notifying new content as a string.
  * 
  * @author Jerome Louvel
  */
-public abstract class ReaderListener extends InputListener {
-
-    /** The character set of the associated representation. */
-    private final CharacterSet characterSet;
+public abstract class StringReadingListener extends CharacterReadingListener {
 
     /**
      * Default constructor. Uses a byte buffer of {@link IoUtils#BUFFER_SIZE}
@@ -61,8 +54,8 @@ public abstract class ReaderListener extends InputListener {
      *            The source representation.
      * @throws IOException
      */
-    public ReaderListener(Representation source) throws IOException {
-        this(source, IoUtils.BUFFER_SIZE);
+    public StringReadingListener(Representation source) throws IOException {
+        super(source);
     }
 
     /**
@@ -74,25 +67,35 @@ public abstract class ReaderListener extends InputListener {
      *            The byte buffer to use.
      * @throws IOException
      */
-    public ReaderListener(Representation source, int bufferSize)
+    public StringReadingListener(Representation source, int bufferSize)
             throws IOException {
         super(source, bufferSize);
-        this.characterSet = source.getCharacterSet();
     }
 
     @Override
-    protected final void onContent(InputStream inputStream) {
-        InputStreamReader isr = new InputStreamReader(inputStream,
-                this.characterSet.toCharset());
-        onContent(isr);
+    protected final void onContent(Reader reader) {
+        try {
+            int r = reader.read();
+            StringBuilder sb = new StringBuilder();
+
+            while (r != -1) {
+                sb.append((char) r);
+                r = reader.read();
+            }
+
+            String s = sb.toString();
+            onContent(s);
+        } catch (IOException ioe) {
+            onError(ioe);
+        }
     }
 
     /**
      * Callback invoked when new content is available.
      * 
-     * @param reader
-     *            The reader allowing to retrieve the new content.
+     * @param content
+     *            The new content.
      */
-    protected abstract void onContent(Reader reader);
+    protected abstract void onContent(String content);
 
 }

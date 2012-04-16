@@ -33,18 +33,20 @@
 
 package org.restlet.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 
 /**
- * Selection listener notifying new content as a string.
+ * Selection listener notifying new content as an {@link InputStream}.
  * 
  * @author Jerome Louvel
  */
-public abstract class StringListener extends ReaderListener {
+public abstract class ByteReadingListener extends ReadingListener {
 
     /**
      * Default constructor. Uses a byte buffer of {@link IoUtils#BUFFER_SIZE}
@@ -54,7 +56,7 @@ public abstract class StringListener extends ReaderListener {
      *            The source representation.
      * @throws IOException
      */
-    public StringListener(Representation source) throws IOException {
+    public ByteReadingListener(Representation source) throws IOException {
         super(source);
     }
 
@@ -62,40 +64,33 @@ public abstract class StringListener extends ReaderListener {
      * Constructor. Uses a byte buffer of a given size.
      * 
      * @param source
-     *            The source representation.
+     *            The source byte channel.
      * @param bufferSize
      *            The byte buffer to use.
      * @throws IOException
      */
-    public StringListener(Representation source, int bufferSize)
+    public ByteReadingListener(Representation source, int bufferSize)
             throws IOException {
         super(source, bufferSize);
-    }
-
-    @Override
-    protected final void onContent(Reader reader) {
-        try {
-            int r = reader.read();
-            StringBuilder sb = new StringBuilder();
-
-            while (r != -1) {
-                sb.append((char) r);
-                r = reader.read();
-            }
-
-            String s = sb.toString();
-            onContent(s);
-        } catch (IOException ioe) {
-            onError(ioe);
-        }
     }
 
     /**
      * Callback invoked when new content is available.
      * 
-     * @param content
-     *            The new content.
+     * @param byteBuffer
+     *            The byte buffer filled with the new content (correctly flip).
      */
-    protected abstract void onContent(String content);
+    protected final void onContent(ByteBuffer byteBuffer) {
+        onContent(new ByteArrayInputStream(byteBuffer.array(),
+                byteBuffer.arrayOffset(), byteBuffer.remaining()));
+    }
+
+    /**
+     * Callback invoked when new content is available.
+     * 
+     * @param inputStream
+     *            The input stream allowing to retrieve the new content.
+     */
+    protected abstract void onContent(InputStream inputStream);
 
 }
