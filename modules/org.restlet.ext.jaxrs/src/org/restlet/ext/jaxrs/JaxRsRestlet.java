@@ -598,7 +598,7 @@ public class JaxRsRestlet extends Restlet {
         // (class)}.
         Collection<MediaType> p = resourceMethod.getProducedMimes();
 
-        // (c) Else set P = {V (writers)} where ‘writers’ is the set of
+        // (c) Else set P = {V (writers)} where 'writers' is the set of
         // MessageBodyWriter that support the class of the returned entity
         // object.
         if (p.isEmpty()) {
@@ -606,13 +606,13 @@ public class JaxRsRestlet extends Restlet {
                     .getAllProducibleMediaTypes();
         }
 
-        // 3. If P = {}, set P = {‘*/*’}
+        // 3. If P = {}, set P = {'*/*'}
         if (p.isEmpty())
             return MediaType.ALL;
         else
             p = sortByConcreteness(p);
 
-        // 4. Obtain the acceptable media types A. If A = {}, set A = {‘*/*’}
+        // 4. Obtain the acceptable media types A. If A = {}, set A = {'*/*'}
         SortedMetadata<MediaType> a = callContext.getAccMediaTypes();
 
         if (a.isEmpty())
@@ -669,8 +669,8 @@ public class JaxRsRestlet extends Restlet {
             if (mediaType.isConcrete())
                 return mediaType;
 
-        // 9. If M contains ‘*/*’ or ‘application/*’, set Mselected =
-        // ‘application/octet-stream’, finish.
+        // 9. If M contains '*/*' or 'application/*', set Mselected =
+        // 'application/octet-stream', finish.
         if (m.contains(MediaType.ALL) || m.contains(MediaType.APPLICATION_ALL))
             return MediaType.APPLICATION_OCTET_STREAM;
 
