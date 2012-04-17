@@ -436,14 +436,14 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
         return accessServer(Method.GET, reference);
     }
 
-    public Response get(Reference reference, MediaType mediaType) {
-        Collection<MediaType> mediaTypes = null;
+    public Response get(Reference reference, MediaType... mediaType) {
+        Collection<MediaType> accepted = null;
         if (mediaType != null) {
-            mediaTypes = new ArrayList<MediaType>();
-            mediaTypes.add(mediaType);
+            accepted = new ArrayList<MediaType>();
+            accepted.addAll(Arrays.asList(mediaType));
         }
-        return accessServer(Method.GET, reference, mediaTypes, null, null,
-                null, null, null);
+        return accessServer(Method.GET, reference, accepted, null, null, null,
+                null, null);
     }
 
     public Response get(String subPath) {

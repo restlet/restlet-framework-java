@@ -5,8 +5,11 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
-	   - Fixed user agent name detection for Firefox 12 on Windows.
-	     Reported by Tim Peierls.
+       - Fixed user agent name detection for Firefox 12 on Windows.
+         Reported by Tim Peierls.
+       - Fixed issue with content negotiation in the JAX-RS when
+         multiple Accept preferences were expressed by the client.
+         Reported by Vincent Massol, Fabio Mancinelli, Anca Luca.
 
 - 2.0.12 (2012-04-06)
     - Bug fixed
