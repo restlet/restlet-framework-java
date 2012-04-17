@@ -598,7 +598,7 @@ public class JaxRsRestlet extends Restlet {
         // (class)}.
         Collection<MediaType> p = resourceMethod.getProducedMimes();
 
-        // (c) Else set P = {V (writers)} where ‘writers’ is the set of
+        // (c) Else set P = {V (writers)} where â€˜writersâ€™ is the set of
         // MessageBodyWriter that support the class of the returned entity
         // object.
         if (p.isEmpty()) {
@@ -606,13 +606,13 @@ public class JaxRsRestlet extends Restlet {
                     .getAllProducibleMediaTypes();
         }
 
-        // 3. If P = {}, set P = {‘*/*’}
+        // 3. If P = {}, set P = {â€˜*/*â€™}
         if (p.isEmpty())
             return MediaType.ALL;
         else
             p = sortByConcreteness(p);
 
-        // 4. Obtain the acceptable media types A. If A = {}, set A = {‘*/*’}
+        // 4. Obtain the acceptable media types A. If A = {}, set A = {â€˜*/*â€™}
         SortedMetadata<MediaType> a = callContext.getAccMediaTypes();
 
         if (a.isEmpty())
@@ -635,23 +635,19 @@ public class JaxRsRestlet extends Restlet {
         }
 
         // Otherwise test inclusion (good)
-        if (m.isEmpty()) {
-            for (MediaType a1 : a) {
-                for (MediaType p1 : p) {
-                    if (a1.includes(p1)) {
-                        m.add(MediaType.getMostSpecific(a1, p1));
-                    }
+        for (MediaType a1 : a) {
+            for (MediaType p1 : p) {
+                if (a1.includes(p1)) {
+                    m.add(MediaType.getMostSpecific(a1, p1));
                 }
             }
         }
 
         // Finally test compatibility (most flexible)
-        if (m.isEmpty()) {
-            for (MediaType a1 : a) {
-                for (MediaType p1 : p) {
-                    if (a1.isCompatible(p1)) {
-                        m.add(MediaType.getMostSpecific(a1, p1));
-                    }
+        for (MediaType a1 : a) {
+            for (MediaType p1 : p) {
+                if (a1.isCompatible(p1)) {
+                    m.add(MediaType.getMostSpecific(a1, p1));
                 }
             }
         }
@@ -673,8 +669,8 @@ public class JaxRsRestlet extends Restlet {
             if (mediaType.isConcrete())
                 return mediaType;
 
-        // 9. If M contains ‘*/*’ or ‘application/*’, set Mselected =
-        // ‘application/octet-stream’, finish.
+        // 9. If M contains â€˜*/*â€™ or â€˜application/*â€™, set Mselected =
+        // â€˜application/octet-streamâ€™, finish.
         if (m.contains(MediaType.ALL) || m.contains(MediaType.APPLICATION_ALL))
             return MediaType.APPLICATION_OCTET_STREAM;
 
