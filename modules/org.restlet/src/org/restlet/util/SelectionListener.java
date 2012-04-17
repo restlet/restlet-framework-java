@@ -45,7 +45,11 @@ public interface SelectionListener {
     /**
      * Callback method invoked when the connection has been selected for IO
      * operations it registered interest in.
+     * 
+     * @param selectionRegistration
+     *            The selected registration.
      */
-    public void onSelected() throws IOException;
+    public void onSelected(SelectionRegistration selectionRegistration)
+            throws IOException;
 
 }

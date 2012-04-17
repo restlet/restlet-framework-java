@@ -292,7 +292,7 @@ public class SelectionRegistration {
         this.readyOperations = readyOperations;
 
         if ((getListener() != null) && isInterestReady()) {
-            getListener().onSelected();
+            getListener().onSelected(this);
         }
     }
 

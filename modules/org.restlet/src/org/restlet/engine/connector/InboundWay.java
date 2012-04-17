@@ -335,7 +335,8 @@ public abstract class InboundWay extends Way {
 
             if (getIoState() == IoState.READY) {
                 if (getEntityRegistration().getListener() != null) {
-                    getEntityRegistration().getListener().onSelected();
+                    getEntityRegistration().getListener().onSelected(
+                            getEntityRegistration());
                 }
             } else {
                 getEntityRegistration().onSelected(

@@ -564,8 +564,12 @@ public class Connection<T extends Connector> implements SelectionListener {
      * that allows the detection of expired connections and calls
      * {@link SelectionRegistration#onSelected(int)} on the inbound or outbound
      * way.
+     * 
+     * @param selectionRegistration
+     *            The selected registration.
      */
-    public void onSelected() {
+    public void onSelected(SelectionRegistration selectionRegistration)
+            throws IOException {
         onActivity();
 
         if (getLogger().isLoggable(Level.FINER)) {
