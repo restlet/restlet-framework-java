@@ -82,7 +82,8 @@ public class PersonsTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_CREATED, response1.getStatus());
         final Reference newLocation = response1.getLocationRef();
 
-        final Response response2 = get(newLocation, MediaType.TEXT_XML);
+        final Response response2 = get(newLocation,
+                MediaType.APPLICATION_JAVASCRIPT, MediaType.TEXT_XML);
         sysOutEntityIfError(response2);
         assertEquals(Status.SUCCESS_OK, response2.getStatus());
         final JaxbRepresentation<Person> repr = new JaxbRepresentation<Person>(

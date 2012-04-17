@@ -33,7 +33,6 @@
 
 package org.restlet.engine.converter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -50,76 +49,6 @@ import org.restlet.resource.Resource;
  * @author Jerome Louvel
  */
 public class ConverterUtils {
-
-    /**
-     * Adds a variant to the given list.
-     * 
-     * @param variants
-     *            The list to update.
-     * @param variant
-     *            The variant info to add.
-     * @return The updated list.
-     */
-    protected static List<VariantInfo> addVariant(List<VariantInfo> variants,
-            VariantInfo variant) {
-        List<VariantInfo> result = variants;
-
-        if (result == null) {
-            result = new ArrayList<VariantInfo>();
-        }
-
-        if (!result.contains(variant)) {
-            result.add(variant);
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the list of variants that can be converted from a given object
-     * class.
-     * 
-     * @param sourceClass
-     *            The source class.
-     * @param targetVariant
-     *            The expected representation metadata.
-     * @return The list of variants that can be converted.
-     */
-    public static List<VariantInfo> getVariants(Class<?> sourceClass,
-            Variant targetVariant) {
-        List<VariantInfo> result = null;
-        List<VariantInfo> helperVariants = null;
-
-        for (ConverterHelper ch : Engine.getInstance()
-                .getRegisteredConverters()) {
-            if (ch != null) {
-                // List of variants that can be converted from the source class
-                helperVariants = ch.getVariants(sourceClass);
-
-                if (helperVariants != null) {
-                    // Loop over the variants list
-                    for (VariantInfo helperVariant : helperVariants) {
-                        if (targetVariant == null) {
-                            result = addVariant(result, helperVariant);
-                        } else if (helperVariant.includes(targetVariant)) {
-                            // Detected a more generic variant, but still
-                            // consider
-                            // the conversion is possible to the target variant.
-                            result = addVariant(result, new VariantInfo(
-                                    targetVariant.getMediaType()));
-                        } else if (targetVariant.includes(helperVariant)) {
-                            // Detected a more specific variant, but still
-                            // consider
-                            // the conversion is possible to the target variant.
-                            result = addVariant(result, helperVariant);
-                        }
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
 
     /**
      * Returns the best converter helper matching the given parameters.
@@ -188,6 +117,30 @@ public class ConverterUtils {
                     bestScore = currentScore;
                     result = ch;
                 }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the list of variants that can be converted from a given object
+     * class.
+     * 
+     * @param sourceClass
+     *            The source class.
+     * @param targetVariant
+     *            The expected representation metadata.
+     * @return The list of variants that can be converted.
+     */
+    public static List<VariantInfo> getVariants(Class<?> sourceClass,
+            Variant targetVariant) {
+        List<VariantInfo> result = null;
+
+        for (ConverterHelper ch : Engine.getInstance()
+                .getRegisteredConverters()) {
+            if (ch != null) {
+                result = ch.addVariants(sourceClass, targetVariant, result);
             }
         }
 

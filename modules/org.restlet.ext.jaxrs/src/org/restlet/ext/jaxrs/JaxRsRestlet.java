@@ -117,7 +117,7 @@ import org.restlet.service.MetadataService;
 /**
  * <p>
  * This class choose the JAX-RS resource class and method to use for a request
- * and handles the result from he resource method. Typically you should
+ * and handles the result from the resource method. Typically you should
  * instantiate a {@link JaxRsApplication} to run JAX-RS resource classes.
  * </p>
  * 
@@ -266,7 +266,11 @@ public class JaxRsRestlet extends Restlet {
         // @see Application#getClasses()
         // @see Application#getSingletons()
         if (!used) {
-            getLogger().warning("The class " + jaxRsClass + " is neither a provider nor a root resource class");
+            getLogger()
+                    .warning(
+                            "The class "
+                                    + jaxRsClass
+                                    + " is neither a provider nor a root resource class");
         }
         return used;
     }
@@ -544,48 +548,113 @@ public class JaxRsRestlet extends Restlet {
     private MediaType determineMediaType(MediaType jaxRsResponseMediaType,
             ResourceMethod resourceMethod, Class<?> entityClass,
             Type genericReturnType) throws WebApplicationException {
-        // 1. if the Response contains a MediaType, use it.
+        // In many cases it is not possible to statically determine the media
+        // type of a response. The following algorithm is used to determine the
+        // response media type, Mselected, at run time:
+
+        // 1. If the method returns an instance of Response whose metadata
+        // includes the response media type (Mspecified) then set Mselected =
+        // Mspecified, finish.
         if (jaxRsResponseMediaType != null)
             return jaxRsResponseMediaType;
         if (resourceMethod == null)
             return MediaType.TEXT_PLAIN;
+
         CallContext callContext = tlContext.get();
-        // 2. Gather the set of producible media types P:
-        // (a) + (b)
+
+        // 2. Gather the set of producible media types P :
+        //
+        // (a) If the method is annotated with @Produces, set P = {V (method)}
+        // where V (t) represents the values of @Produces on the specified
+        // target t.
+        //
+        // (b) Else if the class is annotated with @Produces, set P = {V
+        // (class)}.
         Collection<MediaType> p = resourceMethod.getProducedMimes();
-        // 2. (c)
+
+        // (c) Else set P = {V (writers)} where ‘writers’ is the set of
+        // MessageBodyWriter that support the class of the returned entity
+        // object.
         if (p.isEmpty()) {
             p = providers.writerSubSet(entityClass, genericReturnType)
                     .getAllProducibleMediaTypes();
-            // 3.
-            if (p.isEmpty())
-                // '*/*', in conjunction with 8.:
-                return MediaType.APPLICATION_OCTET_STREAM;
         }
-        // 4. Obtain the acceptable media types A.
+
+        // 3. If P = {}, set P = {‘*/*’}
+        if (p.isEmpty())
+            return MediaType.ALL;
+        else
+            p = sortByConcreteness(p);
+
+        // 4. Obtain the acceptable media types A. If A = {}, set A = {‘*/*’}
         SortedMetadata<MediaType> a = callContext.getAccMediaTypes();
-        // 4. If A = {}, set A = {'*/*'}
+
         if (a.isEmpty())
             a = SortedMetadata.getMediaTypeAll();
-        // 5. Sort P and A (A is already sorted)
-        List<MediaType> pSorted = sortByConcreteness(p);
-        // 6.
+
+        // 5. Set M = {}. For each member of A,a:
+        // (a) For each member of P,p:
+        // (a.1) If a is compatible with p, add S(a,p) to M, where the function
+        // S returns the most specific media type of the pair with the q-value
+        // of a.
         List<MediaType> m = new ArrayList<MediaType>();
-        for (MediaType acc : a)
-            for (MediaType prod : pSorted)
-                if (prod.isCompatible(acc))
-                    m.add(MediaType.getMostSpecific(prod, acc));
-        // 7.
+
+        // First test equality (ideal)
+        for (MediaType a1 : a) {
+            for (MediaType p1 : p) {
+                if (a1.equals(p1)) {
+                    m.add(a1);
+                }
+            }
+        }
+
+        // Otherwise test inclusion (good)
+        if (m.isEmpty()) {
+            for (MediaType a1 : a) {
+                for (MediaType p1 : p) {
+                    if (a1.includes(p1)) {
+                        m.add(MediaType.getMostSpecific(a1, p1));
+                    }
+                }
+            }
+        }
+
+        // Finally test compatibility (most flexible)
+        if (m.isEmpty()) {
+            for (MediaType a1 : a) {
+                for (MediaType p1 : p) {
+                    if (a1.isCompatible(p1)) {
+                        m.add(MediaType.getMostSpecific(a1, p1));
+                    }
+                }
+            }
+        }
+
+        // 6. If M = {} then generate a WebApplicationException with a not
+        // acceptable response (HTTP 406 status) and no entity. The exception
+        // MUST be processed as described in section 3.3.4. Finish.
         if (m.isEmpty())
             excHandler.notAcceptableWhileDetermineMediaType();
-        // 8.
+
+        // 7. Sort M in descending order, with a primary key of specificity (n/m
+        // > n/* > */*) and secondary key of q-value.
+
+        // TODO
+
+        // 8. For each member of M,m:
+        // (a) If m is a concrete type, set Mselected = m, finish.
         for (MediaType mediaType : m)
             if (mediaType.isConcrete())
                 return mediaType;
-        // 9.
+
+        // 9. If M contains ‘*/*’ or ‘application/*’, set Mselected =
+        // ‘application/octet-stream’, finish.
         if (m.contains(MediaType.ALL) || m.contains(MediaType.APPLICATION_ALL))
             return MediaType.APPLICATION_OCTET_STREAM;
-        // 10.
+
+        // 10. Generate a WebApplicationException with a not acceptable response
+        // (HTTP 406 status) and no entity. The exception MUST be processed as
+        // described in section 3.3.4. Finish.
         throw excHandler.notAcceptableWhileDetermineMediaType();
     }
 

@@ -95,6 +95,45 @@ public abstract class ConverterHelper extends Helper {
     }
 
     /**
+     * Returns the list of variants that can be converted from a given object
+     * class.
+     * 
+     * @param sourceClass
+     *            The source class.
+     * @param targetVariant
+     *            The expected representation metadata.
+     * @param variants
+     *            The variants list to update.
+     */
+    public List<VariantInfo> addVariants(Class<?> sourceClass,
+            Variant targetVariant, List<VariantInfo> variants) {
+        // List of variants that can be converted from the source class
+        List<VariantInfo> helperVariants = getVariants(sourceClass);
+
+        if (helperVariants != null) {
+            // Loop over the variants list
+            for (VariantInfo helperVariant : helperVariants) {
+                if (targetVariant == null) {
+                    variants = addVariant(variants, helperVariant);
+                } else if (helperVariant.includes(targetVariant)) {
+                    // Detected a more generic variant, but still
+                    // consider
+                    // the conversion is possible to the target variant.
+                    variants = addVariant(variants, new VariantInfo(
+                            targetVariant.getMediaType()));
+                } else if (targetVariant.includes(helperVariant)) {
+                    // Detected a more specific variant, but still
+                    // consider
+                    // the conversion is possible to the target variant.
+                    variants = addVariant(variants, helperVariant);
+                }
+            }
+        }
+
+        return variants;
+    }
+
+    /**
      * Returns the list of object classes that can be converted from a given
      * variant.
      * 
@@ -115,6 +154,21 @@ public abstract class ConverterHelper extends Helper {
     public abstract List<VariantInfo> getVariants(Class<?> source);
 
     /**
+     * Returns the list of variants that can be converted from a given object
+     * class by a specific converter helper.
+     * 
+     * @param sourceClass
+     *            The source class.
+     * @param targetVariant
+     *            The expected representation metadata.
+     * @return The list of variants that can be converted.
+     */
+    public List<VariantInfo> getVariants(Class<?> sourceClass,
+            Variant targetVariant) {
+        return addVariants(sourceClass, targetVariant, null);
+    }
+
+    /**
      * Scores the affinity of this helper with the source class.
      * 
      * @param source
@@ -125,8 +179,7 @@ public abstract class ConverterHelper extends Helper {
      *            The calling resource.
      * @return The affinity score of this helper.
      */
-    public abstract float score(Object source, Variant target,
-            Resource resource);
+    public abstract float score(Object source, Variant target, Resource resource);
 
     /**
      * Scores the affinity of this helper with the source class.
