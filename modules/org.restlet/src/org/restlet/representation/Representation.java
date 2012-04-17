@@ -568,6 +568,31 @@ public abstract class Representation extends RepresentationInfo {
         this.expirationDate = DateUtils.unmodifiable(expirationDate);
     }
 
+    // [ifndef gwt] method
+    /**
+     * Sets a listener for NIO read events. If the listener is null, it clear
+     * any existing listener.
+     * 
+     * @param readingListener
+     *            The listener for NIO read events.
+     */
+    public void setListener(org.restlet.util.ReadingListener readingListener) {
+        try {
+            org.restlet.util.SelectionRegistration sr = getRegistration();
+
+            if ((readingListener == null)) {
+                sr.setNoInterest();
+            } else {
+                sr.setReadInterest();
+            }
+
+            sr.setListener(readingListener);
+        } catch (IOException ioe) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to register the reading listener", ioe);
+        }
+    }
+
     /**
      * Sets the range where in the full content the partial content available
      * should be applied.<br>
@@ -580,31 +605,6 @@ public abstract class Representation extends RepresentationInfo {
      */
     public void setRange(Range range) {
         this.range = range;
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Sets a listener for NIO read events. If the listener is null, it clear
-     * any existing listener.
-     * 
-     * @param readListener
-     *            The listener for NIO read events.
-     */
-    public void setReadListener(org.restlet.util.SelectionListener readListener) {
-        try {
-            org.restlet.util.SelectionRegistration sr = getRegistration();
-
-            if ((readListener == null)) {
-                sr.setNoInterest();
-            } else {
-                sr.setReadInterest();
-            }
-
-            sr.setListener(readListener);
-        } catch (IOException ioe) {
-            Context.getCurrentLogger().log(Level.WARNING,
-                    "Unable to register the listener", ioe);
-        }
     }
 
     /**

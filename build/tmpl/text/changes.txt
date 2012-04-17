@@ -5,12 +5,14 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
-	   - Fixed user agent parsing for Chrome and Safari.
-	- API changes
-	   - Renamed ReadableListener into ReadingListener
-	   - Renamed InputListener into ByteReadingListener
-	   - Renamed ReaderListener into CharacterReadingListener
-	   - Renamed StringListener into StringReadingListener
+       - Fixed user agent parsing for Chrome and Safari.
+    - API changes
+       - Renamed ReadableListener into ReadingListener
+       - Renamed InputListener into ByteReadingListener
+       - Renamed ReaderListener into CharacterReadingListener
+       - Renamed StringListener into StringReadingListener
+       - Added missing SelectionRegistration parameter to
+       - SelectionListener#onSelected() method.
 
 - 2.1 Release Candidate 4 (04/06/2012)
     - Bug fixed

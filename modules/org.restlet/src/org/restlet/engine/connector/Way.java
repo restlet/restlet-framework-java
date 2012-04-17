@@ -386,8 +386,11 @@ public abstract class Way implements SelectionListener, CompletionListener,
     /**
      * Callback method invoked when the way has been selected for IO operations
      * it registered interest in.
+     * 
+     * @param selectionRegistration
+     *            The selected registration.
      */
-    public void onSelected() {
+    public void onSelected(SelectionRegistration selectionRegistration) {
         try {
             // Adjust states
             if (getIoState() != IoState.READY) {
