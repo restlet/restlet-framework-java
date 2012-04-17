@@ -142,7 +142,8 @@ public abstract class ReadingListener implements SelectionListener {
      * {@link #onContent(ByteBuffer)} method or the {@link #onEnd()} method or
      * the {@link #onError(IOException)} method.
      */
-    public final void onSelected() {
+    public final void onSelected(SelectionRegistration selectionRegistration)
+            throws IOException {
         try {
             synchronized (this.byteBuffer) {
                 this.byteBuffer.clear();
