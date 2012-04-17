@@ -274,7 +274,7 @@ public class ExceptionHandler {
             SortedMetadata<MediaType> accMediaTypes)
             throws WebApplicationException {
         String warning = "No message body writer found for " + entityClass
-                + "(genericType is " + genericType + ")";
+                + "(generic type is " + genericType + ")";
         
         if (respMediaType != null) {
             warning += "; response media type should be: " + respMediaType;

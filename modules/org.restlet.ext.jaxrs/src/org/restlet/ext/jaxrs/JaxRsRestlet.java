@@ -609,23 +609,19 @@ public class JaxRsRestlet extends Restlet {
         }
 
         // Otherwise test inclusion (good)
-        if (m.isEmpty()) {
-            for (MediaType a1 : a) {
-                for (MediaType p1 : p) {
-                    if (a1.includes(p1)) {
-                        m.add(MediaType.getMostSpecific(a1, p1));
-                    }
+        for (MediaType a1 : a) {
+            for (MediaType p1 : p) {
+                if (a1.includes(p1)) {
+                    m.add(MediaType.getMostSpecific(a1, p1));
                 }
             }
         }
 
         // Finally test compatibility (most flexible)
-        if (m.isEmpty()) {
-            for (MediaType a1 : a) {
-                for (MediaType p1 : p) {
-                    if (a1.isCompatible(p1)) {
-                        m.add(MediaType.getMostSpecific(a1, p1));
-                    }
+        for (MediaType a1 : a) {
+            for (MediaType p1 : p) {
+                if (a1.isCompatible(p1)) {
+                    m.add(MediaType.getMostSpecific(a1, p1));
                 }
             }
         }

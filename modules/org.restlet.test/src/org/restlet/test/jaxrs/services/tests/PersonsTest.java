@@ -91,6 +91,15 @@ public class PersonsTest extends JaxRsTestCase {
         final Person person = repr.getObject();
         assertTrue(person.getFirstname().startsWith("firstname"));
         assertEquals("lastname", person.getLastname());
+
+        final Response response3 = get(newLocation, MediaType.ALL);
+        sysOutEntityIfError(response3);
+        assertEquals(Status.SUCCESS_OK, response3.getStatus());
+        final JaxbRepresentation<Person> repr3 = new JaxbRepresentation<Person>(
+                response3.getEntity(), Person.class);
+        final Person person3 = repr3.getObject();
+        assertTrue(person3.getFirstname().startsWith("firstname"));
+        assertEquals("lastname", person3.getLastname());
     }
 
     public void testGetList() throws Exception {
