@@ -80,18 +80,17 @@ public class RangeFilter extends Filter {
                                     .isSuccess())) {
                         Range requestedRange = request.getRanges().get(0);
 
-                        if (response.getEntity().getSize() == Representation.UNKNOWN_SIZE) {
-                            if ((requestedRange.getIndex() == Range.INDEX_LAST || requestedRange
-                                    .getSize() == Range.SIZE_MAX)
-                                    && !(requestedRange.getIndex() == Range.INDEX_LAST && requestedRange
-                                            .getSize() == Range.SIZE_MAX)) {
-                                // The end index cannot be properly computed
-                                response.setStatus(Status.SERVER_ERROR_INTERNAL);
-                                getLogger()
-                                        .warning(
-                                                "Unable to serve this range since at least the end index of the range cannot be computed.");
-                                response.setEntity(null);
-                            }
+                        if ((response.getEntity().getSize() == Representation.UNKNOWN_SIZE)
+                                && ((requestedRange.getIndex() == Range.INDEX_LAST || requestedRange
+                                        .getSize() == Range.SIZE_MAX) && !(requestedRange
+                                        .getIndex() == Range.INDEX_LAST && requestedRange
+                                        .getSize() == Range.SIZE_MAX))) {
+                            // The end index cannot be properly computed
+                            response.setStatus(Status.SERVER_ERROR_INTERNAL);
+                            getLogger()
+                                    .warning(
+                                            "Unable to serve this range since at least the end index of the range cannot be computed.");
+                            response.setEntity(null);
                         } else if (!requestedRange.equals(response.getEntity()
                                 .getRange())) {
                             if (rangedEntity) {
