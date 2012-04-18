@@ -6,6 +6,9 @@ Changes log
 - @version-full@ (@release-date@)
     - Bug fixed
        - Fixed user agent parsing for Chrome and Safari.
+       - Usage of ranges on representations having unknown size.
+         Reported by Bjorn Roche.
+
     - API changes
        - Renamed ReadableListener into ReadingListener
        - Renamed InputListener into ByteReadingListener
