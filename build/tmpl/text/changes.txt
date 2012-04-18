@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+
 - 2.0.13 (2012-04-18)
     - Bug fixed
        - Fixed user agent name detection for Firefox 12 on Windows.
