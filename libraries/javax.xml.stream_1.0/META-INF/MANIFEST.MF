@@ -12,4 +12,4 @@ Export-Package: javax.xml.stream;version="1.0.2";
    javax.xml.namespace",
  javax.xml.stream.events;version="1.0.2";uses:="javax.xml.stream,javax.xml.namespace",
  javax.xml.stream.util;version="1.0.2";uses:="javax.xml.stream,javax.xml.stream.events,javax.xml.namespace"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

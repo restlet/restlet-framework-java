@@ -10,6 +10,6 @@ Export-Package: org.apache.commons.dbcp,
  org.apache.commons.dbcp.datasources,
  org.apache.commons.dbcp.managed,
  org.apache.commons.jocl
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.apache.commons.pool,
  org.apache.commons.pool.impl

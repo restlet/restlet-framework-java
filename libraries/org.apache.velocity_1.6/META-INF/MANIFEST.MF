@@ -30,4 +30,4 @@ Export-Package: org.apache.velocity,
  org.apache.velocity.texen.util,
  org.apache.velocity.util,
  org.apache.velocity.util.introspection
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -103,4 +103,4 @@ Export-Package: com.db4o,
  com.db4o.typehandlers,
  com.db4o.typehandlers.internal,
  com.db4o.types
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -4,7 +4,7 @@ Bundle-Name: Google GData
 Bundle-SymbolicName: com.google.gdata
 Bundle-Version: 1.0
 Bundle-Vendor: Google Inc.
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: 
  com.google.gdata.client,
  com.google.gdata.client.authn.oauth,

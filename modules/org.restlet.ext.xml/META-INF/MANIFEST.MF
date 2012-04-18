@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - XML
 Bundle-SymbolicName: org.restlet.ext.xml
-Bundle-Version: 2.1
+Bundle-Version: 2.2
 Bundle-Vendor: Restlet S.A.S.
 Export-Package: org.restlet.ext.xml,
  org.restlet.ext.xml.internal
@@ -29,4 +29,4 @@ Import-Package: javax.xml,
  org.w3c.dom,
  org.xml.sax,
  org.xml.sax.helpers
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

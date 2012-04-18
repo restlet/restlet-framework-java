@@ -73,4 +73,4 @@ Export-Package: freemarker,
    freemarker.core,
    org.python.core,
    org.w3c.dom"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

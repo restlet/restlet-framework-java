@@ -2,11 +2,11 @@ Manifest-Version: 1.0
 Main-Class: org.restlet.ext.odata.Generator
 Class-Path: org.restlet.jar org.restlet.ext.xml.jar org.restlet.ext.atom.jar org.restlet.ext.freemarker.jar org.restlet.ext.odata.jar org.freemarker.jar
 Bundle-ManifestVersion: 2
-Bundle-Name: Restlet Extension - WCF Data Services
+Bundle-Name: Restlet Extension - OData Services
 Bundle-SymbolicName: org.restlet.ext.odata
-Bundle-Version: 2.1
+Bundle-Version: 2.2
 Bundle-Vendor: Restlet S.A.S.
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: freemarker,
  freemarker.cache,
  freemarker.core,

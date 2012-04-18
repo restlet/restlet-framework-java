@@ -6,7 +6,7 @@ Bundle-Version: 2.2
 Bundle-ClassPath: com.google.gwt.jar,
  com.google.gwt.dev.jar
 Bundle-Vendor: Google Inc.
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: com.gargoylesoftware.htmlunit,
  com.gargoylesoftware.htmlunit.attachment,
  com.gargoylesoftware.htmlunit.gae,

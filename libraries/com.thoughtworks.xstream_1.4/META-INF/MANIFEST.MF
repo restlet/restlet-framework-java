@@ -26,4 +26,4 @@ Export-Package: com.thoughtworks.xstream,
  com.thoughtworks.xstream.io.xml.xppdom,
  com.thoughtworks.xstream.mapper,
  com.thoughtworks.xstream.persistence
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -30,4 +30,4 @@ Export-Package: com.sun.mail.handlers;uses:="javax.activation",
  javax.mail.internet;uses:="javax.activation,javax.mail",
  javax.mail.search;uses:="javax.mail",
  javax.mail.util;uses:="javax.activation,javax.mail.internet"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

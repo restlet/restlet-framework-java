@@ -6,7 +6,7 @@ Bundle-Version: 1.4
 Bundle-ClassPath: org.apache.solr.jar,
  org.apache.solr.common.jar
 Bundle-Vendor: Apache Software Foundation
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.apache.solr.analysis,
  org.apache.solr.client.solrj,
  org.apache.solr.client.solrj.beans,

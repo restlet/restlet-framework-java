@@ -10,4 +10,4 @@ Export-Package: org.codehaus.jettison,
  org.codehaus.jettison.json,
  org.codehaus.jettison.mapped,
  org.codehaus.jettison.util
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

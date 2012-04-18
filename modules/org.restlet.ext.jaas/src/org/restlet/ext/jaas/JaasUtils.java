@@ -96,7 +96,6 @@ public final class JaasUtils {
      *            and action.
      * @return the value returned by the action.
      */
-    @SuppressWarnings("unchecked")
     public static <T> T doAsPriviledged(ClientInfo clientInfo,
             PrivilegedAction<T> action, AccessControlContext acc) {
         Subject subject = JaasUtils.createSubject(clientInfo);

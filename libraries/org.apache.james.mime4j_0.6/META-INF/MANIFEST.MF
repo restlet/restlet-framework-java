@@ -6,7 +6,7 @@ Bundle-Version: 0.6
 Bundle-ClassPath: 
  org.apache.james.mime4j.jar
 Bundle-Vendor: Apache Software Foundation
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.apache.james.mime4j,
  org.apache.james.mime4j.codec,
  org.apache.james.mime4j.descriptor;uses:="org.apache.james.mime4j.field.datetime,org.apache.james.mime4j.parser,org.apache.james.mime4j",

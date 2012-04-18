@@ -126,7 +126,7 @@ public class Provider {
         MessageExtension me = m.getExtension(AxMessage.OPENID_NS_AX);
         if(me instanceof FetchRequest){
             FetchRequest fr = (FetchRequest) me;
-            Map attrs = fr.getAttributes(required);
+            Map<?, ?> attrs = fr.getAttributes(required);
             Set <AttributeExchange> toRet = new TreeSet <AttributeExchange> ();
             for(Object key : attrs.keySet()){
                 String type = (String) attrs.get(key);

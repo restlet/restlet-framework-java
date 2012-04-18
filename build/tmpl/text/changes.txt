@@ -6,7 +6,8 @@ Changes log
 - @version-full@ (@release-date@)
     - Bug fixed
     - Enhancements
-	- Misc
+    - Misc
+      - Updated Eclipse projects to JavaSE 1.6.
     - API changes
       - Added a resource client to the JAX-RS extension.
         Contributed by Shaun Elliott.

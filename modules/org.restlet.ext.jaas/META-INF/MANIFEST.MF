@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - JAAS
 Bundle-SymbolicName: org.restlet.ext.jaas
-Bundle-Version: 2.1
+Bundle-Version: 2.2
 Bundle-Vendor: Restlet S.A.S.
 Import-Package: javax.security.auth,
  javax.security.auth.callback,
@@ -21,5 +21,5 @@ Import-Package: javax.security.auth,
  org.restlet.security,
  org.restlet.service,
  org.restlet.util
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.restlet.ext.jaas

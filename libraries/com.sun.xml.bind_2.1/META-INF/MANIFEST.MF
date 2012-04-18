@@ -173,4 +173,4 @@ Export-Package: com.sun.xml.bind;version="2.1.10";
    com.sun.xml.bind.v2.runtime.unmarshaller,
    javax.xml.namespace,
    org.xml.sax"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

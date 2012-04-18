@@ -14,6 +14,6 @@ Export-Package: org.apache.commons.fileupload;uses:="org.apache.commons.fileuplo
    org.apache.commons.io,
    javax.servlet.http",
  org.apache.commons.fileupload.util;uses:="org.apache.commons.fileupload"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.apache.commons.io,
  org.apache.commons.io.output

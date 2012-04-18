@@ -18,4 +18,4 @@ Export-Package: com.sun.rowset;
    javax.sql.rowset.spi,
    com.sun.rowset",
  com.sun.rowset.providers;uses:="javax.sql.rowset.spi,javax.sql"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

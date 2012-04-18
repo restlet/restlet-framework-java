@@ -6,7 +6,7 @@ Bundle-Version: 0.6
 Bundle-ClassPath: org.apache.tika.jar,
  org.apache.tika.parsers.jar
 Bundle-Vendor: Apache Software Foundation
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.apache.tika,
  org.apache.tika.config,
  org.apache.tika.detect,

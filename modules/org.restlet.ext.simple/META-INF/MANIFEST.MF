@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - Simple
 Bundle-SymbolicName: org.restlet.ext.simple
-Bundle-Version: 2.1
+Bundle-Version: 2.2
 Bundle-Vendor: Restlet S.A.S.
 Export-Package: org.restlet.ext.simple,
  org.restlet.ext.simple.internal
@@ -26,4 +26,4 @@ Import-Package: org.restlet,
  org.simpleframework.http.core,
  org.simpleframework.transport,
  org.simpleframework.transport.connect
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

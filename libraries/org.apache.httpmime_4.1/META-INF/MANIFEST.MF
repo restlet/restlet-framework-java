@@ -6,6 +6,6 @@ Bundle-Version: 4.1
 Bundle-ClassPath: 
  org.apache.httpmime.jar
 Bundle-Vendor: Apache Software Foundation
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.apache.http.entity.mime,
  org.apache.http.entity.mime.content

@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - OAuth
 Bundle-SymbolicName: org.restlet.ext.oauth
-Bundle-Version: 2.1
+Bundle-Version: 2.2
 Bundle-Vendor: Restlet S.A.S.
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.restlet.ext.oauth,
  org.restlet.ext.oauth.internal
 Import-Package: freemarker.template,

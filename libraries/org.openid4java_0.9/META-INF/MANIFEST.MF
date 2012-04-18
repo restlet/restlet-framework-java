@@ -22,4 +22,4 @@ Export-Package: org.openid4java,
  org.openid4java.message.sreg,
  org.openid4java.server,
  org.openid4java.util
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
