@@ -9,7 +9,9 @@ Changes log
          using its getStream() method when writing negative integers.
          Now properly shift values into the 0-255 ranges, leaving the -1
          value as a clear marker for end of file.
-
+       - Usage of ranges on representations having unknown size.
+         Reported by Bjorn Roche.
+ 
 - 2.0.13 (2012-04-18)
     - Bug fixed
        - Fixed user agent name detection for Firefox 12 on Windows.
