@@ -411,7 +411,6 @@ public final class BioUtils {
                     try {
                         java.io.OutputStream os = pipe.getOutputStream();
                         representation.write(os);
-                        os.write(-1);
                         os.flush();
                         os.close();
                     } catch (IOException ioe) {
