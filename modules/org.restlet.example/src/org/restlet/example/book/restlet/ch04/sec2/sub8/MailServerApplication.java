@@ -34,8 +34,8 @@
 package org.restlet.example.book.restlet.ch04.sec2.sub8;
 
 import org.restlet.Application;
+import org.restlet.Component;
 import org.restlet.Restlet;
-import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
 
@@ -52,8 +52,9 @@ public class MailServerApplication extends Application {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        Server mailServer = new Server(Protocol.HTTP, 8111);
-        mailServer.setNext(new MailServerApplication());
+        Component mailServer = new Component();
+        mailServer.getServers().add(Protocol.HTTP, 8111);
+        mailServer.getDefaultHost().attach(new MailServerApplication());
         mailServer.start();
     }
 
@@ -64,7 +65,7 @@ public class MailServerApplication extends Application {
     public Restlet createInboundRoot() {
         Router router = new Router(getContext());
         router.attach(
-                "http://localhost:8111/accounts/{accountId}/mails/{mailId}",
+                "/accounts/{accountId}/mails/{mailId}",
                 MailServerResource.class);
         return router;
     }
