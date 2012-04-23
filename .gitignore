@@ -79,3 +79,5 @@ org.eclipse.jdt.core.prefs
 /modules/org.restlet.ext.xstream/target
 /modules/org.restlet.test/bin
 /modules/org.restlet.test/target
+/build/build.number
+/modules/org.restlet.test/velocity.log

@@ -67,24 +67,18 @@ public class PipeStream {
      */
     public InputStream getInputStream() {
         return new InputStream() {
-            private boolean endReached = false;
-
             @Override
             public int read() throws IOException {
                 try {
-                    if (this.endReached) {
-                        return -1;
-                    }
-
                     final Integer value = queue.poll(QUEUE_TIMEOUT,
                             TimeUnit.SECONDS);
+
                     if (value == null) {
                         throw new IOException(
                                 "Timeout while reading from the queue-based input stream");
+                    } else {
+                        return value.intValue();
                     }
-
-                    this.endReached = (value.intValue() == -1);
-                    return value;
                 } catch (InterruptedException ie) {
                     throw new IOException(
                             "Interruption occurred while writing in the queue");
@@ -103,7 +97,20 @@ public class PipeStream {
             @Override
             public void write(int b) throws IOException {
                 try {
-                    if (!queue.offer(b, QUEUE_TIMEOUT, TimeUnit.SECONDS)) {
+                    if (!queue.offer(b & 0xff, QUEUE_TIMEOUT, TimeUnit.SECONDS)) {
+                        throw new IOException(
+                                "Timeout while writing to the queue-based output stream");
+                    }
+                } catch (InterruptedException ie) {
+                    throw new IOException(
+                            "Interruption occurred while writing in the queue");
+                }
+            }
+
+            @Override
+            public void close() throws IOException {
+                try {
+                    if (!queue.offer(-1, QUEUE_TIMEOUT, TimeUnit.SECONDS)) {
                         throw new IOException(
                                 "Timeout while writing to the queue-based output stream");
                     }
