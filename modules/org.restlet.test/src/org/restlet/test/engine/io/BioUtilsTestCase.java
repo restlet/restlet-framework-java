@@ -33,12 +33,16 @@
 
 package org.restlet.test.engine.io;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
 
 import org.restlet.data.CharacterSet;
+import org.restlet.data.MediaType;
 import org.restlet.engine.io.BioUtils;
+import org.restlet.representation.OutputRepresentation;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -55,6 +59,28 @@ public class BioUtilsTestCase extends RestletTestCase {
         out.flush();
         out.close();
         assertEquals("testé", writer.toString());
+    }
+
+    public void testPipe() throws IOException {
+        final byte[] content = new byte[] { 1, 2, 3, -1, -2, -3, 4, 5, 6 };
+        ByteArrayInputStream bais = new ByteArrayInputStream(content);
+
+        OutputRepresentation or = new OutputRepresentation(
+                MediaType.APPLICATION_OCTET_STREAM) {
+            @Override
+            public void write(OutputStream outputStream) throws IOException {
+                outputStream.write(content);
+            }
+        };
+
+        InputStream is = or.getStream();
+        int result = 0;
+
+        while (result != -1) {
+            result = is.read();
+            assertEquals(bais.read(), result);
+            System.out.println(result);
+        }
     }
 
 }
