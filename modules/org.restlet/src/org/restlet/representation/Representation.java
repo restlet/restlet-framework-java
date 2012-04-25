@@ -669,7 +669,10 @@ public abstract class Representation extends RepresentationInfo {
      * <br>
      * Note that the class implementing this method shouldn't flush or close the
      * given {@link OutputStream} after writing to it as this will be handled by
-     * the Restlet connectors automatically.
+     * the Restlet connectors automatically. However, if outputStream is wrapped
+     * with an object which is {@link java.io.Flushable} such as a
+     * {@link java.io.OutputStreamWriter} make sure the wrapping object is
+     * flushed before the method returns.
      * 
      * @param outputStream
      *            The output stream.
