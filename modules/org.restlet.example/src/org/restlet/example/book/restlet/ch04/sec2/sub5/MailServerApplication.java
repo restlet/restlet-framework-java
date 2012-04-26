@@ -40,7 +40,7 @@ import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
 
 /**
- * Routing to annotated server resources.
+ * Simple test application serving mail resources using XML namespaces.
  */
 public class MailServerApplication extends Application {
 

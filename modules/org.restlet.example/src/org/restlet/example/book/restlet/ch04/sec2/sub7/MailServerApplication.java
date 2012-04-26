@@ -40,7 +40,7 @@ import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
 
 /**
- * Routing to annotated server resources.
+ * Simple test application serving mail resources using XSLT transformation.
  */
 public class MailServerApplication extends Application {
 
@@ -53,6 +53,7 @@ public class MailServerApplication extends Application {
      */
     public static void main(String[] args) throws Exception {
         Component mailServer = new Component();
+        mailServer.getClients().add(Protocol.CLAP);
         mailServer.getServers().add(Protocol.HTTP, 8111);
         mailServer.getDefaultHost().attach(new MailServerApplication());
         mailServer.start();

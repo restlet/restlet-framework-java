@@ -42,7 +42,7 @@ import org.restlet.data.Reference;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
-import org.restlet.resource.ResourceException;
+import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
 /**
@@ -51,8 +51,8 @@ import org.restlet.resource.ServerResource;
  */
 public class MailServerResource extends ServerResource {
 
-    @Override
-    protected Representation get() throws ResourceException {
+    @Get
+    public Representation toXml() {
         // Create the mail bean
         Mail mail = new Mail();
         mail.setStatus("received");
@@ -71,7 +71,8 @@ public class MailServerResource extends ServerResource {
                         + "/Mail.ftl").get();
 
         // Wraps the bean with a FreeMarker representation
-        return new TemplateRepresentation(mailFtl, dataModel, MediaType.TEXT_HTML);
+        return new TemplateRepresentation(mailFtl, dataModel,
+                MediaType.TEXT_HTML);
     }
 
 }

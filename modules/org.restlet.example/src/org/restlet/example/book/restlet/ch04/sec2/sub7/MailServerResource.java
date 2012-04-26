@@ -43,67 +43,60 @@ import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.TransformRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
-import org.restlet.resource.ResourceException;
+import org.restlet.resource.Get;
+import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
  * Resource corresponding to a mail received or sent with the parent mail
- * account. Leverages XML Schema validation.
+ * account. Leverages XSLT transformation.
  */
 public class MailServerResource extends ServerResource {
 
-    @Override
-    protected Representation get() throws ResourceException {
-        TransformRepresentation result = null;
+    @Get
+    public Representation toXml() throws IOException {
+        // Create a new DOM representation
+        DomRepresentation rmepMail = new DomRepresentation();
+        rmepMail.setIndenting(true);
 
-        try {
-            // Create a new DOM representation
-            DomRepresentation rmepMail = new DomRepresentation();
-            rmepMail.setIndenting(true);
+        // Populate the DOM document
+        Document doc = rmepMail.getDocument();
 
-            // Populate the DOM document
-            Document doc = rmepMail.getDocument();
+        Node mailElt = doc.createElement("mail");
+        doc.appendChild(mailElt);
 
-            Node mailElt = doc.createElement("mail");
-            doc.appendChild(mailElt);
+        Node statusElt = doc.createElement("status");
+        statusElt.setTextContent("received");
+        mailElt.appendChild(statusElt);
 
-            Node statusElt = doc.createElement("status");
-            statusElt.setTextContent("received");
-            mailElt.appendChild(statusElt);
+        Node subjectElt = doc.createElement("subject");
+        subjectElt.setTextContent("Message to self");
+        mailElt.appendChild(subjectElt);
 
-            Node subjectElt = doc.createElement("subject");
-            subjectElt.setTextContent("Message to self");
-            mailElt.appendChild(subjectElt);
+        Node contentElt = doc.createElement("content");
+        contentElt.setTextContent("Doh!");
+        mailElt.appendChild(contentElt);
 
-            Node contentElt = doc.createElement("content");
-            contentElt.setTextContent("Doh!");
-            mailElt.appendChild(contentElt);
+        Node accountRefElt = doc.createElement("accountRef");
+        accountRefElt.setTextContent(new Reference(getReference(), "..")
+                .getTargetRef().toString());
+        mailElt.appendChild(accountRefElt);
 
-            Node accountRefElt = doc.createElement("accountRef");
-            accountRefElt.setTextContent(new Reference(getReference(), "..")
-                    .getTargetRef().toString());
-            mailElt.appendChild(accountRefElt);
+        // Transform to another XML format using XSLT
+        Representation transformSheet = new ClientResource(
+                LocalReference.createClapReference(getClass().getPackage())
+                        + "/Mail.xslt").get();
 
-            // Transform to another XML format using XSLT
-            Representation transformSheet = new ClientResource(LocalReference
-                    .createClapReference(getClass().getPackage())
-                    + "/Mail.xslt").get();
-            result = new TransformRepresentation(rmepMail, transformSheet);
-            result.getOutputProperties().put(OutputKeys.INDENT, "yes");
-        } catch (IOException e) {
-            throw new ResourceException(e);
-        }
-
+        TransformRepresentation result = new TransformRepresentation(rmepMail,
+                transformSheet);
+        result.getOutputProperties().put(OutputKeys.INDENT, "yes");
         return result;
     }
 
-    @Override
-    protected Representation put(Representation representation)
-            throws ResourceException {
-        DomRepresentation mailRep = new DomRepresentation(representation);
-
+    @Put
+    public void store(DomRepresentation mailRep) {
         // Retrieve the XML element using XPath expressions
         String subject = mailRep.getText("/email/head/subject");
         String content = mailRep.getText("/email/body");
@@ -111,7 +104,5 @@ public class MailServerResource extends ServerResource {
         // Output the XML element values
         System.out.println("Subject: " + subject);
         System.out.println("Content: " + content);
-
-        return null;
     }
 }
