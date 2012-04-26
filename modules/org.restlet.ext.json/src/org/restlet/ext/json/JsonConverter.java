@@ -45,7 +45,6 @@ import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
@@ -180,11 +179,11 @@ public class JsonConverter extends ConverterHelper {
         Representation result = null;
 
         if (source instanceof JSONArray) {
-            result = new StringRepresentation(((JSONArray) source).toString());
+            result = new JsonRepresentation((JSONArray) source);
         } else if (source instanceof JSONObject) {
-            result = new StringRepresentation(((JSONObject) source).toString());
+            result = new JsonRepresentation((JSONObject) source);
         } else if (source instanceof JSONTokener) {
-            result = new StringRepresentation(((JSONTokener) source).toString());
+            result = new JsonRepresentation((JSONTokener) source);
         }
 
         return result;

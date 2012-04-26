@@ -12,6 +12,8 @@ Changes log
          Reported by Gabriel Pulido.
        - Usage of ranges on representations having unknown size.
          Reported by Bjorn Roche.
+       - Fixed missing JSON media type with converter service and the 
+         JSON extension.
  
 - 2.0.13 (2012-04-18)
     - Bug fixed
