@@ -9,6 +9,7 @@ Changes log
          using its getStream() method when writing negative integers.
          Now properly shift values into the 0-255 ranges, leaving the -1
          value as a clear marker for end of file.
+         Reported by Gabriel Pulido.
        - Fixed user agent parsing for Chrome and Safari.
        - Usage of ranges on representations having unknown size.
          Reported by Bjorn Roche.

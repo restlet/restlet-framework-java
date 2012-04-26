@@ -42,7 +42,7 @@ import org.restlet.data.Reference;
 import org.restlet.ext.velocity.TemplateRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
-import org.restlet.resource.ResourceException;
+import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
 /**
@@ -51,8 +51,8 @@ import org.restlet.resource.ServerResource;
  */
 public class MailServerResource extends ServerResource {
 
-    @Override
-    protected Representation get() throws ResourceException {
+    @Get
+    public Representation toXml() throws Exception {
         // Create the mail bean
         Mail mail = new Mail();
         mail.setStatus("received");
@@ -71,12 +71,8 @@ public class MailServerResource extends ServerResource {
                         + "/Mail.vtl").get();
 
         // Wraps the bean with a Velocity representation
-        try {
-            return new TemplateRepresentation(mailVtl, dataModel,
-                    MediaType.TEXT_HTML);
-        } catch (Exception e) {
-            throw new ResourceException(e);
-        }
+        return new TemplateRepresentation(mailVtl, dataModel,
+                MediaType.TEXT_HTML);
     }
 
 }

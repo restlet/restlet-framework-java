@@ -38,7 +38,8 @@ import java.io.IOException;
 import org.restlet.data.Reference;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ResourceException;
+import org.restlet.resource.Get;
+import org.restlet.resource.Put;
 import org.restlet.resource.ServerResource;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -50,12 +51,10 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class MailServerResource extends ServerResource {
 
-    @Override
-    protected Representation get() throws ResourceException {
-        SaxRepresentation result;
-
+    @Get
+    public Representation toXml() {
         // Create a new SAX representation
-        result = new SaxRepresentation() {
+        SaxRepresentation result = new SaxRepresentation() {
 
             public void write(org.restlet.ext.xml.XmlWriter writer)
                     throws IOException {
@@ -98,50 +97,39 @@ public class MailServerResource extends ServerResource {
         return result;
     }
 
-    @Override
-    protected Representation put(Representation representation)
-            throws ResourceException {
-        // Wraps the XML representation in a SAX representation
-        SaxRepresentation mailRep = new SaxRepresentation(representation);
+    @Put
+    public void store(SaxRepresentation mailRep) throws IOException {
+        mailRep.parse(new DefaultHandler() {
 
-        try {
-            mailRep.parse(new DefaultHandler() {
-
-                @Override
-                public void startElement(String uri, String localName,
-                        String qName, Attributes attributes)
-                        throws SAXException {
-                    // Output the XML element values
-                    if ("status".equals(localName)) {
-                        System.out.print("Status: ");
-                    } else if ("subject".equals(localName)) {
-                        System.out.print("Subject: ");
-                    } else if ("content".equals(localName)) {
-                        System.out.print("Content: ");
-                    } else if ("accountRef".equals(localName)) {
-                        System.out.print("Account URI: ");
-                    }
+            @Override
+            public void startElement(String uri, String localName,
+                    String qName, Attributes attributes) throws SAXException {
+                // Output the XML element names
+                if ("status".equals(localName)) {
+                    System.out.print("Status: ");
+                } else if ("subject".equals(localName)) {
+                    System.out.print("Subject: ");
+                } else if ("content".equals(localName)) {
+                    System.out.print("Content: ");
+                } else if ("accountRef".equals(localName)) {
+                    System.out.print("Account URI: ");
                 }
+            }
 
-                @Override
-                public void characters(char[] ch, int start, int length)
-                        throws SAXException {
-                    // Output the XML element values
-                    System.out.print(new String(ch, start, length));
-                }
+            @Override
+            public void characters(char[] ch, int start, int length)
+                    throws SAXException {
+                // Output the XML element values
+                System.out.print(new String(ch, start, length));
+            }
 
-                @Override
-                public void endElement(String uri, String localName,
-                        String qName) throws SAXException {
-                    // Output a new line
-                    System.out.println();
-                }
+            @Override
+            public void endElement(String uri, String localName, String qName)
+                    throws SAXException {
+                // Output a new line
+                System.out.println();
+            }
 
-            });
-        } catch (IOException e) {
-            throw new ResourceException(e);
-        }
-
-        return null;
+        });
     }
 }

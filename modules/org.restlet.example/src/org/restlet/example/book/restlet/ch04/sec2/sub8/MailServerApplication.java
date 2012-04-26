@@ -40,7 +40,7 @@ import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
 
 /**
- * Routing to annotated server resources.
+ * Simple test application serving mail resources using JAXB extension.
  */
 public class MailServerApplication extends Application {
 
@@ -64,7 +64,8 @@ public class MailServerApplication extends Application {
     @Override
     public Restlet createInboundRoot() {
         Router router = new Router(getContext());
-        router.attach("/accounts/{accountId}/mails/{mailId}",
+        router.attach(
+                "/accounts/{accountId}/mails/{mailId}",
                 MailServerResource.class);
         return router;
     }
