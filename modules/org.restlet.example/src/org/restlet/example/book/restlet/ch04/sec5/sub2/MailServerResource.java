@@ -33,6 +33,8 @@
 
 package org.restlet.example.book.restlet.ch04.sec5.sub2;
 
+import java.io.IOException;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.ext.jackson.JacksonRepresentation;
@@ -88,7 +90,8 @@ public class MailServerResource extends ServerResource {
             if (MediaType.APPLICATION_XML.isCompatible(representation
                     .getMediaType())) {
                 // Parse the XML representation to get the mail bean
-                mail = new XstreamRepresentation<Mail>(representation).getObject();
+                mail = new XstreamRepresentation<Mail>(representation,
+                        Mail.class).getObject();
                 System.out.println("XML representation received");
             } else if (MediaType.APPLICATION_JSON.isCompatible(representation
                     .getMediaType())) {
@@ -106,7 +109,7 @@ public class MailServerResource extends ServerResource {
                 System.out.println("Account URI: " + mail.getAccountRef());
                 System.out.println();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ResourceException(e);
         }
 
