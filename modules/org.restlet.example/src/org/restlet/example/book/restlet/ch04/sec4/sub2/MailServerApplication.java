@@ -53,6 +53,7 @@ public class MailServerApplication extends Application {
      */
     public static void main(String[] args) throws Exception {
         Component mailServer = new Component();
+        mailServer.getClients().add(Protocol.CLAP);
         mailServer.getServers().add(Protocol.HTTP, 8111);
         mailServer.getDefaultHost().attach(new MailServerApplication());
         mailServer.start();
