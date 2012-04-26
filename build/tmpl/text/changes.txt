@@ -13,7 +13,6 @@ Changes log
        - Fixed user agent parsing for Chrome and Safari.
        - Usage of ranges on representations having unknown size.
          Reported by Bjorn Roche.
-
     - API changes
        - Renamed ReadableListener into ReadingListener
        - Renamed InputListener into ByteReadingListener
@@ -21,6 +20,9 @@ Changes log
        - Renamed StringListener into StringReadingListener
        - Added missing SelectionRegistration parameter to
        - SelectionListener#onSelected() method.
+       - Added missing ClientResource#setProxyChallengeResponse(...),
+         ServerResource#setProxyChallengeRequests(...) and
+         Resource#getProxyChallenge...() methods. Reported by Tim Peierls.
 
 - 2.1 Release Candidate 4 (04/06/2012)
     - Bug fixed

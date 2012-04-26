@@ -1717,6 +1717,36 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Sets the proxy authentication response sent by a client to an origin
+     * server.
+     * 
+     * @param challengeResponse
+     *            The proxy authentication response sent by a client to an
+     *            origin server.
+     * @see Request#setProxyChallengeResponse(ChallengeResponse)
+     */
+    public void setProxyChallengeResponse(ChallengeResponse challengeResponse) {
+        getRequest().setProxyChallengeResponse(challengeResponse);
+    }
+
+    /**
+     * Sets the proxy authentication response sent by a client to an origin
+     * server given a scheme, identifier and secret.
+     * 
+     * @param scheme
+     *            The challenge scheme.
+     * @param identifier
+     *            The user identifier, such as a login name or an access key.
+     * @param secret
+     *            The user secret, such as a password or a secret key.
+     */
+    public void setProxyChallengeResponse(ChallengeScheme scheme,
+            final String identifier, String secret) {
+        setProxyChallengeResponse(new ChallengeResponse(scheme, identifier,
+                secret));
+    }
+
+    /**
      * Sets the client-specific information.
      * 
      * @param clientInfo

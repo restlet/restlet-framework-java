@@ -1541,6 +1541,22 @@ public abstract class ServerResource extends UniformResource {
     }
 
     /**
+     * Sets the list of proxy authentication requests sent by an origin server
+     * to a client. The list instance set must be thread-safe (use
+     * {@link CopyOnWriteArrayList} for example.
+     * 
+     * @param requests
+     *            The list of proxy authentication requests sent by an origin
+     *            server to a client.
+     * @see Response#setProxyChallengeRequests(List)
+     */
+    public void setProxyChallengeRequests(List<ChallengeRequest> requests) {
+        if (getResponse() != null) {
+            getResponse().setProxyChallengeRequests(requests);
+        }
+    }
+
+    /**
      * Sets the server-specific information.
      * 
      * @param serverInfo
