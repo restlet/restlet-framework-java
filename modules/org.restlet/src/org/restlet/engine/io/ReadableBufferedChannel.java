@@ -122,7 +122,7 @@ public class ReadableBufferedChannel extends
      * @param eofDetected
      *            Indicates if the end of network connection was detected.
      */
-    public void onCompleted(boolean eofDetected) {
+    public void onCompleted(boolean eofDetected) throws IOException {
         if (getCompletionListener() != null) {
             getCompletionListener().onCompleted(eofDetected);
         }
@@ -178,7 +178,7 @@ public class ReadableBufferedChannel extends
      * @param endReached
      *            True if the end of the channel has been reached.
      */
-    protected void setEndReached(boolean endReached) {
+    protected void setEndReached(boolean endReached) throws IOException {
         this.endReached = endReached;
 
         if (this.endReached) {

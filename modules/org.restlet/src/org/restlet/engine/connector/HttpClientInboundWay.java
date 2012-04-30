@@ -117,7 +117,7 @@ public class HttpClientInboundWay extends ClientInboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) {
+    public void onCompleted(boolean endDetected) throws IOException {
         if (getMessage() != null) {
             getMessages().remove(getMessage());
         }
@@ -146,7 +146,7 @@ public class HttpClientInboundWay extends ClientInboundWay {
                         Status.CONNECTOR_ERROR_COMMUNICATION, rsp);
             }
         }
-        
+
         super.onTimeOut();
     }
 

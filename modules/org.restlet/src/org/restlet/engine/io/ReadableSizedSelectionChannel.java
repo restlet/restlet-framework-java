@@ -117,7 +117,7 @@ public class ReadableSizedSelectionChannel extends ReadableBufferedChannel {
      *            The remaining size that should be read from the source
      *            channel.
      */
-    protected void setAvailableSize(long availableSize) {
+    protected void setAvailableSize(long availableSize) throws IOException {
         this.availableSize = availableSize;
         setEndReached(this.availableSize == 0);
     }

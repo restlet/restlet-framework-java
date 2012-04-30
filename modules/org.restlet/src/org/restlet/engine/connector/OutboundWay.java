@@ -268,9 +268,13 @@ public abstract class OutboundWay extends Way {
     }
 
     @Override
-    public void onCompleted(boolean endReached) {
+    public void onCompleted(boolean endReached) throws IOException {
         if (getActualMessage() != null) {
             Representation messageEntity = getActualMessage().getEntity();
+
+            if (getEntityChannel() != null) {
+                getEntityChannel().close();
+            }
 
             // Release entity
             if (messageEntity != null) {

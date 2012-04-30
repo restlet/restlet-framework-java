@@ -13,6 +13,8 @@ Changes log
        - Fixed user agent parsing for Chrome and Safari.
        - Usage of ranges on representations having unknown size.
          Reported by Bjorn Roche.
+       - Internal connector now closes entity stream/channel upon 
+         completion. Suggested by Arjohn Kampman
     - API changes
        - Renamed ReadableListener into ReadingListener
        - Renamed InputListener into ByteReadingListener

@@ -88,7 +88,7 @@ public abstract class ServerInboundWay extends InboundWay {
     }
 
     @Override
-    protected void onReceived() {
+    protected void onReceived() throws IOException {
         InboundRequest request = (InboundRequest) getMessage().getRequest();
 
         if (getHeaders() != null) {
@@ -121,7 +121,7 @@ public abstract class ServerInboundWay extends InboundWay {
      * @param message
      *            The new message received.
      */
-    protected void onReceived(Response message) {
+    protected void onReceived(Response message) throws IOException {
         if (message.getRequest() != null) {
             // Add it to the helper queue
             getHelper().getInboundMessages().add(message);

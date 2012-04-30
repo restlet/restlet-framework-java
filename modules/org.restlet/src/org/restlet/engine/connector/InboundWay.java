@@ -208,7 +208,7 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) {
+    public void onCompleted(boolean endDetected) throws IOException {
         super.onCompleted(endDetected);
 
         if (getLogger().isLoggable(Level.FINER)) {
@@ -297,7 +297,7 @@ public abstract class InboundWay extends Way {
      * start line and the headers must have been received, not the optional
      * body.
      */
-    protected void onReceived() {
+    protected void onReceived() throws IOException {
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger()
                     .finer("Inbound message start line and headers received");
@@ -309,8 +309,9 @@ public abstract class InboundWay extends Way {
      * 
      * @param message
      *            The new message received.
+     * @throws IOException
      */
-    protected abstract void onReceived(Response message);
+    protected abstract void onReceived(Response message) throws IOException;
 
     @Override
     public void onTimeOut() {

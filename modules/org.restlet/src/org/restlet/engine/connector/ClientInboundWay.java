@@ -130,7 +130,7 @@ public abstract class ClientInboundWay extends InboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) {
+    public void onCompleted(boolean endDetected) throws IOException {
         // Check if we need to close the connection
         if (endDetected || !getConnection().isPersistent()
                 || HeaderUtils.isConnectionClose(getHeaders())) {
@@ -141,7 +141,7 @@ public abstract class ClientInboundWay extends InboundWay {
     }
 
     @Override
-    protected void onReceived() {
+    protected void onReceived() throws IOException {
         // Update the response
         getMessage().setEntity(createEntity(getHeaders()));
 
@@ -162,7 +162,7 @@ public abstract class ClientInboundWay extends InboundWay {
     }
 
     @Override
-    protected void onReceived(Response message) {
+    protected void onReceived(Response message) throws IOException {
         // Add it to the helper queue
         getHelper().getInboundMessages().add(getMessage());
 
