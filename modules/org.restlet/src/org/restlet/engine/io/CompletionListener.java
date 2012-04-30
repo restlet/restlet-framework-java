@@ -33,6 +33,8 @@
 
 package org.restlet.engine.io;
 
+import java.io.IOException;
+
 /**
  * Listener called back upon IO completion.
  * 
@@ -46,6 +48,6 @@ public interface CompletionListener {
      * @param eofDetected
      *            Indicates if the end of network connection was detected.
      */
-    public void onCompleted(boolean eofDetected);
+    public void onCompleted(boolean eofDetected) throws IOException;
 
 }

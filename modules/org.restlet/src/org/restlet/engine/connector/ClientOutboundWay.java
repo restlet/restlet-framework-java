@@ -95,7 +95,7 @@ public abstract class ClientOutboundWay extends OutboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) {
+    public void onCompleted(boolean endDetected) throws IOException {
         Response message = getMessage();
 
         if (message != null) {

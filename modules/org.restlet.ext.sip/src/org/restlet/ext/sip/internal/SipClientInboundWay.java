@@ -322,7 +322,7 @@ public class SipClientInboundWay extends ClientInboundWay {
     }
 
     @Override
-    protected void onReceived(Response message) {
+    protected void onReceived(Response message) throws IOException {
         if (message != null) {
             SipRequest request = (SipRequest) getHelper().getRequest(message);
 

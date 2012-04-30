@@ -33,6 +33,7 @@
 
 package org.restlet.engine.connector;
 
+import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -113,7 +114,7 @@ public class HttpServerInboundWay extends ServerInboundWay {
     }
 
     @Override
-    protected void onReceived(Response message) {
+    protected void onReceived(Response message) throws IOException {
         if ((message.getRequest() != null)
                 && message.getRequest().isExpectingResponse()) {
             // Add it to the inbound queue

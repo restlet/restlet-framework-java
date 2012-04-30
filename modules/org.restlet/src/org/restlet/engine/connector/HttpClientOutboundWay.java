@@ -33,6 +33,7 @@
 
 package org.restlet.engine.connector;
 
+import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -94,7 +95,7 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) {
+    public void onCompleted(boolean endDetected) throws IOException {
         Response message = getMessage();
 
         if (message != null) {
