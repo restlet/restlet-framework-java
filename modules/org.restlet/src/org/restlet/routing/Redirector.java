@@ -251,7 +251,7 @@ public class Redirector extends Restlet {
         switch (this.mode) {
         case MODE_CLIENT_PERMANENT:
             if (request.isLoggable()) {
-                getLogger().log(Level.INFO,
+                getLogger().log(Level.FINE,
                         "Permanently redirecting client to: " + targetRef);
             }
 
@@ -260,7 +260,7 @@ public class Redirector extends Restlet {
 
         case MODE_CLIENT_FOUND:
             if (request.isLoggable()) {
-                getLogger().log(Level.INFO,
+                getLogger().log(Level.FINE,
                         "Redirecting client to found location: " + targetRef);
             }
 
@@ -270,7 +270,7 @@ public class Redirector extends Restlet {
 
         case MODE_CLIENT_SEE_OTHER:
             if (request.isLoggable()) {
-                getLogger().log(Level.INFO,
+                getLogger().log(Level.FINE,
                         "Redirecting client to another location: " + targetRef);
             }
 
@@ -279,7 +279,7 @@ public class Redirector extends Restlet {
 
         case MODE_CLIENT_TEMPORARY:
             if (request.isLoggable()) {
-                getLogger().log(Level.INFO,
+                getLogger().log(Level.FINE,
                         "Temporarily redirecting client to: " + targetRef);
             }
 
@@ -288,7 +288,7 @@ public class Redirector extends Restlet {
 
         case MODE_SERVER_OUTBOUND:
             if (request.isLoggable()) {
-                getLogger().log(Level.INFO,
+                getLogger().log(Level.FINE,
                         "Redirecting via client dispatcher to: " + targetRef);
             }
 
@@ -297,7 +297,7 @@ public class Redirector extends Restlet {
 
         case MODE_SERVER_INBOUND:
             if (request.isLoggable()) {
-                getLogger().log(Level.INFO,
+                getLogger().log(Level.FINE,
                         "Redirecting via server dispatcher to: " + targetRef);
             }
 

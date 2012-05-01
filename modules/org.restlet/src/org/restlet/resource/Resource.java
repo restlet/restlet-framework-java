@@ -187,7 +187,7 @@ public abstract class Resource {
     public Set<Method> getAllowedMethods() {
         return getResponse() == null ? null : getResponse().getAllowedMethods();
     }
-    
+
     // [ifndef gwt] method
     /**
      * Returns the parent application. If it wasn't set, it attempts to retrieve
@@ -451,6 +451,29 @@ public abstract class Resource {
      */
     public Protocol getProtocol() {
         return getRequest() == null ? null : getRequest().getProtocol();
+    }
+
+    /**
+     * Returns the list of proxy authentication requests sent by an origin server to a
+     * client. If none is available, an empty list is returned.
+     * 
+     * @return The list of proxy authentication requests.
+     * @see Response#getProxyChallengeRequests()
+     */
+    public List<ChallengeRequest> getProxyChallengeRequests() {
+        return getResponse() == null ? null : getResponse()
+                .getProxyChallengeRequests();
+    }
+
+    /**
+     * Returns the proxy authentication response sent by a client to an origin server.
+     * 
+     * @return The proxy authentication response sent by a client to an origin server.
+     * @see Request#getProxyChallengeResponse()
+     */
+    public ChallengeResponse getProxyChallengeResponse() {
+        return getRequest() == null ? null : getRequest()
+                .getProxyChallengeResponse();
     }
 
     /**

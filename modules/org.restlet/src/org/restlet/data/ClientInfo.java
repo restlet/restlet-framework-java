@@ -36,7 +36,6 @@ package org.restlet.data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -227,9 +226,6 @@ public final class ClientInfo {
                     }
                     ClientInfo.userAgentTemplates = u;
                 }
-                if (u == null) {
-                    u = new ArrayList<String>();
-                }
             }
         }
         return u;
@@ -354,6 +350,47 @@ public final class ClientInfo {
      */
     public ClientInfo(MediaType mediaType) {
         getAcceptedMediaTypes().add(new Preference<MediaType>(mediaType));
+    }
+
+    /**
+     * Updates the client preferences to accept the given metadata (media types,
+     * character sets, etc.) with a 1.0 quality in addition to existing ones.
+     * 
+     * @param metadata
+     *            The metadata to accept.
+     */
+    public void accept(Metadata... metadata) {
+        if (metadata != null) {
+            for (Metadata md : metadata) {
+                accept(md, 1.0F);
+            }
+        }
+    }
+
+    /**
+     * Updates the client preferences to accept the given metadata (media types,
+     * character sets, etc.) with a given quality in addition to existing ones.
+     * 
+     * @param metadata
+     *            The metadata to accept.
+     * @param quality
+     *            The quality to set.
+     */
+    public void accept(Metadata metadata, float quality) {
+        if (metadata instanceof MediaType) {
+            getAcceptedMediaTypes().add(
+                    new Preference<MediaType>((MediaType) metadata, quality));
+        } else if (metadata instanceof Language) {
+            getAcceptedLanguages().add(
+                    new Preference<Language>((Language) metadata, quality));
+        } else if (metadata instanceof Encoding) {
+            getAcceptedEncodings().add(
+                    new Preference<Encoding>((Encoding) metadata, quality));
+        } else {
+            getAcceptedCharacterSets().add(
+                    new Preference<CharacterSet>((CharacterSet) metadata,
+                            quality));
+        }
     }
 
     /**

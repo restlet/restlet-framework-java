@@ -49,9 +49,9 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.MediaType;
+import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
@@ -419,45 +419,29 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Updates the client preferences to accept the given media type with a 1.0
-     * quality.
+     * Updates the client preferences to accept the given metadata (media types,
+     * character sets, etc.) with a 1.0 quality in addition to existing ones.
      * 
-     * @param mediaType
-     *            The media type to accept.
+     * @param metadata
+     *            The metadata to accept.
+     * @see ClientInfo#accept(Metadata...)
      */
-    public void accept(MediaType mediaType) {
-        getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(mediaType));
+    public void accept(Metadata... metadata) {
+        getClientInfo().accept(metadata);
     }
 
     /**
-     * Updates the client preferences to accept the given media types with a 1.0
-     * quality.
+     * Updates the client preferences to accept the given metadata (media types,
+     * character sets, etc.) with a given quality in addition to existing ones.
      * 
-     * @param mediaTypes
-     *            The media type to accept.
-     */
-    public void accept(MediaType... mediaTypes) {
-        if (mediaTypes != null) {
-            for (MediaType mediaType : mediaTypes) {
-                getClientInfo().getAcceptedMediaTypes().add(
-                        new Preference<MediaType>(mediaType));
-            }
-        }
-    }
-
-    /**
-     * Updates the client preferences to accept the given media type with a
-     * given quality.
-     * 
-     * @param mediaType
-     *            The media type to accept.
+     * @param metadata
+     *            The metadata to accept.
      * @param quality
      *            The quality to set.
+     * @see ClientInfo#accept(Metadata, float)
      */
-    public void accept(MediaType mediaType, float quality) {
-        getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(mediaType, quality));
+    public void accept(Metadata metadata, float quality) {
+        getClientInfo().accept(metadata, quality);
     }
 
     /**
@@ -1352,13 +1336,13 @@ public class ClientResource extends UniformResource {
 
     // [ifndef gwt] method
     /**
-     * Indicates if transient or unknown size request entities should be
-     * buffered before being sent. This is useful to increase the chance of
+     * Indicates if transient or unknown size response entities should be
+     * buffered after being received. This is useful to increase the chance of
      * being able to resubmit a failed request due to network error, or to
-     * prevent chunked encoding from being used with HTTP connectors.
+     * prevent chunked encoding from being used an HTTP connector.
      * 
-     * @return True if transient request entities should be buffered before
-     *         being sent.
+     * @return True if transient response entities should be buffered after
+     *         being received.
      */
     public boolean isRequestEntityBuffering() {
         return requestEntityBuffering;
@@ -1717,6 +1701,36 @@ public class ClientResource extends UniformResource {
     }
 
     /**
+     * Sets the proxy authentication response sent by a client to an origin
+     * server.
+     * 
+     * @param challengeResponse
+     *            The proxy authentication response sent by a client to an
+     *            origin server.
+     * @see Request#setProxyChallengeResponse(ChallengeResponse)
+     */
+    public void setProxyChallengeResponse(ChallengeResponse challengeResponse) {
+        getRequest().setProxyChallengeResponse(challengeResponse);
+    }
+
+    /**
+     * Sets the proxy authentication response sent by a client to an origin
+     * server given a scheme, identifier and secret.
+     * 
+     * @param scheme
+     *            The challenge scheme.
+     * @param identifier
+     *            The user identifier, such as a login name or an access key.
+     * @param secret
+     *            The user secret, such as a password or a secret key.
+     */
+    public void setProxyChallengeResponse(ChallengeScheme scheme,
+            final String identifier, String secret) {
+        setProxyChallengeResponse(new ChallengeResponse(scheme, identifier,
+                secret));
+    }
+
+    /**
      * Sets the client-specific information.
      * 
      * @param clientInfo
@@ -1956,14 +1970,14 @@ public class ClientResource extends UniformResource {
 
     // [ifndef gwt] method
     /**
-     * Indicates if transient or unknown size request entities should be
-     * buffered before being sent. This is useful to increase the chance of
+     * Indicates if transient or unknown size response entities should be
+     * buffered after being received. This is useful to increase the chance of
      * being able to resubmit a failed request due to network error, or to
-     * prevent chunked encoding from being used with HTTP connectors.
+     * prevent chunked encoding from being used an HTTP connector.
      * 
      * @param requestEntityBuffering
-     *            True if transient request entities should be buffered before
-     *            being sent.
+     *            True if transient request entities should be buffered after
+     *            being received.
      */
     public void setRequestEntityBuffering(boolean requestEntityBuffering) {
         this.requestEntityBuffering = requestEntityBuffering;
