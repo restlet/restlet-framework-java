@@ -36,6 +36,7 @@ package org.restlet.engine.application;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
@@ -92,15 +93,6 @@ public class DecodeRepresentation extends WrapperRepresentation {
     }
 
     /**
-     * Indicates if the decoding can happen.
-     * 
-     * @return True if the decoding can happen.
-     */
-    public boolean isDecoding() {
-        return this.decoding;
-    }
-
-    /**
      * Returns a readable byte channel. If it is supported by a file a read-only
      * instance of FileChannel is returned.
      * 
@@ -110,9 +102,9 @@ public class DecodeRepresentation extends WrapperRepresentation {
     public ReadableByteChannel getChannel() throws IOException {
         if (isDecoding()) {
             return NioUtils.getChannel(getStream());
+        } else {
+            return getWrappedRepresentation().getChannel();
         }
-
-        return getWrappedRepresentation().getChannel();
     }
 
     /**
@@ -157,9 +149,18 @@ public class DecodeRepresentation extends WrapperRepresentation {
     public List<Encoding> getEncodings() {
         if (isDecoding()) {
             return new ArrayList<Encoding>();
+        } else {
+            return this.wrappedEncodings;
         }
+    }
 
-        return this.wrappedEncodings;
+    @Override
+    public Reader getReader() throws IOException {
+        if (isDecoding()) {
+            return BioUtils.getReader(getStream(), getCharacterSet());
+        } else {
+            return getWrappedRepresentation().getReader();
+        }
     }
 
     /**
@@ -195,10 +196,9 @@ public class DecodeRepresentation extends WrapperRepresentation {
      */
     @Override
     public InputStream getStream() throws IOException {
-        InputStream result = null;
+        InputStream result = getWrappedRepresentation().getStream();
 
         if (isDecoding()) {
-            result = getWrappedRepresentation().getStream();
             for (int i = this.wrappedEncodings.size() - 1; i >= 0; i--) {
                 if (!this.wrappedEncodings.get(i).equals(Encoding.IDENTITY)) {
                     result = getDecodedStream(this.wrappedEncodings.get(i),
@@ -219,15 +219,20 @@ public class DecodeRepresentation extends WrapperRepresentation {
      */
     @Override
     public String getText() throws IOException {
-        String result = null;
-
         if (isDecoding()) {
-            result = BioUtils.toString(getStream(), getCharacterSet());
+            return BioUtils.toString(getStream(), getCharacterSet());
         } else {
-            result = getWrappedRepresentation().getText();
+            return getWrappedRepresentation().getText();
         }
+    }
 
-        return result;
+    /**
+     * Indicates if the decoding can happen.
+     * 
+     * @return True if the decoding can happen.
+     */
+    public boolean isDecoding() {
+        return this.decoding;
     }
 
     /**

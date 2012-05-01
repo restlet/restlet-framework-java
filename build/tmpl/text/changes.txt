@@ -9,12 +9,14 @@ Changes log
          using its getStream() method when writing negative integers.
          Now properly shift values into the 0-255 ranges, leaving the -1
          value as a clear marker for end of file.
-         Reported by Gabriel Pulido.
+         Reported by Gabriel Pulido and Marc Knaup.
        - Fixed user agent parsing for Chrome and Safari.
        - Usage of ranges on representations having unknown size.
          Reported by Bjorn Roche.
        - Internal connector now closes entity stream/channel upon 
          completion. Suggested by Arjohn Kampman
+       - Fixed hanging bug in NIO connector occurring especially with
+         chunked encoding. Reported by John Logsdon.
     - API changes
        - Renamed ReadableListener into ReadingListener
        - Renamed InputListener into ByteReadingListener
@@ -25,6 +27,12 @@ Changes log
        - Added missing ClientResource#setProxyChallengeResponse(...),
          ServerResource#setProxyChallengeRequests(...) and
          Resource#getProxyChallenge...() methods. Reported by Tim Peierls.
+       - Added ClientResource#accept(...) and ClientInfo#accept(...) 
+         methods for easier preferences customization.
+       - 
+    - Misc
+       - Lowered trace level in Redirector from INFO to FINE.
+       - Cleaned up EncodeRepresentation and DecodeRepresentation classes.
 
 - 2.1 Release Candidate 4 (04/06/2012)
     - Bug fixed

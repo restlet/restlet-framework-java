@@ -49,9 +49,9 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.MediaType;
+import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
@@ -419,45 +419,29 @@ public class ClientResource extends UniformResource {
     }
 
     /**
-     * Updates the client preferences to accept the given media type with a 1.0
-     * quality.
+     * Updates the client preferences to accept the given metadata (media types,
+     * character sets, etc.) with a 1.0 quality in addition to existing ones.
      * 
-     * @param mediaType
-     *            The media type to accept.
+     * @param metadata
+     *            The metadata to accept.
+     * @see ClientInfo#accept(Metadata...)
      */
-    public void accept(MediaType mediaType) {
-        getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(mediaType));
+    public void accept(Metadata... metadata) {
+        getClientInfo().accept(metadata);
     }
 
     /**
-     * Updates the client preferences to accept the given media types with a 1.0
-     * quality.
+     * Updates the client preferences to accept the given metadata (media types,
+     * character sets, etc.) with a given quality in addition to existing ones.
      * 
-     * @param mediaTypes
-     *            The media type to accept.
-     */
-    public void accept(MediaType... mediaTypes) {
-        if (mediaTypes != null) {
-            for (MediaType mediaType : mediaTypes) {
-                getClientInfo().getAcceptedMediaTypes().add(
-                        new Preference<MediaType>(mediaType));
-            }
-        }
-    }
-
-    /**
-     * Updates the client preferences to accept the given media type with a
-     * given quality.
-     * 
-     * @param mediaType
-     *            The media type to accept.
+     * @param metadata
+     *            The metadata to accept.
      * @param quality
      *            The quality to set.
+     * @see ClientInfo#accept(Metadata, float)
      */
-    public void accept(MediaType mediaType, float quality) {
-        getClientInfo().getAcceptedMediaTypes().add(
-                new Preference<MediaType>(mediaType, quality));
+    public void accept(Metadata metadata, float quality) {
+        getClientInfo().accept(metadata, quality);
     }
 
     /**
