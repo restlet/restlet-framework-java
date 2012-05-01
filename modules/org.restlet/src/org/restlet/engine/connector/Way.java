@@ -126,6 +126,14 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * pool.
      */
     public void clear() {
+        if (getLogger().isLoggable(Level.FINEST)) {
+            if (this instanceof OutboundWay) {
+                getLogger().log(Level.FINEST, "OutboundWay#clear: " + this);
+            } else {
+                getLogger().log(Level.FINEST, "InboundWay#clear: " + this);
+            }
+        }
+
         this.buffer.clear();
         this.headers = null;
         this.ioState = IoState.IDLE;
@@ -332,6 +340,16 @@ public abstract class Way implements SelectionListener, CompletionListener,
      *            Indicates if the end of the socket channel was detected.
      */
     public void onCompleted(boolean endDetected) throws IOException {
+        if (getLogger().isLoggable(Level.FINEST)) {
+            if (this instanceof OutboundWay) {
+                getLogger().log(Level.FINEST,
+                        "OutboundWay#onCompleted: " + endDetected);
+            } else {
+                getLogger().log(Level.FINEST,
+                        "InboundWay#onCompleted: " + endDetected);
+            }
+        }
+
         setIoState(IoState.IDLE);
         setMessageState(MessageState.IDLE);
         setMessage(null);
@@ -378,10 +396,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * Called back after the IO processing to indicate if there is further IO
      * interest. By default, it sets the IO state to {@link IoState#INTEREST}.
      */
-    protected void onPostProcessing() {
-        // Socket channel exhausted
-        setIoState(IoState.INTEREST);
-    }
+    protected abstract void onPostProcessing();
 
     /**
      * Callback method invoked when the way has been selected for IO operations
@@ -424,6 +439,14 @@ public abstract class Way implements SelectionListener, CompletionListener,
         } catch (Exception e) {
             getConnection().onError("Error while processing a connection", e,
                     Status.CONNECTOR_ERROR_COMMUNICATION);
+        }
+
+        if (this instanceof InboundWay) {
+            getLogger().log(Level.FINER,
+                    "Inbound way selected. Done for : " + this);
+        } else {
+            getLogger().log(Level.FINER,
+                    "Outbound way selected. Done for : " + this);
         }
     }
 

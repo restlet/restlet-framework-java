@@ -318,7 +318,7 @@ public abstract class OutboundWay extends Way {
         if (result == 0) {
             if (getIoState() == IoState.PROCESSING) {
                 // The byte buffer hasn't been written, the socket
-                // channel can't write more. We needs to put the
+                // channel can't write more. We need to put the
                 // byte buffer in the filling state again and
                 // wait for a new NIO selection.
                 setIoState(IoState.INTEREST);
@@ -391,7 +391,10 @@ public abstract class OutboundWay extends Way {
     @Override
     protected void onPostProcessing() {
         if ((getMessageState() != MessageState.IDLE) || getBuffer().canDrain()) {
-            super.onPostProcessing();
+            // Socket channel exhausted
+            setIoState(IoState.INTEREST);
+        } else {
+            setIoState(IoState.IDLE);
         }
     }
 
