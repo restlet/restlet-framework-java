@@ -5,8 +5,7 @@ Bundle-SymbolicName: org.restlet.ext.jackson
 Bundle-Version: 2.1
 Bundle-Vendor: Restlet S.A.S.
 Export-Package: org.restlet.ext.jackson
-Import-Package: 
- org.codehaus.jackson,
+Import-Package: org.codehaus.jackson,
  org.codehaus.jackson.annotate,
  org.codehaus.jackson.format,
  org.codehaus.jackson.impl,
