@@ -353,6 +353,47 @@ public final class ClientInfo {
     }
 
     /**
+     * Updates the client preferences to accept the given metadata (media types,
+     * character sets, etc.) with a 1.0 quality in addition to existing ones.
+     * 
+     * @param metadata
+     *            The metadata to accept.
+     */
+    public void accept(Metadata... metadata) {
+        if (metadata != null) {
+            for (Metadata md : metadata) {
+                accept(md, 1.0F);
+            }
+        }
+    }
+
+    /**
+     * Updates the client preferences to accept the given metadata (media types,
+     * character sets, etc.) with a given quality in addition to existing ones.
+     * 
+     * @param metadata
+     *            The metadata to accept.
+     * @param quality
+     *            The quality to set.
+     */
+    public void accept(Metadata metadata, float quality) {
+        if (metadata instanceof MediaType) {
+            getAcceptedMediaTypes().add(
+                    new Preference<MediaType>((MediaType) metadata, quality));
+        } else if (metadata instanceof Language) {
+            getAcceptedLanguages().add(
+                    new Preference<Language>((Language) metadata, quality));
+        } else if (metadata instanceof Encoding) {
+            getAcceptedEncodings().add(
+                    new Preference<Encoding>((Encoding) metadata, quality));
+        } else {
+            getAcceptedCharacterSets().add(
+                    new Preference<CharacterSet>((CharacterSet) metadata,
+                            quality));
+        }
+    }
+
+    /**
      * Returns the modifiable list of character set preferences. Creates a new
      * instance if no one has been set.<br>
      * <br>

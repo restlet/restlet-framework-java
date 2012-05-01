@@ -36,6 +36,7 @@ package org.restlet.engine.application;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Arrays;
@@ -137,10 +138,10 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public ReadableByteChannel getChannel() throws IOException {
         if (canEncode()) {
-            return NioUtils.getChannel(getStream());
+            return NioUtils.getReadableByteChannel(this);
+        } else {
+            return getWrappedRepresentation().getChannel();
         }
-
-        return getWrappedRepresentation().getChannel();
     }
 
     /**
@@ -216,6 +217,15 @@ public class EncodeRepresentation extends WrapperRepresentation {
         return this.encodings;
     }
 
+    @Override
+    public Reader getReader() throws IOException {
+        if (canEncode()) {
+            return BioUtils.getReader(getStream(), getCharacterSet());
+        } else {
+            return getWrappedRepresentation().getReader();
+        }
+    }
+
     /**
      * Returns the size in bytes of the encoded representation if known,
      * UNKNOWN_SIZE (-1) otherwise.
@@ -237,46 +247,24 @@ public class EncodeRepresentation extends WrapperRepresentation {
         return result;
     }
 
-    /**
-     * Returns a stream with the representation's content.
-     * 
-     * @return A stream with the representation's content.
-     */
     @Override
     public InputStream getStream() throws IOException {
         if (canEncode()) {
             return BioUtils.getInputStream(this);
+        } else {
+            return getWrappedRepresentation().getStream();
         }
-
-        return getWrappedRepresentation().getStream();
     }
 
-    /**
-     * Converts the representation to a string value. Be careful when using this
-     * method as the conversion of large content to a string fully stored in
-     * memory can result in OutOfMemoryErrors being thrown.
-     * 
-     * @return The representation as a string value.
-     */
     @Override
     public String getText() throws IOException {
-        String result = null;
-
         if (canEncode()) {
-            result = BioUtils.toString(getStream(), getCharacterSet());
+            return BioUtils.toString(getStream(), getCharacterSet());
         } else {
-            result = getWrappedRepresentation().getText();
+            return getWrappedRepresentation().getText();
         }
-
-        return result;
     }
 
-    /**
-     * Writes the representation to a byte stream.
-     * 
-     * @param outputStream
-     *            The output stream.
-     */
     @Override
     public void write(OutputStream outputStream) throws IOException {
         if (canEncode()) {
@@ -289,6 +277,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
             } else if (this.encoding.equals(Encoding.ZIP)) {
                 final ZipOutputStream stream = new ZipOutputStream(outputStream);
                 String name = "entry";
+                
                 if (getWrappedRepresentation().getDisposition() != null) {
                     name = getWrappedRepresentation()
                             .getDisposition()
@@ -296,8 +285,8 @@ public class EncodeRepresentation extends WrapperRepresentation {
                             .getFirstValue(Disposition.NAME_FILENAME, true,
                                     name);
                 }
+                
                 stream.putNextEntry(new ZipEntry(name));
-
                 encoderOutputStream = stream;
             } else if (this.encoding.equals(Encoding.IDENTITY)) {
                 // Encoder unnecessary for identity encoding
@@ -315,18 +304,27 @@ public class EncodeRepresentation extends WrapperRepresentation {
         }
     }
 
-    /**
-     * Writes the representation to a byte channel.
-     * 
-     * @param writableChannel
-     *            A writable byte channel.
-     */
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         if (canEncode()) {
-            write(NioUtils.getOutputStream(writableChannel));
+            OutputStream os = NioUtils.getOutputStream(writableChannel);
+            write(os);
+            os.flush();
         } else {
             getWrappedRepresentation().write(writableChannel);
         }
     }
+
+    @Override
+    public void write(java.io.Writer writer) throws IOException {
+        if (canEncode()) {
+            OutputStream os = BioUtils.getOutputStream(writer,
+                    getCharacterSet());
+            write(os);
+            os.flush();
+        } else {
+            getWrappedRepresentation().write(writer);
+        }
+    }
+
 }

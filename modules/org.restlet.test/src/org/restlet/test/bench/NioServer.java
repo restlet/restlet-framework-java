@@ -33,16 +33,18 @@
 
 package org.restlet.test.bench;
 
+import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.Server;
-import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.resource.ClientResource;
+import org.restlet.util.WrapperRepresentation;
 
 public class NioServer {
 
@@ -57,38 +59,53 @@ public class NioServer {
         // Engine.setLogLevel(Level.FINEST);
 
         // Create and start a connector instance
-        Server server = new Server(new Context(), Protocol.HTTP, 9999);
-        server.getContext().getParameters().add("tracing", "false");
-        server.getContext().getParameters().add("minThreads", "1");
-        server.getContext().getParameters().add("lowThreads", "30");
-        server.getContext().getParameters().add("maxThreads", "40");
-        server.getContext().getParameters().add("maxQueued", "0");
-        server.getContext().getParameters().add("directBuffers", "false");
-        server.getContext().getParameters().add("workerThreads", "true");
-        server.getContext().getParameters().add("pooledConnections", "true");
-        server.getContext().getParameters().add("maxIoIdleTimeMs", "3000000");
+        final Server server = new Server(new Context(), Protocol.HTTP, 9999);
+        // server.getContext().getParameters().add("tracing", "true");
+        // server.getContext().getParameters().add("minThreads", "1");
+        // server.getContext().getParameters().add("lowThreads", "30");
+        // server.getContext().getParameters().add("maxThreads", "40");
+        // server.getContext().getParameters().add("maxQueued", "0");
+        // server.getContext().getParameters().add("directBuffers", "false");
+        // server.getContext().getParameters().add("workerThreads", "true");
+        // server.getContext().getParameters().add("pooledConnections", "true");
+        // server.getContext().getParameters().add("maxIoIdleTimeMs",
+        // "3000000");
+
+        System.out.println("NIO SERVER");
+        Component comp = new Component();
+        comp.getServers().add(server);
+        comp.getClients().add(Protocol.CLAP);
 
         final ClientResource fr = new ClientResource(
-                "file://C/TEST/restlet-jse-2.0.5-ff.zip");
+                "file://C/Test/getting-started.pdf");
 
         // server.setNext(HelloServerResource.class);
-        server.setNext(new Restlet() {
+        comp.getDefaultHost().attach(new Restlet() {
             @Override
             public void handle(Request request, Response response) {
-                fr.put(request.getEntity());
+                try {
+                    // fr.put(request.getEntity());
+                    response.setEntity(fr.get());
+//                    response.setEntity(new WrapperRepresentation(fr.get()) {
+//                        public long getSize() {
+//                            return -1L;
+//                        }
+//
+//                        public long getAvailableSize() {
+//                            return BioUtils.getAvailableSize(this);
+//                        }
+//                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                // try {
-                // response.setEntity(new InputRepresentation(
-                // new FileInputStream("C://TEST/contacts2.txt")));
-                // } catch (FileNotFoundException e) {
-                // e.printStackTrace();
-                // }
-
-                response.setEntity("hello, world!", MediaType.TEXT_PLAIN);
+                // response.setEntity("hello, world!", MediaType.TEXT_PLAIN);
             }
         });
 
-        server.start();
-
+        // Configure the log service
+//        comp.getLogService().setLogPropertiesRef(
+//                "clap://system/org/restlet/test/bench/log.properties");
+        comp.start();
     }
 }
