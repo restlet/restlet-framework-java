@@ -292,6 +292,12 @@ public abstract class InboundWay extends Way {
     public void onFillEof() {
     }
 
+    @Override
+    protected void onPostProcessing() {
+        // Socket channel exhausted
+        setIoState(IoState.INTEREST);
+    }
+
     /**
      * Callback invoked when a message has been received. Note that one the
      * start line and the headers must have been received, not the optional
@@ -392,16 +398,16 @@ public abstract class InboundWay extends Way {
 
     @Override
     public void updateState() {
-        if (getHelper().getLogger().isLoggable(Level.FINEST)) {
-            getHelper().getLogger().log(Level.FINEST,
-                    "Old inbound way NIO interest: " + getRegistration());
-            getHelper().getLogger().log(
-                    Level.FINEST,
-                    "Old inbound entity NIO interest: "
-                            + getEntityRegistration());
-        }
-
         if (getMessageState() == MessageState.BODY) {
+            if (getHelper().getLogger().isLoggable(Level.FINEST)) {
+                getHelper().getLogger().log(Level.FINEST,
+                        "Old inbound way NIO interest: " + getRegistration());
+                getHelper().getLogger().log(
+                        Level.FINEST,
+                        "Old inbound entity NIO interest: "
+                                + getEntityRegistration());
+            }
+
             if ((getEntityRegistration() != null)
                     && (getEntityRegistration().getListener() != null)) {
                 getRegistration().setInterestOperations(
@@ -409,17 +415,17 @@ public abstract class InboundWay extends Way {
             } else {
                 getRegistration().setInterestOperations(0);
             }
+
+            if (getHelper().getLogger().isLoggable(Level.FINEST)) {
+                getHelper().getLogger().log(
+                        Level.FINEST,
+                        "New inbound entity NIO interest: "
+                                + getEntityRegistration());
+                getHelper().getLogger().log(Level.FINEST,
+                        "New inbound way NIO interest: " + getRegistration());
+            }
         } else {
             super.updateState();
-        }
-
-        if (getHelper().getLogger().isLoggable(Level.FINEST)) {
-            getHelper().getLogger().log(
-                    Level.FINEST,
-                    "New inbound entity NIO interest: "
-                            + getEntityRegistration());
-            getHelper().getLogger().log(Level.FINEST,
-                    "New inbound way NIO interest: " + getRegistration());
         }
     }
 }
