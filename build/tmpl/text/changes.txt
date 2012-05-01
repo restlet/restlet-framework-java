@@ -23,7 +23,7 @@ Changes log
        - Renamed ReaderListener into CharacterReadingListener
        - Renamed StringListener into StringReadingListener
        - Added missing SelectionRegistration parameter to
-       - SelectionListener#onSelected() method.
+         SelectionListener#onSelected() method.
        - Added missing ClientResource#setProxyChallengeResponse(...),
          ServerResource#setProxyChallengeRequests(...) and
          Resource#getProxyChallenge...() methods. Reported by Tim Peierls.
