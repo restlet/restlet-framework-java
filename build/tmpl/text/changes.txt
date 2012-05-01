@@ -29,7 +29,6 @@ Changes log
          Resource#getProxyChallenge...() methods. Reported by Tim Peierls.
        - Added ClientResource#accept(...) and ClientInfo#accept(...) 
          methods for easier preferences customization.
-       - 
     - Misc
        - Lowered trace level in Redirector from INFO to FINE.
        - Cleaned up EncodeRepresentation and DecodeRepresentation classes.
