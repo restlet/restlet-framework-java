@@ -456,6 +456,24 @@ public class MetadataService extends Service {
     }
 
     /**
+     * Return the ordered list of extension names mapped to character set.
+     * 
+     * @return The ordered list of extension names mapped to character set.
+     */
+    public List<String> getAllCharacterSetExtensionNames() {
+        List<String> result = new ArrayList<String>();
+
+        for (MetadataExtension mapping : this.mappings) {
+            if ((mapping.getMetadata() instanceof CharacterSet)
+                    && !result.contains(mapping.getName())) {
+                result.add(mapping.getName());
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns all the character sets associated to this extension. It returns
      * null if the extension was not declared.
      * 
@@ -484,6 +502,59 @@ public class MetadataService extends Service {
     }
 
     /**
+     * Return the ordered list of extension names mapped to encodings.
+     * 
+     * @return The ordered list of extension names mapped to encodings.
+     */
+    public List<String> getAllEncodingExtensionNames() {
+        List<String> result = new ArrayList<String>();
+
+        for (MetadataExtension mapping : this.mappings) {
+            if ((mapping.getMetadata() instanceof Encoding)
+                    && !result.contains(mapping.getName())) {
+                result.add(mapping.getName());
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Return the ordered list of extension names.
+     * 
+     * @return The ordered list of extension names.
+     */
+    public List<String> getAllExtensionNames() {
+        List<String> result = new ArrayList<String>();
+
+        for (MetadataExtension mapping : this.mappings) {
+            if (!result.contains(mapping.getName())) {
+                result.add(mapping.getName());
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Return the ordered list of extension names mapped to languages.
+     * 
+     * @return The ordered list of extension names mapped to languages.
+     */
+    public List<String> getAllLanguageExtensionNames() {
+        List<String> result = new ArrayList<String>();
+
+        for (MetadataExtension mapping : this.mappings) {
+            if ((mapping.getMetadata() instanceof Language)
+                    && !result.contains(mapping.getName())) {
+                result.add(mapping.getName());
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns all the languages associated to this extension. It returns null
      * if the extension was not declared.
      * 
@@ -505,6 +576,24 @@ public class MetadataService extends Service {
 
                     result.add(metadataExtension.getLanguage());
                 }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Return the ordered list of extension names mapped to media types.
+     * 
+     * @return The ordered list of extension names mapped to media types.
+     */
+    public List<String> getAllMediaTypeExtensionNames() {
+        List<String> result = new ArrayList<String>();
+
+        for (MetadataExtension mapping : this.mappings) {
+            if ((mapping.getMetadata() instanceof MediaType)
+                    && !result.contains(mapping.getName())) {
+                result.add(mapping.getName());
             }
         }
 

@@ -29,6 +29,8 @@ Changes log
          Resource#getProxyChallenge...() methods. Reported by Tim Peierls.
        - Added ClientResource#accept(...) and ClientInfo#accept(...) 
          methods for easier preferences customization.
+       - Added methods to MetadataService to retrieve the list of extension
+         names, per metadata subclass. 
     - Misc
        - Lowered trace level in Redirector from INFO to FINE.
        - Cleaned up EncodeRepresentation and DecodeRepresentation classes.
