@@ -36,6 +36,9 @@ package org.restlet.ext.jackson;
 import java.io.IOException;
 import java.util.List;
 
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerator.Feature;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
@@ -54,6 +57,9 @@ public class JacksonConverter extends ConverterHelper {
     private static final VariantInfo VARIANT_JSON = new VariantInfo(
             MediaType.APPLICATION_JSON);
 
+    /** The modifiable Jackson object mapper. */
+    private ObjectMapper objectMapper;
+
     /**
      * Creates the marshaling {@link JacksonRepresentation}.
      * 
@@ -65,7 +71,10 @@ public class JacksonConverter extends ConverterHelper {
      * @return The marshaling {@link JacksonRepresentation}.
      */
     protected <T> JacksonRepresentation<T> create(MediaType mediaType, T source) {
-        return new JacksonRepresentation<T>(mediaType, source);
+        JacksonRepresentation<T> result = new JacksonRepresentation<T>(
+                mediaType, source);
+        result.setObjectMapper(getObjectMapper());
+        return result;
     }
 
     /**
@@ -80,7 +89,22 @@ public class JacksonConverter extends ConverterHelper {
      */
     protected <T> JacksonRepresentation<T> create(Representation source,
             Class<T> objectClass) {
-        return new JacksonRepresentation<T>(source, objectClass);
+        JacksonRepresentation<T> result = new JacksonRepresentation<T>(source,
+                objectClass);
+        result.setObjectMapper(getObjectMapper());
+        return result;
+    }
+
+    /**
+     * Creates a Jackson object mapper based on a media type. By default, it
+     * calls {@link ObjectMapper#ObjectMapper(JsonFactory)}.
+     * 
+     * @return The Jackson object mapper.
+     */
+    protected ObjectMapper createObjectMapper() {
+        JsonFactory jsonFactory = new JsonFactory();
+        jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+        return new ObjectMapper(jsonFactory);
     }
 
     @Override
@@ -93,6 +117,24 @@ public class JacksonConverter extends ConverterHelper {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the modifiable Jackson object mapper. Useful to customize
+     * mappings.
+     * 
+     * @return The modifiable Jackson object mapper.
+     */
+    public ObjectMapper getObjectMapper() {
+        if (this.objectMapper == null) {
+            synchronized (this) {
+                if (this.objectMapper == null) {
+                    this.objectMapper = createObjectMapper();
+                }
+            }
+        }
+
+        return this.objectMapper;
     }
 
     @Override
@@ -140,6 +182,16 @@ public class JacksonConverter extends ConverterHelper {
         }
 
         return result;
+    }
+
+    /**
+     * Sets the Jackson object mapper.
+     * 
+     * @param objectMapper
+     *            The Jackson object mapper.
+     */
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @SuppressWarnings("unchecked")

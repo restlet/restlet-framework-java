@@ -113,7 +113,7 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
 
     /**
      * Creates a Jackson object mapper based on a media type. By default, it
-     * calls {@link ObjectMapper#ObjectMapper()}.
+     * calls {@link ObjectMapper#ObjectMapper(JsonFactory)}.
      * 
      * @return The Jackson object mapper.
      */
