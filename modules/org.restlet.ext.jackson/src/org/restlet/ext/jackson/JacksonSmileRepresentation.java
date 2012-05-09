@@ -112,7 +112,7 @@ public class JacksonSmileRepresentation<T> extends OutputRepresentation {
 
     /**
      * Creates a Jackson object mapper based on a media type. By default, it
-     * calls {@link ObjectMapper#ObjectMapper()}.
+     * calls {@link ObjectMapper#ObjectMapper(SmileFactory)}.
      * 
      * @return The Jackson object mapper.
      */

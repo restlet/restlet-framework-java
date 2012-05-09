@@ -36,6 +36,10 @@ package org.restlet.ext.jackson;
 import java.io.IOException;
 import java.util.List;
 
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonGenerator.Feature;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.smile.SmileFactory;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
@@ -58,6 +62,12 @@ public class JacksonConverter extends ConverterHelper {
     private static final VariantInfo VARIANT_JSON_SMILE = new VariantInfo(
             MediaType.APPLICATION_JSON_SMILE);
 
+    /** The modifiable Jackson binary object mapper. */
+    private ObjectMapper binaryObjectMapper;
+
+    /** The modifiable Jackson object mapper. */
+    private ObjectMapper objectMapper;
+
     /**
      * Creates the marshaling {@link JacksonRepresentation}.
      * 
@@ -69,23 +79,12 @@ public class JacksonConverter extends ConverterHelper {
      * @return The marshaling {@link JacksonRepresentation}.
      */
     protected <T> JacksonRepresentation<T> create(MediaType mediaType, T source) {
-        return new JacksonRepresentation<T>(mediaType, source);
+        JacksonRepresentation<T> result = new JacksonRepresentation<T>(
+                mediaType, source);
+        result.setObjectMapper(getObjectMapper());
+        return result;
     }
 
-    /**
-     * Creates the marshaling {@link JacksonSmileRepresentation}.
-     * 
-     * @param <T>
-     * @param mediaType
-     *            The target media type.
-     * @param source
-     *            The source object to marshal.
-     * @return The marshaling {@link JacksonSmileRepresentation}.
-     */
-    protected <T> JacksonSmileRepresentation<T> createBinary(MediaType mediaType, T source) {
-        return new JacksonSmileRepresentation<T>(mediaType, source);
-    }
-    
     /**
      * Creates the unmarshaling {@link JacksonRepresentation}.
      * 
@@ -98,7 +97,28 @@ public class JacksonConverter extends ConverterHelper {
      */
     protected <T> JacksonRepresentation<T> create(Representation source,
             Class<T> objectClass) {
-        return new JacksonRepresentation<T>(source, objectClass);
+        JacksonRepresentation<T> result = new JacksonRepresentation<T>(source,
+                objectClass);
+        result.setObjectMapper(getObjectMapper());
+        return result;
+    }
+
+    /**
+     * Creates the marshaling {@link JacksonSmileRepresentation}.
+     * 
+     * @param <T>
+     * @param mediaType
+     *            The target media type.
+     * @param source
+     *            The source object to marshal.
+     * @return The marshaling {@link JacksonSmileRepresentation}.
+     */
+    protected <T> JacksonSmileRepresentation<T> createBinary(
+            MediaType mediaType, T source) {
+        JacksonSmileRepresentation<T> result = new JacksonSmileRepresentation<T>(
+                mediaType, source);
+        result.setObjectMapper(getBinaryObjectMapper());
+        return result;
     }
 
     /**
@@ -111,11 +131,57 @@ public class JacksonConverter extends ConverterHelper {
      *            The object class to instantiate.
      * @return The unmarshaling {@link JacksonSmileRepresentation}.
      */
-    protected <T> JacksonSmileRepresentation<T> createBinary(Representation source,
-            Class<T> objectClass) {
-        return new JacksonSmileRepresentation<T>(source, objectClass);
+    protected <T> JacksonSmileRepresentation<T> createBinary(
+            Representation source, Class<T> objectClass) {
+        JacksonSmileRepresentation<T> result = new JacksonSmileRepresentation<T>(
+                source, objectClass);
+        result.setObjectMapper(getBinaryObjectMapper());
+        return result;
     }
-    
+
+    /**
+     * Creates a Jackson object mapper for binary representations based on a
+     * media type. By default, it calls
+     * {@link ObjectMapper#ObjectMapper(SmileFactory)}.
+     * 
+     * @return The Jackson object mapper.
+     */
+    protected ObjectMapper createBinaryObjectMapper() {
+        JsonFactory jsonFactory = new SmileFactory();
+        jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+        return new ObjectMapper(jsonFactory);
+    }
+
+    /**
+     * Creates a Jackson object mapper based on a media type. By default, it
+     * calls {@link ObjectMapper#ObjectMapper(JsonFactory)}.
+     * 
+     * @return The Jackson object mapper.
+     */
+    protected ObjectMapper createObjectMapper() {
+        JsonFactory jsonFactory = new JsonFactory();
+        jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+        return new ObjectMapper(jsonFactory);
+    }
+
+    /**
+     * Returns the modifiable Jackson binary object mapper. Useful to customize
+     * mappings.
+     * 
+     * @return The modifiable Jackson binary object mapper.
+     */
+    public ObjectMapper getBinaryObjectMapper() {
+        if (this.binaryObjectMapper == null) {
+            synchronized (this) {
+                if (this.binaryObjectMapper == null) {
+                    this.binaryObjectMapper = createBinaryObjectMapper();
+                }
+            }
+        }
+
+        return this.binaryObjectMapper;
+    }
+
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
@@ -128,6 +194,24 @@ public class JacksonConverter extends ConverterHelper {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the modifiable Jackson object mapper. Useful to customize
+     * mappings.
+     * 
+     * @return The modifiable Jackson object mapper.
+     */
+    public ObjectMapper getObjectMapper() {
+        if (this.objectMapper == null) {
+            synchronized (this) {
+                if (this.objectMapper == null) {
+                    this.objectMapper = createObjectMapper();
+                }
+            }
+        }
+
+        return this.objectMapper;
     }
 
     @Override
@@ -189,12 +273,31 @@ public class JacksonConverter extends ConverterHelper {
         return result;
     }
 
+    /**
+     * Sets the Jackson binary object mapper.
+     * 
+     * @param objectMapper
+     *            The Jackson binary object mapper.
+     */
+    public void setBinaryObjectMapper(ObjectMapper objectMapper) {
+        this.binaryObjectMapper = objectMapper;
+    }
+
+    /**
+     * Sets the Jackson object mapper.
+     * 
+     * @param objectMapper
+     *            The Jackson object mapper.
+     */
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
         Object result = null;
-
 
         JacksonSmileRepresentation<?> bSource = null;
         if (source instanceof JacksonSmileRepresentation) {
@@ -205,7 +308,8 @@ public class JacksonConverter extends ConverterHelper {
         if (bSource != null) {
             // Handle the conversion
             if ((target != null)
-                    && JacksonSmileRepresentation.class.isAssignableFrom(target)) {
+                    && JacksonSmileRepresentation.class
+                            .isAssignableFrom(target)) {
                 result = bSource;
             } else {
                 result = bSource.getObject();
