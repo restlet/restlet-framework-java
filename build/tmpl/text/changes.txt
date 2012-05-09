@@ -14,6 +14,8 @@ Changes log
          Reported by Bjorn Roche.
        - Fixed missing JSON media type with converter service and the 
          JSON extension.
+       - Optimized conversions using the Jackson extension in order to reuse
+         configuration (issue #577).
  
 - 2.0.13 (2012-04-18)
     - Bug fixed
