@@ -79,7 +79,6 @@ public class PipeStream {
                     final Integer value = queue.poll(QUEUE_TIMEOUT,
                             TimeUnit.SECONDS);
                     this.endReached = (value == -1);
-                    System.out.println(value);
                     
                     if (value == null) {
                         throw new IOException(
