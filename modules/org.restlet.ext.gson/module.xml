@@ -1,0 +1,15 @@
+<module id="gson" excludes="gwt" type="integration" package="org.restlet.ext.gson">
+	<name>Restlet Extension - Gson</name>
+	<description>Integration with Gson.</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+		<distribution id="p2" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="library" id="gson" primary="true" />
+		<dependency type="module" id="core" />
+	</dependencies>
+	<wikiUri>299-restlet</wikiUri>
+</module>
