@@ -158,10 +158,8 @@ public class AtomConverter extends ConverterHelper {
             Resource resource) {
         Representation result = null;
 
-        if (source instanceof Feed) {
-            result = (Feed) source;
-        } else if (source instanceof Service) {
-            result = (Service) source;
+        if (source instanceof Representation) {
+            result = (Representation) source;
         }
 
         return result;

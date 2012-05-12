@@ -5,7 +5,7 @@
 	<release>2</release>
 	<homeUri>http://www.oracle.com/technetwork/java/index-jsp-139225.html</homeUri>
 	<downloadUri>http://www.oracle.com/technetwork/java/index-138643.html</downloadUri>
-	<provider>Sun Microsystems Inc.</provider>
+	<provider>Oracle Inc.</provider>
 	
 	<package id="javamail" name="javax.mail">
 		<maven>

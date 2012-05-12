@@ -4,7 +4,7 @@
 	<version>2.5</version>
 	<homeUri>http://java.sun.com/products/servlet/index.jsp</homeUri>
 	<downloadUri>http://java.sun.com/products/servlet/download.html</downloadUri>
-	<provider>Sun Microsystems Inc.</provider>
+	<provider>Oracle Inc.</provider>
 	
 	<package name="javax.servlet">
 		<maven>

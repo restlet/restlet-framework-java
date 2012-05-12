@@ -11,6 +11,7 @@
 		<dependency type="library" id="openid4java" primary="true" />
 		<dependency type="library" id="nekohtml" />
 		<dependency type="library" id="httpclient" />
+		<dependency type="library" id="json" />
 		<dependency type="module" id="core" />
 		<dependency type="module" id="xml" />
 		<dependency type="module" id="json" />

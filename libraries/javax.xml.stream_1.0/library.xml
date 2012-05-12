@@ -5,7 +5,7 @@
 	<release>2</release>
 	<homeUri>http://download.oracle.com/docs/cd/E17802_01/webservices/webservices/docs/2.0/sjsxp/index.html</homeUri>
 	<downloadUri>http://download.java.net/maven/1/javax.xml.stream/jars/</downloadUri>
-	<provider>Sun Microsystems Inc.</provider>
+	<provider>Oracle Inc.</provider>
 	
 	<package name="javax.xml.stream">
 		<maven>

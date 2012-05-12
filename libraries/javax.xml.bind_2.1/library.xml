@@ -4,7 +4,7 @@
 	<version>2.1</version>
 	<homeUri>https://jaxb.dev.java.net/</homeUri>
 	<downloadUri>https://jaxb.dev.java.net/servlets/ProjectDocumentList</downloadUri>
-	<provider>Sun Microsystems Inc.</provider>
+	<provider>Oracle Inc.</provider>
 
 	<package name="javax.xml.bind">
 		<maven>

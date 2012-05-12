@@ -9,7 +9,6 @@
 	
 	<dependencies>
 		<dependency type="module" id="core" />
-		<dependency type="library" id="junit" />
 	</dependencies>
 	<wikiUri>390-restlet</wikiUri>
 </module>

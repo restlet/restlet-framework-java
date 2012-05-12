@@ -4,7 +4,7 @@
 	<version>1.0</version>
 	<homeUri>https://jsr311.dev.java.net</homeUri>
 	<downloadUri>http://download.java.net/maven/2/javax/ws/rs/jsr311-api/</downloadUri>
-	<provider>Sun Microsystems Inc.</provider>
+	<provider>Oracle Inc.</provider>
 	
 	<package name="javax.ws.rs">
 		<maven>
@@ -20,8 +20,8 @@
 	<maven-misc>
 <![CDATA[
    	<organization>
-		<name>Sun Microsystems, Inc</name>
-		<url>http://www.sun.com/</url>
+		<name>Oracle, Inc</name>
+		<url>http://www.oracle.com/</url>
 	</organization>
 	<licenses>
 		<license>

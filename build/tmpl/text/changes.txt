@@ -7,7 +7,9 @@ Changes log
     - Bug fixed
     - Enhancements
     - Misc
-      - Updated Eclipse projects to JavaSE 1.6.
+      - Updated Eclipse projects to use JavaSE 1.6 and simple Java 
+        build rather than PDE/OSGi (removed manifest.mf files) or 
+        Maven (removed pom.xml files)
     - API changes
       - Added a resource client to the JAX-RS extension.
         Contributed by Shaun Elliott.

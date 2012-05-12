@@ -42,9 +42,7 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
-import org.restlet.engine.io.BioUtils;
 import org.restlet.resource.ClientResource;
-import org.restlet.util.WrapperRepresentation;
 
 public class NioServer {
 
