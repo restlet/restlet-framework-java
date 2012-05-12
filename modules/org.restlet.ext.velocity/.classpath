@@ -5,5 +5,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.velocity"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.commons.collections"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.commons.lang"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

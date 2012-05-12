@@ -540,24 +540,32 @@ public final class ClientInfo {
                     org.restlet.routing.Variable.TYPE_COMMENT_ATTRIBUTE);
             org.restlet.routing.Variable facultativeData = new org.restlet.routing.Variable(
                     org.restlet.routing.Variable.TYPE_ALL, null, false, false);
+            List<String> agentTemplates = ClientInfo.getUserAgentTemplates();
 
-            for (String string : ClientInfo.getUserAgentTemplates()) {
-                template = new org.restlet.routing.Template(string,
-                        org.restlet.routing.Template.MODE_EQUALS);
-                // Update the predefined variables.
-                template.getVariables().put("agentName", agentName);
-                template.getVariables().put("agentVersion", agentVersion);
-                template.getVariables().put("agentComment", agentComment);
-                template.getVariables().put("agentOs", agentCommentAttribute);
-                template.getVariables().put("commentAttribute",
-                        agentCommentAttribute);
-                template.getVariables().put("facultativeData", facultativeData);
-                // Parse the template
-                if (template.parse(getAgent(), map) > -1) {
-                    for (String key : map.keySet()) {
-                        this.agentAttributes.put(key, (String) map.get(key));
+            if (agentTemplates != null) {
+                for (String string : agentTemplates) {
+                    template = new org.restlet.routing.Template(string,
+                            org.restlet.routing.Template.MODE_EQUALS);
+                    
+                    // Update the predefined variables.
+                    template.getVariables().put("agentName", agentName);
+                    template.getVariables().put("agentVersion", agentVersion);
+                    template.getVariables().put("agentComment", agentComment);
+                    template.getVariables().put("agentOs",
+                            agentCommentAttribute);
+                    template.getVariables().put("commentAttribute",
+                            agentCommentAttribute);
+                    template.getVariables().put("facultativeData",
+                            facultativeData);
+                    
+                    // Parse the template
+                    if (template.parse(getAgent(), map) > -1) {
+                        for (String key : map.keySet()) {
+                            this.agentAttributes
+                                    .put(key, (String) map.get(key));
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }

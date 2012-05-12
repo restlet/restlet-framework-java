@@ -30,6 +30,7 @@
 		<dependency type="module" id="odata" />
 		<dependency type="module" id="rdf" />
 		<dependency type="module" id="simple" includes="jse" />
+		<dependency type="module" id="sip" includes="jse" />
 		<dependency type="module" id="spring" />
 		<dependency type="module" id="ssl" includes="jse" />
 		<dependency type="module" id="velocity" />
