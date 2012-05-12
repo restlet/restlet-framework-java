@@ -67,11 +67,18 @@ public class PipeStream {
      */
     public InputStream getInputStream() {
         return new InputStream() {
+            private boolean endReached = false;
+
             @Override
             public int read() throws IOException {
                 try {
+                    if (this.endReached) {
+                        return -1;
+                    }
+
                     final Integer value = queue.poll(QUEUE_TIMEOUT,
                             TimeUnit.SECONDS);
+                    this.endReached = (value == -1);
 
                     if (value == null) {
                         throw new IOException(
