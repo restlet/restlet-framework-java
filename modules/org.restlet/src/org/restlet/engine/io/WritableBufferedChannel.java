@@ -119,7 +119,7 @@ public class WritableBufferedChannel extends
      * @return The number of bytes written, possibly 0.
      */
     public int write(ByteBuffer sourceBuffer) throws IOException {
-        return getBuffer().process(this, sourceBuffer);
+        return getBuffer().process(this, 0, sourceBuffer);
     }
 
 }

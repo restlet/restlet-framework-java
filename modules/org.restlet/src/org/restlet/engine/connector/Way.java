@@ -474,7 +474,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * @throws IOException
      */
     protected int processIoBuffer() throws IOException {
-        return getBuffer().process(this);
+        return getBuffer().process(this, 0);
     }
 
     /**

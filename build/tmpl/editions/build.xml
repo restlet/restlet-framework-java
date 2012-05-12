@@ -75,14 +75,6 @@
 		<path path="${sun.boot.class.path}" />
 	</pathconvert>
 
-	<pathconvert property="backportbootclasspath">
-		<path>
-			<pathelement location="${tools}/retrotranslator/rowset.jar" />
-			<pathelement location="${tools}/retrotranslator/xerces.jar" />
-		</path>
-		<path path="${sun.boot.class.path}" />
-	</pathconvert>
-
 	<!-- Create the time stamp -->
 	<tstamp>
 		<format property="release-date" pattern="yyyy-MM-dd" />
@@ -121,16 +113,6 @@
 				<contains string="${ant.version}" substring="Ant version 1.8" />
 			</or>
 		</not>
-	</condition>
-
-
-	<!-- Set the property that will enable the Weave target -->
-	<condition property="do-backport">
-		<istrue value="${backport}" />
-	</condition>
-
-	<condition property="custombootclasspath" value="${backportbootclasspath}" else="${defaultbootclasspath}">
-		<istrue value="${backport}" />
 	</condition>
 
 	<!-- Set the property that will enable the Javadoc target -->
@@ -266,14 +248,6 @@
 	<!-- ===  Ant Tasks  === -->
 	<!-- =================== -->
 
-	<!-- Retrotranslator 1.2.0 -->
-	<taskdef name="retrotranslator" classname="net.sf.retrotranslator.transformer.RetrotranslatorTask">
-		<classpath>
-			<pathelement location="${tools}/retrotranslator/retrotranslator-transformer-1.2.7.jar" />
-			<pathelement location="${tools}/retrotranslator/retrotranslator-runtime-1.2.7.jar" />
-		</classpath>
-	</taskdef>
-
 	<!-- Findbugs -->
 	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask">
 		<classpath>
@@ -322,8 +296,8 @@
 
 	<!-- Compile using preferences -->
 	<macrodef name="compile">
-		<attribute name="source" default="1.5" />
-		<attribute name="target" default="1.5" />
+		<attribute name="source" default="1.6" />
+		<attribute name="target" default="1.6" />
 		<attribute name="debug" default="${debug}" />
 		<attribute name="debuglevel" default="${debuglevel}" />
 		<attribute name="optimize" default="${optimize}" />
@@ -455,32 +429,6 @@
 		</sequential>
 	</macrodef>
 
-	<!-- Backport a module -->
-	<macrodef name="backportModule">
-		<attribute name="name" />
-		<attribute name="failonwarning" default="true" />
-		<sequential>
-			<path id="backport-@{name}-classpath">
-				<dirset dir="${classes}" />
-				<path refid="mod-@{name}-path" />
-				<fileset dir="${tools}/retrotranslator">
-					<include name="**/*.jar" />
-				</fileset>
-				<fileset dir="${jdk1.4-home}/jre/lib">
-					<filename name="*.jar" />
-				</fileset>
-			</path>
-			<pathconvert property="backport-@{name}-jarfiles" refid="backport-@{name}-classpath" />
-
-			<retrotranslator verify="true" classpath="${backport-@{name}-jarfiles}" failonwarning="@{failonwarning}" backport="javax.security.auth.login.CredentialException:javax.security.auth.login.LoginException" smart="true" support="Thread.setUncaughtExceptionHandler;URLConnection.setConnectTimeout;URLConnection.setReadTimeout;HttpURLConnection.setFixedLengthStreamingMode;HttpURLConnection.setChunkedStreamingMode">
-				<!-- Caution: Overrides the Java 1.5 generated classes -->
-				<fileset dir="${classes}/${mod-@{name}-id}">
-					<include name="**/*.class" />
-				</fileset>
-			</retrotranslator>
-		</sequential>
-	</macrodef>
-
 	<!-- Package a library -->
 	<macrodef name="stageLibrary">
 		<!-- Package a library -->
@@ -604,7 +552,7 @@
 	</target>
 
 	<!-- GENERATE target -->
-	<target name="generate" depends="generate-classes, generate-backport, generate-templates, generate-javadocs" description="Generate files." />
+	<target name="generate" depends="generate-classes, generate-templates, generate-javadocs" description="Generate files." />
 
 	<target name="generate-sources" description="Generate the sources.">
 		<!-- @generate-sources@ -->
@@ -637,15 +585,6 @@
 			<sequential>
 				<compileModule name="@{module}" />
 				<!-- @generate-classes-extras@ -->
-			</sequential>
-		</for>
-	</target>
-
-	<!-- GENERATE-BACKPORT target -->
-	<target name="generate-backport" if="do-backport" depends="generate-classes" description="Backport classes using Retrotranslator.">
-		<for param="module" delimiter=" " list="${modules}">
-			<sequential>
-				<backportModule name="@{module}" failonwarning="@{backport-failonwarning}" />
 			</sequential>
 		</for>
 	</target>
