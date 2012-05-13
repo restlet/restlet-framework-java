@@ -10,7 +10,7 @@ Otherwise, you can list the available build targets by running 'ant -p'.
 Here is the output at time of writing:
 
 Main targets:
- build [default]               Regenerate the source code and build the editions.
+ build                         Regenerate the source code and build the editions.
  build-current                 Build the editions with the current source code.
  clean                         Clean the staging area.
  clean-dist                    Clean distributions files.
