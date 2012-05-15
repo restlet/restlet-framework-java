@@ -41,6 +41,9 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
+/**
+ * Returns a textual representation with its MD5 digest metadata.
+ */
 public class VerifiedServerResource extends ServerResource {
 
     @Get
@@ -48,9 +51,9 @@ public class VerifiedServerResource extends ServerResource {
         // Wraps the StringRepresentation
         DigesterRepresentation result = new DigesterRepresentation(
                 new StringRepresentation("hello, world"));
+
         // Compute's representation's digest.
         result.setDigest(result.computeDigest());
-
         return result;
     }
 }
