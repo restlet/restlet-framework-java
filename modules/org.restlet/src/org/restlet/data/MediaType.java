@@ -1076,11 +1076,17 @@ public final class MediaType extends Metadata {
         return SystemUtils.hashCode(super.hashCode(), getParameters());
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean includes(Metadata included) {
+        return includes(included, true);
+    }
+
     /**
-     * Indicates if a given media type is included in the current one. The test
-     * is true if both types are equal or if the given media type is within the
-     * range of the current one. For example, ALL includes all media types.
-     * Parameters are ignored for this comparison. A null media type is
+     * Indicates if a given media type is included in the current one, with the
+     * possibility to ignore parameters. The test is true if both types are
+     * equal or if the given media type is within the range of the current one.
+     * For example, ALL includes all media types. A null media type is
      * considered as included into the current one.
      * <p>
      * Examples:
@@ -1091,12 +1097,14 @@ public final class MediaType extends Metadata {
      * 
      * @param included
      *            The media type to test for inclusion.
+     * @param ignoreParameters
+     *            Indicates if parameters should be ignored during comparison.
      * @return True if the given media type is included in the current one.
      * @see #isCompatible(Metadata)
      */
-    @Override
-    public boolean includes(Metadata included) {
-        boolean result = equals(ALL) || equals(included);
+
+    public boolean includes(Metadata included, boolean ignoreParameters) {
+       boolean result = equals(ALL) || equals(included);
 
         if (!result && (included instanceof MediaType)) {
             MediaType includedMediaType = (MediaType) included;
@@ -1104,7 +1112,29 @@ public final class MediaType extends Metadata {
             if (getMainType().equals(includedMediaType.getMainType())) {
                 // Both media types are different
                 if (getSubType().equals(includedMediaType.getSubType())) {
-                    result = true;
+                    if (ignoreParameters) {
+                        result = true;
+                    } else {
+                        // check parameters - media type A includes media type B
+                        // iff for each param name/value pair in A, B contains
+                        // the same name/value.
+                        boolean paramsMatch = true;
+                        for (Parameter thisParam : getParameters()) {
+                            Parameter includedParam = includedMediaType
+                                    .getParameters().getFirst(
+                                            thisParam.getName());
+                            if (includedParam != null
+                                    && !thisParam.getValue().equals(
+                                            includedParam.getValue())) {
+                                paramsMatch = false;
+                                break;
+                            }
+                        }
+                        if (paramsMatch) {
+                            result = true;
+                        }
+                    }
+
                 } else if (getSubType().equals("*")) {
                     result = true;
                 } else if (getSubType().startsWith("*+")
