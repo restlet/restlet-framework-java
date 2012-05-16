@@ -8,7 +8,6 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="library" id="activation" />
 		<dependency type="library" id="javamail" primary="true" />
 		<dependency type="module" id="core" />
 		<dependency type="module" id="xml" />

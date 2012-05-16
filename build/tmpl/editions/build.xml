@@ -243,6 +243,9 @@
 	<path id="forge-path">
 		<fileset dir="${tools}/forge" includes="**/*.jar" />
 	</path>
+	<path id="bnd-path">
+		<fileset dir="${tools}/bnd" includes="**/*.jar" />
+	</path>
 
 	<!-- =================== -->
 	<!-- ===  Ant Tasks  === -->
@@ -289,7 +292,9 @@
 			<fileset dir="${tools}/forge" includes="**/*.jar" />
 		</classpath>
 	</taskdef>
-
+	<!-- BND (handling of OSGI bundles) -->
+	<taskdef resource="aQute/bnd/ant/taskdef.properties" classpathref="bnd-path" />
+	
 	<!-- ==================== -->
 	<!-- ===  Ant Macros  === -->
 	<!-- ==================== -->
@@ -340,69 +345,6 @@
 		</sequential>
 	</macrodef>
 
-	<!-- Package a module -->
-	<macrodef name="stageModule">
-		<attribute name="name" />
-		<attribute name="includeSource" default="false" />
-		<sequential>
-			<!-- Create the Manifest by merging the Eclipse plugin Manifest and the default JAR's one -->
-			<mkdir dir="${temp}/jar/META-INF" />
-			<delete failonerror="false" file="${temp}/jar/META-INF/MANIFEST.MF" />
-			<copy failonerror="false" file="${mod}/${mod-@{name}-id}/META-INF/MANIFEST.MF" tofile="${temp}/jar/META-INF/MANIFEST.MF" />
-
-			<condition property="include-@{name}-pattern" value="org/restlet/test/**">
-				<equals arg1="@{name}" arg2="core-test"/>
-			</condition>
-			<condition property="include-@{name}-pattern" value="org/restlet/**">
-				<equals arg1="@{name}" arg2="core" />
-			</condition>
-			<property name="include-@{name}-pattern" value="org/restlet/ext/@{name}/**" />
-			<dirset id="mod-@{name}-exported-packages" dir="${classes}/${mod-@{name}-id}">
-				<include name="${include-@{name}-pattern}" />
-				<!-- <exclude name="**/internal/**" /> -->
-			</dirset>
-			<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
-				<map from="${classes}/${mod-@{name}-id}/" to='' />
-			</pathconvert>
-			<manifest file="${temp}/jar/META-INF/MANIFEST.MF" mode="update">
-				<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
-				<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-				<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-				<section name="${mod-@{name}-id}">
-					<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-					<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-					<attribute name="Implementation-Vendor" value="${vendor}" />
-				</section>
-			</manifest>
-
-			<!-- Create plugin jar -->
-			<mkdir dir="${dist-classic}/lib" />
-
-			<condition property="source-exclude-patterns" value="**/package.html, **/*.java">
-				<equals arg1="@{includeSource}" arg2="false" />
-			</condition>
-			<property name="source-exclude-patterns" value="**/package.html" />
-
-			<mkdir dir="${temp}/jar-extras/@{name}" />
-			<property name="jar-extras" value="${temp}/jar-extras/@{name}" />
-
-			<delete failonerror="false" file="${dist-classic}/lib/${mod-@{name}-id}.jar" />
-			<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
-				<fileset dir="${classes}/${mod-@{name}-id}" />
-				<fileset dir="${temp}/jar/" />
-				<fileset dir="${jar-extras}" />
-				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${source-exclude-patterns}" />
-			</jar>
-			<!-- Create extension source jar file -->
-			<mkdir dir="${dist-classic}/src" />
-			<copy todir="${dist-classic}/src/${mod-@{name}-id}">
-				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${excludes}" />
-			</copy>
-			<var name="source-exclude-patterns" unset="true" />
-			<var name="jar-extras" unset="true" />
-		</sequential>
-	</macrodef>
-
 	<!-- Find bugs in a module -->
 	<macrodef name="findbugsModule">
 		<attribute name="name" />
@@ -441,6 +383,86 @@
 			<copy todir="${dist-classic}/lib/${lib-@{name}-root}">
 				<fileset dir="${libs}/${lib-@{name}-root}" excludes="bin, .classpath, .project, build.properties" />
 			</copy>
+		</sequential>
+	</macrodef>
+	
+	<!-- Package a module -->
+	<macrodef name="stageModule">
+		<attribute name="name" />
+		<attribute name="includeSource" default="false" />
+		<sequential>
+			<condition property="include-@{name}-pattern" value="org/restlet/test/**">
+				<equals arg1="@{name}" arg2="core-test"/>
+			</condition>
+			<condition property="include-@{name}-pattern" value="org/restlet/**">
+				<equals arg1="@{name}" arg2="core" />
+			</condition>
+			<property name="include-@{name}-pattern" value="org/restlet/ext/@{name}/**" />
+			<dirset id="mod-@{name}-exported-packages" dir="${classes}/${mod-@{name}-id}">
+				<include name="${include-@{name}-pattern}" />
+				<!-- <exclude name="**/internal/**" /> -->
+			</dirset>
+			<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
+				<map from="${classes}/${mod-@{name}-id}/" to='' />
+			</pathconvert>
+			
+			<mkdir dir="${temp}/jar" />
+			<if>
+				<equals arg1="${edition}" arg2="osgi" />
+				<then>
+					<!-- Create the Manifest -->
+					<mkdir dir="${temp}/jar/META-INF" />
+					<delete failonerror="false" file="${temp}/jar/META-INF/MANIFEST.MF" />
+					<copy failonerror="false" file="${mod}/${mod-@{name}-id}/META-INF/MANIFEST.MF" tofile="${temp}/jar/META-INF/MANIFEST.MF" />
+
+					<manifest file="${temp}/jar/META-INF/MANIFEST.MF" mode="update">
+						<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
+						<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
+						<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
+						<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="JavaSE-1.6" />
+						<section name="${mod-@{name}-id}">
+							<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
+							<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
+							<attribute name="Implementation-Vendor" value="${vendor}" />
+						</section>
+					</manifest>
+				</then>
+			</if>
+
+			<!-- Create plugin jar -->
+			<mkdir dir="${dist-classic}/lib" />
+
+			<condition property="source-exclude-patterns" value="**/package.html, **/*.java">
+				<equals arg1="@{includeSource}" arg2="false" />
+			</condition>
+			<property name="source-exclude-patterns" value="**/package.html" />
+
+			<mkdir dir="${temp}/jar-extras/@{name}" />
+			<property name="jar-extras" value="${temp}/jar-extras/@{name}" />
+
+			<delete failonerror="false" file="${dist-classic}/lib/${mod-@{name}-id}.jar" />
+			<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
+				<fileset dir="${classes}/${mod-@{name}-id}" />
+				<fileset dir="${temp}/jar/" />
+				<fileset dir="${jar-extras}" />
+				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${source-exclude-patterns}" />
+			</jar>
+
+			<!-- Update the manifest file -->
+			<if>
+				<equals arg1="${edition}" arg2="osgi" />
+				<then>
+					<bndwrap jars="${dist-classic}/lib/${mod-@{name}-id}.jar" output="${dist-classic}/lib/${mod-@{name}-id}.jar" /> 
+				</then>
+			</if>
+			
+			<!-- Create extension source jar file -->
+			<mkdir dir="${dist-classic}/src" />
+			<copy todir="${dist-classic}/src/${mod-@{name}-id}">
+				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${excludes}" />
+			</copy>
+			<var name="source-exclude-patterns" unset="true" />
+			<var name="jar-extras" unset="true" />
 		</sequential>
 	</macrodef>
 
@@ -578,6 +600,19 @@
 		</copy>
 	</target>
 
+	<target name="generate-modules-manifests" description="Generates the manifest.mf files for the unique source code">
+		<!-- Generate bnd definition files -->
+		<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/modules" dataroot="${basedir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				ant: antProperties()
+			</data>
+			<include name="bndModule.tmpl" />
+		</fmpp>
+		<delete file="${temp}/definitions/modules/bndModule.tmpl" />
+	</target>
+	
 	<!-- COMPILE target -->
 	<target name="generate-classes" description="Compile the Java source files.">
 		<mkdir dir="${classes}" />

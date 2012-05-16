@@ -8,9 +8,7 @@
 	</distributions>
 
 	<dependencies>
-		<dependency type="library" id="jaxb-api" primary="true" />
-		<dependency type="library" id="jaxb-ri" />
-		<dependency type="library" id="stax" />
+		<dependency type="library" id="jaxb-ri"  primary="true"/>
 		<dependency type="module" id="core" />
 	</dependencies>
 	<wikiUri>67-restlet</wikiUri>

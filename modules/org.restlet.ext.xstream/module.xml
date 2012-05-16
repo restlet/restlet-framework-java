@@ -9,7 +9,6 @@
 
 	<dependencies>
 		<dependency type="library" id="jettison" />
-		<dependency type="library" id="stax" />
 		<dependency type="library" id="xstream" primary="true" />
 		<dependency type="module" id="core" />
 	</dependencies>
