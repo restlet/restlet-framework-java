@@ -60,7 +60,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
 
     private final boolean enabledClientJdkNet = true;
 
-    private final boolean enabledServerInternal = true;
+    private final boolean enabledServerInternal = false;
 
     private final boolean enabledServerJetty = false;
 
