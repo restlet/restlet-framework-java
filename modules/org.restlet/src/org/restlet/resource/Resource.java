@@ -454,8 +454,8 @@ public abstract class Resource {
     }
 
     /**
-     * Returns the list of proxy authentication requests sent by an origin server to a
-     * client. If none is available, an empty list is returned.
+     * Returns the list of proxy authentication requests sent by an origin
+     * server to a client. If none is available, an empty list is returned.
      * 
      * @return The list of proxy authentication requests.
      * @see Response#getProxyChallengeRequests()
@@ -465,10 +465,13 @@ public abstract class Resource {
                 .getProxyChallengeRequests();
     }
 
+    // [ifndef gwt] method
     /**
-     * Returns the proxy authentication response sent by a client to an origin server.
+     * Returns the proxy authentication response sent by a client to an origin
+     * server.
      * 
-     * @return The proxy authentication response sent by a client to an origin server.
+     * @return The proxy authentication response sent by a client to an origin
+     *         server.
      * @see Request#getProxyChallengeResponse()
      */
     public ChallengeResponse getProxyChallengeResponse() {
