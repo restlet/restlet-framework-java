@@ -217,10 +217,15 @@
 		<sequential>
 			<for param="task" delimiter=" " list="@{target}">
 				<sequential>
-					<ant antfile="build.xml" target="@{task}" dir="${editions-dir}/@{edition}/" inheritall="false">
-						<property name="build.number" value="${build.number}" />
-						<property name="eclipse-version-full" value="${eclipse-version-full}" />
-					</ant>
+					<if>
+						<available file="${editions-dir}/@{edition}/build.xml" property="build.@{edition}.present" />
+						<then>
+							<ant antfile="build.xml" target="@{task}" dir="${editions-dir}/@{edition}/" inheritall="false">
+								<property name="build.number" value="${build.number}" />
+								<property name="eclipse-version-full" value="${eclipse-version-full}" />
+							</ant>
+						</then>
+					</if>
 				</sequential>
 			</for>
 		</sequential>
@@ -266,29 +271,31 @@
 	</target>
 
 	<!-- CLEAN target -->
-	<target name="clean" depends="clean-temp, clean-dist" description="Clean the staging area." />
+	<target name="clean" description="Clean the staging area.">
+		<!-- Remove final distribution directory. -->
+		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
+			<fileset dir="${dist}" />
+		</delete>
+		<!-- Remove temp directory. -->
+		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
+			<fileset dir="${temp}" />
+		</delete>
+		<!-- Remove editions temp and dist directory. -->
+		<for param="edition" delimiter="," list="${editions}" trim="true">
+			<sequential>
+				<exec-edition edition="@{edition}" target="clean" />
+			</sequential>
+		</for>
+	</target>
+
 
 	<!-- CLEAN-FULL target -->
-	<target name="clean-full" depends="clean-editions, clean-temp, clean-dist" description="Clean the working area" />
+	<target name="clean-full" depends="clean, clean-editions" description="Clean the working area" />
 
 	<!-- CLEAN-EDITIONS target -->
 	<target name="clean-editions" description="Clean the editions root directory">
 		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
 			<fileset dir="${editions-dir}" includes="*/**" excludes="readme.txt" />
-		</delete>
-	</target>
-
-	<!-- CLEAN-DIST target -->
-	<target name="clean-dist" description="Clean distributions files.">
-		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
-			<fileset dir="${dist}" />
-		</delete>
-	</target>
-
-	<!-- CLEAN-TEMP target -->
-	<target name="clean-temp" description="Clean temporary build files.">
-		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
-			<fileset dir="${temp}" />
 		</delete>
 	</target>
 
