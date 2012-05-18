@@ -274,7 +274,7 @@
 	<!-- CLEAN-EDITIONS target -->
 	<target name="clean-editions" description="Clean the editions root directory">
 		<delete includeEmptyDirs="false" verbose="false" quiet="false" failonerror="false">
-			<fileset dir="${editions-dir}" includes="*/**" excludes="readme.txt" />
+			<dirset dir="${editions-dir}" includes="*" />
 		</delete>
 	</target>
 
