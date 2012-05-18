@@ -29,7 +29,7 @@
 	<tstamp>
 		<format property="maven-snapshot-timestamp" pattern="yyyyMMdd.HHmmss" />
 	</tstamp>
-	
+
 	<tstamp>
 		<format property="build.date" pattern="yyyyMMdd-HHmm" />
 	</tstamp>
@@ -47,7 +47,7 @@
 	<property name="parent-maven-version" value="${version-maven}" />
 	<property name="eclipse-version-suffix" value="v${build.date}" />
 	<property name="eclipse-version-full" value="${version-manifest-prefix}${eclipse-version-suffix}" />
-	
+
 	<!-- Set the property that will enable the generation of miscellaneous files -->
 	<condition property="do-miscgeneration">
 		<istrue value="${miscgeneration}" />
@@ -94,7 +94,7 @@
 	<macrodef name="generate-edition" description="Generate the source code for a target edition.">
 		<attribute name="edition" />
 		<sequential>
-			<mkdir dir="${editions-dir}/@{edition}"/>
+			<mkdir dir="${editions-dir}/@{edition}" />
 			<!-- Generate the properties files -->
 			<fmpp sourceroot="${tmpl}/editions" outputroot="${editions-dir}/@{edition}" dataroot="${basedir}" includes="*.properties">
 				<data expandproperties="true">
@@ -200,7 +200,7 @@
 					</fmpp>
 				</then>
 			</if>
-					
+
 			<copy file="build.properties" todir="${editions-dir}/@{edition}" overwrite="true" />
 			<copy file="custom.properties" todir="${editions-dir}/@{edition}" overwrite="true" failonerror="false" />
 			<ant antfile="build.xml" target="generate-sources" dir="${editions-dir}/@{edition}/" inheritall="false" />
@@ -229,7 +229,7 @@
 	<!-- = = = = = = = = = = = = = = = = =
           Definition of targets          
          = = = = = = = = = = = = = = = = = -->
-	<target name="generate-misc" if="do-miscgeneration" description="Generates miscellaneous files." >
+	<target name="generate-misc" if="do-miscgeneration" description="Generates miscellaneous files.">
 		<delete dir="${temp}/misc" />
 		<!-- Generate editions matrix file -->
 		<fmpp sourceroot="${tmpl}/text" outputroot="${temp}/misc" dataroot="${basedir}" expert="true">
@@ -264,7 +264,7 @@
 		</exec>
 		<echo message="${line.separator}" file="${temp}/snapshot.properties" append="true" />
 	</target>
-	
+
 	<!-- CLEAN target -->
 	<target name="clean" depends="clean-temp, clean-dist" description="Clean the staging area." />
 
@@ -273,8 +273,8 @@
 
 	<!-- CLEAN-EDITIONS target -->
 	<target name="clean-editions" description="Clean the editions root directory">
-		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
-			<fileset dir="${editions-dir}" includes="**" />
+		<delete includeEmptyDirs="false" verbose="false" quiet="false" failonerror="false">
+			<fileset dir="${editions-dir}" includes="**" excludes="readme.txt" />
 		</delete>
 	</target>
 
@@ -291,7 +291,7 @@
 			<fileset dir="${temp}" />
 		</delete>
 	</target>
-	
+
 	<target name="build" description="Build the editions without generating the source code.">
 		<for param="edition" delimiter="," list="${editions}">
 			<sequential>
@@ -300,16 +300,9 @@
 			</sequential>
 		</for>
 	</target>
-	
-	<target name="rebuild" depends="clean-full, generate" description="Clean the temp files, regenerate the source code and build the editions.">
-		<for param="edition" delimiter="," list="${editions}">
-			<sequential>
-				<echo message="Build the edition @{edition}" />
-				<exec-edition edition="@{edition}" target="build" />
-			</sequential>
-		</for>
-	</target>
-	
+
+	<target name="rebuild" depends="clean-full, generate, build" description="Clean the temp files, regenerate the source code and build the editions." />
+
 	<target name="generate" depends="generate-misc" description="Regenerate the source code.">
 		<for param="edition" delimiter="," list="${editions}">
 			<sequential>
@@ -329,5 +322,37 @@
 	</target>
 
 	<target name="regenerate" depends="clean-editions, generate" description="Clean and regenerate the source code." />
-	
+
+	<target name="verify" description="Verify editions.">
+		<for param="edition" delimiter="," list="${editions}">
+			<sequential>
+				<exec-edition edition="@{edition}" target="verify" />
+			</sequential>
+		</for>
+	</target>
+
+	<target name="verify-checkstyle" description="Verify editions.">
+		<for param="edition" delimiter="," list="${editions}">
+			<sequential>
+				<exec-edition edition="@{edition}" target="verify-checkstyle" />
+			</sequential>
+		</for>
+	</target>
+
+	<target name="verify-findbugs" description="Verify editions.">
+		<for param="edition" delimiter="," list="${editions}">
+			<sequential>
+				<exec-edition edition="@{edition}" target="verify-findbugs" />
+			</sequential>
+		</for>
+	</target>
+
+	<target name="verify-tests" description="Verify editions.">
+		<for param="edition" delimiter="," list="${editions}">
+			<sequential>
+				<exec-edition edition="@{edition}" target="verify-tests" />
+			</sequential>
+		</for>
+	</target>
+
 </project>
