@@ -4,7 +4,7 @@
      Restlet build script - Copyright 2005-2012 Restlet S.A.S.
      ========================================================= -->
 
-<project name="Restlet" default="rebuild">
+<project name="Restlet - @edition@" default="rebuild">
 	<!-- ============================ -->
 	<!-- ===  Properties setting  === -->
 	<!-- ============================ -->
@@ -543,6 +543,44 @@
 			</copy>
 		</sequential>
 	</macrodef>
+	
+	<target name="generate-libraries-manifests" description="Generates the manifest.mf files for the libraries">
+		<!-- Generate eclipse .classpath, .project, .properties files -->
+		<fmpp sourceroot="${tmpl}/eclipse" outputroot="${temp}/p2" dataroot="${basedir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				ant: antProperties()
+			</data>
+			<include name="classpath.tmpl" />
+			<include name="project.tmpl" />
+			<include name="build.properties.tmpl" />
+		</fmpp>
+		<delete file="${temp}/p2/classpath.tmpl" />
+		<delete file="${temp}/p2/project.tmpl" />
+		<delete file="${temp}/p2/build.properties.tmpl" />
+		<copy file="${tmpl}/bundles/bndbis.bnd" todir="${temp}/definitions/libs" />
+		<!-- Generate bnd definition files -->
+		<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/libs" dataroot="${basedir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				ant: antProperties()
+			</data>
+			<include name="bndLibrary.tmpl" />
+		</fmpp>
+		<delete file="${temp}/definitions/libs/bndLibrary.tmpl" />
+		<!-- Generate ant manifest generation script -->
+		<fmpp sourcefile="${tmpl}/bundles/extractmanifestLibrary.tmpl" outputfile="${temp}/p2/extractmanifestLibrary.xml" dataroot="${basedir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				ant: antProperties()
+			</data>
+		</fmpp>
+		<ant antfile="${temp}/p2/extractmanifestLibrary.xml" dir="${temp}/p2" inheritAll="true" />
+		<delete file="${temp}/p2/extractmanifestLibrary.tmpl" />
+	</target>
 
 	<!-- ===================== -->
 	<!-- ===  Ant Targets  === -->
