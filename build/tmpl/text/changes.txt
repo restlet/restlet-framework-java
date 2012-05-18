@@ -17,6 +17,8 @@ Changes log
          completion. Suggested by Arjohn Kampman
        - Fixed hanging bug in NIO connector occurring especially with
          chunked encoding. Reported by John Logsdon.
+       - Fixed retrieval of SSL cipher suites and client certificates
+         for the internal HTTP client.
     - API changes
        - Renamed ReadableListener into ReadingListener
        - Renamed InputListener into ByteReadingListener
@@ -30,7 +32,14 @@ Changes log
        - Added ClientResource#accept(...) and ClientInfo#accept(...) 
          methods for easier preferences customization.
        - Added methods to MetadataService to retrieve the list of extension
-         names, per metadata subclass. 
+         names, per metadata subclass.
+       - Added constructor with just a name to Role.
+       - Replaced SecretVerifier#createUser(identifier) method with more
+         flexible createUser(identifier, request, response) one. 
+         Suggested by Tim Peierls.
+       - Added CertificateAuthenticator to SSL extension that verifies the
+         presence of trusted client certificates.
+         Contributed by Bruno Harbulot.
     - Misc
        - Lowered trace level in Redirector from INFO to FINE.
        - Cleaned up EncodeRepresentation and DecodeRepresentation classes.

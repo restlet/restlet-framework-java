@@ -18,6 +18,7 @@ Import-Package: org.jsslutils.keystores,
  org.restlet.engine.io,
  org.restlet.engine.security,
  org.restlet.resource,
+ org.restlet.security,
  org.restlet.service,
  org.restlet.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

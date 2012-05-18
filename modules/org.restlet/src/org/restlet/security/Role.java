@@ -86,6 +86,16 @@ public class Role implements Principal {
      * 
      * @param name
      *            The name.
+     */
+    public Role(String name) {
+        this(name, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param name
+     *            The name.
      * @param description
      *            The description.
      */

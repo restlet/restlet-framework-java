@@ -164,13 +164,10 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      * @return The SSL cipher suite.
      */
     public String getSslCipherSuite() {
-        if (getSocket() instanceof SSLSocket) {
-            SSLSocket sslSocket = (SSLSocket) getSocket();
-            SSLSession sslSession = sslSocket.getSession();
+        SSLSession sslSession = getSslSession();
 
-            if (sslSession != null) {
-                return sslSession.getCipherSuite();
-            }
+        if (sslSession != null) {
+            return sslSession.getCipherSuite();
         }
 
         return null;
@@ -182,19 +179,16 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      * @return The list of client SSL certificates.
      */
     public List<Certificate> getSslClientCertificates() {
-        if (getSocket() instanceof SSLSocket) {
-            SSLSocket sslSocket = (SSLSocket) getSocket();
-            SSLSession sslSession = sslSocket.getSession();
+        SSLSession sslSession = getSslSession();
 
-            if (sslSession != null) {
-                try {
-                    List<Certificate> clientCertificates = Arrays
-                            .asList(sslSession.getPeerCertificates());
-                    return clientCertificates;
-                } catch (SSLPeerUnverifiedException e) {
-                    getLogger().log(Level.FINE,
-                            "Can't get the client certificates.", e);
-                }
+        if (sslSession != null) {
+            try {
+                List<Certificate> clientCertificates = Arrays.asList(sslSession
+                        .getPeerCertificates());
+                return clientCertificates;
+            } catch (SSLPeerUnverifiedException e) {
+                getLogger().log(Level.FINE,
+                        "Can't get the client certificates.", e);
             }
         }
 

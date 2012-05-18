@@ -145,4 +145,10 @@ public class Digest {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "Digest [algorithm=" + algorithm + ", value="
+                + Arrays.toString(value) + "]";
+    }
+
 }

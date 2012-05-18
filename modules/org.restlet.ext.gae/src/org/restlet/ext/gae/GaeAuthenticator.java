@@ -110,11 +110,12 @@ public class GaeAuthenticator extends Authenticator {
     @Override
     protected boolean authenticate(Request request, Response response) {
         ClientInfo info = request.getClientInfo();
+
         if (info.isAuthenticated()) {
             // The request is already authenticated.
             return true;
         } else if (userService.isUserLoggedIn()) {
-            // The user is logged in, create restlet user.
+            // The user is logged in, create Restlet user.
             com.google.appengine.api.users.User gaeUser = userService
                     .getCurrentUser();
             User restletUser = new User(gaeUser.getUserId());
