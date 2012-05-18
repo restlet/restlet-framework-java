@@ -31,43 +31,32 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch05.sec2;
+package org.restlet.example.book.restlet.ch05.sec2.basic;
 
-import org.restlet.Application;
-import org.restlet.Component;
-import org.restlet.Restlet;
-import org.restlet.Server;
-import org.restlet.data.Protocol;
-import org.restlet.example.book.restlet.ch05.EchoPrincipalsResource;
-import org.restlet.routing.Router;
-import org.restlet.security.Authenticator;
+import org.restlet.data.Reference;
+import org.restlet.resource.ServerResource;
 
 /**
- * @author Bruno Harbulot (bruno/distributedmatter.net)
- * 
+ * Mail server resource implementing the {@link MailResource} interface.
  */
-public class CertificateAuthenticationApplication extends Application {
-    @Override
-    public synchronized Restlet createInboundRoot() {
-        Router router = new Router(getContext());
-        router.attachDefault(EchoPrincipalsResource.class);
+public class MailServerResource extends ServerResource implements MailResource {
 
-        Authenticator authenticator = new ClientCertificateAuthenticator(
-                getContext());
-
-        authenticator.setNext(router);
-        return authenticator;
+    public Mail retrieve() {
+        Mail mail = new Mail();
+        mail.setStatus("received");
+        mail.setSubject("Message to self");
+        mail.setContent("Doh!");
+        mail.setAccountRef(new Reference(getReference(), "..").getTargetRef()
+                .toString());
+        return mail;
     }
 
-    public static void main(String[] args) throws Exception {
-        Component component = new Component();
-        Server server = component.getServers().add(Protocol.HTTPS, 8183);
-
-        server.getContext().getParameters().add("wantClientAuthentication",
-                "true");
-
-        component.getDefaultHost().attachDefault(
-                new CertificateAuthenticationApplication());
-        component.start();
+    public void store(Mail mail) {
+        System.out.println("Status: " + mail.getStatus());
+        System.out.println("Subject: " + mail.getSubject());
+        System.out.println("Content: " + mail.getContent());
+        System.out.println("Account URI: " + mail.getAccountRef());
+        System.out.println();
     }
+
 }

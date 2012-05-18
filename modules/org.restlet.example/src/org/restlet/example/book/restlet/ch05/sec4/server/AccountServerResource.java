@@ -31,49 +31,54 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch05;
+package org.restlet.example.book.restlet.ch05.sec4.server;
 
-import java.security.Principal;
-
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Get;
+import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-import org.restlet.security.Role;
 
 /**
- * @author Bruno Harbulot (bruno/distributedmatter.net)
- * 
+ * Implementation of a mail account resource.
  */
-public class EchoPrincipalsResource extends ServerResource {
-    @Get("txt")
-    public Representation echoPrincipals() throws ResourceException {
-        StringBuilder sb = new StringBuilder("* User: ");
-        sb.append(getClientInfo().getUser());
-        sb.append("\n");
+public class AccountServerResource extends ServerResource implements
+        AccountResource {
 
-        sb.append("* Roles: \n");
-        for (Role role : getClientInfo().getRoles()) {
-            sb.append("  - ");
-            sb.append(role.getName());
-            sb.append("\n");
+    /** The account identifier. */
+    private int accountId;
+
+    /**
+     * Retrieve the account identifier based on the URI path variable
+     * "accountId" declared in the URI template attached to the application
+     * router.
+     */
+    @Override
+    protected void doInit() throws ResourceException {
+        String accountIdAttribute = (String) getRequestAttributes().get(
+                "accountId");
+
+        if (accountIdAttribute != null) {
+            this.accountId = Integer.parseInt((String) getRequestAttributes()
+                    .get("accountId"));
+        }
+    }
+
+    public String represent() {
+        String result = AccountsServerResource.getAccounts()
+                .get(this.accountId);
+
+        if (isInRole("CFO")) {
+            return result + " (CFO)";
+        } else {
+            return result;
         }
 
-        sb.append("* Principals: \n");
-        for (Principal principal : getClientInfo().getPrincipals()) {
-            sb.append("  - ");
-            sb.append(principal.getName());
-            sb.append(" (");
-            sb.append(principal.getClass());
-            sb.append(")\n");
-        }
+    }
 
-        Representation rep = new StringRepresentation(sb, MediaType.TEXT_PLAIN,
-                Language.ALL, CharacterSet.UTF_8);
-        return rep;
+    public void store(String account) {
+        AccountsServerResource.getAccounts().set(this.accountId, account);
+    }
+
+    public void remove() {
+        AccountsServerResource.getAccounts().remove(this.accountId);
     }
 }

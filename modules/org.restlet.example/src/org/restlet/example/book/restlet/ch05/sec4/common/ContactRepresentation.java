@@ -31,20 +31,58 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch05.sec5;
+package org.restlet.example.book.restlet.ch05.sec4.common;
 
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+public class ContactRepresentation {
 
-/**
- * Server exposing a resource capable of computing a digest on its
- * representations.
- */
-public class VerificationServer {
+    private String firstName;
 
-    public static void main(String[] args) throws Exception {
-        // Instantiating the HTTP server and listening on port 8111
-        new Server(Protocol.HTTP, 8111, VerifiedServerResource.class).start();
+    private String lastName;
+
+    private String login;
+
+    private String nickName;
+
+    private String senderName;
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
 
 }

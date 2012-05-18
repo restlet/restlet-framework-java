@@ -31,20 +31,43 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch05.sec5;
+package org.restlet.example.book.restlet.ch05.sec3.common;
 
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+import java.util.List;
 
-/**
- * Server exposing a resource capable of computing a digest on its
- * representations.
- */
-public class VerificationServer {
+public class AccountRepresentation {
 
-    public static void main(String[] args) throws Exception {
-        // Instantiating the HTTP server and listening on port 8111
-        new Server(Protocol.HTTP, 8111, VerifiedServerResource.class).start();
+    private List<String> contactRefs;
+
+    private List<String> mailRefs;
+
+    private List<String> feedRefs;
+
+    public AccountRepresentation() {
+    }
+
+    public List<String> getContactRefs() {
+        return contactRefs;
+    }
+
+    public List<String> getFeedRefs() {
+        return feedRefs;
+    }
+
+    public List<String> getMailRefs() {
+        return mailRefs;
+    }
+
+    public void setContactRefs(List<String> contactRefs) {
+        this.contactRefs = contactRefs;
+    }
+
+    public void setFeedRefs(List<String> feedRefs) {
+        this.feedRefs = feedRefs;
+    }
+
+    public void setMailRefs(List<String> mailRefs) {
+        this.mailRefs = mailRefs;
     }
 
 }

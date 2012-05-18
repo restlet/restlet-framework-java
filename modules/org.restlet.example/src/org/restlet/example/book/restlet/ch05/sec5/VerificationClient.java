@@ -48,7 +48,9 @@ public class VerificationClient {
         // representation's content.
         DigesterRepresentation rep = new DigesterRepresentation(resource.get());
         rep.write(System.out);
-
+        System.out.println("\nMD5 digest (received): " + rep.getDigest());
+        System.out.println("\nMD5 digest (computed): " + rep.getComputedDigest());
+        
         if (rep.checkDigest()) {
             System.out.println("\nContent checked.");
         } else {

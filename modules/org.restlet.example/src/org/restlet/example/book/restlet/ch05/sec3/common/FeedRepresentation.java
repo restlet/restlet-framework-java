@@ -31,20 +31,8 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch05.sec5;
+package org.restlet.example.book.restlet.ch05.sec3.common;
 
-import org.restlet.Server;
-import org.restlet.data.Protocol;
-
-/**
- * Server exposing a resource capable of computing a digest on its
- * representations.
- */
-public class VerificationServer {
-
-    public static void main(String[] args) throws Exception {
-        // Instantiating the HTTP server and listening on port 8111
-        new Server(Protocol.HTTP, 8111, VerifiedServerResource.class).start();
-    }
+public class FeedRepresentation {
 
 }

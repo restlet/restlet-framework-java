@@ -31,42 +31,46 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch05.sec3;
+package org.restlet.example.book.restlet.ch05.sec4.server;
 
 import org.restlet.Application;
-import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.example.book.restlet.ch05.EchoPrincipalsResource;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
-import org.restlet.security.RoleAuthorizer;
+import org.restlet.security.Role;
 
 /**
- * Application authorizing access to its resources based on roles.
- * 
- * @author Bruno Harbulot (bruno/distributedmatter.net)
+ * The reusable mail server application.
  */
-public class RoleAuthorizationApplication extends Application {
-    public RoleAuthorizationApplication(Context context) {
-        super(context);
+public class MailServerApplication extends Application {
+
+    /**
+     * Constructor.
+     */
+    public MailServerApplication() {
+        setName("RESTful Mail Server application");
+        setDescription("Example application for 'Restlet in Action' book");
+        setOwner("Restlet S.A.S.");
+        setAuthor("The Restlet Team");
+        
+        getRoles().add(new Role("Admin"));
+        getRoles().add(new Role("User"));
     }
 
+    /**
+     * Creates a root Router to dispatch call to server resources.
+     */
     @Override
-    public synchronized Restlet createInboundRoot() {
-        ChallengeAuthenticator authenticator = new ChallengeAuthenticator(
-                getContext(), ChallengeScheme.HTTP_BASIC, "My Realm");
-        authenticator.setVerifier(getContext().getDefaultVerifier());
-
-        RoleAuthorizer authorizer = new RoleAuthorizer();
-        authorizer.getAuthorizedRoles().add(getRole("CFO"));
-        authorizer.setNext(EchoPrincipalsResource.class);
-
+    public Restlet createInboundRoot() {
         Router router = new Router(getContext());
-        router.attach("/admin", authorizer);
-        router.attachDefault(EchoPrincipalsResource.class);
+        router.attach("/", RootServerResource.class);
+        router.attach("/accounts/", AccountsServerResource.class);
+        router.attach("/accounts/{accountId}", AccountServerResource.class);
 
-        authenticator.setNext(router);
-        return authenticator;
+        ChallengeAuthenticator guard = new ChallengeAuthenticator(getContext(),
+                ChallengeScheme.HTTP_BASIC, "My Realm");
+        guard.setNext(router);
+        return guard;
     }
 }

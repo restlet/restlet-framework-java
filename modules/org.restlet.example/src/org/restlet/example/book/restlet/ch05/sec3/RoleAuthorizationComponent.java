@@ -37,14 +37,13 @@ import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
-import org.restlet.example.book.restlet.ch05.sec4.SecurityManagerDemoComponent;
 import org.restlet.security.Group;
 import org.restlet.security.MemoryRealm;
 import org.restlet.security.Role;
 import org.restlet.security.User;
 
 /**
- * Sample SAAS component with declared organizations.
+ * Sample component with declared organizations.
  * 
  * @author Jerome Louvel
  */
@@ -96,9 +95,8 @@ public class RoleAuthorizationComponent extends Component {
     }
 
     public static void main(String[] args) throws Exception {
-        SecurityManagerDemoComponent component = new SecurityManagerDemoComponent();
+        RoleAuthorizationComponent component = new RoleAuthorizationComponent();
         component.getServers().add(Protocol.HTTP, 8111);
-
         component.start();
     }
 }

@@ -31,20 +31,17 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch05.sec5;
+package org.restlet.example.book.restlet.ch05.sec2.verifier.secret;
 
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+import org.restlet.security.SecretVerifier;
 
 /**
- * Server exposing a resource capable of computing a digest on its
- * representations.
+ * Simple secret verifier that checks a hard-coded username and password.
  */
-public class VerificationServer {
-
-    public static void main(String[] args) throws Exception {
-        // Instantiating the HTTP server and listening on port 8111
-        new Server(Protocol.HTTP, 8111, VerifiedServerResource.class).start();
+public class SimpleSecretVerifier extends SecretVerifier {
+    @Override
+    public int verify(String identifier, char[] secret) {
+        return (("chunkylover53".equals(identifier)) && compare(
+                "pwd".toCharArray(), secret)) ? RESULT_VALID : RESULT_INVALID;
     }
-
 }

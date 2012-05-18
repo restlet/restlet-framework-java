@@ -31,20 +31,34 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch05.sec5;
+package org.restlet.example.book.restlet.ch05.sec1;
 
-import org.restlet.Server;
+import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.resource.ClientResource;
+import org.restlet.util.Series;
 
 /**
- * Server exposing a resource capable of computing a digest on its
- * representations.
+ * Mail client retrieving a mail then storing it again on the same resource.
  */
-public class VerificationServer {
+public class MailClient {
 
     public static void main(String[] args) throws Exception {
-        // Instantiating the HTTP server and listening on port 8111
-        new Server(Protocol.HTTP, 8111, VerifiedServerResource.class).start();
+        Client client = new Client(new Context(), Protocol.HTTPS);
+        Series<Parameter> parameters = client.getContext().getParameters();
+        parameters.add("truststorePath",
+                "src/org/restlet/example/book/restlet/ch05/clientTrust.jks");
+        parameters.add("truststorePassword", "password");
+        parameters.add("truststoreType", "JKS");
+
+        ClientResource clientResource = new ClientResource(
+                "https://localhost:8183/accounts/chunkylover53/mails/123");
+        clientResource.setNext(client);
+        MailResource mailClient = clientResource.wrap(MailResource.class);
+        mailClient.store(mailClient.retrieve());
+        client.stop();
     }
 
 }

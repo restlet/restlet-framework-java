@@ -31,20 +31,18 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch05.sec5;
+package org.restlet.example.book.restlet.ch05.sec3.server;
 
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+import org.restlet.example.book.restlet.ch02.sect5.sub5.common.RootResource;
+import org.restlet.resource.ServerResource;
 
 /**
- * Server exposing a resource capable of computing a digest on its
- * representations.
+ * Root resource implementation.
  */
-public class VerificationServer {
+public class RootServerResource extends ServerResource implements RootResource {
 
-    public static void main(String[] args) throws Exception {
-        // Instantiating the HTTP server and listening on port 8111
-        new Server(Protocol.HTTP, 8111, VerifiedServerResource.class).start();
+    public String represent() {
+        return "Welcome to the " + getApplication().getName() + " !";
     }
 
 }

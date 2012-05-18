@@ -31,20 +31,33 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch05.sec5;
+package org.restlet.example.book.restlet.ch05.sec4.common;
 
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+import org.restlet.resource.Get;
+import org.restlet.resource.Post;
 
 /**
- * Server exposing a resource capable of computing a digest on its
- * representations.
+ * Collection resource containing user accounts.
  */
-public class VerificationServer {
+public interface AccountsResource {
 
-    public static void main(String[] args) throws Exception {
-        // Instantiating the HTTP server and listening on port 8111
-        new Server(Protocol.HTTP, 8111, VerifiedServerResource.class).start();
-    }
+    /**
+     * Returns the list of accounts, each one on a separate line.
+     * 
+     * @return The list of accounts.
+     */
+    @Get
+    public String represent();
+
+    /**
+     * Add the given account to the list and returns its position as an
+     * identifier.
+     * 
+     * @param account
+     *            The account to add.
+     * @return The account identifier.
+     */
+    @Post
+    public String add(String account);
 
 }

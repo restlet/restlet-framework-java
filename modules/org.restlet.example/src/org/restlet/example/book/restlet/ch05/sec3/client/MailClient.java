@@ -31,10 +31,12 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch03.sec3.client;
+package org.restlet.example.book.restlet.ch05.sec3.client;
 
 import org.restlet.Client;
 import org.restlet.Context;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountResource;
 import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountsResource;
@@ -54,9 +56,11 @@ public class MailClient {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        System.out.println("\n1) Set up the service client resource\n");
+        System.out.println("\n1) Set-up the service client resource\n");
         Client client = new Client(new Context(), Protocol.HTTP);
         ClientResource service = new ClientResource("http://localhost:8111");
+        service.setChallengeResponse(new ChallengeResponse(
+                ChallengeScheme.HTTP_BASIC, "chunkylover53", "pwd"));
         service.setNext(client);
 
         System.out.println("\n2) Display the root resource\n");

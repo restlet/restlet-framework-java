@@ -31,20 +31,44 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch05.sec5;
+package org.restlet.example.book.restlet.ch05.sec3.server;
 
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountsResource;
+import org.restlet.resource.ServerResource;
 
 /**
- * Server exposing a resource capable of computing a digest on its
- * representations.
+ * Implementation of the resource containing the list of mail accounts.
  */
-public class VerificationServer {
+public class AccountsServerResource extends ServerResource implements
+        AccountsResource {
 
-    public static void main(String[] args) throws Exception {
-        // Instantiating the HTTP server and listening on port 8111
-        new Server(Protocol.HTTP, 8111, VerifiedServerResource.class).start();
+    /** Static list of accounts stored in memory. */
+    private static final List<String> accounts = new CopyOnWriteArrayList<String>();
+
+    /**
+     * Returns the static list of accounts stored in memory.
+     * 
+     * @return The static list of accounts.
+     */
+    public static List<String> getAccounts() {
+        return accounts;
     }
 
+    public String represent() {
+        StringBuilder result = new StringBuilder();
+
+        for (String account : getAccounts()) {
+            result.append((account == null) ? "" : account).append('\n');
+        }
+
+        return result.toString();
+    }
+
+    public String add(String account) {
+        getAccounts().add(account);
+        return Integer.toString(getAccounts().indexOf(account));
+    }
 }

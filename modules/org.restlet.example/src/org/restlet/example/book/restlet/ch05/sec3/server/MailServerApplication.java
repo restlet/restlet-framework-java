@@ -31,47 +31,46 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch05.sec2;
+package org.restlet.example.book.restlet.ch05.sec3.server;
 
 import org.restlet.Application;
-import org.restlet.Component;
 import org.restlet.Restlet;
-import org.restlet.data.Protocol;
-import org.restlet.ext.crypto.DigestAuthenticator;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.routing.Router;
-import org.restlet.security.LocalVerifier;
-import org.restlet.security.MapVerifier;
+import org.restlet.security.ChallengeAuthenticator;
+import org.restlet.security.Role;
 
 /**
- * @author Bruno Harbulot (bruno/distributedmatter.net)
- * 
+ * The reusable mail server application.
  */
-public class DigestAuthenticationApplication extends Application {
-    private final LocalVerifier verifier;
+public class MailServerApplication extends Application {
 
-    public DigestAuthenticationApplication() {
-        MapVerifier verifier = new MapVerifier();
-        verifier.getLocalSecrets().put("scott", "tiger".toCharArray());
-        this.verifier = verifier;
+    /**
+     * Constructor.
+     */
+    public MailServerApplication() {
+        setName("RESTful Mail Server application");
+        setDescription("Example application for 'Restlet in Action' book");
+        setOwner("Restlet S.A.S.");
+        setAuthor("The Restlet Team");
+        
+        getRoles().add(new Role("Admin"));
+        getRoles().add(new Role("User"));
     }
 
+    /**
+     * Creates a root Router to dispatch call to server resources.
+     */
     @Override
-    public synchronized Restlet createInboundRoot() {
+    public Restlet createInboundRoot() {
         Router router = new Router(getContext());
+        router.attach("/", RootServerResource.class);
+        router.attach("/accounts/", AccountsServerResource.class);
+        router.attach("/accounts/{accountId}", AccountServerResource.class);
 
-        DigestAuthenticator authenticator = new DigestAuthenticator(
-                getContext(), "Digest Test", "1234567890ABCDEF");
-        authenticator.setWrappedVerifier(this.verifier);
-        authenticator.setNext(router);
-        return authenticator;
-    }
-
-    public static void main(String[] args) throws Exception {
-        Component component = new Component();
-        component.getServers().add(Protocol.HTTP, 8111);
-
-        component.getDefaultHost().attachDefault(
-                new DigestAuthenticationApplication());
-        component.start();
+        ChallengeAuthenticator guard = new ChallengeAuthenticator(getContext(),
+                ChallengeScheme.HTTP_BASIC, "My Realm");
+        guard.setNext(router);
+        return guard;
     }
 }

@@ -31,20 +31,32 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch05.sec5;
+package org.restlet.example.book.restlet.ch05.sec2.digest;
 
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
+import org.restlet.resource.ServerResource;
 
 /**
- * Server exposing a resource capable of computing a digest on its
- * representations.
+ * Mail server resource implementing the {@link MailResource} interface.
  */
-public class VerificationServer {
+public class MailServerResource extends ServerResource implements MailResource {
 
-    public static void main(String[] args) throws Exception {
-        // Instantiating the HTTP server and listening on port 8111
-        new Server(Protocol.HTTP, 8111, VerifiedServerResource.class).start();
+    public Mail retrieve() {
+        Mail mail = new Mail();
+        mail.setStatus("received");
+        mail.setSubject("Message to self");
+        mail.setContent("Doh!");
+        mail.setAccountRef(new Reference(getReference(), "..").getTargetRef()
+                .toString());
+        return mail;
+    }
+
+    public void store(Mail mail) {
+        System.out.println("Status: " + mail.getStatus());
+        System.out.println("Subject: " + mail.getSubject());
+        System.out.println("Content: " + mail.getContent());
+        System.out.println("Account URI: " + mail.getAccountRef());
+        System.out.println();
     }
 
 }

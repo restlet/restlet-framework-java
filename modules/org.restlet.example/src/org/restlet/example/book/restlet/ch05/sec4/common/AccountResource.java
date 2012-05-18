@@ -31,20 +31,38 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch05.sec5;
+package org.restlet.example.book.restlet.ch05.sec4.common;
 
-import org.restlet.Server;
-import org.restlet.data.Protocol;
+import org.restlet.resource.Delete;
+import org.restlet.resource.Get;
+import org.restlet.resource.Put;
 
 /**
- * Server exposing a resource capable of computing a digest on its
- * representations.
+ * User account resource.
  */
-public class VerificationServer {
+public interface AccountResource {
 
-    public static void main(String[] args) throws Exception {
-        // Instantiating the HTTP server and listening on port 8111
-        new Server(Protocol.HTTP, 8111, VerifiedServerResource.class).start();
-    }
+    /**
+     * Represents the account as a simple string with the owner name for now.
+     * 
+     * @return The account representation.
+     */
+    @Get
+    public String represent();
+
+    /**
+     * Stores the new value for the identified account.
+     * 
+     * @param account
+     *            The identified account.
+     */
+    @Put
+    public void store(String account);
+
+    /**
+     * Deletes the identified account by setting its value to null.
+     */
+    @Delete
+    public void remove();
 
 }
