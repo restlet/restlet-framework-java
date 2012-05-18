@@ -622,13 +622,6 @@
 		<copy file="${tmpl}/nsis/setup.nsi" todir="${temp}" overwrite="true">
 			<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
 		</copy>
-
-		<!-- Generate the javadocs overview files -->
-		<copy todir="${temp}/javadocs" overwrite="true">
-			<fileset dir="${tmpl}/javadocs" includes="*.tmpl" />
-			<globmapper from="*.tmpl" to="*.html" />
-			<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
-		</copy>
 	</target>
 
 	<target name="generate-modules-manifests" description="Generates the manifest.mf files for the unique source code">
@@ -656,6 +649,12 @@
 	</target>
 
 	<target name="generate-javadocs" if="do-javadoc" depends="generate-classes" description="Generate the Javadocs.">
+		<!-- Generate the javadocs overview files -->
+		<copy todir="${temp}/javadocs-overviews" overwrite="true">
+			<fileset dir="${tmpl}/javadocs" includes="*.tmpl" />
+			<globmapper from="*.tmpl" to="*.html" />
+			<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
+		</copy>
 		<!-- @generate-javadocs@ -->
 	</target>
 
