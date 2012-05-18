@@ -1700,6 +1700,7 @@ public class ClientResource extends UniformResource {
         setChallengeResponse(new ChallengeResponse(scheme, identifier, secret));
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the proxy authentication response sent by a client to an origin
      * server.
@@ -1713,6 +1714,7 @@ public class ClientResource extends UniformResource {
         getRequest().setProxyChallengeResponse(challengeResponse);
     }
 
+    // [ifndef gwt] method
     /**
      * Sets the proxy authentication response sent by a client to an origin
      * server given a scheme, identifier and secret.

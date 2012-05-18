@@ -366,14 +366,14 @@
 		</delete>
 	</target>
 	<target name="build-current" depends="generate-artifacts, prepare-stage-maven" description="Build the editions with the current source code.">
-		<for param="edition" delimiter="," list="${editions}">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
 			<sequential>
 				<exec-edition edition="@{edition}" target="build" />
 			</sequential>
 		</for>
 	</target>
 	<target name="build" depends="generate-artifacts, prepare-stage-maven" description="Regenerate the source code and build the editions.">
-		<for param="edition" delimiter="," list="${editions}">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
 			<sequential>
 				<generate-edition edition="@{edition}" />
 				<exec-edition edition="@{edition}" target="build" />
@@ -381,7 +381,7 @@
 		</for>
 	</target>
 	<target name="rebuild" depends="clean-temp, generate-artifacts, prepare-stage-maven" description="Clean the temp files, regenerate the source code and build the editions.">
-		<for param="edition" delimiter="," list="${editions}">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
 			<sequential>
 				<generate-edition edition="@{edition}" />
 				<exec-edition edition="@{edition}" target="build" />
@@ -389,7 +389,7 @@
 		</for>
 	</target>
 	<target name="generate" depends="generate-artifacts" description="Regenerate the source code.">
-		<for param="edition" delimiter="," list="${editions}">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
 			<sequential>
 				<generate-edition edition="@{edition}" />
 			</sequential>
