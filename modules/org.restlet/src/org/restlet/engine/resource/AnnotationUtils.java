@@ -283,7 +283,7 @@ public class AnnotationUtils {
      *            Java annotation.
      * @param methodAnnotation
      *            Annotation that corresponds to a Restlet method.
-     * @return
+     * @return An instance of {@link Method} according to the given annotations.
      */
     protected Method getRestletMethod(Annotation annotation,
             Annotation methodAnnotation) {

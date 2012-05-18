@@ -77,7 +77,7 @@ public class JaxRsClientResource extends ClientResource {
      * into Restlet method calls.
      * 
      * @param <T>
-     * @param uri
+     * @param baseUri
      *            The target URI.
      * @param resourceInterface
      *            The annotated resource interface class to proxy.

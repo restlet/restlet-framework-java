@@ -142,7 +142,7 @@ public class JacksonConverter extends ConverterHelper {
     /**
      * Creates a Jackson object mapper for binary representations based on a
      * media type. By default, it calls
-     * {@link ObjectMapper#ObjectMapper(SmileFactory)}.
+     * {@link ObjectMapper#ObjectMapper(JsonFactory)} with a {@link SmileFactory}.
      * 
      * @return The Jackson object mapper.
      */
