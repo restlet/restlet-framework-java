@@ -83,8 +83,26 @@ public abstract class SecretVerifier implements Verifier {
      * 
      * @param identifier
      *            The user identifier.
+     * @param request
+     *            The request handled.
+     * @param response
+     *            The response handled.
      * @return The {@link User} instance created.
      */
+    protected User createUser(String identifier, Request request,
+            Response response) {
+        return createUser(identifier);
+    }
+
+    /**
+     * Called back to create a new user when valid credentials are provided.
+     * 
+     * @param identifier
+     *            The user identifier.
+     * @return The {@link User} instance created.
+     * @deprecated
+     */
+    @Deprecated
     protected User createUser(String identifier) {
         return new User(identifier);
     }
@@ -139,7 +157,8 @@ public abstract class SecretVerifier implements Verifier {
             result = verify(identifier, secret);
 
             if (result == RESULT_VALID) {
-                request.getClientInfo().setUser(createUser(identifier));
+                request.getClientInfo().setUser(
+                        createUser(identifier, request, response));
             }
         }
 
