@@ -293,7 +293,7 @@
 	</target>
 
 	<target name="build" description="Build the editions without generating the source code.">
-		<for param="edition" delimiter="," list="${editions}">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
 			<sequential>
 				<echo message="Build the edition @{edition}" />
 				<exec-edition edition="@{edition}" target="build" />
@@ -304,7 +304,7 @@
 	<target name="rebuild" depends="clean-full, generate, build" description="Clean the temp files, regenerate the source code and build the editions." />
 
 	<target name="generate" depends="generate-misc" description="Regenerate the source code.">
-		<for param="edition" delimiter="," list="${editions}">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
 			<sequential>
 				<echo message="Generate the source code of the edition @{edition}" />
 				<generate-edition edition="@{edition}" />
@@ -313,7 +313,7 @@
 	</target>
 
 	<target name="generate-javadocs" description="Regenerate the javadocs of the editions.">
-		<for param="edition" delimiter="," list="${editions}">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
 			<sequential>
 				<echo message="Generate javadocs of the edition @{edition}" />
 				<exec-edition edition="@{edition}" target="generate-javadocs" />
@@ -324,7 +324,7 @@
 	<target name="regenerate" depends="clean-editions, generate" description="Clean and regenerate the source code." />
 
 	<target name="verify" description="Verify editions.">
-		<for param="edition" delimiter="," list="${editions}">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
 			<sequential>
 				<exec-edition edition="@{edition}" target="verify" />
 			</sequential>
@@ -332,7 +332,7 @@
 	</target>
 
 	<target name="verify-checkstyle" description="Verify editions.">
-		<for param="edition" delimiter="," list="${editions}">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
 			<sequential>
 				<exec-edition edition="@{edition}" target="verify-checkstyle" />
 			</sequential>
@@ -340,7 +340,7 @@
 	</target>
 
 	<target name="verify-findbugs" description="Verify editions.">
-		<for param="edition" delimiter="," list="${editions}">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
 			<sequential>
 				<exec-edition edition="@{edition}" target="verify-findbugs" />
 			</sequential>
@@ -348,7 +348,7 @@
 	</target>
 
 	<target name="verify-tests" description="Verify editions.">
-		<for param="edition" delimiter="," list="${editions}">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
 			<sequential>
 				<exec-edition edition="@{edition}" target="verify-tests" />
 			</sequential>
