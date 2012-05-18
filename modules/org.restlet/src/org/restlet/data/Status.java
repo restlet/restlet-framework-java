@@ -959,7 +959,7 @@ public final class Status {
      *            The specification code.
      */
     public Status(int code) {
-        this(code, null, null, null);
+        this(code, null, null, null, null);
     }
 
     /**
@@ -974,8 +974,7 @@ public final class Status {
      * @param uri
      *            The URI of the specification describing the method.
      */
-    public Status(int code, final String reasonPhrase,
-            final String description, final String uri) {
+    public Status(int code, String reasonPhrase, String description, String uri) {
         this(code, null, reasonPhrase, description, uri);
     }
 
@@ -1007,10 +1006,10 @@ public final class Status {
      */
     public Status(int code, Throwable throwable, String reasonPhrase,
             String description, String uri) {
+        this.code = code;
+        this.throwable = throwable;
         this.reasonPhrase = checkReasonPhrase(reasonPhrase);
         this.description = description;
-        this.throwable = throwable;
-        this.code = code;
         this.uri = uri;
     }
 
@@ -1023,8 +1022,7 @@ public final class Status {
      *            The description to associate.
      */
     public Status(Status status, String description) {
-        this(status.getCode(), status.getReasonPhrase(), description, status
-                .getUri());
+        this(status, null, description);
     }
 
     /**
@@ -1036,9 +1034,7 @@ public final class Status {
      *            The related error or exception.
      */
     public Status(Status status, Throwable throwable) {
-        this(status.getCode(), throwable, status.getReasonPhrase(),
-                (throwable == null) ? null : throwable.getMessage(), status
-                        .getUri());
+        this(status, throwable, null);
     }
 
     /**
@@ -1052,8 +1048,10 @@ public final class Status {
      *            The description to associate.
      */
     public Status(Status status, Throwable throwable, String description) {
-        this(status.getCode(), throwable, status.getReasonPhrase(),
-                description, status.getUri());
+        this(status.getCode(), (throwable == null) ? status.getThrowable()
+                : throwable, status.getReasonPhrase(),
+                (description == null) ? status.getDescription() : description,
+                status.getUri());
     }
 
     /**

@@ -36,6 +36,8 @@ package org.restlet.ext.xml;
 import java.io.IOException;
 import java.io.Writer;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -50,6 +52,7 @@ import org.restlet.representation.Representation;
 import org.w3c.dom.Document;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 /**
  * XML representation for SAX events processing. The purpose is to create a
@@ -65,12 +68,15 @@ import org.xml.sax.InputSource;
  */
 public class SaxRepresentation extends XmlRepresentation {
 
+    /** Limits potential XML overflow attacks. */
+    private boolean secureProcessing;
+
     /** The SAX source. */
     private volatile SAXSource source;
 
     /** The source XML representation. */
     private volatile Representation xmlRepresentation;
-    
+
     /**
      * Default constructor. Uses the {@link MediaType#TEXT_XML} media type.
      */
@@ -86,6 +92,7 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     public SaxRepresentation(MediaType mediaType) {
         super(mediaType);
+        this.secureProcessing = false;
     }
 
     /**
@@ -98,6 +105,7 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     public SaxRepresentation(MediaType mediaType, Document xmlDocument) {
         super(mediaType);
+        this.secureProcessing = false;
         this.source = new SAXSource(
                 SAXSource.sourceToInputSource(new DOMSource(xmlDocument)));
     }
@@ -112,6 +120,7 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     public SaxRepresentation(MediaType mediaType, InputSource xmlSource) {
         super(mediaType);
+        this.secureProcessing = false;
         this.source = new SAXSource(xmlSource);
     }
 
@@ -125,6 +134,7 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     public SaxRepresentation(MediaType mediaType, SAXSource xmlSource) {
         super(mediaType);
+        this.secureProcessing = false;
         this.source = xmlSource;
     }
 
@@ -137,6 +147,7 @@ public class SaxRepresentation extends XmlRepresentation {
     public SaxRepresentation(Representation xmlRepresentation) {
         super((xmlRepresentation == null) ? null : xmlRepresentation
                 .getMediaType());
+        this.secureProcessing = false;
         this.xmlRepresentation = xmlRepresentation;
     }
 
@@ -157,8 +168,35 @@ public class SaxRepresentation extends XmlRepresentation {
                 this.source = ((XmlRepresentation) xmlRepresentation)
                         .getSaxSource();
             } else {
-                this.source = new SAXSource(new InputSource(
-                        xmlRepresentation.getReader()));
+                try {
+                    SAXParserFactory spf = SAXParserFactory.newInstance();
+                    spf.setNamespaceAware(isNamespaceAware());
+
+                    // Keep before the external entity preferences
+                    spf.setValidating(isValidatingDtd());
+
+                    javax.xml.validation.Schema xsd = getSchema();
+
+                    if (xsd != null) {
+                        spf.setSchema(xsd);
+                    }
+
+                    spf.setXIncludeAware(isXIncludeAware());
+                    spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING,
+                            isSecureProcessing());
+                    spf.setFeature(
+                            "http://xml.org/sax/features/external-general-entities",
+                            isExpandingEntityRefs());
+                    spf.setFeature(
+                            "http://xml.org/sax/features/external-parameter-entities",
+                            isExpandingEntityRefs());
+                    XMLReader xmlReader = spf.newSAXParser().getXMLReader();
+                    this.source = new SAXSource(xmlReader, new InputSource(
+                            xmlRepresentation.getReader()));
+                } catch (Exception e) {
+                    throw new IOException(
+                            "Unable to create customized SAX source", e);
+                }
             }
 
             if (xmlRepresentation.getLocationRef() != null) {
@@ -166,8 +204,17 @@ public class SaxRepresentation extends XmlRepresentation {
                         .getTargetRef().toString());
             }
         }
-        
+
         return this.source;
+    }
+
+    /**
+     * Indicates if it limits potential XML overflow attacks.
+     * 
+     * @return True if it limits potential XML overflow attacks.
+     */
+    public boolean isSecureProcessing() {
+        return secureProcessing;
     }
 
     /**
@@ -185,16 +232,15 @@ public class SaxRepresentation extends XmlRepresentation {
             } catch (TransformerConfigurationException tce) {
                 throw new IOException(
                         "Couldn't parse the source representation: "
-                                + tce.getMessage());
+                                + tce.getMessage(), tce);
             } catch (TransformerException te) {
-                te.printStackTrace();
                 throw new IOException(
                         "Couldn't parse the source representation: "
-                                + te.getMessage());
+                                + te.getMessage(), te);
             } catch (TransformerFactoryConfigurationError tfce) {
                 throw new IOException(
                         "Couldn't parse the source representation: "
-                                + tfce.getMessage());
+                                + tfce.getMessage(), tfce);
             }
         } else {
             throw new IOException(
@@ -226,6 +272,16 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     public void setSaxSource(SAXSource source) {
         this.source = source;
+    }
+
+    /**
+     * Indicates if it limits potential XML overflow attacks.
+     * 
+     * @param secureProcessing
+     *            True if it limits potential XML overflow attacks.
+     */
+    public void setSecureProcessing(boolean secureProcessing) {
+        this.secureProcessing = secureProcessing;
     }
 
     @Override

@@ -43,6 +43,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.util.JAXBSource;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
@@ -120,6 +121,12 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     private volatile String contextPath;
 
     /**
+     * Specifies that the parser will expand entity reference nodes. By default
+     * the value of this is set to true.
+     */
+    private volatile boolean expandingEntityRefs;
+
+    /**
      * Indicates if the resulting XML data should be formatted with line breaks
      * and indentation. Defaults to false.
      */
@@ -143,8 +150,29 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     /** The "xsi:schemaLocation" attribute in the generated XML data */
     private volatile String schemaLocation;
 
+    /** Limits potential XML overflow attacks. */
+    private boolean secureProcessing;
+
+    /**
+     * Indicates the desire for validating this type of XML representations
+     * against a DTD. Note that for XML schema or Relax NG validation, use the
+     * "schema" property instead.
+     * 
+     * @see DocumentBuilderFactory#setValidating(boolean)
+     */
+    private volatile boolean validatingDtd;
+
     /** The JAXB validation event handler. */
     private volatile ValidationEventHandler validationEventHandler;
+
+    /**
+     * Indicates the desire for processing <em>XInclude</em> if found in this
+     * type of XML representations. By default the value of this is set to
+     * false.
+     * 
+     * @see DocumentBuilderFactory#setXIncludeAware(boolean)
+     */
+    private volatile boolean xIncludeAware;
 
     /** The source XML representation. */
     private volatile Representation xmlRepresentation;
@@ -181,6 +209,15 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
         this.object = object;
         this.validationEventHandler = null;
         this.xmlRepresentation = null;
+        this.expandingEntityRefs = false;
+        this.formattedOutput = false;
+        this.fragment = false;
+        this.namespacePrefixMapper = null;
+        this.noNamespaceSchemaLocation = null;
+        this.schemaLocation = null;
+        this.secureProcessing = true;
+        this.validatingDtd = false;
+        this.xIncludeAware = false;
     }
 
     /**
@@ -392,8 +429,8 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
             }
 
             try {
-                this.object = (T) u.unmarshal(this.xmlRepresentation
-                        .getReader());
+                this.object = (T) u.unmarshal(this,
+                        this.xmlRepresentation.getReader());
             } catch (JAXBException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to unmarshal the XML representation", e);
@@ -424,6 +461,16 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     }
 
     /**
+     * Indicates if the parser will expand entity reference nodes. By default
+     * the value of this is set to true.
+     * 
+     * @return True if the parser will expand entity reference nodes.
+     */
+    public boolean isExpandingEntityRefs() {
+        return expandingEntityRefs;
+    }
+
+    /**
      * Indicates if the resulting XML data should be formatted with line breaks
      * and indentation. Defaults to false.
      * 
@@ -445,6 +492,36 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     }
 
     /**
+     * Indicates if it limits potential XML overflow attacks.
+     * 
+     * @return True if it limits potential XML overflow attacks.
+     */
+    public boolean isSecureProcessing() {
+        return secureProcessing;
+    }
+
+    /**
+     * Indicates the desire for validating this type of XML representations
+     * against an XML schema if one is referenced within the contents.
+     * 
+     * @return True if the schema-based validation is enabled.
+     */
+    public boolean isValidatingDtd() {
+        return validatingDtd;
+    }
+
+    /**
+     * Indicates the desire for processing <em>XInclude</em> if found in this
+     * type of XML representations. By default the value of this is set to
+     * false.
+     * 
+     * @return The current value of the xIncludeAware flag.
+     */
+    public boolean isXIncludeAware() {
+        return xIncludeAware;
+    }
+
+    /**
      * Sets the classloader to use for JAXB annotated classes.
      * 
      * @param classLoader
@@ -463,6 +540,17 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
      */
     public void setContextPath(String contextPath) {
         this.contextPath = contextPath;
+    }
+
+    /**
+     * Indicates if the parser will expand entity reference nodes. By default
+     * the value of this is set to true.
+     * 
+     * @param expandEntityRefs
+     *            True if the parser will expand entity reference nodes.
+     */
+    public void setExpandingEntityRefs(boolean expandEntityRefs) {
+        this.expandingEntityRefs = expandEntityRefs;
     }
 
     /**
@@ -533,6 +621,27 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     }
 
     /**
+     * Indicates if it limits potential XML overflow attacks.
+     * 
+     * @param secureProcessing
+     *            True if it limits potential XML overflow attacks.
+     */
+    public void setSecureProcessing(boolean secureProcessing) {
+        this.secureProcessing = secureProcessing;
+    }
+
+    /**
+     * Indicates the desire for validating this type of XML representations
+     * against an XML schema if one is referenced within the contents.
+     * 
+     * @param validating
+     *            The new validation flag to set.
+     */
+    public void setValidatingDtd(boolean validating) {
+        this.validatingDtd = validating;
+    }
+
+    /**
      * Sets the validation event handler.
      * 
      * @param validationEventHandler
@@ -541,6 +650,18 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     public void setValidationEventHandler(
             ValidationEventHandler validationEventHandler) {
         this.validationEventHandler = validationEventHandler;
+    }
+
+    /**
+     * Indicates the desire for processing <em>XInclude</em> if found in this
+     * type of XML representations. By default the value of this is set to
+     * false.
+     * 
+     * @param includeAware
+     *            The new value of the xIncludeAware flag.
+     */
+    public void setXIncludeAware(boolean includeAware) {
+        xIncludeAware = includeAware;
     }
 
     /**

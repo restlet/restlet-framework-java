@@ -312,7 +312,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
         this.coalescing = false;
         this.entityResolver = null;
         this.errorHandler = null;
-        this.expandingEntityRefs = true;
+        this.expandingEntityRefs = false;
         this.ignoringComments = false;
         this.ignoringExtraWhitespaces = false;
         this.namespaceAware = false;
@@ -405,6 +405,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
 
             // [ifndef android]
             javax.xml.validation.Schema xsd = getSchema();
+            
             if (xsd != null) {
                 dbf.setSchema(xsd);
             }
