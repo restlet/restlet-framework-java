@@ -19,6 +19,24 @@ import org.restlet.representation.Variant;
 
 import com.google.gson.annotations.Since;
 
+/**
+ * 
+ * @author nealmi May 20, 2012
+ * 
+ *         Copyright 2012 Neal Mi
+ * 
+ *         Licensed under the Apache License, Version 2.0 (the "License"); you
+ *         may not use this file except in compliance with the License. You may
+ *         obtain a copy of the License at
+ * 
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ *         Unless required by applicable law or agreed to in writing, software
+ *         distributed under the License is distributed on an "AS IS" BASIS,
+ *         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+ *         implied. See the License for the specific language governing
+ *         permissions and limitations under the License.
+ */
 public class GsonConverterTests {
 
     @BeforeClass
@@ -131,10 +149,10 @@ public class GsonConverterTests {
                 "{\"loginId\":\"hello\",\"password\":\"sceret\",\"rate\":1,\"active\":true,\"createAt\":\"2012-05-20T15:41:01.489+08:00\",\"lastLogin\":\"2012-05-20T15:41:01.489+08:00\"}");
         Representation source = new ReaderRepresentation(reader);
         source.setMediaType(MediaType.APPLICATION_JSON);
-        
+
         GsonRepresentation<User> gsonRep = c.create(source, User.class);
         User u = gsonRep.getObject();
-        
+
         assertNotNull(u);
         assertEquals("hello", u.getLoginId());
         assertEquals("sceret", u.getPassword());
@@ -142,7 +160,7 @@ public class GsonConverterTests {
         assertTrue(u.isActive());
         DateTime time = new DateTime("2012-05-20T15:41:01.489+08:00");
         assertEquals(time.getMillis(), u.getCreateAt().getTime());
-        
+
         Reader reader1 = new StringReader(
                 "{\"loginId\":\"hello\",\"password\":\"sceret\",\"rate\":1,\"active\":true,\"createAt\":\"2012-05-20T15:41:01.489+08:00\",\"lastLogin\":\"2012-05-20T15:41:01.489+08:00\"}");
         Representation source1 = new ReaderRepresentation(reader1);
@@ -174,7 +192,6 @@ public class GsonConverterTests {
         assertEquals(text, source1.getObject());
         source1.write(System.out);
         System.out.println();
-
 
     }
 
