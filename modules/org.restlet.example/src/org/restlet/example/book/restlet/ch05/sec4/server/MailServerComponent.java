@@ -77,25 +77,33 @@ public class MailServerComponent extends Component {
 
         // Configure the security realm
         MemoryRealm realm = new MemoryRealm();
-        User homer = new User("homer", "pwd", "Homer", "Simpson",
-                "homer@simpson.me");
+        User homer = new User("chunkylover53", "pwd", "Homer", "Simpson",
+                "homer@simpson.org");
         realm.getUsers().add(homer);
         realm.map(homer, new Role("CFO"));
+        realm.map(homer, new Role("User"));
 
-        User maggie = new User("maggie", "pwd", "Marge", "Simpson",
-                "maggie@simpson.me");
-        realm.getUsers().add(maggie);
+        User marge = new User("bretzels34", "pwd", "Marge", "Simpson",
+                "marge@simpson.org");
+        realm.getUsers().add(marge);
+        realm.map(marge, new Role("User"));
+
+        User bart = new User("jojo10", "pwd", "Marge", "Simpson",
+                "bart@simpson.org");
+        realm.getUsers().add(bart);
+        realm.map(bart, new Role("User"));
+
+        User lisa = new User("lisa1984", "pwd", "Marge", "Simpson",
+                "lisa@simpson.org");
+        realm.getUsers().add(lisa);
+        realm.map(lisa, new Role("User"));
 
         // Attach the application to the default virtual host
         MailServerApplication app = new MailServerApplication();
         getDefaultHost().attachDefault(app);
+
+        // Set the realm's default enroler and verifier
         app.getContext().setDefaultEnroler(realm.getEnroler());
         app.getContext().setDefaultVerifier(realm.getVerifier());
-
-        // Configure the log service
-        getLogService().setLoggerName("MailServer.AccessLog");
-        getLogService()
-                .setLogPropertiesRef(
-                        "clap://system/org/restlet/example/book/restlet/ch05/sec4/server/log.properties");
     }
 }

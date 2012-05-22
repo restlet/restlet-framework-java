@@ -61,7 +61,7 @@ public class UserResource extends BaseResource {
     @Override
     protected void doInit() throws ResourceException {
         // Get user thanks to its ID taken from the resource's URI.
-        final String userId = (String) getRequestAttributes().get("userId");
+        String userId = getAttribute("userId");
         this.user = getObjectsFacade().getUserById(userId);
 
         if (this.user != null) {

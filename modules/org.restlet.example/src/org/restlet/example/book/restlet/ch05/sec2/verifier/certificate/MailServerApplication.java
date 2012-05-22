@@ -39,6 +39,7 @@ import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.ext.ssl.CertificateAuthenticator;
 import org.restlet.routing.Router;
 import org.restlet.security.Authenticator;
 import org.restlet.util.Series;
@@ -92,9 +93,8 @@ public class MailServerApplication extends Application {
         router.attach("/accounts/{accountId}/mails/{mailId}",
                 MailServerResource.class);
 
-        // Create the authenticator based on client SSL certificates
-        Authenticator authenticator = new CertificateAuthenticator(
-                getContext());
+        // Create the authenticator based on client TLS certificates
+        Authenticator authenticator = new CertificateAuthenticator(getContext());
 
         // Chain the authenticator with the router
         authenticator.setNext(router);

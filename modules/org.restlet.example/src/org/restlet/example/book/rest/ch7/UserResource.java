@@ -137,8 +137,8 @@ public class UserResource extends ServerResource {
 
     @Override
     public void doInit() {
-        this.userName = (String) getRequestAttributes().get("username");
-        final ChallengeResponse cr = getChallengeResponse();
+        this.userName = getAttribute("username");
+        ChallengeResponse cr = getChallengeResponse();
         this.login = (cr != null) ? cr.getIdentifier() : null;
         this.password = (cr != null) ? new String(cr.getSecret()) : null;
         this.user = findUser();

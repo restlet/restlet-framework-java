@@ -33,7 +33,7 @@
 
 package org.restlet.example.book.restlet.ch03.sec3.server;
 
-import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountResource;
+import org.restlet.example.book.restlet.ch02.sec5.sub5.common.AccountResource;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
@@ -53,8 +53,7 @@ public class AccountServerResource extends ServerResource implements
      */
     @Override
     protected void doInit() throws ResourceException {
-        this.accountId = Integer.parseInt((String) getRequestAttributes().get(
-                "accountId"));
+        this.accountId = Integer.parseInt(getAttribute("accountId"));
     }
 
     public String represent() {

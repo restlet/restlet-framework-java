@@ -38,9 +38,9 @@ import org.restlet.Context;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
-import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountResource;
-import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountsResource;
-import org.restlet.example.book.restlet.ch02.sect5.sub5.common.RootResource;
+import org.restlet.example.book.restlet.ch02.sec5.sub5.common.AccountResource;
+import org.restlet.example.book.restlet.ch02.sec5.sub5.common.AccountsResource;
+import org.restlet.example.book.restlet.ch02.sec5.sub5.common.RootResource;
 import org.restlet.resource.ClientResource;
 
 /**
@@ -60,7 +60,7 @@ public class MailClient {
         Client client = new Client(new Context(), Protocol.HTTP);
         ClientResource service = new ClientResource("http://localhost:8111");
         service.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.HTTP_BASIC, "homer", "pwd"));
+                ChallengeScheme.HTTP_BASIC, "chunkylover53", "pwd"));
         service.setNext(client);
 
         System.out.println("\n2) Display the root resource\n");
@@ -75,7 +75,7 @@ public class MailClient {
 
         System.out.println("4) Adds new accounts\n");
         mailAccounts.add("Homer Simpson");
-        mailAccounts.add("Maggie Simpson");
+        mailAccounts.add("Marjorie Simpson");
         mailAccounts.add("Bart Simpson");
         System.out.println("Three accounts added !");
 
@@ -83,7 +83,7 @@ public class MailClient {
         System.out.println(mailAccounts.represent());
 
         System.out.println("6) Display the second account\n");
-        AccountResource mailAccount = service.getChild("/accounts/2",
+        AccountResource mailAccount = service.getChild("/accounts/1",
                 AccountResource.class);
         System.out.println(mailAccount.represent());
 
@@ -94,7 +94,7 @@ public class MailClient {
 
         System.out
                 .println("\n8) Delete the first account and display the list again\n");
-        mailAccount = service.getChild("/accounts/1", AccountResource.class);
+        mailAccount = service.getChild("/accounts/0", AccountResource.class);
         mailAccount.remove();
         System.out.println(mailAccounts.represent());
     }

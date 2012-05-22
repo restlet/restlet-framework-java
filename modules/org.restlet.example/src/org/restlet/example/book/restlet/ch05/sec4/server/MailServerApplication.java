@@ -39,6 +39,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.Role;
+import org.restlet.security.RoleAuthorizer;
 
 /**
  * The reusable mail server application.
@@ -53,8 +54,9 @@ public class MailServerApplication extends Application {
         setDescription("Example application for 'Restlet in Action' book");
         setOwner("Restlet S.A.S.");
         setAuthor("The Restlet Team");
-        
-        getRoles().add(new Role("Admin"));
+
+        // Declare the supported roles
+        getRoles().add(new Role("CFO"));
         getRoles().add(new Role("User"));
     }
 
@@ -67,10 +69,16 @@ public class MailServerApplication extends Application {
         router.attach("/", RootServerResource.class);
         router.attach("/accounts/", AccountsServerResource.class);
         router.attach("/accounts/{accountId}", AccountServerResource.class);
+        router.attach("/accounts/{accountId}/files", FilesServerResource.class);
 
-        ChallengeAuthenticator guard = new ChallengeAuthenticator(getContext(),
-                ChallengeScheme.HTTP_BASIC, "My Realm");
-        guard.setNext(router);
-        return guard;
+        RoleAuthorizer authorizer = new RoleAuthorizer();
+        authorizer.getAuthorizedRoles().add(getRole("CFO"));
+        authorizer.setNext(router);
+
+        ChallengeAuthenticator authenticator = new ChallengeAuthenticator(
+                getContext(), ChallengeScheme.HTTP_BASIC, "My Realm");
+        authenticator.setNext(authorizer);
+
+        return authenticator;
     }
 }

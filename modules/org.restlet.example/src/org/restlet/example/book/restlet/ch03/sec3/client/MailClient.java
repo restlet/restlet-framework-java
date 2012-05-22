@@ -36,9 +36,9 @@ package org.restlet.example.book.restlet.ch03.sec3.client;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
-import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountResource;
-import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountsResource;
-import org.restlet.example.book.restlet.ch02.sect5.sub5.common.RootResource;
+import org.restlet.example.book.restlet.ch02.sec5.sub5.common.AccountResource;
+import org.restlet.example.book.restlet.ch02.sec5.sub5.common.AccountsResource;
+import org.restlet.example.book.restlet.ch02.sec5.sub5.common.RootResource;
 import org.restlet.resource.ClientResource;
 
 /**

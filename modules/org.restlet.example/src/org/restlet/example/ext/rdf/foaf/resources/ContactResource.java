@@ -61,14 +61,13 @@ public class ContactResource extends BaseResource {
     @Override
     public void doInit() {
         // Get user thanks to its ID taken from the resource's URI.
-        final String userId = (String) getRequestAttributes().get("userId");
+        final String userId = getAttribute("userId");
         this.user = getObjectsFacade().getUserById(userId);
 
         if (user != null) {
             // Get the contact and its parent mailbox thanks to their IDs taken
             // from the resource's URI.
-            final String contactId = (String) getRequestAttributes().get(
-                    "contactId");
+            final String contactId = getAttribute("contactId");
             this.contact = getObjectsFacade().getContactById(contactId);
         }
         setExisting(this.contact != null);
