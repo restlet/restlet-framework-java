@@ -109,6 +109,7 @@ public class TikaRepresentation extends SaxRepresentation {
     public TikaRepresentation(Representation representation,
             TikaConfig tikaConfig, Parser tikaParser) {
         super((representation == null) ? null : representation.getMediaType());
+        setNamespaceAware(true);
         this.tikaConfig = tikaConfig;
         this.representation = representation;
         this.metadata = new Metadata();

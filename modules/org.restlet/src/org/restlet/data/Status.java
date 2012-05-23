@@ -977,7 +977,7 @@ public final class Status {
     public Status(int code, String reasonPhrase, String description, String uri) {
         this(code, null, reasonPhrase, description, uri);
     }
-
+    
     /**
      * Constructor.
      * 
