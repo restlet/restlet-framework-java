@@ -46,7 +46,7 @@ public class AuthenticationInfoTestCase extends RestletTestCase {
     /**
      * Test parsing an Authorization-Info header string.
      */
-    public void testAuthenticaitonInfoHeaderParse() throws Exception {
+    public void testAuthenticationInfoHeaderParse() throws Exception {
         AuthenticationInfo authInfo = new AuthenticationInfo("00000002", 1,
                 "MDAzMTAw1", "auth", null);
         String authInfoHeader = new String(

@@ -74,6 +74,7 @@ public class Metadata extends SaxRepresentation {
     public Metadata(Representation metadata, Reference metadataRef)
             throws IOException {
         super(metadata);
+        setNamespaceAware(true);
         this.metadataRef = metadataRef;
         parse(new MetadataReader(this));
     }

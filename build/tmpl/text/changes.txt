@@ -19,6 +19,10 @@ Changes log
          chunked encoding. Reported by John Logsdon.
        - Fixed retrieval of SSL cipher suites and client certificates
          for the internal HTTP client.
+       - Fixed security bug in the XML extension that allows XML external 
+         entity attacks.
+         Reported by Fabio Mancinelli.
+
     - API changes
        - Renamed ReadableListener into ReadingListener
        - Renamed InputListener into ByteReadingListener

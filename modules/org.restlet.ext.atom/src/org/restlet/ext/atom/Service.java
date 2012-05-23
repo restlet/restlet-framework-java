@@ -91,6 +91,7 @@ public class Service extends SaxRepresentation {
      */
     public Service(Client clientDispatcher) {
         super(new MediaType("***"));
+        setNamespaceAware(true);
         this.clientDispatcher = clientDispatcher;
     }
 
@@ -123,6 +124,7 @@ public class Service extends SaxRepresentation {
     public Service(Restlet clientDispatcher, String serviceUri,
             Representation xmlService) throws IOException {
         super(xmlService);
+        setNamespaceAware(true);
         this.clientDispatcher = clientDispatcher;
         this.reference = (serviceUri == null) ? null
                 : new Reference(serviceUri);

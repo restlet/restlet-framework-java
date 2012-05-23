@@ -113,6 +113,7 @@ public class Categories extends SaxRepresentation {
      */
     public Categories(Representation categoriesFeed) throws IOException {
         super(categoriesFeed);
+        setNamespaceAware(true);
         parse(new CategoriesContentReader(this));
     }
 
@@ -126,7 +127,6 @@ public class Categories extends SaxRepresentation {
     public Categories(String categoriesUri) throws IOException {
         this(new Client(new Reference(categoriesUri).getSchemeProtocol()),
                 categoriesUri);
-
     }
 
     /**

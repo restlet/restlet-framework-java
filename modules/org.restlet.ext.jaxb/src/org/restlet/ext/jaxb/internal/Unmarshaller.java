@@ -35,15 +35,20 @@ package org.restlet.ext.jaxb.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.logging.Level;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.ValidationEventHandler;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.sax.SAXSource;
 
 import org.restlet.Context;
 import org.restlet.ext.jaxb.JaxbRepresentation;
-import org.restlet.representation.StringRepresentation;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 /**
  * This is a utility class to assist in unmarshaling XML into a new Java content
@@ -154,8 +159,9 @@ public class Unmarshaller<T> {
      * @throws IOException
      *             If an error occurs accessing the string representation.
      */
-    public Object unmarshal(InputStream stream) throws JAXBException {
-        return getUnmarshaller().unmarshal(stream);
+    public Object unmarshal(JaxbRepresentation<?> jaxbRep, InputStream stream)
+            throws JAXBException {
+        return unmarshal(jaxbRep, new InputStreamReader(stream));
     }
 
     /**
@@ -170,24 +176,48 @@ public class Unmarshaller<T> {
      * @throws IOException
      *             If an error occurs accessing the string representation.
      */
-    public Object unmarshal(Reader reader) throws JAXBException {
-        return getUnmarshaller().unmarshal(reader);
+    public Object unmarshal(JaxbRepresentation<?> jaxbRep, Reader reader)
+            throws JAXBException {
+        SAXSource ss = null;
+
+        try {
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+
+            // Keep before the external entity preferences
+            spf.setValidating(jaxbRep.isValidatingDtd());
+            spf.setXIncludeAware(jaxbRep.isXIncludeAware());
+            spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING,
+                    jaxbRep.isSecureProcessing());
+            spf.setFeature(
+                    "http://xml.org/sax/features/external-general-entities",
+                    jaxbRep.isExpandingEntityRefs());
+            spf.setFeature(
+                    "http://xml.org/sax/features/external-parameter-entities",
+                    jaxbRep.isExpandingEntityRefs());
+            XMLReader xmlReader = spf.newSAXParser().getXMLReader();
+            ss = new SAXSource(xmlReader, new InputSource(reader));
+        } catch (Exception e) {
+            throw new JAXBException("Unable to create customized SAX source", e);
+        }
+
+        getUnmarshaller().setEventHandler(jaxbRep.getValidationEventHandler());
+        return getUnmarshaller().unmarshal(ss);
     }
 
     /**
      * Unmarshal XML data from the specified Restlet string representation and
      * return the resulting Java content tree.
      * 
-     * @param rep
-     *            The source string representation.
+     * @param jaxbRep
+     *            The source JAXB representation.
      * @return The newly created root object of the Java content tree.
      * @throws JAXBException
      *             If any unexpected problem occurs during unmarshaling.
      * @throws IOException
      *             If an error occurs accessing the string representation.
      */
-    public Object unmarshal(StringRepresentation rep) throws JAXBException,
-            IOException {
-        return getUnmarshaller().unmarshal(rep.getReader());
+    public Object unmarshal(JaxbRepresentation<?> jaxbRep)
+            throws JAXBException, IOException {
+        return unmarshal(jaxbRep, jaxbRep.getReader());
     }
 }

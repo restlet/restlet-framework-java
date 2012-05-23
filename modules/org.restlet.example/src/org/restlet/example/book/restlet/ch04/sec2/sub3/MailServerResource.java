@@ -93,6 +93,7 @@ public class MailServerResource extends ServerResource {
                 }
             };
         };
+        result.setNamespaceAware(true);
 
         return result;
     }
