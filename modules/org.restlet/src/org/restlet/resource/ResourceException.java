@@ -112,7 +112,8 @@ public class ResourceException extends RuntimeException {
      *            The status to associate.
      */
     public ResourceException(Status status) {
-        this(status, (Throwable) null);
+        this(status, (Throwable) ((status == null) ? null : status
+                .getThrowable()));
     }
 
     /**

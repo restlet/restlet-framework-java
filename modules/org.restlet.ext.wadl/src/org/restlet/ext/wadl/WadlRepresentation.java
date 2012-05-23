@@ -830,6 +830,7 @@ public class WadlRepresentation extends SaxRepresentation {
      */
     public WadlRepresentation() {
         super(MediaType.APPLICATION_WADL);
+        setNamespaceAware(true);
     }
 
     /**
@@ -840,6 +841,7 @@ public class WadlRepresentation extends SaxRepresentation {
      */
     public WadlRepresentation(ApplicationInfo application) {
         super(MediaType.APPLICATION_WADL);
+        setNamespaceAware(true);
         this.application = application;
     }
 
@@ -853,6 +855,7 @@ public class WadlRepresentation extends SaxRepresentation {
     public WadlRepresentation(Representation xmlRepresentation)
             throws IOException {
         super(xmlRepresentation);
+        setNamespaceAware(true);
         setMediaType(MediaType.APPLICATION_WADL);
 
         // Parse the given document using SAX to produce an ApplicationInfo
@@ -870,6 +873,7 @@ public class WadlRepresentation extends SaxRepresentation {
      */
     public WadlRepresentation(ResourceInfo resource) {
         super(MediaType.APPLICATION_WADL);
+        setNamespaceAware(true);
         this.application = resource.createApplication();
     }
 

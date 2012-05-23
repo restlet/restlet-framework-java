@@ -103,6 +103,7 @@ public class Entry extends SaxRepresentation {
      */
     public Entry() {
         super(MediaType.APPLICATION_ATOM);
+        setNamespaceAware(true);
         this.authors = null;
         this.categories = null;
         this.content = null;
@@ -155,6 +156,7 @@ public class Entry extends SaxRepresentation {
      */
     public Entry(Representation xmlEntry) throws IOException {
         super(xmlEntry);
+        setNamespaceAware(true);
         parse(new EntryContentReader(this));
     }
 
@@ -170,6 +172,7 @@ public class Entry extends SaxRepresentation {
     public Entry(Representation xmlEntry, EntryReader entryReader)
             throws IOException {
         super(xmlEntry);
+        setNamespaceAware(true);
         parse(new EntryContentReader(this, entryReader));
     }
 
