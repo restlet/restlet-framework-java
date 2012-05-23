@@ -957,7 +957,7 @@ public final class Status {
      *            The specification code.
      */
     public Status(int code) {
-        this(code, null, null, null);
+        this(code, null, null, null, null);
     }
 
     /**
@@ -1005,10 +1005,10 @@ public final class Status {
      */
     public Status(int code, Throwable throwable, final String name,
             final String description, final String uri) {
+        this.code = code;
+        this.throwable = throwable;
         this.name = checkName(name);
         this.description = description;
-        this.throwable = throwable;
-        this.code = code;
         this.uri = uri;
     }
 
@@ -1021,7 +1021,7 @@ public final class Status {
      *            The description to associate.
      */
     public Status(final Status status, final String description) {
-        this(status.getCode(), status.getName(), description, status.getUri());
+        this(status, null, description);
     }
 
     /**
@@ -1033,9 +1033,7 @@ public final class Status {
      *            The related error or exception.
      */
     public Status(final Status status, final Throwable throwable) {
-        this(status.getCode(), throwable, status.getName(),
-                (throwable == null) ? null : throwable.getMessage(), status
-                        .getUri());
+        this(status, throwable, null);
     }
 
     /**
@@ -1048,10 +1046,12 @@ public final class Status {
      * @param description
      *            The description to associate.
      */
-    public Status(final Status status, final Throwable throwable,
-            final String description) {
-        this(status.getCode(), throwable, status.getName(), description, status
-                .getUri());
+    public Status(Status status, Throwable throwable,
+            String description) {
+        this(status.getCode(), (throwable == null) ? status.getThrowable()
+                : throwable, status.getName(),
+                (description == null) ? status.getDescription() : description,
+                status.getUri());
     }
 
     /**

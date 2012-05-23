@@ -113,6 +113,7 @@ public class Categories extends SaxRepresentation {
      */
     public Categories(Representation categoriesFeed) throws IOException {
         super(categoriesFeed);
+        setNamespaceAware(true);
         parse(new CategoriesContentReader(this));
     }
 

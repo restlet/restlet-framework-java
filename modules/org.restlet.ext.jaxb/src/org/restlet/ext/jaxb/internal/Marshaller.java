@@ -34,16 +34,14 @@
 package org.restlet.ext.jaxb.internal;
 
 import java.io.OutputStream;
-import java.io.StringWriter;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.logging.Level;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.ValidationEventHandler;
 
 import org.restlet.Context;
 import org.restlet.ext.jaxb.JaxbRepresentation;
-import org.restlet.representation.StringRepresentation;
 
 /**
  * This is a utility class to assist in marshaling Java content trees into XML.
@@ -184,25 +182,7 @@ public class Marshaller<T> {
      */
     public void marshal(Object jaxbElement, OutputStream stream)
             throws JAXBException {
-        getMarshaller().marshal(jaxbElement, stream);
-    }
-
-    /**
-     * Marshal the content tree rooted at {@code jaxbElement} into a Restlet
-     * String representation.
-     * 
-     * @param jaxbElement
-     *            The root of the content tree to be marshaled.
-     * @param rep
-     *            The target string representation write the XML to.
-     * @throws JAXBException
-     *             If any unexpected problem occurs during marshaling.
-     */
-    public void marshal(Object jaxbElement, StringRepresentation rep)
-            throws JAXBException {
-        final StringWriter writer = new StringWriter();
-        marshal(jaxbElement, writer);
-        rep.setText(writer.toString());
+        marshal(jaxbElement, new OutputStreamWriter(stream));
     }
 
     /**
@@ -216,20 +196,9 @@ public class Marshaller<T> {
      *             If any unexpected problem occurs during marshaling.
      */
     public void marshal(Object jaxbElement, Writer writer) throws JAXBException {
+        getMarshaller().setEventHandler(
+                getJaxbRepresentation().getValidationEventHandler());
         getMarshaller().marshal(jaxbElement, writer);
-    }
-
-    /**
-     * Sets the validation handler for this marshaler.
-     * 
-     * @param handler
-     *            A validation handler.
-     * @throws JAXBException
-     *             If an error was encountered while setting the event handler.
-     */
-    public void setEventHandler(ValidationEventHandler handler)
-            throws JAXBException {
-        getMarshaller().setEventHandler(handler);
     }
 
 }

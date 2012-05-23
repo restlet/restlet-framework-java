@@ -118,6 +118,7 @@ public class Feed extends SaxRepresentation {
      */
     public Feed() {
         super(MediaType.APPLICATION_ATOM);
+        setNamespaceAware(true);
         this.authors = null;
         this.categories = null;
         this.contributors = null;
@@ -171,6 +172,7 @@ public class Feed extends SaxRepresentation {
      */
     public Feed(Representation xmlFeed) throws IOException {
         super(xmlFeed);
+        setNamespaceAware(true);
         parse(new FeedContentReader(this));
     }
 
@@ -186,6 +188,7 @@ public class Feed extends SaxRepresentation {
     public Feed(Representation xmlFeed, FeedReader feedReader)
             throws IOException {
         super(xmlFeed);
+        setNamespaceAware(true);
         parse(new FeedContentReader(this, feedReader));
     }
 
