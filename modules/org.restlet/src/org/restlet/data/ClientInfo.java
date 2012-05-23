@@ -191,8 +191,9 @@ public final class ClientInfo {
                 u = ClientInfo.userAgentTemplates;
                 if (u == null) {
                     // Load from the "agent.properties" file
-                    final java.net.URL userAgentPropertiesUrl = Engine
+                    java.net.URL userAgentPropertiesUrl = Engine
                             .getResource("org/restlet/data/agent.properties");
+
                     if (userAgentPropertiesUrl != null) {
                         BufferedReader reader;
                         try {
@@ -541,23 +542,28 @@ public final class ClientInfo {
             org.restlet.routing.Variable facultativeData = new org.restlet.routing.Variable(
                     org.restlet.routing.Variable.TYPE_ALL, null, false, false);
 
-            for (String string : ClientInfo.getUserAgentTemplates()) {
-                template = new org.restlet.routing.Template(string,
-                        org.restlet.routing.Template.MODE_EQUALS);
-                // Update the predefined variables.
-                template.getVariables().put("agentName", agentName);
-                template.getVariables().put("agentVersion", agentVersion);
-                template.getVariables().put("agentComment", agentComment);
-                template.getVariables().put("agentOs", agentCommentAttribute);
-                template.getVariables().put("commentAttribute",
-                        agentCommentAttribute);
-                template.getVariables().put("facultativeData", facultativeData);
-                // Parse the template
-                if (template.parse(getAgent(), map) > -1) {
-                    for (String key : map.keySet()) {
-                        this.agentAttributes.put(key, (String) map.get(key));
+            if (getUserAgentTemplates() != null) {
+                for (String string : ClientInfo.getUserAgentTemplates()) {
+                    template = new org.restlet.routing.Template(string,
+                            org.restlet.routing.Template.MODE_EQUALS);
+                    // Update the predefined variables.
+                    template.getVariables().put("agentName", agentName);
+                    template.getVariables().put("agentVersion", agentVersion);
+                    template.getVariables().put("agentComment", agentComment);
+                    template.getVariables().put("agentOs",
+                            agentCommentAttribute);
+                    template.getVariables().put("commentAttribute",
+                            agentCommentAttribute);
+                    template.getVariables().put("facultativeData",
+                            facultativeData);
+                    // Parse the template
+                    if (template.parse(getAgent(), map) > -1) {
+                        for (String key : map.keySet()) {
+                            this.agentAttributes
+                                    .put(key, (String) map.get(key));
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }

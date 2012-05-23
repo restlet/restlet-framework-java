@@ -738,7 +738,8 @@ public class ClientResource extends UniformResource {
      * @return The request attribute value.
      */
     public String getAttribute(String name) {
-        return (String) getRequestAttributes().get(name);
+        Object value = getRequestAttributes().get(name);
+        return (value == null) ? null : value.toString();
     }
 
     /**
@@ -1668,7 +1669,7 @@ public class ClientResource extends UniformResource {
      * @param value
      *            The attribute to set.
      */
-    public void setAttribute(String name, String value) {
+    public void setAttribute(String name, Object value) {
         getRequestAttributes().put(name, value);
     }
 

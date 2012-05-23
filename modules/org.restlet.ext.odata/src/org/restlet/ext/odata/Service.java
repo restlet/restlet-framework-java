@@ -307,8 +307,7 @@ public class Service {
                 headers.add("MaxDataServiceVersion", getMaxClientVersion());
             }
 
-            resource.getRequestAttributes().put(
-                    HeaderConstants.ATTRIBUTE_HEADERS, headers);
+            resource.setAttribute(HeaderConstants.ATTRIBUTE_HEADERS, headers);
         }
 
         return resource;
