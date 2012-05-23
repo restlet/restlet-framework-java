@@ -33,8 +33,6 @@
 
 package org.restlet.example.book.restlet.ch05.sec5;
 
-import java.security.NoSuchAlgorithmException;
-
 import org.restlet.representation.DigesterRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -47,12 +45,13 @@ import org.restlet.resource.ServerResource;
 public class VerifiedServerResource extends ServerResource {
 
     @Get
-    public Representation represent() throws NoSuchAlgorithmException {
+    public Representation represent() throws Exception {
         // Wraps the StringRepresentation
         DigesterRepresentation result = new DigesterRepresentation(
                 new StringRepresentation("hello, world"));
+        result.exhaust();
 
-        // Compute's representation's digest.
+        // Compute representation's digest.
         result.setDigest(result.computeDigest());
         return result;
     }

@@ -80,11 +80,12 @@ public class BookmarkResource extends UserResource {
         super.doInit();
 
         if (getUser() != null) {
-            this.uri = (String) getRequestAttributes().get("URI");
+            this.uri = getAttribute("URI");
             this.bookmark = getUser().getBookmark(this.uri);
 
             if (this.bookmark != null) {
-                if ((checkAuthorization() != 1) && this.bookmark.isRestricting()) {
+                if ((checkAuthorization() != 1)
+                        && this.bookmark.isRestricting()) {
                     // Intentionally hide the bookmark existence
                     setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 }
@@ -116,10 +117,11 @@ public class BookmarkResource extends UserResource {
                     .append('\n');
             sb.append("Long:     ").append(this.bookmark.getLongDescription())
                     .append('\n');
-            sb.append("Date:     ").append(this.bookmark.getDateTime()).append(
-                    '\n');
-            sb.append("Restrict: ").append(
-                    Boolean.toString(this.bookmark.isRestricting())).append('\n');
+            sb.append("Date:     ").append(this.bookmark.getDateTime())
+                    .append('\n');
+            sb.append("Restrict: ")
+                    .append(Boolean.toString(this.bookmark.isRestricting()))
+                    .append('\n');
             result = new StringRepresentation(sb);
         }
 

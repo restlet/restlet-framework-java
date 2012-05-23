@@ -65,8 +65,7 @@ public class AccountServerResource extends WadlServerResource implements
      */
     @Override
     protected void doInit() throws ResourceException {
-        String accountIdAttribute = (String) getRequestAttributes().get(
-                "accountId");
+        String accountIdAttribute = getAttribute("accountId");
 
         if (accountIdAttribute != null) {
             this.accountId = Integer.parseInt(accountIdAttribute);

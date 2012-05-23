@@ -66,7 +66,7 @@ public class AccountServerResource extends ServerResource implements
      */
     @Override
     protected void doInit() throws ResourceException {
-        String accountId = (String) getRequestAttributes().get("accountId");
+        String accountId = getAttribute("accountId");
         this.account = getAccounts().get(accountId);
     }
 

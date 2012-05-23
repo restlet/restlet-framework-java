@@ -44,6 +44,7 @@ Changes log
        - Added CertificateAuthenticator to SSL extension that verifies the
          presence of trusted client certificates.
          Contributed by Bruno Harbulot.
+       - Added Resource#getMatrixValue(String).
     - Misc
        - Lowered trace level in Redirector from INFO to FINE.
        - Cleaned up EncodeRepresentation and DecodeRepresentation classes.

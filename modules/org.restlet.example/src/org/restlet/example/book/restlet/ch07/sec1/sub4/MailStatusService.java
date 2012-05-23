@@ -56,9 +56,10 @@ public class MailStatusService extends StatusService {
         // Create the data model
         Map<String, String> dataModel = new ConcurrentHashMap<String, String>();
         dataModel.put("applicationName", Application.getCurrent().getName());
-        dataModel.put("statusName", response.getStatus().getName());
         dataModel.put("statusDescription", response.getStatus()
                 .getDescription());
+        dataModel.put("statusReasonPhrase", response.getStatus()
+                .getReasonPhrase());
 
         // Load the FreeMarker template
         Representation mailFtl = new ClientResource(

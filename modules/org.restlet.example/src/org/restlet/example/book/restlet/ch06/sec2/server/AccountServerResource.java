@@ -33,7 +33,7 @@
 
 package org.restlet.example.book.restlet.ch06.sec2.server;
 
-import org.restlet.example.book.restlet.ch02.sect5.sub5.common.AccountResource;
+import org.restlet.example.book.restlet.ch02.sec5.sub5.common.AccountResource;
 import org.restlet.ext.wadl.MethodInfo;
 import org.restlet.ext.wadl.RepresentationInfo;
 import org.restlet.ext.wadl.WadlServerResource;
@@ -65,14 +65,13 @@ public class AccountServerResource extends WadlServerResource implements
      */
     @Override
     protected void doInit() throws ResourceException {
-        String accountIdAttribute = (String) getRequestAttributes().get(
-                "accountId");
+        String accountIdAttribute = getAttribute("accountId");
 
         if (accountIdAttribute != null) {
             this.accountId = Integer.parseInt(accountIdAttribute);
-            setName("Resource for mail account \"" + this.accountId + "\"");
-            setDescription("The resource describing the mail account number \""
-                    + this.accountId + "\"");
+            setName("Resource for mail account '" + this.accountId + "'");
+            setDescription("The resource describing the mail account number '"
+                    + this.accountId + "'");
         } else {
             setName("Mail account resource");
             setDescription("The resource describing a mail account");

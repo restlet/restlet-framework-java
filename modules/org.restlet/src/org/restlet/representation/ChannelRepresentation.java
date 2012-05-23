@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.BioUtils;
@@ -66,12 +67,13 @@ public abstract class ChannelRepresentation extends Representation {
 
     @Override
     public InputStream getStream() throws IOException {
-        return NioUtils.getInputStream(getChannel());
+        return NioUtils.getStream(getChannel());
     }
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        NioUtils.copy(getChannel(), outputStream);
+        WritableByteChannel wbc = NioUtils.getChannel(outputStream);
+        write(wbc);
     }
 
     @Override
