@@ -4,7 +4,7 @@
      Restlet build script - Copyright 2005-2012 Restlet S.A.S.
      ========================================================= -->
 
-<project name="Restlet" default="rebuild">
+<project name="Restlet Framework - Master" default="rebuild">
 	<!-- ============================ -->
 	<!-- ===  Properties setting  === -->
 	<!-- ============================ -->

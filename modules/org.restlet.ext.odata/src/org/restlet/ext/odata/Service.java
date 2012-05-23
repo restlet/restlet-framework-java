@@ -1198,6 +1198,7 @@ public class Service {
                         }
                     }
                 };
+                r.setNamespaceAware(true);
 
                 if (type.isBlob()) {
                     result = new Entry() {
@@ -1211,6 +1212,7 @@ public class Service {
                             }
                         }
                     };
+                    result.setNamespaceAware(true);
 
                     Link editLink = new Link(getValueEditRef(entity),
                             Relation.EDIT_MEDIA, null);
