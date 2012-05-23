@@ -730,15 +730,17 @@ public class ClientResource extends UniformResource {
 
     /**
      * Returns the attribute value by looking up the given name in the request
-     * attributes maps. This is typically used for variables that are declared
-     * in the URI template used to route the call to this resource.
+     * attributes maps. The toString() method is then invoked on the attribute
+     * value. This is typically used for variables that are declared in the URI
+     * template used to route the call to this resource.
      * 
      * @param name
      *            The attribute name.
      * @return The request attribute value.
      */
     public String getAttribute(String name) {
-        return (String) getRequestAttributes().get(name);
+        Object value = getRequestAttributes().get(name);
+        return (value == null) ? null : value.toString();
     }
 
     /**
@@ -1668,7 +1670,7 @@ public class ClientResource extends UniformResource {
      * @param value
      *            The attribute to set.
      */
-    public void setAttribute(String name, String value) {
+    public void setAttribute(String name, Object value) {
         getRequestAttributes().put(name, value);
     }
 

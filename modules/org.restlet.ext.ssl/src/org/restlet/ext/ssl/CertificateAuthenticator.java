@@ -60,7 +60,7 @@ import org.restlet.security.User;
  * @author Bruno Harbulot (bruno/distributedmatter.net)
  */
 public class CertificateAuthenticator extends Authenticator {
-    
+
     /**
      * 
      * @param context
@@ -126,6 +126,8 @@ public class CertificateAuthenticator extends Authenticator {
      * returned from this chain by {@link #getPrincipal(List)} to the request's
      * ClientInfo and set the user to the result of {@link #getUser(Principal)}
      * if that user is non-null.
+     * 
+     * If no client certificate is available, then a 401 status is set.
      */
     @Override
     protected boolean authenticate(Request request, Response response) {
@@ -141,17 +143,9 @@ public class CertificateAuthenticator extends Authenticator {
             }
             return true;
         } else {
+            response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
             return false;
         }
-    }
-
-    /**
-     * If no client certificate is available, then a 401 status is set.
-     */
-    @Override
-    protected int unauthenticated(Request request, Response response) {
-        response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-        return super.unauthenticated(request, response);
     }
 
 }

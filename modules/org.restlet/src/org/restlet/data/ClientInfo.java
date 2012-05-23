@@ -191,7 +191,7 @@ public final class ClientInfo {
                 u = ClientInfo.userAgentTemplates;
                 if (u == null) {
                     // Load from the "agent.properties" file
-                    final java.net.URL userAgentPropertiesUrl = Engine
+                    java.net.URL userAgentPropertiesUrl = Engine
                             .getResource("org/restlet/data/agent.properties");
                     if (userAgentPropertiesUrl != null) {
                         BufferedReader reader;
@@ -540,10 +540,9 @@ public final class ClientInfo {
                     org.restlet.routing.Variable.TYPE_COMMENT_ATTRIBUTE);
             org.restlet.routing.Variable facultativeData = new org.restlet.routing.Variable(
                     org.restlet.routing.Variable.TYPE_ALL, null, false, false);
-            List<String> agentTemplates = ClientInfo.getUserAgentTemplates();
 
-            if (agentTemplates != null) {
-                for (String string : agentTemplates) {
+            if (ClientInfo.getUserAgentTemplates() != null) {
+                for (String string : ClientInfo.getUserAgentTemplates()) {
                     template = new org.restlet.routing.Template(string,
                             org.restlet.routing.Template.MODE_EQUALS);
                     

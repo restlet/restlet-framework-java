@@ -85,7 +85,7 @@ public abstract class CharacterRepresentation extends Representation {
     public void write(java.nio.channels.WritableByteChannel writableChannel)
             throws IOException {
         OutputStream os = org.restlet.engine.io.NioUtils
-                .getOutputStream(writableChannel);
+                .getStream(writableChannel);
         write(os);
         os.flush();
     }

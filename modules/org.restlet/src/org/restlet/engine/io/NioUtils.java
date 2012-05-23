@@ -193,7 +193,7 @@ public class NioUtils {
      * @return A readable byte channel.
      * @throws IOException
      */
-    public static ReadableByteChannel getReadableByteChannel(
+    public static ReadableByteChannel getChannel(
             final Representation representation) throws IOException {
         ReadableByteChannel result = null;
         if (Edition.CURRENT != Edition.GAE) {
@@ -204,20 +204,31 @@ public class NioUtils {
             // writing the representation into the input side of the pipe
             Runnable task = new Runnable() {
                 public void run() {
+                    WritableByteChannel wbc = null;
                     try {
-                        WritableByteChannel wbc = pipe.sink();
+                        wbc = pipe.sink();
                         representation.write(wbc);
                         wbc.close();
                     } catch (IOException ioe) {
                         Context.getCurrentLogger().log(Level.FINE,
                                 "Error while writing to the piped channel.",
                                 ioe);
+                    } finally {
+                        if (wbc != null)
+                            try {
+                                wbc.close();
+                            } catch (IOException e) {
+                                Context.getCurrentLogger()
+                                        .log(Level.FINE,
+                                                "Error while closing to the piped channel.",
+                                                e);
+                            }
                     }
                 }
             };
 
             org.restlet.Application application = org.restlet.Application
-            .getCurrent();
+                    .getCurrent();
             if (application != null && application.getTaskService() != null) {
                 application.getTaskService().execute(task);
             } else {
@@ -233,7 +244,7 @@ public class NioUtils {
         }
         return result;
     }
-    
+
     /**
      * Returns an input stream based on a given readable byte channel.
      * 
@@ -241,7 +252,7 @@ public class NioUtils {
      *            The readable byte channel.
      * @return An input stream based on a given readable byte channel.
      */
-    public static InputStream getInputStream(ReadableByteChannel readableChannel) {
+    public static InputStream getStream(ReadableByteChannel readableChannel) {
         InputStream result = null;
 
         if (readableChannel != null) {
@@ -258,8 +269,7 @@ public class NioUtils {
      *            The writable byte channel.
      * @return An output stream based on a given writable byte channel.
      */
-    public static OutputStream getOutputStream(
-            WritableByteChannel writableChannel) {
+    public static OutputStream getStream(WritableByteChannel writableChannel) {
         return isBlocking(writableChannel) ? Channels
                 .newOutputStream(writableChannel) : new NbChannelOutputStream(
                 writableChannel);

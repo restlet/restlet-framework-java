@@ -77,7 +77,7 @@ public abstract class OutputRepresentation extends StreamRepresentation {
     
     @Override
     public ReadableByteChannel getChannel() throws IOException {
-        return NioUtils.getReadableByteChannel(this);
+        return NioUtils.getChannel(this);
     }
 
     /**

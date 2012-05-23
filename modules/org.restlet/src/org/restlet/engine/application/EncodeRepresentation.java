@@ -138,7 +138,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public ReadableByteChannel getChannel() throws IOException {
         if (canEncode()) {
-            return NioUtils.getReadableByteChannel(this);
+            return NioUtils.getChannel(this);
         } else {
             return getWrappedRepresentation().getChannel();
         }
@@ -307,7 +307,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         if (canEncode()) {
-            OutputStream os = NioUtils.getOutputStream(writableChannel);
+            OutputStream os = NioUtils.getStream(writableChannel);
             write(os);
             os.flush();
         } else {

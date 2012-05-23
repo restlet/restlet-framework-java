@@ -1272,13 +1272,14 @@ public class Reference {
      * Returns the optional matrix for hierarchical identifiers. A matrix part
      * starts after the first ';' character of the last path segment. It is a
      * sequence of 'name=value' parameters separated by ';' characters. The
-     * value can be ommited.<br>
+     * value can be ommitted.<br>
      * Note that no URI decoding is done by this method.
      * 
      * @return The matrix or null.
      */
     public String getMatrix() {
-        final String lastSegment = getLastSegment();
+        String lastSegment = getLastSegment();
+        
         if (lastSegment != null) {
             final int matrixIndex = lastSegment.indexOf(';');
 

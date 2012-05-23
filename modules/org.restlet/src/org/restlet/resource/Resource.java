@@ -395,6 +395,25 @@ public abstract class Resource {
     }
 
     /**
+     * Returns the first value of the matrix parameter given its name if
+     * existing, or null.
+     * 
+     * @param name
+     *            The matrix parameter name.
+     * @return The first value of the matrix parameter.
+     */
+    public String getMatrixValue(String name) {
+        String result = null;
+        Form matrix = getMatrix();
+
+        if (matrix != null) {
+            result = matrix.getFirstValue(name);
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the maximum number of intermediaries.
      * 
      * @return The maximum number of intermediaries.
@@ -749,7 +768,7 @@ public abstract class Resource {
      * @param value
      *            The attribute to set.
      */
-    public abstract void setAttribute(String name, String value);
+    public abstract void setAttribute(String name, Object value);
 
     /**
      * Sets the query value for the named parameter. If no query is defined, it
