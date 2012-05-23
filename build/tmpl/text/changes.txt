@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+
 - 2.0.14 (2012-05-23)
     - Bug fixed
        - Fixed issue with OutputRepresentation retrieved as InputStream
