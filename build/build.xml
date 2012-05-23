@@ -130,19 +130,6 @@
 					ant: antProperties()
     			</data>
 			</fmpp>
-			<!-- Generate the feature.xml file -->
-			<echo message="Generate the feature.xml file" />
-			<fmpp sourceroot="${tmpl}/eclipse" outputroot="${editions-dir}/@{edition}" dataroot="${basedir}" includes="feature.xml">
-				<data expandproperties="true">
-						values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
-						project: get(values, "project")
-						editions: get(values, "editions")
-						editionKey: @{edition}
-	    				edition: get(editions, @{edition})
-						currentYear: ${current-year}
-						ant: antProperties()
-	    			</data>
-			</fmpp>
 
 			<move file="${editions-dir}/@{edition}/poms/org.restlet.parent.pom.tmpl" tofile="${editions-dir}/@{edition}/poms/org.restlet.parent.pom" />
 			<!-- Process the build.xml file. -->
@@ -182,7 +169,7 @@
 			<replace file="${editions-dir}/@{edition}/build.xml" token="*DOLLAR*" value="$" />
 
 			<if>
-				<equals arg1="${edition}" arg2="osgi" />
+				<equals arg1="@{edition}" arg2="osgi" />
 				<then>
 					<!-- Generate the P2 feature files. -->
 					<echo message="Generate the P2 feature files" />
