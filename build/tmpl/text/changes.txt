@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bug fixed
+    - Misc
 
 - 2.0.14 (2012-05-23)
     - Bug fixed
@@ -19,8 +21,7 @@ Changes log
        - Optimized conversions using the Jackson extension in order to reuse
          configuration (issue #577).
        - Fixed security bug in the XML extension that allows XML external 
-         entity attacks.
-         Reported by Fabio Mancinelli.
+         entity attacks. Reported by Fabio Mancinelli and Nicolas Gregoire.
  
 - 2.0.13 (2012-04-18)
     - Bug fixed
@@ -52,7 +53,6 @@ Changes log
        - Fixed scoring algorithm of the JaxbConverter, detected when used in 
          conjunction with JacksonConverter.
          Reported by Michael Henderson.
-
     - Misc
         - Updated FreeMarker library to version 2.3.19.
 
