@@ -21,7 +21,8 @@ Changes log
        - Optimized conversions using the Jackson extension in order to reuse
          configuration (issue #577).
        - Fixed security bug in the XML extension that allows XML external 
-         entity attacks. Reported by Fabio Mancinelli and Nicolas Gregoire.
+         entity attacks. Reported by Nicolas Grégoire, 
+         Caleb James DeLisle and Fabio Mancinelli.
  
 - 2.0.13 (2012-04-18)
     - Bug fixed
