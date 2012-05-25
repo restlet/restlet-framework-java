@@ -87,11 +87,11 @@ public class MailClient {
                         digestChallenge, clientResource.getResponse(),
                         "chunkylover53", "pwd");
                 clientResource.setChallengeResponse(authentication);
-
-                // Communicate with remote resource
-                mailClient.store(mailClient.retrieve());
             }
         }
+
+        // Communicate with remote resource
+        mailClient.store(mailClient.retrieve());
 
         // Store HTTPS client
         client.stop();

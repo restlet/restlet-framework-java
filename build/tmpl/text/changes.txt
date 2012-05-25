@@ -25,7 +25,8 @@ Changes log
        - Fixed retrieval of SSL cipher suites and client certificates
          for the internal HTTP client.
        - Fixed security bug in the XML extension that allows XML external 
-         entity attacks. Reported by Fabio Mancinelli and Nicolas Gregoire.
+         entity attacks. Reported by Nicolas Grégoire, 
+         Caleb James DeLisle and Fabio Mancinelli.
     - API changes
        - Renamed ReadableListener into ReadingListener
        - Renamed InputListener into ByteReadingListener
