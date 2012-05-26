@@ -7,6 +7,9 @@ Changes log
     - Bug fixed
     - API changes
     - Misc
+       - Reverted Role equality test to default Java object equality as
+         equality based on name could cause issues with MemoryRealm
+         mapping if several applications used the same role names.
 
 - 2.1 Release Candidate 5 (05/23/2012)
     - Bug fixed

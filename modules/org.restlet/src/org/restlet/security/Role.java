@@ -37,11 +37,18 @@ import java.security.Principal;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.Application;
+
 /**
  * Application specific role. Common examples are "administrator", "user",
  * "anonymous", "supervisor". Note that for reusability purpose, it is
  * recommended that those role don't reflect an actual organization, but more
  * the functional requirements of your application.
+ * 
+ * Also, two roles are not considered equals if they have the same the name and
+ * child roles, they need to be the same Java object. If you need to reuse the
+ * same role, you should call {@link Application#getRole(String)} method
+ * instead.
  * 
  * @author Jerome Louvel
  */
@@ -103,28 +110,6 @@ public class Role implements Principal {
         this.name = name;
         this.description = description;
         this.childRoles = new CopyOnWriteArrayList<Role>();
-    }
-
-    @Override
-    public boolean equals(Object target) {
-        boolean result = false;
-        if (this.name == null) {
-            return target == null;
-        }
-        if (target instanceof Role) {
-            Role r = (Role) target;
-            // Test equality of names and child roles.
-            result = this.name.equals(r.getName())
-                    && getChildRoles().size() == r.getChildRoles().size();
-            if (result && !getChildRoles().isEmpty()) {
-                for (int i = 0; result && i < getChildRoles().size(); i++) {
-                    result = getChildRoles().get(i).equals(
-                            r.getChildRoles().get(i));
-                }
-            }
-        }
-
-        return result;
     }
 
     /**

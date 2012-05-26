@@ -1337,13 +1337,18 @@ public class Reference {
         if (isHierarchical()) {
             String parentRef = null;
             String path = getPath();
+
             if (!path.equals("/") && !path.equals("")) {
                 if (path.endsWith("/")) {
                     path = path.substring(0, path.length() - 1);
                 }
 
-                parentRef = getHostIdentifier()
-                        + path.substring(0, path.lastIndexOf('/') + 1);
+                if (isAbsolute()) {
+                    parentRef = getHostIdentifier()
+                            + path.substring(0, path.lastIndexOf('/') + 1);
+                } else {
+                    parentRef = path.substring(0, path.lastIndexOf('/') + 1);
+                }
             } else {
                 parentRef = this.internalRef;
             }
