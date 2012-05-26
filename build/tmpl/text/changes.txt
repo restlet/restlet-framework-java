@@ -5,7 +5,12 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
+       - Fixed bug in Reference#getParentRef with relative URIs.
+         Reported by Christian Bauer.
     - Misc
+       - Reverted Role equality test to default Java object equality as
+         equality based on name could cause issues with MemoryRealm
+         mapping if several applications used the same role names.
 
 - 2.0.14 (2012-05-23)
     - Bug fixed

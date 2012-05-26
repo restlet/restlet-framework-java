@@ -44,7 +44,7 @@ import org.restlet.engine.security.RoleMapping;
 
 /**
  * Security realm based on a memory model. The model is composed of root groups,
- * users and mapping to associated roles.
+ * users and mapping to associated roles. 
  * 
  * @author Jerome Louvel
  */
@@ -84,7 +84,6 @@ public class MemoryRealm extends Realm {
      * mapped organizations.
      */
     private class DefaultVerifier extends LocalVerifier {
-
         @Override
         public char[] getLocalSecret(String identifier) {
             char[] result = null;
