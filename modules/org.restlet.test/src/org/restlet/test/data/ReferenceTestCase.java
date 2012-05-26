@@ -222,6 +222,20 @@ public class ReferenceTestCase extends RestletTestCase {
     }
 
     /**
+     * Test the computation of parent references, for absolute and relative
+     * URIs.
+     */
+    public void testParentRef() {
+        Reference baseRef = new Reference("http://test.com/foo/bar");
+        Reference parentRef = baseRef.getParentRef();
+        assertEquals("http://test.com/foo/", parentRef.toString());
+
+        baseRef = new Reference("/foo/bar");
+        parentRef = baseRef.getParentRef();
+        assertEquals("/foo/", parentRef.toString());
+    }
+
+    /**
      * Tests the URI parsing.
      */
     public void testParsing() {
@@ -627,25 +641,25 @@ public class ReferenceTestCase extends RestletTestCase {
         ref.setSchemeSpecificPart(part);
         assertEquals(part, ref.getSchemeSpecificPart());
     }
-    
+
     /**
      * Test setting of the last segment.
      */
-    public void testSetLastSegment(){
+    public void testSetLastSegment() {
         Reference ref = new Reference("http://localhost:1234");
         ref.addSegment("test");
         assertEquals("http://localhost:1234/test", ref.toString());
-        
+
         ref.setLastSegment("last");
         assertEquals("http://localhost:1234/last", ref.toString());
-        
+
         ref = new Reference("http://localhost:1234");
         ref.setLastSegment("last");
         assertEquals("http://localhost:1234/last", ref.toString());
 
         ref.setLastSegment("test");
         assertEquals("http://localhost:1234/test", ref.toString());
-        
+
         ref.addSegment("last");
         assertEquals("http://localhost:1234/test/last", ref.toString());
     }

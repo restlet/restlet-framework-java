@@ -46,7 +46,7 @@ public class RoleTestCase extends RestletTestCase {
     public void testRoleEquality() {
         Role role1 = new Role("role", "");
         Role role2 = new Role("role", "");
-        assertEquals(role1, role2);
+        assertNotSame(role1, role2);
 
         Role role3 = new Role("role3", "");
         Role role4 = new Role("role4", "");
@@ -62,6 +62,6 @@ public class RoleTestCase extends RestletTestCase {
         role2.getChildRoles().clear();
         role2.getChildRoles().add(role3);
         role2.getChildRoles().add(role4);
-        assertEquals(role1, role2);
+        assertNotSame(role1, role2);
     }
 }
