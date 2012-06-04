@@ -432,12 +432,18 @@ public final class BioUtils {
                     try {
                         representation.write(pipedWriter);
                         pipedWriter.flush();
-                        pipedWriter.close();
                     } catch (IOException ioe) {
                         Context.getCurrentLogger()
-                                .log(Level.FINE,
+                                .log(Level.WARNING,
                                         "Error while writing to the piped reader.",
                                         ioe);
+                    } finally {
+                        try {
+                            pipedWriter.close();
+                        } catch (IOException ioe2) {
+                            Context.getCurrentLogger().log(Level.WARNING,
+                                    "Error while closing the pipe.", ioe2);
+                        }
                     }
                 }
             };

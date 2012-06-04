@@ -341,11 +341,20 @@ public abstract class OutboundWay extends Way {
         // Write the message or part of it in the byte
         // buffer
         if (getMessageState() == MessageState.BODY) {
-            int filled = buffer.fill(getEntityChannel());
+            try {
+                int filled = buffer.fill(getEntityChannel());
 
-            // Detect end of entity reached
-            if (filled == -1) {
-                setMessageState(MessageState.END);
+                // Detect end of entity reached
+                if (filled == -1) {
+                    setMessageState(MessageState.END);
+                }
+            } catch (IOException ioe) {
+                if (getLogger().isLoggable(Level.WARNING)) {
+                    getLogger().log(Level.WARNING, "Unable to read the entity",
+                            ioe);
+                }
+
+                throw ioe;
             }
         } else if (getMessageState() != MessageState.END) {
             // Write the start line or the headers,
