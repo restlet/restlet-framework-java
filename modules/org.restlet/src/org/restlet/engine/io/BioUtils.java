@@ -330,20 +330,27 @@ public final class BioUtils {
             }
 
             final PipeStream pipe = new PipeStream();
+            final java.io.OutputStream os = pipe.getOutputStream();
+
             // Creates a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
             Runnable task = new Runnable() {
                 public void run() {
                     try {
-                        java.io.OutputStream os = pipe.getOutputStream();
                         representation.write(os);
                         os.flush();
-                        os.close();
                     } catch (IOException ioe) {
                         Context.getCurrentLogger()
-                                .log(Level.FINE,
+                                .log(Level.WARNING,
                                         "Error while writing to the piped input stream.",
                                         ioe);
+                    } finally {
+                        try {
+                            os.close();
+                        } catch (IOException ioe2) {
+                            Context.getCurrentLogger().log(Level.WARNING,
+                                    "Error while closing the pipe.", ioe2);
+                        }
                     }
                 }
             };
@@ -422,8 +429,6 @@ public final class BioUtils {
             final java.io.PipedWriter pipedWriter = new java.io.PipedWriter();
             java.io.PipedReader pipedReader = new java.io.PipedReader(
                     pipedWriter);
-            org.restlet.Application application = org.restlet.Application
-                    .getCurrent();
 
             // Gets a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
@@ -447,6 +452,9 @@ public final class BioUtils {
                     }
                 }
             };
+
+            org.restlet.Application application = org.restlet.Application
+                    .getCurrent();
 
             if (application != null && application.getTaskService() != null) {
                 application.getTaskService().execute(task);
