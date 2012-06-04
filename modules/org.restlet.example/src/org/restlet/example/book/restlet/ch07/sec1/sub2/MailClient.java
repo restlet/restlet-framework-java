@@ -46,11 +46,12 @@ public class MailClient {
         ClientResource mailClient = new ClientResource(
                 "http://localhost:8111/accounts/123/mails/abc");
         mailClient.getRequest().getCookies()
-                .add(new Cookie("Credentials", "scott=tiger"));
+                .add(new Cookie("Credentials", "chunkylover53=pwd"));
 
         Form form = new Form();
-        form.add("subject", "Message to J�r�me");
+        form.add("subject", "Message to Jérôme");
         form.add("content", "Doh!\n\nAllo?");
+        System.out.println(form.getWebRepresentation());
         mailClient.put(form).write(System.out);
     }
 

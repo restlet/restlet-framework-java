@@ -51,6 +51,11 @@ import org.restlet.resource.ClientResource;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.Verifier;
 
+/**
+ * Naive implementation of a cookie authenticator.
+ * 
+ * @author Jerome Louvel
+ */
 public class CookieAuthenticator extends ChallengeAuthenticator {
 
     public CookieAuthenticator(Context context, boolean optional, String realm) {
@@ -64,6 +69,25 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
 
     public CookieAuthenticator(Context context, String realm) {
         super(context, ChallengeScheme.HTTP_COOKIE, realm);
+    }
+
+    @Override
+    protected void afterHandle(Request request, Response response) {
+        super.afterHandle(request, response);
+        Cookie cookie = request.getCookies().getFirst("Credentials");
+
+        if (request.getClientInfo().isAuthenticated() && (cookie == null)) {
+            String identifier = request.getChallengeResponse().getIdentifier();
+            String secret = new String(request.getChallengeResponse()
+                    .getSecret());
+            CookieSetting cookieSetting = new CookieSetting("Credentials",
+                    identifier + "=" + secret);
+            cookieSetting.setAccessRestricted(true);
+            cookieSetting.setPath("/");
+            cookieSetting.setComment("Unsecured cookie based authentication");
+            cookieSetting.setMaxAge(30);
+            response.getCookieSettings().add(cookieSetting);
+        }
     }
 
     @Override
@@ -108,25 +132,6 @@ public class CookieAuthenticator extends ChallengeAuthenticator {
         response.setEntity(new TemplateRepresentation(ftl, response
                 .getRequest().getResourceRef(), MediaType.TEXT_HTML));
         response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-    }
-
-    @Override
-    protected void afterHandle(Request request, Response response) {
-        super.afterHandle(request, response);
-        Cookie cookie = request.getCookies().getFirst("Credentials");
-
-        if (request.getClientInfo().isAuthenticated() && (cookie == null)) {
-            String identifier = request.getChallengeResponse().getIdentifier();
-            String secret = new String(request.getChallengeResponse()
-                    .getSecret());
-            CookieSetting cookieSetting = new CookieSetting("Credentials",
-                    identifier + "=" + secret);
-            cookieSetting.setAccessRestricted(true);
-            cookieSetting.setPath("/");
-            cookieSetting.setComment("Unsecured cookie based authentication");
-            cookieSetting.setMaxAge(30);
-            response.getCookieSettings().add(cookieSetting);
-        }
     }
 
 }

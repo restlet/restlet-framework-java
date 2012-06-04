@@ -31,12 +31,12 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.example.book.restlet.ch07.sec1.sub1;
+package org.restlet.example.book.restlet.ch07.sec1.sub2;
 
 /**
  * The mail representation bean.
  */
-public class MailRepresentation {
+public class Mail {
 
     private String status;
 

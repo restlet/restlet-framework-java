@@ -291,8 +291,35 @@ public class Directory extends Finder {
      * Sets the reference comparator based on classic alphabetical order.
      * 
      * @see #setComparator(Comparator)
+     * @deprecated Call {@link #useAlphaComparator()} instead
      */
+    @Deprecated
     public void setAlphaComparator() {
+        useAlphaComparator();
+    }
+
+    /**
+     * Sets the reference comparator based on the more friendly "Alphanum
+     * Algorithm" created by David Koelle. The internal implementation used is
+     * based on an optimized public domain implementation provided by Rob
+     * Heittman from the Solertium Corporation.
+     * 
+     * @see <a href="http://www.davekoelle.com/alphanum.html">The original
+     *      Alphanum Algorithm from David Koelle</a>
+     * @see #setComparator(Comparator)
+     * @deprecated Call {@link #useAlphaComparator()} instead
+     */
+    @Deprecated
+    public void setAlphaNumComparator() {
+        useAlphaNumComparator();
+    }
+
+    /**
+     * Sets the reference comparator based on classic alphabetical order.
+     * 
+     * @see #setComparator(Comparator)
+     */
+    public void useAlphaComparator() {
         setComparator(new AlphabeticalComparator());
     }
 
@@ -306,7 +333,7 @@ public class Directory extends Finder {
      *      Alphanum Algorithm from David Koelle</a>
      * @see #setComparator(Comparator)
      */
-    public void setAlphaNumComparator() {
+    public void useAlphaNumComparator() {
         setComparator(new AlphabeticalComparator());
     }
 

@@ -6,6 +6,9 @@ Changes log
 - @version-full@ (@release-date@)
     - Bug fixed
     - API changes
+       - Renamed Directory#setAlphaComparator and setAlphaNumComparator
+         methods into useAlphaComparator and useAlphaNumComparator with
+         proper deprecation. Suggested by Tim Peierls.
     - Misc
        - Reverted Role equality test to default Java object equality as
          equality based on name could cause issues with MemoryRealm
@@ -28,7 +31,7 @@ Changes log
        - Fixed retrieval of SSL cipher suites and client certificates
          for the internal HTTP client.
        - Fixed security bug in the XML extension that allows XML external 
-         entity attacks. Reported by Nicolas Grégoire, 
+         entity attacks. Reported by Nicolas Grï¿½goire, 
          Caleb James DeLisle and Fabio Mancinelli.
     - API changes
        - Renamed ReadableListener into ReadingListener

@@ -40,8 +40,9 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.Get;
+import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
@@ -51,10 +52,10 @@ import org.restlet.resource.ServerResource;
  */
 public class MailServerResource extends ServerResource {
 
-    @Override
-    protected Representation get() throws ResourceException {
-        // Create the mail representation bean
-        MailRepresentation mail = new MailRepresentation();
+    @Get
+    public Representation toHtml() throws ResourceException {
+        // Create the mail bean
+        Mail mail = new Mail();
         mail.setStatus("received");
         mail.setSubject("Message to self");
         mail.setContent("Doh!");
@@ -70,20 +71,12 @@ public class MailServerResource extends ServerResource {
         return new TemplateRepresentation(mailFtl, mail, MediaType.TEXT_HTML);
     }
 
-    @Override
-    protected Representation put(Representation input) {
-        try {
-            String inputText = input.getText();
-            System.out.println(inputText);
-            Form form = new Form(inputText);
-
-            for (Parameter entry : form) {
-                System.out.println(entry.getName() + "=" + entry.getValue());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    @Put
+    public String store(Form form) {
+        for (Parameter entry : form) {
+            System.out.println(entry.getName() + "=" + entry.getValue());
         }
 
-        return new StringRepresentation("Mail updated!");
+        return "Mail updated!";
     }
 }

@@ -69,7 +69,7 @@ public class MailServerApplication extends Application {
                 MailServerResource.class);
 
         MapVerifier verifier = new MapVerifier();
-        verifier.getLocalSecrets().put("scott", "tiger".toCharArray());
+        verifier.getLocalSecrets().put("chunkylover53", "pwd".toCharArray());
 
         CookieAuthenticator authenticator = new CookieAuthenticator(
                 getContext(), "Cookie Test");

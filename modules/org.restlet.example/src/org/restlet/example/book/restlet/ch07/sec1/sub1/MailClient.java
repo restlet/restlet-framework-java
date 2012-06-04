@@ -44,9 +44,11 @@ public class MailClient {
     public static void main(String[] args) throws Exception {
         ClientResource mailClient = new ClientResource(
                 "http://localhost:8111/accounts/123/mails/abc");
+
         Form form = new Form();
-        form.add("subject", "Message to J�r�me");
+        form.add("subject", "Message to Jérôme");
         form.add("content", "Doh!\n\nAllo?");
+        System.out.println(form.getWebRepresentation());
         mailClient.put(form).write(System.out);
     }
 
