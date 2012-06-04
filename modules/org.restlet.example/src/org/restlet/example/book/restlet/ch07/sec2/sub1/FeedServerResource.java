@@ -63,8 +63,8 @@ public class FeedServerResource extends ServerResource {
 
         for (int i = 1; i < 11; i++) {
             entry = new Entry();
-            entry.setTitle(new Text("Mail n�" + i));
-            entry.setSummary("Doh! This is the content of mail n�" + i);
+            entry.setTitle(new Text("Mail #" + i));
+            entry.setSummary("Doh! This is the content of mail #" + i);
             result.getEntries().add(entry);
         }
 
@@ -84,9 +84,9 @@ public class FeedServerResource extends ServerResource {
 
         for (int i = 1; i < 11; i++) {
             entry = new SyndEntryImpl();
-            entry.setTitle("Mail n�" + i);
+            entry.setTitle("Mail #" + i);
             description = new SyndContentImpl();
-            description.setValue("Doh! This is the content of mail n�" + i);
+            description.setValue("Doh! This is the content of mail #" + i);
             entry.setDescription(description);
             entries.add(entry);
         }
