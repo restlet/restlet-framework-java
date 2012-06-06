@@ -5,6 +5,7 @@
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />
+		<distribution id="p2" />
 	</distributions>
 
 	<dependencies>
