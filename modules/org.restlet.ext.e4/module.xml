@@ -1,0 +1,17 @@
+<module includes="osgi" id="e4" type="standard" package="org.restlet.ext.e4">
+	<name>Restlet Extension - e4</name>
+	<description>Support for the WADL specification.</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+		<distribution id="p2" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="module" id="core" />
+		<dependency type="library" id="osgi" maven-scope="compile" />
+		<dependency type="library" id="e4" maven-scope="compile" />
+	</dependencies>
+	<wikiUri>TODO</wikiUri>
+
+</module>

@@ -4,5 +4,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet.ext.xml"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.eclipse.e4"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet.ext.e4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
