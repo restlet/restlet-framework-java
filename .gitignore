@@ -8,6 +8,8 @@ org.eclipse.jdt.core.prefs
 /modules/org.restlet.ext.atom/target
 /modules/org.restlet.ext.crypto/bin
 /modules/org.restlet.ext.crypto/target
+/modules/org.restlet.ext.e4/bin
+/modules/org.restlet.ext.e4/target
 /modules/org.restlet.ext.emf/bin
 /modules/org.restlet.ext.emf/target
 /modules/org.restlet.ext.fileupload/bin
@@ -50,6 +52,8 @@ org.eclipse.jdt.core.prefs
 /modules/org.restlet.ext.odata/target
 /modules/org.restlet.ext.openid/bin
 /modules/org.restlet.ext.openid/target
+/modules/org.restlet.ext.osgi/bin
+/modules/org.restlet.ext.osgi/target
 /modules/org.restlet.ext.rdf/bin
 /modules/org.restlet.ext.rdf/target
 /modules/org.restlet.ext.rome/bin
