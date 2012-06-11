@@ -129,9 +129,10 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
      * 
      * @param javaMethod
      *            The Java method.
+     * @param args TODO
      * @return A new instance of {@link Request}.
      */
-    protected Request getRequest(Method javaMethod) {
+    protected Request getRequest(Method javaMethod, Object[] args) {
         return getClientResource().createRequest();
     }
 
@@ -226,7 +227,7 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
                 }
 
                 // Clone the prototype request
-                Request request = getRequest(javaMethod);
+                Request request = getRequest(javaMethod, args);
 
                 // The Java method was annotated
                 request.setMethod(annotationInfo.getRestletMethod());

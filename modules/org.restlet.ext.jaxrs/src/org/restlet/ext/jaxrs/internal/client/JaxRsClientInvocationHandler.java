@@ -71,8 +71,8 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
     }
 
     @Override
-    protected Request getRequest(Method javaMethod) {
-        Request request = super.getRequest(javaMethod);
+    protected Request getRequest(Method javaMethod, Object[] args) {
+        Request request = super.getRequest(javaMethod, args);
 
         Path methodPathAnnotation = javaMethod.getAnnotation(Path.class);
         if (methodPathAnnotation != null) {
