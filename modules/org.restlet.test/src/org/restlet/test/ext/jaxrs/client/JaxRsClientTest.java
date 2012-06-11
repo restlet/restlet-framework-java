@@ -45,8 +45,8 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.ext.jaxrs.JaxRsClientResource;
 import org.restlet.ext.xstream.XstreamConverter;
-import org.restlet.test.ext.jaxrs.services.point.EchoResource;
-import org.restlet.test.ext.jaxrs.services.point.EchoResourceImpl;
+import org.restlet.test.ext.jaxrs.services.echo.EchoResource;
+import org.restlet.test.ext.jaxrs.services.echo.EchoResourceImpl;
 import org.restlet.test.ext.jaxrs.services.tests.JaxRsTestCase;
 
 /**
@@ -56,97 +56,108 @@ import org.restlet.test.ext.jaxrs.services.tests.JaxRsTestCase;
  * @see <a
  *      href="https://github.com/restlet/restlet-framework-java/issues/441">Issue
  *      #441</a>
- * @author Shaun Elliot
+ * @author Shaun Elliott
  */
 public class JaxRsClientTest extends JaxRsTestCase {
-	
-	//TODO - add tests for other param types: QueryParam, MatrixParam, CookieParam, etc.
-	
+
+	// TODO - add tests for other param types: QueryParam, MatrixParam,
+	// CookieParam, etc.
+
 	private AtomicBoolean _serverStarted = new AtomicBoolean(false);
+	private Object lock = new Object();
 
-    @Override
-    protected Application getApplication() {
-        return new Application() {
-            @Override
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-            public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(EchoResourceImpl.class);
-            }
-        };
-    }
+	@Override
+	protected Application getApplication() {
+		return new Application() {
+			@Override
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			public Set<Class<?>> getClasses() {
+				return (Set) Collections.singleton(EchoResourceImpl.class);
+			}
+		};
+	}
 
-    public void testEchoString() throws Exception {
-        final JaxRsClientTest clientTest = startSocketServerDaemon();
-        
-        // give the server a chance to come up before using it
-        while(!_serverStarted.get()){
-        	Thread.sleep(100);
-        }
+	public void testEchoString() throws Exception {
+		final JaxRsClientTest clientTest = startSocketServerDaemon();
 
-        EchoResource echoResource = JaxRsClientResource.createJaxRsClient(
-                "http://localhost:" + clientTest.getServerPort(),
-                EchoResource.class);
+		// give the server a chance to come up before using it
+		while (!_serverStarted.get()) {
+			Thread.sleep(100);
+			System.out.println("waiting for the server to start...");
+		}
 
-        assertEquals("this is a test", echoResource.echo("this is a test"));
+		EchoResource echoResource = JaxRsClientResource.createJaxRsClient(
+				"http://localhost:" + clientTest.getServerPort(),
+				EchoResource.class);
 
-        clientTest.stopServer();
-        _serverStarted.set(false);
-    }
+		assertEquals("this is a test", echoResource.echo("this is a test"));
 
-    /*
-     * Shows the problem addressed in:
-     * https://github.com/restlet/restlet-framework-java/issues/441
-     */
-    public void testEchoPoint() throws Exception {
-        final JaxRsClientTest clientTest = startSocketServerDaemon();
-        
-        // give the server a chance to come up before using it
-        while(!_serverStarted.get()){
-        	Thread.sleep(100);
-        }
+		synchronized (lock) {
+			clientTest.stopServer();
+			_serverStarted.set(false);
+		}
+	}
 
-        
-        EchoResource echoResource = JaxRsClientResource.createJaxRsClient(
-                "http://localhost:" + clientTest.getServerPort(),
-                EchoResource.class);
+	/*
+	 * Shows the problem addressed in:
+	 * https://github.com/restlet/restlet-framework-java/issues/441
+	 */
+	public void testEchoPoint() throws Exception {
+		final JaxRsClientTest clientTest = startSocketServerDaemon();
 
-        assertEquals(1, echoResource.echoPoint(new Point(1, 2)).x);
+		// give the server a chance to come up before using it
+		while (!_serverStarted.get()) {
+			Thread.sleep(100);
+			System.out.println("waiting for the server to start...");
+		}
 
-        clientTest.stopServer();
-        _serverStarted.set(false);
-    }
+		EchoResource echoResource = JaxRsClientResource.createJaxRsClient(
+				"http://localhost:" + clientTest.getServerPort(),
+				EchoResource.class);
 
-    private JaxRsClientTest startSocketServerDaemon()
-            throws InterruptedException {
-    	
-    	//there are a bunch of converters registered in the unit test project, we only want xstream
-    	List<ConverterHelper> registeredConverters = Engine.getInstance().getRegisteredConverters();
-    	for (int i = registeredConverters.size() - 1; i >= 0; i--) {
+		assertEquals(1, echoResource.echoPointHeaderParam(new Point(1, 2)).x);
+
+		assertEquals(3, echoResource.echoPointQueryParam(new Point(3, 4)).x);
+
+		synchronized (lock) {
+			clientTest.stopServer();
+			_serverStarted.set(false);
+		}
+	}
+
+	private JaxRsClientTest startSocketServerDaemon()
+			throws InterruptedException {
+
+		// there are a bunch of converters registered in the unit test project,
+		// we only want xstream
+		List<ConverterHelper> registeredConverters = Engine.getInstance()
+				.getRegisteredConverters();
+		for (int i = registeredConverters.size() - 1; i >= 0; i--) {
 			ConverterHelper converterHelper = registeredConverters.get(i);
-			if(!(converterHelper instanceof XstreamConverter)){
+			if (!(converterHelper instanceof XstreamConverter)) {
 				registeredConverters.remove(i);
 			}
 		}
-    	
-        final JaxRsClientTest clientTest = new JaxRsClientTest();
-        setUseTcp(true);
 
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    clientTest.startServer(clientTest.createApplication());
-                    _serverStarted.set(true);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+		final JaxRsClientTest clientTest = new JaxRsClientTest();
+		setUseTcp(true);
 
-        t.setDaemon(true);
-        t.start();
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					clientTest.startServer(clientTest.createApplication());
+					_serverStarted.set(true);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
 
-        return clientTest;
-    }
+		t.setDaemon(true);
+		t.start();
+
+		return clientTest;
+	}
 
 }
