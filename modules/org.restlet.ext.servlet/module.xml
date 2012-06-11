@@ -9,13 +9,27 @@
 
 	<dependencies>
 		<dependency type="library" id="servlet" maven-scope="provided" primary="true" />
+		<dependency includes="osgi" type="library" id="osgi" maven-scope="compile" />
+		<dependency includes="osgi" type="library" id="e4" maven-scope="compile" />
 		<dependency type="module" id="core" />
+		<dependency includes="osgi" type="module" id="osgi" />
 	</dependencies>
 
 	<source edition="gae">
 		<files-sets>
 <![CDATA[
-         <exclude name="src/org/restlet/engine/internal/ServletLogger.java" />
+        <exclude name="OSGI-INF*" />
+        <exclude name="src/org/restlet/ext/servlet/ApplicationServlet.java" />
+        <exclude name="src/org/restlet/ext/servlet/RestletServletService.java" />
+]]>
+		</files-sets>
+	</source>
+	<source edition="jee">
+		<files-sets>
+<![CDATA[
+        <exclude name="OSGI-INF*" /> 
+        <exclude name="src/org/restlet/ext/servlet/ApplicationServlet.java" />
+        <exclude name="src/org/restlet/ext/servlet/RestletServletService.java" />
 ]]>
 		</files-sets>
 	</source>

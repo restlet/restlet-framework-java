@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.restlet.ext.osgi.servlet">
+   <implementation class="org.restlet.ext.osgi.servlet.RestletServletService"/>
+   <reference bind="bindHttpService" cardinality="0..1" interface="org.osgi.service.http.HttpService" name="HttpService" policy="dynamic" unbind="unbindHttpService"/>
+   <reference bind="bindLogService" cardinality="0..1" interface="org.osgi.service.log.LogService" name="LogService" policy="dynamic" unbind="unbindLogService"/>
+   <reference bind="bindApplicationProvider" cardinality="0..n" interface="org.restlet.ext.osgi.IApplicationProvider" name="IApplicationProvider" policy="dynamic" unbind="unbindApplicationProvider"/>
+</scr:component>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="org.restlet.ext.osgi.examples.app">
+   <implementation class="org.restlet.ext.osgi.ApplicationProvider"/>
+   <service>
+      <provide interface="org.restlet.ext.osgi.IApplicationProvider"/>
+   </service>
+   <property name="alias" type="String" value="/"/>
+   <reference bind="bindRouterProvider" cardinality="1..1" interface="org.restlet.ext.osgi.IRouterProvider" name="IRouterProvider" policy="static" unbind="unbindRouterProvider"/>
+</scr:component>

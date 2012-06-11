@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.eclipse.e4"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.osgi"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet.ext.osgi"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -10,6 +10,31 @@
 	<dependencies>
 		<dependency type="module" id="core" />
 		<dependency type="module" id="xml" />
+		<dependency includes="osgi" type="module" id="e4" />
+		<dependency includes="osgi" type="library" id="osgi" maven-scope="compile" />
+		<dependency includes="osgi" type="library" id="e4" maven-scope="compile" />
 	</dependencies>
 	<wikiUri>72-restlet</wikiUri>
+
+	<source edition="gae">
+		<files-sets>
+<![CDATA[
+         <exclude name="src/org/restlet/ext/wadl/InjectedWadlServerResource.java" />
+]]>
+		</files-sets>
+	</source>
+	<source edition="jee">
+		<files-sets>
+<![CDATA[
+         <exclude name="src/org/restlet/ext/wadl/InjectedWadlServerResource.java" />
+]]>
+		</files-sets>
+	</source>
+	<source edition="jse">
+		<files-sets>
+<![CDATA[
+         <exclude name="src/org/restlet/ext/wadl/InjectedWadlServerResource.java" />
+]]>
+		</files-sets>
+	</source>
 </module>

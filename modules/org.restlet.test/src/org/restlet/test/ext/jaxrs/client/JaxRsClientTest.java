@@ -35,11 +35,16 @@ package org.restlet.test.ext.jaxrs.client;
 
 import java.awt.Point;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.ws.rs.core.Application;
 
+import org.restlet.engine.Engine;
+import org.restlet.engine.converter.ConverterHelper;
 import org.restlet.ext.jaxrs.JaxRsClientResource;
+import org.restlet.ext.xstream.XstreamConverter;
 import org.restlet.test.ext.jaxrs.services.point.EchoResource;
 import org.restlet.test.ext.jaxrs.services.point.EchoResourceImpl;
 import org.restlet.test.ext.jaxrs.services.tests.JaxRsTestCase;
@@ -54,6 +59,10 @@ import org.restlet.test.ext.jaxrs.services.tests.JaxRsTestCase;
  * @author Shaun Elliot
  */
 public class JaxRsClientTest extends JaxRsTestCase {
+	
+	//TODO - add tests for other param types: QueryParam, MatrixParam, CookieParam, etc.
+	
+	private AtomicBoolean _serverStarted = new AtomicBoolean(false);
 
     @Override
     protected Application getApplication() {
@@ -68,6 +77,11 @@ public class JaxRsClientTest extends JaxRsTestCase {
 
     public void testEchoString() throws Exception {
         final JaxRsClientTest clientTest = startSocketServerDaemon();
+        
+        // give the server a chance to come up before using it
+        while(!_serverStarted.get()){
+        	Thread.sleep(100);
+        }
 
         EchoResource echoResource = JaxRsClientResource.createJaxRsClient(
                 "http://localhost:" + clientTest.getServerPort(),
@@ -76,6 +90,7 @@ public class JaxRsClientTest extends JaxRsTestCase {
         assertEquals("this is a test", echoResource.echo("this is a test"));
 
         clientTest.stopServer();
+        _serverStarted.set(false);
     }
 
     /*
@@ -84,7 +99,13 @@ public class JaxRsClientTest extends JaxRsTestCase {
      */
     public void testEchoPoint() throws Exception {
         final JaxRsClientTest clientTest = startSocketServerDaemon();
+        
+        // give the server a chance to come up before using it
+        while(!_serverStarted.get()){
+        	Thread.sleep(100);
+        }
 
+        
         EchoResource echoResource = JaxRsClientResource.createJaxRsClient(
                 "http://localhost:" + clientTest.getServerPort(),
                 EchoResource.class);
@@ -92,10 +113,21 @@ public class JaxRsClientTest extends JaxRsTestCase {
         assertEquals(1, echoResource.echoPoint(new Point(1, 2)).x);
 
         clientTest.stopServer();
+        _serverStarted.set(false);
     }
 
     private JaxRsClientTest startSocketServerDaemon()
             throws InterruptedException {
+    	
+    	//there are a bunch of converters registered in the unit test project, we only want xstream
+    	List<ConverterHelper> registeredConverters = Engine.getInstance().getRegisteredConverters();
+    	for (int i = registeredConverters.size() - 1; i >= 0; i--) {
+			ConverterHelper converterHelper = registeredConverters.get(i);
+			if(!(converterHelper instanceof XstreamConverter)){
+				registeredConverters.remove(i);
+			}
+		}
+    	
         final JaxRsClientTest clientTest = new JaxRsClientTest();
         setUseTcp(true);
 
@@ -104,6 +136,7 @@ public class JaxRsClientTest extends JaxRsTestCase {
             public void run() {
                 try {
                     clientTest.startServer(clientTest.createApplication());
+                    _serverStarted.set(true);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -113,8 +146,6 @@ public class JaxRsClientTest extends JaxRsTestCase {
         t.setDaemon(true);
         t.start();
 
-        // give the server a chance to come up before using it
-        Thread.sleep(500);
         return clientTest;
     }
 
