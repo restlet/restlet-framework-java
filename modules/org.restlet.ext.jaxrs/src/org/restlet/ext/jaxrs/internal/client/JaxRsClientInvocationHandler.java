@@ -33,14 +33,23 @@
 
 package org.restlet.ext.jaxrs.internal.client;
 
+import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 
 import org.restlet.Request;
+import org.restlet.engine.header.Header;
 import org.restlet.engine.resource.ClientInvocationHandler;
 import org.restlet.ext.jaxrs.JaxRsClientResource;
+import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+import org.restlet.service.ConverterService;
+import org.restlet.util.Series;
 
 /**
  * Reflection proxy invocation handler created for the
@@ -56,7 +65,9 @@ import org.restlet.resource.ClientResource;
  */
 public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> {
 
-    /**
+    private ClientResource clientResource;
+
+	/**
      * Constructor.
      * 
      * @param clientResource
@@ -68,13 +79,54 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
             Class<? extends T> resourceInterface) {
         super(clientResource, resourceInterface, JaxRsAnnotationUtils
                 .getInstance());
+        
+        this.clientResource = clientResource;
     }
 
     @Override
     protected Request getRequest(Method javaMethod, Object[] args) {
         Request request = super.getRequest(javaMethod, args);
+        
+        setRequestParams(javaMethod, args, request);
 
-        Path methodPathAnnotation = javaMethod.getAnnotation(Path.class);
+        setRequestPathToAnnotationPath(javaMethod, request);
+
+        return request;
+    }
+
+	private void setRequestParams(Method javaMethod, Object[] args,
+			Request request) {
+		Annotation[][] parameterAnnotations = javaMethod.getParameterAnnotations();
+        for( Annotation[] annotations : parameterAnnotations ) {
+            for( Annotation annotation : annotations ) {
+                
+                if(annotation instanceof HeaderParam) {
+                    HeaderParam headerParam = (HeaderParam)annotation;
+                    String value = headerParam.value();
+                    Series< Header > headers = Util.getHttpHeaders( request );
+
+                    ConverterService converterService = clientResource.getApplication().getConverterService();
+                    
+                    //TODO - don't just use args[0], each param should be set
+                    Representation representation = converterService.toRepresentation( args[0] );
+                    try {
+                        headers.add( value, representation.getText()  );
+                    }
+                    catch ( IOException exception ) {
+                        throw new RuntimeException(exception);
+                    }
+                } else if(annotation instanceof QueryParam) {
+                    // TODO - encode & map QueryParam
+                    //resourceRef.addQueryParameter( new Parameter( "point", "<java.awt.Point>   <x>22</x>   <y>33</y> </java.awt.Point>" ) );
+                }
+                // TODO - other param types
+            }
+        }
+	}
+
+	private void setRequestPathToAnnotationPath(Method javaMethod,
+			Request request) {
+		Path methodPathAnnotation = javaMethod.getAnnotation(Path.class);
         if (methodPathAnnotation != null) {
             String methodPath = methodPathAnnotation.value();
             if (methodPath != null && methodPath.length() > 0) {
@@ -82,8 +134,6 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
                         request.getResourceRef().getPath() + "/" + methodPath);
             }
         }
-
-        return request;
-    }
+	}
 
 }

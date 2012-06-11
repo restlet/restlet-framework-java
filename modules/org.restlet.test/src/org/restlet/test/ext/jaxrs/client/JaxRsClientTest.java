@@ -43,8 +43,8 @@ import javax.ws.rs.core.Application;
 
 import org.restlet.engine.Engine;
 import org.restlet.engine.converter.ConverterHelper;
-import org.restlet.ext.emf.EmfConverter;
 import org.restlet.ext.jaxrs.JaxRsClientResource;
+import org.restlet.ext.xstream.XstreamConverter;
 import org.restlet.test.ext.jaxrs.services.point.EchoResource;
 import org.restlet.test.ext.jaxrs.services.point.EchoResourceImpl;
 import org.restlet.test.ext.jaxrs.services.tests.JaxRsTestCase;
@@ -59,6 +59,8 @@ import org.restlet.test.ext.jaxrs.services.tests.JaxRsTestCase;
  * @author Shaun Elliot
  */
 public class JaxRsClientTest extends JaxRsTestCase {
+	
+	//TODO - add tests for other param types: QueryParam, MatrixParam, CookieParam, etc.
 	
 	private AtomicBoolean _serverStarted = new AtomicBoolean(false);
 
@@ -88,6 +90,7 @@ public class JaxRsClientTest extends JaxRsTestCase {
         assertEquals("this is a test", echoResource.echo("this is a test"));
 
         clientTest.stopServer();
+        _serverStarted.set(false);
     }
 
     /*
@@ -110,16 +113,17 @@ public class JaxRsClientTest extends JaxRsTestCase {
         assertEquals(1, echoResource.echoPoint(new Point(1, 2)).x);
 
         clientTest.stopServer();
+        _serverStarted.set(false);
     }
 
     private JaxRsClientTest startSocketServerDaemon()
             throws InterruptedException {
     	
-    	//for some reason the EMF converter gets scored at level with other more appropriate converters
+    	//there are a bunch of converters registered in the unit test project, we only want xstream
     	List<ConverterHelper> registeredConverters = Engine.getInstance().getRegisteredConverters();
     	for (int i = registeredConverters.size() - 1; i >= 0; i--) {
 			ConverterHelper converterHelper = registeredConverters.get(i);
-			if(converterHelper instanceof EmfConverter){
+			if(!(converterHelper instanceof XstreamConverter)){
 				registeredConverters.remove(i);
 			}
 		}

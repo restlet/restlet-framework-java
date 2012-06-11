@@ -70,7 +70,10 @@ import javax.ws.rs.core.UriInfo;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.engine.converter.ConverterHelper;
+import org.restlet.engine.converter.ConverterUtils;
 import org.restlet.engine.header.Header;
+import org.restlet.engine.resource.VariantInfo;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.PathSegmentImpl;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
@@ -92,6 +95,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.util.Series;
 
 /**
@@ -217,6 +221,12 @@ public class ParameterList {
                 DefaultValue defaultValue) throws ConvertParameterException,
                 WebApplicationException {
             WebApplicationException constructorWae = null;
+            
+            Object convertWithConverterUtils = convertWithConverterUtils(paramValue);
+			if(convertWithConverterUtils != null){
+				return convertWithConverterUtils;
+            }
+            
             try {
                 final Constructor<?> constr = this.convertTo
                         .getConstructor(String.class);
@@ -271,6 +281,25 @@ public class ParameterList {
                         paramValue, ite);
             }
         }
+
+		private Object convertWithConverterUtils(String paramValue) {
+			ConverterHelper converterHelper = ConverterUtils.getBestHelper(this.tlContext.get().getRequest()
+                    .getEntity(), this.convertTo, null);
+            List< VariantInfo > variants = converterHelper.getVariants(this.convertTo);
+            for(VariantInfo variantInfo : variants) {
+                try {
+                    Object object = converterHelper.toObject(new StringRepresentation(paramValue, variantInfo.getMediaType()), this.convertTo, null );
+                    if(object != null) {
+                        return object;
+                    }
+                }
+                catch (Exception exception) {
+                    // -- don't worry about it...proceed with the old style conversion
+                }
+            }
+            
+            return null;
+		}
 
         protected Object convertParamValues(Iterator<String> paramValueIter)
                 throws ConvertParameterException {
