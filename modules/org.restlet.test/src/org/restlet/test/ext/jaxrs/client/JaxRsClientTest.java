@@ -35,10 +35,15 @@ package org.restlet.test.ext.jaxrs.client;
 
 import java.awt.Point;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.ws.rs.core.Application;
 
+import org.restlet.engine.Engine;
+import org.restlet.engine.converter.ConverterHelper;
+import org.restlet.ext.emf.EmfConverter;
 import org.restlet.ext.jaxrs.JaxRsClientResource;
 import org.restlet.test.ext.jaxrs.services.point.EchoResource;
 import org.restlet.test.ext.jaxrs.services.point.EchoResourceImpl;
@@ -54,6 +59,8 @@ import org.restlet.test.ext.jaxrs.services.tests.JaxRsTestCase;
  * @author Shaun Elliot
  */
 public class JaxRsClientTest extends JaxRsTestCase {
+	
+	private AtomicBoolean _serverStarted = new AtomicBoolean(false);
 
     @Override
     protected Application getApplication() {
@@ -68,6 +75,11 @@ public class JaxRsClientTest extends JaxRsTestCase {
 
     public void testEchoString() throws Exception {
         final JaxRsClientTest clientTest = startSocketServerDaemon();
+        
+        // give the server a chance to come up before using it
+        while(!_serverStarted.get()){
+        	Thread.sleep(100);
+        }
 
         EchoResource echoResource = JaxRsClientResource.createJaxRsClient(
                 "http://localhost:" + clientTest.getServerPort(),
@@ -84,7 +96,13 @@ public class JaxRsClientTest extends JaxRsTestCase {
      */
     public void testEchoPoint() throws Exception {
         final JaxRsClientTest clientTest = startSocketServerDaemon();
+        
+        // give the server a chance to come up before using it
+        while(!_serverStarted.get()){
+        	Thread.sleep(100);
+        }
 
+        
         EchoResource echoResource = JaxRsClientResource.createJaxRsClient(
                 "http://localhost:" + clientTest.getServerPort(),
                 EchoResource.class);
@@ -96,6 +114,16 @@ public class JaxRsClientTest extends JaxRsTestCase {
 
     private JaxRsClientTest startSocketServerDaemon()
             throws InterruptedException {
+    	
+    	//for some reason the EMF converter gets scored at level with other more appropriate converters
+    	List<ConverterHelper> registeredConverters = Engine.getInstance().getRegisteredConverters();
+    	for (int i = registeredConverters.size() - 1; i >= 0; i--) {
+			ConverterHelper converterHelper = registeredConverters.get(i);
+			if(converterHelper instanceof EmfConverter){
+				registeredConverters.remove(i);
+			}
+		}
+    	
         final JaxRsClientTest clientTest = new JaxRsClientTest();
         setUseTcp(true);
 
@@ -104,6 +132,7 @@ public class JaxRsClientTest extends JaxRsTestCase {
             public void run() {
                 try {
                     clientTest.startServer(clientTest.createApplication());
+                    _serverStarted.set(true);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -113,8 +142,6 @@ public class JaxRsClientTest extends JaxRsTestCase {
         t.setDaemon(true);
         t.start();
 
-        // give the server a chance to come up before using it
-        Thread.sleep(500);
         return clientTest;
     }
 

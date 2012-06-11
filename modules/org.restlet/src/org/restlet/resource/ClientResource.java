@@ -541,7 +541,7 @@ public class ClientResource extends UniformResource {
                 result = dispatcher;
                 // [enddef]
                 // [ifdef gwt] uncomment
-                result = new Client(protocol);
+                // result = new Client(protocol);
                 // [enddef]
             }
         }
