@@ -5,6 +5,8 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
+       - Fixed sharing of ClientResource context with the underlying connector, 
+         when this ClientResource is used outside a Component.
     - API changes
        - Renamed Directory#setAlphaComparator and setAlphaNumComparator
          methods into useAlphaComparator and useAlphaNumComparator with
@@ -42,9 +44,7 @@ Changes log
          SelectionListener#onSelected() method.
        - Added missing ClientResource#setProxyChallengeResponse(...),
          ServerResource#setProxyChallengeRequests(...) and
-         Resource#getProxyChallenge...() methods. Reported by Tim Peierls.
-       - Added ClientResource#accept(...) and ClientInfo#accept(...) 
-         methods for easier preferences customization.
+         Resource#getProxyChallenge...() methods. Reported ,tion.
        - Added methods to MetadataService to retrieve the list of extension
          names, per metadata subclass.
        - Added constructor with just a name to Role.
