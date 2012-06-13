@@ -537,6 +537,7 @@ public class ClientResource extends UniformResource {
             if (protocol != null) {
                 // [ifndef gwt]
                 org.restlet.engine.TemplateDispatcher dispatcher = new org.restlet.engine.TemplateDispatcher();
+                dispatcher.setContext(getContext());
                 dispatcher.setNext(new Client(protocol));
                 result = dispatcher;
                 // [enddef]
