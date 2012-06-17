@@ -270,11 +270,11 @@ public abstract class Filter extends Restlet {
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
-            super.start();
-
             if (getNext() != null) {
                 getNext().start();
             }
+
+            super.start();
         }
     }
 
@@ -284,11 +284,11 @@ public abstract class Filter extends Restlet {
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
+            super.stop();
+
             if (getNext() != null) {
                 getNext().stop();
             }
-
-            super.stop();
         }
     }
 

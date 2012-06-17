@@ -582,8 +582,6 @@ public class Application extends Restlet {
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
-            super.start();
-
             if (getHelper() != null) {
                 getHelper().start();
             }
@@ -597,6 +595,8 @@ public class Application extends Restlet {
             if (getOutboundRoot() != null) {
                 getOutboundRoot().start();
             }
+
+            super.start();
         }
     }
 
@@ -608,6 +608,8 @@ public class Application extends Restlet {
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
+            super.stop();
+
             if (getOutboundRoot() != null) {
                 getOutboundRoot().stop();
             }
@@ -624,8 +626,6 @@ public class Application extends Restlet {
 
             // Clear the annotations cache
             AnnotationUtils.clearCache();
-
-            super.stop();
         }
     }
 

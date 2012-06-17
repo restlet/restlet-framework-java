@@ -213,20 +213,22 @@ public class Client extends Connector {
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
-            super.start();
             if (getHelper() != null) {
                 getHelper().start();
             }
+
+            super.start();
         }
     }
 
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
+            super.stop();
+
             if (getHelper() != null) {
                 getHelper().stop();
             }
-            super.stop();
         }
     }
 
