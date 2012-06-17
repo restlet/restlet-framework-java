@@ -7,6 +7,12 @@ Changes log
     - Bug fixed
        - Fixed bug in Reference#getParentRef with relative URIs.
          Reported by Christian Bauer.
+       - Fixed closing issue with pipes used by BioUtils.getReader
+         and getInputStream methods.
+       - Fixed concurrency bug upon application start or strop that could
+         cause erros such as "no Restlet defined to process calls. Maybe it
+         wasn't properly started" errors (500). Reported by several persons 
+         including David Fuchs, Danny Leshem, Yunwu Zhu and Bjorn Roche.
     - Misc
        - Reverted Role equality test to default Java object equality as
          equality based on name could cause issues with MemoryRealm

@@ -181,11 +181,9 @@ public class Client extends Connector {
             getHelper().handle(request, response);
         } else {
             StringBuilder sb = new StringBuilder();
-            sb
-                    .append("No available client connector supports the required protocol: ");
+            sb.append("No available client connector supports the required protocol: ");
             sb.append("'").append(request.getProtocol().getName()).append("'.");
-            sb
-                    .append(" Please add the JAR of a matching connector to your classpath.");
+            sb.append(" Please add the JAR of a matching connector to your classpath.");
             response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, sb.toString());
         }
     }
@@ -243,20 +241,23 @@ public class Client extends Connector {
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
-            super.start();
             if (getHelper() != null) {
                 getHelper().start();
             }
+
+            super.start();
         }
     }
 
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
+            // Must be invoked as a first step
+            super.stop();
+
             if (getHelper() != null) {
                 getHelper().stop();
             }
-            super.stop();
         }
     }
 

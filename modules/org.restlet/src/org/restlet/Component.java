@@ -630,13 +630,15 @@ public class Component extends Restlet {
      */
     @Override
     public synchronized void stop() throws Exception {
+        // Must be invoked as a first step
+        super.stop();
+
         stopHelper();
         stopRealms();
         stopServices();
         stopRouters();
         stopServers();
         stopClients();
-        super.stop();
     }
 
     /**

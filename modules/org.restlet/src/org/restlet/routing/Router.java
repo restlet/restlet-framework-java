@@ -883,8 +883,6 @@ public class Router extends Restlet {
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
-            super.start();
-
             for (Route route : getRoutes()) {
                 route.start();
             }
@@ -892,6 +890,8 @@ public class Router extends Restlet {
             if (getDefaultRoute() != null) {
                 getDefaultRoute().start();
             }
+
+            super.start();
         }
     }
 
@@ -902,6 +902,9 @@ public class Router extends Restlet {
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
+            // Must be invoked as a first step
+            super.stop();
+
             if (getDefaultRoute() != null) {
                 getDefaultRoute().stop();
             }
@@ -909,8 +912,6 @@ public class Router extends Restlet {
             for (Route route : getRoutes()) {
                 route.stop();
             }
-
-            super.stop();
         }
     }
 
