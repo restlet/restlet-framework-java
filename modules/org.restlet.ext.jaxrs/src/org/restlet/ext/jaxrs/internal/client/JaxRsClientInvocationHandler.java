@@ -37,19 +37,22 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.restlet.Request;
-import org.restlet.engine.header.Header;
+import org.restlet.data.Parameter;
 import org.restlet.engine.resource.ClientInvocationHandler;
 import org.restlet.ext.jaxrs.JaxRsClientResource;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
-import org.restlet.service.ConverterService;
-import org.restlet.util.Series;
 
 /**
  * Reflection proxy invocation handler created for the
@@ -65,75 +68,109 @@ import org.restlet.util.Series;
  */
 public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> {
 
-    private ClientResource clientResource;
+	private ClientResource clientResource;
 
 	/**
-     * Constructor.
-     * 
-     * @param clientResource
-     *            The client resource.
-     * @param resourceInterface
-     *            The annotated resource interface.
-     */
-    public JaxRsClientInvocationHandler(ClientResource clientResource,
-            Class<? extends T> resourceInterface) {
-        super(clientResource, resourceInterface, JaxRsAnnotationUtils
-                .getInstance());
-        
-        this.clientResource = clientResource;
-    }
+	 * Constructor.
+	 * 
+	 * @param clientResource
+	 *            The client resource.
+	 * @param resourceInterface
+	 *            The annotated resource interface.
+	 */
+	public JaxRsClientInvocationHandler(ClientResource clientResource,
+			Class<? extends T> resourceInterface) {
+		super(clientResource, resourceInterface, JaxRsAnnotationUtils
+				.getInstance());
 
-    @Override
-    protected Request getRequest(Method javaMethod, Object[] args) {
-        Request request = super.getRequest(javaMethod, args);
-        
-        setRequestParams(javaMethod, args, request);
+		this.clientResource = clientResource;
+	}
 
-        setRequestPathToAnnotationPath(javaMethod, request);
+	@Override
+	protected Request getRequest(Method javaMethod, Object[] args)
+			throws Throwable {
+		Request request = super.getRequest(javaMethod, args);
 
-        return request;
-    }
+		setRequestParams(javaMethod, args, request);
+
+		setRequestPathToAnnotationPath(javaMethod, request);
+
+		return request;
+	}
 
 	private void setRequestParams(Method javaMethod, Object[] args,
-			Request request) {
-		Annotation[][] parameterAnnotations = javaMethod.getParameterAnnotations();
-        for( Annotation[] annotations : parameterAnnotations ) {
-            for( Annotation annotation : annotations ) {
-                
-                if(annotation instanceof HeaderParam) {
-                    HeaderParam headerParam = (HeaderParam)annotation;
-                    String value = headerParam.value();
-                    Series< Header > headers = Util.getHttpHeaders( request );
+			Request request) throws IllegalMethodParamTypeException {
 
-                    ConverterService converterService = clientResource.getApplication().getConverterService();
-                    
-                    //TODO - don't just use args[0], each param should be set
-                    Representation representation = converterService.toRepresentation( args[0] );
-                    try {
-                        headers.add( value, representation.getText()  );
-                    }
-                    catch ( IOException exception ) {
-                        throw new RuntimeException(exception);
-                    }
-                } else if(annotation instanceof QueryParam) {
-                    // TODO - encode & map QueryParam
-                    //resourceRef.addQueryParameter( new Parameter( "point", "<java.awt.Point>   <x>22</x>   <y>33</y> </java.awt.Point>" ) );
-                }
-                // TODO - other param types
-            }
-        }
+		int argIndex = 0;
+
+		Annotation[][] parameterAnnotations = javaMethod
+				.getParameterAnnotations();
+		for (Annotation[] annotations : parameterAnnotations) {
+
+			String representationAsText = getRepresentationAsText(argIndex,
+					args);
+
+			for (Annotation annotation : annotations) {
+				if (annotation instanceof HeaderParam
+						&& representationAsText != null) {
+					Util.getHttpHeaders(request).add(
+							((HeaderParam) annotation).value(),
+							representationAsText);
+					argIndex++;
+				} else if (annotation instanceof QueryParam) {
+					request.getResourceRef().addQueryParameter(
+							new Parameter(((QueryParam) annotation).value(),
+									representationAsText));
+					argIndex++;
+				} else if (annotation instanceof MatrixParam
+						&& representationAsText != null) {
+					// TODO
+					argIndex++;
+				} else if (annotation instanceof CookieParam
+						&& representationAsText != null) {
+					// TODO
+					argIndex++;
+				} else if (annotation instanceof FormParam
+						&& representationAsText != null) {
+					// TODO
+					argIndex++;
+				} else if (annotation instanceof QueryParam
+						&& representationAsText != null) {
+					// TODO
+					argIndex++;
+				} else if (annotation instanceof PathParam
+						&& representationAsText != null) {
+					// TODO
+					argIndex++;
+				}
+			}
+		}
+
+		// TODO - possibly throw an exception if the arg count != processed annotations?
+	}
+
+	private String getRepresentationAsText(int argIndex, Object[] args) {
+		String representationAsText = null;
+		Representation representation = clientResource.getApplication()
+				.getConverterService().toRepresentation(args[argIndex]);
+		try {
+			representationAsText = representation.getText();
+		} catch (IOException exception) {
+			throw new RuntimeException(exception);
+		}
+		return representationAsText;
 	}
 
 	private void setRequestPathToAnnotationPath(Method javaMethod,
 			Request request) {
 		Path methodPathAnnotation = javaMethod.getAnnotation(Path.class);
-        if (methodPathAnnotation != null) {
-            String methodPath = methodPathAnnotation.value();
-            if (methodPath != null && methodPath.length() > 0) {
-                request.getResourceRef().setPath(
-                        request.getResourceRef().getPath() + "/" + methodPath);
-            }
-        }
+		if (methodPathAnnotation != null) {
+			String methodPath = methodPathAnnotation.value();
+			if (methodPath != null && methodPath.length() > 0) {
+				request.getResourceRef().setPath(
+						request.getResourceRef().getPath() + "/" + methodPath);
+			}
+		}
 	}
 
 }

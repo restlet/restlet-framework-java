@@ -124,15 +124,9 @@ public class ClientInvocationHandler<T> implements InvocationHandler {
     }
 
     /**
-     * Returns a new instance of {@link Request} according to the given Java
-     * Method.
-     * 
-     * @param javaMethod
-     *            The Java method.
-     * @param args TODO
-     * @return A new instance of {@link Request}.
+     * Allows for child classes to modify the request.
      */
-    protected Request getRequest(Method javaMethod, Object[] args) {
+    protected Request getRequest(Method javaMethod, Object[] args) throws Throwable {
         return getClientResource().createRequest();
     }
 
