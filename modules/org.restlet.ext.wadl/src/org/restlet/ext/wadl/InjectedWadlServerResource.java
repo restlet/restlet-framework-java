@@ -41,7 +41,6 @@ import org.restlet.resource.ResourceException;
  * @author Bryan Hunt
  * 
  */
-@SuppressWarnings("restriction")
 public class InjectedWadlServerResource extends WadlServerResource implements
         InjectedResource {
     private IEclipseContext eclipseContext;

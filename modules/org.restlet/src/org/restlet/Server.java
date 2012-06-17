@@ -584,22 +584,24 @@ public class Server extends Connector {
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
-            super.start();
-
             if (getHelper() != null) {
                 getHelper().start();
             }
+
+            // Must be invoked as a last step
+            super.start();
         }
     }
 
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
+            // Must be invoked as a first step
+            super.stop();
+
             if (getHelper() != null) {
                 getHelper().stop();
             }
-
-            super.stop();
         }
     }
 

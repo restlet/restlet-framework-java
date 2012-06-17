@@ -39,7 +39,6 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
  * @author Bryan Hunt
  * 
  */
-@SuppressWarnings("restriction")
 public interface InjectedResource {
     void setEclipseContext(IEclipseContext eclipseContext);
 }

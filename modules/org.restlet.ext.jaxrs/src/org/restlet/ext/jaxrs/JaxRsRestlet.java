@@ -1241,6 +1241,8 @@ public class JaxRsRestlet extends Restlet {
     @Override
     public void start() throws Exception {
         providers.initAll();
+
+        // Must be invoked as a last step
         super.start();
     }
 }

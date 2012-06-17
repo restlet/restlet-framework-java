@@ -540,6 +540,8 @@ public class Component extends Restlet {
             startServices();
             startRealms();
             startHelper();
+
+            // Must be invoked as a last step
             super.start();
         }
     }
