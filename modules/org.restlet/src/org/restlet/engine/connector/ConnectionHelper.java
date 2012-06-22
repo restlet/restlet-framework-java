@@ -36,8 +36,8 @@ package org.restlet.engine.connector;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Connector;
 
@@ -114,7 +114,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
     private volatile ConnectionPool<T> connectionPool;
 
     /** The set of active connections. */
-    private final Set<Connection<T>> connections;
+    private final List<Connection<T>> connections;
 
     /**
      * Constructor.
@@ -126,7 +126,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
      */
     public ConnectionHelper(T connector, boolean clientSide) {
         super(connector, clientSide);
-        this.connections = new CopyOnWriteArraySet<Connection<T>>();
+        this.connections = new CopyOnWriteArrayList<Connection<T>>();
         this.connectionPool = null;
     }
 
@@ -255,7 +255,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * 
      * @return The set of active connections.
      */
-    public Set<Connection<T>> getConnections() {
+    public List<Connection<T>> getConnections() {
         return connections;
     }
 

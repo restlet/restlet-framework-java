@@ -84,7 +84,11 @@ public class ConnectionController extends Controller implements Runnable {
      */
     protected void controlConnections() throws IOException {
         // Close connections or register interest in NIO operations
-        for (Connection<?> conn : getHelper().getConnections()) {
+        Connection<?> conn;
+
+        for (int i = 0; i < getHelper().getConnections().size(); i++) {
+            conn = getHelper().getConnections().get(i);
+
             if (getHelper().getLogger().isLoggable(Level.FINEST)) {
                 getHelper().getLogger().log(Level.FINEST,
                         "Connection status: " + conn);
