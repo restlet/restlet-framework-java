@@ -7,6 +7,8 @@ Changes log
     - Bug fixed
        - Fixed sharing of ClientResource context with the underlying connector, 
          when this ClientResource is used outside a Component.
+       - Reduced the number of iterators created when internal NIO connector is 
+         idle. Reported by Yan Zhou 
     - API changes
        - Renamed Directory#setAlphaComparator and setAlphaNumComparator
          methods into useAlphaComparator and useAlphaNumComparator with
