@@ -266,20 +266,22 @@ public final class BioUtils {
      */
     public static long getAvailableSize(Representation representation) {
         // [ifndef gwt]
+        long result = Representation.UNKNOWN_SIZE;
         if (representation.getRange() == null) {
-            return representation.getSize();
-        } else if (representation.getRange().getSize() != Range.SIZE_MAX) {
-            return representation.getRange().getSize();
+            result = representation.getSize();
         } else if (representation.hasKnownSize()) {
-            if (representation.getRange().getIndex() != Range.INDEX_LAST) {
-                return representation.getSize()
+            if(representation.getRange().getSize() != Range.SIZE_MAX) {
+                result = Math.min(representation.getRange().getSize(), representation.getSize());    
+            } else if (representation.getRange().getIndex() == Range.INDEX_LAST) {
+                // return the whole representation
+                result = representation.getSize();
+            } else {
+                result = representation.getSize()
                         - representation.getRange().getIndex();
             }
-
-            return representation.getSize();
         }
 
-        return Representation.UNKNOWN_SIZE;
+        return result;
         // [enddef]
         // [ifdef gwt] line uncomment
         // return representation.getSize();
