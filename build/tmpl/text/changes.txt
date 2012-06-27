@@ -13,6 +13,8 @@ Changes log
          cause erros such as "no Restlet defined to process calls. Maybe it
          wasn't properly started" errors (500). Reported by several persons 
          including David Fuchs, Danny Leshem, Yunwu Zhu and Bjorn Roche.
+       - Fixed range issue that leads to generate a Response having a 
+         Content-length greater than actual content with range request.
     - Misc
        - Reverted Role equality test to default Java object equality as
          equality based on name could cause issues with MemoryRealm

@@ -98,6 +98,12 @@ public class RangeFilter extends Filter {
                                         .info("The range of the response entity is not equal to the requested one.");
                             }
 
+                            if (response.getEntity().getSize() > Representation.UNKNOWN_SIZE
+                                    && requestedRange.getSize() > response
+                                            .getEntity().getAvailableSize()) {
+                                requestedRange.setSize(Range.SIZE_MAX);
+                            }
+
                             response.setEntity(new RangeRepresentation(response
                                     .getEntity(), requestedRange));
                             response.setStatus(Status.SUCCESS_PARTIAL_CONTENT);
