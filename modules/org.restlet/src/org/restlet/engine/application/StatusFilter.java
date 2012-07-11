@@ -41,6 +41,7 @@ import org.restlet.Response;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.routing.Filter;
@@ -194,11 +195,11 @@ public class StatusFilter extends Filter {
         sb.append("<body style=\"font-family: sans-serif;\">\n");
 
         sb.append("<p style=\"font-size: 1.2em;font-weight: bold;margin: 1em 0px;\">");
-        sb.append(getStatusInfo(status));
+        sb.append(StringUtils.htmlEscape(getStatusInfo(status)));
         sb.append("</p>\n");
         if (status.getDescription() != null) {
             sb.append("<p>");
-            sb.append(status.getDescription());
+            sb.append(StringUtils.htmlEscape(status.getDescription()));
             sb.append("</p>\n");
         }
 
