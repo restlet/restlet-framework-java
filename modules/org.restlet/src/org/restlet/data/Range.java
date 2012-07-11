@@ -68,6 +68,12 @@ public class Range {
      * available from the index, then use the {@value #SIZE_MAX} constant.
      */
     private volatile long size;
+    
+    /**
+     * Specifies the unit of the range. The HTTP/1.1 protocol specifies
+     * only 'bytes', but other ranges are allowed {@link http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.12}
+     */
+    private volatile String unitName = "bytes";
 
     /**
      * Default constructor defining a range starting on the first byte and with
@@ -187,4 +193,22 @@ public class Range {
     public void setSize(long size) {
         this.size = size;
     }
+
+    /**
+     * Returns the name of the range unit name.
+     * @return 
+     * 			The name of the range
+     */
+	public String getUnitName() {
+		return unitName;
+	}
+	
+	/**
+	 * Setter to define the unit name.
+	 * @param unitName 
+	 * 			with the name of the unit.
+	 */
+	public void setUnitName(String unitName) {
+		this.unitName = unitName;
+	}
 }
