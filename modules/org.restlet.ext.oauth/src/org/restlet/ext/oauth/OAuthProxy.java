@@ -45,6 +45,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.util.Base64;
@@ -316,6 +317,7 @@ public class OAuthProxy extends Filter {
 
             try {
                 Representation input = form.getWebRepresentation();
+                tokenResource.getClientInfo().getAcceptedMediaTypes().add(new Preference<MediaType>(MediaType.APPLICATION_JSON));
                 Representation body = tokenResource.post(input);
 
                 if (tokenResource.getStatus().isSuccess()) {
