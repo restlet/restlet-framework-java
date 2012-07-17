@@ -33,14 +33,31 @@
 
 package org.restlet.example.book.restlet.ch07.sec1.sub4;
 
+import org.restlet.Component;
 import org.restlet.Restlet;
+import org.restlet.data.Protocol;
 import org.restlet.ext.wadl.WadlApplication;
 import org.restlet.routing.Router;
 
 /**
- * The reusable mail server application.
+ * The mail server application using a custom status service.
  */
 public class MailServerApplication extends WadlApplication {
+
+    /**
+     * Launches the application with an HTTP server.
+     * 
+     * @param args
+     *            The arguments.
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        Component mailServer = new Component();
+        mailServer.getClients().add(Protocol.CLAP);
+        mailServer.getServers().add(Protocol.HTTP, 8111);
+        mailServer.getDefaultHost().attach(new MailServerApplication());
+        mailServer.start();
+    }
 
     /**
      * Constructor.

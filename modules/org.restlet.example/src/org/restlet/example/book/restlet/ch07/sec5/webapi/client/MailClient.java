@@ -68,7 +68,7 @@ public class MailClient {
 
         // FORM SUBMIT
         ClientResource mailClient = new ClientResource(
-                "http://localhost:8111/accounts/123/mails/abc");
+                "http://localhost:8111/accounts/chunkylover53/mails/123");
         mailClient.getRequest().getCookies()
                 .add(new Cookie("Credentials", "scott=tiger"));
 
@@ -79,7 +79,7 @@ public class MailClient {
 
         // WEB FEEDS
         mailClient = new ClientResource(
-                "http://localhost:8111/accounts/123/feeds/xyz");
+                "http://localhost:8111/accounts/chunkylover53/feeds/xyz");
 
         // Display the retrieved Atom feed and entries
         Feed atomFeed = mailClient.get(Feed.class);

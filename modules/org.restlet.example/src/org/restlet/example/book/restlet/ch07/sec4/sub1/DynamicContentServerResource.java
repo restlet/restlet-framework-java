@@ -55,8 +55,8 @@ public class DynamicContentServerResource extends ServerResource {
 
             @Override
             public void write(Writer writer) throws IOException {
-                for (int i = 0; i < 10; i++) {
-                    writer.append(Integer.toString(i));
+                for (int i = 0; i < 10000; i++) {
+                    writer.append("0123456789\n");
                 }
             }
         };

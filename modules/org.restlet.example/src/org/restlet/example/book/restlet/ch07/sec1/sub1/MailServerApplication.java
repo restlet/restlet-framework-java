@@ -40,7 +40,7 @@ import org.restlet.data.Protocol;
 import org.restlet.routing.Router;
 
 /**
- * Routing to annotated server resources.
+ * The mail server application using a custom status service.
  */
 public class MailServerApplication extends Application {
 

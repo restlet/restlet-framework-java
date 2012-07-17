@@ -40,12 +40,14 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
+import org.restlet.example.book.restlet.ch07.sec1.sub1.Mail;
 import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.Get;
+import org.restlet.resource.Put;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
@@ -55,8 +57,8 @@ import org.restlet.resource.ServerResource;
  */
 public class MailServerResource extends ServerResource {
 
-    @Override
-    protected Representation get() throws ResourceException {
+    @Get
+    public Representation toHtml() throws ResourceException {
         // Create the mail bean
         Mail mail = new Mail();
         mail.setStatus("received");
@@ -74,28 +76,24 @@ public class MailServerResource extends ServerResource {
         return new TemplateRepresentation(mailFtl, mail, MediaType.TEXT_HTML);
     }
 
-    @Override
-    protected Representation put(Representation input) {
-        try {
-            // Create a factory for disk-based file items
-            RestletFileUpload fileUpload = new RestletFileUpload(
-                    new DiskFileItemFactory());
-            List<FileItem> fileItems = fileUpload.parseRepresentation(input);
+    @Put
+    public String store(Representation input) throws Exception {
+        // Create a factory for disk-based file items
+        RestletFileUpload fileUpload = new RestletFileUpload(
+                new DiskFileItemFactory());
+        List<FileItem> fileItems = fileUpload.parseRepresentation(input);
 
-            for (FileItem fileItem : fileItems) {
-                if (fileItem.isFormField()) {
-                    System.out.println(fileItem.getFieldName() + "="
-                            + fileItem.getString());
-                } else {
-                    Representation attachment = new InputRepresentation(
-                            fileItem.getInputStream());
-                    attachment.write(System.out);
-                }
+        for (FileItem fileItem : fileItems) {
+            if (fileItem.isFormField()) {
+                System.out.println(fileItem.getFieldName() + "="
+                        + fileItem.getString());
+            } else {
+                Representation attachment = new InputRepresentation(
+                        fileItem.getInputStream());
+                attachment.write(System.out);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
-        return new StringRepresentation("Mail updated!");
+        return "Mail updated!";
     }
 }
