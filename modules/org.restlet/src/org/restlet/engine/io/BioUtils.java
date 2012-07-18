@@ -269,7 +269,10 @@ public final class BioUtils {
         if (representation.getRange() == null) {
             return representation.getSize();
         } else if (representation.getRange().getSize() != Range.SIZE_MAX) {
-            return representation.getRange().getSize();
+            if(representation.hasKnownSize() && representation.getRange().getSize() > representation.getSize())
+        		return representation.getSize();
+        	else
+        		return representation.getRange().getSize();
         } else if (representation.hasKnownSize()) {
             if (representation.getRange().getIndex() != Range.INDEX_LAST) {
                 return representation.getSize()
