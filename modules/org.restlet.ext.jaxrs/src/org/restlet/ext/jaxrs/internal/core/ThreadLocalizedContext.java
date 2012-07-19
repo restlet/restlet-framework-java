@@ -68,10 +68,16 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
         SecurityContext {
 
     /**
-     * The key of the {@link CallContext} in the
-     * {@link org.restlet.Request} attributes.
+     * The key of the {@link CallContext} in the {@link org.restlet.Request}
+     * attributes.
      */
     private static final String CALLCONTEXT_KEY = "org.restlet.ext.jaxrs.CallContext";
+
+    @Override
+    public ResponseBuilder evaluatePreconditions() {
+        // TODO Implement
+        return null;
+    }
 
     /**
      * @param lastModified
@@ -183,8 +189,16 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     }
 
     /**
-     * Returns the attributes of the current Restlet
-     * {@link org.restlet.Request}.
+     * @return .
+     * @see UriInfo#getPathSegments()
+     */
+    public List<PathSegment> getPathSegments() {
+        return get().getPathSegments();
+    }
+
+    /**
+     * Returns the attributes of the current Restlet {@link org.restlet.Request}
+     * .
      * 
      * @return the attributes of the current Restlet Request, but never null
      */
@@ -261,14 +275,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
                     "You must give a CallContext here. null is not allowed");
         }
         getRequestAttributes().put(CALLCONTEXT_KEY, callContext);
-    }
-
-    /**
-     * @return .
-     * @see UriInfo#getPathSegments()
-     */
-    public List<PathSegment> getPathSegments() {
-        return get().getPathSegments();
     }
 
 }

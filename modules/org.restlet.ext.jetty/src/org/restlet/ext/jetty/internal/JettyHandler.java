@@ -39,7 +39,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.HttpConnection;
+import org.eclipse.jetty.server.AbstractHttpConnection;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.restlet.Server;
@@ -116,9 +116,9 @@ public class JettyHandler extends AbstractHandler {
             HttpServletResponse servletResponse) throws IOException,
             ServletException {
         final Request baseRequest = (servletRequest instanceof Request) ? (Request) servletRequest
-                : HttpConnection.getCurrentConnection().getRequest();
+                : AbstractHttpConnection.getCurrentConnection().getRequest();
         this.helper.handle(new JettyCall(this.helper.getHelped(),
-                HttpConnection.getCurrentConnection()));
+                AbstractHttpConnection.getCurrentConnection()));
         baseRequest.setHandled(true);
     }
 

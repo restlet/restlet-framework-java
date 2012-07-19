@@ -35,7 +35,6 @@ package org.restlet.ext.jetty;
 
 import java.util.logging.Level;
 
-import org.eclipse.jetty.http.ssl.SslContextFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
@@ -43,6 +42,7 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jetty.internal.RestletSslContextFactory;
 import org.restlet.ext.ssl.DefaultSslContextFactory;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
  * Jetty HTTPS server connector. Here is the list of additional parameters that

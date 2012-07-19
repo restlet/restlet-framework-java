@@ -197,17 +197,17 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     private final SortedMetadata<org.restlet.data.MediaType> accMediaTypes;
 
-    /** contains the current value of the ancestor resources */
-    private final LinkedList<Object> matchedResources = new LinkedList<Object>();
-
-    /** contains the current value of the ancestor resource URIs */
-    private final LinkedList<String> matchedURIs = new LinkedList<String>();
-
     private String baseUri;
 
     private Map<String, Cookie> cookies;
 
     private Locale language;
+
+    /** contains the current value of the ancestor resources */
+    private final LinkedList<Object> matchedResources = new LinkedList<Object>();
+
+    /** contains the current value of the ancestor resource URIs */
+    private final LinkedList<String> matchedURIs = new LinkedList<String>();
 
     private MediaType mediaType;
 
@@ -337,6 +337,14 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         }
     }
 
+    private ExtendedUriBuilder createExtendedUriBuilder(Reference ref) {
+        ExtendedUriBuilder b = new ExtendedUriBuilder();
+        fillUriBuilder(ref, b);
+        String extension = ref.getExtensions();
+        b.extension(extension);
+        return b;
+    }
+
     /**
      * Creates an unmodifiable List of {@link PathSegment}s.
      * 
@@ -367,32 +375,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         return fillUriBuilder(ref, b);
     }
 
-    /**
-     * @param ref
-     * @param b
-     * @return
-     * @throws IllegalArgumentException
-     */
-    private UriBuilder fillUriBuilder(Reference ref, final UriBuilder b)
-            throws IllegalArgumentException {
-        b.scheme(ref.getScheme(false));
-        b.userInfo(ref.getUserInfo(false));
-        b.host(ref.getHostDomain(false));
-        b.port(ref.getHostPort());
-        b.path(ref.getPath(false));
-        b.replaceQuery(ref.getQuery(false));
-        b.fragment(ref.getFragment(false));
-        return b;
-    }
-
-    private ExtendedUriBuilder createExtendedUriBuilder(Reference ref) {
-        ExtendedUriBuilder b = new ExtendedUriBuilder();
-        fillUriBuilder(ref, b);
-        String extension = ref.getExtensions();
-        b.extension(extension);
-        return b;
-    }
-
     @Override
     public boolean equals(Object anotherObject) {
         if (this == anotherObject) {
@@ -412,6 +394,12 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             return false;
         }
         return true;
+    }
+
+    @Override
+    public ResponseBuilder evaluatePreconditions() {
+        // TODO: implement
+        return null;
     }
 
     /**
@@ -434,34 +422,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
                     "The last modification date must not be null");
         }
         return evaluatePreconditionsInternal(lastModified, null);
-    }
-
-    /**
-     * Evaluates the preconditions of the current request against the given last
-     * modified date and / or the given entity tag. This method does not check,
-     * if the arguments are not null.
-     * 
-     * @param lastModified
-     * @param entityTag
-     * @return
-     * @see Request#evaluateConditions(Tag, Date)
-     */
-    private ResponseBuilder evaluatePreconditionsInternal(
-            final Date lastModified, final EntityTag entityTag) {
-        Status status = this.request.getConditions().getStatus(
-                this.request.getMethod(), true,
-                Converter.toRestletTag(entityTag), lastModified);
-
-        if (status == null)
-            return null;
-        if (status.equals(Status.REDIRECTION_NOT_MODIFIED)) {
-            final ResponseBuilder rb = Response.notModified();
-            rb.lastModified(lastModified);
-            rb.tag(entityTag);
-            return rb;
-        }
-
-        return Response.status(STATUS_PREC_FAILED);
     }
 
     /**
@@ -532,6 +492,52 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
                     "The entity tag must not be null");
         }
         return evaluatePreconditionsInternal(null, entityTag);
+    }
+
+    /**
+     * Evaluates the preconditions of the current request against the given last
+     * modified date and / or the given entity tag. This method does not check,
+     * if the arguments are not null.
+     * 
+     * @param lastModified
+     * @param entityTag
+     * @return
+     * @see Request#evaluateConditions(Tag, Date)
+     */
+    private ResponseBuilder evaluatePreconditionsInternal(
+            final Date lastModified, final EntityTag entityTag) {
+        Status status = this.request.getConditions().getStatus(
+                this.request.getMethod(), true,
+                Converter.toRestletTag(entityTag), lastModified);
+
+        if (status == null)
+            return null;
+        if (status.equals(Status.REDIRECTION_NOT_MODIFIED)) {
+            final ResponseBuilder rb = Response.notModified();
+            rb.lastModified(lastModified);
+            rb.tag(entityTag);
+            return rb;
+        }
+
+        return Response.status(STATUS_PREC_FAILED);
+    }
+
+    /**
+     * @param ref
+     * @param b
+     * @return
+     * @throws IllegalArgumentException
+     */
+    private UriBuilder fillUriBuilder(Reference ref, final UriBuilder b)
+            throws IllegalArgumentException {
+        b.scheme(ref.getScheme(false));
+        b.userInfo(ref.getUserInfo(false));
+        b.host(ref.getHostDomain(false));
+        b.port(ref.getHostPort());
+        b.path(ref.getPath(false));
+        b.replaceQuery(ref.getQuery(false));
+        b.fragment(ref.getFragment(false));
+        return b;
     }
 
     /**
@@ -609,24 +615,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public SortedMetadata<org.restlet.data.MediaType> getAccMediaTypes() {
         return this.accMediaTypes;
-    }
-
-    /**
-     * current state of the matchedResources
-     * 
-     * @see javax.ws.rs.core.UriInfo#getMatchedResources()
-     */
-    List<Object> getMatchedResources() {
-        return this.matchedResources;
-    }
-
-    /**
-     * current state of the matchedURIs
-     * 
-     * @see javax.ws.rs.core.UriInfo#getMatchedURIs()
-     */
-    List<String> getMatchedURIs() {
-        return this.matchedURIs;
     }
 
     /**
@@ -818,6 +806,24 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         pathParam.annotationType();
         // TODO CallContext.getLastPathSegmentEnc(PathParam)
         throw new NotYetImplementedException();
+    }
+
+    /**
+     * current state of the matchedResources
+     * 
+     * @see javax.ws.rs.core.UriInfo#getMatchedResources()
+     */
+    List<Object> getMatchedResources() {
+        return this.matchedResources;
+    }
+
+    /**
+     * current state of the matchedURIs
+     * 
+     * @see javax.ws.rs.core.UriInfo#getMatchedURIs()
+     */
+    List<String> getMatchedURIs() {
+        return this.matchedURIs;
     }
 
     /**

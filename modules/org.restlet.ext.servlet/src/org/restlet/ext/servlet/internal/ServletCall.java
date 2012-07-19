@@ -192,7 +192,6 @@ public class ServletCall extends ServerCall {
     }
 
     // [ifdef gae] method
-    @SuppressWarnings("unchecked")
     @Override
     public Representation getRequestEntity() {
         Representation result = null;
@@ -241,7 +240,6 @@ public class ServletCall extends ServerCall {
      * @return The list of request headers.
      */
     @Override
-    @SuppressWarnings("unchecked")
     public Series<Header> getRequestHeaders() {
         if (this.requestHeaders == null) {
             this.requestHeaders = new Series<Header>(Header.class);
