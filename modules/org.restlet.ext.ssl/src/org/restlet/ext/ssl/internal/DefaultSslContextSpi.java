@@ -102,6 +102,8 @@ public class DefaultSslContextSpi extends SSLContextSpi {
                 .isNeedClientAuthentication());
         sslEngine.setWantClientAuth(getContextFactory()
                 .isWantClientAuthentication());
+        sslEngine.setEnabledCipherSuites(getContextFactory()
+                .getSelectedCipherSuites(sslEngine.getSupportedCipherSuites()));
     }
 
     @Override

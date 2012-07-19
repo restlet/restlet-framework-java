@@ -36,6 +36,9 @@ package org.restlet.ext.ssl;
 import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.net.ssl.SSLContext;
 
@@ -153,7 +156,9 @@ import org.restlet.util.Series;
  * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
  * @see javax.net.ssl.SSLContext
  * @see java.security.KeyStore
- * @see <a href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jsse/JSSERefGuide.html#AppA">JSSE Reference - Standard names</a>
+ * @see <a
+ *      href="http://download.oracle.com/javase/1.5.0/docs/guide/security/jsse/JSSERefGuide.html#AppA">JSSE
+ *      Reference - Standard names</a>
  */
 public class DefaultSslContextFactory extends SslContextFactory {
 
@@ -418,6 +423,35 @@ public class DefaultSslContextFactory extends SslContextFactory {
     }
 
     /**
+     * Returns the selected cipher suites. The selection is the subset of
+     * supported suites that are both in the enable suites and out of the
+     * disabled suites.
+     * 
+     * @param supportedCipherSuites
+     *            The initial cipher suites to restrict.
+     * @return The selected cipher suites.
+     */
+    public String[] getSelectedCipherSuites(String[] supportedCipherSuites) {
+        Set<String> resultSet = new HashSet<String>();
+
+        if (supportedCipherSuites != null) {
+            for (String supportedCipherSuite : supportedCipherSuites) {
+                if (((getEnabledCipherSuites() == null) || Arrays.asList(
+                        getEnabledCipherSuites())
+                        .contains(supportedCipherSuite))
+                        && ((getDisabledCipherSuites() == null) || !Arrays
+                                .asList(getDisabledCipherSuites()).contains(
+                                        supportedCipherSuite))) {
+                    resultSet.add(supportedCipherSuite);
+                }
+            }
+        }
+
+        String[] result = new String[resultSet.size()];
+        return resultSet.toArray(result);
+    }
+
+    /**
      * Returns the secure socket protocol name, "TLS" by default.
      * 
      * @return The secure socket protocol.
@@ -606,6 +640,46 @@ public class DefaultSslContextFactory extends SslContextFactory {
                 .getFirstValue("needClientAuthentication", true, "false")));
         setWantClientAuthentication(Boolean.parseBoolean(helperParameters
                 .getFirstValue("wantClientAuthentication", true, "false")));
+
+        // Parses and set the enabled cipher suites
+        String[] enabledCipherSuitesArray = helperParameters
+                .getValuesArray("enabledCipherSuites");
+        Set<String> enabledCipherSuites = new HashSet<String>();
+
+        for (String enabledCipherSuiteSeries : enabledCipherSuitesArray) {
+            for (String enabledCipherSuite : enabledCipherSuiteSeries
+                    .split(" ")) {
+                enabledCipherSuites.add(enabledCipherSuite);
+            }
+        }
+
+        if (enabledCipherSuites.size() > 0) {
+            enabledCipherSuitesArray = new String[enabledCipherSuites.size()];
+            enabledCipherSuites.toArray(enabledCipherSuitesArray);
+            setEnabledCipherSuites(enabledCipherSuitesArray);
+        } else {
+            setEnabledCipherSuites(null);
+        }
+
+        // Parses and set the disabled cipher suites
+        String[] disabledCipherSuitesArray = helperParameters
+                .getValuesArray("disabledCipherSuites");
+        Set<String> disabledCipherSuites = new HashSet<String>();
+
+        for (String disabledCipherSuiteSeries : disabledCipherSuitesArray) {
+            for (String disabledCipherSuite : disabledCipherSuiteSeries
+                    .split(" ")) {
+                disabledCipherSuites.add(disabledCipherSuite);
+            }
+        }
+
+        if (disabledCipherSuites.size() > 0) {
+            disabledCipherSuitesArray = new String[disabledCipherSuites.size()];
+            disabledCipherSuites.toArray(disabledCipherSuitesArray);
+            setDisabledCipherSuites(disabledCipherSuitesArray);
+        } else {
+            setDisabledCipherSuites(null);
+        }
     }
 
     /**

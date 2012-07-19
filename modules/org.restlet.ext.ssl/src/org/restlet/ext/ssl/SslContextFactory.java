@@ -70,5 +70,4 @@ public abstract class SslContextFactory {
      *            The connector parameters.
      */
     public abstract void init(Series<Parameter> parameters);
-
 }
