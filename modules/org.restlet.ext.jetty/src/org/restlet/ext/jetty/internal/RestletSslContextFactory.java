@@ -33,7 +33,10 @@
 
 package org.restlet.ext.jetty.internal;
 
-import org.eclipse.jetty.http.ssl.SslContextFactory;
+import java.util.logging.Level;
+
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.restlet.Context;
 
 /**
  * Jetty SSL context factory based on a Restlet SSL context one.
@@ -57,8 +60,15 @@ public class RestletSslContextFactory extends SslContextFactory {
     }
 
     @Override
-    public boolean checkConfig() {
-        return (getSslContext() == null) ? super.checkConfig() : true;
+    public void checkKeyStore() {
+        try {
+            if (getSslContext() == null) {
+                super.checkKeyStore();
+            }
+        } catch (IllegalStateException e) {
+            Context.getCurrentLogger().log(Level.FINE,
+                    "Unable to check Jetty SSL keystore", e);
+        }
     }
 
 }

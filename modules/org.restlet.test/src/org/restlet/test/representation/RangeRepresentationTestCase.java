@@ -56,4 +56,15 @@ public class RangeRepresentationTestCase extends RestletTestCase {
         assertEquals("34567", rr.getText());
     }
 
+    public void testSize() throws Exception {
+        StringRepresentation sr = new StringRepresentation("1234567890");
+        RangeRepresentation rr = new RangeRepresentation(sr);
+        rr.setRange(new Range(5, 10000));
+        assertNull(sr.getRange());
+        assertEquals(10, sr.getAvailableSize());
+        assertEquals(5, rr.getAvailableSize());
+        assertEquals("1234567890", sr.getText());
+        assertEquals("67890", rr.getText());
+    }
+
 }

@@ -179,18 +179,25 @@ public class PkixSslContextFactory extends SslContextFactory {
         KeyStoreLoader keyStoreLoader = KeyStoreLoader
                 .getKeyStoreDefaultLoader();
         String keyStorePath = parameters.getFirstValue("keystorePath");
+
         if (keyStorePath != null) {
             keyStoreLoader.setKeyStorePath(keyStorePath);
         }
+
         String keyStorePassword = parameters.getFirstValue("keystorePassword");
+
         if (keyStorePassword != null) {
             keyStoreLoader.setKeyStorePassword(keyStorePassword);
         }
+
         String keyStoreType = parameters.getFirstValue("keystoreType");
+
         if (keyStoreType != null) {
             keyStoreLoader.setKeyStoreType(keyStoreType);
         }
+
         String keyStoreProvider = parameters.getFirstValue("keystoreProvider");
+
         if (keyStoreProvider != null) {
             keyStoreLoader.setKeyStoreProvider(keyStoreProvider);
         }
@@ -198,30 +205,34 @@ public class PkixSslContextFactory extends SslContextFactory {
         KeyStoreLoader trustStoreLoader = KeyStoreLoader
                 .getTrustStoreDefaultLoader();
         String trustStorePath = parameters.getFirstValue("truststorePath");
+
         if (trustStorePath != null) {
             trustStoreLoader.setKeyStorePath(trustStorePath);
         }
+
         String trustStorePassword = parameters
                 .getFirstValue("truststorePassword");
+
         if (trustStorePassword != null) {
             trustStoreLoader.setKeyStorePassword(trustStorePassword);
         }
+
         String trustStoreType = parameters.getFirstValue("truststoreType");
+
         if (trustStoreType != null) {
             trustStoreLoader.setKeyStoreType(trustStoreType);
         }
+
         String trustStoreProvider = parameters
                 .getFirstValue("truststoreProvider");
+
         if (trustStoreProvider != null) {
             trustStoreLoader.setKeyStoreProvider(trustStoreProvider);
         }
 
         String keyPassword = parameters.getFirstValue("keyPassword", "");
-
         String sslProtocol = parameters.getFirstValue("sslProtocol");
-
         String serverAlias = parameters.getFirstValue("sslServerAlias");
-
         boolean disableRevocation = Boolean.parseBoolean(parameters
                 .getFirstValue("disableCrl"));
 

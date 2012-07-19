@@ -1,7 +1,7 @@
 <library id="jaxrs" symbolicName="javax.ws.rs">
 	<name>JAX-RS API</name>
 	<description>JAX-RS (JSR 311) API</description>
-	<version>1.0</version>
+	<version>1.1.1</version>
 	<homeUri>https://jsr311.dev.java.net</homeUri>
 	<downloadUri>http://download.java.net/maven/2/javax/ws/rs/jsr311-api/</downloadUri>
 	<provider>Oracle Inc.</provider>

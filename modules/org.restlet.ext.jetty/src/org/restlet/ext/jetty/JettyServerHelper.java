@@ -38,7 +38,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 
 import org.eclipse.jetty.server.AbstractConnector;
-import org.eclipse.jetty.server.HttpConnection;
+import org.eclipse.jetty.server.AbstractHttpConnection;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.restlet.ext.jetty.internal.JettyCall;
@@ -135,7 +135,7 @@ import org.restlet.ext.jetty.internal.JettyCall;
  * </tr>
  * </table>
  * 
- * @see <a href="http://jetty.mortbay.org/">Jetty home page</a>
+ * @see <a href="jetty.codehaus.org/">Jetty home page</a>
  * @author Jerome Louvel
  */
 public abstract class JettyServerHelper extends
@@ -165,7 +165,7 @@ public abstract class JettyServerHelper extends
          *            The connection to handle.
          */
         @Override
-        public void handle(HttpConnection connection) throws IOException,
+        public void handle(AbstractHttpConnection connection) throws IOException,
                 ServletException {
             this.helper.handle(new JettyCall(this.helper.getHelped(),
                     connection));
