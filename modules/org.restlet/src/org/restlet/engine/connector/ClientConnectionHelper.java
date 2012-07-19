@@ -512,12 +512,14 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
                 // Add the message to the outbound queue for processing
                 getOutboundMessages().add(response);
+                getController().wakeup();
 
                 // Await on the latch
                 latch.await();
             } else {
                 // Add the message to the outbound queue for processing
                 getOutboundMessages().add(response);
+                getController().wakeup();
             }
         } catch (Exception e) {
             getLogger().log(
