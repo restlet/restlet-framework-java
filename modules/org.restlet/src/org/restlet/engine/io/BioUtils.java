@@ -251,22 +251,27 @@ public final class BioUtils {
      */
     public static long getAvailableSize(Representation representation) {
         // [ifndef gwt]
-        long result = Representation.UNKNOWN_SIZE;
         if (representation.getRange() == null) {
-            result = representation.getSize();
-        } else if (representation.getSize() != Representation.UNKNOWN_SIZE) {
-            if(representation.getRange().getSize() != Range.SIZE_MAX) {
-                result = Math.min(representation.getRange().getSize(), representation.getSize());    
-            } else if (representation.getRange().getIndex() == Range.INDEX_LAST) {
-                // return the whole representation
-                result = representation.getSize();
+            return representation.getSize();
+        } else if (representation.getRange().getSize() != Range.SIZE_MAX) {
+            if (representation.hasKnownSize()) {
+                return Math.min(representation.getRange().getIndex()
+                        + representation.getRange().getSize(),
+                        representation.getSize())
+                        - representation.getRange().getIndex();
             } else {
-                result = representation.getSize()
+                return Representation.UNKNOWN_SIZE;
+            }
+        } else if (representation.hasKnownSize()) {
+            if (representation.getRange().getIndex() != Range.INDEX_LAST) {
+                return representation.getSize()
                         - representation.getRange().getIndex();
             }
+
+            return representation.getSize();
         }
 
-        return result;
+        return Representation.UNKNOWN_SIZE;
         // [enddef]
         // [ifdef gwt] line uncomment
         // return representation.getSize();
