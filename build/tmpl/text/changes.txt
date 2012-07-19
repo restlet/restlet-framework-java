@@ -9,6 +9,8 @@ Changes log
          when this ClientResource is used outside a Component.
        - Reduced the number of iterators created when internal NIO connector is 
          idle. Reported by Yan Zhou 
+       - Fixed incomplete support for enabling and disabling cipher suites.
+         Reported by Enoch Stephen, Jim Zuber and Andreas Schnabl.
     - API changes
        - Renamed Directory#setAlphaComparator and setAlphaNumComparator
          methods into useAlphaComparator and useAlphaNumComparator with
