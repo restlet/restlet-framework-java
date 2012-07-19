@@ -18,8 +18,8 @@ licensing, please contact the owner:
 
     Restlet S.A.S.
 	ESSEC Ventures - CNIT - BP 230
-    2 place de la Défense
-    92053 Paris La Défense
+    2 place de la Defense
+    92053 Paris La Defense
     FRANCE
 	http://www.restlet.org/about/legal
 	mailto:legal@restlet.com

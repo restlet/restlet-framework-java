@@ -626,7 +626,7 @@ public final class Status {
 
     /**
      * Check if the provided name of the status contains forbidden characters
-     * such as CR and LF. an IllegalArgumentException is thrown in this case.
+     * such as CR and LF. An IllegalArgumentException is thrown in this case.
      * 
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1.1">Status
