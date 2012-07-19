@@ -45,19 +45,34 @@ import java.util.List;
  */
 public final class DateUtils {
 
-    /** Obsoleted HTTP date format (ANSI C asctime() format). */
+    /**
+     * Obsoleted HTTP date format (ANSI C asctime() format). Pattern:
+     * "EEE MMM dd HH:mm:ss yyyy".
+     */
     public static final List<String> FORMAT_ASC_TIME = unmodifiableList("EEE MMM dd HH:mm:ss yyyy");
 
-    /** Obsoleted HTTP date format (RFC 1036). */
+    /**
+     * Obsoleted HTTP date format (RFC 1036). Pattern:
+     * "EEEE, dd-MMM-yy HH:mm:ss zzz".
+     */
     public static final List<String> FORMAT_RFC_1036 = unmodifiableList("EEEE, dd-MMM-yy HH:mm:ss zzz");
 
-    /** Preferred HTTP date format (RFC 1123). */
+    /**
+     * Preferred HTTP date format (RFC 1123). Pattern:
+     * "EEE, dd MMM yyyy HH:mm:ss zzz".
+     */
     public static final List<String> FORMAT_RFC_1123 = unmodifiableList("EEE, dd MMM yyyy HH:mm:ss zzz");
 
-    /** W3C date format (RFC 3339). */
+    /** W3C date format (RFC 3339). Pattern: "yyyy-MM-dd'T'HH:mm:ssz". */
     public static final List<String> FORMAT_RFC_3339 = unmodifiableList("yyyy-MM-dd'T'HH:mm:ssz");
 
-    /** Common date format (RFC 822). */
+    /** AWS date format (ISO 8601). Pattern: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'". */
+    public static final List<String> FORMAT_ISO_8601 = unmodifiableList("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+    /**
+     * Common date format (RFC 822). Patterns: "EEE, dd MMM yy HH:mm:ss z" or
+     * "EEE, dd MMM yy HH:mm z", "dd MMM yy HH:mm:ss z" or "dd MMM yy HH:mm z".
+     */
     public static final List<String> FORMAT_RFC_822 = unmodifiableList(
             "EEE, dd MMM yy HH:mm:ss z", "EEE, dd MMM yy HH:mm z",
             "dd MMM yy HH:mm:ss z", "dd MMM yy HH:mm z");
@@ -85,8 +100,8 @@ public final class DateUtils {
                     "Can't compare the dates, at least one of them is null");
         }
 
-        final long baseTime = baseDate.getTime() / 1000;
-        final long afterTime = afterDate.getTime() / 1000;
+        long baseTime = baseDate.getTime() / 1000;
+        long afterTime = afterDate.getTime() / 1000;
         return baseTime < afterTime;
     }
 
@@ -105,8 +120,8 @@ public final class DateUtils {
                     "Can't compare the dates, at least one of them is null");
         }
 
-        final long baseTime = baseDate.getTime() / 1000;
-        final long beforeTime = beforeDate.getTime() / 1000;
+        long baseTime = baseDate.getTime() / 1000;
+        long beforeTime = beforeDate.getTime() / 1000;
         return beforeTime < baseTime;
     }
 
@@ -125,8 +140,8 @@ public final class DateUtils {
                     "Can't compare the dates, at least one of them is null");
         }
 
-        final long baseTime = baseDate.getTime() / 1000;
-        final long otherTime = otherDate.getTime() / 1000;
+        long baseTime = baseDate.getTime() / 1000;
+        long otherTime = otherDate.getTime() / 1000;
         return otherTime == baseTime;
     }
 
@@ -147,6 +162,19 @@ public final class DateUtils {
      * @param date
      *            The date to format.
      * @param format
+     *            The array of date formats to use.
+     * @return The formatted date.
+     */
+    public static String format(final Date date, final List<String> formats) {
+        return format(date, formats != null ? formats.get(0) : null);
+    }
+
+    /**
+     * Formats a Date according to the given format.
+     * 
+     * @param date
+     *            The date to format.
+     * @param format
      *            The date format to use.
      * @return The formatted date.
      */
@@ -157,6 +185,7 @@ public final class DateUtils {
 
         // [ifndef gwt]
         java.text.DateFormat formatter = null;
+
         if (FORMAT_RFC_3339.get(0).equals(format)) {
             formatter = new InternetDateFormat(TIMEZONE_GMT);
         } else {
@@ -164,6 +193,7 @@ public final class DateUtils {
                     java.util.Locale.US);
             formatter.setTimeZone(TIMEZONE_GMT);
         }
+
         return formatter.format(date);
         // [enddef]
         // [ifdef gwt]
@@ -269,7 +299,7 @@ public final class DateUtils {
      * @param <T>
      *            Any valid java object
      * @param array
-     *            to be convereted into an unmodifiable list
+     *            to be converted into an unmodifiable list
      * @return unmodifiable list based on the provided array
      */
     private static <T> List<T> unmodifiableList(final T... array) {
@@ -278,7 +308,7 @@ public final class DateUtils {
 
     /**
      * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instatiable and extensible.
+     * i.e. it isn't instantiable and extensible.
      */
     private DateUtils() {
 

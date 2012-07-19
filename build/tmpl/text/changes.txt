@@ -26,6 +26,7 @@ Changes log
          equality based on name could cause issues with MemoryRealm
          mapping if several applications used the same role names.
        - Added log traces in case of error with custom status representation.
+       - Improved DateUtils's Javadocs with clear formatting hints.
 
 - 2.0.14 (2012-05-23)
     - Bug fixed
