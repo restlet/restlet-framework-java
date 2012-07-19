@@ -627,7 +627,7 @@ public final class Status {
 
     /**
      * Check if the provided reason phrase of the status contains forbidden
-     * characters such as CR and LF. an IllegalArgumentException is thrown in
+     * characters such as CR and LF. An IllegalArgumentException is thrown in
      * this case.
      * 
      * @see <a
