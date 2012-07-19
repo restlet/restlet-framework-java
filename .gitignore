@@ -41,3 +41,12 @@
 /modules/org.restlet.ext.xstream/bin
 /modules/org.restlet.test/bin
 /modules/org.restlet.test/velocity.log
+/modules/org.restlet.example.book.restlet.ch08.odata/bin
+/modules/org.restlet.example.book.restlet.ch09.android/bin
+/modules/org.restlet.example.book.restlet.ch09.gwt/gwt-unitCache
+/modules/org.restlet.example.book.restlet.ch09.gwt/gwt-gen
+/modules/org.restlet.example.book.restlet.ch09.gwt\war/mail
+/modules/org.restlet.example.book.restlet.ch09.gwt\war\WEB-INF/deploy
+/modules/org.restlet.example.book.restlet.ch09.gwt\war\WEB-INF/classes
+/modules/org.restlet.example.book.restlet.ch09.gwt\war\WEB-INF/appengine-generated
+/modules/org.restlet.example.book.restlet.ch09.gwt\war/mail
