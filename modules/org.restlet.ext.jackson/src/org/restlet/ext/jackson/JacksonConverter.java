@@ -47,7 +47,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 
-
 /**
  * Converter between the JSON and Representation classes based on Jackson.
  * 
@@ -77,6 +76,7 @@ public class JacksonConverter extends ConverterHelper {
         result.setObjectMapper(getObjectMapper());
         return result;
     }
+
     /**
      * Creates the unmarshaling {@link JacksonRepresentation}.
      * 
@@ -94,7 +94,6 @@ public class JacksonConverter extends ConverterHelper {
         result.setObjectMapper(getObjectMapper());
         return result;
     }
-
 
     /**
      * Creates a Jackson object mapper based on a media type. By default, it

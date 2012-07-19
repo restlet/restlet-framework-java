@@ -17,6 +17,8 @@ Changes log
        - Reverted Role equality test to default Java object equality as
          equality based on name could cause issues with MemoryRealm
          mapping if several applications used the same role names.
+       - Upgraded Jetty to version 7.6.5.
+       - Upgraded Jackson to version 1.9.8.
 
 - 2.1 Release Candidate 5 (05/23/2012)
     - Bug fixed
