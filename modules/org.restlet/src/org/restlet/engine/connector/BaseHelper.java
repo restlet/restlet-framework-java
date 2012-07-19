@@ -319,7 +319,7 @@ public abstract class BaseHelper<T extends Connector> extends
 
         // Stops the controller
         if (this.controllerService != null) {
-            this.controller.setRunning(false);
+            this.controller.shutdown();
             this.controllerService.shutdown();
 
             try {

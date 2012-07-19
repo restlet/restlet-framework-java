@@ -36,8 +36,9 @@ package org.restlet.ext.e4;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
 /**
- * @author Bryan Hunt
  * 
+ * 
+ * @author Bryan Hunt
  */
 public interface InjectedResource {
     void setEclipseContext(IEclipseContext eclipseContext);

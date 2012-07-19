@@ -191,6 +191,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
             if (!response.isCommitted() && response.isAutoCommitting()) {
                 response.setCommitted(true);
                 getOutboundMessages().add(response);
+                getController().wakeup();
             }
         }
     }
@@ -210,6 +211,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
                     } else {
                         // Put the response at the end of the queue
                         getOutboundMessages().add(response);
+                        getController().wakeup();
                     }
                 } catch (IOException e) {
                     getLogger().log(Level.FINE,

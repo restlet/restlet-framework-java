@@ -56,11 +56,11 @@ import org.restlet.util.SelectionRegistration;
  */
 public class ConnectionController extends Controller implements Runnable {
 
-    /** The NIO selector. */
-    private volatile Selector selector;
-
     /** The list of new selection registrations. */
     private final Queue<SelectionRegistration> newRegistrations;
+
+    /** The NIO selector. */
+    private volatile Selector selector;
 
     /** The list of updated selection registrations. */
     private final Queue<SelectionRegistration> updatedRegistrations;
@@ -154,10 +154,10 @@ public class ConnectionController extends Controller implements Runnable {
     @Override
     protected void doRun(long sleepTime) throws IOException {
         super.doRun(sleepTime);
+        controlConnections();
         registerKeys();
         updateKeys();
         selectKeys(sleepTime);
-        controlConnections();
     }
 
     /**
@@ -177,7 +177,7 @@ public class ConnectionController extends Controller implements Runnable {
     protected Selector getSelector() {
         return selector;
     }
-
+    
     /**
      * Returns the queue of updated selection registrations.
      * 
@@ -265,7 +265,7 @@ public class ConnectionController extends Controller implements Runnable {
     protected void selectKeys(long sleepTime) throws IOException,
             ClosedByInterruptException {
         // Select the connections ready for NIO operations
-        int selectCount = getSelector().select(sleepTime);
+        int selectCount = getSelector().select();
 
         if (selectCount > 0) {
             if (getHelper().getLogger().isLoggable(Level.FINEST)) {
@@ -285,9 +285,9 @@ public class ConnectionController extends Controller implements Runnable {
     }
 
     @Override
-    public void shutdown() throws IOException {
+    public void shutdown() {
         super.shutdown();
-        getSelector().close();
+        wakeup();
     }
 
     /**
@@ -309,6 +309,15 @@ public class ConnectionController extends Controller implements Runnable {
 
             updatedRegistration.update();
             updatedRegistration = getUpdatedRegistrations().poll();
+        }
+    }
+
+    /**
+     * Wakes up the controller thread if wait for an NIO selection.
+     */
+    public void wakeup() {
+        if (getSelector() != null) {
+            getSelector().wakeup();
         }
     }
 

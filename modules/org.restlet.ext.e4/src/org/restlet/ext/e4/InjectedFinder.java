@@ -46,8 +46,9 @@ import org.restlet.resource.Finder;
 import org.restlet.resource.ServerResource;
 
 /**
- * @author Bryan Hunt
  * 
+ * 
+ * @author Bryan Hunt
  */
 public class InjectedFinder extends Finder {
     private static ReentrantLock diLock = new ReentrantLock();

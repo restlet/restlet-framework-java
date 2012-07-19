@@ -36,6 +36,11 @@ package org.restlet.ext.e4.internal;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
+/**
+ * 
+ * 
+ * @author Bryan Hunt
+ */
 public class Activator implements BundleActivator {
 
     private static BundleContext context;
