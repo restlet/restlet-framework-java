@@ -310,8 +310,7 @@ public final class BioUtils {
             final java.io.PipedWriter pipedWriter = new java.io.PipedWriter();
             java.io.PipedReader pipedReader = new java.io.PipedReader(
                     pipedWriter);
-            org.restlet.Application application = org.restlet.Application
-                    .getCurrent();
+
             // Gets a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
             Runnable task = new Runnable() {
@@ -319,20 +318,29 @@ public final class BioUtils {
                     try {
                         representation.write(pipedWriter);
                         pipedWriter.flush();
-                        pipedWriter.close();
                     } catch (IOException ioe) {
                         Context.getCurrentLogger()
-                                .log(Level.FINE,
+                                .log(Level.WARNING,
                                         "Error while writing to the piped reader.",
                                         ioe);
+                    } finally {
+                        try {
+                            pipedWriter.close();
+                        } catch (IOException ioe2) {
+                            Context.getCurrentLogger().log(Level.WARNING,
+                                    "Error while closing the pipe.", ioe2);
+                        }
                     }
                 }
             };
 
+            org.restlet.Application application = org.restlet.Application
+                    .getCurrent();
+
             if (application != null && application.getTaskService() != null) {
                 application.getTaskService().execute(task);
             } else {
-                new Thread(task).start();
+                new Thread(task, "Restlet-PipeWriter").start();
             }
 
             result = pipedReader;
@@ -401,26 +409,33 @@ public final class BioUtils {
             }
 
             final PipeStream pipe = new PipeStream();
-            org.restlet.Application application = org.restlet.Application
-                    .getCurrent();
-
-            // Gets a thread that will handle the task of continuously
+            final java.io.OutputStream os = pipe.getOutputStream();
+            
+            // Creates a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
             Runnable task = new Runnable() {
                 public void run() {
                     try {
-                        java.io.OutputStream os = pipe.getOutputStream();
                         representation.write(os);
                         os.flush();
-                        os.close();
                     } catch (IOException ioe) {
                         Context.getCurrentLogger()
-                                .log(Level.FINE,
-                                        "Error while writing to the piped input stream.",
+                        .log(Level.WARNING,
+                                "Error while writing to the piped input stream.",
                                         ioe);
+                    } finally {
+                        try {
+                            os.close();
+                        } catch (IOException ioe2) {
+                            Context.getCurrentLogger().log(Level.WARNING,
+                                    "Error while closing the pipe.", ioe2);
+                        }
                     }
                 }
             };
+
+            org.restlet.Application application = org.restlet.Application
+                    .getCurrent();
 
             if (application != null && application.getTaskService() != null) {
                 application.getTaskService().execute(task);

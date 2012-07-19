@@ -13,10 +13,13 @@ Changes log
          cause erros such as "no Restlet defined to process calls. Maybe it
          wasn't properly started" errors (500). Reported by several persons 
          including David Fuchs, Danny Leshem, Yunwu Zhu and Bjorn Roche.
+       - Fixed potential threading/pipe issues with OutputRepresentation
+         and WriterRepresentation classes.
     - Misc
        - Reverted Role equality test to default Java object equality as
          equality based on name could cause issues with MemoryRealm
          mapping if several applications used the same role names.
+       - Added log traces in case of error with custom status representation.
 
 - 2.0.14 (2012-05-23)
     - Bug fixed
