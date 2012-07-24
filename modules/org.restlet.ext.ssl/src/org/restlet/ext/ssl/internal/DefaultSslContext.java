@@ -38,7 +38,7 @@ import javax.net.ssl.SSLContext;
 import org.restlet.ext.ssl.DefaultSslContextFactory;
 
 /**
- * Default SSL context that delegates calls to {@link DefaultSslContextSpi}
+ * Default SSL context that delegates calls to {@link WrapperSslContextSpi}
  * 
  * @author Jerome Louvel
  */
@@ -54,9 +54,9 @@ public class DefaultSslContext extends SSLContext {
      *            The wrapped SSL context.
      * @return The created SSL context SPI.
      */
-    private static DefaultSslContextSpi createContextSpi(
+    private static WrapperSslContextSpi createContextSpi(
             DefaultSslContextFactory contextFactory, SSLContext wrappedContext) {
-        return new DefaultSslContextSpi(contextFactory, wrappedContext);
+        return new WrapperSslContextSpi(contextFactory, wrappedContext);
     }
 
     /**
