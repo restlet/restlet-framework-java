@@ -53,7 +53,7 @@ import org.restlet.ext.ssl.DefaultSslContextFactory;
  * 
  * @author Jerome Louvel
  */
-public class DefaultSslContextSpi extends SSLContextSpi {
+public class WrapperSslContextSpi extends SSLContextSpi {
 
     /** The parent SSL context factory. */
     private final DefaultSslContextFactory contextFactory;
@@ -69,7 +69,7 @@ public class DefaultSslContextSpi extends SSLContextSpi {
      * @param wrappedContext
      *            The wrapped SSL context.
      */
-    public DefaultSslContextSpi(DefaultSslContextFactory contextFactory,
+    public WrapperSslContextSpi(DefaultSslContextFactory contextFactory,
             SSLContext wrappedContext) {
         this.contextFactory = contextFactory;
         this.wrappedContext = wrappedContext;
@@ -90,22 +90,6 @@ public class DefaultSslContextSpi extends SSLContextSpi {
         return result;
     }
 
-    /**
-     * Initializes the SSL engine with additional parameters from the SSL
-     * context factory.
-     * 
-     * @param sslEngine
-     *            The SSL engine to initialize.
-     */
-    protected void initEngine(SSLEngine sslEngine) {
-        sslEngine.setNeedClientAuth(getContextFactory()
-                .isNeedClientAuthentication());
-        sslEngine.setWantClientAuth(getContextFactory()
-                .isWantClientAuthentication());
-        sslEngine.setEnabledCipherSuites(getContextFactory()
-                .getSelectedCipherSuites(sslEngine.getSupportedCipherSuites()));
-    }
-
     @Override
     protected SSLSessionContext engineGetClientSessionContext() {
         return getWrappedContext().getClientSessionContext();
@@ -118,12 +102,14 @@ public class DefaultSslContextSpi extends SSLContextSpi {
 
     @Override
     protected SSLServerSocketFactory engineGetServerSocketFactory() {
-        return getWrappedContext().getServerSocketFactory();
+        return new WrapperSslServerSocketFactory(getContextFactory(),
+                getWrappedContext().getServerSocketFactory());
     }
 
     @Override
     protected SSLSocketFactory engineGetSocketFactory() {
-        return getWrappedContext().getSocketFactory();
+        return new WrapperSslSocketFactory(getContextFactory(),
+                getWrappedContext().getSocketFactory());
     }
 
     @Override
@@ -148,6 +134,22 @@ public class DefaultSslContextSpi extends SSLContextSpi {
      */
     protected SSLContext getWrappedContext() {
         return wrappedContext;
+    }
+
+    /**
+     * Initializes the SSL engine with additional parameters from the SSL
+     * context factory.
+     * 
+     * @param sslEngine
+     *            The SSL engine to initialize.
+     */
+    protected void initEngine(SSLEngine sslEngine) {
+        sslEngine.setNeedClientAuth(getContextFactory()
+                .isNeedClientAuthentication());
+        sslEngine.setWantClientAuth(getContextFactory()
+                .isWantClientAuthentication());
+        sslEngine.setEnabledCipherSuites(getContextFactory()
+                .getSelectedCipherSuites(sslEngine.getSupportedCipherSuites()));
     }
 
 }
