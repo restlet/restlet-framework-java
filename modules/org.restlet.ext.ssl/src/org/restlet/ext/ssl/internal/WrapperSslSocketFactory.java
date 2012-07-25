@@ -72,6 +72,12 @@ public class WrapperSslSocketFactory extends SSLSocketFactory {
     }
 
     @Override
+    public Socket createSocket() throws IOException {
+        SSLSocket result = (SSLSocket) getWrappedSocketFactory().createSocket();
+        return initSslSocket(result);
+    }
+
+    @Override
     public Socket createSocket(InetAddress host, int port) throws IOException {
         SSLSocket result = (SSLSocket) getWrappedSocketFactory().createSocket(
                 host, port);
