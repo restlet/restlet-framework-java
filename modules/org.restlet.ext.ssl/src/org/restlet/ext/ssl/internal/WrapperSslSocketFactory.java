@@ -72,7 +72,8 @@ public class WrapperSslSocketFactory extends SSLSocketFactory {
     }
     @Override
     public Socket createSocket() throws IOException {
-        return getWrappedSocketFactory().createSocket();
+        SSLSocket result = (SSLSocket) getWrappedSocketFactory().createSocket();
+        return initSslSocket(result);
     }
 
     @Override
