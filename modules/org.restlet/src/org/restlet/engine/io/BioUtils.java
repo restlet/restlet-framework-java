@@ -254,13 +254,12 @@ public final class BioUtils {
         if (representation.getRange() == null) {
             return representation.getSize();
         } else if (representation.getRange().getSize() != Range.SIZE_MAX) {
-            if (representation.getSize() >= 0) {
-                return Math.min(representation.getRange().getIndex()
-                        + representation.getRange().getSize(),
-                        representation.getSize())
-                        - representation.getRange().getIndex();
+            if (representation.getSize() >= 0
+                    && representation.getRange().getSize() > representation
+                            .getSize()) {
+                return representation.getSize();
             } else {
-                return Representation.UNKNOWN_SIZE;
+                return representation.getRange().getSize();
             }
         } else if (representation.getSize() >= 0) {
             if (representation.getRange().getIndex() != Range.INDEX_LAST) {
@@ -417,7 +416,7 @@ public final class BioUtils {
 
             final PipeStream pipe = new PipeStream();
             final java.io.OutputStream os = pipe.getOutputStream();
-            
+
             // Creates a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
             Runnable task = new Runnable() {
@@ -427,8 +426,8 @@ public final class BioUtils {
                         os.flush();
                     } catch (IOException ioe) {
                         Context.getCurrentLogger()
-                        .log(Level.WARNING,
-                                "Error while writing to the piped input stream.",
+                                .log(Level.WARNING,
+                                        "Error while writing to the piped input stream.",
                                         ioe);
                     } finally {
                         try {

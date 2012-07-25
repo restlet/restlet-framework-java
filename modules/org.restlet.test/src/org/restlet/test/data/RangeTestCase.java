@@ -203,6 +203,7 @@ public class RangeTestCase extends RestletTestCase {
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("1234567890", response.getEntity().getText());
         assertEquals(10, response.getEntity().getSize());
+        assertEquals(10, response.getEntity().getAvailableSize());
         assertEquals(0, response.getEntity().getRange().getIndex());
         assertEquals(10, response.getEntity().getRange().getSize());
 
@@ -211,6 +212,7 @@ public class RangeTestCase extends RestletTestCase {
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("12", response.getEntity().getText());
         assertEquals(2, response.getEntity().getSize());
+        assertEquals(2, response.getEntity().getAvailableSize());
         assertEquals(0, response.getEntity().getRange().getIndex());
         assertEquals(2, response.getEntity().getRange().getSize());
 
@@ -219,6 +221,7 @@ public class RangeTestCase extends RestletTestCase {
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("34", response.getEntity().getText());
         assertEquals(2, response.getEntity().getSize());
+        assertEquals(2, response.getEntity().getAvailableSize());
         assertEquals(2, response.getEntity().getRange().getIndex());
         assertEquals(2, response.getEntity().getRange().getSize());
 
@@ -227,6 +230,7 @@ public class RangeTestCase extends RestletTestCase {
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("3456789", response.getEntity().getText());
         assertEquals(7, response.getEntity().getSize());
+        assertEquals(7, response.getEntity().getAvailableSize());
         assertEquals(2, response.getEntity().getRange().getIndex());
         assertEquals(7, response.getEntity().getRange().getSize());
 
@@ -235,6 +239,7 @@ public class RangeTestCase extends RestletTestCase {
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("4567890", response.getEntity().getText());
         assertEquals(7, response.getEntity().getSize());
+        assertEquals(7, response.getEntity().getAvailableSize());
         assertEquals(3, response.getEntity().getRange().getIndex());
         assertEquals(7, response.getEntity().getRange().getSize());
 
@@ -243,6 +248,7 @@ public class RangeTestCase extends RestletTestCase {
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("234567890", response.getEntity().getText());
         assertEquals(9, response.getEntity().getSize());
+        assertEquals(9, response.getEntity().getAvailableSize());
         assertEquals(1, response.getEntity().getRange().getIndex());
         assertEquals(9, response.getEntity().getRange().getSize());
 
