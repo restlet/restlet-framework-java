@@ -594,7 +594,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
     @Override
     public void stop() throws Exception {
-        getLogger().info("Stopping the internal" + getProtocols() + " client");
+        getLogger().info("Stopping the internal " + getProtocols() + " client");
         super.stop();
     }
 
