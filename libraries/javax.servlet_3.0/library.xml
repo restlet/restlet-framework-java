@@ -1,7 +1,7 @@
 <library id="servlet" symbolicName="javax.servlet">
 	<name>Servlet API</name>
 	<description>Servlet API</description>
-	<version>2.5</version>
+	<version>3.0</version>
 	<homeUri>http://java.sun.com/products/servlet/index.jsp</homeUri>
 	<downloadUri>http://java.sun.com/products/servlet/download.html</downloadUri>
 	<provider>Oracle Inc.</provider>
@@ -15,7 +15,7 @@
 		<distribution id="classic" />
 	</distributions>
 	<javadocs>
-		<link href="http://download.oracle.com/javaee/5/api/" />
+		<link href="http://docs.oracle.com/javaee/6/api/" />
 	</javadocs>
 </library>
 

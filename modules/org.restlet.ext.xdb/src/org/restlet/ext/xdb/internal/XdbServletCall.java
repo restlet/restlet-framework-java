@@ -177,7 +177,6 @@ public class XdbServletCall extends ServerCall {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Series<Header> getRequestHeaders() {
         if (this.requestHeaders == null) {
             this.requestHeaders = new Series<Header>(Header.class);

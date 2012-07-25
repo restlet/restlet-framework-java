@@ -252,7 +252,6 @@ public class XdbServletAdapter extends ServerAdapter {
      *            The low-level Servlet call.
      * @return A new high-level uniform request.
      */
-    @SuppressWarnings("unchecked")
     public HttpRequest toRequest(XdbServletCall servletCall) {
         final HttpRequest result = super.toRequest(servletCall);
 

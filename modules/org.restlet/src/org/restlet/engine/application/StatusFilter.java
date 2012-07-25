@@ -250,8 +250,15 @@ public class StatusFilter extends Filter {
      */
     protected Representation getRepresentation(Status status, Request request,
             Response response) {
-        Representation result = getStatusService().getRepresentation(status,
-                request, response);
+        Representation result = null;
+
+        try {
+            result = getStatusService().getRepresentation(status, request,
+                    response);
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING,
+                    "Unable to get the custom status representation", e);
+        }
 
         if (result == null) {
             result = getDefaultRepresentation(status, request, response);

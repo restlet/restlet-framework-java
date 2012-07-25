@@ -38,10 +38,10 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
 /**
- * @author Bryan Hunt
  * 
+ * 
+ * @author Bryan Hunt
  */
-@SuppressWarnings("restriction")
 public class InjectedServerResource extends ServerResource implements
         InjectedResource {
     private IEclipseContext eclipseContext;

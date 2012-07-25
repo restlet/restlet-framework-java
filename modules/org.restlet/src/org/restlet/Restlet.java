@@ -461,12 +461,26 @@ public abstract class Restlet implements Uniform {
         this.owner = owner;
     }
 
-    /** Starts the Restlet. */
+    /**
+     * Starts the Restlet. By default its only sets "started" internal property
+     * to true.
+     * 
+     * WARNING: this method must be called at the end of the starting process by
+     * subclasses otherwise concurrent threads could enter into the call
+     * handling logic too early.
+     */
     public synchronized void start() throws Exception {
         this.started = true;
     }
 
-    /** Stops the Restlet. */
+    /**
+     * Stops the Restlet. By default its only sets "started" internal property
+     * to false.
+     * 
+     * WARNING: this method must be called at the beginning of the stopping
+     * process by subclasses otherwise concurrent threads could continue to
+     * (improperly) handle calls.
+     */
     public synchronized void stop() throws Exception {
         this.started = false;
     }

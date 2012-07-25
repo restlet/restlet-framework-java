@@ -944,7 +944,6 @@ public class ServerServlet extends HttpServlet {
      * @param application
      *            The application to configure.
      */
-    @SuppressWarnings("unchecked")
     protected void init(Application application) {
         if (application != null) {
             Context applicationContext = application.getContext();
@@ -986,7 +985,6 @@ public class ServerServlet extends HttpServlet {
      * @param component
      *            The component to configure.
      */
-    @SuppressWarnings("unchecked")
     protected void init(Component component) {
         if (component != null) {
             // Complete the configuration of the Component

@@ -87,3 +87,6 @@ org.eclipse.jdt.core.prefs
 /build/build.number
 /modules/org.restlet.test/velocity.log
 /build/velocity.log
+/incubator/org.restlet.ext.guice/bin
+/incubator/org.restlet.ext.webdav/bin
+/incubator/org.restlet.sandbox/bin

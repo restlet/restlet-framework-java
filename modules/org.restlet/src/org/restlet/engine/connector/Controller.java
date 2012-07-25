@@ -82,6 +82,7 @@ public abstract class Controller {
      * easy method to overload.
      * 
      * @param sleepTime
+     *            The maximum amount of sleep time.
      */
     protected void doRun(long sleepTime) throws IOException {
         getHelper().control();
@@ -119,7 +120,7 @@ public abstract class Controller {
      * 
      * @return True if the task is running.
      */
-    public boolean isRunning() {
+    protected boolean isRunning() {
         return running;
     }
 
@@ -159,13 +160,13 @@ public abstract class Controller {
                 } catch (Throwable ex) {
                     this.helper.getLogger().log(Level.WARNING,
                             "Unexpected error while controlling connector", ex);
-                    setRunning(false);
+                    shutdown();
                 }
             }
         } catch (Throwable e) {
             this.helper.getLogger().log(Level.WARNING,
                     "Unexpected error while controlling connector", e);
-            setRunning(false);
+            shutdown();
         } finally {
             doRelease();
         }
@@ -188,14 +189,14 @@ public abstract class Controller {
      * @param running
      *            True if the task is running.
      */
-    public void setRunning(boolean running) {
+    private void setRunning(boolean running) {
         this.running = running;
     }
 
     /**
      * Abort the controller.
      */
-    public void shutdown() throws IOException {
+    public void shutdown() {
         setRunning(false);
     }
 

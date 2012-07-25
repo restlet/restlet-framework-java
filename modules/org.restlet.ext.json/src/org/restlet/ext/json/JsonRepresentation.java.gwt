@@ -49,7 +49,6 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
 
-
 /**
  * JSON representation based on an JSON value. JSON (JavaScript Object Notation)
  * is a common serialization format similar to XML but lighter.
@@ -111,10 +110,55 @@ public class JsonRepresentation extends Representation {
         setCharacterSet(CharacterSet.UTF_8);
         this.jsonRepresentation = new StringRepresentation(jsonString);
     }
-    
+
     /**
-     * Converts the representation to a JSON object. This method will trigger
-     * the serialization of any wrapped JSON object.
+     * Converts the representation to a JSON array. This method might trigger
+     * the parsing of the wrapped JSON textual representation.
+     * 
+     * @return The converted JSON array.
+     * @throws IOException
+     */
+    public JSONArray getJsonArray() throws IOException {
+        if (getValue() != null) {
+            return getValue().isArray();
+        }
+
+        return null;
+    }
+
+    /**
+     * Converts the representation to a JSON Boolean. This method might trigger
+     * the parsing of the wrapped JSON textual representation.
+     * 
+     * @return The converted JSON Boolean.
+     * @throws IOException
+     */
+    public JSONBoolean getJsonBoolean() throws IOException {
+        if (getValue() != null) {
+            return getValue().isBoolean();
+        }
+
+        return null;
+    }
+
+    /**
+     * Converts the representation to a JSON null value. This method might
+     * trigger the parsing of the wrapped JSON textual representation.
+     * 
+     * @return The converted JSON null value.
+     * @throws IOException
+     */
+    public JSONNull getJsonNull() throws IOException {
+        if (getValue() != null) {
+            return getValue().isNull();
+        }
+
+        return null;
+    }
+
+    /**
+     * Converts the representation to a JSON object. This method might trigger
+     * the parsing of the wrapped JSON textual representation.
      * 
      * @return The converted JSON object.
      * @throws IOException
@@ -127,6 +171,20 @@ public class JsonRepresentation extends Representation {
         return null;
     }
 
+    /**
+     * Converts the representation to a JSON string. This method might trigger
+     * the parsing of the wrapped JSON textual representation.
+     * 
+     * @return The converted JSON string.
+     * @throws IOException
+     */
+    public JSONString getJsonString() throws IOException {
+        if (getValue() != null) {
+            return getValue().isString();
+        }
+
+        return null;
+    }
 
     @Override
     public Reader getReader() throws IOException {

@@ -45,22 +45,34 @@ import java.util.List;
  */
 public final class DateUtils {
 
-    /** Obsoleted HTTP date format (ANSI C asctime() format). */
+    /**
+     * Obsoleted HTTP date format (ANSI C asctime() format). Pattern:
+     * "EEE MMM dd HH:mm:ss yyyy".
+     */
     public static final List<String> FORMAT_ASC_TIME = unmodifiableList("EEE MMM dd HH:mm:ss yyyy");
 
-    /** Obsoleted HTTP date format (RFC 1036). */
+    /**
+     * Obsoleted HTTP date format (RFC 1036). Pattern:
+     * "EEEE, dd-MMM-yy HH:mm:ss zzz".
+     */
     public static final List<String> FORMAT_RFC_1036 = unmodifiableList("EEEE, dd-MMM-yy HH:mm:ss zzz");
 
-    /** Preferred HTTP date format (RFC 1123). */
+    /**
+     * Preferred HTTP date format (RFC 1123). Pattern:
+     * "EEE, dd MMM yyyy HH:mm:ss zzz".
+     */
     public static final List<String> FORMAT_RFC_1123 = unmodifiableList("EEE, dd MMM yyyy HH:mm:ss zzz");
 
-    /** W3C date format (RFC 3339). */
+    /** W3C date format (RFC 3339). Pattern: "yyyy-MM-dd'T'HH:mm:ssz". */
     public static final List<String> FORMAT_RFC_3339 = unmodifiableList("yyyy-MM-dd'T'HH:mm:ssz");
 
-    /** AWS date format (ISO 8601). */
+    /** AWS date format (ISO 8601). Pattern: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'". */
     public static final List<String> FORMAT_ISO_8601 = unmodifiableList("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-    /** Common date format (RFC 822). */
+    /**
+     * Common date format (RFC 822). Patterns: "EEE, dd MMM yy HH:mm:ss z" or
+     * "EEE, dd MMM yy HH:mm z", "dd MMM yy HH:mm:ss z" or "dd MMM yy HH:mm z".
+     */
     public static final List<String> FORMAT_RFC_822 = unmodifiableList(
             "EEE, dd MMM yy HH:mm:ss z", "EEE, dd MMM yy HH:mm z",
             "dd MMM yy HH:mm:ss z", "dd MMM yy HH:mm z");
@@ -146,6 +158,19 @@ public final class DateUtils {
 
     /**
      * Formats a Date according to the first format in the array.
+     * 
+     * @param date
+     *            The date to format.
+     * @param format
+     *            The array of date formats to use.
+     * @return The formatted date.
+     */
+    public static String format(final Date date, final List<String> formats) {
+        return format(date, formats != null ? formats.get(0) : null);
+    }
+
+    /**
+     * Formats a Date according to the given format.
      * 
      * @param date
      *            The date to format.

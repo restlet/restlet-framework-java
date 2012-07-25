@@ -269,7 +269,14 @@ public final class BioUtils {
         if (representation.getRange() == null) {
             return representation.getSize();
         } else if (representation.getRange().getSize() != Range.SIZE_MAX) {
-            return representation.getRange().getSize();
+            if (representation.hasKnownSize()) {
+                return Math.min(representation.getRange().getIndex()
+                        + representation.getRange().getSize(),
+                        representation.getSize())
+                        - representation.getRange().getIndex();
+            } else {
+                return Representation.UNKNOWN_SIZE;
+            }
         } else if (representation.hasKnownSize()) {
             if (representation.getRange().getIndex() != Range.INDEX_LAST) {
                 return representation.getSize()
@@ -330,20 +337,27 @@ public final class BioUtils {
             }
 
             final PipeStream pipe = new PipeStream();
+            final java.io.OutputStream os = pipe.getOutputStream();
+
             // Creates a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
             Runnable task = new Runnable() {
                 public void run() {
                     try {
-                        java.io.OutputStream os = pipe.getOutputStream();
                         representation.write(os);
                         os.flush();
-                        os.close();
                     } catch (IOException ioe) {
                         Context.getCurrentLogger()
-                                .log(Level.FINE,
+                                .log(Level.WARNING,
                                         "Error while writing to the piped input stream.",
                                         ioe);
+                    } finally {
+                        try {
+                            os.close();
+                        } catch (IOException ioe2) {
+                            Context.getCurrentLogger().log(Level.WARNING,
+                                    "Error while closing the pipe.", ioe2);
+                        }
                     }
                 }
             };
@@ -422,8 +436,6 @@ public final class BioUtils {
             final java.io.PipedWriter pipedWriter = new java.io.PipedWriter();
             java.io.PipedReader pipedReader = new java.io.PipedReader(
                     pipedWriter);
-            org.restlet.Application application = org.restlet.Application
-                    .getCurrent();
 
             // Gets a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
@@ -432,15 +444,24 @@ public final class BioUtils {
                     try {
                         representation.write(pipedWriter);
                         pipedWriter.flush();
-                        pipedWriter.close();
                     } catch (IOException ioe) {
                         Context.getCurrentLogger()
-                                .log(Level.FINE,
+                                .log(Level.WARNING,
                                         "Error while writing to the piped reader.",
                                         ioe);
+                    } finally {
+                        try {
+                            pipedWriter.close();
+                        } catch (IOException ioe2) {
+                            Context.getCurrentLogger().log(Level.WARNING,
+                                    "Error while closing the pipe.", ioe2);
+                        }
                     }
                 }
             };
+
+            org.restlet.Application application = org.restlet.Application
+                    .getCurrent();
 
             if (application != null && application.getTaskService() != null) {
                 application.getTaskService().execute(task);

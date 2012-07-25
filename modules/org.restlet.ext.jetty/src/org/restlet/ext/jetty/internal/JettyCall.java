@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.eclipse.jetty.io.EofException;
-import org.eclipse.jetty.server.HttpConnection;
+import org.eclipse.jetty.server.AbstractHttpConnection;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Status;
@@ -59,7 +59,7 @@ import org.restlet.util.Series;
  */
 public class JettyCall extends ServerCall {
     /** The wrapped Jetty HTTP connection. */
-    private final HttpConnection connection;
+    private final AbstractHttpConnection connection;
 
     /** Indicates if the request headers were parsed and added. */
     private volatile boolean requestHeadersAdded;
@@ -72,7 +72,7 @@ public class JettyCall extends ServerCall {
      * @param connection
      *            The wrapped Jetty HTTP connection.
      */
-    public JettyCall(Server server, HttpConnection connection) {
+    public JettyCall(Server server, AbstractHttpConnection connection) {
         super(server);
         this.connection = connection;
         this.requestHeadersAdded = false;
@@ -142,7 +142,7 @@ public class JettyCall extends ServerCall {
      * 
      * @return The wrapped Jetty HTTP connection.
      */
-    public HttpConnection getConnection() {
+    public AbstractHttpConnection getConnection() {
         return this.connection;
     }
 
