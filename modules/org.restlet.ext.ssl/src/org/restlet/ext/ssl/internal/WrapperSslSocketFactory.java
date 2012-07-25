@@ -70,6 +70,10 @@ public class WrapperSslSocketFactory extends SSLSocketFactory {
         this.wrappedSocketFactory = wrappedSocketFactory;
         this.contextFactory = contextFactory;
     }
+    @Override
+    public Socket createSocket() throws IOException {
+        return getWrappedSocketFactory().createSocket();
+    }
 
     @Override
     public Socket createSocket(InetAddress host, int port) throws IOException {
