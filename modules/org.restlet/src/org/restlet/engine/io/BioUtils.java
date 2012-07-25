@@ -254,7 +254,7 @@ public final class BioUtils {
         if (representation.getRange() == null) {
             return representation.getSize();
         } else if (representation.getRange().getSize() != Range.SIZE_MAX) {
-            if (representation.hasKnownSize()) {
+            if (representation.getSize() >= 0) {
                 return Math.min(representation.getRange().getIndex()
                         + representation.getRange().getSize(),
                         representation.getSize())
@@ -262,7 +262,7 @@ public final class BioUtils {
             } else {
                 return Representation.UNKNOWN_SIZE;
             }
-        } else if (representation.hasKnownSize()) {
+        } else if (representation.getSize() >= 0) {
             if (representation.getRange().getIndex() != Range.INDEX_LAST) {
                 return representation.getSize()
                         - representation.getRange().getIndex();
