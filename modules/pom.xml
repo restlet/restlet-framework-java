@@ -32,8 +32,8 @@
 		<lib-httpcore-version>4.1</lib-httpcore-version>
 		<lib-httpmime-version>4.1.1</lib-httpmime-version>
 		<lib-io-version>2.0.1</lib-io-version>
-		<lib-jackson-core-version>1.9.0</lib-jackson-core-version>
-		<lib-jackson-mapper-version>1.9.0</lib-jackson-mapper-version>
+		<lib-jackson-core-version>1.9.8</lib-jackson-core-version>
+		<lib-jackson-mapper-version>1.9.8</lib-jackson-mapper-version>
 		<lib-javamail-version>1.4.2</lib-javamail-version>
 		<lib-jaxb-api-version>2.1</lib-jaxb-api-version>
 		<lib-jaxb-ri-version>2.1.12</lib-jaxb-ri-version>
@@ -41,12 +41,12 @@
 		<lib-jcip-annotations-version>1.0</lib-jcip-annotations-version>
 		<lib-jdom-version>1.1</lib-jdom-version>
 		<lib-jettison-version>1.3</lib-jettison-version>
-		<lib-jetty-ajp-version>7.4.2.v20110526</lib-jetty-ajp-version>
-		<lib-jetty-continuation-version>7.4.2.v20110526</lib-jetty-continuation-version>
-		<lib-jetty-http-version>7.4.2.v20110526</lib-jetty-http-version>
-		<lib-jetty-io-version>7.4.2.v20110526</lib-jetty-io-version>
-		<lib-jetty-server-version>7.4.2.v20110526</lib-jetty-server-version>
-		<lib-jetty-util-version>7.4.2.v20110526</lib-jetty-util-version>
+		<lib-jetty-ajp-version>7.6.5.v20120716</lib-jetty-ajp-version>
+		<lib-jetty-continuation-version>7.6.5.v20120716</lib-jetty-continuation-version>
+		<lib-jetty-http-version>7.6.5.v20120716</lib-jetty-http-version>
+		<lib-jetty-io-version>7.6.5.v20120716</lib-jetty-io-version>
+		<lib-jetty-server-version>7.6.5.v20120716</lib-jetty-server-version>
+		<lib-jetty-util-version>7.6.5.v20120716</lib-jetty-util-version>
 		<lib-jibx-version>1.2.2</lib-jibx-version>
 		<lib-json-version>2.0</lib-json-version>
 		<lib-jsslutils-version>1.0.5</lib-jsslutils-version>
