@@ -221,12 +221,12 @@ public class ParameterList {
                 DefaultValue defaultValue) throws ConvertParameterException,
                 WebApplicationException {
             WebApplicationException constructorWae = null;
-            
+
             Object convertWithConverterUtils = convertWithConverterUtils(paramValue);
-			if(convertWithConverterUtils != null){
-				return convertWithConverterUtils;
+            if (convertWithConverterUtils != null) {
+                return convertWithConverterUtils;
             }
-            
+
             try {
                 final Constructor<?> constr = this.convertTo
                         .getConstructor(String.class);
@@ -282,24 +282,33 @@ public class ParameterList {
             }
         }
 
-		private Object convertWithConverterUtils(String paramValue) {
-			ConverterHelper converterHelper = ConverterUtils.getBestHelper(this.tlContext.get().getRequest()
-                    .getEntity(), this.convertTo, null);
-            List< VariantInfo > variants = converterHelper.getVariants(this.convertTo);
-            for(VariantInfo variantInfo : variants) {
-                try {
-                    Object object = converterHelper.toObject(new StringRepresentation(paramValue, variantInfo.getMediaType()), this.convertTo, null );
-                    if(object != null) {
-                        return object;
+        private Object convertWithConverterUtils(String paramValue) {
+            Object result = null;
+
+            Representation source = this.tlContext.get().getRequest()
+                    .getEntity();
+            if ((source != null) && source.isAvailable()
+                    && (source.getSize() != 0)) {
+                ConverterHelper converterHelper = ConverterUtils.getBestHelper(
+                        this.tlContext.get().getRequest().getEntity(),
+                        this.convertTo, null);
+                List<VariantInfo> variants = converterHelper
+                        .getVariants(this.convertTo);
+                for (int i = 0; result == null && i < variants.size(); i++) {
+                    try {
+                        result = converterHelper.toObject(
+                                new StringRepresentation(paramValue, variants
+                                        .get(i).getMediaType()),
+                                this.convertTo, null);
+                    } catch (Exception exception) {
+                        // -- don't worry about it...proceed with the old style
+                        // conversion
                     }
                 }
-                catch (Exception exception) {
-                    // -- don't worry about it...proceed with the old style conversion
-                }
             }
-            
-            return null;
-		}
+
+            return result;
+        }
 
         protected Object convertParamValues(Iterator<String> paramValueIter)
                 throws ConvertParameterException {
