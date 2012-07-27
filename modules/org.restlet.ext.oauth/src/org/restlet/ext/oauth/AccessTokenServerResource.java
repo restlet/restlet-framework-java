@@ -487,21 +487,25 @@ public class AccessTokenServerResource extends OAuthServerResource {
         getLogger().fine("Client = " + client);
 
         if (client == null) {
-            sendError(OAuthError.invalid_client,
-                    "Could not find the correct client with id : " + clientId,
-                    null);
-            setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            // #sendError and #setStatus are insignificant here.
+//            sendError(OAuthError.invalid_client,
+//                    "Could not find the correct client with id : " + clientId,
+//                    null);
+//            setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             return null;
         }
 
         if ((clientSecret == null)
                 || !clientSecret.equals(client.getClientSecret())) {
-            sendError(OAuthError.invalid_grant, "Client secret did not match",
-                    null);
-            setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+            // #sendError and #setStatus are insignificant here.
+//            sendError(OAuthError.invalid_grant, "Client secret did not match",
+//                    null);
+//            setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
             getLogger().warning(
                     "Could not find or match client secret " + clientSecret
                             + " : " + client.getClientSecret());
+            // We MUST return to indicate validation goes wrong.
+            return null;
         }
 
         return client;

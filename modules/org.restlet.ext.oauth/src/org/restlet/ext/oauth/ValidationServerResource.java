@@ -83,125 +83,127 @@ public class ValidationServerResource extends OAuthServerResource {
 
     //TODO: Move to OAuthHelper init parameters...
     public static final String LOCAL_ACCESS_ONLY = "localOnly";
-
-    @Post("json")
-    public Representation validate(Representation input)
-            throws ResourceException {
-        getLogger().fine("In Validator resource");
-        JSONObject response = new JSONObject();
-        boolean authenticated = false;
+    
+    private boolean isLocalAcessOnly() {
         String lo = (String) getContext().getAttributes()
                 .get(LOCAL_ACCESS_ONLY);
+        return (lo != null) && (lo.length() > 0) && Boolean.parseBoolean(lo);
+    }
+    
+    private Representation validate(JSONObject call) throws JSONException {
+        Token t = validateToken(call);
+        
+        if (t == null) {
+            return createError(OAuthError.invalid_token);
+        }
 
-        if ((lo != null) && (lo.length() > 0)) {
-            boolean localOnly = Boolean.parseBoolean(lo);
+        String uri = call.get("uri").toString();
+        JSONArray scopes = null;
 
-            if (localOnly) { // Check that protocol = RIAP
-                String scheme = getOriginalRef().getScheme();
+        if (call.has("scope")) {
+            scopes = call.getJSONArray("scope");
+        }
 
-                if (!Protocol.RIAP.getSchemeName().equals(scheme)) {
-                    setStatus(Status.CLIENT_ERROR_FORBIDDEN,
-                            "Auth server only allows local resource validation");
-                    return null;
+        String owner = null;
+
+        if (call.has("owner")) {
+            owner = call.getString("owner");
+        }
+
+        // Todo do more fine grained scope comparison.
+        getLogger().fine("Received uri = " + uri);
+        getLogger().fine("Received scope = " + scopes);
+        getLogger().fine("Received owner = " + owner);
+
+        AuthenticatedUser user = t.getUser();
+        if (user == null) {
+            return createError(OAuthError.invalid_request);
+        }
+
+        if ((scopes != null) && (scopes.length() > 0)) {
+            // All scopes must match if there are any listed
+            for (int i = 0; i < scopes.length(); i++) {
+                if (scopes.isNull(i)) {
+                    continue;
+                }
+                String scope = scopes.getString(i);
+                boolean granted = user.isGrantedRole(Scopes.toRole(scope), owner);
+                getLogger().fine("Granted permission : " + scope + " = " + granted);
+                if (!granted) {
+                    return createError(OAuthError.insufficient_scope);
                 }
             }
         }
 
+        // Matching on the owner if there is one and scope checke out
+        if ((owner != null) && (owner.length() > 0)
+                && !AUTONOMOUS_USER.equals(user.getId())
+                && !owner.equals(user.getId())) {
+            return createError(OAuthError.invalid_request);
+        }
+        
+        JSONObject resp = new JSONObject();
+        resp.put("tokenOwner", user.getId());
+        resp.put("authenticated", true);
+
+        // Sets the no-store Cache-Control header
+        getResponse().setCacheDirectives(noStore);
+        getResponse().setCacheDirectives(noCache);
+        // response.put("expires", t.getToken());
+        
+        // return new JsonRepresentation(response);
+        return new JsonStringRepresentation(resp);
+    }
+    
+    private Token validateToken(JSONObject call) throws JSONException {
+        String token = call.get("access_token").toString();
+
+        getLogger().fine("In Validator resource - searching for token = " + token);
+        Token t = this.generator.findToken(token);
+
+        if (t == null) {
+            return null;
+            // setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+        }
+        
+        getLogger().fine("In Validator resource - got token = " + t);
+
+        if (t instanceof ExpireToken) {
+            // check that the right token was used
+            ExpireToken et = (ExpireToken) t;
+
+            if (!token.equals(et.getToken())) {
+                getLogger().warning("Should not use the refresh_token to sign!");
+                return null;
+            }
+        }
+        
+        return t;
+    }
+    
+    private Representation createError(OAuthError error) throws JSONException {
+        JSONObject resp = new JSONObject();
+        resp.put("authenticated", false);
+        resp.put("error", error.name());
+        return new JsonRepresentation(resp);
+    }
+
+    @Post("json")
+    public Representation validate(Representation input) throws ResourceException {
+        getLogger().fine("In Validator resource");
+
+        if (isLocalAcessOnly()) { // Check that protocol = RIAP
+            String scheme = getOriginalRef().getScheme();
+
+            if (!Protocol.RIAP.getSchemeName().equals(scheme)) {
+                setStatus(Status.CLIENT_ERROR_FORBIDDEN,
+                        "Auth server only allows local resource validation");
+                return null;
+            }
+        }
+        
         try {
-            String error = null;
-            JsonRepresentation rest = new JsonRepresentation(input);
-            JSONObject call = rest.getJsonObject();
-            String token = call.get("access_token").toString();
-            String uri = call.get("uri").toString();
-            JSONArray scopes = null;
-
-            if (call.has("scope")) {
-                scopes = call.getJSONArray("scope");
-            }
-
-            String owner = null;
-
-            if (call.has("owner")) {
-                owner = call.getString("owner");
-            }
-
-            getLogger().fine(
-                    "In Validator resource - searching for token = " + token);
-            Token t = this.generator.findToken(token);
-
-            if (t == null) {
-                response.put("authenticated", authenticated);
-                error = OAuthError.invalid_token.name();
-                // setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-            } else {
-                getLogger().fine("In Validator resource - got token = " + t);
-
-                if (t instanceof ExpireToken) {
-                    // check that the right token was used
-                    ExpireToken et = (ExpireToken) t;
-
-                    if (!token.equals(et.getToken())) {
-                        error = OAuthError.invalid_token.name();
-                        getLogger().warning(
-                                "Should not use the refresh_token to sign!");
-                    }
-                }
-
-                // Todo do more fine grained scope comparison.
-                getLogger().fine("Received uri = " + uri);
-                getLogger().fine("Received scope = " + scopes);
-                getLogger().fine("Received owner = " + owner);
-
-                AuthenticatedUser user = t.getUser();
-                authenticated = (user == null) ? false : true;
-
-                if (!authenticated) {
-                    error = OAuthError.invalid_request.name();
-                }
-
-                if (authenticated && (scopes != null) && (scopes.length() > 0)) {
-                    // All scopes must match if there are any listed
-                    for (int i = 0; i < scopes.length(); i++) {
-                        if (scopes.isNull(i)) {
-                            continue;
-                        }
-                        String scope = scopes.getString(i);
-                        boolean granted = user.isGrantedRole(
-                                Scopes.toRole(scope), owner);
-                        getLogger().fine(
-                                "Granted permission : " + scope + " = "
-                                        + granted);
-                        if (!granted) {
-                            error = OAuthError.insufficient_scope.name();
-                            authenticated = false;
-                            break;
-                        }
-                    }
-                }
-
-                // Matching on the owner if there is one and scope checke out
-                if (authenticated) {
-                    if ((owner != null) && (owner.length() > 0)
-                            && !AUTONOMOUS_USER.equals(user.getId())
-                            && !owner.equals(user.getId())) {
-                        authenticated = false;
-                        error = OAuthError.invalid_request.name();
-                    } else {
-                        response.put("tokenOwner", user.getId());
-                    }
-                }
-
-                response.put("authenticated", authenticated);
-
-                if (error != null) {
-                    response.put("error", error);
-                }
-
-                // Sets the no-store Cache-Control header
-                getResponse().setCacheDirectives(noStore);
-                getResponse().setCacheDirectives(noCache);
-                // response.put("expires", t.getToken());
-            }
+            return validate(new JsonRepresentation(input).getJsonObject());
         } catch (JSONException e) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
                     "Failed parse JSON", e);
@@ -209,8 +211,6 @@ public class ValidationServerResource extends OAuthServerResource {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
                     "Failed parse JSON", e);
         }
-        // return new JsonRepresentation(response);
-        return new JsonStringRepresentation(response);
     }
 
 }

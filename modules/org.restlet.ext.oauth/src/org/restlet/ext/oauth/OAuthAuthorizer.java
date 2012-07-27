@@ -304,6 +304,7 @@ public class OAuthAuthorizer extends RoleAuthorizer {
                 if (response.has("error")) {
                     error = response.getString("error");
                 }
+                // XXX: What should we do when the error is null ?
 
                 getLogger().fine("In Auth Filer -> " + authenticated);
 

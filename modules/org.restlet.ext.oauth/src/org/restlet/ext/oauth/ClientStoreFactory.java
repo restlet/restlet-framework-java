@@ -65,7 +65,7 @@ public abstract class ClientStoreFactory {
 
     private static volatile Class<? extends ClientStore<?>> defaultImpl = MemClientStore.class;
 
-    private static volatile Object[] params = {};
+    private static volatile Object[] params = null;
 
     private static volatile ClientStore<?> store;
 
@@ -87,12 +87,13 @@ public abstract class ClientStoreFactory {
 
         if (store == null) {
 
-            Class<?>[] classTypes = new Class[params.length];
+            Class<?>[] classTypes = null;
 
-            int i = 0;
-
-            for (Object o : params) {
-                classTypes[i++] = o.getClass();
+            if (params != null) {
+                classTypes = new Class[params.length];
+                for (int i = 0; i < params.length; i++) {
+                    classTypes[i] = params[i].getClass();
+                }
             }
 
             try {
@@ -131,9 +132,7 @@ public abstract class ClientStoreFactory {
      *            class reference of a class implementing ClientStore
      */
     public static void setClientStoreImpl(Class<? extends ClientStore<?>> impl) {
-        defaultImpl = impl;
-        Object[] dummy = null;
-        setClientStoreImpl(impl, dummy);
+        setClientStoreImpl(impl);
     }
 
     /**
