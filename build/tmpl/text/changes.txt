@@ -13,7 +13,7 @@ Changes log
          for restricting the SSL protocol version, for all connectors (internal 
          and extensions). Reported by Enoch Stephen, Jim Zuber and Andreas Schnabl.
        - Reduced CPU consumption of internal NIO/HTTP connector by using proper
-         NIO selector wakeup logic instead of constant looping.
+         NIO selector wakeup logic instead of constant looping. 
     - API changes
        - Renamed Directory#setAlphaComparator and setAlphaNumComparator
          methods into useAlphaComparator and useAlphaNumComparator with
