@@ -22,7 +22,7 @@
 /modules/org.restlet.ext.json/bin
 /modules/org.restlet.ext.lucene/bin
 /modules/org.restlet.ext.net/bin
-/modules/org.restlet.ext.oauth/target
+/modules/org.restlet.ext.oauth/bin
 /modules/org.restlet.ext.odata/bin
 /modules/org.restlet.ext.openid/bin
 /modules/org.restlet.ext.rdf/bin

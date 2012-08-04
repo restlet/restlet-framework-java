@@ -2,6 +2,55 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.atom"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.crypto"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.emf"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.fileupload"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.freemarker"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.gae"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.gwt"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.html"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.httpclient"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jaas"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jackson"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.javamail"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jaxb"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jaxrs"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jdbc"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jetty"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jibx"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.json"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.lucene"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.net"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.oauth"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.odata"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.openid"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.rdf"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.rome"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.sdc"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.servlet"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.simple"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.sip"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.slf4j"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.spring"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.ssl"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.velocity"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.wadl"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xdb"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xml"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xstream"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.ws.rs"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.bind"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.velocity"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.springframework"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.apache.tika"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.freemarker"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.emf"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.junit"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.mail"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.json"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.google.gwt"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.google.gwt.server"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
