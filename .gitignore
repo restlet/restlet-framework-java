@@ -72,6 +72,8 @@ org.eclipse.jdt.core.prefs
 /modules/org.restlet.ext.spring/target
 /modules/org.restlet.ext.ssl/bin
 /modules/org.restlet.ext.ssl/target
+/modules/org.restlet.ext.swagger/bin
+/modules/org.restlet.ext.swagger/target
 /modules/org.restlet.ext.velocity/bin
 /modules/org.restlet.ext.velocity/target
 /modules/org.restlet.ext.wadl/bin
