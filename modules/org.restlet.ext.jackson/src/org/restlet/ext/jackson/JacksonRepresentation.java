@@ -36,12 +36,13 @@ package org.restlet.ext.jackson;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator.Feature;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator.Feature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Representation based on the Jackson library. It can serialize and deserialize

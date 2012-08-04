@@ -50,7 +50,6 @@ import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
-import org.restlet.util.Couple;
 
 /**
  * Linked client resource. In addition to regular client resources, this class
@@ -59,7 +58,6 @@ import org.restlet.util.Couple;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("deprecation")
 public class RdfClientResource extends ClientResource {
 
     /** The links cache. */

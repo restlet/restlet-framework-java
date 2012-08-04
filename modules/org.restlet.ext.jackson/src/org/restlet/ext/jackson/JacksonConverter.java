@@ -36,10 +36,6 @@ package org.restlet.ext.jackson;
 import java.io.IOException;
 import java.util.List;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator.Feature;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.smile.SmileFactory;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.converter.ConverterHelper;
@@ -47,6 +43,11 @@ import org.restlet.engine.resource.VariantInfo;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator.Feature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 
 /**
  * Converter between the JSON and Representation classes based on Jackson.
