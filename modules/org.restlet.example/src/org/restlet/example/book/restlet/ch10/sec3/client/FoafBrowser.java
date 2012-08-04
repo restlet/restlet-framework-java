@@ -37,9 +37,9 @@ import java.util.Set;
 
 import org.restlet.data.Reference;
 import org.restlet.example.book.restlet.ch10.sec3.FoafConstants;
+import org.restlet.ext.rdf.Couple;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.RdfClientResource;
-import org.restlet.util.Couple;
 
 public class FoafBrowser {
 

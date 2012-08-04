@@ -169,7 +169,7 @@ public class ReadableBufferedChannel extends
      *         been reached.
      */
     public int read(ByteBuffer targetBuffer) throws IOException {
-        return getBuffer().process(this, targetBuffer);
+        return getBuffer().process(this, 0, targetBuffer);
     }
 
     /**

@@ -159,6 +159,8 @@ public class WrapperSslSocketFactory extends SSLSocketFactory {
                 .isWantClientAuthentication());
         sslSocket.setEnabledCipherSuites(getContextFactory()
                 .getSelectedCipherSuites(sslSocket.getSupportedCipherSuites()));
+        sslSocket.setEnabledProtocols(new String[] { getContextFactory()
+                .getSslProtocol() });
         return sslSocket;
     }
 

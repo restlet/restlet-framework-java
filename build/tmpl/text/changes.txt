@@ -9,8 +9,9 @@ Changes log
          when this ClientResource is used outside a Component.
        - Reduced the number of iterators created when internal NIO connector is 
          idle. Reported by Yan Zhou 
-       - Fixed incomplete support for enabling and disabling cipher suites.
-         Reported by Enoch Stephen, Jim Zuber and Andreas Schnabl.
+       - Fixed incomplete support for enabling and disabling cipher suites, and
+         for restricting the SSL protocol version, for all connectors (internal 
+         and extensions). Reported by Enoch Stephen, Jim Zuber and Andreas Schnabl.
        - Reduced CPU consumption of internal NIO/HTTP connector by using proper
          NIO selector wakeup logic instead of constant looping.
     - API changes
@@ -19,6 +20,8 @@ Changes log
          proper deprecation. Suggested by Tim Peierls.
        - Added getJsonArray, getJsonBoolean, getJsonNull and getJsonString 
          methods to JsonRepresentation in the GWT edition.
+       - Moved Couple and Triple classes to RDF extension. Added conveniency
+         add(...) methods to Graph class.
     - Misc
        - Reverted Role equality test to default Java object equality as
          equality based on name could cause issues with MemoryRealm

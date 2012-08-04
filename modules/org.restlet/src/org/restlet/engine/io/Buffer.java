@@ -651,24 +651,6 @@ public class Buffer {
     }
 
     /**
-     * Processes as a loop the IO event by draining or filling the IO buffer.
-     * Note that synchronization of the {@link #getLock()} object is
-     * automatically made.
-     * 
-     * @param processor
-     *            The IO processor to callback.
-     * @param args
-     *            The optional arguments to pass back to the callbacks.
-     * @return The number of bytes drained or -1 if the filling source has
-     *         ended.
-     * @throws IOException
-     */
-    public int process(BufferProcessor processor, Object... args)
-            throws IOException {
-        return process(processor, 0, args);
-    }
-
-    /**
      * Returns the number of bytes that can be read or written in the byte
      * buffer.
      * 
