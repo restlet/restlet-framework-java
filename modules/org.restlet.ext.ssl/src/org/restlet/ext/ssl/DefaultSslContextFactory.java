@@ -41,6 +41,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 
 import org.restlet.data.Parameter;
 import org.restlet.ext.ssl.internal.DefaultSslContext;
@@ -337,8 +340,22 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
         // Wraps the SSL context to be able to set cipher suites and other
         // properties after SSL engine creation for example
-        result = new DefaultSslContext(this, sslContext);
+        result = createWrapper(sslContext);
         return result;
+    }
+
+    /**
+     * Creates a new {@link SSLContext} wrapper. Necessary to properly
+     * initialize the {@link SSLEngine} or {@link SSLSocketFactory} or
+     * {@link SSLServerSocketFactory} created.
+     * 
+     * @param sslContext
+     *            The SSL context to wrap.
+     * @return The SSL context wrapper.
+     */
+    protected javax.net.ssl.SSLContext createWrapper(
+            javax.net.ssl.SSLContext sslContext) {
+        return new DefaultSslContext(this, sslContext);
     }
 
     /**
