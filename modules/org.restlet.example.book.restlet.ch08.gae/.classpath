@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_29"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.atom.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.fileupload.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.freemarker.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.jackson.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.net.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.servlet.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.wadl.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.restlet.ext.xml.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.apache.commons.fileupload.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.codehaus.jackson.core.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.codehaus.jackson.mapper.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.freemarker.jar"/>
+	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+</classpath>
