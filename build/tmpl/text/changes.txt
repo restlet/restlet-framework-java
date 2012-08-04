@@ -17,9 +17,12 @@ Changes log
     - API changes
       - Added a resource client to the JAX-RS extension.
         Contributed by Shaun Elliott.
-      - Added an optional namespace prefix mapper for JAXB representations when
-        marshalling Java content into XML.
+      - Added an optional namespace prefix mapper for JAXB representations 
+        when marshalling Java content into XML.
         Contributed by Emanuele Ziglioli.
       - Added support of the Jackson Smile format.
         Suggested by Tim Peierls.
+      - Added conveniency add(...) method signature without Reference 
+        parameters in RdfClientResource.
+        
         

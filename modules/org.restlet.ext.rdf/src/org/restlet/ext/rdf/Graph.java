@@ -150,6 +150,102 @@ public class Graph extends CopyOnWriteArraySet<Link> {
      * Creates then adds a link. If one of the parameter is null, the value from
      * {@link #getDefaultLink()} is used instead if possible.
      * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param targetLit
+     *            The target literal.
+     * @return The created link.
+     */
+    public Link add(Reference sourceRef, String typeRef, Literal targetLit) {
+        return add(sourceRef, new Reference(typeRef), targetLit);
+    }
+
+    /**
+     * Creates then adds a link. If one of the parameter is null, the value from
+     * {@link #getDefaultLink()} is used instead if possible.
+     * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param targetRef
+     *            The target resource reference.
+     * @return The created link.
+     */
+    public Link add(Reference sourceRef, String typeRef, Reference targetRef) {
+        return add(sourceRef, new Reference(typeRef), targetRef);
+    }
+
+    /**
+     * Creates then adds a link. If one of the parameter is null, the value from
+     * {@link #getDefaultLink()} is used instead if possible.
+     * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param targetLit
+     *            The target literal.
+     * @return The created link.
+     */
+    public Link add(String sourceRef, Reference typeRef, Literal targetLit) {
+        return add(new Reference(sourceRef), typeRef, targetLit);
+    }
+
+    /**
+     * Creates then adds a link. If one of the parameter is null, the value from
+     * {@link #getDefaultLink()} is used instead if possible.
+     * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param targetRef
+     *            The target resource reference.
+     * @return The created link.
+     */
+    public Link add(String sourceRef, Reference typeRef, Reference targetRef) {
+        return add(new Reference(sourceRef), typeRef, targetRef);
+    }
+
+    /**
+     * Creates then adds a link. If one of the parameter is null, the value from
+     * {@link #getDefaultLink()} is used instead if possible.
+     * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param targetLit
+     *            The target literal.
+     * @return The created link.
+     */
+    public Link add(String sourceRef, String typeRef, Literal targetLit) {
+        return add(new Reference(sourceRef), new Reference(typeRef), targetLit);
+    }
+
+    /**
+     * Creates then adds a link. If one of the parameter is null, the value from
+     * {@link #getDefaultLink()} is used instead if possible.
+     * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param targetRef
+     *            The target resource reference.
+     * @return The created link.
+     */
+    public Link add(String sourceRef, String typeRef, Reference targetRef) {
+        return add(new Reference(sourceRef), new Reference(typeRef), targetRef);
+    }
+
+    /**
+     * Creates then adds a link. If one of the parameter is null, the value from
+     * {@link #getDefaultLink()} is used instead if possible.
+     * 
      * @param sourceGraph
      *            The source graph.
      * @param typeRef
