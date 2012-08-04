@@ -280,8 +280,8 @@ public class HttpClientHelper extends
         } else {
             sslSocketFactory = SSLSocketFactory.getSocketFactory();
         }
-
-        schemeRegistry.register(new Scheme("https", sslSocketFactory, 443));
+        
+        schemeRegistry.register(new Scheme("https", 443, sslSocketFactory));
         // [enddef]
     }
 

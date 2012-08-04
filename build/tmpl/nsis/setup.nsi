@@ -217,7 +217,7 @@ Section un.post UNSEC0001
        ${RemoveDir} "$INSTDIR"
 
        ;Remove the Restlet directory (if so) if it is empty
-       StrCmp "$INSTDIR" "$PROGRAMFILES\Restlet Framework\Edition @edition-medium-label@ @version-full@" 0 +2
+       StrCmp "$INSTDIR" "$PROGRAMFILES\Restlet Framework\@edition-medium-label@@version-compact@" 0 +2
        ${RemoveDir} "$PROGRAMFILES\Restlet Framework"
        
     ${EndIf}
