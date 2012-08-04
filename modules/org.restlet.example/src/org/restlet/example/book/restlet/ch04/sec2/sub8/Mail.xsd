@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+        xmlns:rmep="http://www.rmep.org/namespaces/1.0"
+	    targetNamespace="http://www.rmep.org/namespaces/1.0"
+	    elementFormDefault="qualified">
+
+	<element name="mail">
+		<complexType>
+			<sequence>
+				<element name="status" type="string"></element>
+				<element name="subject" type="string"></element>
+				<element name="content" type="string"></element>
+				<element name="accountRef" type="string"></element>
+			</sequence>
+		</complexType>
+	</element>
+
+</schema>
