@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- @version-full@ (@release-date@) 
     - Bug fixed
        - Fixed sharing of ClientResource context with the underlying connector, 
          when this ClientResource is used outside a Component.
