@@ -28,6 +28,7 @@ Changes log
          mapping if several applications used the same role names.
        - Upgraded Jetty to version 7.6.5.
        - Upgraded Jackson to version 1.9.8.
+       - 
 
 - 2.1 Release Candidate 5 (05/23/2012)
     - Bug fixed
