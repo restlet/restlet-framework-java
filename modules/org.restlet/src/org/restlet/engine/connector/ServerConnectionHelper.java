@@ -191,6 +191,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
             if (!response.isCommitted() && response.isAutoCommitting()) {
                 response.setCommitted(true);
                 getOutboundMessages().add(response);
+                getController().wakeup();
             }
         }
     }
