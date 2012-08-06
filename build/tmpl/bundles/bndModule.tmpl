@@ -1,0 +1,7 @@
+<#list project.modules?values as module>
+    <@pp.nestOutputFile name="${module.package}.bnd">
+-nouses: true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Restlet S.A.S.
+    </@pp.nestOutputFile>
+</#list>
