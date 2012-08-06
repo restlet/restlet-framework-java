@@ -112,12 +112,14 @@ public abstract class InboundWay extends Way {
                 // Wraps the remaining bytes into a special buffer channel
                 inboundEntityChannel = new ReadableChunkedChannel(this,
                         getBuffer(), getConnection()
-                                .getReadableSelectionChannel());
+                                .getReadableSelectionChannel(), getConnection()
+                                .getRegistration().getWakeupListener());
             } else {
                 // Wrap the buffer channel to control its announced size
                 inboundEntityChannel = new ReadableSizedSelectionChannel(this,
                         getBuffer(), getConnection()
-                                .getReadableSelectionChannel(), contentLength);
+                                .getReadableSelectionChannel(), contentLength,
+                        getRegistration().getWakeupListener());
             }
 
             setEntityRegistration(inboundEntityChannel.getRegistration());
@@ -341,8 +343,8 @@ public abstract class InboundWay extends Way {
             }
 
             if (getIoState() == IoState.READY) {
-                if (getEntityRegistration().getListener() != null) {
-                    getEntityRegistration().getListener().onSelected(
+                if (getEntityRegistration().getSelectionListener() != null) {
+                    getEntityRegistration().getSelectionListener().onSelected(
                             getEntityRegistration());
                 }
             } else {
@@ -409,7 +411,7 @@ public abstract class InboundWay extends Way {
             }
 
             if ((getEntityRegistration() != null)
-                    && (getEntityRegistration().getListener() != null)) {
+                    && (getEntityRegistration().getSelectionListener() != null)) {
                 getRegistration().setInterestOperations(
                         getEntityRegistration().getInterestOperations());
             } else {

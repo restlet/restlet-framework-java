@@ -269,8 +269,9 @@ public abstract class Representation extends RepresentationInfo {
 
     // [ifndef gwt] member
     /**
-     * Returns a channel with the representation's content. If it is supported
-     * by a file, a read-only instance of FileChannel is returned.<br>
+     * Returns a channel with the representation's content.<br>
+     * If it is supported by a file, a read-only instance of FileChannel is
+     * returned.<br>
      * This method is ensured to return a fresh channel for each invocation
      * unless it is a transient representation, in which case null is returned.
      * 
@@ -317,8 +318,10 @@ public abstract class Representation extends RepresentationInfo {
 
     /**
      * Returns the range where in the full content the partial content available
-     * should be applied. Note that when used with HTTP connectors, this
-     * property maps to the "Content-Range" header.
+     * should be applied.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Range" header.
      * 
      * @return The content range or null if the full content is available.
      */
@@ -459,8 +462,10 @@ public abstract class Representation extends RepresentationInfo {
     // [ifndef gwt] method
     /**
      * Indicates if the representation content supports NIO selection. In this
-     * case, the {@link #setListener(org.restlet.util.ReadingListener)} method
-     * can be called to be notified when new content is ready for reading.
+     * case, the
+     * {@link org.restlet.engine.connector.ConnectionController#register(java.nio.channels.SelectableChannel, int, org.restlet.util.SelectionListener)}
+     * method can be called to be notified when new content is ready for
+     * reading.
      * 
      * @return True if the representation content supports NIO selection.
      * @see org.restlet.engine.connector.ConnectionController
@@ -527,8 +532,10 @@ public abstract class Representation extends RepresentationInfo {
 
     // [ifndef gwt] method
     /**
-     * Sets the representation digest. Note that when used with HTTP connectors,
-     * this property maps to the "Content-MD5" header.
+     * Sets the representation digest.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-MD5" header.
      * 
      * @param digest
      *            The representation digest.
@@ -579,7 +586,7 @@ public abstract class Representation extends RepresentationInfo {
                 sr.setReadInterest();
             }
 
-            sr.setListener(readingListener);
+            sr.setSelectionListener(readingListener);
         } catch (IOException ioe) {
             Context.getCurrentLogger().log(Level.WARNING,
                     "Unable to register the reading listener", ioe);
@@ -588,8 +595,10 @@ public abstract class Representation extends RepresentationInfo {
 
     /**
      * Sets the range where in the full content the partial content available
-     * should be applied. Note that when used with HTTP connectors, this
-     * property maps to the "Content-Range" header.
+     * should be applied.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Content-Range" header.
      * 
      * @param range
      *            The content range.
@@ -660,10 +669,7 @@ public abstract class Representation extends RepresentationInfo {
      * <br>
      * Note that the class implementing this method shouldn't flush or close the
      * given {@link OutputStream} after writing to it as this will be handled by
-     * the Restlet connectors automatically. However, if outputStream is wrapped
-     * with an object which is {@link java.io.Flushable} such as a
-     * {@link java.io.OutputStreamWriter} make sure the wrapping object is
-     * flushed before the method returns.
+     * the Restlet connectors automatically.
      * 
      * @param outputStream
      *            The output stream.

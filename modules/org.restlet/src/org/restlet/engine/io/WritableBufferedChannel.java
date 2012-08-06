@@ -36,6 +36,8 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.restlet.engine.connector.WakeupListener;
+
 // [excludes gwt]
 /**
  * Writable byte channel based on a target socket channel. It is capable of
@@ -53,10 +55,12 @@ public class WritableBufferedChannel extends
      *            processing.
      * @param target
      *            The target channel.
+     * @param wakeupListener
+     *            The wakeup listener that will be notified.
      */
     public WritableBufferedChannel(Buffer buffer,
-            WritableSelectionChannel target) {
-        super(buffer, target);
+            WritableSelectionChannel target, WakeupListener wakeupListener) {
+        super(buffer, target, wakeupListener);
     }
 
     /**

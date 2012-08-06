@@ -38,6 +38,7 @@ import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.engine.connector.WakeupListener;
 
 // [excludes gwt]
 /**
@@ -67,10 +68,13 @@ public class ReadableChunkedChannel extends ReadableBufferedChannel {
      *            processing.
      * @param source
      *            The source channel.
+     * @param wakeupListener
+     *            The wakeup listener that will be notified.
      */
     public ReadableChunkedChannel(CompletionListener completionListener,
-            Buffer buffer, ReadableSelectionChannel source) {
-        super(completionListener, buffer, source);
+            Buffer buffer, ReadableSelectionChannel source,
+            WakeupListener wakeupListener) {
+        super(completionListener, buffer, source, wakeupListener);
 
         if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
             Context.getCurrentLogger().log(

@@ -204,7 +204,7 @@ public class NbChannelInputStream extends InputStream implements
                     this.selectionRegistration
                             .setInterestOperations(SelectionKey.OP_READ);
                     this.selectionRegistration
-                            .setListener(new SelectionListener() {
+                            .setSelectionListener(new SelectionListener() {
                                 public void onSelected(
                                         SelectionRegistration selectionRegistration)
                                         throws IOException {
@@ -256,7 +256,7 @@ public class NbChannelInputStream extends InputStream implements
 
             if (this.selectionRegistration != null) {
                 this.selectionRegistration.setCanceling(true);
-                this.selectionRegistration.setListener(null);
+                this.selectionRegistration.setSelectionListener(null);
             }
         }
 

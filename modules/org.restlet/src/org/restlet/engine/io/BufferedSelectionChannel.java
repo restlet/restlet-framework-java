@@ -35,6 +35,7 @@ package org.restlet.engine.io;
 
 import java.io.IOException;
 
+import org.restlet.engine.connector.WakeupListener;
 import org.restlet.util.SelectionRegistration;
 
 // [excludes gwt]
@@ -55,10 +56,13 @@ public abstract class BufferedSelectionChannel<T extends SelectionChannel>
      *            processing.
      * @param source
      *            The source channel.
+     * @param wakeupListener
+     *            The wakeup listener that will be notified.
      */
-    public BufferedSelectionChannel(Buffer buffer, T source) {
+    public BufferedSelectionChannel(Buffer buffer, T source,
+            WakeupListener wakeupListener) {
         super(source);
-        setRegistration(new SelectionRegistration(0, null));
+        setRegistration(new SelectionRegistration(0, null, wakeupListener));
         this.buffer = buffer;
     }
 

@@ -86,14 +86,7 @@ public class EngineTestSuite extends TestSuite {
         // [enddef]
 
         // [ifdef jse]
-        addTestSuite(ChunkedEncodingPutTestCase.class);
-        addTestSuite(ChunkedEncodingTestCase.class);
-        addTestSuite(GetTestCase.class);
-        addTestSuite(GetChunkedTestCase.class);
-        addTestSuite(PostPutTestCase.class);
-        addTestSuite(RemoteClientAddressTestCase.class);
-        addTestSuite(org.restlet.test.ext.ssl.SslGetTestCase.class);
-        addTestSuite(org.restlet.test.ext.ssl.SslClientContextGetTestCase.class);
+        addTest(ConnectorsTestSuite.suite());
         // [enddef]
     }
 }
