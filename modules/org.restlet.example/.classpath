@@ -52,5 +52,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.openid4java"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.junit"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.thoughtworks.xstream"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.testng"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

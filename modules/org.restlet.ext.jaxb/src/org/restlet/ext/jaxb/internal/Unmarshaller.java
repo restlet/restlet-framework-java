@@ -184,6 +184,7 @@ public class Unmarshaller<T> {
             SAXParserFactory spf = SAXParserFactory.newInstance();
 
             // Keep before the external entity preferences
+            spf.setNamespaceAware(true);
             spf.setValidating(jaxbRep.isValidatingDtd());
             spf.setXIncludeAware(jaxbRep.isXIncludeAware());
             spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING,

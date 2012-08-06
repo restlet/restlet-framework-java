@@ -14,6 +14,8 @@ Changes log
          and extensions). Reported by Enoch Stephen, Jim Zuber and Andreas Schnabl.
        - Reduced CPU consumption of internal NIO/HTTP connector by using proper
          NIO selector wakeup logic instead of constant looping.
+       - Fixed regression regarding JAXB namespace parsing.
+         Reported by Jim Trainor, Jean Duteau and Lukas Niemeier.
     - API changes
        - Renamed Directory#setAlphaComparator and setAlphaNumComparator
          methods into useAlphaComparator and useAlphaNumComparator with
