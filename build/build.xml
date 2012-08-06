@@ -4,7 +4,7 @@
      Restlet build script - Copyright 2005-2012 Restlet S.A.S.
      ========================================================= -->
 
-<project name="Restlet" default="build">
+<project name="Restlet Framework 2.1" default="rebuild">
 	<!-- ============================ -->
 	<!-- ===  Properties setting  === -->
 	<!-- ============================ -->
@@ -29,15 +29,17 @@
 	<tstamp>
 		<format property="maven-snapshot-timestamp" pattern="yyyyMMdd.HHmmss" />
 	</tstamp>
-	
+
 	<tstamp>
 		<format property="build.date" pattern="yyyyMMdd-HHmm" />
 	</tstamp>
 
 	<!-- Location properties -->
+	<property name="tools" location="tools" />
 	<property name="dist" location="dist" />
 	<property name="temp" location="temp" />
 	<property name="tmpl" location="tmpl" />
+	<property name="editions-dir" location="editions" />
 	<property name="modules" location="../modules" />
 	<property name="libs" location="../libraries" />
 	<property name="parent-maven-groupId" value="org.restlet" />
@@ -45,16 +47,6 @@
 	<property name="parent-maven-version" value="${version-maven}" />
 	<property name="eclipse-version-suffix" value="v${build.date}" />
 	<property name="eclipse-version-full" value="${version-manifest-prefix}${eclipse-version-suffix}" />
-
-	<!-- Set the property that will enable the generation of eclipse project -->
-	<condition property="do-eclipsegeneration">
-		<istrue value="${eclipsegeneration}" />
-	</condition>
-
-	<!-- Set the property that will enable the generation of manifests files -->
-	<condition property="do-manifestsgeneration">
-		<istrue value="${manifestsgeneration}" />
-	</condition>
 
 	<!-- Set the property that will enable the generation of miscellaneous files -->
 	<condition property="do-miscgeneration">
@@ -65,13 +57,13 @@
 	<!-- ===  Paths setting  === -->
 	<!-- ======================= -->
 	<path id="forge-path">
-		<fileset dir="tools/forge" includes="**/*.jar" />
+		<fileset dir="${tools}/forge" includes="**/*.jar" />
 	</path>
 	<path id="fmpp-path">
-		<fileset dir="tools/fmpp" includes="**/*.jar" />
+		<fileset dir="${tools}/fmpp" includes="**/*.jar" />
 	</path>
 	<path id="bnd-path">
-		<fileset dir="tools/bnd" includes="**/*.jar" />
+		<fileset dir="${tools}/bnd" includes="**/*.jar" />
 	</path>
 
 	<!-- =================== -->
@@ -81,7 +73,7 @@
 	<!-- Ant Contrib -->
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
-			<fileset dir="tools/ant-contrib" includes="**/*.jar" />
+			<fileset dir="${tools}/ant-contrib" includes="**/*.jar" />
 		</classpath>
 	</taskdef>
 
@@ -102,8 +94,9 @@
 	<macrodef name="generate-edition" description="Generate the source code for a target edition.">
 		<attribute name="edition" />
 		<sequential>
+			<mkdir dir="${editions-dir}/@{edition}" />
 			<!-- Generate the properties files -->
-			<fmpp sourceroot="${tmpl}/editions" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="*.properties">
+			<fmpp sourceroot="${tmpl}/editions" outputroot="${editions-dir}/@{edition}" dataroot="${basedir}" includes="*.properties">
 				<data expandproperties="true">
 					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 					project: get(values, "project")
@@ -113,9 +106,8 @@
 					currentYear: ${current-year}
     			</data>
 			</fmpp>
-
 			<!-- Generate the dependencies.txt file -->
-			<fmpp sourceroot="${tmpl}/text" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="dependencies.txt">
+			<fmpp sourceroot="${tmpl}/text" outputroot="${editions-dir}/@{edition}" dataroot="${basedir}" includes="dependencies.txt">
 				<data expandproperties="true">
 					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 					project: get(values, "project")
@@ -127,7 +119,7 @@
 			</fmpp>
 			<!-- Generate the POM files. -->
 			<echo message="Generate the POM files" />
-			<fmpp sourceroot="${tmpl}/editions" outputroot="${temp}/@{edition}/poms" dataroot="${basedir}" includes="*pom.tmpl">
+			<fmpp sourceroot="${tmpl}/editions" outputroot="${editions-dir}/@{edition}/poms" dataroot="${basedir}" includes="*pom.tmpl">
 				<data expandproperties="true">
 					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 					project: get(values, "project")
@@ -139,21 +131,7 @@
     			</data>
 			</fmpp>
 
-			<!-- Generate the feature.xml file -->
-			<echo message="Generate the feature.xml file" />
-			<fmpp sourceroot="${tmpl}/eclipse" outputroot="${temp}/@{edition}" dataroot="${basedir}" includes="feature.xml">
-				<data expandproperties="true">
-						values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
-						project: get(values, "project")
-						editions: get(values, "editions")
-						editionKey: @{edition}
-	    				edition: get(editions, @{edition})
-						currentYear: ${current-year}
-						ant: antProperties()
-	    			</data>
-			</fmpp>
-
-			<move file="${temp}/@{edition}/poms/org.restlet.parent.pom.tmpl" tofile="${temp}/@{edition}/poms/org.restlet.parent.pom" />
+			<move file="${editions-dir}/@{edition}/poms/org.restlet.parent.pom.tmpl" tofile="${editions-dir}/@{edition}/poms/org.restlet.parent.pom" />
 			<!-- Process the build.xml file. -->
 			<loadfile property="paths" srcFile="${tmpl}/editions/paths.tmpl" />
 			<loadfile property="generate-sources" srcFile="${tmpl}/editions/generate-sources.tmpl" />
@@ -162,9 +140,10 @@
 			<loadfile property="stage-extras" srcFile="${tmpl}/editions/stage-extras.tmpl" />
 			<loadfile property="generate-classes-extras" srcFile="${tmpl}/editions/generate-classes-extras.tmpl" />
 			<!-- Pre-process the build file since ant and freemarker shares the same syntax. -->
-			<copy file="${tmpl}/editions/build.xml" tofile="${temp}/@{edition}/build.tmpl" overwrite="true">
+			<copy file="${tmpl}/editions/build.xml" tofile="${editions-dir}/@{edition}/build.tmpl" overwrite="true">
 				<filterchain>
 					<replaceregex pattern="\$\{" replace="*DOLLAR*{" flags="g" />
+					<replacestring from="@edition@" to="Edition for ${edition.mediumLabel}" />
 					<!-- nb: ant tokens can't contain "<" characters -->
 					<replacestring from="@paths@" to="${paths}" />
 					<replacestring from="@generate-sources@" to="${generate-sources}" />
@@ -175,7 +154,7 @@
 				</filterchain>
 			</copy>
 			<!-- Process it as a Freemarker template. -->
-			<fmpp sourcefile="${temp}/@{edition}/build.tmpl" outputfile="${temp}/@{edition}/build.xml" dataroot="${basedir}" expert="true">
+			<fmpp sourcefile="${editions-dir}/@{edition}/build.tmpl" outputfile="${editions-dir}/@{edition}/build.xml" dataroot="${basedir}" expert="true">
 				<data expandproperties="true">
 					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 					project: get(values, "project")
@@ -185,28 +164,33 @@
 					currentYear: ${current-year}
     			</data>
 			</fmpp>
-			<delete file="${temp}/@{edition}/build.tmpl" />
+			<delete file="${editions-dir}/@{edition}/build.tmpl" />
 			<!-- Post-process the build file since ant and freemarker share the same syntax. -->
-			<replace file="${temp}/@{edition}/build.xml" token="*DOLLAR*" value="$" />
+			<replace file="${editions-dir}/@{edition}/build.xml" token="*DOLLAR*" value="$" />
 
-			<!-- Generate the P2 feature files. -->
-			<echo message="Generate the P2 feature files" />
-			<fmpp sourceroot="${tmpl}/eclipse" outputroot="${temp}/@{edition}/p2" dataroot="${basedir}">
-				<data expandproperties="true">
-					values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
-					project: get(values, "project")
-					editions: get(values, "editions")
-					editionKey: @{edition}
-    				edition: get(editions, @{edition})
-					currentYear: ${current-year}
-					ant: antProperties()
-    			</data>
-				<include name="feature.tmpl" />
-			</fmpp>
-					
-			<copy file="build.properties" todir="${temp}/@{edition}" overwrite="true" />
-			<copy file="custom.properties" todir="${temp}/@{edition}" overwrite="true" failonerror="false" />
-			<ant antfile="build.xml" target="generate-sources" dir="${temp}/@{edition}/" inheritall="false" />
+			<if>
+				<equals arg1="@{edition}" arg2="osgi" />
+				<then>
+					<!-- Generate the P2 feature files. -->
+					<echo message="Generate the P2 feature files" />
+					<fmpp sourceroot="${tmpl}/eclipse" outputroot="${editions-dir}/@{edition}/p2" dataroot="${basedir}">
+						<data expandproperties="true">
+							values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+							project: get(values, "project")
+							editions: get(values, "editions")
+							editionKey: @{edition}
+		    				edition: get(editions, @{edition})
+							currentYear: ${current-year}
+							ant: antProperties()
+		    			</data>
+						<include name="feature.tmpl" />
+					</fmpp>
+				</then>
+			</if>
+
+			<copy file="build.properties" todir="${editions-dir}/@{edition}" overwrite="true" />
+			<copy file="custom.properties" todir="${editions-dir}/@{edition}" overwrite="true" failonerror="false" />
+			<ant antfile="build.xml" target="generate-sources" dir="${editions-dir}/@{edition}/" inheritall="false" />
 		</sequential>
 	</macrodef>
 
@@ -220,10 +204,15 @@
 		<sequential>
 			<for param="task" delimiter=" " list="@{target}">
 				<sequential>
-					<ant antfile="build.xml" target="@{task}" dir="${temp}/@{edition}/" inheritall="false">
-						<property name="build.number" value="${build.number}" />
-						<property name="eclipse-version-full" value="${eclipse-version-full}" />
-					</ant>
+					<if>
+						<available file="${editions-dir}/@{edition}/build.xml" property="build.@{edition}.present" />
+						<then>
+							<ant antfile="build.xml" target="@{task}" dir="${editions-dir}/@{edition}/" inheritall="false">
+								<property name="build.number" value="${build.number}" />
+								<property name="eclipse-version-full" value="${eclipse-version-full}" />
+							</ant>
+						</then>
+					</if>
 				</sequential>
 			</for>
 		</sequential>
@@ -232,62 +221,7 @@
 	<!-- = = = = = = = = = = = = = = = = =
           Definition of targets          
          = = = = = = = = = = = = = = = = = -->
-	<target name="generate-libraries-manifests" description="Generates the manifest.mf files for the unique source code">
-		<!-- Generate eclipse .classpath, .project, .properties files -->
-		<fmpp sourceroot="${tmpl}/eclipse" outputroot="${temp}/p2" dataroot="${basedir}" expert="true">
-			<data expandproperties="true">
-				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
-				project: get(values, "project")
-				ant: antProperties()
-			</data>
-			<include name="classpath.tmpl" />
-			<include name="project.tmpl" />
-			<include name="build.properties.tmpl" />
-		</fmpp>
-		<delete file="${temp}/p2/classpath.tmpl" />
-		<delete file="${temp}/p2/project.tmpl" />
-		<delete file="${temp}/p2/build.properties.tmpl" />
-		<copy file="${tmpl}/bundles/bndbis.bnd" todir="${temp}/definitions/libs" />
-		<!-- Generate bnd definition files -->
-		<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/libs" dataroot="${basedir}" expert="true">
-			<data expandproperties="true">
-				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
-				project: get(values, "project")
-				ant: antProperties()
-			</data>
-			<include name="bnd.tmpl" />
-		</fmpp>
-		<delete file="${temp}/definitions/libs/bnd.tmpl" />
-		<!-- Generate ant manifest generation script -->
-		<fmpp sourcefile="${tmpl}/bundles/extractmanifest.tmpl" outputfile="${temp}/p2/extractmanifest.xml" dataroot="${basedir}" expert="true">
-			<data expandproperties="true">
-				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
-				project: get(values, "project")
-				ant: antProperties()
-			</data>
-		</fmpp>
-		<ant antfile="${temp}/p2/extractmanifest.xml" dir="${temp}/p2" inheritAll="true" />
-		<delete file="${temp}/p2/extractmanifest.tmpl" />
-	</target>
-
-	<target name="generate-modules-manifests" description="Generates the manifest.mf files for the unique source code">
-		<!-- TODO 
-		<bnd classpath="${modules}/org.restlet/src" eclipse="true" failok="false" exceptions="true" files="test.bnd" />
-		-->
-	</target>
-
-	<target name="copy-eclipse" depends="generate-manifests" if="do-eclipsegeneration" description="Copy the generated artifacts to the project">
-		<copy todir="${libs}">
-			<fileset dir="${temp}/libraries" excludes="**/*.jar" />
-		</copy>
-	</target>
-
-	<target name="generate-manifests" if="do-manifestsgeneration" description="Generates the manifest.mf files for the unique source code" >
-		<antcall target="generate-libraries-manifests" />
-		<antcall target="generate-modules-manifests" />
-	</target>
-
-	<target name="generate-misc" if="do-miscgeneration" description="Generates miscellaneous files." >
+	<target name="generate-misc" if="do-miscgeneration" description="Generates miscellaneous files.">
 		<delete dir="${temp}/misc" />
 		<!-- Generate editions matrix file -->
 		<fmpp sourceroot="${tmpl}/text" outputroot="${temp}/misc" dataroot="${basedir}" expert="true">
@@ -308,33 +242,7 @@
 			</data>
 			<include name="mcs.properties" />
 		</fmpp>
-	</target>
-
-	
-	<target name="generate-poms" description="Generates the pom files for the unique source code">
-		<!-- Parent pom file -->
-		<fmpp sourcefile="${tmpl}/poms/org.restlet.parent.pom.tmpl" outputfile="${modules}/pom.xml" dataroot="${basedir}" expert="true">
-			<data expandproperties="true">
-				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
-				project: get(values, "project")
-				ant: antProperties()
-			</data>
-		</fmpp>
-		<!-- Modules pom files -->
-		<fmpp sourceroot="${tmpl}/poms" outputroot="${modules}" dataroot="${basedir}" expert="true">
-			<data expandproperties="true">
-				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
-				project: get(values, "project")
-				ant: antProperties()
-			</data>
-			<include name="pom.tmpl" />
-		</fmpp>
-		<delete file="${modules}/pom.tmpl" />
-	</target>
-
-	<target name="generate-artifacts" depends="generate-misc, generate-poms, generate-manifests, copy-eclipse" description="Generates artifacts for the unique source code" />
-
-	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
+		<!-- prepare the common time stamp for the maven distribution -->
 		<!-- Revision number -->
 		<mkdir dir="${temp}" />
 		<!-- Snapshot? -->
@@ -350,50 +258,95 @@
 	</target>
 
 	<!-- CLEAN target -->
-	<target name="clean" depends="clean-temp, clean-dist" description="Clean the staging area." />
-
-	<!-- CLEAN-DIST target -->
-	<target name="clean-dist" description="Clean distributions files.">
+	<target name="clean" description="Clean the staging area.">
+		<!-- Remove final distribution directory. -->
 		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
 			<fileset dir="${dist}" />
 		</delete>
-	</target>
-
-	<!-- CLEAN-TEMP target -->
-	<target name="clean-temp" description="Clean temporary build files.">
+		<!-- Remove temp directory. -->
 		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
 			<fileset dir="${temp}" />
 		</delete>
-	</target>
-	<target name="build-current" depends="generate-artifacts, prepare-stage-maven" description="Build the editions with the current source code.">
+		<!-- Remove editions temp and dist directory. -->
 		<for param="edition" delimiter="," list="${editions}" trim="true">
 			<sequential>
+				<exec-edition edition="@{edition}" target="clean" />
+			</sequential>
+		</for>
+	</target>
+
+
+	<!-- CLEAN-FULL target -->
+	<target name="clean-full" depends="clean, clean-editions" description="Clean the working area" />
+
+	<!-- CLEAN-EDITIONS target -->
+	<target name="clean-editions" description="Clean the editions root directory">
+		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
+			<fileset dir="${editions-dir}" includes="*/**" excludes="readme.txt" />
+		</delete>
+	</target>
+
+	<target name="build" description="Build the editions without generating the source code.">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
+			<sequential>
+				<echo message="Build the edition @{edition}" />
 				<exec-edition edition="@{edition}" target="build" />
 			</sequential>
 		</for>
 	</target>
-	<target name="build" depends="generate-artifacts, prepare-stage-maven" description="Regenerate the source code and build the editions.">
+
+	<target name="rebuild" depends="clean-full, generate, build" description="Clean the temp files, regenerate the source code and build the editions." />
+
+	<target name="generate" depends="generate-misc" description="Regenerate the source code.">
 		<for param="edition" delimiter="," list="${editions}" trim="true">
 			<sequential>
-				<generate-edition edition="@{edition}" />
-				<exec-edition edition="@{edition}" target="build" />
-			</sequential>
-		</for>
-	</target>
-	<target name="rebuild" depends="clean-temp, generate-artifacts, prepare-stage-maven" description="Clean the temp files, regenerate the source code and build the editions.">
-		<for param="edition" delimiter="," list="${editions}" trim="true">
-			<sequential>
-				<generate-edition edition="@{edition}" />
-				<exec-edition edition="@{edition}" target="build" />
-			</sequential>
-		</for>
-	</target>
-	<target name="generate" depends="generate-artifacts" description="Regenerate the source code.">
-		<for param="edition" delimiter="," list="${editions}" trim="true">
-			<sequential>
+				<echo message="Generate the source code of the edition @{edition}" />
 				<generate-edition edition="@{edition}" />
 			</sequential>
 		</for>
 	</target>
-	<target name="regenerate" depends="clean-temp, generate" description="Clean and regenerate the source code." />
+
+	<target name="generate-javadocs" description="Regenerate the javadocs of the editions.">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
+			<sequential>
+				<echo message="Generate javadocs of the edition @{edition}" />
+				<exec-edition edition="@{edition}" target="generate-javadocs" />
+			</sequential>
+		</for>
+	</target>
+
+	<target name="regenerate" depends="clean-editions, generate" description="Clean and regenerate the source code." />
+
+	<target name="verify" description="Verify editions.">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
+			<sequential>
+				<exec-edition edition="@{edition}" target="verify" />
+			</sequential>
+		</for>
+	</target>
+
+	<target name="verify-checkstyle" description="Verify editions.">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
+			<sequential>
+				<exec-edition edition="@{edition}" target="verify-checkstyle" />
+			</sequential>
+		</for>
+	</target>
+
+	<target name="verify-findbugs" description="Verify editions.">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
+			<sequential>
+				<exec-edition edition="@{edition}" target="verify-findbugs" />
+			</sequential>
+		</for>
+	</target>
+
+	<target name="verify-tests" description="Verify editions.">
+		<for param="edition" delimiter="," list="${editions}" trim="true">
+			<sequential>
+				<exec-edition edition="@{edition}" target="verify-tests" />
+			</sequential>
+		</for>
+	</target>
+
 </project>
