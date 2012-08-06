@@ -113,7 +113,7 @@ public class HttpClientInboundWay extends ClientInboundWay {
     protected boolean isReady() {
         return getBuffer().canDrain()
                 && ((getMessageState() == MessageState.BODY) && (getEntityRegistration()
-                        .getListener() != null));
+                        .getSelectionListener() != null));
     }
 
     @Override

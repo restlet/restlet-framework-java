@@ -13,7 +13,8 @@ Changes log
          for restricting the SSL protocol version, for all connectors (internal 
          and extensions). Reported by Enoch Stephen, Jim Zuber and Andreas Schnabl.
        - Reduced CPU consumption of internal NIO/HTTP connector by using proper
-         NIO selector wakeup logic instead of constant looping.
+         NIO selector wakeup logic instead of constant looping. 
+         Reported by James Moger.
        - Fixed regression regarding JAXB namespace parsing.
          Reported by Jim Trainor, Jean Duteau and Lukas Niemeier.
     - API changes
@@ -30,7 +31,6 @@ Changes log
          mapping if several applications used the same role names.
        - Upgraded Jetty to version 7.6.5.
        - Upgraded Jackson to version 1.9.8.
-       - ...
 
 - 2.1 Release Candidate 5 (05/23/2012)
     - Bug fixed

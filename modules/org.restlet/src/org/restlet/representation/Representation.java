@@ -586,7 +586,7 @@ public abstract class Representation extends RepresentationInfo {
                 sr.setReadInterest();
             }
 
-            sr.setListener(readingListener);
+            sr.setSelectionListener(readingListener);
         } catch (IOException ioe) {
             Context.getCurrentLogger().log(Level.WARNING,
                     "Unable to register the reading listener", ioe);

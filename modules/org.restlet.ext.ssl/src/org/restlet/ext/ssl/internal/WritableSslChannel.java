@@ -40,6 +40,7 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLEngineResult.Status;
 
+import org.restlet.engine.connector.WakeupListener;
 import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.SelectionChannel;
@@ -66,11 +67,13 @@ public class WritableSslChannel extends WritableBufferedChannel implements
      *            The wrapped channel.
      * @param connection
      *            The parent SSL connection.
+     * @param wakeupListener
+     *            The wakeup listener that will be notified.
      */
     public WritableSslChannel(WritableSelectionChannel target,
-            SslConnection<?> connection) {
+            SslConnection<?> connection, WakeupListener wakeupListener) {
         super(new Buffer(connection.getPacketBufferSize(), connection
-                .getHelper().isDirectBuffers()), target);
+                .getHelper().isDirectBuffers()), target, wakeupListener);
         this.connection = connection;
     }
 

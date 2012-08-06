@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.engine.connector.WakeupListener;
 
 /**
  * Readable byte channel enforcing a maximum size and wrapping a selectable
@@ -62,10 +63,13 @@ public class ReadableSizedSelectionChannel extends ReadableBufferedChannel {
      * @param availableSize
      *            The total available size that can be read from the source
      *            channel.
+     * @param wakeupListener
+     *            The wakeup listener that will be notified.
      */
     public ReadableSizedSelectionChannel(CompletionListener completionListener,
-            Buffer buffer, ReadableSelectionChannel source, long availableSize) {
-        super(completionListener, buffer, source);
+            Buffer buffer, ReadableSelectionChannel source, long availableSize,
+            WakeupListener wakeupListener) {
+        super(completionListener, buffer, source, wakeupListener);
         this.availableSize = availableSize;
     }
 

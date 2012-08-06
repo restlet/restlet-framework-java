@@ -41,9 +41,11 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.engine.connector.WakeupListener;
 import org.restlet.engine.io.IoUtils;
 
 /**
@@ -102,7 +104,7 @@ public class SelectionRegistration {
     private volatile int interestOperations;
 
     /** The selection listener that will be notified. */
-    private volatile SelectionListener listener;
+    private volatile SelectionListener selectionListener;
 
     /** The previous IO operations interest. */
     private volatile int previousInterest;
@@ -116,17 +118,22 @@ public class SelectionRegistration {
     /** The active selection key. */
     private volatile SelectionKey selectionKey;
 
+    /** The wakeup listener that will be notified. */
+    private volatile WakeupListener wakeupListener;
+
     /**
      * Constructor.
      * 
      * @param interestOperations
      *            The IO operations interest.
-     * @param listener
+     * @param selectionListener
      *            The selection listener that will be notified.
+     * @param wakeupListener
+     *            The wakeup listener that will be notified.
      */
     public SelectionRegistration(int interestOperations,
-            SelectionListener listener) {
-        this(null, interestOperations, listener);
+            SelectionListener selectionListener, WakeupListener wakeupListener) {
+        this(null, interestOperations, selectionListener, wakeupListener);
     }
 
     /**
@@ -136,15 +143,19 @@ public class SelectionRegistration {
      *            The parent selectable channel.
      * @param interestOperations
      *            The IO operations interest.
-     * @param listener
+     * @param selectionListener
      *            The selection listener that will be notified.
+     * @param wakeupListener
+     *            The wakeup listener that will be notified.
      */
     public SelectionRegistration(SelectableChannel selectableChannel,
-            int interestOperations, SelectionListener listener) {
+            int interestOperations, SelectionListener selectionListener,
+            WakeupListener wakeupListener) {
         this.canceling = false;
         this.selectableChannel = selectableChannel;
         this.barrier = new CyclicBarrier(2);
-        this.listener = listener;
+        this.selectionListener = selectionListener;
+        this.wakeupListener = wakeupListener;
         this.setInterestOperations(interestOperations);
     }
 
@@ -176,7 +187,17 @@ public class SelectionRegistration {
                                 + this.barrier.getNumberWaiting());
             }
 
+            getWakeupListener().onWokeup(this);
             this.barrier.await(IoUtils.TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            Context.getCurrentLogger()
+                    .log(Level.WARNING,
+                            "The thread blocked at the cyclic barrier has timed out",
+                            e);
+            IOException ioe = new IOException(
+                    "The thread blocked at the cyclic barrier has timed out.");
+            ioe.initCause(e);
+            throw ioe;
         } catch (Exception e) {
             Context.getCurrentLogger().log(Level.WARNING,
                     "Unable to block the thread at the cyclic barrier", e);
@@ -209,15 +230,6 @@ public class SelectionRegistration {
     }
 
     /**
-     * Returns the selection listener that will be notified.
-     * 
-     * @return The selection listener that will be notified.
-     */
-    public SelectionListener getListener() {
-        return listener;
-    }
-
-    /**
      * Returns the IO operations ready.
      * 
      * @return The IO operations ready.
@@ -233,6 +245,24 @@ public class SelectionRegistration {
      */
     public SelectableChannel getSelectableChannel() {
         return this.selectableChannel;
+    }
+
+    /**
+     * Returns the selection listener that will be notified.
+     * 
+     * @return The selection listener that will be notified.
+     */
+    public SelectionListener getSelectionListener() {
+        return selectionListener;
+    }
+
+    /**
+     * Returns the wakeup listener that will be notified.
+     * 
+     * @return The wakeup listener that will be notified.
+     */
+    public WakeupListener getWakeupListener() {
+        return wakeupListener;
     }
 
     /**
@@ -282,7 +312,7 @@ public class SelectionRegistration {
 
     /**
      * Called back with some interest operations are ready. By default, it calls
-     * back the registered listener provided by {@link #getListener()}.
+     * back the registered listener provided by {@link #getSelectionListener()}.
      * 
      * @param readyOperations
      *            The ready operations.
@@ -291,8 +321,8 @@ public class SelectionRegistration {
     public void onSelected(int readyOperations) throws IOException {
         this.readyOperations = readyOperations;
 
-        if ((getListener() != null) && isInterestReady()) {
-            getListener().onSelected(this);
+        if ((getSelectionListener() != null) && isInterestReady()) {
+            getSelectionListener().onSelected(this);
         }
     }
 
@@ -359,16 +389,6 @@ public class SelectionRegistration {
     }
 
     /**
-     * Sets the selection listener that will be notified.
-     * 
-     * @param listener
-     *            The selection listener that will be notified.
-     */
-    public void setListener(SelectionListener listener) {
-        this.listener = listener;
-    }
-
-    /**
      * Sets interest in no IO operations.
      */
     public void setNoInterest() {
@@ -390,6 +410,26 @@ public class SelectionRegistration {
      */
     public void setReadyOperations(int readyOperations) {
         this.readyOperations = readyOperations;
+    }
+
+    /**
+     * Sets the selection listener that will be notified.
+     * 
+     * @param listener
+     *            The selection listener that will be notified.
+     */
+    public void setSelectionListener(SelectionListener listener) {
+        this.selectionListener = listener;
+    }
+
+    /**
+     * Sets the wakeup listener that will be notified.
+     * 
+     * @param wakeupListener
+     *            The wakeup listener that will be notified.
+     */
+    public void setWakeupListener(WakeupListener wakeupListener) {
+        this.wakeupListener = wakeupListener;
     }
 
     /**

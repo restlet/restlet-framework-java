@@ -54,7 +54,8 @@ import org.restlet.util.SelectionRegistration;
  * 
  * @author Jerome Louvel
  */
-public class ConnectionController extends Controller implements Runnable {
+public class ConnectionController extends Controller implements Runnable,
+        WakeupListener {
 
     /** The list of new selection registrations. */
     private final Queue<SelectionRegistration> newRegistrations;
@@ -177,7 +178,7 @@ public class ConnectionController extends Controller implements Runnable {
     protected Selector getSelector() {
         return selector;
     }
-    
+
     /**
      * Returns the queue of updated selection registrations.
      * 
@@ -215,6 +216,14 @@ public class ConnectionController extends Controller implements Runnable {
     }
 
     /**
+     * Invoked when one of the connections needs to wake up the controller.
+     */
+    public void onWokeup(SelectionRegistration selectionRegistration)
+            throws IOException {
+        wakeup();
+    }
+
+    /**
      * Registers a selection listener with the underlying selector for the given
      * operations and returns the registration created.
      * 
@@ -230,7 +239,7 @@ public class ConnectionController extends Controller implements Runnable {
             int interestOperations, SelectionListener listener)
             throws IOException {
         SelectionRegistration result = new SelectionRegistration(
-                selectableChannel, interestOperations, listener);
+                selectableChannel, interestOperations, listener, this);
         getNewRegistrations().add(result);
         return result;
     }
@@ -265,12 +274,17 @@ public class ConnectionController extends Controller implements Runnable {
     protected void selectKeys(long sleepTime) throws IOException,
             ClosedByInterruptException {
         // Select the connections ready for NIO operations
+        if (getHelper().getLogger().isLoggable(Level.FINER)) {
+            getHelper().getLogger().log(Level.FINER,
+                    "NIO controller about to sleep " + sleepTime + " ms...");
+        }
+
         int selectCount = getSelector().select();
 
         if (selectCount > 0) {
-            if (getHelper().getLogger().isLoggable(Level.FINEST)) {
-                getHelper().getLogger().log(Level.FINEST,
-                        "NIO selected " + selectCount + " key(s) !");
+            if (getHelper().getLogger().isLoggable(Level.FINER)) {
+                getHelper().getLogger().log(Level.FINER,
+                        "NIO controller selected " + selectCount + " key(s) !");
             }
 
             for (Iterator<SelectionKey> keys = getSelector().selectedKeys()
@@ -279,8 +293,9 @@ public class ConnectionController extends Controller implements Runnable {
                 onSelected(keys.next());
                 keys.remove();
             }
-        } else if (getHelper().getLogger().isLoggable(Level.FINEST)) {
-            // getHelper().getLogger().log(Level.FINEST, "No NIO key selected");
+        } else if (getHelper().getLogger().isLoggable(Level.FINER)) {
+            getHelper().getLogger().log(Level.FINER,
+                    "NIO controlled selected no key");
         }
     }
 
@@ -300,9 +315,9 @@ public class ConnectionController extends Controller implements Runnable {
                 .poll();
 
         while (updatedRegistration != null) {
-            if (getHelper().getLogger().isLoggable(Level.FINEST)) {
+            if (getHelper().getLogger().isLoggable(Level.FINER)) {
                 getHelper().getLogger().log(
-                        Level.FINEST,
+                        Level.FINER,
                         "Updating NIO interest with selector: "
                                 + updatedRegistration);
             }
@@ -318,6 +333,11 @@ public class ConnectionController extends Controller implements Runnable {
     public void wakeup() {
         if (getSelector() != null) {
             getSelector().wakeup();
+
+            if (getHelper().getLogger().isLoggable(Level.FINER)) {
+                getHelper().getLogger().log(Level.FINER,
+                        "NIO controller woke up");
+            }
         }
     }
 
