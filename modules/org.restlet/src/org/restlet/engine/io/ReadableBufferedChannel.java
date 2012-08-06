@@ -36,6 +36,8 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.restlet.engine.connector.WakeupListener;
+
 // [excludes gwt]
 /**
  * Readable byte channel based on a source socket channel that must only be
@@ -62,10 +64,13 @@ public class ReadableBufferedChannel extends
      *            processing.
      * @param source
      *            The source channel.
+     * @param wakeupListener
+     *            The wakeup listener that will be notified.
      */
     public ReadableBufferedChannel(CompletionListener completionListener,
-            Buffer buffer, ReadableSelectionChannel source) {
-        super(buffer, source);
+            Buffer buffer, ReadableSelectionChannel source,
+            WakeupListener wakeupListener) {
+        super(buffer, source, wakeupListener);
         this.completionListener = completionListener;
         this.endReached = false;
     }

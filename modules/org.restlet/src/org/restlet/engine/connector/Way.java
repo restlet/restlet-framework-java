@@ -104,7 +104,7 @@ public abstract class Way implements SelectionListener, CompletionListener,
         this.lineBuilderState = BufferState.IDLE;
         this.message = null;
         this.messageState = MessageState.IDLE;
-        this.registration = new SelectionRegistration(0, this);
+        this.registration = new SelectionRegistration(0, this, null);
     }
 
     /**

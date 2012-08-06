@@ -466,6 +466,9 @@ public class Connection<T extends Connector> implements SelectionListener {
                         this.writableSelectionChannel);
             }
 
+            // Setup the wakeup listener
+            getInboundWay().getRegistration().setWakeupListener(controller);
+            getOutboundWay().getRegistration().setWakeupListener(controller);
         }
 
         onActivity();

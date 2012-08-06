@@ -41,6 +41,7 @@ import javax.net.ssl.SSLEngineResult;
 
 import org.restlet.Context;
 import org.restlet.engine.connector.MessageState;
+import org.restlet.engine.connector.WakeupListener;
 import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.ReadableBufferedChannel;
@@ -67,11 +68,13 @@ public class ReadableSslChannel extends ReadableBufferedChannel implements
      *            The source channel.
      * @param connection
      *            The parent SSL connection.
+     * @param wakeupListener
+     *            The wakeup listener that will be notified.
      */
     public ReadableSslChannel(ReadableSelectionChannel source,
-            SslConnection<?> connection) {
+            SslConnection<?> connection, WakeupListener wakeupListener) {
         super(null, new Buffer(connection.getPacketBufferSize(), connection
-                .getHelper().isDirectBuffers()), source);
+                .getHelper().isDirectBuffers()), source, wakeupListener);
 
         if (Context.getCurrentLogger().isLoggable(Level.FINER)) {
             Context.getCurrentLogger().log(

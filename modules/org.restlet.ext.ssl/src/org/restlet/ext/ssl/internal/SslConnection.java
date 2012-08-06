@@ -108,13 +108,13 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     @Override
     protected ReadableSelectionChannel createReadableSelectionChannel() {
         return new ReadableSslChannel(super.createReadableSelectionChannel(),
-                this);
+                this, getRegistration().getWakeupListener());
     }
 
     @Override
     protected WritableSelectionChannel createWritableSelectionChannel() {
         return new WritableSslChannel(super.createWritableSelectionChannel(),
-                this);
+                this, getRegistration().getWakeupListener());
     }
 
     /**
