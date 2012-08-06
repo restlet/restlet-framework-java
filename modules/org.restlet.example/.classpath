@@ -42,5 +42,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xdb"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xml"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xstream"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.testng"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

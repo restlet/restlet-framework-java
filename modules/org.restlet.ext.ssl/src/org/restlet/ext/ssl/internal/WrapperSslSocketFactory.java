@@ -70,6 +70,7 @@ public class WrapperSslSocketFactory extends SSLSocketFactory {
         this.wrappedSocketFactory = wrappedSocketFactory;
         this.contextFactory = contextFactory;
     }
+
     @Override
     public Socket createSocket() throws IOException {
         SSLSocket result = (SSLSocket) getWrappedSocketFactory().createSocket();
@@ -158,8 +159,8 @@ public class WrapperSslSocketFactory extends SSLSocketFactory {
                 .isWantClientAuthentication());
         sslSocket.setEnabledCipherSuites(getContextFactory()
                 .getSelectedCipherSuites(sslSocket.getSupportedCipherSuites()));
-        sslSocket.setEnabledProtocols(new String[] { getContextFactory()
-                .getSslProtocol() });
+        sslSocket.setEnabledProtocols(getContextFactory()
+                .getSelectedSslProtocols(sslSocket.getSupportedProtocols()));
         return sslSocket;
     }
 
