@@ -327,8 +327,8 @@
 
 	<!-- Compile using preferences -->
 	<macrodef name="compile">
-		<attribute name="source" default="1.5" />
-		<attribute name="target" default="1.5" />
+		<attribute name="source" default="${jdk.compilation.version}" />
+		<attribute name="target" default="${jdk.compilation.version}" />
 		<attribute name="debug" default="${debug}" />
 		<attribute name="debuglevel" default="${debuglevel}" />
 		<attribute name="optimize" default="${optimize}" />
@@ -471,7 +471,7 @@
 						<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
 						<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
 						<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-						<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="JavaSE-1.6" />
+						<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
 						<section name="${mod-@{name}-id}">
 							<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
 							<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
@@ -643,21 +643,14 @@
 	<target name="rebuild" depends="clean, generate, verify, integrate, stage, package" description="Full build from scratch." />
 
 	<!-- CLEAN target -->
-	<target name="clean" depends="clean-temp, clean-dist" description="Clean the staging area." />
-
-	<!-- CLEAN-DIST target -->
-	<target name="clean-dist" description="Clean distributions files.">
+	<target name="clean" description="Clean the staging area.">
 		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
 			<fileset dir="${dist-base}">
 				<include name="*/${dist-path}/**/*" />
 				<include name="*/${dist-path}" />
 			</fileset>
 		</delete>
-	</target>
-
-	<!-- CLEAN-TEMP target -->
-	<target name="clean-temp" description="Clean temporary build files.">
-		<!-- Delete the classes and Javadoc directories -->
+		<!-- Delete the classes and Javadoc directories, etc -->
 		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
 			<fileset dir="${temp}" />
 		</delete>
