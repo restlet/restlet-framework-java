@@ -21,6 +21,8 @@ Changes log
        - Fixed potential threading/pipe issues with OutputRepresentation
          and WriterRepresentation classes.
        - Fixed range computation issue.
+       - Fixed Turtle BNode parsing (RDF extension).
+         Contributed by Christophe Gueret.
     - Misc
        - Reverted Role equality test to default Java object equality as
          equality based on name could cause issues with MemoryRealm
