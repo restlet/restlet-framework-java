@@ -313,6 +313,9 @@ public class RdfTurtleReader extends RdfNTriplesReader {
                 break;
             case ']':
                 break;
+            case '.':
+				step();
+				break;
             default:
                 if (!isEndOfFile(getChar())) {
                     blankNode.getLexicalUnits().add(

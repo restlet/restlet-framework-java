@@ -1,0 +1,20 @@
+<library id="testng" symbolicName="org.testng">
+	<name>TestNG Testing Framework</name>
+	<description>TestNG Testing Framework</description>
+	<version>6.7</version>
+	<homeUri>http://testng.org/</homeUri>
+	<downloadUri>
+		<![CDATA[http://testng.org/doc/download.html]]>
+	</downloadUri>
+	<provider>Cedric Beust</provider>
+	
+	<package name="org.testng">
+		<maven>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

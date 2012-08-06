@@ -75,7 +75,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private final boolean enabledServerJetty = true;
 
-    private final boolean enabledServerSimple = true;
+    private final boolean enabledServerSimple = false;
 
     private final File testDir = new File(System.getProperty("java.io.tmpdir"),
             "SslBaseConnectorsTestCase");

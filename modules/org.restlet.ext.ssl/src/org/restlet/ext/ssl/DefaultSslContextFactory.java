@@ -114,7 +114,7 @@ import org.restlet.util.Series;
  * <td>sslProtocol</td>
  * <td>String</td>
  * <td>TLS</td>
- * <td>SSL protocol.</td>
+ * <td>SSL protocol (see Java Secure Socket Extension (JSSE) reference guide.</td>
  * </tr>
  * <tr>
  * <td>truststorePath</td>
@@ -460,6 +460,31 @@ public class DefaultSslContextFactory extends SslContextFactory {
                                 .asList(getDisabledCipherSuites()).contains(
                                         supportedCipherSuite))) {
                     resultSet.add(supportedCipherSuite);
+                }
+            }
+        }
+
+        String[] result = new String[resultSet.size()];
+        return resultSet.toArray(result);
+    }
+
+    /**
+     * Returns the selected SSL protocols. The selection is the subset of
+     * supported protocols whose name starts with the name of of
+     * {@link #getSslProtocol()} name.
+     * 
+     * @param supportedProtocols
+     *            The selected SSL protocols.
+     * @return The selected SSL protocols.
+     */
+    public String[] getSelectedSslProtocols(String[] supportedProtocols) {
+        Set<String> resultSet = new HashSet<String>();
+
+        if (supportedProtocols != null) {
+            for (String supportedProtocol : supportedProtocols) {
+                if ((getSslProtocol() == null)
+                        || supportedProtocol.startsWith(getSslProtocol())) {
+                    resultSet.add(supportedProtocol);
                 }
             }
         }
