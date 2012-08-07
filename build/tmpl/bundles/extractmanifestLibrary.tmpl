@@ -1,7 +1,12 @@
 <?xml version="1.0"?>
 <project name="Restlet" default="build">
+	
+	<property name="tools" value="${ant["tools"]}" />
+	<property name="lib" value="${ant["lib"]}" />
+	<property name="temp" value="${ant["temp"]}" />
+	
 	<path id="bnd-path">
-		<fileset dir="../../tools/bnd" includes="**/*.jar" />
+		<fileset dir="<#noparse>${tools}</#noparse>/bnd" includes="**/*.jar" />
 	</path>
 
 	<!-- BND (FreeMarker-based text file PreProcessor) -->
@@ -10,8 +15,27 @@
 	<target name="build" description="Generates the manifest.mf files for the unique source code">
 <#list project.libraries?values as library>
   <#list library.packages as package>
-		<bndwrap jars="${ant["libs"]}/${library.rootDirectory}/${package.name}.jar" output="${library.rootDirectory}/${package.name}.jar" definitions="../definitions/libs" />
+		<bndwrap jars="<#noparse>${lib}</#noparse>/${library.rootDirectory}/${package.name}.jar" output="${library.rootDirectory}/${package.name}.jar" definitions="<#noparse>${temp}</#noparse>/definitions/libs" />
 	</#list>
+		<java classname="aQute.bnd.main.bnd" fork="true">
+			<arg value="buildx" />
+			<arg value="-classpath" />
+			<arg value="<#list library.packages as package><#noparse>${lib}</#noparse>/${library.rootDirectory}/${package.name}.jar<#if package_has_next>,</#if></#list>" />
+			<arg value="-noeclipse" />
+			<arg value="-output" />
+			<arg value="<#noparse>${temp}</#noparse>/${library.id}.jar" />
+			<arg value="<#noparse>${temp}</#noparse>/definitions/libs/global.${library.id}.bnd" />
+			<classpath refid="bnd-path" />
+		</java>
+		<unzip dest="<#noparse>${lib}</#noparse>/${library.rootDirectory}/">
+		    <patternset>
+		        <include name="META-INF/*"/>
+		    </patternset>
+		    <fileset dir="<#noparse>${temp}</#noparse>">
+		        <include name="${library.id}.jar"/>
+		    </fileset>
+		</unzip>
+		<delete file="<#noparse>${temp}</#noparse>/${library.id}.jar" />
 </#list>
 	</target>
 </project>

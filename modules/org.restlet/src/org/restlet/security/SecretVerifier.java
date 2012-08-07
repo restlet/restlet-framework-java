@@ -48,7 +48,7 @@ import org.restlet.data.ClientInfo;
  */
 public abstract class SecretVerifier implements Verifier {
     /**
-     * Compares that two secrets are equal.
+     * Compares that two secrets are equal and not null.
      * 
      * @param secret1
      *            The input secret.
@@ -59,10 +59,7 @@ public abstract class SecretVerifier implements Verifier {
     public static boolean compare(char[] secret1, char[] secret2) {
         boolean result = false;
 
-        if ((secret1 == null) || (secret2 == null)) {
-            // Check if both are null
-            result = (secret1 == secret2);
-        } else {
+        if ((secret1 != null) && (secret2 != null)) {
             // None is null
             if (secret1.length == secret2.length) {
                 boolean equals = true;
