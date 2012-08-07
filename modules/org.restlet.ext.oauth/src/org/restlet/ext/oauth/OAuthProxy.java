@@ -40,6 +40,8 @@ import java.util.List;
 import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.Restlet;
+import org.restlet.Uniform;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -114,8 +116,8 @@ public class OAuthProxy extends Filter {
     private final OAuthParameters params;
 
     private final boolean basicSecret;
-
-    private final org.restlet.Client cc;
+    
+    private final Uniform next;
 
     /**
      * Sets up an OauthProxy. Defaults to form based authentication and not http
@@ -143,8 +145,33 @@ public class OAuthProxy extends Filter {
      */
     public OAuthProxy(OAuthParameters params, Context ctx,
             boolean useBasicSecret) {
-        this(params, ctx, useBasicSecret, null);
+        this(params, ctx, useBasicSecret, (Filter)null);
     }
+    
+    /**
+     * Sets up an OAuthProxy.
+     * 
+     * @param params
+     *            The OAuth parameters.
+     * @param useBasicSecret
+     *            If true use http basic authentication otherwise use form
+     *            based.
+     * @param ctx
+     *            The Restlet context.
+     * @param interceptor
+     *            A predefined client filter that will be used for remote 
+     *            request. Useful when a community has non complian request
+     *            or response parameters that need to be normalized.
+     */
+    public OAuthProxy(OAuthParameters params, Context ctx,
+            boolean useBasicSecret, Filter interceptor) {
+        this.basicSecret = useBasicSecret;
+        setContext(ctx);
+        this.params = params;
+        no.add(CacheDirective.noStore());
+        this.next = interceptor;
+    }
+
 
     /**
      * Sets up an OAuthProxy.
@@ -167,7 +194,7 @@ public class OAuthProxy extends Filter {
         setContext(ctx);
         this.params = params;
         no.add(CacheDirective.noStore());
-        this.cc = requestClient;
+        this.next = requestClient;
     }
 
     @Override
@@ -283,8 +310,21 @@ public class OAuthProxy extends Filter {
             getLogger().fine("Came back after SNS code = " + code);
             ClientResource tokenResource = new CookieCopyClientResource(
                     this.params.getBaseRef() + this.params.getAccessTokenPath());
-            if (this.cc != null) {
-                tokenResource.setNext(this.cc);
+            if (this.next != null) {
+            	if( next instanceof Filter ) {
+            		Filter filter = (Filter) next;
+            		//TODO why need to cast!? Dock says Restlet but returns Uniform
+            		Restlet u = (Restlet) tokenResource.getNext(); 
+            		Restlet end = filter.getNext();
+            		while( end != null && (end instanceof Filter) &&
+            				((Filter)end).getNext() != null ) {
+            			u = end;
+            			end = ((Filter)end).getNext();
+            		}
+            		((Filter) next).setNext(u);
+            	}
+            	
+                tokenResource.setNext(this.next);
             }
             Form form = new Form();
             form.add(OAuthServerResource.GRANT_TYPE,
