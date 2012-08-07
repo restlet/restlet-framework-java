@@ -1,16 +1,14 @@
 <#list project.libraries?values as library>
-  <#list library.packages as package>
-    <@pp.nestOutputFile name="${package.name}.bnd">
+    <@pp.nestOutputFile name="global.${library.id}.bnd">
 -nouses: true
 -noextraheaders: true
 -debug: true
-Export-Package: * 
+Export-Package: *;-split-package:=merge-first
 Import-Package: *;resolution:=optional
-Bundle-Name: ${package.name}
-Bundle-SymbolicName: ${package.name}
+Bundle-Name: ${library.id}
+Bundle-SymbolicName: ${library.id}
 Bundle-Version: ${ant["eclipse-version-full"]}
 Created-By: Restlet forge
 Bundle-RequiredExecutionEnvironment: ${ant["bundle.required-execution-environment"]}
     </@pp.nestOutputFile>
-  </#list>  
 </#list>
