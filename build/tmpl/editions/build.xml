@@ -415,7 +415,7 @@
 						<!-- <exclude name="**/internal/**" /> -->
 					</dirset>
 					<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
-						<map from="${mod}/${mod-@{name}-id}/" to='' />
+						<map from="${mod}/${mod-@{name}-id}/src/" to='' />
 					</pathconvert>
 					<manifest file="@{dir}/META-INF/MANIFEST.MF">
 						<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
