@@ -1,0 +1,10 @@
+<module excludes="*" id="example-ch08-gae" package="org.restlet.example.book.restlet.ch08.gae">
+   <name>Restlet examples</name>
+   <description>Book examples (ch08-gae)</description>
+   <distributions />
+
+   <dependencies>
+      <dependency type="library" id="testng" />
+      <dependency type="module" id="core" />
+   </dependencies>
+</module>

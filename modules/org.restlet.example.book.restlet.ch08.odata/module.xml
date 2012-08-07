@@ -1,0 +1,14 @@
+<module excludes="*" id="example-ch08-odata" package="org.restlet.example.book.restlet.ch08.odata">
+   <name>Restlet examples</name>
+   <description>Book examples (ch08-odata)</description>
+   <distributions />
+
+   <dependencies>
+      <dependency type="library" id="freemarker" />
+      <dependency type="library" id="testng" />
+      <dependency type="module" id="core" />
+      <dependency type="module" id="freemarker" />
+      <dependency type="module" id="odata" />
+      <dependency type="module" id="xml" />
+   </dependencies>
+</module>
