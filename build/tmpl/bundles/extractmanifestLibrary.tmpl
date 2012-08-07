@@ -4,7 +4,6 @@
 	<property name="tools" value="${ant["tools"]}" />
 	<property name="lib" value="${ant["lib"]}" />
 	<property name="temp" value="${ant["temp"]}" />
-	
 	<path id="bnd-path">
 		<fileset dir="<#noparse>${tools}</#noparse>/bnd" includes="**/*.jar" />
 	</path>
@@ -35,6 +34,8 @@
 		        <include name="${library.id}.jar"/>
 		    </fileset>
 		</unzip>
+<echo append="true" file="<#noparse>${lib}</#noparse>/${library.rootDirectory}/META-INF/MANIFEST.MF">Bundle-ClassPath: <#list library.packages as package>${package.name}.jar<#if package_has_next>,</#if></#list>
+</echo>
 		<delete file="<#noparse>${temp}</#noparse>/${library.id}.jar" />
 </#list>
 	</target>
