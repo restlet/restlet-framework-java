@@ -467,12 +467,12 @@
 						<equals arg1="@{name}" arg2="core" />
 					</condition>
 					<property name="include-@{name}-pattern" value="org/restlet/ext/@{name}/**" />
-					<dirset id="mod-@{name}-exported-packages" dir="${mod}/${mod-@{name}-id}/src">
+					<dirset id="mod-@{name}-exported-packages" dir="${mod}/${mod-@{name}-id}/src" >
 						<include name="${include-@{name}-pattern}" />
 						<!-- <exclude name="**/internal/**" /> -->
 					</dirset>
 					<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
-						<map from="${mod}/${mod-@{name}-id}/" to='' />
+						<map from="${mod}/${mod-@{name}-id}/src/" to='' />
 					</pathconvert>
 					<manifest file="@{dir}/META-INF/MANIFEST.MF">
 						<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
