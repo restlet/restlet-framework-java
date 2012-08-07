@@ -103,15 +103,15 @@ public class Engine {
     /** The registered engine. */
     private static volatile Engine instance = null;
 
-    // [ifdef jse] member
+    // [ifdef jse,android,osgi] member
     /** The org.restlet log level . */
     private static volatile boolean logConfigured = false;
 
-    // [ifdef jse] member
+    // [ifdef jse,android,osgi] member
     /** The general log formatter. */
     private static volatile Class<? extends Formatter> logFormatter = org.restlet.engine.log.SimplestFormatter.class;
 
-    // [ifdef jse] member
+    // [ifdef jse,android,osgi] member
     /** The general log level . */
     private static volatile Level logLevel = Level.INFO;
 
@@ -124,7 +124,7 @@ public class Engine {
     /** Release number. */
     public static final String RELEASE_NUMBER = "@release-type@@release-number@";
 
-    // [ifdef jse] member
+    // [ifdef jse,android,osgi] member
     /** The org.restlet log level . */
     private static volatile Level restletLogLevel;
 
@@ -153,7 +153,7 @@ public class Engine {
         org.restlet.Application.setCurrent(null);
     }
 
-    // [ifdef jse] method
+    // [ifdef jse,android,osgi] method
     /**
      * Updates the global log configuration of the JVM programmatically.
      */
@@ -222,7 +222,7 @@ public class Engine {
         return result;
     }
 
-    // [ifdef jse] method
+    // [ifdef jse,android,osgi] method
     /**
      * Returns the general log formatter.
      * 
@@ -284,7 +284,7 @@ public class Engine {
         return getInstance().getLoggerFacade().getLogger(loggerName);
     }
 
-    // [ifdef jse] method
+    // [ifdef jse,android,osgi] method
     /**
      * Returns the general log level.
      * 
@@ -306,7 +306,7 @@ public class Engine {
         return getInstance().getClassLoader().getResource(name);
     }
 
-    // [ifdef jse] method
+    // [ifdef jse,android,osgi] method
     /**
      * Returns the Restlet log level. For loggers with a name starting with
      * "org.restlet".
@@ -348,7 +348,7 @@ public class Engine {
      * @return The registered engine.
      */
     public static synchronized Engine register(boolean discoverPlugins) {
-        // [ifdef jse]
+        // [ifdef jse,android,osgi]
         if (!logConfigured) {
             configureLog();
         }
@@ -371,7 +371,7 @@ public class Engine {
         instance = engine;
     }
 
-    // [ifdef jse] method
+    // [ifdef jse,android,osgi] method
     /**
      * Sets the general log formatter.
      * 
@@ -383,7 +383,7 @@ public class Engine {
         configureLog();
     }
 
-    // [ifdef jse] method
+    // [ifdef jse,android,osgi] method
     /**
      * Sets the general log level. Modifies the global JVM's {@link LogManager}.
      * 
@@ -395,7 +395,7 @@ public class Engine {
         configureLog();
     }
 
-    // [ifdef jse] method
+    // [ifdef jse,android,osgi] method
     /**
      * Sets the Restlet log level. For loggers with a name starting with
      * "org.restlet".
