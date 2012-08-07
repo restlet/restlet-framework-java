@@ -8,6 +8,7 @@ Import-Package: *;resolution:=optional
 Bundle-Name: ${library.symbolicName}
 Bundle-SymbolicName: ${library.symbolicName}
 Bundle-Version: ${library.versionFull}
+Bundle-ClassPath: <#list library.packages as package>${package.name}.jar<#if package_has_next>,</#if></#list>
 Created-By: Restlet forge
 Bundle-RequiredExecutionEnvironment: ${ant["bundle.required-execution-environment"]}
     </@pp.nestOutputFile>
