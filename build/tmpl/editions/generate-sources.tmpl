@@ -38,8 +38,13 @@
       <replace dir="<#noparse>${mod}</#noparse>/${module.package}" includes="**/package.html" token="@home-uri@" value="${module.primaryLibrary.homeUri}" />
    </#if>
    <#if edition.postSource??>${edition.postSource?replace("\\$\\{module\\.package\\}", module.package, "r")}</#if>
-   <!-- Generate the manifest file -->
-   <generateModuleManifest name="${module}" dir="<#noparse>${mod}</#noparse>/${module.package}" source="true" />
+      <if>
+         <istrue value="<#noparse>${do-eclipse-pde}</#noparse>" />
+         <then>
+            <!-- Generate the manifest file -->
+            <generateModuleManifest name="${module}" dir="<#noparse>${mod}</#noparse>/${module.package}" source="true" />
+         </then>
+      </if>
 </#list>
 <#noparse>
       <replace dir="${mod}" includes="**/Engine.java" token="@major-number@" value="${major-number}" />
