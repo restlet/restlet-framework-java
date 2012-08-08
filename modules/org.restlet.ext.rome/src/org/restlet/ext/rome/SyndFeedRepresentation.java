@@ -56,7 +56,7 @@ import com.sun.syndication.io.SyndFeedOutput;
  * access via {@link #getFeed()}.
  * 
  * @author Tal Liron
- * @see <a href="https://rome.dev.java.net/">ROME home</a>
+ * @see <a href="http://java.net/projects/rome/">ROME home</a>
  */
 public class SyndFeedRepresentation extends WriterRepresentation {
 
