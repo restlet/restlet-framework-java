@@ -23,6 +23,10 @@ Changes log
        - Fixed range computation issue.
        - Fixed Turtle BNode parsing (RDF extension).
          Contributed by Christophe Gueret.
+       - MemoryRealm now copies the properties from the reference user in the 
+         realm to the User object set in Request.clientInfo.
+         Reported by Peter Ansell.
+       - SecretVerifier now consider two 'null' secrets as not comparable.
     - Misc
        - Reverted Role equality test to default Java object equality as
          equality based on name could cause issues with MemoryRealm

@@ -48,7 +48,7 @@ import org.restlet.data.ClientInfo;
  */
 public abstract class SecretVerifier implements Verifier {
     /**
-     * Compares that two secrets are equal.
+     * Compares that two secrets are equal and not null.
      * 
      * @param secret1
      *            The input secret.
@@ -59,10 +59,7 @@ public abstract class SecretVerifier implements Verifier {
     public static boolean compare(char[] secret1, char[] secret2) {
         boolean result = false;
 
-        if ((secret1 == null) || (secret2 == null)) {
-            // Check if both are null
-            result = (secret1 == secret2);
-        } else {
+        if ((secret1 != null) && (secret2 != null)) {
             // None is null
             if (secret1.length == secret2.length) {
                 boolean equals = true;
@@ -76,6 +73,35 @@ public abstract class SecretVerifier implements Verifier {
         }
 
         return result;
+    }
+
+    /**
+     * Called back to create a new user when valid credentials are provided.
+     * 
+     * @param identifier
+     *            The user identifier.
+     * @param request
+     *            The request handled.
+     * @param response
+     *            The response handled.
+     * @return The {@link User} instance created.
+     */
+    protected User createUser(String identifier, Request request,
+            Response response) {
+        return createUser(identifier);
+    }
+
+    /**
+     * Called back to create a new user when valid credentials are provided.
+     * 
+     * @param identifier
+     *            The user identifier.
+     * @return The {@link User} instance created.
+     * @deprecated
+     */
+    @Deprecated
+    protected User createUser(String identifier) {
+        return new User(identifier);
     }
 
     /**
@@ -115,7 +141,7 @@ public abstract class SecretVerifier implements Verifier {
      *            The request to inspect.
      * @param response
      *            The response to inspect.
-     * @return True if the proposed secret was correct and the subject updated.
+     * @return Result of the verification based on the RESULT_* constants.
      */
     public int verify(Request request, Response response) {
         int result = RESULT_VALID;
@@ -125,16 +151,11 @@ public abstract class SecretVerifier implements Verifier {
         } else {
             String identifier = getIdentifier(request, response);
             char[] secret = getSecret(request, response);
+            result = verify(identifier, secret);
 
-            try {
-                if (verify(identifier, secret)) {
-                    request.getClientInfo().setUser(new User(identifier));
-                } else {
-                    result = RESULT_INVALID;
-                }
-            } catch (IllegalArgumentException iae) {
-                // The identifier is unknown.
-                result = RESULT_UNKNOWN;
+            if (result == RESULT_VALID) {
+                request.getClientInfo().setUser(
+                        createUser(identifier, request, response));
             }
         }
 
@@ -150,11 +171,8 @@ public abstract class SecretVerifier implements Verifier {
      *            The user identifier to match.
      * @param secret
      *            The provided secret to verify.
-     * @return true if the identifier/secret couple is valid.
-     * @throws IllegalArgumentException
-     *             In case the identifier is unknown.
+     * @return Result of the verification based on the RESULT_* constants.
      */
-    public abstract boolean verify(String identifier, char[] secret)
-            throws IllegalArgumentException;
+    public abstract int verify(String identifier, char[] secret);
 
 }
