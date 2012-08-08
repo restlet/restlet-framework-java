@@ -2,8 +2,8 @@
 	<name>Rome</name>
 	<description>Rome.</description>
 	<version>1.0</version>
-	<homeUri>https://rome.dev.java.net/</homeUri>
-	<downloadUri>https://rome.dev.java.net/</downloadUri>
+	<homeUri>http://java.net/projects/rome/</homeUri>
+	<downloadUri>http://java.net/projects/rome/downloads</downloadUri>
 	<provider>Sun Microsystems Inc.</provider>
 	
 	<package name="com.sun.syndication">
@@ -13,6 +13,6 @@
 		</maven>
 	</package>
 	<javadocs>
-		<link href="http://rome.java.net/1_0/api/" />
+		<link href="http://java.net/projects/rome/" />
 	</javadocs>
 </library>
