@@ -388,7 +388,11 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
             } else {
                 println("getClientResource().getRequest().setEntity(null);");
             }
+            println("if (getClientResource().getClientInfo().getAcceptedMediaTypes().isEmpty()) {");
+            indent();
             println("getClientResource().getClientInfo().getAcceptedMediaTypes().add(new Preference<MediaType>(MediaType.APPLICATION_JAVA_OBJECT_GWT));");
+            outdent();
+            println("}");
             println("getClientResource().setMethod(Method."
                     + info.getRestletMethod().toString() + ");");
             println("getClientResource().setOnResponse(new Uniform() {");
