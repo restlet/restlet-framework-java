@@ -9,6 +9,10 @@ Bundle-Name: ${library.symbolicName}
 Bundle-SymbolicName: ${library.symbolicName}
 Bundle-Version: ${library.versionFull}
 Created-By: Restlet forge
+    <#if library.activator??>
+Import-Package: org.osgi.framework
+Bundle-Activator: ${library.activator}
+    </#if>
 Bundle-RequiredExecutionEnvironment: ${ant["bundle.required-execution-environment"]}
     </@pp.nestOutputFile>
 </#list>

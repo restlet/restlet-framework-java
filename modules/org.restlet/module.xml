@@ -13,6 +13,7 @@
 		<dependency includes="osgi" type="library" id="osgi" maven-scope="compile" />
 		<dependency includes="gwt" type="library" id="gwt" />
 	</dependencies>
+	<bundleActivator>org.restlet.engine.internal.Activator</bundleActivator>
 	<source edition="android">
 		<files-sets>
 <![CDATA[
