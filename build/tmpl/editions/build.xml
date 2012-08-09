@@ -551,30 +551,25 @@
 		<attribute name="name" />
 		<attribute name="includeSource" default="false" />
 		<sequential>
+			<mkdir dir="${temp}/jar-extras/@{name}" />
 			<if>
 				<istrue value="${do-p2}" />
 				<then>
-					<generateModuleManifest name="@{name}" dir="${temp}/jar/@{name}" />
+					<generateModuleManifest name="@{name}" dir="${temp}/jar-extras/@{name}" />
 				</then>
 			</if>
 
 			<!-- Create plugin jar -->
 			<mkdir dir="${dist-classic}/lib" />
-
-			<condition property="source-exclude-patterns" value="**/package.html, **/*.java">
+			<condition property="source-exclude-patterns-@{name}" value="**/package.html, **/*.java">
 				<equals arg1="@{includeSource}" arg2="false" />
 			</condition>
-			<property name="source-exclude-patterns" value="**/package.html" />
-
-			<mkdir dir="${temp}/jar-extras/@{name}" />
-			<property name="jar-extras" value="${temp}/jar-extras/@{name}" />
-
+			<property name="source-exclude-patterns-@{name}" value="**/package.html" />
 			<delete failonerror="false" file="${dist-classic}/lib/${mod-@{name}-id}.jar" />
 			<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
 				<fileset dir="${classes}/${mod-@{name}-id}" />
-				<fileset dir="${temp}/jar/@{name}" />
-				<fileset dir="${jar-extras}" />
-				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${source-exclude-patterns}" />
+				<fileset dir="${temp}/jar-extras/@{name}" />
+				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${source-exclude-patterns-@{name}}" />
 			</jar>
 			<!-- Update the manifest file -->
 			<if>
@@ -589,8 +584,6 @@
 			<copy todir="${dist-classic}/src/${mod-@{name}-id}">
 				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${excludes}" />
 			</copy>
-			<var name="source-exclude-patterns" unset="true" />
-			<var name="jar-extras" unset="true" />
 		</sequential>
 	</macrodef>
 
