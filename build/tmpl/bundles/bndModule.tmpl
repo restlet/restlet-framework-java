@@ -3,5 +3,8 @@
 -nouses: true
 Bundle-RequiredExecutionEnvironment: ${ant["bundle.required-execution-environment"]}
 Bundle-Vendor: Restlet S.A.S.
+    <#if module.activator??>
+Bundle-Activator: ${module.activator}
+    </#if>
     </@pp.nestOutputFile>
 </#list>
