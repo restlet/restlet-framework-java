@@ -167,7 +167,7 @@
 			<isset property="libraries-p2" />
 		</and>
 	</condition>
-	
+
 	<!-- Set the property that will enable the stage-p2 target -->
 	<condition property="do-p2">
 		<and>
@@ -176,7 +176,7 @@
 		</and>
 	</condition>
 
-	
+
 	<!-- Set the property that will enable the package target -->
 	<condition property="do-package-p2">
 		<and>
@@ -184,7 +184,7 @@
 			<istrue value="${package}" />
 		</and>
 	</condition>
-	
+
 	<!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
 	<condition property="exclude-packages" value="">
 		<isfalse value="${javadoc-hide}" />
@@ -390,7 +390,7 @@
 			</copy>
 		</sequential>
 	</macrodef>
-	
+
 	<!-- Generate a manifest.mf file for a module -->
 	<macrodef name="generateModuleManifest">
 		<attribute name="name" description="name of the module" />
@@ -404,7 +404,7 @@
 				<equals arg1="@{source}" arg2="true" />
 				<then>
 					<condition property="include-@{name}-pattern" value="org/restlet/test/**">
-						<equals arg1="@{name}" arg2="core-test"/>
+						<equals arg1="@{name}" arg2="core-test" />
 					</condition>
 					<condition property="include-@{name}-pattern" value="org/restlet/**">
 						<equals arg1="@{name}" arg2="core" />
@@ -417,37 +417,78 @@
 					<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
 						<map from="${mod}/${mod-@{name}-id}/src/" to='' />
 					</pathconvert>
-					<manifest file="@{dir}/META-INF/MANIFEST.MF">
-						<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-						<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-						<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-						<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-						<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
-						<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
-						<section name="${mod-@{name}-id}">
-							<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-							<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-							<attribute name="Implementation-Vendor" value="${vendor}" />
-						</section>
-					</manifest>
+					<if>
+						<isset property="mod-@{name}-activator" />
+						<then>
+							<manifest file="@{dir}/META-INF/MANIFEST.MF">
+								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
+								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
+								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
+								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
+								<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
+								<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
+								<attribute id="Import-Package" name="Import-Package" value="org.osgi.framework" />
+								<attribute id="Bundle-Activator" name="Bundle-Activator" value="${mod-@{name}-activator}" />
+								<section name="${mod-@{name}-id}">
+									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
+									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
+									<attribute name="Implementation-Vendor" value="${vendor}" />
+								</section>
+							</manifest>
+						</then>
+						<else>
+							<manifest file="@{dir}/META-INF/MANIFEST.MF">
+								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
+								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
+								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
+								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
+								<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
+								<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
+								<section name="${mod-@{name}-id}">
+									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
+									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
+									<attribute name="Implementation-Vendor" value="${vendor}" />
+								</section>
+							</manifest>
+						</else>
+					</if>
 				</then>
 				<else>
-					<manifest file="@{dir}/META-INF/MANIFEST.MF">
-						<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-						<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-						<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-						<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-						<section name="${mod-@{name}-id}">
-							<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-							<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-							<attribute name="Implementation-Vendor" value="${vendor}" />
-						</section>
-					</manifest>
+					<if>
+						<isset property="mod-@{name}-activator" />
+						<then>
+							<manifest file="@{dir}/META-INF/MANIFEST.MF">
+								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
+								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
+								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
+								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
+								<attribute id="Bundle-Activator" name="Bundle-Activator" value="${mod-@{name}-activator}" />
+								<section name="${mod-@{name}-id}">
+									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
+									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
+									<attribute name="Implementation-Vendor" value="${vendor}" />
+								</section>
+							</manifest>
+						</then>
+						<else>
+							<manifest file="@{dir}/META-INF/MANIFEST.MF">
+								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
+								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
+								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
+								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
+								<section name="${mod-@{name}-id}">
+									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
+									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
+									<attribute name="Implementation-Vendor" value="${vendor}" />
+								</section>
+							</manifest>
+						</else>
+					</if>
 				</else>
 			</if>
 		</sequential>
 	</macrodef>
-	
+
 	<!-- Package a module -->
 	<macrodef name="stageModule">
 		<attribute name="name" />
@@ -474,6 +515,7 @@
 			<delete failonerror="false" file="${dist-classic}/lib/${mod-@{name}-id}.jar" />
 			<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
 				<fileset dir="${classes}/${mod-@{name}-id}" />
+				<fileset dir="${temp}/jar/@{name}" />
 				<fileset dir="${jar-extras}" />
 				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${source-exclude-patterns}" />
 			</jar>
@@ -481,10 +523,10 @@
 			<if>
 				<istrue value="${do-p2}" />
 				<then>
-					<bndwrap jars="${dist-classic}/lib/${mod-@{name}-id}.jar" output="${dist-classic}/lib/${mod-@{name}-id}.jar" /> 
+					<bndwrap jars="${dist-classic}/lib/${mod-@{name}-id}.jar" output="${dist-classic}/lib/${mod-@{name}-id}.jar" />
 				</then>
 			</if>
-			
+
 			<!-- Create extension source jar file -->
 			<mkdir dir="${dist-classic}/src" />
 			<copy todir="${dist-classic}/src/${mod-@{name}-id}">
@@ -547,12 +589,12 @@
 			<delete file="${dist-p2}/features/feature.xml" />
 			<!-- Generation of source bundle. -->
 			<delete dir="${temp}/@{name}" />
-			<mkdir dir="${temp}/@{name}"/>
-			<copy todir="${temp}/@{name}" overwrite="true" >
-				<fileset dir="${mod}/${mod-@{name}-id}/src"/>
+			<mkdir dir="${temp}/@{name}" />
+			<copy todir="${temp}/@{name}" overwrite="true">
+				<fileset dir="${mod}/${mod-@{name}-id}/src" />
 			</copy>
 
-			<mkdir dir="${temp}/@{name}/META-INF"/>
+			<mkdir dir="${temp}/@{name}/META-INF" />
 			<manifest file="${temp}/@{name}/META-INF/MANIFEST.MF" mode="replace">
 				<attribute id="Eclipse-SourceBundle" name="Eclipse-SourceBundle" value="${mod-@{name}-id};version=${eclipse-version-full}" />
 				<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}.source" />
@@ -562,13 +604,13 @@
 			<delete dir="${temp}/@{name}" />
 		</sequential>
 	</macrodef>
-	
+
 	<macrodef name="p22Library">
 		<attribute name="name" />
 		<sequential>
 			<copy todir="${dist-p2}/plugins" overwrite="true">
-				<fileset dir="${libs}/${lib-@{name}-root}"/>
-				<mapper type="glob" from="*.jar" to="*_${eclipse-version-full}.jar"/>
+				<fileset dir="${libs}/${lib-@{name}-root}" />
+				<mapper type="glob" from="*.jar" to="*_${eclipse-version-full}.jar" />
 			</copy>
 		</sequential>
 	</macrodef>
@@ -605,7 +647,7 @@
 			<istrue value="${do-eclipse-pde}" />
 			<then>
 				<copy todir="${lib}" overwrite="true" includeEmptyDirs="false">
-			         <fileset dir="${libs}" />
+					<fileset dir="${libs}" />
 				</copy>
 				<antcall target="generate-modules-eclipse-artifacts" inheritall="true" />
 				<antcall target="generate-libraries-eclipse-artifacts" inheritall="true" />
@@ -829,7 +871,7 @@
 	<target name="integrate" depends="" description="Integrate files from other projects." />
 
 	<!-- STAGE target -->
-	<target name="stage" description="Stage the packaging step." >
+	<target name="stage" description="Stage the packaging step.">
 		<antcall target="stage-classic" />
 		<antcall target="stage-maven" />
 		<antcall target="stage-p2" />
@@ -932,7 +974,7 @@
 	</target>
 
 	<!-- STAGE-P2 target -->
-	<target name="stage-p2" if="do-p2" description="Generate the p2 distribution." >
+	<target name="stage-p2" if="do-p2" description="Generate the p2 distribution.">
 		<for param="module" delimiter=" " list="${modules-p2}">
 			<sequential>
 				<p22Module name="@{module}" />
@@ -944,7 +986,7 @@
 			</sequential>
 		</for>
 	</target>
-		
+
 	<!-- PACKAGE target -->
 	<target name="package" if="do-package" depends="package-classic, package-maven, package-p2" description="Generate the distribution.">
 		<!-- copy final artifacts to the final distribution directory -->
@@ -983,5 +1025,5 @@
 			<fileset dir="${dist-classic}" includes="**/*" />
 		</nsis>
 	</target>
-	
+
 </project>
