@@ -84,6 +84,7 @@
          <exclude name="src/org/restlet/engine/io/ReaderInputStream.java" />
          <exclude name="src/org/restlet/engine/io/Trace*" />
          <exclude name="src/org/restlet/engine/io/*Channel*" />
+         <exclude name="src/org/restlet/engine/io/WakeupListener.java" />
          <exclude name="src/org/restlet/engine/local/**" />
          <exclude name="src/org/restlet/engine/log/AccessLogFileHandler.java" />
          <exclude name="src/org/restlet/engine/log/AccessLogFormatter.java" />
