@@ -36,9 +36,7 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.restlet.engine.connector.WakeupListener;
 
-// [excludes gwt]
 /**
  * Writable byte channel based on a target socket channel. It is capable of
  * first filling a buffer before draining it to the target channel.

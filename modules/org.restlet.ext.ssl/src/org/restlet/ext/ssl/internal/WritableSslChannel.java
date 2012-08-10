@@ -40,10 +40,10 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLEngineResult.Status;
 
-import org.restlet.engine.connector.WakeupListener;
 import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.SelectionChannel;
+import org.restlet.engine.io.WakeupListener;
 import org.restlet.engine.io.WritableBufferedChannel;
 import org.restlet.engine.io.WritableSelectionChannel;
 

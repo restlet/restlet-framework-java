@@ -41,12 +41,12 @@ import javax.net.ssl.SSLEngineResult;
 
 import org.restlet.Context;
 import org.restlet.engine.connector.MessageState;
-import org.restlet.engine.connector.WakeupListener;
 import org.restlet.engine.io.Buffer;
 import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.ReadableBufferedChannel;
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.engine.io.SelectionChannel;
+import org.restlet.engine.io.WakeupListener;
 
 /**
  * SSL byte channel that unwraps all read data using the SSL/TLS protocols. It

@@ -36,9 +36,7 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.restlet.engine.connector.WakeupListener;
 
-// [excludes gwt]
 /**
  * Readable byte channel based on a source socket channel that must only be
  * partially read. It is capable of first using the remaining buffer before

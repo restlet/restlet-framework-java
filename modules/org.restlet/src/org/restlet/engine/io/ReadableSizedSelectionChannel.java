@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.engine.connector.WakeupListener;
 
 /**
  * Readable byte channel enforcing a maximum size and wrapping a selectable
