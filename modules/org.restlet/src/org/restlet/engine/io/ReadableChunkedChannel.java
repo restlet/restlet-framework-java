@@ -38,7 +38,6 @@ import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.engine.connector.WakeupListener;
 
 // [excludes gwt]
 /**

@@ -36,7 +36,6 @@ package org.restlet.engine.io;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.restlet.engine.connector.WakeupListener;
 
 // [excludes gwt]
 /**
