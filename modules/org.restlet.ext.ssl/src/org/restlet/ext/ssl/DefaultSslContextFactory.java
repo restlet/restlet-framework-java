@@ -96,7 +96,7 @@ import org.restlet.util.Series;
  * <td>needClientAuthentication</td>
  * <td>boolean</td>
  * <td>false</td>
- * <td>Indicates if we require client certificate authentication</td>
+ * <td>Indicates if we require client certificate authentication. If set to 'true', the "wantClientAuthentication" parameter is ignored.</td>
  * </tr>
  * <tr>
  * <td>secureRandomAlgorithm</td>
@@ -138,7 +138,7 @@ import org.restlet.util.Series;
  * <td>wantClientAuthentication</td>
  * <td>boolean</td>
  * <td>false</td>
- * <td>Indicates if we would like client certificate authentication</td>
+ * <td>Indicates if we would like client certificate authentication. Only taken into account if the "needClientAuthentication" parameter is 'false'.</td>
  * </tr>
  * </table>
  * <p>

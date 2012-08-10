@@ -144,12 +144,17 @@ public class WrapperSslContextSpi extends SSLContextSpi {
      *            The SSL engine to initialize.
      */
     protected void initEngine(SSLEngine sslEngine) {
-        sslEngine.setNeedClientAuth(getContextFactory()
-                .isNeedClientAuthentication());
-        sslEngine.setWantClientAuth(getContextFactory()
-                .isWantClientAuthentication());
-        sslEngine.setEnabledCipherSuites(getContextFactory()
-                .getSelectedCipherSuites(sslEngine.getSupportedCipherSuites()));
+        if (getContextFactory().isNeedClientAuthentication()) {
+            sslEngine.setNeedClientAuth(true);
+        } else if (getContextFactory().isWantClientAuthentication()) {
+            sslEngine.setWantClientAuth(true);
+        }
+
+        if (getContextFactory().getEnabledCipherSuites() != null) {
+            sslEngine.setEnabledCipherSuites(getContextFactory()
+                    .getSelectedCipherSuites(
+                            sslEngine.getSupportedCipherSuites()));
+        }
     }
 
 }

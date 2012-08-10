@@ -139,10 +139,11 @@ public class WrapperSslServerSocketFactory extends SSLServerSocketFactory {
      */
     protected SSLServerSocket initSslServerSocket(
             SSLServerSocket sslServerSocket) {
-        sslServerSocket.setNeedClientAuth(getContextFactory()
-                .isNeedClientAuthentication());
-        sslServerSocket.setWantClientAuth(getContextFactory()
-                .isWantClientAuthentication());
+        if (getContextFactory().isNeedClientAuthentication()) {
+            sslServerSocket.setNeedClientAuth(true);
+        } else if (getContextFactory().isWantClientAuthentication()) {
+            sslServerSocket.setWantClientAuth(true);
+        }
 
         if (getContextFactory().getEnabledCipherSuites() != null) {
             sslServerSocket.setEnabledCipherSuites(getContextFactory()
