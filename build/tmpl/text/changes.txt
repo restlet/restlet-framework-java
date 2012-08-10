@@ -9,9 +9,10 @@ Changes log
          when this ClientResource is used outside a Component.
        - Reduced the number of iterators created when internal NIO connector is 
          idle. Reported by Yan Zhou 
-       - Fixed incomplete support for enabling and disabling cipher suites, and
-         for restricting the SSL protocol version, for all connectors (internal 
-         and extensions). Reported by Enoch Stephen, Jim Zuber and Andreas Schnabl.
+       - Fixed support for enabling and disabling cipher suites, restricting the 
+         SSL protocol version and the requesting a client certificate, for all 
+         connectors (internal and extensions). 
+         Reported by Enoch Stephen, Jim Zuber and Andreas Schnabl.
        - Reduced CPU consumption of internal NIO/HTTP connector by using proper
          NIO selector wakeup logic instead of constant looping. 
          Reported by James Moger.
