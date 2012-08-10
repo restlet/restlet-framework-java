@@ -45,8 +45,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.engine.connector.WakeupListener;
 import org.restlet.engine.io.IoUtils;
+import org.restlet.engine.io.WakeupListener;
 
 /**
  * Represents a unique registration between a NIO selector and a selectable

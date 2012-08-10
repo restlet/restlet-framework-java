@@ -178,7 +178,7 @@ public class WrapperRepresentation extends Representation {
         return getWrappedRepresentation().isAvailable();
     }
 
-    // [ifndef gwt] method
+    // [ifndef gae,gwt] method
     @Override
     public boolean isSelectable() {
         return getWrappedRepresentation().isSelectable();
@@ -189,7 +189,7 @@ public class WrapperRepresentation extends Representation {
         return getWrappedRepresentation().isTransient();
     }
 
-    // [ifndef gwt] method
+    // [ifndef gae,gwt] method
     @Override
     public org.restlet.util.SelectionRegistration getRegistration()
             throws IOException {

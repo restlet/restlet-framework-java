@@ -341,7 +341,7 @@ public abstract class Representation extends RepresentationInfo {
      */
     public abstract Reader getReader() throws IOException;
 
-    // [ifndef gwt] method
+    // [ifndef gae,gwt] method
     /**
      * Returns the NIO registration of the related channel with its selector.
      * You can modify this registration to be called back when some readable
@@ -459,7 +459,7 @@ public abstract class Representation extends RepresentationInfo {
     // */
     // public abstract String getText() throws IOException;
 
-    // [ifndef gwt] method
+    // [ifndef gae,gwt] method
     /**
      * Indicates if the representation content supports NIO selection. In this
      * case, the
@@ -568,7 +568,7 @@ public abstract class Representation extends RepresentationInfo {
         this.expirationDate = DateUtils.unmodifiable(expirationDate);
     }
 
-    // [ifndef gwt] method
+    // [ifndef gae,gwt] method
     /**
      * Sets a listener for NIO read events. If the listener is null, it clear
      * any existing listener.

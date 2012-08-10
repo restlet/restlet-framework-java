@@ -28,7 +28,7 @@
          <exclude name="src/com/**" />
          <exclude name="src/org/restlet/engine/connector/**" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
-         <exclude name="src/org/restlet/engine/io/*SocketChannel.java" />
+         <exclude name="src/org/restlet/engine/io/*SocketChannel*.java" />
          <exclude name="src/org/restlet/engine/local/FileClientHelper.java" />
          <exclude name="src/org/restlet/engine/local/ZipClientHelper.java" />
          <exclude name="src/org/restlet/engine/log/AccessLogFileHandler.java" />
@@ -80,9 +80,11 @@
          <exclude name="src/org/restlet/engine/internal/**" />
          <exclude name="src/org/restlet/engine/io/Drainer.java" />
          <exclude name="src/org/restlet/engine/io/Buffer*.java" />
+         <exclude name="src/org/restlet/engine/io/NioUtils.java" />
          <exclude name="src/org/restlet/engine/io/ReaderInputStream.java" />
          <exclude name="src/org/restlet/engine/io/Trace*" />
          <exclude name="src/org/restlet/engine/io/*Channel*" />
+         <exclude name="src/org/restlet/engine/io/WakeupListener.java" />
          <exclude name="src/org/restlet/engine/local/**" />
          <exclude name="src/org/restlet/engine/log/AccessLogFileHandler.java" />
          <exclude name="src/org/restlet/engine/log/AccessLogFormatter.java" />

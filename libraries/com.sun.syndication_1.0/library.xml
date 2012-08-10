@@ -12,7 +12,4 @@
 			<artifactId>rome</artifactId>
 		</maven>
 	</package>
-	<javadocs>
-		<link href="http://java.net/projects/rome/" />
-	</javadocs>
 </library>
