@@ -35,10 +35,8 @@ package org.restlet.engine.io;
 
 import java.io.IOException;
 
-import org.restlet.engine.connector.WakeupListener;
 import org.restlet.util.SelectionRegistration;
 
-// [excludes gwt]
 /**
  * Byte channel wrapping a byte buffer.
  */

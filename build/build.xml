@@ -168,27 +168,11 @@
 			<!-- Post-process the build file since ant and freemarker share the same syntax. -->
 			<replace file="${editions-dir}/@{edition}/build.xml" token="*DOLLAR*" value="$" />
 
-			<if>
-				<equals arg1="@{edition}" arg2="osgi" />
-				<then>
-					<!-- Generate the P2 feature files. -->
-					<echo message="Generate the P2 feature files" />
-					<fmpp sourceroot="${tmpl}/eclipse" outputroot="${editions-dir}/@{edition}/p2" dataroot="${basedir}">
-						<data expandproperties="true">
-							values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
-							project: get(values, "project")
-							editions: get(values, "editions")
-							editionKey: @{edition}
-		    				edition: get(editions, @{edition})
-							currentYear: ${current-year}
-							ant: antProperties()
-		    			</data>
-						<include name="feature.tmpl" />
-					</fmpp>
-				</then>
-			</if>
-
 			<copy file="build.properties" todir="${editions-dir}/@{edition}" overwrite="true" />
+			<echo append="true" file="${editions-dir}/@{edition}/build.properties">
+				build.number: ${build.number}
+				eclipse-version-full: ${eclipse-version-full}
+			</echo>
 			<copy file="custom.properties" todir="${editions-dir}/@{edition}" overwrite="true" failonerror="false" />
 			<ant antfile="build.xml" target="generate-sources" dir="${editions-dir}/@{edition}/" inheritall="false" />
 		</sequential>

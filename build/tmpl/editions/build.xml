@@ -42,6 +42,7 @@
 	<property name="tools" location="../../tools" />
 	<property name="bin" location="../../bin" />
 	<property name="tmpl" location="../../tmpl" />
+	<property name="build-dir" location="../../../build" />
 	<property name="libs" location="../../../libraries" />
 	<property name="mods" location="../../../modules" />
 	<property name="temp" location="${basedir}/temp" />
@@ -51,6 +52,7 @@
 	<property name="images" location="../../images" />
 	<property name="pom-mods" location="modules" />
 	<property name="mod" location="modules" />
+	<property name="lib" location="libraries" />
 	<property name="poms" location="poms" />
 
 	<property name="dist-classic" location="${dist-base}/classic/${dist-path}" />
@@ -69,11 +71,6 @@
 	<property name="final-dist-eclipse" location="${final-dist-base}/eclipse/${final-dist-path}/${edition}" />
 	<property name="final-dist-maven2" location="${final-dist-base}/maven2/${final-dist-path}" />
 	<property name="final-dist-p2" location="${final-dist-base}/p2/${final-dist-path}" />
-
-	<!-- Boot classpath propertiesLoad system specific paths -->
-	<pathconvert property="defaultbootclasspath">
-		<path path="${sun.boot.class.path}" />
-	</pathconvert>
 
 	<!-- Create the time stamp -->
 	<tstamp>
@@ -162,16 +159,24 @@
 		<istrue value="${package}" />
 	</condition>
 
-	<!-- Set the property that will enable the stage-p2 target -->
-	<condition property="do-p2">
+	<!-- Set the property that indicates that the edition uses bundles for OSGi and PDE eclipse plugin -->
+	<condition property="do-eclipse-pde">
 		<and>
-			<istrue value="${p2}" />
+			<istrue value="${eclipse-pde}" />
 			<isset property="modules-p2" />
 			<isset property="libraries-p2" />
 		</and>
 	</condition>
 
-	
+	<!-- Set the property that will enable the stage-p2 target -->
+	<condition property="do-p2">
+		<and>
+			<istrue value="${p2}" />
+			<istrue value="${do-eclipse-pde}" />
+		</and>
+	</condition>
+
+
 	<!-- Set the property that will enable the package target -->
 	<condition property="do-package-p2">
 		<and>
@@ -179,7 +184,7 @@
 			<istrue value="${package}" />
 		</and>
 	</condition>
-	
+
 	<!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
 	<condition property="exclude-packages" value="">
 		<isfalse value="${javadoc-hide}" />
@@ -294,7 +299,7 @@
 	</taskdef>
 	<!-- BND (handling of OSGI bundles) -->
 	<taskdef resource="aQute/bnd/ant/taskdef.properties" classpathref="bnd-path" />
-	
+
 	<!-- ==================== -->
 	<!-- ===  Ant Macros  === -->
 	<!-- ==================== -->
@@ -385,84 +390,143 @@
 			</copy>
 		</sequential>
 	</macrodef>
-	
+
+	<!-- Generate a manifest.mf file for a module -->
+	<macrodef name="generateModuleManifest">
+		<attribute name="name" description="name of the module" />
+		<attribute name="dir" description="The path of the directory where to generate the META-INF/MANIFEST.MF file" />
+		<attribute name="source" default="false" description="'true' to just declare the list of required bundles in the manifest file using the 'Require-Bundle' attribute - fine for development. 'false' to generate a manifest file without the 'Require-Bundle' attribute " />
+		<sequential>
+			<!-- Create the Manifest -->
+			<mkdir dir="@{dir}/META-INF" />
+			<delete failonerror="false" file="@{dir}/META-INF/MANIFEST.MF" />
+			<if>
+				<equals arg1="@{source}" arg2="true" />
+				<then>
+					<condition property="include-@{name}-pattern" value="org/restlet/test/**">
+						<equals arg1="@{name}" arg2="core-test" />
+					</condition>
+					<condition property="include-@{name}-pattern" value="org/restlet/**">
+						<equals arg1="@{name}" arg2="core" />
+					</condition>
+					<property name="include-@{name}-pattern" value="org/restlet/ext/@{name}/**" />
+					<dirset id="mod-@{name}-exported-packages" dir="${mod}/${mod-@{name}-id}/src">
+						<include name="${include-@{name}-pattern}" />
+						<!-- <exclude name="**/internal/**" /> -->
+					</dirset>
+					<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
+						<map from="${mod}/${mod-@{name}-id}/src/" to='' />
+					</pathconvert>
+					<if>
+						<isset property="mod-@{name}-activator" />
+						<then>
+							<manifest file="@{dir}/META-INF/MANIFEST.MF">
+								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
+								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
+								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
+								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
+								<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
+								<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
+								<attribute id="Import-Package" name="Import-Package" value="org.osgi.framework" />
+								<attribute id="Bundle-Activator" name="Bundle-Activator" value="${mod-@{name}-activator}" />
+								<section name="${mod-@{name}-id}">
+									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
+									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
+									<attribute name="Implementation-Vendor" value="${vendor}" />
+								</section>
+							</manifest>
+						</then>
+						<else>
+							<manifest file="@{dir}/META-INF/MANIFEST.MF">
+								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
+								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
+								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
+								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
+								<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
+								<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
+								<section name="${mod-@{name}-id}">
+									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
+									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
+									<attribute name="Implementation-Vendor" value="${vendor}" />
+								</section>
+							</manifest>
+						</else>
+					</if>
+				</then>
+				<else>
+					<if>
+						<isset property="mod-@{name}-activator" />
+						<then>
+							<manifest file="@{dir}/META-INF/MANIFEST.MF">
+								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
+								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
+								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
+								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
+								<attribute id="Bundle-Activator" name="Bundle-Activator" value="${mod-@{name}-activator}" />
+								<section name="${mod-@{name}-id}">
+									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
+									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
+									<attribute name="Implementation-Vendor" value="${vendor}" />
+								</section>
+							</manifest>
+						</then>
+						<else>
+							<manifest file="@{dir}/META-INF/MANIFEST.MF">
+								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
+								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
+								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
+								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
+								<section name="${mod-@{name}-id}">
+									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
+									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
+									<attribute name="Implementation-Vendor" value="${vendor}" />
+								</section>
+							</manifest>
+						</else>
+					</if>
+				</else>
+			</if>
+		</sequential>
+	</macrodef>
+
 	<!-- Package a module -->
 	<macrodef name="stageModule">
 		<attribute name="name" />
 		<attribute name="includeSource" default="false" />
 		<sequential>
-			<condition property="include-@{name}-pattern" value="org/restlet/test/**">
-				<equals arg1="@{name}" arg2="core-test"/>
-			</condition>
-			<condition property="include-@{name}-pattern" value="org/restlet/**">
-				<equals arg1="@{name}" arg2="core" />
-			</condition>
-			<property name="include-@{name}-pattern" value="org/restlet/ext/@{name}/**" />
-			<dirset id="mod-@{name}-exported-packages" dir="${classes}/${mod-@{name}-id}">
-				<include name="${include-@{name}-pattern}" />
-				<!-- <exclude name="**/internal/**" /> -->
-			</dirset>
-			<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
-				<map from="${classes}/${mod-@{name}-id}/" to='' />
-			</pathconvert>
-			
-			<mkdir dir="${temp}/jar" />
+			<mkdir dir="${temp}/jar-extras/@{name}" />
 			<if>
-				<equals arg1="${edition}" arg2="osgi" />
+				<istrue value="${do-p2}" />
 				<then>
-					<!-- Create the Manifest -->
-					<mkdir dir="${temp}/jar/META-INF" />
-					<delete failonerror="false" file="${temp}/jar/META-INF/MANIFEST.MF" />
-					<copy failonerror="false" file="${mod}/${mod-@{name}-id}/META-INF/MANIFEST.MF" tofile="${temp}/jar/META-INF/MANIFEST.MF" />
-
-					<manifest file="${temp}/jar/META-INF/MANIFEST.MF" mode="update">
-						<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-						<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-						<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-						<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-						<section name="${mod-@{name}-id}">
-							<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-							<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-							<attribute name="Implementation-Vendor" value="${vendor}" />
-						</section>
-					</manifest>
+					<generateModuleManifest name="@{name}" dir="${temp}/jar-extras/@{name}" />
 				</then>
 			</if>
 
 			<!-- Create plugin jar -->
 			<mkdir dir="${dist-classic}/lib" />
-
-			<condition property="source-exclude-patterns" value="**/package.html, **/*.java">
+			<condition property="source-exclude-patterns-@{name}" value="**/package.html, **/*.java">
 				<equals arg1="@{includeSource}" arg2="false" />
 			</condition>
-			<property name="source-exclude-patterns" value="**/package.html" />
-
-			<mkdir dir="${temp}/jar-extras/@{name}" />
-			<property name="jar-extras" value="${temp}/jar-extras/@{name}" />
-
+			<property name="source-exclude-patterns-@{name}" value="**/package.html" />
 			<delete failonerror="false" file="${dist-classic}/lib/${mod-@{name}-id}.jar" />
 			<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
 				<fileset dir="${classes}/${mod-@{name}-id}" />
-				<fileset dir="${temp}/jar/" />
-				<fileset dir="${jar-extras}" />
-				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${source-exclude-patterns}" />
+				<fileset dir="${temp}/jar-extras/@{name}" />
+				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${source-exclude-patterns-@{name}}" />
 			</jar>
-
 			<!-- Update the manifest file -->
 			<if>
-				<equals arg1="${edition}" arg2="osgi" />
+				<istrue value="${do-p2}" />
 				<then>
-					<bndwrap jars="${dist-classic}/lib/${mod-@{name}-id}.jar" output="${dist-classic}/lib/${mod-@{name}-id}.jar" /> 
+					<bndwrap jars="${dist-classic}/lib/${mod-@{name}-id}.jar" output="${dist-classic}/lib/${mod-@{name}-id}.jar" />
 				</then>
 			</if>
-			
+
 			<!-- Create extension source jar file -->
 			<mkdir dir="${dist-classic}/src" />
 			<copy todir="${dist-classic}/src/${mod-@{name}-id}">
 				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${excludes}" />
 			</copy>
-			<var name="source-exclude-patterns" unset="true" />
-			<var name="jar-extras" unset="true" />
 		</sequential>
 	</macrodef>
 
@@ -513,17 +577,17 @@
 		<sequential>
 			<!-- Generation of bundle and feature. -->
 			<copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${dist-p2}/plugins/${mod-@{name}-id}_${eclipse-version-full}.jar" />
-			<copy file="p2/feature.@{name}.xml" tofile="${dist-p2}/features/feature.xml" />
+			<copy file="${temp}/p2/feature.@{name}.xml" tofile="${dist-p2}/features/feature.xml" />
 			<zip destfile="${dist-p2}/features/${mod-@{name}-id}_${eclipse-version-full}.jar" basedir="${dist-p2}/features" includes="feature.xml" update="false" />
 			<delete file="${dist-p2}/features/feature.xml" />
 			<!-- Generation of source bundle. -->
 			<delete dir="${temp}/@{name}" />
-			<mkdir dir="${temp}/@{name}"/>
-			<copy todir="${temp}/@{name}" overwrite="true" >
-				<fileset dir="${mod}/${mod-@{name}-id}/src"/>
+			<mkdir dir="${temp}/@{name}" />
+			<copy todir="${temp}/@{name}" overwrite="true">
+				<fileset dir="${mod}/${mod-@{name}-id}/src" />
 			</copy>
 
-			<mkdir dir="${temp}/@{name}/META-INF"/>
+			<mkdir dir="${temp}/@{name}/META-INF" />
 			<manifest file="${temp}/@{name}/META-INF/MANIFEST.MF" mode="replace">
 				<attribute id="Eclipse-SourceBundle" name="Eclipse-SourceBundle" value="${mod-@{name}-id};version=${eclipse-version-full}" />
 				<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}.source" />
@@ -533,54 +597,16 @@
 			<delete dir="${temp}/@{name}" />
 		</sequential>
 	</macrodef>
-	
+
 	<macrodef name="p22Library">
 		<attribute name="name" />
 		<sequential>
 			<copy todir="${dist-p2}/plugins" overwrite="true">
-				<fileset dir="${libs}/${lib-@{name}-root}"/>
-				<mapper type="glob" from="*.jar" to="*_${eclipse-version-full}.jar"/>
+				<fileset dir="${libs}/${lib-@{name}-root}" />
+				<mapper type="glob" from="*.jar" to="*_${eclipse-version-full}.jar" />
 			</copy>
 		</sequential>
 	</macrodef>
-	
-	<target name="generate-libraries-manifests" description="Generates the manifest.mf files for the libraries">
-		<!-- Generate eclipse .classpath, .project, .properties files -->
-		<fmpp sourceroot="${tmpl}/eclipse" outputroot="${temp}/p2" dataroot="${basedir}" expert="true">
-			<data expandproperties="true">
-				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
-				project: get(values, "project")
-				ant: antProperties()
-			</data>
-			<include name="classpath.tmpl" />
-			<include name="project.tmpl" />
-			<include name="build.properties.tmpl" />
-		</fmpp>
-		<delete file="${temp}/p2/classpath.tmpl" />
-		<delete file="${temp}/p2/project.tmpl" />
-		<delete file="${temp}/p2/build.properties.tmpl" />
-		<copy file="${tmpl}/bundles/bndbis.bnd" todir="${temp}/definitions/libs" />
-		<!-- Generate bnd definition files -->
-		<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/libs" dataroot="${basedir}" expert="true">
-			<data expandproperties="true">
-				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
-				project: get(values, "project")
-				ant: antProperties()
-			</data>
-			<include name="bndLibrary.tmpl" />
-		</fmpp>
-		<delete file="${temp}/definitions/libs/bndLibrary.tmpl" />
-		<!-- Generate ant manifest generation script -->
-		<fmpp sourcefile="${tmpl}/bundles/extractmanifestLibrary.tmpl" outputfile="${temp}/p2/extractmanifestLibrary.xml" dataroot="${basedir}" expert="true">
-			<data expandproperties="true">
-				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
-				project: get(values, "project")
-				ant: antProperties()
-			</data>
-		</fmpp>
-		<ant antfile="${temp}/p2/extractmanifestLibrary.xml" dir="${temp}/p2" inheritAll="true" />
-		<delete file="${temp}/p2/extractmanifestLibrary.tmpl" />
-	</target>
 
 	<!-- ===================== -->
 	<!-- ===  Ant Targets  === -->
@@ -609,6 +635,17 @@
 
 	<target name="generate-sources" description="Generate the sources.">
 		<!-- @generate-sources@ -->
+		<!-- Generate libraries -->
+		<if>
+			<istrue value="${do-eclipse-pde}" />
+			<then>
+				<copy todir="${lib}" overwrite="true" includeEmptyDirs="false">
+					<fileset dir="${libs}" />
+				</copy>
+				<antcall target="generate-modules-eclipse-artifacts" inheritall="true" />
+				<antcall target="generate-libraries-eclipse-artifacts" inheritall="true" />
+			</then>
+		</if>
 	</target>
 
 	<target name="generate-templates" description="Generate template-based files.">
@@ -624,9 +661,94 @@
 		</copy>
 	</target>
 
-	<target name="generate-modules-manifests" description="Generates the manifest.mf files for the unique source code">
+	<target name="generate-libraries-eclipse-artifacts" if="do-eclipse-pde" description="Generates the manifest.mf files for the libraries">
+		<!-- Generate eclipse .classpath, .project, .properties files -->
+		<echo message="Generate eclipse .classpath, .project, .properties files" />
+		<fmpp sourceroot="${tmpl}/eclipse" outputroot="${lib}" dataroot="${build-dir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				ant: antProperties()
+			</data>
+			<include name="library.classpath.tmpl" />
+			<include name="library.project.tmpl" />
+			<include name="library.build.properties.tmpl" />
+		</fmpp>
+		<delete file="${lib}/library.classpath.tmpl" />
+		<delete file="${lib}/library.project.tmpl" />
+		<delete file="${lib}/library.build.properties.tmpl" />
 		<!-- Generate bnd definition files -->
-		<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/modules" dataroot="${basedir}" expert="true">
+		<echo message="Generate bnd definition files" />
+		<copy file="${tmpl}/bundles/bndbis.bnd" todir="${temp}/definitions/libs" />
+		<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/libs" dataroot="${build-dir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				ant: antProperties()
+			</data>
+			<include name="bndLibrary.tmpl" />
+		</fmpp>
+		<delete file="${temp}/definitions/libs/bndLibrary.tmpl" />
+		<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/libs" dataroot="${build-dir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				ant: antProperties()
+			</data>
+			<include name="bndGlobalLibrary.tmpl" />
+		</fmpp>
+		<delete file="${temp}/definitions/libs/bndGlobalLibrary.tmpl" />
+
+		<!-- Generate ant manifest generation script -->
+		<echo message="Generate ant manifest generation script" />
+		<fmpp sourcefile="${tmpl}/bundles/extractmanifestLibrary.tmpl" outputfile="${lib}/extractmanifestLibrary.xml" dataroot="${build-dir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				ant: antProperties()
+			</data>
+		</fmpp>
+		<ant antfile="${lib}/extractmanifestLibrary.xml" dir="${lib}" inheritAll="true" />
+		<delete file="${lib}/extractmanifestLibrary.tmpl" />
+	</target>
+
+	<target name="generate-modules-eclipse-artifacts" if="do-eclipse-pde" description="Generates the manifest.mf files for the unique source code">
+		<!-- Generate the P2 feature files. -->
+		<echo message="Generate the P2 feature files" />
+		<fmpp sourceroot="${tmpl}/eclipse" outputroot="${temp}/p2" dataroot="${build-dir}">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				editions: get(values, "editions")
+				editionKey: ${edition}
+   				edition: get(editions, ${edition})
+				currentYear: ${current-year}
+				ant: antProperties()
+   			</data>
+			<include name="feature.tmpl" />
+		</fmpp>
+
+		<!-- Generate eclipse .classpath, .project, .properties files -->
+		<echo message="Generate eclipse .classpath, .project, .properties files" />
+		<fmpp sourceroot="${tmpl}/eclipse" outputroot="${mod}" dataroot="${build-dir}" expert="true">
+			<data expandproperties="true">
+				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
+				project: get(values, "project")
+				editions: get(values, "editions")
+   				edition: get(editions, ${edition})
+				ant: antProperties()
+			</data>
+			<include name="module.classpath.tmpl" />
+			<include name="module.project.tmpl" />
+			<include name="module.build.properties.tmpl" />
+		</fmpp>
+		<delete file="${mod}/module.classpath.tmpl" />
+		<delete file="${temp}/module.project.tmpl" />
+		<delete file="${temp}/module.build.properties.tmpl" />
+
+		<!-- Generate bnd definition files -->
+		<echo message="Generate bnd definition files" />
+		<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/modules" dataroot="${build-dir}" expert="true">
 			<data expandproperties="true">
 				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 				project: get(values, "project")
@@ -636,7 +758,7 @@
 		</fmpp>
 		<delete file="${temp}/definitions/modules/bndModule.tmpl" />
 	</target>
-	
+
 	<!-- COMPILE target -->
 	<target name="generate-classes" description="Compile the Java source files.">
 		<mkdir dir="${classes}" />
@@ -742,7 +864,7 @@
 	<target name="integrate" depends="" description="Integrate files from other projects." />
 
 	<!-- STAGE target -->
-	<target name="stage" description="Stage the packaging step." >
+	<target name="stage" description="Stage the packaging step.">
 		<antcall target="stage-classic" />
 		<antcall target="stage-maven" />
 		<antcall target="stage-p2" />
@@ -845,7 +967,7 @@
 	</target>
 
 	<!-- STAGE-P2 target -->
-	<target name="stage-p2" if="do-p2" description="Generate the p2 distribution." >
+	<target name="stage-p2" if="do-p2" description="Generate the p2 distribution.">
 		<for param="module" delimiter=" " list="${modules-p2}">
 			<sequential>
 				<p22Module name="@{module}" />
@@ -857,7 +979,7 @@
 			</sequential>
 		</for>
 	</target>
-		
+
 	<!-- PACKAGE target -->
 	<target name="package" if="do-package" depends="package-classic, package-maven, package-p2" description="Generate the distribution.">
 		<!-- copy final artifacts to the final distribution directory -->
@@ -896,5 +1018,5 @@
 			<fileset dir="${dist-classic}" includes="**/*" />
 		</nsis>
 	</target>
-	
+
 </project>

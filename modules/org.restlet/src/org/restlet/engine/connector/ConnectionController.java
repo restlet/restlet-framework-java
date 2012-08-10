@@ -46,6 +46,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.engine.io.IoState;
+import org.restlet.engine.io.WakeupListener;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
 

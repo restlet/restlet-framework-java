@@ -9,20 +9,50 @@
 
 	<package id="jackson-core" name="com.fasterxml.jackson.core">
 		<maven>
-			<groupId>com.fasterxml.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
 		</maven>
 	</package>
-	<package id="jackson-mapper" name="com.fasterxml.jackson.mapper">
+	<package id="jackson-annotations" name="com.fasterxml.jackson.annotations">
 		<maven>
-			<groupId>com.fasterxml.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+		</maven>
+	</package>
+	<package id="jackson-databind" name="com.fasterxml.jackson.databind">
+		<maven>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</maven>
+	</package>
+	<package id="jackson-csv" name="com.fasterxml.jackson.csv">
+		<maven>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-csv</artifactId>
 		</maven>
 	</package>
 	<package id="jackson-smile" name="com.fasterxml.jackson.smile">
 		<maven>
-			<groupId>com.fasterxml.jackson</groupId>
-			<artifactId>jackson-smile</artifactId>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-smile</artifactId>
+		</maven>
+	</package>
+	<package id="jackson-xml" name="com.fasterxml.jackson.xml">
+		<maven>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
+		</maven>
+	</package>
+	<package id="jackson-yaml" name="com.fasterxml.jackson.yaml">
+		<maven>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-yaml</artifactId>
+		</maven>
+	</package>
+	<package id="jackson-jaxb" name="com.fasterxml.jackson.jaxb">
+		<maven>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-jaxb-annotations</artifactId>
 		</maven>
 	</package>
 	<distributions>
