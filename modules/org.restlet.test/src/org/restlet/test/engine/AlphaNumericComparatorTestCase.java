@@ -73,4 +73,13 @@ public class AlphaNumericComparatorTestCase extends RestletTestCase {
         Collections.sort(result, new AlphaNumericComparator());
         Assert.assertEquals(expected, result);
     }
+
+    public void test02() throws Exception {
+        AlphaNumericComparator anc = new AlphaNumericComparator();
+        System.out.println(anc.compare("Intel 5000X", "Intel 5500"));
+        System.out.println(anc.compare("66", "3"));
+        System.out.println(anc.compare("200", "66"));
+        System.out.println(anc.compare("18", "2"));
+    }
+
 }
