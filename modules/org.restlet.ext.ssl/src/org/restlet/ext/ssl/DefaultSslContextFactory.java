@@ -63,25 +63,54 @@ import org.restlet.util.Series;
  * <th>Description</th>
  * </tr>
  * <tr>
- * <td>certAlgorithm</td>
+ * <td>disabledCipherSuites</td>
  * <td>String</td>
- * <td>SunX509</td>
- * <td>SSL certificate algorithm.</td>
+ * <td>null</td>
+ * <td>Whitespace-separated list of disabled cipher suites and/or can be
+ * specified multiple times. It affects the cipher suites manually enabled or
+ * the default ones.</td>
  * </tr>
  * <tr>
- * <td>keystorePath</td>
+ * <td>disabledProtocols</td>
+ * <td>String (see Java Secure Socket Extension (JSSE) reference guide)</td>
+ * <td>TLS</td>
+ * <td>Whitespace-separated list of disabled SSL/TLS protocol names and/or can
+ * be specified multiple times. Used when creating SSL sockets and engines.</td>
+ * </tr>
+ * <tr>
+ * <td>enabledCipherSuites</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Whitespace-separated list of enabled cipher suites and/or can be
+ * specified multiple times</td>
+ * </tr>
+ * <tr>
+ * <td>enabledProtocols</td>
+ * <td>String (see Java Secure Socket Extension (JSSE) reference guide)</td>
+ * <td>TLS</td>
+ * <td>Whitespace-separated list of enabled SSL/TLS protocol names and/or can be
+ * specified multiple times. Used when creating SSL sockets and engines.</td>
+ * </tr>
+ * <tr>
+ * <td>keyManagerAlgorithm</td>
+ * <td>String</td>
+ * <td>System property "ssl.KeyManagerFactory.algorithm" or "SunX509"</td>
+ * <td>Certificate algorithm for the key manager.</td>
+ * </tr>
+ * <tr>
+ * <td>keyStorePath</td>
  * <td>String</td>
  * <td>${user.home}/.keystore</td>
  * <td>SSL keystore path.</td>
  * </tr>
  * <tr>
- * <td>keystorePassword</td>
+ * <td>keyStorePassword</td>
  * <td>String</td>
  * <td>System property "javax.net.ssl.keyStorePassword"</td>
  * <td>SSL keystore password.</td>
  * </tr>
  * <tr>
- * <td>keystoreType</td>
+ * <td>keyStoreType</td>
  * <td>String</td>
  * <td>JKS</td>
  * <td>SSL keystore type</td>
@@ -96,40 +125,41 @@ import org.restlet.util.Series;
  * <td>needClientAuthentication</td>
  * <td>boolean</td>
  * <td>false</td>
- * <td>Indicates if we require client certificate authentication. If set to 'true', the "wantClientAuthentication" parameter is ignored.</td>
+ * <td>Indicates if we require client certificate authentication. If set to
+ * 'true', the "wantClientAuthentication" parameter is ignored.</td>
+ * </tr>
+ * <tr>
+ * <td>protocol</td>
+ * <td>String</td>
+ * <td>TLS (see Java Secure Socket Extension (JSSE) reference guide)</td>
+ * <td>SSL protocol used when creating the SSLContext.</td>
  * </tr>
  * <tr>
  * <td>secureRandomAlgorithm</td>
  * <td>String</td>
  * <td>null (see java.security.SecureRandom)</td>
- * <td>Name of the RNG algorithm. (see java.security.SecureRandom class).</td>
+ * <td>Name of the RNG algorithm. (see java.security.SecureRandom class)</td>
  * </tr>
  * <tr>
- * <td>securityProvider</td>
+ * <td>trustManagerAlgorithm</td>
  * <td>String</td>
- * <td>null (see javax.net.ssl.SSLContext)</td>
- * <td>Java security provider name (see java.security.Provider class).</td>
+ * <td>System property "ssl.TrustManagerFactory.algorithm" or "SunX509"</td>
+ * <td>Certificate algorithm for the trust manager.</td>
  * </tr>
  * <tr>
- * <td>sslProtocol</td>
- * <td>String</td>
- * <td>TLS</td>
- * <td>SSL protocol (see Java Secure Socket Extension (JSSE) reference guide.</td>
- * </tr>
- * <tr>
- * <td>truststorePath</td>
- * <td>String</td>
- * <td>null</td>
- * <td>Path to trust store</td>
- * </tr>
- * <tr>
- * <td>truststorePassword</td>
+ * <td>trustStorePassword</td>
  * <td>String</td>
  * <td>System property "javax.net.ssl.trustStorePassword"</td>
  * <td>Trust store password</td>
  * </tr>
  * <tr>
- * <td>truststoreType</td>
+ * <td>trustStorePath</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Path to trust store</td>
+ * </tr>
+ * <tr>
+ * <td>trustStoreType</td>
  * <td>String</td>
  * <td>System property "javax.net.ssl.trustStoreType"</td>
  * <td>Trust store type</td>
@@ -138,12 +168,13 @@ import org.restlet.util.Series;
  * <td>wantClientAuthentication</td>
  * <td>boolean</td>
  * <td>false</td>
- * <td>Indicates if we would like client certificate authentication. Only taken into account if the "needClientAuthentication" parameter is 'false'.</td>
+ * <td>Indicates if we would like client certificate authentication. Only taken
+ * into account if the "needClientAuthentication" parameter is 'false'.</td>
  * </tr>
  * </table>
  * <p>
  * In short, two instances of KeyStore are used when configuring an SSLContext:
- * the keystore (which contains the public and private keys and certificates to
+ * the key store (which contains the public and private keys and certificates to
  * be used locally) and the trust store (which generally holds the CA
  * certificates to be trusted when connecting to a remote host). Both keystore
  * and trust store are KeyStores. When not explicitly set using the setters of
@@ -165,16 +196,20 @@ import org.restlet.util.Series;
  */
 public class DefaultSslContextFactory extends SslContextFactory {
 
-    /** The name of the KeyManager algorithm. */
-    private volatile String certAlgorithm = System.getProperty(
-            "ssl.KeyManagerFactory.algorithm",
-            javax.net.ssl.KeyManagerFactory.getDefaultAlgorithm());
-
     /** The whitespace-separated list of disabled cipher suites. */
     private volatile String[] disabledCipherSuites = null;
 
+    /** The whitespace-separated list of disabled SSL protocols. */
+    private volatile String[] disabledProtocols = null;
+
     /** The whitespace-separated list of enabled cipher suites. */
     private volatile String[] enabledCipherSuites = null;
+
+    /** The whitespace-separated list of enabled SSL protocols. */
+    private volatile String[] enabledProtocols = null;
+
+    /** The name of the KeyManager algorithm. */
+    private volatile String keyManagerAlgorithm = null;
 
     /** The password for the key in the keystore (as a String). */
     private volatile char[] keyStoreKeyPassword = (System.getProperty(
@@ -204,16 +239,14 @@ public class DefaultSslContextFactory extends SslContextFactory {
     /** Indicates if we require client certificate authentication. */
     private volatile boolean needClientAuthentication = false;
 
+    /** The standard name of the protocol to use when creating the SSLContext. */
+    private volatile String protocol = "TLS";
+
     /** The name of the SecureRandom algorithm. */
     private volatile String secureRandomAlgorithm = null;
 
-    /** The standard name of the protocol to use when creating the SSLContext. */
-    private volatile String sslProtocol = "TLS";
-
     /** The name of the TrustManager algorithm. */
-    private volatile String trustManagerAlgorithm = System.getProperty(
-            "ssl.TrustManagerFactory.algorithm",
-            javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm());
+    private volatile String trustManagerAlgorithm = null;
 
     /** The password for the trust store keystore. */
     private volatile char[] trustStorePassword = (System
@@ -290,7 +323,7 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
             // Creates the key-manager factory.
             kmf = javax.net.ssl.KeyManagerFactory
-                    .getInstance(this.certAlgorithm);
+                    .getInstance(this.keyManagerAlgorithm);
             kmf.init(keyStore, this.keyStoreKeyPassword);
         }
 
@@ -328,7 +361,7 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
         // Creates the SSL context
         javax.net.ssl.SSLContext sslContext = javax.net.ssl.SSLContext
-                .getInstance(this.sslProtocol);
+                .getInstance(this.protocol);
         SecureRandom sr = null;
 
         if (this.secureRandomAlgorithm != null) {
@@ -359,15 +392,6 @@ public class DefaultSslContextFactory extends SslContextFactory {
     }
 
     /**
-     * Returns the name of the KeyManager algorithm.
-     * 
-     * @return The name of the KeyManager algorithm.
-     */
-    public String getCertAlgorithm() {
-        return certAlgorithm;
-    }
-
-    /**
      * Returns the whitespace-separated list of disabled cipher suites.
      * 
      * @return The whitespace-separated list of disabled cipher suites.
@@ -377,12 +401,39 @@ public class DefaultSslContextFactory extends SslContextFactory {
     }
 
     /**
+     * Returns the whitespace-separated list of disabled SSL protocols.
+     * 
+     * @return The whitespace-separated list of disabled SSL protocols.
+     */
+    public String[] getDisabledProtocols() {
+        return disabledProtocols;
+    }
+
+    /**
      * Returns the whitespace-separated list of enabled cipher suites.
      * 
      * @return The whitespace-separated list of enabled cipher suites.
      */
     public String[] getEnabledCipherSuites() {
         return enabledCipherSuites;
+    }
+
+    /**
+     * Returns the whitespace-separated list of enabled SSL protocols.
+     * 
+     * @return The whitespace-separated list of enabled SSL protocols.
+     */
+    public String[] getEnabledProtocols() {
+        return enabledProtocols;
+    }
+
+    /**
+     * Returns the name of the KeyManager algorithm.
+     * 
+     * @return The name of the KeyManager algorithm.
+     */
+    public String getKeyManagerAlgorithm() {
+        return keyManagerAlgorithm;
     }
 
     /**
@@ -428,6 +479,15 @@ public class DefaultSslContextFactory extends SslContextFactory {
      */
     public String getKeyStoreType() {
         return keyStoreType;
+    }
+
+    /**
+     * Returns the secure socket protocol name, "TLS" by default.
+     * 
+     * @return The secure socket protocol.
+     */
+    public String getProtocol() {
+        return this.protocol;
     }
 
     /**
@@ -482,8 +542,11 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
         if (supportedProtocols != null) {
             for (String supportedProtocol : supportedProtocols) {
-                if ((getSslProtocol() == null)
-                        || supportedProtocol.startsWith(getSslProtocol())) {
+                if (((getEnabledProtocols() == null) || Arrays.asList(
+                        getEnabledProtocols()).contains(supportedProtocol))
+                        && ((getDisabledProtocols() == null) || !Arrays.asList(
+                                getDisabledProtocols()).contains(
+                                supportedProtocol))) {
                     resultSet.add(supportedProtocol);
                 }
             }
@@ -491,15 +554,6 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
         String[] result = new String[resultSet.size()];
         return resultSet.toArray(result);
-    }
-
-    /**
-     * Returns the secure socket protocol name, "TLS" by default.
-     * 
-     * @return The secure socket protocol.
-     */
-    public String getSslProtocol() {
-        return this.sslProtocol;
     }
 
     /**
@@ -549,102 +603,8 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
     /**
      * Sets the following options according to parameters that may have been set
-     * up directly in the HttpsClientHelper or HttpsServerHelper parameters.
-     * <table>
-     * <tr>
-     * <th>Parameter name</th>
-     * <th>Value type</th>
-     * <th>Default value</th>
-     * <th>Description</th>
-     * </tr>
-     * <tr>
-     * <td>enabledCipherSuites</td>
-     * <td>String</td>
-     * <td>null</td>
-     * <td>Whitespace-separated list of enabled cipher suites and/or can be
-     * specified multiple times</td>
-     * </tr>
-     * <tr>
-     * <td>disabledCipherSuites</td>
-     * <td>String</td>
-     * <td>null</td>
-     * <td>Whitespace-separated list of disabled cipher suites and/or can be
-     * specified multiple times. It affects the cipher suites manually enabled
-     * or the default ones.</td>
-     * </tr>
-     * <tr>
-     * <td>keyStorePath</td>
-     * <td>String</td>
-     * <td>${user.home}/.keystore</td>
-     * <td>SSL keystore path.</td>
-     * </tr>
-     * <tr>
-     * <td>keyStorePassword</td>
-     * <td>String</td>
-     * <td></td>
-     * <td>SSL keystore password.</td>
-     * </tr>
-     * <tr>
-     * <td>keyStoreType</td>
-     * <td>String</td>
-     * <td>JKS</td>
-     * <td>SSL keystore type</td>
-     * </tr>
-     * <tr>
-     * <td>keyPassword</td>
-     * <td>String</td>
-     * <td></td>
-     * <td>SSL key password.</td>
-     * </tr>
-     * <tr>
-     * <td>certAlgorithm</td>
-     * <td>String</td>
-     * <td>SunX509</td>
-     * <td>SSL certificate algorithm.</td>
-     * </tr>
-     * <tr>
-     * <td>needClientAuthentication</td>
-     * <td>boolean</td>
-     * <td>false</td>
-     * <td>Indicates if we require client certificate authentication</td>
-     * </tr>
-     * <tr>
-     * <td>secureRandomAlgorithm</td>
-     * <td>String</td>
-     * <td>null (see java.security.SecureRandom)</td>
-     * <td>Name of the RNG algorithm. (see java.security.SecureRandom class)</td>
-     * </tr>
-     * <tr>
-     * <td>sslProtocol</td>
-     * <td>String</td>
-     * <td>TLS</td>
-     * <td>SSL protocol.</td>
-     * </tr>
-     * <tr>
-     * <td>truststorePath</td>
-     * <td>String</td>
-     * <td>null</td>
-     * <td>Path to trust store</td>
-     * </tr>
-     * <tr>
-     * <td>truststorePassword</td>
-     * <td>String</td>
-     * <td>System property "javax.net.ssl.trustStorePassword"</td>
-     * <td>Trust store password</td>
-     * </tr>
-     * <tr>
-     * <td>truststoreType</td>
-     * <td>String</td>
-     * <td>System property "javax.net.ssl.trustStoreType"</td>
-     * <td>Trust store type</td>
-     * </tr>
-     * <tr>
-     * <td>wantClientAuthentication</td>
-     * <td>boolean</td>
-     * <td>false</td>
-     * <td>Indicates if we would like client certificate authentication</td>
-     * </tr>
-     * </table>
+     * up directly in the HttpsClientHelper or HttpsServerHelper parameters. See
+     * class Javadocs for the list of parameters supported.
      * 
      * @param helperParameters
      *            Typically, the parameters that would have been obtained from
@@ -652,36 +612,44 @@ public class DefaultSslContextFactory extends SslContextFactory {
      */
     @Override
     public void init(Series<Parameter> helperParameters) {
-        setKeyStorePath(helperParameters.getFirstValue("keyStorePath", true,
-                System.getProperty("javax.net.ssl.keyStore")));
-        setKeyStorePassword(helperParameters.getFirstValue("keyStorePassword",
-                true, System.getProperty("javax.net.ssl.keyStorePassword", "")));
-        setKeyStoreType(helperParameters.getFirstValue("keyStoreType", true,
-                System.getProperty("javax.net.ssl.keyStoreType")));
-        setKeyStoreKeyPassword(helperParameters.getFirstValue("keyPassword",
-                true, System.getProperty("javax.net.ssl.keyPassword")));
+        // Parses and set the disabled cipher suites
+        String[] disabledCipherSuitesArray = helperParameters
+                .getValuesArray("disabledCipherSuites");
+        Set<String> disabledCipherSuites = new HashSet<String>();
 
-        if (this.keyStoreKeyPassword == null) {
-            this.keyStoreKeyPassword = this.keyStorePassword;
+        for (String disabledCipherSuiteSeries : disabledCipherSuitesArray) {
+            for (String disabledCipherSuite : disabledCipherSuiteSeries
+                    .split(" ")) {
+                disabledCipherSuites.add(disabledCipherSuite);
+            }
         }
 
-        setTrustStorePath(helperParameters.getFirstValue("trustStorePath",
-                true, System.getProperty("javax.net.ssl.trustStore")));
-        setTrustStorePassword(helperParameters.getFirstValue(
-                "trustStorePassword",
-                System.getProperty("javax.net.ssl.trustStorePassword")));
-        setTrustStoreType(helperParameters.getFirstValue("trustStoreType",
-                true, System.getProperty("javax.net.ssl.trustStoreType")));
+        if (disabledCipherSuites.size() > 0) {
+            disabledCipherSuitesArray = new String[disabledCipherSuites.size()];
+            disabledCipherSuites.toArray(disabledCipherSuitesArray);
+            setDisabledCipherSuites(disabledCipherSuitesArray);
+        } else {
+            setDisabledCipherSuites(null);
+        }
 
-        setCertAlgorithm(helperParameters.getFirstValue("certAlgorithm", true,
-                "SunX509"));
-        setSslProtocol(helperParameters.getFirstValue("sslProtocol", true,
-                "TLS"));
+        // Parses and set the disabled protocols
+        String[] disabledProtocolsArray = helperParameters
+                .getValuesArray("disabledProtocols");
+        Set<String> disabledProtocols = new HashSet<String>();
 
-        setNeedClientAuthentication(Boolean.parseBoolean(helperParameters
-                .getFirstValue("needClientAuthentication", true, "false")));
-        setWantClientAuthentication(Boolean.parseBoolean(helperParameters
-                .getFirstValue("wantClientAuthentication", true, "false")));
+        for (String disabledProtocolsSeries : disabledProtocolsArray) {
+            for (String disabledProtocol : disabledProtocolsSeries.split(" ")) {
+                disabledProtocols.add(disabledProtocol);
+            }
+        }
+
+        if (disabledProtocols.size() > 0) {
+            disabledProtocolsArray = new String[disabledProtocols.size()];
+            disabledProtocols.toArray(disabledProtocolsArray);
+            setDisabledProtocols(disabledProtocolsArray);
+        } else {
+            setDisabledProtocols(null);
+        }
 
         // Parses and set the enabled cipher suites
         String[] enabledCipherSuitesArray = helperParameters
@@ -703,25 +671,62 @@ public class DefaultSslContextFactory extends SslContextFactory {
             setEnabledCipherSuites(null);
         }
 
-        // Parses and set the disabled cipher suites
-        String[] disabledCipherSuitesArray = helperParameters
-                .getValuesArray("disabledCipherSuites");
-        Set<String> disabledCipherSuites = new HashSet<String>();
+        // Parses and set the enabled protocols
+        String[] enabledProtocolsArray = helperParameters
+                .getValuesArray("enabledProtocols");
+        Set<String> enabledProtocols = new HashSet<String>();
 
-        for (String disabledCipherSuiteSeries : disabledCipherSuitesArray) {
-            for (String disabledCipherSuite : disabledCipherSuiteSeries
-                    .split(" ")) {
-                disabledCipherSuites.add(disabledCipherSuite);
+        for (String enabledProtocolSeries : enabledProtocolsArray) {
+            for (String enabledProtocol : enabledProtocolSeries.split(" ")) {
+                enabledProtocols.add(enabledProtocol);
             }
         }
 
-        if (disabledCipherSuites.size() > 0) {
-            disabledCipherSuitesArray = new String[disabledCipherSuites.size()];
-            disabledCipherSuites.toArray(disabledCipherSuitesArray);
-            setDisabledCipherSuites(disabledCipherSuitesArray);
+        if (enabledProtocols.size() > 0) {
+            enabledProtocolsArray = new String[enabledProtocols.size()];
+            enabledProtocols.toArray(enabledProtocolsArray);
+            setEnabledProtocols(enabledProtocolsArray);
         } else {
-            setDisabledCipherSuites(null);
+            setEnabledCipherSuites(null);
         }
+
+        setKeyManagerAlgorithm(helperParameters.getFirstValue(
+                "keyManagerAlgorithm", true, System.getProperty(
+                        "ssl.KeyManagerFactory.algorithm", "SunX509")));
+        setKeyStorePassword(helperParameters.getFirstValue("keyStorePassword",
+                true, System.getProperty("javax.net.ssl.keyStorePassword", "")));
+        setKeyStoreKeyPassword(helperParameters.getFirstValue("keyPassword",
+                true, System.getProperty("javax.net.ssl.keyPassword")));
+
+        if (this.keyStoreKeyPassword == null) {
+            this.keyStoreKeyPassword = this.keyStorePassword;
+        }
+
+        setKeyStorePath(helperParameters.getFirstValue("keyStorePath", true,
+                System.getProperty("javax.net.ssl.keyStore")));
+        setKeyStoreType(helperParameters.getFirstValue("keyStoreType", true,
+                System.getProperty("javax.net.ssl.keyStoreType")));
+        setNeedClientAuthentication(Boolean.parseBoolean(helperParameters
+                .getFirstValue("needClientAuthentication", true, "false")));
+
+        // Support deprecated "sslProtocol" name
+        setProtocol(helperParameters.getFirstValue("protocol", true,
+                helperParameters.getFirstValue("sslProtocol", true, "TLS")));
+
+        setSecureRandomAlgorithm(helperParameters.getFirstValue(
+                "secureRandomAlgorithm", true));
+        setTrustManagerAlgorithm(helperParameters.getFirstValue(
+                "trustManagerAlgorithm", true, System.getProperty(
+                        "ssl.TrustManagerFactory.algorithm", "SunX509")));
+        setTrustStorePassword(helperParameters.getFirstValue(
+                "trustStorePassword", true,
+                System.getProperty("javax.net.ssl.trustStorePassword")));
+        setTrustStorePath(helperParameters.getFirstValue("trustStorePath",
+                true, System.getProperty("javax.net.ssl.trustStore")));
+        setTrustStoreType(helperParameters.getFirstValue("trustStoreType",
+                true, System.getProperty("javax.net.ssl.trustStoreType")));
+        setWantClientAuthentication(Boolean.parseBoolean(helperParameters
+                .getFirstValue("wantClientAuthentication", true, "false")));
     }
 
     /**
@@ -743,18 +748,6 @@ public class DefaultSslContextFactory extends SslContextFactory {
     }
 
     /**
-     * Sets the KeyManager algorithm. The default value is that of the
-     * <i>ssl.KeyManagerFactory.algorithm</i> system property, or
-     * <i>"SunX509"</i> if the system property has not been set up.
-     * 
-     * @param keyManagerAlgorithm
-     *            The KeyManager algorithm.
-     */
-    public void setCertAlgorithm(String keyManagerAlgorithm) {
-        this.certAlgorithm = keyManagerAlgorithm;
-    }
-
-    /**
      * Sets the whitespace-separated list of disabled cipher suites.
      * 
      * @param disabledCipherSuites
@@ -765,6 +758,16 @@ public class DefaultSslContextFactory extends SslContextFactory {
     }
 
     /**
+     * Sets the whitespace-separated list of disabled SSL protocols.
+     * 
+     * @param disabledProtocols
+     *            The whitespace-separated list of disabled SSL protocols.
+     */
+    public void setDisabledProtocols(String[] disabledProtocols) {
+        this.disabledProtocols = disabledProtocols;
+    }
+
+    /**
      * Sets the whitespace-separated list of enabled cipher suites.
      * 
      * @param enabledCipherSuites
@@ -772,6 +775,30 @@ public class DefaultSslContextFactory extends SslContextFactory {
      */
     public void setEnabledCipherSuites(String[] enabledCipherSuites) {
         this.enabledCipherSuites = enabledCipherSuites;
+    }
+
+    /**
+     * Sets the standard name of the protocols to use when creating the SSL
+     * sockets or engines.
+     * 
+     * @param enabledProtocols
+     *            The standard name of the protocols to use when creating the
+     *            SSL sockets or engines.
+     */
+    public void setEnabledProtocols(String[] enabledProtocols) {
+        this.enabledProtocols = enabledProtocols;
+    }
+
+    /**
+     * Sets the KeyManager algorithm. The default value is that of the
+     * <i>ssl.KeyManagerFactory.algorithm</i> system property, or
+     * <i>"SunX509"</i> if the system property has not been set up.
+     * 
+     * @param keyManagerAlgorithm
+     *            The KeyManager algorithm.
+     */
+    public void setKeyManagerAlgorithm(String keyManagerAlgorithm) {
+        this.keyManagerAlgorithm = keyManagerAlgorithm;
     }
 
     /**
@@ -869,6 +896,16 @@ public class DefaultSslContextFactory extends SslContextFactory {
     }
 
     /**
+     * Sets the secure socket protocol name, "TLS" by default.
+     * 
+     * @param protocol
+     *            Name of the secure socket protocol to use.
+     */
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    /**
      * Sets the SecureRandom algorithm. The default value is <i>null</i>, in
      * which case the default SecureRandom would be used.
      * 
@@ -877,18 +914,6 @@ public class DefaultSslContextFactory extends SslContextFactory {
      */
     public void setSecureRandomAlgorithm(String secureRandomAlgorithm) {
         this.secureRandomAlgorithm = secureRandomAlgorithm;
-    }
-
-    /**
-     * Sets the secure socket protocol name, "TLS" by default. Typically, this
-     * will be either "TLS" or "SSLv3". This is the name used when instantiating
-     * the SSLContext.
-     * 
-     * @param sslProtocol
-     *            Name of the secure socket protocol to use.
-     */
-    public void setSslProtocol(String sslProtocol) {
-        this.sslProtocol = sslProtocol;
     }
 
     /**

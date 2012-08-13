@@ -145,15 +145,20 @@ public class WrapperSslServerSocketFactory extends SSLServerSocketFactory {
             sslServerSocket.setWantClientAuth(true);
         }
 
-        if (getContextFactory().getEnabledCipherSuites() != null) {
+        if ((getContextFactory().getEnabledCipherSuites() != null)
+                || (getContextFactory().getDisabledCipherSuites() != null)) {
             sslServerSocket.setEnabledCipherSuites(getContextFactory()
                     .getSelectedCipherSuites(
                             sslServerSocket.getSupportedCipherSuites()));
         }
 
-        sslServerSocket.setEnabledProtocols(getContextFactory()
-                .getSelectedSslProtocols(
-                        sslServerSocket.getSupportedProtocols()));
+        if ((getContextFactory().getEnabledProtocols() != null)
+                || (getContextFactory().getDisabledProtocols() != null)) {
+            sslServerSocket.setEnabledProtocols(getContextFactory()
+                    .getSelectedSslProtocols(
+                            sslServerSocket.getSupportedProtocols()));
+        }
+
         return sslServerSocket;
     }
 
