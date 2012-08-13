@@ -18,6 +18,8 @@ Changes log
          Reported by James Moger.
        - Fixed regression regarding JAXB namespace parsing.
          Reported by Jim Trainor, Jean Duteau and Lukas Niemeier.
+       - Fixed alphanum comparator bug.
+         Reported by Abdunnassar Usman, fixed by Rob Heittman.
     - API changes
        - Renamed Directory#setAlphaComparator and setAlphaNumComparator
          methods into useAlphaComparator and useAlphaNumComparator with

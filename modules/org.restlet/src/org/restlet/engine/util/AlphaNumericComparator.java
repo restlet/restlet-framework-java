@@ -88,7 +88,7 @@ public class AlphaNumericComparator extends AlphabeticalComparator {
             b = uri1.charAt(ptr);
             diff = a - b;
 
-            if ((a > '9') || (b > '9') || (a < '0') || (b < '0')) {
+            if ((a >= '9') || (b >= '9') || (a <= '0') || (b <= '0')) {
                 if (diff != 0) {
                     return diff;
                 }
