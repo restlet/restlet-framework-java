@@ -7,9 +7,16 @@
 	<downloadUri>http://code.google.com/webtoolkit/download.html</downloadUri>
 	<provider>Google Inc.</provider>
 	
-	<package name="com.google.gwt">
+	<package id="gwt-user" name="com.google.gwt.user">
 		<maven>
-			<artifactId>gwt-servlet</artifactId>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+		</maven>
+	</package>
+	<package id="gwt-dev" name="com.google.gwt.dev">
+		<maven>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-dev</artifactId>
 		</maven>
 	</package>
 </library>
