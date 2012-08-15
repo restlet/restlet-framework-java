@@ -45,7 +45,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.WakeupListener;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
@@ -80,40 +79,41 @@ public class ConnectionController extends Controller implements Runnable,
     }
 
     /**
-     * Control each connection for messages to read or write.
+     * Controls a given connection for messages to read or write. Close inactive
+     * connections, select ready connections or register interest in NIO
+     * operations.
+     * 
+     * @param conn
+     *            The connection to control.
+     */
+    protected void controlConnection(Connection<?> conn) {
+        if (getHelper().getLogger().isLoggable(Level.FINEST)) {
+            getHelper().getLogger().log(Level.FINEST,
+                    "Connection status: " + conn);
+        }
+
+        if (conn.getState() == ConnectionState.CLOSED) {
+            // Detach the connection and collect it
+            getHelper().getConnections().remove(conn);
+            getHelper().checkin(conn);
+        } else if ((conn.getState() == ConnectionState.CLOSING)
+                && conn.isEmpty()) {
+            conn.close(false);
+        } else if (conn.hasTimedOut()) {
+            conn.onTimeOut();
+        } else if (conn.updateState()) {
+            getUpdatedRegistrations().add(conn.getRegistration());
+        }
+    }
+
+    /**
+     * Controls all helper connections.
      * 
      * @throws IOException
      */
     protected void controlConnections() throws IOException {
-        // Close connections or register interest in NIO operations
-        Connection<?> conn;
-
         for (int i = 0; i < getHelper().getConnections().size(); i++) {
-            conn = getHelper().getConnections().get(i);
-
-            if (getHelper().getLogger().isLoggable(Level.FINEST)) {
-                getHelper().getLogger().log(Level.FINEST,
-                        "Connection status: " + conn);
-            }
-
-            if (conn.getState() == ConnectionState.CLOSED) {
-                // Detach the connection and collect it
-                getHelper().getConnections().remove(conn);
-                getHelper().checkin(conn);
-            } else if ((conn.getState() == ConnectionState.CLOSING)
-                    && conn.isEmpty()) {
-                conn.close(false);
-            } else if (conn.hasTimedOut()) {
-                conn.onTimeOut();
-            } else if (conn.updateState()) {
-                getUpdatedRegistrations().add(conn.getRegistration());
-            } else if (conn.getInboundWay().getIoState() == IoState.READY) {
-                conn.getInboundWay().onSelected(
-                        conn.getInboundWay().getRegistration());
-            } else if (conn.getOutboundWay().getIoState() == IoState.READY) {
-                conn.getOutboundWay().onSelected(
-                        conn.getOutboundWay().getRegistration());
-            }
+            controlConnection(getHelper().getConnections().get(i));
         }
     }
 
