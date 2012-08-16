@@ -574,30 +574,30 @@ public class Connection<T extends Connector> implements SelectionListener {
      */
     public void onSelected(SelectionRegistration selectionRegistration)
             throws IOException {
-        onActivity();
-
-        if (getLogger().isLoggable(Level.FINER)) {
-            String trace = null;
-
-            if (isClientSide()) {
-                trace = "Client ";
-            } else {
-                trace = "Server ";
-            }
-
-            getLogger().finer(
-                    trace + "connection (state | inbound | outbound): "
-                            + toString());
-
-            if (this.registration != null) {
-                getLogger()
-                        .finer(trace
-                                + "NIO selection (interest | ready | cancelled): "
-                                + this.registration.toString());
-            }
-        }
-
         try {
+            onActivity();
+
+            if (getLogger().isLoggable(Level.FINER)) {
+                String trace = null;
+
+                if (isClientSide()) {
+                    trace = "Client ";
+                } else {
+                    trace = "Server ";
+                }
+
+                getLogger().finer(
+                        trace + "connection (state | inbound | outbound): "
+                                + toString());
+
+                if (this.registration != null) {
+                    getLogger()
+                            .finer(trace
+                                    + "NIO selection (interest | ready | cancelled): "
+                                    + this.registration.toString());
+                }
+            }
+
             if (registration == null) {
                 getLogger().warning(
                         "Connection with no registration selected: " + this);
@@ -627,6 +627,31 @@ public class Connection<T extends Connector> implements SelectionListener {
                             Status.CONNECTOR_ERROR_CONNECTION);
                 }
             }
+
+            // Keep looping while ways are ready
+            // Useful for SSL connections that can alternate between ways
+            // without going back to NIO selection.
+            boolean readyFound;
+
+            do {
+                readyFound = false;
+
+                synchronized (getInboundWay().getBuffer().getLock()) {
+                    if (getInboundWay().getIoState() == IoState.READY) {
+                        readyFound = true;
+                        getInboundWay().onSelected(
+                                getInboundWay().getRegistration());
+                    }
+                }
+
+                synchronized (getOutboundWay().getBuffer().getLock()) {
+                    if (getInboundWay().getIoState() == IoState.READY) {
+                        readyFound = true;
+                        getOutboundWay().onSelected(
+                                getOutboundWay().getRegistration());
+                    }
+                }
+            } while (readyFound);
         } catch (Throwable t) {
             onError("Unexpected error detected. Closing the connection.", t,
                     Status.CONNECTOR_ERROR_INTERNAL);

@@ -245,7 +245,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
                 if (bestConn != null) {
                     bestConn.getOutboundWay().handle(response);
-                    getConnections().add(bestConn);
                 } else {
                     getLogger().log(Level.WARNING,
                             "Unable to find a connection to send the request");

@@ -150,10 +150,19 @@ public class WrapperSslContextSpi extends SSLContextSpi {
             sslEngine.setWantClientAuth(true);
         }
 
-        if (getContextFactory().getEnabledCipherSuites() != null) {
+        if ((getContextFactory().getEnabledCipherSuites() != null)
+                || (getContextFactory().getDisabledCipherSuites() != null)) {
             sslEngine.setEnabledCipherSuites(getContextFactory()
                     .getSelectedCipherSuites(
                             sslEngine.getSupportedCipherSuites()));
+        }
+
+        if ((getContextFactory().getEnabledProtocols() != null)
+                || (getContextFactory().getDisabledProtocols() != null)) {
+            sslEngine
+                    .setEnabledProtocols(getContextFactory()
+                            .getSelectedSslProtocols(
+                                    sslEngine.getSupportedProtocols()));
         }
     }
 
