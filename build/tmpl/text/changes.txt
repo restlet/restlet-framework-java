@@ -20,6 +20,9 @@ Changes log
          Reported by Jim Trainor, Jean Duteau and Lukas Niemeier.
        - Fixed alphanum comparator bug.
          Reported by Abdunnassar Usman, fixed by Rob Heittman.
+       - ServerResource.doConditionalHandle now returns 406 if no acceptable 
+         variant and strict mode==true in ConnegService.
+         Contributed by Andrew Dennie.
     - API changes
        - Renamed Directory#setAlphaComparator and setAlphaNumComparator
          methods into useAlphaComparator and useAlphaNumComparator with

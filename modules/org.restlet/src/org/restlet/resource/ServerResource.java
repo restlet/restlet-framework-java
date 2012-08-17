@@ -282,7 +282,14 @@ public abstract class ServerResource extends UniformResource {
 
             if (existing) {
                 if (isNegotiated()) {
-                    resultInfo = doGetInfo(getPreferredVariant(getVariants(Method.GET)));
+                    Variant preferredVariant = getPreferredVariant(getVariants(Method.GET));
+
+                    if (preferredVariant == null
+                            && getConnegService().isStrict()) {
+                        doError(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+                    } else {
+                        resultInfo = doGetInfo(preferredVariant);
+                    }
                 } else {
                     resultInfo = doGetInfo();
                 }
