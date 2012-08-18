@@ -268,6 +268,7 @@ public class NioUtils {
      *            The writable byte channel.
      * @return An output stream based on a given writable byte channel.
      */
+    @SuppressWarnings("resource")
     public static OutputStream getStream(WritableByteChannel writableChannel) {
         return isBlocking(writableChannel) ? Channels
                 .newOutputStream(writableChannel) : new NbChannelOutputStream(

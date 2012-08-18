@@ -275,6 +275,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
             } else if (this.encoding.equals(Encoding.DEFLATE)) {
                 encoderOutputStream = new DeflaterOutputStream(outputStream);
             } else if (this.encoding.equals(Encoding.ZIP)) {
+                @SuppressWarnings("resource")
                 final ZipOutputStream stream = new ZipOutputStream(outputStream);
                 String name = "entry";
                 

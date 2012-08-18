@@ -593,6 +593,10 @@ public abstract class OutboundWay extends Way {
             }
 
             break;
+
+        default:
+            // Do nothing
+            break;
         }
     }
 

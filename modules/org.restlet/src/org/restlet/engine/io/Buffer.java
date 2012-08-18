@@ -318,6 +318,10 @@ public class Buffer {
                 }
 
                 break;
+
+            default:
+                // Do nothing
+                break;
             }
         }
 

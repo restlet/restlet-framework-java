@@ -50,7 +50,6 @@ import javax.ws.rs.core.UriInfo;
 @Path("ancestorTest")
 public class MatchedUriTestResource {
 
-    @SuppressWarnings("unused") // will be used later
     @Context
     private UriInfo mainUriInfo;
 

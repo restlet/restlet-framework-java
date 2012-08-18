@@ -53,8 +53,8 @@ public class InputEntityStreamTestCase extends RestletTestCase {
     public void testRead() {
         String data = "test data";
         InputStream input = new ByteArrayInputStream(data.getBytes());
-        assertEquals("test", BioUtils
-                .toString(new SizedInputStream(null, input, 4)));
+        assertEquals("test",
+                BioUtils.toString(new SizedInputStream(null, input, 4)));
     }
 
     public void testReset() throws IOException {
@@ -87,6 +87,8 @@ public class InputEntityStreamTestCase extends RestletTestCase {
 
         assertEquals('3', (char) ies.read());
         assertEquals('4', (char) ies.read());
+
+        ies.close();
     }
 
 }
