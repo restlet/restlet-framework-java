@@ -40,7 +40,6 @@ import java.io.OutputStream;
 import org.restlet.engine.io.UnclosableOutputStream;
 import org.restlet.test.RestletTestCase;
 
-
 /**
  * Unit tests for the HTTP KeepAlive.
  * 
@@ -84,6 +83,8 @@ public class UnclosableOutputStreamTestCase extends RestletTestCase {
 
         out.write(new byte[] { 'd', 'e', 'f', 'g' }, 0, 2);
         assertEquals("abcde", new String(stream.toByteArray()));
+
+        out.close();
     }
 
 }

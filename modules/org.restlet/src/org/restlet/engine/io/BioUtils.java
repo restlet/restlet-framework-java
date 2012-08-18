@@ -434,6 +434,8 @@ public final class BioUtils {
         if (Edition.CURRENT != Edition.GAE) {
             // [ifndef gae]
             final java.io.PipedWriter pipedWriter = new java.io.PipedWriter();
+            
+            @SuppressWarnings("resource")
             java.io.PipedReader pipedReader = new java.io.PipedReader(
                     pipedWriter);
 

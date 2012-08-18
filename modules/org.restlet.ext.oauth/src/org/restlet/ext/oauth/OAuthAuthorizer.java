@@ -474,7 +474,9 @@ public class OAuthAuthorizer extends RoleAuthorizer {
                 // +"by the access token.");
                 resp.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
                 break;
-
+            default:
+                // Nothing to do
+                break;
             }
 
             // parameters.add("error_uri",authorizeRef.toString());

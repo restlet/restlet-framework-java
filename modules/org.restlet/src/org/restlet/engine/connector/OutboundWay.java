@@ -590,7 +590,10 @@ public abstract class OutboundWay extends Way {
                     setMessageState(MessageState.END);
                 }
             }
+            break;
 
+        default:
+            // Nothing to do
             break;
         }
     }

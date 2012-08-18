@@ -106,6 +106,7 @@ public class BufferingRepresentation extends WrapperRepresentation {
         return buffer;
     }
 
+    @SuppressWarnings("resource")
     @Override
     public java.nio.channels.ReadableByteChannel getChannel()
             throws IOException {
