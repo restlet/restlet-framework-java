@@ -29,6 +29,8 @@ Changes log
        - SecretVerifier now consider two 'null' secrets as not comparable.
        - Fixed client proxy media type preferences, when repeated calls 
          are done, which may lead to a status 413 response.
+       - Fixed case sensitivity issue with query parameters in JAX-RS 
+         extension. Reported by Mark Kharitonov.
     - Misc
        - Reverted Role equality test to default Java object equality as
          equality based on name could cause issues with MemoryRealm

@@ -155,8 +155,9 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
 
     public boolean containsKey(Object key) {
         if (this.caseInsensitive && (key != null)) {
-            this.mmap.containsKey(caseInsensitive(key.toString()));
+            key = caseInsensitive(key.toString());
         }
+
         return this.mmap.containsKey(key);
     }
 
