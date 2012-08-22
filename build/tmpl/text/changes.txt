@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.1 Release Candidate 6 (08/22/2012)
     - Bug fixed
        - Fixed sharing of ClientResource context with the underlying connector, 
          when this ClientResource is used outside a Component.
