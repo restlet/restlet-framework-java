@@ -31,11 +31,12 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.oauth.internal;
+package org.restlet.ext.oauth.internal.memory;
 
 import java.util.concurrent.ScheduledFuture;
 
 import org.restlet.ext.oauth.AuthenticatedUser;
+import org.restlet.ext.oauth.internal.Token;
 
 /**
  * Token that can be set to expire at a given point in time. This behavior
@@ -45,7 +46,7 @@ import org.restlet.ext.oauth.AuthenticatedUser;
  * @see TokenGenerator#generateToken(AuthenticatedUser, long)
  * @see TokenGenerator#refreshToken(ExpireToken)
  */
-public class ExpireToken extends Token {
+public class ExpireToken implements Token {
 
     private final long expireTime;
 
@@ -95,7 +96,7 @@ public class ExpireToken extends Token {
         return token;
     }
 
-    void setToken(String token) {
+    public void setToken(String token) {
         this.token = token;
     }
 

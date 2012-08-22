@@ -37,8 +37,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
 import org.restlet.ext.oauth.AuthenticatedUser;
+import org.restlet.ext.oauth.internal.memory.ExpireToken;
+import org.restlet.ext.oauth.internal.memory.UnlimitedToken;
 
 /**
  * Class that controls the generation of code, token and refresh token.

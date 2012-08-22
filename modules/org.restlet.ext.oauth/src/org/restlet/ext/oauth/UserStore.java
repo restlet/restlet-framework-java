@@ -40,7 +40,7 @@ package org.restlet.ext.oauth;
  * 
  * @author Kristoffer Gronowski
  */
-public abstract class UserStore {
+public interface UserStore {
 
     /**
      * Indicates of the OAuth server contains a given user.
@@ -49,7 +49,7 @@ public abstract class UserStore {
      *            The identifier of the user.
      * @return true if the OAuth server contains a given user.
      */
-    public abstract boolean containsUser(String id);
+    public boolean containsUser(String id);
 
     /**
      * Creates a user and return it.
@@ -58,7 +58,7 @@ public abstract class UserStore {
      *            The user id.
      * @return The created instance of {@link AuthenticatedUser}.
      */
-    public abstract AuthenticatedUser createUser(String id);
+    public AuthenticatedUser createUser(String id);
 
     /**
      * Retrieves a given user according to the given identifier.
@@ -67,7 +67,7 @@ public abstract class UserStore {
      *            The user's identifier.
      * @return The given user according to the given identifier.
      */
-    public abstract AuthenticatedUser findUser(String id);
+    public AuthenticatedUser findUser(String id);
 
     /**
      * Revoke/delete a user according to its id.
@@ -75,6 +75,6 @@ public abstract class UserStore {
      * @param id
      *            The identifier of the user to revoke/delete.
      */
-    public abstract void revokeUser(String id); // Same as delete a user.
+    public void revokeUser(String id); // Same as delete a user.
 
 }

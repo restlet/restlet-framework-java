@@ -41,27 +41,22 @@ package org.restlet.ext.oauth;
 public enum GrantType {
 
     /**
-     * 
-     */
-    assertion,
-
-    /**
-     * 
+     * Defined in 4.1 Authorization Code Grant.
      */
     authorization_code,
 
     /**
-     * 
-     */
-    none,
-
-    /**
-     * 
+     * Defined in 4.3 Resource Owner Password Credentials Grant.
      */
     password,
+    
+    /**
+     * Defined in 4.4 Client Credentials Grant.
+     */
+    client_credentials,
 
     /**
-     * 
+     * Defined in 6 Refreshing an Access Token.
      */
     refresh_token;
     

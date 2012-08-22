@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.oauth.internal;
+package org.restlet.ext.oauth.internal.memory;
 
 import java.util.ArrayList;
 import java.util.Collection;

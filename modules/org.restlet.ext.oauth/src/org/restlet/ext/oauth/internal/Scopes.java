@@ -46,8 +46,10 @@ import org.restlet.security.Role;
  */
 public class Scopes {
 
-    public static String toScope(List<Role> roles)
-            throws IllegalArgumentException {
+    public static String toScope(List<Role> roles) throws IllegalArgumentException {
+        if (roles == null || roles.isEmpty()) {
+            return "";
+        }
         StringBuilder sb = new StringBuilder();
         for (Role r : roles) {
             String scope = toScope(r);

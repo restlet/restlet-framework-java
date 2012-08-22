@@ -124,6 +124,17 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
     public static String getAuthPage(Context c) {
         return c.getParameters().getFirstValue("authPage", "/auth_page");
     }
+    
+    /**
+     * Returns the value of the "loginPage" parameter.
+     * 
+     * @param c
+     *            The context where to find the parameter.
+     * @return The value of the "loginPage" parameter.
+     */
+    public static String getLoginPage(Context c) {
+        return c.getParameters().getFirstValue("login", "/login");
+    }
 
     /**
      * Returns the value of the "authPageTemplate" parameter.
@@ -150,17 +161,33 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
             return false;
         return Boolean.parseBoolean(skip);
     }
+    
+    public static String getErrorPageTemplate(Context c) {
+        return c.getParameters().getFirstValue("errorPageTemplate");
+    }
 
     /**
-     * Sets the value of the "authpage" parameter.
+     * Sets the value of the "authPage" parameter.
      * 
      * @param authPage
-     *            The value of the "authpage" parameter.
+     *            The value of the "authPage" parameter.
      * @param c
      *            The context to update.
      */
     public static void setAuthPage(String authPage, Context c) {
         c.getParameters().set("authPage", authPage);
+    }
+    
+    /**
+     * Sets the value of the "loginPage" parameter.
+     * 
+     * @param loginPage
+     *            The value of the "loginPage" parameter.
+     * @param c
+     *            The context to update.
+     */
+    public static void setLoginPage(String loginPage, Context c) {
+        c.getParameters().set("loginPage", loginPage);
     }
 
     /**
@@ -185,6 +212,10 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
      */
     public static void setAuthSkipApproved(boolean skip, Context c) {
         c.getParameters().set("authSkipApproved", Boolean.toString(skip));
+    }
+    
+    public static void setErrorPageTemplate(String errorPageTemplate, Context c) {
+        c.getParameters().set("errorPageTemplate", errorPageTemplate);
     }
 
     /**

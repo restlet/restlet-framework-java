@@ -224,10 +224,10 @@ public class OAuthProxy extends Filter {
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
                 response.setEntity(repr);
                 break;
-            case redirect_uri_mismatch:
-                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
-                response.setEntity(repr);
-                break;
+//            case redirect_uri_mismatch:
+//                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
+//                response.setEntity(repr);
+//                break;
             case access_denied:
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
                 response.setEntity(repr);

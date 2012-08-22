@@ -36,14 +36,11 @@ package org.restlet.ext.oauth;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.data.Status;
 import org.restlet.ext.freemarker.ContextTemplateLoader;
 import org.restlet.ext.freemarker.TemplateRepresentation;
-import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.internal.AuthSession;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.EmptyRepresentation;
@@ -51,6 +48,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 
 import freemarker.template.Configuration;
+import org.restlet.data.CacheDirective;
 
 /**
  * Helper class to the AuhorizationResource Handles Authorization requests. By
@@ -151,6 +149,9 @@ import freemarker.template.Configuration;
 
 public class AuthPageServerResource extends OAuthServerResource {
 
+    private static final String ACTION_ACCEPT = "Accept";
+    private static final String ACTION_REJECT = "Reject";
+    
     /**
      * Entry point to the AuthPageResource. The AuthorizationResource dispatches
      * the call to this method. Should also be invoked by an eventual HTML page
@@ -162,7 +163,7 @@ public class AuthPageServerResource extends OAuthServerResource {
      */
 
     @Get("html")
-    public Representation showPage() {
+    public Representation showPage() throws OAuthException {
         String action = getQuery().getFirstValue("action");
         // Came back after user interacted with the page
         if (action != null) {
@@ -195,12 +196,12 @@ public class AuthPageServerResource extends OAuthServerResource {
                 }
             }
 
-            getResponse().setCacheDirectives(noCache);
+            addCacheDirective(getResponse(), CacheDirective.noCache());
             return getPage(authPage);
         }
         getLogger().fine("accepting scopes since no authPage: " + authPage);
         // No page automatically accept all the scopes requested
-        handleAction("Accept", getQuery().getValuesArray("scope"));
+        handleAction(ACTION_ACCEPT, getQuery().getValuesArray("scope"));
         getLogger().fine("action handled");
         return new EmptyRepresentation(); // Will redirect
     }
@@ -216,23 +217,13 @@ public class AuthPageServerResource extends OAuthServerResource {
      * @param scopes
      *            the scopes that was approved.
      */
-    protected void handleAction(String action, String[] scopes) {
-        // TODO: should maybe be removed
-        String sessionId = (String) getRequest().getAttributes().get(
-                ClientCookieID);
-        if (sessionId == null)
-            sessionId = getCookies().getFirstValue(ClientCookieID);
+    protected void handleAction(String action, String[] scopes) throws OAuthException {
+        // TODO: SessionId should maybe be removed
+        AuthSession session = getAuthSession();
 
-        ConcurrentMap<String, Object> attribs = getContext().getAttributes();
-        AuthSession session = (sessionId == null) ? null
-                : (AuthSession) attribs.get(sessionId);
-
-        if ("Reject".equals(action)) {
-            setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-            sendError(session, OAuthError.access_denied, session.getState(),
-                    "Rejected.", null);
+        if (action.equals(ACTION_REJECT)) {
             getLogger().fine("Rejected.");
-            return;
+            throw new OAuthException(OAuthError.access_denied, "Rejected.", null);
         }
         getLogger().fine("Accepting scopes - in handleAction");
         Client client = session.getClient();
@@ -240,8 +231,9 @@ public class AuthPageServerResource extends OAuthServerResource {
 
         String redirUrl = session.getDynamicCallbackURI();
         getLogger().fine("OAuth2 get dynamic callback = " + redirUrl);
-        if (redirUrl == null || redirUrl.length() == 0)
+        if (redirUrl == null || redirUrl.isEmpty()) {
             redirUrl = client.getRedirectUri();
+        }
 
         String location = null;
         ResponseType flow = session.getAuthFlow();
@@ -253,10 +245,10 @@ public class AuthPageServerResource extends OAuthServerResource {
         }
 
         // Following scopes were approved
-        AuthenticatedUser user = client.findUser(session.getScopeOwner());
+        AuthenticatedUser user = client.findUser(id);
         if (user == null) {
-            setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Can't find User id : "
-                    + session.getScopeOwner());
+            // XXX: We 'know' user has created before.
+            throw new OAuthException(OAuthError.server_error, "authenticated_user not found", null);
         }
 
         // clear scopes.... if user wants to downgrade
@@ -335,44 +327,4 @@ public class AuthPageServerResource extends OAuthServerResource {
         result.setDataModel(data);
         return result;
     }
-
-    /**
-     * 
-     * Helper method to format error responses according to OAuth2 spec.
-     * 
-     * @param session
-     *            local server session object
-     * @param error
-     *            code, one of the valid from spec
-     * @param state
-     *            state parameter as presented in the initial auth request
-     * @param description
-     *            any text describing the error
-     * @param errorUri
-     *            uri to a page with more description about the error
-     */
-
-    protected void sendError(AuthSession session, OAuthError error,
-            String state, String description, String errorUri) {
-        String redirUri = session.getDynamicCallbackURI();
-
-        Reference cb = new Reference(redirUri);
-        cb.addQueryParameter("error", error.name());
-        if (state != null && state.length() > 0) {
-            cb.addQueryParameter("state", state);
-        }
-        if (description != null && description.length() > 0) {
-            cb.addQueryParameter("error_description", description);
-        }
-        if (errorUri != null && errorUri.length() > 0) {
-            cb.addQueryParameter("error_uri", errorUri);
-        }
-        redirectTemporary(cb.toString());
-
-        // cleanup cookie..
-        ConcurrentMap<String, Object> attribs = getContext().getAttributes();
-        attribs.remove(session.getId());
-
-    }
-
 }

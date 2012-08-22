@@ -43,7 +43,7 @@ import org.restlet.ext.oauth.AuthenticatedUser;
  * @see UnlimitedToken
  * @see ExpireToken
  */
-public abstract class Token {
+public interface Token {
 
     /**
      * Value indicating that the Token should not expire
@@ -54,13 +54,17 @@ public abstract class Token {
      * 
      * @return the actual token to be used for OAuth invocations.
      */
-    public abstract String getToken();
+    public String getToken();
 
     /**
      * 
      * @return the user that is the owner of this token
      */
-    public abstract AuthenticatedUser getUser();
+    public AuthenticatedUser getUser();
+    
+    public long getExpirePeriod();
+    
+    public String getRefreshToken();
 
     /**
      * Generic package method since the Token can be revoked and re-issued or
@@ -69,5 +73,5 @@ public abstract class Token {
      * 
      * @param token
      */
-    abstract void setToken(String token);
+    //void setToken(String token);
 }
