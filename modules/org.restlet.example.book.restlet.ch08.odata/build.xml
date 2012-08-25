@@ -1,0 +1,46 @@
+<project name="RestletOData" default="generate" basedir=".">
+    <description>Restlet OData support</description>
+  
+    <property name="src" location="src"/>
+
+    <path id="src">
+        <pathelement location="src"/>
+        <pathelement location="out"/>
+    </path>
+
+    <target name="generate">
+	    <java classname="org.restlet.ext.odata.Generator">
+            <arg value="http://services.odata.org/OData/OData.svc"/>
+            <arg value="src"/>
+            <classpath>
+                <fileset dir="lib">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="compile"><!-- depends="generate" -->
+        <mkdir dir="bin"/>
+	    <javac srcdir="src" destdir="bin">
+            <!-- src path="${src}"/-->
+            <classpath>
+                <fileset dir="lib">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="run" depends="compile">
+		<java classname="TestService">
+            <classpath>
+		        <pathelement location="bin"/>
+                <fileset dir="lib">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+</project>

@@ -1,0 +1,10 @@
+<module excludes="*" id="example-ch09-android" package="org.restlet.example.book.restlet.ch09.android">
+   <name>Restlet examples</name>
+   <description>Book examples (ch09-android)</description>
+   <distributions />
+
+   <dependencies>
+      <dependency type="library" id="testng" />
+      <dependency type="module" id="core" />
+   </dependencies>
+</module>

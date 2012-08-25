@@ -1,0 +1,8 @@
+<resources>
+
+    <string name="app_name">MobileMailClient</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_mobile_mail_client_main">MobileMailClientMainActivity</string>
+
+</resources>
