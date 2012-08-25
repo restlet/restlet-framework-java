@@ -59,7 +59,7 @@ public class MailStatusService extends StatusService {
         dataModel.put("statusDescription", response.getStatus()
                 .getDescription());
         dataModel.put("statusReasonPhrase", response.getStatus()
-                .getReasonPhrase());
+                .getName());
 
         // Load the FreeMarker template
         Representation mailFtl = new ClientResource(

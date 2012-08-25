@@ -55,46 +55,46 @@ import org.restlet.resource.ServerResource;
  */
 public class MailServerResource extends ServerResource {
 
-    @Get
-    Representation retrieve() {
-        // Create the mail URI inside the API application
-        String accountId = getAttribute("accountId");
-        String mailId = getAttribute("mailId");
-        String mailApiUri = "riap://component/api/accounts/" + accountId
-                + "/mails/" + mailId;
+	@Get
+	Representation retrieve() {
+		// Create the mail URI inside the API application
+		String accountId = (String) getRequestAttributes().get("accountId");
+		String mailId = (String) getRequestAttributes().get("mailId");
+		String mailApiUri = "riap://component/api/accounts/" + accountId
+				+ "/mails/" + mailId;
 
-        // Optimal internal call using the server dispatcher
-        ClientResource cr = new ClientResource(mailApiUri);
-        cr.setNext(getContext().getServerDispatcher());
-        MailRepresentation mail = cr.get(MailRepresentation.class);
+		// Optimal internal call using the server dispatcher
+		ClientResource cr = new ClientResource(mailApiUri);
+		cr.setNext(getContext().getServerDispatcher());
+		MailRepresentation mail = cr.get(MailRepresentation.class);
 
-        // Load the FreeMarker template
-        Representation mailFtl = new ClientResource(
-                LocalReference.createClapReference(getClass().getPackage())
-                        + "/Mail.ftl").get();
+		// Load the FreeMarker template
+		Representation mailFtl = new ClientResource(
+				LocalReference.createClapReference(getClass().getPackage())
+						+ "/Mail.ftl").get();
 
-        // Wraps the bean with a FreeMarker representation
-        return new TemplateRepresentation(mailFtl, mail, MediaType.TEXT_HTML);
-    }
+		// Wraps the bean with a FreeMarker representation
+		return new TemplateRepresentation(mailFtl, mail, MediaType.TEXT_HTML);
+	}
 
-    @Put
-    public String store(Representation input) throws Exception {
-        // Create a factory for disk-based file items
-        RestletFileUpload fileUpload = new RestletFileUpload(
-                new DiskFileItemFactory());
-        List<FileItem> fileItems = fileUpload.parseRepresentation(input);
+	@Put
+	public String store(Representation input) throws Exception {
+		// Create a factory for disk-based file items
+		RestletFileUpload fileUpload = new RestletFileUpload(
+				new DiskFileItemFactory());
+		List<FileItem> fileItems = fileUpload.parseRepresentation(input);
 
-        for (FileItem fileItem : fileItems) {
-            if (fileItem.isFormField()) {
-                System.out.println(fileItem.getFieldName() + "="
-                        + fileItem.getString());
-            } else {
-                Representation attachment = new InputRepresentation(
-                        fileItem.getInputStream());
-                attachment.write(System.out);
-            }
-        }
+		for (FileItem fileItem : fileItems) {
+			if (fileItem.isFormField()) {
+				System.out.println(fileItem.getFieldName() + "="
+						+ fileItem.getString());
+			} else {
+				Representation attachment = new InputRepresentation(
+						fileItem.getInputStream());
+				attachment.write(System.out);
+			}
+		}
 
-        return "Mail updated!";
-    }
+		return "Mail updated!";
+	}
 }

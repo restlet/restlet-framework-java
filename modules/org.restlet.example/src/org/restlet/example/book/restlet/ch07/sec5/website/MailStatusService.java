@@ -56,7 +56,7 @@ public class MailStatusService extends StatusService {
         // Create the data model
         Map<String, String> dataModel = new TreeMap<String, String>();
         dataModel.put("applicationName", Application.getCurrent().getName());
-        dataModel.put("statusReasonPhrase", response.getStatus().getReasonPhrase());
+        dataModel.put("statusReasonPhrase", response.getStatus().getName());
         dataModel.put("statusDescription", response.getStatus().getDescription());
 
         // Load the FreeMarker template
