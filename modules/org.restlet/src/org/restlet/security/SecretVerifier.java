@@ -54,7 +54,7 @@ public abstract class SecretVerifier implements Verifier {
      *            The input secret.
      * @param secret2
      *            The output secret.
-     * @return True if both are equal.
+     * @return True if both are equal and not null.
      */
     public static boolean compare(char[] secret1, char[] secret2) {
         boolean result = false;
@@ -151,11 +151,17 @@ public abstract class SecretVerifier implements Verifier {
         } else {
             String identifier = getIdentifier(request, response);
             char[] secret = getSecret(request, response);
-            result = verify(identifier, secret);
 
-            if (result == RESULT_VALID) {
-                request.getClientInfo().setUser(
-                        createUser(identifier, request, response));
+            try {
+                if (verify(identifier, secret)) {
+                    request.getClientInfo().setUser(
+                            createUser(identifier, request, response));
+                } else {
+                    result = RESULT_INVALID;
+                }
+            } catch (IllegalArgumentException iae) {
+                // The identifier is unknown.
+                result = RESULT_UNKNOWN;
             }
         }
 
@@ -171,8 +177,11 @@ public abstract class SecretVerifier implements Verifier {
      *            The user identifier to match.
      * @param secret
      *            The provided secret to verify.
-     * @return Result of the verification based on the RESULT_* constants.
+     * @return true if the identifier/secret couple is valid.
+     * @throws IllegalArgumentException
+     *             In case the identifier is unknown.
      */
-    public abstract int verify(String identifier, char[] secret);
+    public abstract boolean verify(String identifier, char[] secret)
+            throws IllegalArgumentException;
 
 }

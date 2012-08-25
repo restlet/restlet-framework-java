@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+
+- 2.0.15 (2012-08-23)
     - Bug fixed
        - Fixed bug in Reference#getParentRef with relative URIs.
          Reported by Christian Bauer.

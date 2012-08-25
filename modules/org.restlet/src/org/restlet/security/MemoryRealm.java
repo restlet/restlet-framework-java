@@ -103,7 +103,7 @@ public class MemoryRealm extends Realm {
         }
 
         @Override
-        public int verify(String identifier, char[] secret) {
+        public boolean verify(String identifier, char[] secret) {
             char[] actualSecret = null;
             User user = findUser(identifier);
 
@@ -111,8 +111,7 @@ public class MemoryRealm extends Realm {
                 actualSecret = user.getSecret();
             }
 
-            return compare(secret, actualSecret) ? RESULT_VALID
-                    : RESULT_INVALID;
+            return compare(secret, actualSecret);
         }
     }
 
