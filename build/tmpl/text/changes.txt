@@ -4,7 +4,10 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-
+    - Bug fixed
+    - API changes
+    - Misc
+    
 - 2.1 Release Candidate 6 (08/22/2012)
     - Bug fixed
        - Fixed sharing of ClientResource context with the underlying connector, 
@@ -23,7 +26,7 @@ Changes log
        - Fixed alphanum comparator bug.
          Reported by Abdunnassar Usman, fixed by Rob Heittman.
        - ServerResource.doConditionalHandle now returns 406 if no acceptable 
-         variant and strict mode==true in ConnegService.
+         variant and strict mode is true in ConnegService.
          Contributed by Andrew Dennie.
     - API changes
        - Renamed Directory#setAlphaComparator and setAlphaNumComparator
