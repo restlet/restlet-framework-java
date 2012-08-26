@@ -4,6 +4,7 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Updated book examples based on the printed "Restlet in Action" book.
 
 - 2.0.15 (2012-08-23)
     - Bug fixed
