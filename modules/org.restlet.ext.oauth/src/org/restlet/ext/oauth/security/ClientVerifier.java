@@ -78,7 +78,7 @@ public class ClientVerifier implements Verifier {
             request.getClientInfo().setUser(new User(clientId));
         } else {
             response.setEntity(
-                    OAuthServerResource.getErrorJsonDocument(
+                    OAuthServerResource.responseErrorRepresentation(
                         new OAuthException(OAuthError.invalid_client,
                         "Invalid client", null)));
         }

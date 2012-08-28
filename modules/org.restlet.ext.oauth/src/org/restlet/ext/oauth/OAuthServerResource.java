@@ -33,9 +33,7 @@
 
 package org.restlet.ext.oauth;
 
-import freemarker.template.Configuration;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 import org.json.JSONException;
@@ -44,11 +42,7 @@ import org.restlet.Response;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
-import org.restlet.ext.freemarker.ContextTemplateLoader;
-import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.ext.oauth.internal.AuthSession;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.ext.oauth.internal.Token;
 import org.restlet.ext.oauth.internal.TokenGenerator;
@@ -111,26 +105,6 @@ public abstract class OAuthServerResource extends ServerResource {
         super();
     }
 
-    /**
-     * Completes the given {@link StringBuilder} with the authentication attributes.
-     *
-     * @param location The {@link StringBuilder} to complete.
-     */
-    private void appendState(StringBuilder location) {
-        String sessionId = (String) getRequest().getAttributes().get(ClientCookieID);
-        if (sessionId == null) {
-            sessionId = getCookies().getFirstValue(ClientCookieID);
-        }
-        ConcurrentMap<String, Object> attribs = getContext().getAttributes();
-        AuthSession session = (AuthSession) attribs.get(sessionId);
-        String state = session.getState();
-        if (state != null && state.length() > 0) {
-            location.append("&state=");
-            location.append(state);
-        }
-        session.reset();
-    }
-
     @Override
     protected void doInit() throws ResourceException {
         super.doInit();
@@ -138,11 +112,6 @@ public abstract class OAuthServerResource extends ServerResource {
         ConcurrentMap<String, Object> attribs = ctx.getAttributes();
         clients = ClientStoreFactory.getInstance();
 
-        // NOT NEEDED I THINK:
-        /*
-         * clients = (ClientStore<?>) attribs.get(ClientStore.class
-         * .getCanonicalName());
-         */
         getLogger().fine("Found client store = " + clients);
 
         generator = clients.getTokenGenerator();
@@ -156,72 +125,6 @@ public abstract class OAuthServerResource extends ServerResource {
             tokenMaxTimeSec = (Long) attribs.get(TOKEN_SERVER_MAX_TIME_SEC);
         }
         generator.setMaxTokenTime(tokenMaxTimeSec);
-    }
-
-    /**
-     * Returns the agent token for the given user, client and redirection URI.
-     *
-     * @param userId The identifier of the user.
-     * @param client The oAuth client.
-     * @param redirURL The redirection URI.
-     * @return The agent token for the given user, client and redirection URI.
-     */
-    protected String generateAgentToken(String userId, Client client,
-            String redirURL) {
-        AuthenticatedUser user = null;
-        if (client.containsUser(userId)) {
-            user = client.findUser(userId);
-        } else {
-            user = client.createUser(userId);
-        }
-
-        // TODO generate token and keep for a while.
-        Token token = generator.generateToken(user, tokenTimeSec);
-        StringBuilder location = new StringBuilder(redirURL);
-        location.append("#access_token=").append(token.getToken());
-
-        // TODO add expires
-        appendState(location);
-
-        // Sets the no-store Cache-Control header
-        addCacheDirective(getResponse(), CacheDirective.noStore());
-        // TODO: Set Pragma: no-cache
-
-        getLogger().fine("Redirecting to -> " + location.toString());
-        // TODO add state to request string
-        return location.toString();
-    }
-
-    /**
-     * Returns the code for the given user, client and redirection URI.
-     *
-     * @param userId The identifier of the user.
-     * @param client The oAuth client.
-     * @param redirURL The redirection URI.
-     * @return The code for the given user, client and redirection URI.
-     */
-    protected String generateCode(String userId, Client client, String redirURL) {
-        AuthenticatedUser user = null;
-        if (client.containsUser(userId)) {
-            user = client.findUser(userId);
-        } else {
-            user = client.createUser(userId);
-        }
-
-        // TODO generate code and keep for a while.
-        String code = generator.generateCode(user);
-        StringBuilder location = new StringBuilder(redirURL);
-        String c = (location.indexOf("?") == -1) ? "?code=" : "&code=";
-        location.append(c).append(code);
-        appendState(location);
-
-        // Sets the no-store Cache-Control header
-        addCacheDirective(getResponse(), CacheDirective.noStore());
-        // TODO: Set Pragma: no-cache
-
-        getLogger().fine("Redirecting to -> " + location.toString());
-        // TODO add state to request string
-        return location.toString();
     }
 
     /**
@@ -287,83 +190,25 @@ public abstract class OAuthServerResource extends ServerResource {
         return Scopes.parseScope(scope);
     }
     
+    /**
+     * Get request parameter "state".
+     * 
+     * @param params
+     * @return
+     * @throws OAuthException 
+     */
     protected String getState(Form params) {
         return params.getFirstValue(STATE);
-    }
-
-    protected AuthSession getAuthSession() {
-        // Get some basic information
-        String sessionId = getCookies().getFirstValue(ClientCookieID);
-        getLogger().fine("sessionId = " + sessionId);
-
-        AuthSession session = (sessionId == null) ? null
-                : (AuthSession) getContext().getAttributes().get(sessionId);
-        return session;
-    }
-
-    /**
-     *
-     * Helper method to format error responses according to OAuth2 spec. (Redirect)
-     *
-     * @param redirectUri redirection URI to send error
-     * @param ex Any OAuthException with error
-     * @param state state parameter as presented in the initial auth request
-     */
-    protected void sendError(String redirectUri, OAuthException ex, String state) {
-        Reference cb = new Reference(redirectUri);
-        cb.addQueryParameter(ERROR, ex.getError().name());
-        if (state != null && state.length() > 0) {
-            cb.addQueryParameter(STATE, state);
-        }
-        String description = ex.getErrorDescription();
-        if (description != null && description.length() > 0) {
-            cb.addQueryParameter(ERROR_DESC, description);
-        }
-        String errorUri = ex.getErrorURI();
-        if (errorUri != null && errorUri.length() > 0) {
-            cb.addQueryParameter(ERROR_URI, errorUri);
-        }
-        redirectTemporary(cb.toString());
-    }
-
-    /**
-     *
-     * Helper method to format error responses according to OAuth2 spec. (Non Redirect)
-     *
-     * @param errPage errorPage template name
-     * @param ex Any OAuthException with error
-     */
-    protected Representation getErrorPage(String errPage, OAuthException ex) {
-        Configuration config = new Configuration();
-        config.setTemplateLoader(new ContextTemplateLoader(getContext(), "clap:///"));
-        getLogger().fine("loading: " + errPage);
-        TemplateRepresentation response = new TemplateRepresentation(errPage, config, MediaType.TEXT_HTML);
-
-        // Build the model
-        HashMap<String, Object> data = new HashMap<String, Object>();
-
-        data.put(ERROR, ex.getError().name());
-        data.put(ERROR_DESC, ex.getErrorDescription());
-        data.put(ERROR_URI, ex.getErrorURI());
-        //data.put(STATE, state);
-
-        response.setDataModel(data);
-
-        return response;
     }
     
     /**
      * Returns the representation of the given error.
+     * The format of the JSON document is according to 5.2. Error Response.
      * 
-     * @param error
-     *            The OAuth error.
-     * @param description
-     *            The error description.
-     * @param errorUri
-     *            the error URI.
+     * @param ex Any OAuthException with error
      * @return The representation of the given error.
      */
-    public static Representation getErrorJsonDocument(OAuthException ex) {
+    public static Representation responseErrorRepresentation(OAuthException ex) {
         try {
             return new JsonRepresentation(ex.createErrorDocument());
         } catch (JSONException e) {

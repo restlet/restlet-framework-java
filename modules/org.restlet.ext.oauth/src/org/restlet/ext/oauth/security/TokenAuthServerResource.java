@@ -48,18 +48,11 @@ public class TokenAuthServerResource extends OAuthServerResource {
     
     @Override
     protected void doCatch(Throwable t) {
-        final OAuthException oex;
-        if (t instanceof OAuthException) {
-            oex = (OAuthException) t;
-        } else if (t.getCause() instanceof OAuthException) {
-            oex = (OAuthException) t.getCause();
-        } else {
-            oex = new OAuthException(OAuthError.server_error, t.getMessage(), null);
-        }
-        // XXX:
+        final OAuthException oex = OAuthException.toOAuthException(t);
+        // XXX: Generally, we only communicate with TokenVerifier. So we don't need HTTP 400 code.
 //        getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         getResponse().setStatus(Status.SUCCESS_OK);
-        getResponse().setEntity(getErrorJsonDocument(oex));
+        getResponse().setEntity(responseErrorRepresentation(oex));
     }
     
     @Post("json")

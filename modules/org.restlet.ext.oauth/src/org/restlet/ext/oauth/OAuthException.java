@@ -38,6 +38,16 @@ public class OAuthException extends Exception {
         this.errorUri = errorUri;
     }
     
+    public static OAuthException toOAuthException(Throwable t) {
+        if (t instanceof OAuthException) {
+            return (OAuthException) t;
+        } else if (t.getCause() instanceof OAuthException) {
+            return (OAuthException) t.getCause();
+        } else {
+            return new OAuthException(OAuthError.server_error, t.getMessage(), null);
+        }
+    }
+    
     public OAuthError getError() {
         return error;
     }

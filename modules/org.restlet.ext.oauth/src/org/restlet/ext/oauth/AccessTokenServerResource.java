@@ -34,12 +34,14 @@
 package org.restlet.ext.oauth;
 
 
+import java.util.Arrays;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.CacheDirective;
 import org.restlet.data.Form;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.ext.oauth.internal.Token;
 import org.restlet.ext.oauth.internal.memory.ExpireToken;
 import org.restlet.representation.Representation;
@@ -121,17 +123,13 @@ public class AccessTokenServerResource extends OAuthServerResource {
      */
     @Override
     protected void doCatch(Throwable t) {
-        final OAuthException oex;
-        if (t instanceof OAuthException) {
-            oex = (OAuthException) t;
-        } else if (t.getCause() instanceof OAuthException) {
-            oex = (OAuthException) t.getCause();
-        } else {
-            oex = new OAuthException(OAuthError.server_error, t.getMessage(), null);
-        }
+        final OAuthException oex = OAuthException.toOAuthException(t);
         // The authorization server responds with an HTTP 400 (Bad Request)
         getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-        getResponse().setEntity(getErrorJsonDocument(oex));
+        getResponse().setEntity(responseErrorRepresentation(oex));
+        // Sets the no-store Cache-Control header
+        addCacheDirective(getResponse(), CacheDirective.noStore());
+        // TODO: Set Pragma: no-cache
     }
     
     /**
@@ -220,36 +218,38 @@ public class AccessTokenServerResource extends OAuthServerResource {
     }
     
     /**
-     * Converts a {@link Token} to its equivalent as a {@link JSONObject}.
+     * Response JSON document with valid token.
+     * The format of the JSON document is according to 5.1. Successful Response.
      * 
-     * @param token
-     *            The token.
-     * @param scopes
-     *            The list of scopes.
+     * @param token The token.
+     * @param scopes The list of scopes.
      * @return An instance of {@link Token} equivalent to the given token.
      * @throws ResourceException
      */
-    private JSONObject createJsonToken(Token token, String scopes)
-            throws ResourceException {
-        JSONObject body = new JSONObject();
+    protected Representation responseTokenRepresentation(Token token, String scopes) throws ResourceException {
+        JSONObject response = new JSONObject();
 
         try {
-            body.put(TOKEN_TYPE, TOKEN_TYPE_BEARER);
-            body.put(ACCESS_TOKEN, token.getToken());
+            response.put(TOKEN_TYPE, TOKEN_TYPE_BEARER);
+            response.put(ACCESS_TOKEN, token.getToken());
             long expiresIn = token.getExpirePeriod();
             if (expiresIn != Token.UNLIMITED) {
-                body.put(EXPIRES_IN, expiresIn);
-                body.put(REFRESH_TOKEN, token.getRefreshToken());
+                response.put(EXPIRES_IN, expiresIn);
+                response.put(REFRESH_TOKEN, token.getRefreshToken());
             }
             if (scopes != null && !scopes.isEmpty()) {
-                body.put(SCOPE, scopes);
+                response.put(SCOPE, scopes);
             }
         } catch (JSONException e) {
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
                     "Failed to generate JSON", e);
         }
+        
+        // Sets the no-store Cache-Control header
+        addCacheDirective(getResponse(), CacheDirective.noStore());
+        // TODO: Set Pragma: no-cache
 
-        return body;
+        return new JsonRepresentation(response);
     }
 
     /**
@@ -276,14 +276,10 @@ public class AccessTokenServerResource extends OAuthServerResource {
         // 5 min timeout on tokens, 0 for unlimited
         Token token = generator.exchangeForToken(code, tokenTimeSec);
 
-        // TODO send back scopes if limited
+        // XXX: Required only if NOT identical to the scope requested by the client.
+        String scopes = Scopes.toScope(token.getUser().getGrantedRoles());
 
-        JSONObject body = createJsonToken(token, null);
-
-        // Sets the no-store Cache-Control header
-        addCacheDirective(getResponse(), CacheDirective.noStore());
-        // TODO: Set Pragma: no-cache
-        return new JsonRepresentation(body);
+        return responseTokenRepresentation(token, scopes);
     }
 
     /**
@@ -297,6 +293,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
      *            The authentication parameters.
      * @return The result of the flow.
      */
+    // XXX: Client might be optional for client type "public".
     private Representation doPasswordFlow(Client client, Form params) throws OAuthException {
         AuthenticatedUser user = client.findUser(getUsername(params));
         if (user == null) {
@@ -309,14 +306,13 @@ public class AccessTokenServerResource extends OAuthServerResource {
             throw new OAuthException(OAuthError.invalid_grant,
                     "Password not correct.", null);
         }
+        
+        String[] requestedScope = getScope(params);
+        refreshUserScopesAndPersist(user, requestedScope);
 
         Token token = this.generator.generateToken(user, this.tokenTimeSec);
-        JSONObject body = createJsonToken(token, null); // Scopes N/A
-
-        // Sets the no-store Cache-Control header
-        addCacheDirective(getResponse(), CacheDirective.noStore());
-        // TODO: Set Pragma: no-cache
-        return new JsonRepresentation(body);
+        
+        return responseTokenRepresentation(token, Scopes.toString(requestedScope));
     }
 
     /**
@@ -338,15 +334,28 @@ public class AccessTokenServerResource extends OAuthServerResource {
 
             // Make sure that the user owning the token is owned by this client
             if (client.containsUser(user.getId())) {
+                String scope = params.getFirstValue(SCOPE);
+                
+                /*
+                 * The requested scope MUST NOT include any scope
+                 * not originally granted by the resource owner, and if omitted is
+                 * treated as equal to the scope originally granted by the
+                 * resource owner. (6. Refreshing an Access Token)
+                 */
+                if (scope != null && !scope.isEmpty()) {
+                    String[] requestedScopes = Scopes.parseScope(scope);
+                    String[] grantedScopes = Scopes.parseScope(user.getGrantedRoles());
+                    if (!Arrays.asList(grantedScopes).containsAll(Arrays.asList(requestedScopes))) {
+                        throw new OAuthException(OAuthError.invalid_scope,
+                                "Requested scopes contains which is not originally granted by the resource owner.", null);
+                    }
+                    refreshUserScopesAndPersist(user, requestedScopes);
+                }
+                
                 // refresh the token
                 generator.refreshToken((ExpireToken) token);
 
-                JSONObject body = createJsonToken(token, null); // Scopes N/A
-
-                // Sets the no-store Cache-Control header
-                addCacheDirective(getResponse(), CacheDirective.noStore());
-                // TODO: Set Pragma: no-cache
-                return new JsonRepresentation(body);
+                return responseTokenRepresentation(token, scope);
             } else { // error not owner
                 // XXX:
                 throw new OAuthException(OAuthError.unauthorized_client, "User does not match.", null);
@@ -356,5 +365,13 @@ public class AccessTokenServerResource extends OAuthServerResource {
             // XXX:
             throw new OAuthException(OAuthError.invalid_grant, "Refresh token.", null);
         }
+    }
+    
+    private static void refreshUserScopesAndPersist(AuthenticatedUser user, String[] scopes) {
+        user.revokeRoles();
+        for (String s : scopes) {
+            user.addRole(Scopes.toRole(s), "");
+        }
+        user.persist();
     }
 }

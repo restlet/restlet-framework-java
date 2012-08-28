@@ -78,41 +78,8 @@ import org.restlet.security.User;
  * 
  * @see <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-30#section-3.1">OAuth 2 draft 30</a>
  */
-public class AuthorizationServerResource extends OAuthServerResource {
+public class AuthorizationServerResource extends AuthorizationBaseServerResource {
 
-    @Override
-    protected void doCatch(Throwable t) {
-        final OAuthException oex;
-        if (t instanceof OAuthException) {
-            oex = (OAuthException) t;
-        } else if (t.getCause() instanceof OAuthException) {
-            oex = (OAuthException) t.getCause();
-        } else {
-            oex = new OAuthException(OAuthError.server_error, t.getMessage(), null);
-        }
-        AuthSession session = getAuthSession();
-        if (session == null) {
-            Representation resp = getErrorPage(
-                    HttpOAuthHelper.getErrorPageTemplate(getContext()),
-                    oex);
-            getResponse().setEntity(resp);
-        } else {
-            /* 
-             * If the resource owner denies the access request or if the request
-             * fails for reasons other than a missing or invalid redirection URI,
-             * the authorization server informs the client by adding the following
-             * parameters to the query component of the redirection URI using the
-             * "application/x-www-form-urlencoded" format, per Appendix B:
-             * (draft-ietf-oauth-v2-30 4.1.2.1.)
-             */
-            String redirectURI = session.getDynamicCallbackURI();
-            if (redirectURI == null) {
-                redirectURI = session.getClient().getRedirectUri();
-            }
-            sendError(redirectURI, oex, session.getState());
-        }
-    }
-    
     /**
      * Checks that all incoming requests have a type parameter. Requires
      * response_type, client_id and redirect_uri parameters. For the code flow

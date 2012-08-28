@@ -59,6 +59,15 @@ public class Scopes {
         }
         return sb.substring(1);
     }
+    
+    public static String toString(String[] scopes) {
+        StringBuilder sb = new StringBuilder();
+        for (String scope : scopes) {
+            sb.append(' ');
+            sb.append(scope);
+        }
+        return sb.substring(1);
+    }
 
     public static String toScope(Role r) throws IllegalArgumentException {
         String rname = r.getName();
@@ -94,5 +103,12 @@ public class Scopes {
             return scope;
         }
         return new String[0];
+    }
+    public static String[] parseScope(List<Role> roles) {
+        String[] scopes = new String[roles.size()];
+        for (int i = 0; i < roles.size(); i++) {
+            scopes[i] = roles.get(i).getName();
+        }
+        return scopes;
     }
 }
