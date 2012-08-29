@@ -7,6 +7,7 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/javax.servlet"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/javax.ws.rs"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.commons.fileupload"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.commons.lang"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.json"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
