@@ -3,8 +3,8 @@
 -nouses: true
 -noextraheaders: true
 -debug: true
-Export-Package: *;-split-package:=merge-first
-Import-Package: *
+Export-Package: !org.apache.commons.lang.enum,*;-split-package:=merge-first
+Import-Package: *<#if ant["bundle.libraries.optional.dependencies"]??>;resolution:=optional</#if>
 Bundle-Name: ${library.symbolicName}
 Bundle-SymbolicName: ${library.symbolicName}
 Bundle-Version: ${library.versionFull}
