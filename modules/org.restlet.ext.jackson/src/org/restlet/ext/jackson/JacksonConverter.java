@@ -47,9 +47,11 @@ import org.restlet.resource.Resource;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 /**
  * Converter between the JSON and Representation classes based on Jackson.
@@ -57,20 +59,39 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
  * @author Jerome Louvel
  */
 public class JacksonConverter extends ConverterHelper {
+    /** Variant with media type application/xml. */
+    private static final VariantInfo VARIANT_APPLICATION_XML = new VariantInfo(
+            MediaType.APPLICATION_XML);
+
+    /** Variant with media type application/yaml. */
+    private static final VariantInfo VARIANT_APPLICATION_YAML = new VariantInfo(
+            MediaType.APPLICATION_YAML);
+
     /** Variant with media type application/json. */
     private static final VariantInfo VARIANT_JSON = new VariantInfo(
             MediaType.APPLICATION_JSON);
-    
+
     /** Variant with media type application/x-json-smile. */
     private static final VariantInfo VARIANT_JSON_SMILE = new VariantInfo(
             MediaType.APPLICATION_JSON_SMILE);
 
-    /** Variant with media type application/json. */
-    private static final VariantInfo VARIANT_XML = new VariantInfo(
-            MediaType.APPLICATION_XML);
+    /** Variant with media type text/csv. */
+    private static final VariantInfo VARIANT_TEXT_CSV = new VariantInfo(
+            MediaType.TEXT_CSV);
+
+    /** Variant with media type text/xml. */
+    private static final VariantInfo VARIANT_TEXT_XML = new VariantInfo(
+            MediaType.TEXT_XML);
+
+    /** Variant with media type text/yaml. */
+    private static final VariantInfo VARIANT_TEXT_YAML = new VariantInfo(
+            MediaType.TEXT_YAML);
 
     /** The modifiable Jackson binary object mapper. */
     private ObjectMapper binaryObjectMapper;
+
+    /** The modifiable Jackson csv mapper. */
+    private ObjectMapper csvMapper;
 
     /** The modifiable Jackson object mapper. */
     private ObjectMapper objectMapper;
@@ -78,7 +99,9 @@ public class JacksonConverter extends ConverterHelper {
     /** The modifiable Jackson xml mapper. */
     private ObjectMapper xmlMapper;
 
-    
+    /** The modifiable Jackson yaml mapper. */
+    private ObjectMapper yamlMapper;
+
     /**
      * Creates the marshaling {@link JacksonRepresentation}.
      * 
@@ -149,10 +172,12 @@ public class JacksonConverter extends ConverterHelper {
         result.setObjectMapper(getBinaryObjectMapper());
         return result;
     }
+
     /**
      * Creates a Jackson object mapper for binary representations based on a
      * media type. By default, it calls
-     * {@link ObjectMapper#ObjectMapper(JsonFactory)} with a {@link SmileFactory}.
+     * {@link ObjectMapper#ObjectMapper(JsonFactory)} with a
+     * {@link SmileFactory}.
      * 
      * @return The Jackson object mapper.
      */
@@ -160,6 +185,52 @@ public class JacksonConverter extends ConverterHelper {
         JsonFactory jsonFactory = new SmileFactory();
         jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
         return new ObjectMapper(jsonFactory);
+    }
+
+    /**
+     * Creates the marshaling {@link JacksonRepresentation}.
+     * 
+     * @param <T>
+     * @param mediaType
+     *            The target media type.
+     * @param source
+     *            The source object to marshal.
+     * @return The marshaling {@link JacksonRepresentation}.
+     */
+    protected <T> JacksonRepresentation<T> createCsv(MediaType mediaType,
+            T source) {
+        JacksonRepresentation<T> result = new JacksonRepresentation<T>(
+                mediaType, source);
+        result.setObjectMapper(getCsvMapper());
+        return result;
+    }
+
+    /**
+     * Creates the unmarshaling {@link JacksonRepresentation}.
+     * 
+     * @param <T>
+     * @param source
+     *            The source representation to unmarshal.
+     * @param objectClass
+     *            The object class to instantiate.
+     * @return The unmarshaling {@link JacksonRepresentation}.
+     */
+    protected <T> JacksonRepresentation<T> createCsv(Representation source,
+            Class<T> objectClass) {
+        JacksonRepresentation<T> result = new JacksonRepresentation<T>(source,
+                objectClass);
+        result.setObjectMapper(getCsvMapper());
+        return result;
+    }
+
+    /**
+     * Creates a Jackson csv mapper based on a media type. By default, it calls
+     * {@link CsvMapper()}.
+     * 
+     * @return The Jackson object mapper.
+     */
+    protected ObjectMapper createCsvMapper() {
+        return new CsvMapper();
     }
 
     /**
@@ -184,7 +255,8 @@ public class JacksonConverter extends ConverterHelper {
      *            The source object to marshal.
      * @return The marshaling {@link JacksonRepresentation}.
      */
-    protected <T> JacksonRepresentation<T> createXml(MediaType mediaType, T source) {
+    protected <T> JacksonRepresentation<T> createXml(MediaType mediaType,
+            T source) {
         JacksonRepresentation<T> result = new JacksonRepresentation<T>(
                 mediaType, source);
         result.setObjectMapper(getXmlMapper());
@@ -210,8 +282,8 @@ public class JacksonConverter extends ConverterHelper {
     }
 
     /**
-     * Creates a Jackson xml mapper based on a media type. By default, it
-     * calls {@link XmlMapper#XmlMapper(XmlFactory)}.
+     * Creates a Jackson xml mapper based on a media type. By default, it calls
+     * {@link XmlMapper#XmlMapper(XmlFactory)}.
      * 
      * @return The Jackson object mapper.
      */
@@ -219,6 +291,54 @@ public class JacksonConverter extends ConverterHelper {
         XmlFactory xmlFactory = new XmlFactory();
         xmlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
         return new XmlMapper(xmlFactory);
+    }
+
+    /**
+     * Creates the marshaling {@link JacksonRepresentation}.
+     * 
+     * @param <T>
+     * @param mediaType
+     *            The target media type.
+     * @param source
+     *            The source object to marshal.
+     * @return The marshaling {@link JacksonRepresentation}.
+     */
+    protected <T> JacksonRepresentation<T> createYaml(MediaType mediaType,
+            T source) {
+        JacksonRepresentation<T> result = new JacksonRepresentation<T>(
+                mediaType, source);
+        result.setObjectMapper(getYamlMapper());
+        return result;
+    }
+
+    /**
+     * Creates the unmarshaling {@link JacksonRepresentation}.
+     * 
+     * @param <T>
+     * @param source
+     *            The source representation to unmarshal.
+     * @param objectClass
+     *            The object class to instantiate.
+     * @return The unmarshaling {@link JacksonRepresentation}.
+     */
+    protected <T> JacksonRepresentation<T> createYaml(Representation source,
+            Class<T> objectClass) {
+        JacksonRepresentation<T> result = new JacksonRepresentation<T>(source,
+                objectClass);
+        result.setObjectMapper(getYamlMapper());
+        return result;
+    }
+
+    /**
+     * Creates a Jackson yaml mapper based on a media type. By default, it calls
+     * {@link ObjectMapper#ObjectMapper(YAMLFactory)}.
+     * 
+     * @return The Jackson object mapper.
+     */
+    protected ObjectMapper createYamlMapper() {
+        YAMLFactory yamlFactory = new YAMLFactory();
+        yamlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+        return new ObjectMapper(yamlFactory);
     }
 
     /**
@@ -238,13 +358,30 @@ public class JacksonConverter extends ConverterHelper {
 
         return this.binaryObjectMapper;
     }
-    
+
+    public ObjectMapper getCsvMapper() {
+        if (this.csvMapper == null) {
+            synchronized (this) {
+                if (this.csvMapper == null) {
+                    this.csvMapper = createCsvMapper();
+                }
+            }
+        }
+
+        return this.csvMapper;
+    }
+
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
         if (VARIANT_JSON.isCompatible(source)
-                || VARIANT_JSON_SMILE.isCompatible(source) || VARIANT_XML.isCompatible(source)) {
+                || VARIANT_JSON_SMILE.isCompatible(source)
+                || VARIANT_APPLICATION_XML.isCompatible(source)
+                || VARIANT_TEXT_XML.isCompatible(source)
+                || VARIANT_APPLICATION_YAML.isCompatible(source)
+                || VARIANT_TEXT_YAML.isCompatible(source)
+                || VARIANT_TEXT_CSV.isCompatible(source)) {
             result = addObjectClass(result, Object.class);
             result = addObjectClass(result, JacksonRepresentation.class);
             result = addObjectClass(result, JacksonSmileRepresentation.class);
@@ -278,7 +415,11 @@ public class JacksonConverter extends ConverterHelper {
         if (source != null) {
             result = addVariant(result, VARIANT_JSON);
             result = addVariant(result, VARIANT_JSON_SMILE);
-            result = addVariant(result, VARIANT_XML);
+            result = addVariant(result, VARIANT_APPLICATION_XML);
+            result = addVariant(result, VARIANT_TEXT_XML);
+            result = addVariant(result, VARIANT_APPLICATION_YAML);
+            result = addVariant(result, VARIANT_TEXT_YAML);
+            result = addVariant(result, VARIANT_TEXT_CSV);
         }
 
         return result;
@@ -296,6 +437,18 @@ public class JacksonConverter extends ConverterHelper {
         return this.xmlMapper;
     }
 
+    public ObjectMapper getYamlMapper() {
+        if (this.yamlMapper == null) {
+            synchronized (this) {
+                if (this.yamlMapper == null) {
+                    this.yamlMapper = createYamlMapper();
+                }
+            }
+        }
+
+        return this.yamlMapper;
+    }
+
     @Override
     public float score(Object source, Variant target, Resource resource) {
         float result = -1.0F;
@@ -311,7 +464,15 @@ public class JacksonConverter extends ConverterHelper {
                 result = 0.8F;
             } else if (VARIANT_JSON_SMILE.isCompatible(target)) {
                 result = 0.8F;
-            } else if (VARIANT_XML.isCompatible(target)) {
+            } else if (VARIANT_APPLICATION_XML.isCompatible(target)) {
+                result = 0.8F;
+            } else if (VARIANT_TEXT_XML.isCompatible(target)) {
+                result = 0.8F;
+            } else if (VARIANT_APPLICATION_YAML.isCompatible(target)) {
+                result = 0.8F;
+            } else if (VARIANT_TEXT_YAML.isCompatible(target)) {
+                result = 0.8F;
+            } else if (VARIANT_TEXT_CSV.isCompatible(target)) {
                 result = 0.8F;
             } else {
                 result = 0.5F;
@@ -340,7 +501,15 @@ public class JacksonConverter extends ConverterHelper {
             result = 0.8F;
         } else if (VARIANT_JSON_SMILE.isCompatible(source)) {
             result = 0.8F;
-        } else if (VARIANT_XML.isCompatible(source)) {
+        } else if (VARIANT_APPLICATION_XML.isCompatible(source)) {
+            result = 0.8F;
+        } else if (VARIANT_TEXT_XML.isCompatible(source)) {
+            result = 0.8F;
+        } else if (VARIANT_APPLICATION_YAML.isCompatible(source)) {
+            result = 0.8F;
+        } else if (VARIANT_TEXT_YAML.isCompatible(source)) {
+            result = 0.8F;
+        } else if (VARIANT_TEXT_CSV.isCompatible(source)) {
             result = 0.8F;
         }
 
@@ -399,8 +568,14 @@ public class JacksonConverter extends ConverterHelper {
                 jacksonSource = (JacksonRepresentation<?>) source;
             } else if (VARIANT_JSON.isCompatible(source)) {
                 jacksonSource = create(source, target);
-            } else if (VARIANT_XML.isCompatible(source)) {
+            } else if (VARIANT_APPLICATION_XML.isCompatible(source)
+                    || VARIANT_TEXT_XML.isCompatible(source)) {
                 jacksonSource = createXml(source, target);
+            } else if (VARIANT_APPLICATION_YAML.isCompatible(source)
+                    || VARIANT_TEXT_YAML.isCompatible(source)) {
+                jacksonSource = createYaml(source, target);
+            } else if (VARIANT_TEXT_CSV.isCompatible(source)) {
+                jacksonSource = createCsv(source, target);
             }
 
             if (jacksonSource != null) {
@@ -430,13 +605,18 @@ public class JacksonConverter extends ConverterHelper {
             if (target.getMediaType() == null) {
                 target.setMediaType(MediaType.APPLICATION_JSON);
             }
-
             if (VARIANT_JSON_SMILE.isCompatible(target)) {
                 result = createBinary(target.getMediaType(), source);
             } else if (VARIANT_JSON.isCompatible(target)) {
                 result = create(target.getMediaType(), source);
-            } else if (VARIANT_XML.isCompatible(target)) {
+            } else if (VARIANT_APPLICATION_XML.isCompatible(target)
+                    || VARIANT_TEXT_XML.isCompatible(target)) {
                 result = createXml(target.getMediaType(), source);
+            } else if (VARIANT_APPLICATION_YAML.isCompatible(target)
+                    || VARIANT_TEXT_YAML.isCompatible(target)) {
+                result = createYaml(target.getMediaType(), source);
+            } else if (VARIANT_TEXT_CSV.isCompatible(target)) {
+                result = createCsv(target.getMediaType(), source);
             }
         }
 
@@ -449,6 +629,10 @@ public class JacksonConverter extends ConverterHelper {
         updatePreferences(preferences, MediaType.APPLICATION_JSON, 1.0F);
         updatePreferences(preferences, MediaType.APPLICATION_JSON_SMILE, 1.0F);
         updatePreferences(preferences, MediaType.APPLICATION_XML, 1.0F);
+        updatePreferences(preferences, MediaType.TEXT_XML, 1.0F);
+        updatePreferences(preferences, MediaType.APPLICATION_YAML, 1.0F);
+        updatePreferences(preferences, MediaType.TEXT_YAML, 1.0F);
+        updatePreferences(preferences, MediaType.TEXT_CSV, 1.0F);
     }
 
 }

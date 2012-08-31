@@ -500,6 +500,10 @@ public final class MediaType extends Metadata {
             "application/vnd.mozilla.xul+xml", "XUL document");
 
     // [ifndef gwt] member
+    public static final MediaType APPLICATION_YAML = register(
+            "application/x-yaml", "YAML document");
+    
+    // [ifndef gwt] member
     public static final MediaType APPLICATION_ZIP = register("application/zip",
             "Zip archive");
 
@@ -627,6 +631,9 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_VCARD = register("text/x-vcard", "vCard");
 
     public static final MediaType TEXT_XML = register("text/xml", "XML text");
+
+    // [ifndef gwt] member
+    public static final MediaType TEXT_YAML = register("text/x-yaml", "YAML document");
 
     // [ifndef gwt] member
     public static final MediaType VIDEO_ALL = register("video/*", "All videos");

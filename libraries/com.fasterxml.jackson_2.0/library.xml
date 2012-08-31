@@ -55,6 +55,7 @@
 			<artifactId>jackson-module-jaxb-annotations</artifactId>
 		</maven>
 	</package>
+	<dependency type="library" id="snakeyaml" />
 	<dependency type="library" id="woodstox" />
 	<distributions>
 		<distribution id="classic" />
