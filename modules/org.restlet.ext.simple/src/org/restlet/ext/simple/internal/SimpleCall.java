@@ -203,9 +203,7 @@ public class SimpleCall extends ServerCall {
             final List<String> names = this.request.getNames();
 
             for (String name : names) {
-                for (String value : this.request.getValues(name)) {
-                    result.add(new Parameter(name, value));
-                }
+                result.add(name, this.request.getValue(name));
             }
             this.requestHeadersAdded = true;
         }
