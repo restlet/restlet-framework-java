@@ -33,6 +33,7 @@
 
 package org.restlet.ext.freemarker;
 
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Date;
