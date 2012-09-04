@@ -12,7 +12,7 @@ Changes log
       - Upgraded Servlet API to version 3.0.
       - Upgraded Jackson to version 2.0.
     - Misc
-      - Updated Eclipse projects to use JavaSE 1.6 and simple Java 
+      - Updated Eclipse projects to use JavaSE 6.0 and simple Java 
         build rather than PDE/OSGi (removed manifest.mf files) or 
         Maven (removed pom.xml files)
     - API changes

@@ -34,6 +34,7 @@
 package org.restlet.ext.freemarker;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Date;
 
@@ -156,12 +157,13 @@ public class ContextTemplateLoader implements TemplateLoader {
      * 
      * @param templateSource
      *            The template source {@link Representation}.
-     * @param encoding
-     *            The reader encoding (currently ignored).
+     * @param characterSet
+     *            The reader character set.
      */
-    public Reader getReader(Object templateSource, String encoding)
+    public Reader getReader(Object templateSource, String characterSet)
             throws IOException {
-        return ((Representation) templateSource).getReader();
+        Representation r = (Representation) templateSource;
+        return new InputStreamReader(r.getStream(), characterSet);
     }
 
 }
