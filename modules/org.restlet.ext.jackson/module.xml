@@ -9,6 +9,8 @@
 
 	<dependencies>
 		<dependency type="library" id="jackson" primary="true" />
+		<dependency type="library" id="woodstox" primary="true" />
+		<dependency type="library" id="snakeyaml" primary="true" />
 		<dependency type="module" id="core" />
 	</dependencies>
 	<wikiUri>299-restlet</wikiUri>

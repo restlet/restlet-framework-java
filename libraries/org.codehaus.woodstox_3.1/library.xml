@@ -1,0 +1,19 @@
+<library id="woodstox" symbolicName="org.codehaus.woodstox">
+	<name>Woodstox</name>
+	<description>Woodstox.</description>
+	<version>3.1</version>
+	<release>1</release>
+	<homeUri>woodstox.codehaus.org/</homeUri>
+	<downloadUri>http://woodstox.codehaus.org/Download</downloadUri>
+	<provider>The Codehaus foundation</provider>
+
+	<package id="stax2" name="org.codehaus.woodstox.stax2api">
+		<maven>
+			<groupId>org.codehaus.woodstox</groupId>
+			<artifactId>stax2-api</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

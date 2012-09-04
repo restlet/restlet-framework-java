@@ -13,6 +13,7 @@
 		<dependency type="library" id="jaxb-ri" />
 		<dependency type="library" id="jaxrs" primary="true" />
 		<dependency type="library" id="json" />
+		<dependency type="library" id="lang" />
 		<dependency type="library" id="servlet" />
 		<dependency type="module" id="core" />
 	</dependencies>

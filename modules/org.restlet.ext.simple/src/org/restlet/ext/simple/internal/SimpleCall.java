@@ -132,7 +132,7 @@ public class SimpleCall extends ServerCall {
         SSLEngine sslEngine = getSslEngine();
 
         if (sslEngine != null) {
-             SSLSession sslSession = sslEngine.getSession();
+            SSLSession sslSession = sslEngine.getSession();
 
             if (sslSession != null) {
                 try {
@@ -213,9 +213,7 @@ public class SimpleCall extends ServerCall {
             final List<String> names = this.request.getNames();
 
             for (String name : names) {
-                for (String value : this.request.getValues(name)) {
-                    result.add(name, value);
-                }
+                result.add(name, this.request.getValue(name));
             }
             this.requestHeadersAdded = true;
         }

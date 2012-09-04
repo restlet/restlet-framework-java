@@ -237,6 +237,12 @@
 		</and>
 	</condition>
 
+	<condition property="bundle.libraries.optional.dependencies" value="true">
+		<and>
+			<istrue value="${do-eclipse-pde}" />
+			<istrue value="${eclipse-pde-optional-dependencies}" />
+		</and>
+	</condition>
 
 	<!-- ======================= -->
 	<!-- ===  Paths setting  === -->

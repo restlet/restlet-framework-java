@@ -217,6 +217,7 @@ public class MetadataService extends Service {
      * <li>xsd: W3C XML Schema document</li>
      * <li>xsl, xslt: XSL Transform file</li>
      * <li>xul: XML User Interface Language file</li>
+     * <li>yaml: YAML text format</li>
      * <li>z: UNIX compressed archive file</li>
      * <li>zip: Zip archive</li>
      * </ul>
@@ -357,6 +358,8 @@ public class MetadataService extends Service {
         ext(dm, "xsl", MediaType.APPLICATION_W3C_XSLT);
         ext(dm, "xslt", MediaType.APPLICATION_W3C_XSLT);
         ext(dm, "xul", MediaType.APPLICATION_XUL);
+        ext(dm, "yaml", MediaType.APPLICATION_YAML);
+        ext(dm, "yaml", MediaType.TEXT_YAML);
         ext(dm, "z", MediaType.APPLICATION_COMPRESS);
         ext(dm, "zip", MediaType.APPLICATION_ZIP);
         // [enddef]

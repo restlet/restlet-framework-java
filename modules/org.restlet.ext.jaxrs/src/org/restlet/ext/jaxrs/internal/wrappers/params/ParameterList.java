@@ -67,6 +67,9 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.reflect.ConstructorUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
@@ -220,68 +223,58 @@ public class ParameterList {
         private Object convertParamValueInner(String paramValue,
                 DefaultValue defaultValue) throws ConvertParameterException,
                 WebApplicationException {
-            WebApplicationException constructorWae = null;
 
             Object convertWithConverterUtils = convertWithConverterUtils(paramValue);
             if (convertWithConverterUtils != null) {
                 return convertWithConverterUtils;
             }
 
-            try {
-                final Constructor<?> constr = this.convertTo
-                        .getConstructor(String.class);
-                return constr.newInstance(paramValue);
-            } catch (WebApplicationException wae) {
-                constructorWae = wae;
-            } catch (Exception e) {
-                // try valueOf(String) as next step
+            String value = paramValue;
+            if(StringUtils.isEmpty(paramValue) ){
+            	if(defaultValue == null || defaultValue.value() == null){
+            		return null;
+            	}
+            	value = defaultValue.value();
             }
-            Method valueOf;
-            try {
-                valueOf = this.convertTo.getMethod("valueOf", String.class);
-            } catch (SecurityException e) {
-                throw ConvertParameterException.object(this.convertTo,
-                        paramValue, e);
-            } catch (NoSuchMethodException e) {
-                throw ConvertParameterException.object(this.convertTo,
-                        paramValue, e);
-            }
-            try {
-                return valueOf.invoke(null, paramValue);
-            } catch (IllegalArgumentException e) {
-                if (constructorWae != null) {
-                    throw constructorWae;
-                }
-                throw ConvertParameterException.object(this.convertTo,
-                        paramValue, e);
-            } catch (IllegalAccessException e) {
-                if (constructorWae != null) {
-                    throw constructorWae;
-                }
-                throw ConvertParameterException.object(this.convertTo,
-                        paramValue, e);
-            } catch (InvocationTargetException ite) {
-                if (constructorWae != null) {
-                    throw constructorWae;
-                }
-                final Throwable cause = ite.getCause();
-                if (cause instanceof WebApplicationException) {
-                    throw (WebApplicationException) cause;
-                }
-                if (((paramValue == null) || (paramValue.length() <= 0))
-                        && (ite.getCause() instanceof IllegalArgumentException)) {
-                    if (defaultValue == null) {
-                        return null;
-                    }
 
-                    final String dfv = defaultValue.value();
-                    return convertParamValueInner(dfv, null);
-                }
-                throw ConvertParameterException.object(this.convertTo,
-                        paramValue, ite);
+            try {
+            	return ConstructorUtils.invokeConstructor(convertTo, value);
+            } catch (Exception e) {
+            	handleExceptionOnInvocation(value, e);
             }
+
+            // fixes for: https://github.com/restlet/restlet-framework-java/issues/645
+            try {
+            	return MethodUtils.invokeStaticMethod(convertTo, convertTo.isEnum() ? "fromString" : "valueOf", value);
+            } catch (Exception e) {
+            	handleExceptionOnInvocation(value, e);
+            }
+            
+            try {
+            	return MethodUtils.invokeStaticMethod(convertTo, convertTo.isEnum() ? "valueOf" : "fromString", value);
+            } catch (Exception e) {
+            	handleExceptionOnInvocation(value, e);
+            }
+            
+            throw ConvertParameterException.object(this.convertTo,
+    				value, new Exception("Target object has no String constructor, valueOf or fromString method."));
         }
 
+		private void handleExceptionOnInvocation(String value, Exception e)
+				throws ConvertParameterException {
+			final Throwable cause = e.getCause();
+			if (e instanceof WebApplicationException || cause instanceof WebApplicationException) {
+				throw (WebApplicationException) cause;
+
+			//swallow the typical invocation exceptions, convert real exceptions to ConvertParameterException
+			}else if(!(e instanceof NoSuchMethodException) && !(e instanceof IllegalAccessException) &&
+						!(e instanceof InvocationTargetException) && !(e instanceof InstantiationException) &&
+						!(e instanceof NoSuchMethodException) ) {
+				throw ConvertParameterException.object(this.convertTo,
+						value, e);
+			}
+		}
+        
         private Object convertWithConverterUtils(String paramValue) {
             Object result = null;
 
@@ -301,8 +294,7 @@ public class ParameterList {
                                         .get(i).getMediaType()),
                                 this.convertTo, null);
                     } catch (Exception exception) {
-                        // -- don't worry about it...proceed with the old style
-                        // conversion
+                        // -- don't worry about it...proceed with reflective calls
                     }
                 }
             }
