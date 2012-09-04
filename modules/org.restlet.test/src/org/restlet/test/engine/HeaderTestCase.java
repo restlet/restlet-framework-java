@@ -41,10 +41,15 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.MediaType;
 import org.restlet.engine.header.EncodingReader;
+import org.restlet.engine.header.Header;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderReader;
+import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.header.PreferenceReader;
 import org.restlet.engine.header.TokenReader;
+import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.representation.Representation;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -202,5 +207,25 @@ public class HeaderTestCase extends RestletTestCase {
             index++;
             value = hr.readRawValue();
         }
+    }
+    
+    public void testExtracting() {
+    	ArrayList<Header> headers = new ArrayList<Header>();
+    	String md5hash = "aaaaaaaaaaaaaaaa";
+    	String encodedWithPadding = Base64.encode(md5hash.getBytes(), false);// encodes to "YWFhYWFhYWFhYWFhYWFhYQ==", the "==" at the end is padding
+    	String encodedNoPadding = encodedWithPadding.substring(0,22);
+    	Header header = new Header(HeaderConstants.HEADER_CONTENT_MD5, encodedWithPadding);
+    	headers.add(header); 
+    	
+    	// extract Content-MD5 header with padded Base64 encoding, make sure it decodes to original hash
+    	Representation rep = HeaderUtils.extractEntityHeaders(headers, null);
+    	assertEquals(rep.getDigest().getAlgorithm(), org.restlet.data.Digest.ALGORITHM_MD5);
+    	assertEquals(new String(rep.getDigest().getValue()), md5hash);
+
+    	// extract header with UNpadded encoding, make sure it also decodes to original hash
+    	header.setValue(encodedNoPadding);
+    	rep = HeaderUtils.extractEntityHeaders(headers, null);
+    	assertEquals(rep.getDigest().getAlgorithm(), org.restlet.data.Digest.ALGORITHM_MD5);
+    	assertEquals(new String(rep.getDigest().getValue()), md5hash);
     }
 }
