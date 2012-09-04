@@ -53,7 +53,7 @@ public final class ChallengeScheme {
 
     /** Amazon S3 HTTP scheme. */
     public static final ChallengeScheme HTTP_AWS_S3 = new ChallengeScheme(
-            "HTTP_AWS_S3", "AWS_S3", "Amazon S3 HTTP authentication");
+            "HTTP_AWS_S3", "AWS", "Amazon S3 HTTP authentication");
 
     /** Amazon Query String HTTP scheme. */
     public static final ChallengeScheme HTTP_AWS_QUERY = new ChallengeScheme(
