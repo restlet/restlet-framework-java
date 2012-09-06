@@ -249,7 +249,28 @@ public class StrictConneg extends Conneg {
      * @return The score.
      */
     public float scoreMediaType(MediaType mediaType) {
-        return scoreMetadata(mediaType, getMediaTypePrefs());
+        float result = -1.0F;
+        float current;
+
+        if (mediaType != null) {
+            for (Preference<MediaType> pref : getMediaTypePrefs()) {
+                // passing false as 2nd arg causes media type params to be
+                // considered in inclusion test
+                if (pref.getMetadata().includes(mediaType, false)) {
+                    current = pref.getQuality();
+                } else {
+                    current = -1.0F;
+                }
+
+                if (current > result) {
+                    result = current;
+                }
+            }
+        } else {
+            result = 0.0F;
+        }
+
+        return result;
     }
 
     /**
@@ -349,7 +370,8 @@ public class StrictConneg extends Conneg {
                                     + (mediaTypeScore * 3.0F)
                                     + (characterSetScore * 2.0F)
                                     + (encodingScore * 1.0F) + (annotationScore * 2.0F)) / 12.0F;
-                            // Take into account the affinity with the input entity
+                            // Take into account the affinity with the input
+                            // entity
                             result = result
                                     * ((VariantInfo) variant).getInputScore();
                         } else {
