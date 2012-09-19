@@ -563,15 +563,20 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
     protected void generateSerializers() throws UnableToCompleteException {
         try {
             try {
-                this.stob = getSerializableTypeOracleBuilder2_3();
-            } catch (Exception e2_3) {
-                try {
-                    this.stob = getSerializableTypeOracleBuilder2_2();
-                } catch (Exception e2_2) {
-                    getLogger().log(TreeLogger.ERROR, "", e2_2);
-                    throw new UnableToCompleteException();
-                }
+                this.stob = getSerializableTypeOracleBuilder2_5();
+            } catch (Exception e2_5) {
+	            try {
+	                this.stob = getSerializableTypeOracleBuilder2_3();
+	            } catch (Exception e2_3) {
+	                try {
+	                    this.stob = getSerializableTypeOracleBuilder2_2();
+	                } catch (Exception e2_2) {
+	                    getLogger().log(TreeLogger.ERROR, "", e2_2);
+	                    throw new UnableToCompleteException();
+	                }
+	            }
             }
+
 
             this.stob.setTypeFilter(new RestletBlackListTypeFilter(getLogger(),
                     getContext().getPropertyOracle()));
@@ -792,6 +797,26 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
         Constructor<SerializableTypeOracleBuilder> c = null;
         c = SerializableTypeOracleBuilder.class.getDeclaredConstructor(
                 TreeLogger.class, PropertyOracle.class, genClass);
+        result = c.newInstance(getLogger(), getContext().getPropertyOracle(),
+                getContext());
+
+        return result;
+    }
+
+    /**
+     * Instantiates a SerializableTypeOracleBuilder instance using the GWT2.5
+     * constructor.
+     * 
+     * @return An instance of a {@link SerializableTypeOracleBuilder}.
+     * @throws Exception
+     */
+    private SerializableTypeOracleBuilder getSerializableTypeOracleBuilder2_5()
+            throws Exception {
+        SerializableTypeOracleBuilder result = null;
+
+        Constructor<SerializableTypeOracleBuilder> c = null;
+        c = SerializableTypeOracleBuilder.class.getDeclaredConstructor(
+                TreeLogger.class, PropertyOracle.class, GeneratorContext.class);
         result = c.newInstance(getLogger(), getContext().getPropertyOracle(),
                 getContext());
 
