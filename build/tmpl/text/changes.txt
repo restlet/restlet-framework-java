@@ -5,6 +5,7 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
+       - Added support of GWT 2.5.
     - API changes
     - Misc
     
