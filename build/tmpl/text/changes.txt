@@ -3,6 +3,11 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+    - Bug fixed
+    - API changes
+    - Misc
+
 - 2.1.0 (09/20/2012)
     - Bug fixed
        - Added support of GWT 2.5.
