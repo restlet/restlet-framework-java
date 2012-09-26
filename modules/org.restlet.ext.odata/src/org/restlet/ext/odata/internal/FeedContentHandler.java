@@ -90,6 +90,11 @@ public class FeedContentHandler<T> extends FeedReader {
 
     /** Used to glean text content. */
     StringBuilder sb = null;
+    
+    /**
+     * This is true if we are inside our 'feed' element. 
+     */
+    private boolean isInFeed;
 
     /**
      * Constructor.
@@ -160,25 +165,64 @@ public class FeedContentHandler<T> extends FeedReader {
         if (parseCount) {
             this.count = Integer.parseInt(sb.toString());
             parseCount = false;
-        } else if (parseEntry) {
+        }
+        /* Allow also the "entry" end handling to cascade.  */
+        else if (parseEntry || (entryHandler != null && localName.equals("entry"))) {
             // Delegate to the Entry reader
             entryHandler.endElement(uri, localName, qName);
         }
+        
+        if (!parseEntry &&
+        		uri.equals("http://www.w3.org/2005/Atom") && localName.equals("feed"))
+        {
+          /* Mark the end of 'feed' element pertaining to this handler. */
+        	isInFeed = false;
+        }
+
     }
 
     @Override
     public void endEntry(Entry entry) {
-        parseEntry = false;
+    		// Only add the entity to the feed if it is our entry closing,
+    		// not an inner entry of an expanded association.
+        if (entryHandler.closeEntry(entry))
+        {
+          parseEntry = false;
 
-        // Delegate to the Entry reader
-        entryHandler.endEntry(entry);
-        T entity = entryHandler.getEntity();
-
-        if (entity != null) {
-            entities.add(entity);
-        } else {
-            getLogger().warning("Can't add a null entity.");
+	        T entity = entryHandler.getEntity();
+	
+	        if (entity != null) {
+	            entities.add(entity);
+	        } else {
+	            getLogger().warning("Can't add a null entity.");
+	        }
         }
+    }
+
+    /**
+     * Handle the end of a "link" element.
+     * Doesn't close link that belongs to inner associations!
+     * @return Returns true if the caller should not pop state.
+     */
+    public boolean closeLink()
+    {
+    	if (parseEntry)
+    	{
+    		/*
+    		 * Cascade to any expanded associations.
+    		 * If someone from inner expanded associations has 
+    		 * matched the close of the "link" and has popped state, 
+    		 * inhibit my callers from popping state.
+    		 */
+    		return entryHandler.closeLink();
+    	}
+    	
+    	/*  
+    	 * If we have passed 'feed' tag but haven't met any 'entry' tag,
+    	 * inhibit callers from popping state when link closes,
+    	 * because in this case the link pertains to the feed.
+    	 */
+    	return isInFeed;
     }
 
     @Override
@@ -248,6 +292,11 @@ public class FeedContentHandler<T> extends FeedReader {
         } else if (parseEntry) {
             // Delegate to the Entry reader
             entryHandler.startElement(uri, localName, qName, attrs);
+        }
+        else if (uri.equals("http://www.w3.org/2005/Atom") && localName.equals("feed"))
+        {
+          /* Mark the start of the 'feed' element pertaining to this handler. */
+        	isInFeed = true;
         }
     }
 
