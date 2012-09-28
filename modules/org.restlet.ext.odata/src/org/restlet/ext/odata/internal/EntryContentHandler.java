@@ -77,9 +77,6 @@ public class EntryContentHandler<T> extends EntryReader {
     /** The currently parsed association. */
     private AssociationEnd association;
 
-    /** The currently parsed inline content. */
-    private Content inlineContent;
-
     /** The currently parsed inline entry. */
     private Entry inlineEntry;
 
@@ -183,30 +180,6 @@ public class EntryContentHandler<T> extends EntryReader {
     }
 
     @Override
-    public void endContent(Content content) {
-        if (State.ASSOCIATION == getState()) {
-            // Delegates to the inline content handler
-            if (association.isToMany()) {
-                inlineFeedHandler.endContent(content);
-            } else {
-                inlineEntryHandler.endContent(content);
-            }
-        } else {
-            /*
-             * The design implication which makes O(d^2) calls
-             * to inner expansions, where d is expansion depth, would pop 
-             * the state too many times if we are in deeper levels unless
-             * we add a condition. Don't pop many
-             * times for a single content close. 
-             * The current state being CONTENT is the desired condition.
-             */
-            if (State.CONTENT == getState()) {
-                popState();
-            }
-        }
-    }
-
-    @Override
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
         if (State.ASSOCIATION == getState()) {
@@ -231,12 +204,6 @@ public class EntryContentHandler<T> extends EntryReader {
                         inlineFeedHandler.endEntry(inlineEntry);
                     } else {
                         inlineEntryHandler.closeEntry(inlineEntry);
-                    }
-                } else if (localName.equalsIgnoreCase("content")) {
-                    if (association.isToMany()) {
-                        inlineFeedHandler.endContent(inlineContent);
-                    } else {
-                        inlineEntryHandler.endContent(inlineContent);
                     }
                 }
             }
@@ -458,6 +425,17 @@ public class EntryContentHandler<T> extends EntryReader {
 
             return true;
         }
+        
+        /* 
+         * Pop the path leaf since now our caller will not propagate
+         * a call to the endElement which would normally pop the leaf.
+         * Propagation is inhibited because it would result into 
+         * multiple invocations of closeLink method disrupting the
+         * balance of the opening and closing of links.
+         */
+        if (eltPath != null) {
+            if (!eltPath.isEmpty()) eltPath.remove(eltPath.size() - 1);
+        }
 
         /*
          * So, here we are not in ASSOCIATION state. Should we signal our
@@ -612,7 +590,6 @@ public class EntryContentHandler<T> extends EntryReader {
     public void startContent(Content content) {
         if (State.ENTRY == getState()) {
             pushState(State.CONTENT);
-            inlineContent = content;
             if (entityType != null && entityType.isBlob()
                     && entityType.getBlobValueRefProperty() != null) {
                 Reference ref = content.getExternalRef();
@@ -765,6 +742,10 @@ public class EntryContentHandler<T> extends EntryReader {
                     }
                 }
             }
+        } else if (getState() == null && 
+                "entry".equals(localName) && 
+                "http://www.w3.org/2005/Atom".equals(uri)) {
+            pushState(State.ENTRY);
         }
     }
 
@@ -783,7 +764,6 @@ public class EntryContentHandler<T> extends EntryReader {
             }
         } else {
             this.states = new ArrayList<State>();
-            pushState(State.ENTRY);
             eltPath = new ArrayList<String>();
             // Instantiate the entity
             try {
