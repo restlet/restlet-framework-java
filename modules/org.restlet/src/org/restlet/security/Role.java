@@ -139,24 +139,6 @@ public class Role implements Principal {
         return name;
     }
 
-    @Override
-    public int hashCode() {
-        int result;
-        if (name == null) {
-            result = super.hashCode();
-        } else if (getChildRoles().isEmpty()) {
-            result = name.hashCode();
-        } else {
-            StringBuilder sb = new StringBuilder(name).append("(");
-            for (Role role : getChildRoles()) {
-                sb.append(role.hashCode()).append("-");
-            }
-            sb.append(")");
-            result = sb.toString().hashCode();
-        }
-        return result;
-    }
-
     /**
      * Sets the modifiable list of child roles. This method clears the current
      * list and adds all entries in the parameter list.
