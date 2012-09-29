@@ -100,8 +100,6 @@ public class ContainerService extends org.restlet.ext.odata.Service {
      */
     public ContainerService() {
     	super("http://localhost:8111/CoopOData.svc");
-//        super("http://praktiki.metal.ntua.gr/CoopOData/CoopOData.svc");
-//        super("http://localhost:8080/CoopOData.svc");
     }
 
     /**
