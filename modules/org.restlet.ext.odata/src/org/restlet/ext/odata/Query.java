@@ -130,7 +130,7 @@ public class Query<T> implements Iterable<T> {
                     result = iterator.hasNext();
                 }
                 // Set the reference to the next page
-                nextPage = query.getNextPage();
+                nextPage = null;
             }
 
             return result;
