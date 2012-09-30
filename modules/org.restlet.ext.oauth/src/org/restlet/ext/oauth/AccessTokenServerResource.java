@@ -502,6 +502,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
             getLogger().warning(
                     "Could not find or match client secret " + clientSecret
                             + " : " + client.getClientSecret());
+            return null;
         }
 
         return client;
