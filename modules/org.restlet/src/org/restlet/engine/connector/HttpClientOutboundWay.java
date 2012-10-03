@@ -121,7 +121,8 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
     public void onError(Status status) {
         for (Response rsp : getMessages()) {
             if (rsp != getMessage()) {
-                getHelper().getOutboundMessages().add(rsp);
+                getMessages().remove(rsp);
+                getHelper().onOutboundError(status, rsp);
             }
         }
 
@@ -132,7 +133,9 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
     public void onTimeOut() {
         for (Response rsp : getMessages()) {
             if (rsp != getMessage()) {
-                getHelper().getOutboundMessages().add(rsp);
+                getMessages().remove(rsp);
+                getHelper().onOutboundError(
+                        Status.CONNECTOR_ERROR_COMMUNICATION, rsp);
             }
         }
 
