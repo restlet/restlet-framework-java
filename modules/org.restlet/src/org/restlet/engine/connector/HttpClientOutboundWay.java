@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Status;
+import org.restlet.engine.io.IoState;
 
 /**
  * HTTP client outbound way.
@@ -120,8 +121,7 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
     public void onError(Status status) {
         for (Response rsp : getMessages()) {
             if (rsp != getMessage()) {
-                getMessages().remove(rsp);
-                getHelper().onOutboundError(status, rsp);
+                getHelper().getOutboundMessages().add(rsp);
             }
         }
 
@@ -132,9 +132,7 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
     public void onTimeOut() {
         for (Response rsp : getMessages()) {
             if (rsp != getMessage()) {
-                getMessages().remove(rsp);
-                getHelper().onOutboundError(
-                        Status.CONNECTOR_ERROR_COMMUNICATION, rsp);
+                getHelper().getOutboundMessages().add(rsp);
             }
         }
 
@@ -144,11 +142,13 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
     @Override
     public void updateState() {
         // Update the IO state if necessary
-        if (!getMessages().isEmpty() && (getMessage() == null)) {
+        if (getMessage() == null && getConnection().getInboundWay().isAvailable()) {
             setMessage(getMessages().peek());
         }
 
         super.updateState();
     }
+    
+    
 
 }
