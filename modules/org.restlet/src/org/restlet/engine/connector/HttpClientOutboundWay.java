@@ -124,8 +124,10 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
                 getHelper().getOutboundMessages().add(rsp);
             }
         }
-
+        
         super.onError(status);
+
+        getHelper().getController().wakeup();
     }
 
     @Override
@@ -135,8 +137,10 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
                 getHelper().getOutboundMessages().add(rsp);
             }
         }
-
+        
         super.onTimeOut();
+
+        getHelper().getController().wakeup();
     }
 
     @Override
