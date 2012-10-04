@@ -427,11 +427,6 @@ public abstract class InboundWay extends Way {
                         "New inbound way NIO interest: " + getRegistration());
             }
         } else {
-        	// Read the next request
-        	if ((getIoState() == IoState.IDLE) && getConnection().getOutboundWay().getIoState() == IoState.INTEREST) {
-        		setIoState(IoState.INTEREST);
-        	}
-        	
             super.updateState();
         }
     }

@@ -784,8 +784,8 @@ public class Connection<T extends Connector> implements SelectionListener {
                 oldState = getRegistration().toString();
             }
 
-            getOutboundWay().updateState();
             getInboundWay().updateState();
+            getOutboundWay().updateState();
 
             // Update the registration
             result = getRegistration().setInterestOperations(

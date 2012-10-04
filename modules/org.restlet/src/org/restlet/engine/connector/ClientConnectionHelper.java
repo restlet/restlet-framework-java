@@ -281,7 +281,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
         // Try to reuse an existing connection for the same host and
         // port
         int hostConnectionCount = 0;
-        int bestScore = Integer.MAX_VALUE;
+        int bestScore = 0;
         boolean foundConn = false;
 
         // Determine the target host domain and port of the request.

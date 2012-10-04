@@ -155,15 +155,10 @@ public class ConnectionController extends Controller implements Runnable,
 
     @Override
     protected void doRun(long sleepTime) throws IOException {
-    	getHelper().getLogger().log(Level.FINEST, "helper.control()");
         super.doRun(sleepTime);
-        getHelper().getLogger().log(Level.FINEST, "controlConnections()");
         controlConnections();
-        getHelper().getLogger().log(Level.FINEST, "registerKeys()");
         registerKeys();
-        getHelper().getLogger().log(Level.FINEST, "updateKeys()");
         updateKeys();
-        getHelper().getLogger().log(Level.FINEST, "selectKeys(sleepTime)");
         selectKeys(sleepTime);
     }
 
@@ -285,7 +280,7 @@ public class ConnectionController extends Controller implements Runnable,
                     "NIO controller about to sleep " + sleepTime + " ms...");
         }
 
-        int selectCount = getSelector().select(sleepTime);
+        int selectCount = getSelector().select();
 
         if (selectCount > 0) {
             if (getHelper().getLogger().isLoggable(Level.FINER)) {
