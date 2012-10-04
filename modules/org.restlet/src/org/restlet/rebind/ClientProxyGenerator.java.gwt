@@ -183,13 +183,13 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
         } else {
             type = null;
         }
-	StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         if (type == null) {
-	    buildTypeName(parameterType, sb);
+            buildTypeName(parameterType, sb);
         } else {
             buildTypeName(genericParameterType, sb);
         }
-	return sb.toString();
+        return sb.toString();
     }
 
     /**
@@ -202,12 +202,12 @@ public class ClientProxyGenerator extends com.google.gwt.core.ext.Generator {
      */
     private void buildTypeName(java.lang.reflect.Type type, StringBuilder sb) {
         if (type instanceof Class<?>) {
-	    if (((Class<?>) type).isArray()) {
-	        buildTypeName(((Class<?>) type).getComponentType(), sb);
-		sb.append("[]");
-	    } else {	   
-	        sb.append(((Class<?>) type).getName());
-	    }
+            if (((Class<?>) type).isArray()) {
+                buildTypeName(((Class<?>) type).getComponentType(), sb);
+                sb.append("[]");
+            } else {	   
+                sb.append(((Class<?>) type).getName());
+            }
         } else if (type instanceof GenericArrayType) {
             buildTypeName(((GenericArrayType) type).getGenericComponentType(),
                     sb);
