@@ -123,6 +123,8 @@ public class HttpClientInboundWay extends ClientInboundWay {
         }
 
         super.onCompleted(endDetected);
+        
+        getHelper().getController().wakeup();
     }
 
     @Override
@@ -148,18 +150,6 @@ public class HttpClientInboundWay extends ClientInboundWay {
         }
 
         super.onTimeOut();
-    }
-
-    @Override
-    public void updateState() {
-        if ((getIoState() == IoState.IDLE)
-                && (getMessageState() != MessageState.BODY) && !isEmpty()) {
-            // Read the next response
-            setIoState(IoState.INTEREST);
-        }
-
-        // Update the registration
-        super.updateState();
     }
 
 }

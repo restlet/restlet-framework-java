@@ -398,7 +398,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getControllerSleepTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "controllerSleepTimeMs", "1"));
+                "controllerSleepTimeMs", "60000"));
     }
 
     /**
