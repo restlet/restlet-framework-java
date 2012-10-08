@@ -83,7 +83,6 @@ public class AsynchroneTestCase extends RestletTestCase {
  				
  				HttpClientInboundWay.items.add(Integer.valueOf(item));
  				
-// 				System.out.println("handle: " + request);
  				try {
  					assertEquals(item, Integer.toString(response.getAge()));
  					if (responseEntityExpected(request.getMethod())) {
@@ -180,7 +179,7 @@ public class AsynchroneTestCase extends RestletTestCase {
 	}
 	
 	public void testGet() throws Exception {
-        testCall(context, 1000, Method.GET);
+        testCall(context, 10000, Method.GET);
     }
 	
 	public void testPost() throws Exception {

@@ -122,7 +122,6 @@ public class HttpClientInboundWay extends ClientInboundWay {
     @Override
     public void onCompleted(boolean endDetected) throws IOException {
         getMessages().remove(getMessage());
-//        System.out.println("InboundWay#onCompleted " + getMessage().getRequest());
         
         super.onCompleted(endDetected);
         

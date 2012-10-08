@@ -139,6 +139,13 @@ public abstract class ClientInboundWay extends InboundWay {
 
         super.onCompleted(endDetected);
     }
+    
+//    @Override
+//    protected void onPostProcessing() {
+//    	if (!isAvailable()) {    		
+//    		super.onPostProcessing();
+//    	}
+//    }
 
     @Override
     protected void onReceived() throws IOException {
@@ -165,10 +172,7 @@ public abstract class ClientInboundWay extends InboundWay {
     protected void onReceived(Response message) throws IOException {
         // Add it to the helper queue
         getHelper().getInboundMessages().add(getMessage());
-//        
-//            System.out.println((getHelper().isServerSide()? "Server ": "Client ") +
-//                    "InboundWay#onReceived: " + getMessage().getRequest());
-//        
+        
         if (getMessage().isEntityAvailable()) {
             // Let's wait for the entity to be consumed by the caller
             setIoState(IoState.IDLE);
@@ -258,6 +262,16 @@ public abstract class ClientInboundWay extends InboundWay {
             setMessageState(MessageState.HEADERS);
             clearLineBuilder();
         }
+    }
+    
+    @Override
+    public void updateState() {
+    	// Read the next request
+    	if (getMessageState() == MessageState.START) {
+    		setIoState(IoState.INTEREST);
+    	}
+
+    	super.updateState();
     }
 
 }

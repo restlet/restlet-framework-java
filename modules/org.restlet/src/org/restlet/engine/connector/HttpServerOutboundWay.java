@@ -114,7 +114,7 @@ public class HttpServerOutboundWay extends ServerOutboundWay {
                 inboundMessages.remove(inboundMessage);
             }
         }
-//        System.out.println("Server completed: " + getMessage().getRequest());
+        
         super.onCompleted(endDetected);
     }
 

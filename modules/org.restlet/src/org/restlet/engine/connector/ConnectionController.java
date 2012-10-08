@@ -287,10 +287,8 @@ public class ConnectionController extends Controller implements Runnable,
                     "NIO controller about to sleep " + sleepTime + " ms...");
         }
 
-//        System.out.println((getHelper().isServerSide()? "Server: ": "Client: ") + (System.currentTimeMillis() - start) + "ms");
         int selectCount = getSelector().select(sleepTime);
-//        start = System.currentTimeMillis();
-
+        
         if (selectCount > 0) {
             if (getHelper().getLogger().isLoggable(Level.FINER)) {
                 getHelper().getLogger().log(Level.FINER,
