@@ -81,8 +81,6 @@ public class AsynchroneTestCase extends RestletTestCase {
  			public void handle(Request request, Response response) {
  				String item = request.getResourceRef().getQueryAsForm().getFirstValue("item");
  				
- 				HttpClientInboundWay.items.add(Integer.valueOf(item));
- 				
  				try {
  					assertEquals(item, Integer.toString(response.getAge()));
  					if (responseEntityExpected(request.getMethod())) {
@@ -95,7 +93,6 @@ public class AsynchroneTestCase extends RestletTestCase {
  					}
  				} finally { 					
  					latch.countDown();
-// 					System.out.println("item: " + item + ", " + latch.getCount());
  				}
  			}
  		};

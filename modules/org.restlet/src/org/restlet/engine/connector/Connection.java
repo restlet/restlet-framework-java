@@ -804,7 +804,7 @@ public class Connection<T extends Connector> implements SelectionListener {
                 }
             }
         }
-        
+
         return result;
     }
 }

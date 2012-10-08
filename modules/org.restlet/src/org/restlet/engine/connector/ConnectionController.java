@@ -286,7 +286,7 @@ public class ConnectionController extends Controller implements Runnable,
         }
 
         int selectCount = getSelector().select(sleepTime);
-        
+
         if (selectCount > 0) {
             if (getHelper().getLogger().isLoggable(Level.FINER)) {
                 getHelper().getLogger().log(Level.FINER,

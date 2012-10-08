@@ -165,7 +165,7 @@ public abstract class ClientInboundWay extends InboundWay {
     protected void onReceived(Response message) throws IOException {
         // Add it to the helper queue
         getHelper().getInboundMessages().add(getMessage());
-        
+
         if (getMessage().isEntityAvailable()) {
             // Let's wait for the entity to be consumed by the caller
             setIoState(IoState.IDLE);

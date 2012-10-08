@@ -124,7 +124,7 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
                 getHelper().onOutboundError(status, rsp);
             }
         }
-        
+
         super.onError(status);
 
         getHelper().getController().wakeup();
@@ -139,7 +139,7 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
                         Status.CONNECTOR_ERROR_COMMUNICATION, rsp);
             }
         }
-        
+
         super.onTimeOut();
 
         getHelper().getController().wakeup();
@@ -154,7 +154,5 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
 
         super.updateState();
     }
-    
-    
 
 }

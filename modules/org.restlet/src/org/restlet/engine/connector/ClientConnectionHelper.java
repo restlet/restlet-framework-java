@@ -314,7 +314,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                             bestScore = currScore;
                             result = currConn;
                         }
-                        
+
                         hostConnectionCount++;
                     }
                 }
