@@ -112,9 +112,9 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
                 getConnection().getInboundWay().setMessageState(
                         MessageState.START);
             }
+//            System.out.println("sent: " + getMessage().getRequest());
+            super.onCompleted(endDetected);
         }
-
-        super.onCompleted(endDetected);
     }
 
     @Override
@@ -125,8 +125,10 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
                 getHelper().onOutboundError(status, rsp);
             }
         }
-
+        
         super.onError(status);
+
+        getHelper().getController().wakeup();
     }
 
     @Override
@@ -138,8 +140,10 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
                         Status.CONNECTOR_ERROR_COMMUNICATION, rsp);
             }
         }
-
+        
         super.onTimeOut();
+
+        getHelper().getController().wakeup();
     }
 
     @Override

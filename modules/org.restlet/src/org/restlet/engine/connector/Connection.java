@@ -804,6 +804,8 @@ public class Connection<T extends Connector> implements SelectionListener {
                 }
             }
         }
+        
+//        System.out.println((isServerSide()? "Server: ": "Client: ") + this);
 
         return result;
     }

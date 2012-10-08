@@ -183,10 +183,11 @@ public class ReadableBufferedChannel extends
      *            True if the end of the channel has been reached.
      */
     protected void setEndReached(boolean endReached) throws IOException {
-        this.endReached = endReached;
-
-        if (this.endReached) {
-            onCompleted(false);
+        if (this.endReached != endReached) {
+        	this.endReached = endReached;
+        	if (this.endReached) {
+        		onCompleted(false);
+        	}
         }
     }
 
