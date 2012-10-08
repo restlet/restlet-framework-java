@@ -34,7 +34,10 @@
 package org.restlet.engine.connector;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.restlet.Client;
@@ -48,7 +51,7 @@ import org.restlet.engine.io.IoState;
  * @author Jerome Louvel
  */
 public class HttpClientInboundWay extends ClientInboundWay {
-
+	public static final Set<Integer> items = Collections.synchronizedSet(new HashSet<Integer>());
     /** The queue of messages. */
     private final Queue<Response> messages;
 
@@ -118,15 +121,14 @@ public class HttpClientInboundWay extends ClientInboundWay {
 
     @Override
     public void onCompleted(boolean endDetected) throws IOException {
-        if (getMessage() != null) {
-            getMessages().remove(getMessage());
-        }
-
+        getMessages().remove(getMessage());
+//        System.out.println("InboundWay#onCompleted " + getMessage().getRequest());
+        
         super.onCompleted(endDetected);
         
         getHelper().getController().wakeup();
     }
-
+    
     @Override
     public void onError(Status status) {
         for (Response rsp : getMessages()) {

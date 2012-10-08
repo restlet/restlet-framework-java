@@ -212,6 +212,9 @@ public abstract class InboundWay extends Way {
     @Override
     public void onCompleted(boolean endDetected) throws IOException {
         super.onCompleted(endDetected);
+        
+        //wakeup the controller to update the registrations, since this callback can be called asynchronous
+        getHelper().getController().wakeup();
 
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger().finer("Inbound message completed");
@@ -428,7 +431,7 @@ public abstract class InboundWay extends Way {
             }
         } else {
         	// Read the next request
-        	if ((getIoState() == IoState.IDLE) && getConnection().getOutboundWay().getIoState() == IoState.INTEREST) {
+        	if ((getIoState() == IoState.IDLE) && getConnection().getOutboundWay().isAvailable()) {
         		setIoState(IoState.INTEREST);
         	}
         	

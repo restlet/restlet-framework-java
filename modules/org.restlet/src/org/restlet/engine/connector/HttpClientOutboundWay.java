@@ -112,9 +112,9 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
                 getConnection().getInboundWay().setMessageState(
                         MessageState.START);
             }
+//            System.out.println("sent: " + getMessage().getRequest());
+            super.onCompleted(endDetected);
         }
-
-        super.onCompleted(endDetected);
     }
 
     @Override

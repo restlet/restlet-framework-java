@@ -66,6 +66,8 @@ public class ConnectionController extends Controller implements Runnable,
     /** The list of updated selection registrations. */
     private final Queue<SelectionRegistration> updatedRegistrations;
 
+	private long start;
+
     /**
      * Constructor.
      * 
@@ -112,8 +114,8 @@ public class ConnectionController extends Controller implements Runnable,
      * @throws IOException
      */
     protected void controlConnections() throws IOException {
-        for (int i = 0; i < getHelper().getConnections().size(); i++) {
-            controlConnection(getHelper().getConnections().get(i));
+    	for (Connection<?> connection: getHelper().getConnections()) {
+            controlConnection(connection);
         }
     }
 
@@ -285,7 +287,9 @@ public class ConnectionController extends Controller implements Runnable,
                     "NIO controller about to sleep " + sleepTime + " ms...");
         }
 
+//        System.out.println((getHelper().isServerSide()? "Server: ": "Client: ") + (System.currentTimeMillis() - start) + "ms");
         int selectCount = getSelector().select(sleepTime);
+//        start = System.currentTimeMillis();
 
         if (selectCount > 0) {
             if (getHelper().getLogger().isLoggable(Level.FINER)) {
