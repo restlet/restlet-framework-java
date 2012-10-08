@@ -139,13 +139,6 @@ public abstract class ClientInboundWay extends InboundWay {
 
         super.onCompleted(endDetected);
     }
-    
-//    @Override
-//    protected void onPostProcessing() {
-//    	if (!isAvailable()) {    		
-//    		super.onPostProcessing();
-//    	}
-//    }
 
     @Override
     protected void onReceived() throws IOException {

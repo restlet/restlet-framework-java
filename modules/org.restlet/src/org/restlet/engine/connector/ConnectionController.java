@@ -66,8 +66,6 @@ public class ConnectionController extends Controller implements Runnable,
     /** The list of updated selection registrations. */
     private final Queue<SelectionRegistration> updatedRegistrations;
 
-	private long start;
-
     /**
      * Constructor.
      * 

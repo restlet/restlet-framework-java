@@ -618,7 +618,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      *            The response.
      */
     protected void unblock(Response response) {
-    	Request request = response.getRequest();
         if (response.getRequest() != null) {
             CountDownLatch latch = (CountDownLatch) response.getRequest()
                     .getAttributes().get(CONNECTOR_LATCH);

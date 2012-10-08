@@ -224,21 +224,18 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     protected boolean control() {
         boolean result = false;
+        int size;
 
         // Control pending inbound messages
-        Response inboundResponse = getInboundMessages().poll();
-        while (inboundResponse != null) {
-        	handleInbound(inboundResponse);
-        	inboundResponse = getInboundMessages().poll();
-        	result = true;
+        size = getInboundMessages().size();
+        for (int i = 0; i < size; i++) {
+            handleInbound(getInboundMessages().poll());
         }
 
         // Control pending outbound messages
-        Response outboundResponse = getOutboundMessages().poll();
-        while (outboundResponse != null) {
-        	handleOutbound(outboundResponse);
-        	outboundResponse = getOutboundMessages().poll();
-        	result = true;
+        size = getInboundMessages().size();
+        for (int i = 0; i < size; i++) {
+            handleOutbound(getOutboundMessages().poll());
         }
 
         return result;
