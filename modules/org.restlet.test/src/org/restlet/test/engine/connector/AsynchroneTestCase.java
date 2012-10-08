@@ -179,7 +179,7 @@ public class AsynchroneTestCase extends RestletTestCase {
 	}
 	
 	public void testGet() throws Exception {
-        testCall(context, 10000, Method.GET);
+        testCall(context, 1000, Method.GET);
     }
 	
 	public void testPost() throws Exception {
