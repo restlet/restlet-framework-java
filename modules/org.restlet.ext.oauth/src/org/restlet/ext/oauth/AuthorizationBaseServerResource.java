@@ -98,8 +98,10 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
         if (errorUri != null && errorUri.length() > 0) {
             cb.addQueryParameter(ERROR_URI, errorUri);
         }
-        cb.setFragment(cb.getQuery());
-        cb.setQuery("");
+        if (fragment) {
+            cb.setFragment(cb.getQuery());
+            cb.setQuery("");
+        }
         redirectTemporary(cb);
     }
     
