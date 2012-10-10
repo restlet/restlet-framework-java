@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>OAuth2Sample</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="row" style="margin-top:50px;">
+                <div class="span8 offset2">
+                    <form action="${target}" method="get" class="form-horizontal">
+                        <legend>Authorize</legend>
+                        <h4>The following private info is requested</h4>
+                        <#list requestingScopes as r> <input type="checkbox" name="scope" value="${r}" checked />
+                        <b>${r}</b><br/>
+                        </#list> 
+                        <#if grantedScopes?has_content>
+                        <hr />
+                        <h4>Previously approved scopes</h4>
+                        <#list grantedScopes as g> <input type="checkbox" name="scope" value="${g}" checked />
+                        <b>${g}</b><br/>
+                        </#list>
+                        </#if>
+                        <div class="form-actions">
+                            <input type="submit" name="action" value="Accept" class="btn btn-large btn-primary" />
+                            <input type="submit" name="action" value="Reject" class="btn btn-large" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
