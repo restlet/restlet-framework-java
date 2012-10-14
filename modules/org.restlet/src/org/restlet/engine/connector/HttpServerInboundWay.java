@@ -92,11 +92,6 @@ public class HttpServerInboundWay extends ServerInboundWay {
     }
 
     @Override
-    public boolean isAvailable() {
-        return super.isAvailable() && getMessages().isEmpty();
-    }
-
-    @Override
     public boolean isEmpty() {
         return super.isEmpty() && getMessages().isEmpty();
     }
@@ -139,11 +134,7 @@ public class HttpServerInboundWay extends ServerInboundWay {
 
     @Override
     public void updateState() {
-        Queue<Response> outboundMessages = ((HttpServerOutboundWay) getConnection()
-                .getOutboundWay()).getMessages();
-
-        if ((getIoState() == IoState.IDLE) && getMessages().isEmpty()
-                && outboundMessages.isEmpty()) {
+        if (isAvailable()) {
             // Read the next request
             setIoState(IoState.INTEREST);
         }
