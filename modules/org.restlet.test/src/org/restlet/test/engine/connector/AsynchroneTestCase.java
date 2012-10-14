@@ -48,7 +48,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.connector.HttpClientInboundWay;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
@@ -60,66 +59,71 @@ import org.restlet.test.RestletTestCase;
  */
 public class AsynchroneTestCase extends RestletTestCase {
 
-	private Context context;
-	private Component clientComponent;
-	private Component originComponent;
-	
-	private boolean requestEntityExpected(Method method) {
-		return method == Method.POST || method == Method.PUT;
-	}
-	
-	private boolean responseEntityExpected(Method method) {
-		return method == Method.GET || method == Method.PUT;
-	}
-	
+    private Context context;
+
+    private Component clientComponent;
+
+    private Component originComponent;
+
+    private boolean requestEntityExpected(Method method) {
+        return method == Method.POST || method == Method.PUT;
+    }
+
+    private boolean responseEntityExpected(Method method) {
+        return method == Method.GET || method == Method.PUT;
+    }
+
     private void testCall(Context context, int count, Method method)
             throws Exception {
-    	final CountDownLatch latch = new CountDownLatch(count);
-    	
-    	final Uniform responseHandler = new Uniform() {
- 			@Override
- 			public void handle(Request request, Response response) {
- 				String item = request.getResourceRef().getQueryAsForm().getFirstValue("item");
- 				
- 				try {
- 					assertEquals(item, Integer.toString(response.getAge()));
- 					if (responseEntityExpected(request.getMethod())) {
- 						assertEquals(Status.SUCCESS_OK, response.getStatus());
- 						assertTrue(response.isEntityAvailable());
- 						assertNotNull(response.getEntityAsText());
- 					} else {
- 						assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
- 						assertFalse(response.isEntityAvailable());
- 					}
- 				} finally { 					
- 					latch.countDown();
- 				}
- 			}
- 		};
- 		
- 		Restlet client = context.getClientDispatcher();
- 		for (int i = 0; i < count; ++i) {
- 			Representation rep = null;
- 			if (requestEntityExpected(method)) {
- 				rep = new StringRepresentation("Item: " + i);
- 			}
- 			
- 			Reference ref = new Reference("http://localhost:" + TEST_PORT + "/?item=" + i);
- 			Request request = new Request(method, ref, rep);
- 			request.setOnResponse(responseHandler);
- 			
- 			client.handle(request);
- 		}
- 		
- 		latch.await();
+        final CountDownLatch latch = new CountDownLatch(count);
+
+        final Uniform responseHandler = new Uniform() {
+            @Override
+            public void handle(Request request, Response response) {
+                String item = request.getResourceRef().getQueryAsForm()
+                        .getFirstValue("item");
+
+                try {
+                    assertEquals(item, Integer.toString(response.getAge()));
+                    if (responseEntityExpected(request.getMethod())) {
+                        assertEquals(Status.SUCCESS_OK, response.getStatus());
+                        assertTrue(response.isEntityAvailable());
+                        assertNotNull(response.getEntityAsText());
+                    } else {
+                        assertEquals(Status.SUCCESS_NO_CONTENT,
+                                response.getStatus());
+                        assertFalse(response.isEntityAvailable());
+                    }
+                } finally {
+                    latch.countDown();
+                }
+            }
+        };
+
+        Restlet client = context.getClientDispatcher();
+        for (int i = 0; i < count; ++i) {
+            Representation rep = null;
+            if (requestEntityExpected(method)) {
+                rep = new StringRepresentation("Item: " + i);
+            }
+
+            Reference ref = new Reference("http://localhost:" + TEST_PORT
+                    + "/?item=" + i);
+            Request request = new Request(method, ref, rep);
+            request.setOnResponse(responseHandler);
+
+            client.handle(request);
+        }
+
+        latch.await();
     }
-    
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		
-    	// Create components
-    	clientComponent = new Component();
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        // Create components
+        clientComponent = new Component();
         originComponent = new Component();
 
         // Create a new Restlet that will display some path information.
@@ -127,76 +131,80 @@ public class AsynchroneTestCase extends RestletTestCase {
                 .createChildContext()) {
             @Override
             public void handle(Request request, Response response) {
-            	//lets set the item number as age ;-)
-            	response.setAge(Integer.valueOf(request.getResourceRef().getQueryAsForm().getFirstValue("item")));
-            	
-            	if (responseEntityExpected(request.getMethod())) {            		
-            		// Print the requested URI path
-            		String message = "Resource URI:  "
-            				+ request.getResourceRef() + '\n' + "Base URI:      "
-            				+ request.getResourceRef().getBaseRef() + '\n'
-            				+ "Remaining part: "
-            				+ request.getResourceRef().getRemainingPart() + '\n'
-            				+ "Method name: " + request.getMethod() + '\n';
-            		
-            		if (requestEntityExpected(request.getMethod())) {       
-            			message += request.getEntityAsText();
-            			request.getEntity().release();
-            		}
-            		
-            		response.setEntity(new StringRepresentation(message,
-            				MediaType.TEXT_PLAIN));
-            		
-            		response.setStatus(Status.SUCCESS_OK);
-            	} else {
-            		//consume entity
-					if (requestEntityExpected(request.getMethod()))
- 						request.getEntityAsText();
-            		
-            		response.setStatus(Status.SUCCESS_NO_CONTENT);
-            	}
+                // lets set the item number as age ;-)
+                response.setAge(Integer.valueOf(request.getResourceRef()
+                        .getQueryAsForm().getFirstValue("item")));
+
+                if (responseEntityExpected(request.getMethod())) {
+                    // Print the requested URI path
+                    String message = "Resource URI:  "
+                            + request.getResourceRef() + '\n'
+                            + "Base URI:      "
+                            + request.getResourceRef().getBaseRef() + '\n'
+                            + "Remaining part: "
+                            + request.getResourceRef().getRemainingPart()
+                            + '\n' + "Method name: " + request.getMethod()
+                            + '\n';
+
+                    if (requestEntityExpected(request.getMethod())) {
+                        message += request.getEntityAsText();
+                        request.getEntity().release();
+                    }
+
+                    response.setEntity(new StringRepresentation(message,
+                            MediaType.TEXT_PLAIN));
+
+                    response.setStatus(Status.SUCCESS_OK);
+                } else {
+                    // consume entity
+                    if (requestEntityExpected(request.getMethod()))
+                        request.getEntityAsText();
+
+                    response.setStatus(Status.SUCCESS_NO_CONTENT);
+                }
             }
         };
-        
+
         originComponent.getDefaultHost().attach("", trace);
 
         // Create the server connectors
-        Server server = originComponent.getServers().add(Protocol.HTTP, TEST_PORT);
+        Server server = originComponent.getServers().add(Protocol.HTTP,
+                TEST_PORT);
         server.getContext().getParameters().add("maxQueued", "-1");
-        
+
         // Create the client connectors
         Client client = clientComponent.getClients().add(Protocol.HTTP);
         context = client.getContext();
         context.getParameters().add("maxQueued", "-1");
         context.getParameters().add("maxConnectionsPerHost", "6");
-        
+
         // Now, let's start the components!
         originComponent.start();
         clientComponent.start();
-	}
-	
-	public void testGet() throws Exception {
+    }
+
+    public void testGet() throws Exception {
         testCall(context, 1000, Method.GET);
     }
-	
-	public void testPost() throws Exception {
+
+    public void testPost() throws Exception {
         testCall(context, 1000, Method.POST);
     }
-	
-	public void testPut() throws Exception {
+
+    public void testPut() throws Exception {
         testCall(context, 1000, Method.PUT);
     }
-	
-	public void testDelete() throws Exception {
+
+    public void testDelete() throws Exception {
         testCall(context, 1000, Method.DELETE);
     }
-	
-	@Override
-	protected void tearDown() throws Exception {
-		// Stop the components
-		clientComponent.stop();
-		originComponent.stop();
 
-		super.tearDown();
-	}
+    @Override
+    protected void tearDown() throws Exception {
+        // Stop the components
+        clientComponent.stop();
+        originComponent.stop();
+
+        super.tearDown();
+    }
 }
