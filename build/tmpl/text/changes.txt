@@ -9,6 +9,8 @@ Changes log
          Contributed by Jeff Plourde.
        - Fixed internal HTTP connector to enable handling of asynchronous
          client requests. Contributed by Florian Buclkers
+	   - Fixed controllerSleepTimeMs default value in documentation for 
+	     internal HTTP connector.
     - API changes
     - Misc
 
