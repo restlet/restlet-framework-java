@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 
+// [excludes gwt]
 /**
  * Readable byte channel based on a source socket channel that must only be
  * partially read. It is capable of first using the remaining buffer before
@@ -182,10 +183,12 @@ public class ReadableBufferedChannel extends
      *            True if the end of the channel has been reached.
      */
     protected void setEndReached(boolean endReached) throws IOException {
-        this.endReached = endReached;
+        if (this.endReached != endReached) {
+            this.endReached = endReached;
 
-        if (this.endReached) {
-            onCompleted(false);
+            if (this.endReached) {
+                onCompleted(false);
+            }
         }
     }
 

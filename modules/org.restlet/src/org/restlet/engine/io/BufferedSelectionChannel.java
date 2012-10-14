@@ -37,6 +37,7 @@ import java.io.IOException;
 
 import org.restlet.util.SelectionRegistration;
 
+// [excludes gwt]
 /**
  * Byte channel wrapping a byte buffer.
  */

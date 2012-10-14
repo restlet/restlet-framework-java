@@ -320,7 +320,7 @@ public class Buffer {
                 break;
 
             default:
-                // Do nothing
+                // Nothing to do
                 break;
             }
         }
