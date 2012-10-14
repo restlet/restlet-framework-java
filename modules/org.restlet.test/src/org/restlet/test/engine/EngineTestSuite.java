@@ -36,6 +36,7 @@ package org.restlet.test.engine;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.restlet.test.engine.connector.AsynchroneTestCase;
 import org.restlet.test.engine.connector.HttpInboundRequestTestCase;
 import org.restlet.test.engine.io.BioUtilsTestCase;
 import org.restlet.test.engine.io.BufferTestCase;
@@ -70,6 +71,7 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(ContentTypeTestCase.class);
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpCallTestCase.class);
+        addTestSuite(AsynchroneTestCase.class);
         addTestSuite(HttpInboundRequestTestCase.class);
         addTestSuite(ImmutableDateTestCase.class);
         addTestSuite(UnclosableInputStreamTestCase.class);
