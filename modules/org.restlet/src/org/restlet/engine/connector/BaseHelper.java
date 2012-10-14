@@ -228,12 +228,14 @@ public abstract class BaseHelper<T extends Connector> extends
 
         // Control pending inbound messages
         size = getInboundMessages().size();
+
         for (int i = 0; i < size; i++) {
             handleInbound(getInboundMessages().poll());
         }
 
         // Control pending outbound messages
         size = getOutboundMessages().size();
+
         for (int i = 0; i < size; i++) {
             handleOutbound(getOutboundMessages().poll());
         }

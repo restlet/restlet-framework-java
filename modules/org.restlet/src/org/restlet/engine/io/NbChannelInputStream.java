@@ -217,7 +217,7 @@ public class NbChannelInputStream extends InputStream implements
 
                                     // Stop listening at this point
                                     selectionRegistration.suspend();
-                                    
+
                                     // Unblock the user thread
                                     selectionRegistration.unblock();
                                 }
@@ -225,7 +225,7 @@ public class NbChannelInputStream extends InputStream implements
                 } else {
                     this.selectionRegistration.resume();
                 }
-                
+
                 // Block until new content arrives or a timeout occurs
                 this.selectionRegistration.block();
 

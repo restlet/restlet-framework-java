@@ -259,12 +259,11 @@ public abstract class ClientInboundWay extends InboundWay {
     
     @Override
     public void updateState() {
-    	// Read the next request
-    	if (getMessageState() == MessageState.START) {
-    		setIoState(IoState.INTEREST);
-    	}
+        // Read the next request
+        if (getMessageState() == MessageState.START) {
+            setIoState(IoState.INTEREST);
+        }
 
-    	super.updateState();
+        super.updateState();
     }
-
 }

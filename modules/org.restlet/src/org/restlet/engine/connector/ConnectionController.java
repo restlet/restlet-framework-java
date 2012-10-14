@@ -112,7 +112,7 @@ public class ConnectionController extends Controller implements Runnable,
      * @throws IOException
      */
     protected void controlConnections() throws IOException {
-    	for (Connection<?> connection: getHelper().getConnections()) {
+        for (Connection<?> connection: getHelper().getConnections()) {
             controlConnection(connection);
         }
     }

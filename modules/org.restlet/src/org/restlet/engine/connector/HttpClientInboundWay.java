@@ -121,7 +121,6 @@ public class HttpClientInboundWay extends ClientInboundWay {
         getMessages().remove(getMessage());
         
         super.onCompleted(endDetected);
-        
         getHelper().getController().wakeup();
     }
 

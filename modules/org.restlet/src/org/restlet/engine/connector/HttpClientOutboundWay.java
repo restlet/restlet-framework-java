@@ -126,7 +126,6 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
         }
 
         super.onError(status);
-
         getHelper().getController().wakeup();
     }
 
@@ -141,7 +140,6 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
         }
 
         super.onTimeOut();
-
         getHelper().getController().wakeup();
     }
 
