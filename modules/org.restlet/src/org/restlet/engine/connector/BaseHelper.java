@@ -75,7 +75,7 @@ import org.restlet.engine.log.LoggingThreadFactory;
  * <tr>
  * <td>controllerSleepTimeMs</td>
  * <td>int</td>
- * <td>1</td>
+ * <td>60 000</td>
  * <td>Time for the controller thread to sleep between each control. A value
  * strictly superior to 0 is required.</td>
  * </tr>
