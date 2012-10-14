@@ -204,7 +204,8 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     protected SocketChannel createSocketChannel(boolean secure,
             String hostDomain, int hostPort) throws UnknownHostException,
             IOException {
-        return createSocketChannel(secure, new InetSocketAddress(hostDomain, hostPort));
+        return createSocketChannel(secure, new InetSocketAddress(hostDomain,
+                hostPort));
     }
 
     @Override
@@ -281,7 +282,7 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
         // Try to reuse an existing connection for the same host and
         // port
         int hostConnectionCount = 0;
-        int bestScore = 0;
+        int bestScore = Integer.MAX_VALUE;
         boolean foundConn = false;
 
         // Determine the target host domain and port of the request.
@@ -302,7 +303,8 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                     if (currConn.isAvailable()) {
                         result = currConn;
                         foundConn = true;
-                    } else {
+                    } else if (currConn.getState().compareTo(
+                            ConnectionState.OPEN) <= 0) {
                         // Assign the request to the busy connection that
                         // handles the less number of messages. This is useful
                         // in case the maximum number of connections has been
@@ -329,15 +331,29 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                                 + socketAddress);
             } else if ((getMaxTotalConnections() != -1)
                     && (getConnections().size() >= getMaxTotalConnections())) {
-                getLogger()
-                        .log(Level.WARNING,
-                                "Unable to create a new connection. Maximum total number of connections reached!");
+                if (result == null) {
+                    getLogger()
+                            .log(Level.WARNING,
+                                    "Unable to create a new connection. Maximum total number of connections reached!");
+                } else {
+                    getLogger().log(
+                            Level.FINE,
+                            "Enqueue Request to an existing client connection to: "
+                                    + socketAddress);
+                }
             } else if ((getMaxConnectionsPerHost() != -1)
                     && (hostConnectionCount >= getMaxConnectionsPerHost())) {
-                getLogger()
-                        .log(Level.WARNING,
-                                "Unable to create a new connection. Maximum number of connections reached for host: "
-                                        + socketAddress);
+                if (result == null) {
+                    getLogger()
+                            .log(Level.WARNING,
+                                    "Unable to create a new connection. Maximum number of connections reached for host: "
+                                            + socketAddress);
+                } else {
+                    getLogger().log(
+                            Level.FINE,
+                            "Enqueue Request to an existing client connection to: "
+                                    + socketAddress);
+                }
             } else {
                 // Create a new connection
                 if (getLogger().isLoggable(Level.FINE)) {

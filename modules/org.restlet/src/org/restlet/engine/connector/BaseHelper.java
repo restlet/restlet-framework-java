@@ -224,14 +224,19 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     protected boolean control() {
         boolean result = false;
+        int size;
 
         // Control pending inbound messages
-        for (int i = 0; i < getInboundMessages().size(); i++) {
+        size = getInboundMessages().size();
+
+        for (int i = 0; i < size; i++) {
             handleInbound(getInboundMessages().poll());
         }
 
         // Control pending outbound messages
-        for (int i = 0; i < getOutboundMessages().size(); i++) {
+        size = getOutboundMessages().size();
+
+        for (int i = 0; i < size; i++) {
             handleOutbound(getOutboundMessages().poll());
         }
 
@@ -398,7 +403,7 @@ public abstract class BaseHelper<T extends Connector> extends
      */
     public int getControllerSleepTimeMs() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "controllerSleepTimeMs", "1"));
+                "controllerSleepTimeMs", "60000"));
     }
 
     /**

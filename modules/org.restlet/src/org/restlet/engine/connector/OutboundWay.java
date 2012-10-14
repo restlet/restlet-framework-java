@@ -380,8 +380,7 @@ public abstract class OutboundWay extends Way {
 
                     clearLineBuilder();
                 } else {
-                    // Put the maximum number of characters
-                    // into the byte buffer
+                    // Put the maximum number of characters into the byte buffer
                     buffer.fill(StringUtils.getLatin1Bytes(getLineBuilder()
                             .substring(0, remaining)));
                     getLineBuilder().delete(0, remaining);
@@ -591,11 +590,10 @@ public abstract class OutboundWay extends Way {
                     setMessageState(MessageState.END);
                 }
             }
-
             break;
 
         default:
-            // Do nothing
+            // Nothing to do
             break;
         }
     }
