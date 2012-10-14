@@ -256,5 +256,15 @@ public abstract class ClientInboundWay extends InboundWay {
             clearLineBuilder();
         }
     }
+    
+    @Override
+    public void updateState() {
+    	// Read the next request
+    	if (getMessageState() == MessageState.START) {
+    		setIoState(IoState.INTEREST);
+    	}
+
+    	super.updateState();
+    }
 
 }

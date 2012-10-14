@@ -118,11 +118,11 @@ public class HttpClientInboundWay extends ClientInboundWay {
 
     @Override
     public void onCompleted(boolean endDetected) throws IOException {
-        if (getMessage() != null) {
-            getMessages().remove(getMessage());
-        }
-
+        getMessages().remove(getMessage());
+        
         super.onCompleted(endDetected);
+        
+        getHelper().getController().wakeup();
     }
 
     @Override
@@ -148,18 +148,6 @@ public class HttpClientInboundWay extends ClientInboundWay {
         }
 
         super.onTimeOut();
-    }
-
-    @Override
-    public void updateState() {
-        if ((getIoState() == IoState.IDLE)
-                && (getMessageState() != MessageState.BODY) && !isEmpty()) {
-            // Read the next response
-            setIoState(IoState.INTEREST);
-        }
-
-        // Update the registration
-        super.updateState();
     }
 
 }

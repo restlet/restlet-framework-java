@@ -111,9 +111,9 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
                 getConnection().getInboundWay().setMessageState(
                         MessageState.START);
             }
+            
+            super.onCompleted(endDetected);
         }
-
-        super.onCompleted(endDetected);
     }
 
     @Override
@@ -126,6 +126,8 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
         }
 
         super.onError(status);
+
+        getHelper().getController().wakeup();
     }
 
     @Override
@@ -139,12 +141,14 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
         }
 
         super.onTimeOut();
+
+        getHelper().getController().wakeup();
     }
 
     @Override
     public void updateState() {
         // Update the IO state if necessary
-        if (!getMessages().isEmpty() && (getMessage() == null)) {
+        if (getMessage() == null && getConnection().getInboundWay().isAvailable()) {
             setMessage(getMessages().peek());
         }
 
