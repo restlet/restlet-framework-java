@@ -5,6 +5,8 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
+	   - Fixed arrays serialzation in GWT edition.
+	     Contributed by Jeff Plourde.
     - API changes
     - Misc
 
