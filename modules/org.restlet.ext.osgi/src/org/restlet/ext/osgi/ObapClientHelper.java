@@ -131,7 +131,7 @@ public class ObapClientHelper extends LocalClientHelper {
 
             // The Bundle returns a directory listing in some cases.
             // As this listing is partial, it is of little value in the context
-            // of the CLAP client, so we have to ignore them.
+            // of the OBAP client, so we have to ignore them.
             if (url != null) {
                 if (url.getProtocol().equals("file")) {
                     File file = new File(url.getFile());
@@ -140,6 +140,8 @@ public class ObapClientHelper extends LocalClientHelper {
                     if (file.isDirectory()) {
                         url = null;
                     }
+                } else if (url.getPath() != null && url.getPath().endsWith("/")) {
+                    url = null;
                 }
             }
 
