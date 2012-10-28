@@ -155,7 +155,7 @@ public class ConnectionController extends Controller implements Runnable,
 
     @Override
     protected void doRun(long sleepTime) throws IOException {
-    	getHelper().getLogger().log(Level.FINEST, "helper.control()");
+        getHelper().getLogger().log(Level.FINEST, "helper.control()");
         super.doRun(sleepTime);
         getHelper().getLogger().log(Level.FINEST, "controlConnections()");
         controlConnections();

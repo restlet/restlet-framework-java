@@ -88,7 +88,13 @@ public abstract class ServerInboundWay extends InboundWay {
     }
 
     @Override
-    protected void onReceived() throws IOException {
+    protected boolean hasIoInterest() {
+        return (getIoState() == IoState.IDLE) && getConnection().isPipelining();
+    }
+
+    @Override
+    protected void onHeadersCompleted() throws IOException {
+        super.onHeadersCompleted();
         InboundRequest request = (InboundRequest) getMessage().getRequest();
 
         if (getHeaders() != null) {
@@ -128,7 +134,7 @@ public abstract class ServerInboundWay extends InboundWay {
 
             if (!message.getRequest().isEntityAvailable()) {
                 // The request has been completely read
-                onCompleted(false);
+                onMessageCompleted(false);
             }
         }
     }
@@ -210,11 +216,6 @@ public abstract class ServerInboundWay extends InboundWay {
     public void updateState() {
         if (getMessageState() == MessageState.IDLE) {
             setMessageState(MessageState.START);
-        }
-
-        if ((getIoState() == IoState.IDLE) && getConnection().isPipelining()) {
-            // Read the next request
-            setIoState(IoState.INTEREST);
         }
 
         // Update the registration

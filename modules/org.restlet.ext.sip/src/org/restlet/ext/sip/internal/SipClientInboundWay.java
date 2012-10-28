@@ -339,14 +339,14 @@ public class SipClientInboundWay extends ClientInboundWay {
     }
 
     @Override
+    protected boolean hasIoInterest() {
+        return (getIoState() == IoState.IDLE);
+    }
+    
+    @Override
     public void updateState() {
         if (getMessageState() == MessageState.IDLE) {
             setMessageState(MessageState.START);
-        }
-
-        if (getIoState() == IoState.IDLE) {
-            // Read the next response
-            setIoState(IoState.INTEREST);
         }
 
         // Update the registration

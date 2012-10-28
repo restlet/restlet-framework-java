@@ -560,6 +560,9 @@ public class Connection<T extends Connector> implements SelectionListener {
         getInboundWay().onError(status);
         getOutboundWay().onError(status);
         close(false);
+        
+        // Give the controller a hint to clean up the closed connection
+        getHelper().getController().wakeup();
     }
 
     /**
@@ -784,8 +787,8 @@ public class Connection<T extends Connector> implements SelectionListener {
                 oldState = getRegistration().toString();
             }
 
-            getOutboundWay().updateState();
             getInboundWay().updateState();
+            getOutboundWay().updateState();
 
             // Update the registration
             result = getRegistration().setInterestOperations(

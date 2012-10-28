@@ -101,6 +101,13 @@ public class HttpClientInboundWay extends ClientInboundWay {
     }
 
     @Override
+    protected boolean hasIoInterest() {
+        return (getMessageState() == MessageState.START)
+                || ((getIoState() == IoState.IDLE)
+                        && (getMessageState() != MessageState.BODY) && !isEmpty());
+    }
+
+    @Override
     public boolean isEmpty() {
         return super.isEmpty() && getMessages().isEmpty();
     }
@@ -117,11 +124,9 @@ public class HttpClientInboundWay extends ClientInboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) throws IOException {
+    public void onMessageCompleted(boolean endDetected) throws IOException {
         getMessages().remove(getMessage());
-        
-        super.onCompleted(endDetected);
-        getHelper().getController().wakeup();
+        super.onMessageCompleted(endDetected);
     }
 
     @Override

@@ -95,28 +95,6 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) throws IOException {
-        Response message = getMessage();
-
-        if (message != null) {
-            Request request = message.getRequest();
-            Queue<Response> inboundMessages = ((HttpClientInboundWay) getConnection()
-                    .getInboundWay()).getMessages();
-
-            // The request has been written
-            getMessages().remove(message);
-
-            if (request.isExpectingResponse()) {
-                inboundMessages.add(message);
-                getConnection().getInboundWay().setMessageState(
-                        MessageState.START);
-            }
-            
-            super.onCompleted(endDetected);
-        }
-    }
-
-    @Override
     public void onError(Status status) {
         for (Response rsp : getMessages()) {
             if (rsp != getMessage()) {
@@ -126,7 +104,35 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
         }
 
         super.onError(status);
-        getHelper().getController().wakeup();
+    }
+
+    @Override
+    public void onHeadersCompleted() throws IOException {
+        Response message = getMessage();
+
+        if (message != null) {
+            Request request = message.getRequest();
+            Queue<Response> inboundMessages = ((HttpClientInboundWay) getConnection()
+                    .getInboundWay()).getMessages();
+
+            if (request.isExpectingResponse()) {
+                inboundMessages.add(message);
+                getConnection().getInboundWay().setMessageState(
+                        MessageState.START);
+            }
+        }
+
+        super.onHeadersCompleted();
+    }
+
+    @Override
+    public void onMessageCompleted(boolean endDetected) throws IOException {
+        Response message = getMessage();
+
+        if (message != null) {
+            getMessages().remove(message);
+            super.onMessageCompleted(endDetected);
+        }
     }
 
     @Override
@@ -140,13 +146,13 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
         }
 
         super.onTimeOut();
-        getHelper().getController().wakeup();
     }
 
     @Override
     public void updateState() {
         // Update the IO state if necessary
-        if (getMessage() == null && getConnection().getInboundWay().isAvailable()) {
+        if (getMessage() == null
+                && getConnection().getInboundWay().isAvailable()) {
             setMessage(getMessages().peek());
         }
 

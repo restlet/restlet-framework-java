@@ -96,7 +96,7 @@ public class HttpServerOutboundWay extends ServerOutboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) throws IOException {
+    public void onMessageCompleted(boolean endDetected) throws IOException {
         getMessages().remove(getMessage());
 
         if (!getMessage().getStatus().isInformational()) {
@@ -115,7 +115,7 @@ public class HttpServerOutboundWay extends ServerOutboundWay {
             }
         }
 
-        super.onCompleted(endDetected);
+        super.onMessageCompleted(endDetected);
     }
 
     @Override

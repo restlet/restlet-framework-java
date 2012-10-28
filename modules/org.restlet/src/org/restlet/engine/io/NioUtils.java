@@ -52,7 +52,6 @@ import org.restlet.Context;
 import org.restlet.engine.Edition;
 import org.restlet.representation.Representation;
 
-// [excludes gwt]
 /**
  * Utility methods for NIO processing.
  * 
@@ -196,6 +195,7 @@ public class NioUtils {
     public static ReadableByteChannel getChannel(
             final Representation representation) throws IOException {
         ReadableByteChannel result = null;
+
         if (Edition.CURRENT != Edition.GAE) {
             // [ifndef gae]
             final java.nio.channels.Pipe pipe = java.nio.channels.Pipe.open();

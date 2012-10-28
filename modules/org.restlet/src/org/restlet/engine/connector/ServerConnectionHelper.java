@@ -211,6 +211,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
                     } else {
                         // Put the response at the end of the queue
                         getOutboundMessages().add(response);
+                        getController().wakeup();
                     }
                 } catch (IOException e) {
                     getLogger().log(Level.FINE,

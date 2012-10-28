@@ -303,6 +303,15 @@ public abstract class Way implements SelectionListener, CompletionListener,
     }
 
     /**
+     * Indicates if we want to be selected for IO processing when the socket is
+     * ready.
+     * 
+     * @return True if we want to be selected for IO processing when the socket
+     *         is ready.
+     */
+    protected abstract boolean hasIoInterest();
+
+    /**
      * Indicates if the way is available to handle new messages.
      * 
      * @return True if the way is available to handle new messages.
@@ -330,30 +339,6 @@ public abstract class Way implements SelectionListener, CompletionListener,
         setMessage(null);
         setHeaders(null);
         getBuffer().clear();
-    }
-
-    /**
-     * Callback method invoked when the current message has been completely
-     * received or sent.
-     * 
-     * @param endDetected
-     *            Indicates if the end of the socket channel was detected.
-     */
-    public void onCompleted(boolean endDetected) throws IOException {
-        if (getLogger().isLoggable(Level.FINEST)) {
-            if (this instanceof OutboundWay) {
-                getLogger().log(Level.FINEST,
-                        "OutboundWay#onCompleted: " + endDetected);
-            } else {
-                getLogger().log(Level.FINEST,
-                        "InboundWay#onCompleted: " + endDetected);
-            }
-        }
-
-        setIoState(IoState.IDLE);
-        setMessageState(MessageState.IDLE);
-        setMessage(null);
-        setHeaders(null);
     }
 
     /**
@@ -391,6 +376,36 @@ public abstract class Way implements SelectionListener, CompletionListener,
      */
     public abstract int onFill(Buffer buffer, Object... args)
             throws IOException;
+
+    /**
+     * Callback method invoked when the headers of the current message have been
+     * completely received or sent.
+     */
+    protected abstract void onHeadersCompleted() throws IOException;
+
+    /**
+     * Callback method invoked when the current message has been completely
+     * received or sent.
+     * 
+     * @param endDetected
+     *            Indicates if the end of the socket channel was detected.
+     */
+    public void onMessageCompleted(boolean endDetected) throws IOException {
+        if (getLogger().isLoggable(Level.FINEST)) {
+            if (this instanceof OutboundWay) {
+                getLogger().log(Level.FINEST,
+                        "OutboundWay#onCompleted: " + endDetected);
+            } else {
+                getLogger().log(Level.FINEST,
+                        "InboundWay#onCompleted: " + endDetected);
+            }
+        }
+
+        setIoState(IoState.IDLE);
+        setMessageState(MessageState.IDLE);
+        setMessage(null);
+        setHeaders(null);
+    }
 
     /**
      * Called back after the IO processing to indicate if there is further IO
@@ -572,6 +587,10 @@ public abstract class Way implements SelectionListener, CompletionListener,
      * Updates the way IO and message states.
      */
     public void updateState() {
+        if (hasIoInterest()) {
+            setIoState(IoState.INTEREST);
+        }
+
         getRegistration().setInterestOperations(getInterestOperations());
     }
 

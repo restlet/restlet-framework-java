@@ -210,9 +210,9 @@ public abstract class InboundWay extends Way {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) throws IOException {
-        super.onCompleted(endDetected);
-        
+    public void onMessageCompleted(boolean endDetected) throws IOException {
+        super.onMessageCompleted(endDetected);
+
         // Wakeup the controller to update the registrations,
         // since this callback can be called asynchronous
         getHelper().getController().wakeup();
@@ -259,7 +259,7 @@ public abstract class InboundWay extends Way {
                     getHeaders().add(header);
                 } else {
                     // All headers received
-                    onReceived();
+                    onHeadersCompleted();
                 }
             }
         }
@@ -305,11 +305,12 @@ public abstract class InboundWay extends Way {
     }
 
     /**
-     * Callback invoked when a message has been received. Note that one the
+     * Callback invoked when a message has been received. Note that only the
      * start line and the headers must have been received, not the optional
      * body.
      */
-    protected void onReceived() throws IOException {
+    @Override
+    protected void onHeadersCompleted() throws IOException {
         if (getLogger().isLoggable(Level.FINER)) {
             getLogger()
                     .finer("Inbound message start line and headers received");

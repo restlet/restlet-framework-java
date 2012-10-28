@@ -41,7 +41,6 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Status;
-import org.restlet.engine.io.IoState;
 
 /**
  * HTTP server inbound way.
@@ -92,6 +91,16 @@ public class HttpServerInboundWay extends ServerInboundWay {
     }
 
     @Override
+    protected boolean hasIoInterest() {
+        return super.hasIoInterest() || isAvailable();
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return super.isAvailable() && getMessages().isEmpty();
+    }
+
+    @Override
     public boolean isEmpty() {
         return super.isEmpty() && getMessages().isEmpty();
     }
@@ -130,16 +139,6 @@ public class HttpServerInboundWay extends ServerInboundWay {
         }
 
         super.onTimeOut();
-    }
-
-    @Override
-    public void updateState() {
-        if (isAvailable()) {
-            // Read the next request
-            setIoState(IoState.INTEREST);
-        }
-
-        super.updateState();
     }
 
 }

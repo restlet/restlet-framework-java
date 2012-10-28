@@ -11,6 +11,7 @@ Changes log
          client requests. Contributed by Florian Buclkers
 	   - Fixed controllerSleepTimeMs default value in documentation for 
 	     internal HTTP connector.
+	   - 
     - API changes
     - Misc
 

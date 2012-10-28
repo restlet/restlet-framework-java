@@ -120,15 +120,15 @@ public class ReadableBufferedChannel extends
 
     /**
      * Callback invoked upon IO completion. Calls
-     * {@link CompletionListener#onCompleted(boolean)} if the end has been
+     * {@link CompletionListener#onMessageCompleted(boolean)} if the end has been
      * reached.
      * 
      * @param eofDetected
      *            Indicates if the end of network connection was detected.
      */
-    public void onCompleted(boolean eofDetected) throws IOException {
+    public void onMessageCompleted(boolean eofDetected) throws IOException {
         if (getCompletionListener() != null) {
-            getCompletionListener().onCompleted(eofDetected);
+            getCompletionListener().onMessageCompleted(eofDetected);
         }
     }
 
@@ -187,7 +187,7 @@ public class ReadableBufferedChannel extends
             this.endReached = endReached;
 
             if (this.endReached) {
-                onCompleted(false);
+                onMessageCompleted(false);
             }
         }
     }
