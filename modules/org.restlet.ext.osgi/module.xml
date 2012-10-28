@@ -6,7 +6,7 @@
 		<distribution id="maven" />
 		<distribution id="p2" />
 	</distributions>
-
+	<bundleActivator>org.restlet.ext.osgi.internal.Activator</bundleActivator>
 	<dependencies>
 		<dependency type="module" id="core" />
 		<dependency type="library" id="osgi" maven-scope="compile" />
