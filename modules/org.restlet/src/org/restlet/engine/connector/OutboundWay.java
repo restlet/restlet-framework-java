@@ -149,16 +149,6 @@ public abstract class OutboundWay extends Way {
      */
     protected abstract void addHeaders(Series<Header> headers);
 
-    /**
-     * Indicates if we should start processing the current message.
-     * 
-     * @return True if we should start processing the current message.
-     */
-    protected boolean canStart() {
-        return (getMessageState() == MessageState.IDLE)
-                && (getMessage() != null);
-    }
-
     @Override
     public void clear() {
         super.clear();
@@ -255,20 +245,73 @@ public abstract class OutboundWay extends Way {
      */
     protected abstract void handle(Response response);
 
-    /**
-     * Indicates if we want to be selected for IO processing when the socket is
-     * ready.
-     * 
-     * @return True if we want to be selected for IO processing when the socket
-     *         is ready.
-     */
+    @Override
     protected boolean hasIoInterest() {
         return (getMessageState() == MessageState.START)
                 || getBuffer().canDrain();
     }
 
+    /**
+     * Callback invoked when a message has been sent. Note that only the start
+     * line and the headers must have been sent, not the optional body.
+     */
     @Override
-    public void onCompleted(boolean endReached) throws IOException {
+    public void onHeadersCompleted() throws IOException {
+        if (getLogger().isLoggable(Level.FINER)) {
+            getLogger().finer("Outbound message start line and headers sent");
+        }
+
+        // Prepare entity writing if available
+        if (getActualMessage().isEntityAvailable()) {
+            // Callback connector service before sending entity
+            ConnectorService connectorService = ConnectorHelper
+                    .getConnectorService();
+
+            if (connectorService != null) {
+                connectorService.afterSend(getActualMessage().getEntity());
+            }
+
+            setMessageState(MessageState.BODY);
+            ReadableByteChannel rbc = getActualMessage().getEntity()
+                    .getChannel();
+
+            if (rbc instanceof FileChannel) {
+                setEntityChannelType(EntityType.TRANSFERABLE);
+            } else if (rbc instanceof BlockableChannel) {
+                BlockableChannel bc = (BlockableChannel) rbc;
+
+                if (bc.isBlocking()) {
+                    setEntityChannelType(EntityType.BLOCKING);
+                } else {
+                    setEntityChannelType(EntityType.NON_BLOCKING);
+                }
+            } else if (rbc instanceof SelectableChannel) {
+                SelectableChannel sc = (SelectableChannel) rbc;
+
+                if (sc.isBlocking()) {
+                    setEntityChannelType(EntityType.BLOCKING);
+                } else {
+                    setEntityChannelType(EntityType.NON_BLOCKING);
+                }
+            } else {
+                setEntityChannelType(EntityType.BLOCKING);
+            }
+
+            if (getActualMessage().getEntity().getAvailableSize() == Representation.UNKNOWN_SIZE) {
+                setEntityChannel(new ReadableChunkingChannel(rbc, getBuffer()
+                        .capacity()));
+            } else {
+                setEntityChannel(new ReadableSizedChannel(rbc,
+                        getActualMessage().getEntity().getAvailableSize()));
+            }
+
+        } else {
+            setMessageState(MessageState.END);
+        }
+    }
+
+    @Override
+    public void onMessageCompleted(boolean endReached) throws IOException {
         if (getActualMessage() != null) {
             Representation messageEntity = getActualMessage().getEntity();
 
@@ -290,7 +333,7 @@ public abstract class OutboundWay extends Way {
             }
         }
 
-        super.onCompleted(endReached);
+        super.onMessageCompleted(endReached);
         setHeaderIndex(0);
 
         if (getLogger().isLoggable(Level.FINER)) {
@@ -422,7 +465,7 @@ public abstract class OutboundWay extends Way {
         if (getMessage() != null) {
             if (getMessageState() == MessageState.END) {
                 // Message fully written, ready for a new one
-                onCompleted(false);
+                onMessageCompleted(false);
             } else if (getMessageState() == MessageState.IDLE) {
                 // Message fully sent, check if another is ready
                 updateState();
@@ -487,12 +530,8 @@ public abstract class OutboundWay extends Way {
 
     @Override
     public void updateState() {
-        if (canStart()) {
+        if ((getMessageState() == MessageState.IDLE) && (getMessage() != null)) {
             setMessageState(MessageState.START);
-        }
-
-        if (hasIoInterest()) {
-            setIoState(IoState.INTEREST);
         }
 
         super.updateState();
@@ -539,56 +578,7 @@ public abstract class OutboundWay extends Way {
                 // Write the end of the headers section
                 getLineBuilder().append('\r'); // CR
                 getLineBuilder().append('\n'); // LF
-
-                // Prepare entity writing if available
-                if (getActualMessage().isEntityAvailable()) {
-                    // Callback connector service before sending entity
-                    ConnectorService connectorService = ConnectorHelper
-                            .getConnectorService();
-
-                    if (connectorService != null) {
-                        connectorService.afterSend(getActualMessage()
-                                .getEntity());
-                    }
-
-                    setMessageState(MessageState.BODY);
-                    ReadableByteChannel rbc = getActualMessage().getEntity()
-                            .getChannel();
-
-                    if (rbc instanceof FileChannel) {
-                        setEntityChannelType(EntityType.TRANSFERABLE);
-                    } else if (rbc instanceof BlockableChannel) {
-                        BlockableChannel bc = (BlockableChannel) rbc;
-
-                        if (bc.isBlocking()) {
-                            setEntityChannelType(EntityType.BLOCKING);
-                        } else {
-                            setEntityChannelType(EntityType.NON_BLOCKING);
-                        }
-                    } else if (rbc instanceof SelectableChannel) {
-                        SelectableChannel sc = (SelectableChannel) rbc;
-
-                        if (sc.isBlocking()) {
-                            setEntityChannelType(EntityType.BLOCKING);
-                        } else {
-                            setEntityChannelType(EntityType.NON_BLOCKING);
-                        }
-                    } else {
-                        setEntityChannelType(EntityType.BLOCKING);
-                    }
-
-                    if (getActualMessage().getEntity().getAvailableSize() == Representation.UNKNOWN_SIZE) {
-                        setEntityChannel(new ReadableChunkingChannel(rbc,
-                                getBuffer().capacity()));
-                    } else {
-                        setEntityChannel(new ReadableSizedChannel(rbc,
-                                getActualMessage().getEntity()
-                                        .getAvailableSize()));
-                    }
-
-                } else {
-                    setMessageState(MessageState.END);
-                }
+                onHeadersCompleted();
             }
             break;
 

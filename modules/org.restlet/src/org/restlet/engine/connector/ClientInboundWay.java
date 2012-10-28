@@ -130,18 +130,9 @@ public abstract class ClientInboundWay extends InboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) throws IOException {
-        // Check if we need to close the connection
-        if (endDetected || !getConnection().isPersistent()
-                || HeaderUtils.isConnectionClose(getHeaders())) {
-            getConnection().close(true);
-        }
+    protected void onHeadersCompleted() throws IOException {
+        super.onHeadersCompleted();
 
-        super.onCompleted(endDetected);
-    }
-
-    @Override
-    protected void onReceived() throws IOException {
         // Update the response
         getMessage().setEntity(createEntity(getHeaders()));
 
@@ -162,6 +153,17 @@ public abstract class ClientInboundWay extends InboundWay {
     }
 
     @Override
+    public void onMessageCompleted(boolean endDetected) throws IOException {
+        // Check if we need to close the connection
+        if (endDetected || !getConnection().isPersistent()
+                || HeaderUtils.isConnectionClose(getHeaders())) {
+            getConnection().close(true);
+        }
+
+        super.onMessageCompleted(endDetected);
+    }
+
+    @Override
     protected void onReceived(Response message) throws IOException {
         // Add it to the helper queue
         getHelper().getInboundMessages().add(getMessage());
@@ -171,7 +173,7 @@ public abstract class ClientInboundWay extends InboundWay {
             setIoState(IoState.IDLE);
         } else {
             // The response has been completely read
-            onCompleted(false);
+            onMessageCompleted(false);
         }
     }
 
@@ -256,5 +258,4 @@ public abstract class ClientInboundWay extends InboundWay {
             clearLineBuilder();
         }
     }
-
 }

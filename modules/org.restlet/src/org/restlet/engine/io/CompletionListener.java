@@ -48,6 +48,6 @@ public interface CompletionListener {
      * @param eofDetected
      *            Indicates if the end of network connection was detected.
      */
-    public void onCompleted(boolean eofDetected) throws IOException;
+    public void onMessageCompleted(boolean eofDetected) throws IOException;
 
 }

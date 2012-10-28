@@ -155,7 +155,7 @@ public abstract class ServerOutboundWay extends OutboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) throws IOException {
+    public void onMessageCompleted(boolean endDetected) throws IOException {
         if (getMessage() != null) {
             // Ensure that the request entity has been fully read
             Representation requestEntity = getMessage().getRequest()
@@ -191,7 +191,7 @@ public abstract class ServerOutboundWay extends OutboundWay {
             getConnection().close(true);
         }
 
-        super.onCompleted(endDetected);
+        super.onMessageCompleted(endDetected);
     }
 
     @Override

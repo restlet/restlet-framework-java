@@ -152,7 +152,7 @@ public class ReadableSizedChannel extends WrapperChannel<ReadableByteChannel>
 
             if (endDetected && (getWrappedChannel() instanceof CompletionListener)) {
                 ((CompletionListener) getWrappedChannel())
-                .onCompleted(isEndDetected());
+                .onMessageCompleted(isEndDetected());
             }
         }
     }

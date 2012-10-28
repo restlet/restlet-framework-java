@@ -195,6 +195,7 @@ public class NioUtils {
     public static ReadableByteChannel getChannel(
             final Representation representation) throws IOException {
         ReadableByteChannel result = null;
+
         if (Edition.CURRENT != Edition.GAE) {
             // [ifndef gae]
             final java.nio.channels.Pipe pipe = java.nio.channels.Pipe.open();
@@ -204,10 +205,10 @@ public class NioUtils {
             Runnable task = new Runnable() {
                 public void run() {
                     WritableByteChannel wbc = null;
+
                     try {
                         wbc = pipe.sink();
                         representation.write(wbc);
-                        wbc.close();
                     } catch (IOException ioe) {
                         Context.getCurrentLogger().log(Level.FINE,
                                 "Error while writing to the piped channel.",

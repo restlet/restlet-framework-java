@@ -93,9 +93,9 @@ public abstract class ClientOutboundWay extends OutboundWay {
     public Connection<Client> getConnection() {
         return (Connection<Client>) super.getConnection();
     }
-
+    
     @Override
-    public void onCompleted(boolean endDetected) throws IOException {
+    public void onMessageCompleted(boolean endDetected) throws IOException {
         Response message = getMessage();
 
         if (message != null) {
@@ -106,7 +106,7 @@ public abstract class ClientOutboundWay extends OutboundWay {
             }
         }
 
-        super.onCompleted(endDetected);
+        super.onMessageCompleted(endDetected);
     }
 
     @Override

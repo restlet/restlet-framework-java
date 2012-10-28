@@ -101,6 +101,13 @@ public class HttpClientInboundWay extends ClientInboundWay {
     }
 
     @Override
+    protected boolean hasIoInterest() {
+        return (getMessageState() == MessageState.START)
+                || ((getIoState() == IoState.IDLE)
+                        && (getMessageState() != MessageState.BODY) && !isEmpty());
+    }
+
+    @Override
     public boolean isEmpty() {
         return super.isEmpty() && getMessages().isEmpty();
     }
@@ -117,12 +124,9 @@ public class HttpClientInboundWay extends ClientInboundWay {
     }
 
     @Override
-    public void onCompleted(boolean endDetected) throws IOException {
-        if (getMessage() != null) {
-            getMessages().remove(getMessage());
-        }
-
-        super.onCompleted(endDetected);
+    public void onMessageCompleted(boolean endDetected) throws IOException {
+        getMessages().remove(getMessage());
+        super.onMessageCompleted(endDetected);
     }
 
     @Override
@@ -148,18 +152,6 @@ public class HttpClientInboundWay extends ClientInboundWay {
         }
 
         super.onTimeOut();
-    }
-
-    @Override
-    public void updateState() {
-        if ((getIoState() == IoState.IDLE)
-                && (getMessageState() != MessageState.BODY) && !isEmpty()) {
-            // Read the next response
-            setIoState(IoState.INTEREST);
-        }
-
-        // Update the registration
-        super.updateState();
     }
 
 }
