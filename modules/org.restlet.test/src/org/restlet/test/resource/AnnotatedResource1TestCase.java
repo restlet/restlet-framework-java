@@ -39,7 +39,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.ext.jackson.JacksonConverter;
-import org.restlet.ext.xstream.XstreamConverter;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
@@ -62,8 +61,6 @@ public class AnnotatedResource1TestCase extends RestletTestCase {
         Engine.getInstance().getRegisteredConverters().clear();
         Engine.getInstance().getRegisteredConverters()
                 .add(new JacksonConverter());
-        Engine.getInstance().getRegisteredConverters()
-                .add(new XstreamConverter());
         Engine.getInstance().registerDefaultConverters();
         Finder finder = new Finder();
         finder.setTargetClass(MyServerResource1.class);
@@ -92,17 +89,17 @@ public class AnnotatedResource1TestCase extends RestletTestCase {
 
         String result = clientResource.get(MediaType.TEXT_XML).getText();
         assertEquals(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <description>myDescription</description>\n  <name>myName</name>\n</org.restlet.test.resource.MyBean>",
+                "<MyBean><description>myDescription</description><name>myName</name></MyBean>",
                 result);
 
         result = clientResource.get(MediaType.APPLICATION_XML).getText();
         assertEquals(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <description>myDescription</description>\n  <name>myName</name>\n</org.restlet.test.resource.MyBean>",
+                "<MyBean><description>myDescription</description><name>myName</name></MyBean>",
                 result);
 
         result = clientResource.get(MediaType.APPLICATION_ALL_XML).getText();
         assertEquals(
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<org.restlet.test.resource.MyBean>\n  <description>myDescription</description>\n  <name>myName</name>\n</org.restlet.test.resource.MyBean>",
+                "<MyBean><description>myDescription</description><name>myName</name></MyBean>",
                 result);
 
         result = clientResource.get(MediaType.APPLICATION_JSON).getText();

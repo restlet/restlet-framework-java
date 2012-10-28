@@ -321,7 +321,8 @@ public class JaxbRepresentation<T> extends WriterRepresentation {
     public JaxbRepresentation(Representation xmlRepresentation,
             String contextPath, ValidationEventHandler validationHandler,
             ClassLoader classLoader) {
-        super(xmlRepresentation.getMediaType());
+        super((xmlRepresentation == null) ? null : xmlRepresentation
+                .getMediaType());
         this.classLoader = classLoader;
         this.contextPath = contextPath;
         this.object = null;

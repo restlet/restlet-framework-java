@@ -11,6 +11,10 @@ Changes log
       - Upgraded JAX-RS to version 1.1.1.
       - Upgraded Servlet API to version 3.0.
       - Upgraded Jackson to version 2.1.0 and Woodstox to 4.1.4.
+	  - Added OBAP (OSGi Bundle Access Protocol) client connector
+	    to allow access to resources from other OSGi bundles.
+        Use "obap://{bundleSymbolicName}/{pathToResource}"
+        Added to the "org.restlet.ext.osgi" extension (OSGi edition). 
     - Misc
       - Updated Eclipse projects to use JavaSE 6.0 and simple Java 
         build rather than PDE/OSGi (removed manifest.mf files) or 
