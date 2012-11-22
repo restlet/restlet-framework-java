@@ -139,7 +139,6 @@ public class ClientAdapter extends Adapter {
 
             HeaderUtils.copyResponseTransportHeaders(responseHeaders, response);
         } catch (Exception e) {
-            e.printStackTrace();
             getLogger()
                     .log(Level.FINE,
                             "An error occured during the processing of the HTTP response.",
