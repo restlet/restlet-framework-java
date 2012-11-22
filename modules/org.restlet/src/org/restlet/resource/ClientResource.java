@@ -137,6 +137,7 @@ public class ClientResource extends UniformResource {
         return create(null, new Reference(uri), resourceInterface);
     }
 
+    // [ifndef gwt] member
     /** Indicates if redirections should be automatically followed. */
     private volatile boolean followingRedirects;
 
@@ -191,13 +192,13 @@ public class ClientResource extends UniformResource {
         Request request = new Request(resource.getRequest());
         Response response = new Response(request);
         this.next = resource.getNext();
-        this.followingRedirects = resource.isFollowingRedirects();
         this.maxRedirects = resource.getMaxRedirects();
         this.retryOnError = resource.isRetryOnError();
         this.retryDelay = resource.getRetryDelay();
         this.retryAttempts = resource.getRetryAttempts();
 
         // [ifndef gwt]
+        this.followingRedirects = resource.isFollowingRedirects();
         this.requestEntityBuffering = resource.isRequestEntityBuffering();
         this.responseEntityBuffering = resource.isResponseEntityBuffering();
         setApplication(resource.getApplication());
@@ -304,12 +305,12 @@ public class ClientResource extends UniformResource {
         // See other constructor ClientResource(Context, Method, Reference)
         response.setRequest(request);
 
-        this.followingRedirects = true;
         this.maxRedirects = 10;
         this.retryOnError = true;
         this.retryDelay = 2000L;
         this.retryAttempts = 2;
         // [ifndef gwt]
+        this.followingRedirects = true;
         this.requestEntityBuffering = false;
         this.responseEntityBuffering = false;
         // [enddef]
@@ -1328,6 +1329,7 @@ public class ClientResource extends UniformResource {
         return handle(Method.HEAD, mediaType);
     }
 
+    // [ifndef gwt] method
     /**
      * Indicates if redirections are followed.
      * 
@@ -1783,6 +1785,7 @@ public class ClientResource extends UniformResource {
         setResponseEntityBuffering(entityBuffering);
     }
 
+    // [ifndef gwt] method
     /**
      * Indicates if redirections are followed.
      * 
