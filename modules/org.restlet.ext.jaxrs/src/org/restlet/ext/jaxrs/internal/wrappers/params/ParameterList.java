@@ -278,27 +278,25 @@ public class ParameterList {
         private Object convertWithConverterUtils(String paramValue) {
             Object result = null;
 
-            Representation source = this.tlContext.get().getRequest()
-                    .getEntity();
-            if ((source != null) && source.isAvailable()
-                    && (source.getSize() != 0)) {
-                ConverterHelper converterHelper = ConverterUtils.getBestHelper(
-                        this.tlContext.get().getRequest().getEntity(),
-                        this.convertTo, null);
-                List<VariantInfo> variants = converterHelper
-                        .getVariants(this.convertTo);
-                for (int i = 0; result == null && i < variants.size(); i++) {
-                    try {
-                        result = converterHelper.toObject(
-                                new StringRepresentation(paramValue, variants
-                                        .get(i).getMediaType()),
-                                this.convertTo, null);
-                    } catch (Exception exception) {
-                        // -- don't worry about it...proceed with reflective calls
-                    }
-                }
+            if(this.tlContext.get().getRequest().getEntity() != null){
+	        	try {
+	                ConverterHelper converterHelper = ConverterUtils.getBestHelper(
+	                        this.tlContext.get().getRequest().getEntity(),
+	                        this.convertTo, null);
+	                List<VariantInfo> variants = converterHelper
+	                        .getVariants(this.convertTo);
+	                for (int i = 0; result == null && i < variants.size(); i++) {
+	                        result = converterHelper.toObject(
+	                                new StringRepresentation(paramValue, variants
+	                                        .get(i).getMediaType()),
+	                                this.convertTo, null);
+	                }
+	        	} catch (Exception exception) {
+	        		// -- don't worry about it...proceed with reflective calls
+	        		exception.printStackTrace();
+	        	}
             }
-
+        	
             return result;
         }
 
