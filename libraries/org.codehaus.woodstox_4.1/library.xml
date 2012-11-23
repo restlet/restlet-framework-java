@@ -1,8 +1,8 @@
 <library id="woodstox" symbolicName="org.codehaus.woodstox">
 	<name>Woodstox</name>
 	<description>Woodstox.</description>
-	<version>3.1</version>
-	<release>1</release>
+	<version>4.1</version>
+	<release>0</release>
 	<homeUri>woodstox.codehaus.org/</homeUri>
 	<downloadUri>http://woodstox.codehaus.org/Download</downloadUri>
 	<provider>The Codehaus foundation</provider>
