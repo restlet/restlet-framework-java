@@ -1173,8 +1173,16 @@ public class ClientResource extends UniformResource {
             // Actually handle the call
             next.handle(request, response);
 
-            // Check for redirections
-            if (isFollowingRedirects() && response.getStatus().isRedirection()
+            if (isRetryOnError()
+                    && response.getStatus().isRecoverableError()
+                    && request.getMethod().isIdempotent()
+                    && (retryAttempt < getRetryAttempts())
+                    && ((request.getEntity() == null) || request.getEntity()
+                            .isAvailable())) {
+                retry(request, response, references, retryAttempt, next);
+            }
+            // [ifndef gwt]
+            else if (isFollowingRedirects() && response.getStatus().isRedirection()
                     && (response.getLocationRef() != null)) {
                 boolean doRedirection = false;
 
@@ -1200,16 +1208,8 @@ public class ClientResource extends UniformResource {
                             "Unable to redirect the client call after a response"
                                     + response);
                 }
-            } else if (isRetryOnError()
-                    && response.getStatus().isRecoverableError()
-                    && request.getMethod().isIdempotent()
-                    && (retryAttempt < getRetryAttempts())
-                    && ((request.getEntity() == null) || request.getEntity()
-                            .isAvailable())) {
-                retry(request, response, references, retryAttempt, next);
             }
 
-            // [ifndef gwt]
             // Check if response entity buffering must be done
             entity = response.getEntity();
 
