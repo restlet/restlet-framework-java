@@ -44,15 +44,20 @@ import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 
+import org.apache.commons.lang.ClassUtils;
 import org.restlet.Request;
+import org.restlet.data.Cookie;
 import org.restlet.data.Parameter;
+import org.restlet.data.Reference;
 import org.restlet.engine.resource.ClientInvocationHandler;
 import org.restlet.ext.jaxrs.JaxRsClientResource;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
+import org.restlet.util.Series;
 
 /**
  * Reflection proxy invocation handler created for the
@@ -91,9 +96,9 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
 			throws Throwable {
 		Request request = super.getRequest(javaMethod, args);
 
-		setRequestParams(javaMethod, args, request);
-
 		setRequestPathToAnnotationPath(javaMethod, request);
+
+		setRequestParams(javaMethod, args, request);
 
 		return request;
 	}
@@ -107,56 +112,118 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
 				.getParameterAnnotations();
 		for (Annotation[] annotations : parameterAnnotations) {
 
-			String representationAsText = getRepresentationAsText(argIndex,
-					args);
+			String representationAsText = getRepresentationAsText(args[argIndex]);
 
-			for (Annotation annotation : annotations) {
-				if (annotation instanceof HeaderParam
-						&& representationAsText != null) {
-					Util.getHttpHeaders(request).add(
-							((HeaderParam) annotation).value(),
-							representationAsText);
-					argIndex++;
-				} else if (annotation instanceof QueryParam) {
-					request.getResourceRef().addQueryParameter(
-							new Parameter(((QueryParam) annotation).value(),
-									representationAsText));
-					argIndex++;
-				} else if (annotation instanceof MatrixParam
-						&& representationAsText != null) {
-					// TODO
-					argIndex++;
-				} else if (annotation instanceof CookieParam
-						&& representationAsText != null) {
-					// TODO
-					argIndex++;
-				} else if (annotation instanceof FormParam
-						&& representationAsText != null) {
-					// TODO
-					argIndex++;
-				} else if (annotation instanceof QueryParam
-						&& representationAsText != null) {
-					// TODO
-					argIndex++;
-				} else if (annotation instanceof PathParam
-						&& representationAsText != null) {
-					// TODO
-					argIndex++;
+			if (representationAsText != null) {
+				for (Annotation annotation : annotations) {
+					if (annotation instanceof HeaderParam) {
+						addHeaderParam(request, representationAsText,
+								annotation);
+						argIndex++;
+					} else if (annotation instanceof QueryParam) {
+						addQueryParam(request, representationAsText, annotation);
+						argIndex++;
+					} else if (annotation instanceof FormParam) {
+
+						// TODO
+						argIndex++;
+					} else if (annotation instanceof CookieParam) {
+						addCookieParam(request, representationAsText,
+								annotation);
+						argIndex++;
+					} else if (annotation instanceof MatrixParam) {
+
+						// TODO
+						argIndex++;
+					} else if (annotation instanceof PathParam) {
+						addPathParam(request, representationAsText, annotation);
+						argIndex++;
+					}
 				}
 			}
 		}
 
-		// TODO - possibly throw an exception if the arg count != processed annotations?
+		// TODO - possibly throw an exception if the arg count != processed
+		// annotations?
 	}
 
-	private String getRepresentationAsText(int argIndex, Object[] args) {
+	private void addPathParam(Request request, String representationAsText,
+			Annotation annotation) {
+		String paramName = ((PathParam) annotation).value();
+		String existingPath = Reference.decode(request.getResourceRef().getPath());
+
+		String simplePathParam = String.format("{%s}", paramName);
+		if (existingPath.contains(simplePathParam)) {
+			existingPath = existingPath.replace(simplePathParam,
+					Reference.encode(representationAsText));
+		}
+
+		// TODO - allow regex path params - this code *mostly* works, but not quite
+//		String regexPathParam = String.format(".*\\{%s:(.+)\\}.*", paramName);
+//		try {
+//			if (existingPath.matches(regexPathParam)) {
+//				Matcher matcher = Pattern.compile(regexPathParam).matcher(
+//						existingPath);
+//				String pattern = matcher.group(1);
+//				
+//				/* I'm not sure how much sense it makes to match on the 
+//				 * textual form of the representation, unless it is a String...
+//				 */
+//				if (representationAsText.matches(pattern)) {
+//					existingPath = existingPath.replace(regexPathParam,
+//							Reference.encode(representationAsText));
+//				}
+//			}
+//		} catch (PatternSyntaxException pse) {
+//			// something is not right in the param definition, skip it
+//			pse.printStackTrace();
+//			return;
+//		}
+
+		request.getResourceRef().setPath(existingPath);
+	}
+
+	private void addCookieParam(Request request, String representationAsText,
+			Annotation annotation) {
+		Series<Cookie> cookies = request.getCookies();
+		if (cookies == null) {
+			cookies = new Series<Cookie>(Cookie.class);
+		}
+
+		cookies.add(new Cookie(((CookieParam) annotation).value(),
+				representationAsText));
+
+		request.setCookies(cookies);
+	}
+
+	private void addQueryParam(Request request, String representationAsText,
+			Annotation annotation) {
+		request.getResourceRef().addQueryParameter(
+				new Parameter(((QueryParam) annotation).value(),
+						representationAsText));
+	}
+
+	private void addHeaderParam(Request request, String representationAsText,
+			Annotation annotation) {
+		Util.getHttpHeaders(request).add(((HeaderParam) annotation).value(),
+				representationAsText);
+	}
+
+	private String getRepresentationAsText(Object value) {
+		Class<? extends Object> clazz = value.getClass();
+		boolean isPrimitiveOrWrapped = clazz.isPrimitive()
+				|| ClassUtils.wrapperToPrimitive(clazz) != null;
+		if(isPrimitiveOrWrapped || clazz == String.class){
+			return String.valueOf(value);
+		}
+
 		String representationAsText = null;
 		Representation representation = clientResource.getApplication()
-				.getConverterService().toRepresentation(args[argIndex]);
+				.getConverterService().toRepresentation(value);
 		try {
 			representationAsText = representation.getText();
 		} catch (IOException exception) {
-			throw new RuntimeException(exception);
+			throw new WebApplicationException(exception);
 		}
 		return representationAsText;
 	}
