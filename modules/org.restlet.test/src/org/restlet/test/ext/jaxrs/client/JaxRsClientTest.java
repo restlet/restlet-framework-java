@@ -60,8 +60,7 @@ import org.restlet.test.ext.jaxrs.services.tests.JaxRsTestCase;
  */
 public class JaxRsClientTest extends JaxRsTestCase {
 
-	// TODO - add tests for other param types: QueryParam, MatrixParam,
-	// CookieParam, etc.
+	// TODO - add tests for remaining param types: FormParam, MatrixParam,
 
 	private AtomicBoolean _serverStarted = new AtomicBoolean(false);
 	private Object lock = new Object();
@@ -76,54 +75,65 @@ public class JaxRsClientTest extends JaxRsTestCase {
 			}
 		};
 	}
-
+	
 	public void testEchoString() throws Exception {
-		final JaxRsClientTest clientTest = startSocketServerDaemon();
-
-		// give the server a chance to come up before using it
-		while (!_serverStarted.get()) {
-			Thread.sleep(100);
-			System.out.println("waiting for the server to start...");
-		}
-
-		EchoResource echoResource = JaxRsClientResource.createJaxRsClient(
-				"http://localhost:" + clientTest.getServerPort(),
-				EchoResource.class);
-
-		assertEquals("this is a test", echoResource.echo("this is a test"));
-
-		synchronized (lock) {
-			clientTest.stopServer();
-			_serverStarted.set(false);
-		}
+		performEchoTest(new EchoTest() {
+			@Override
+			public void performTest(EchoResource echoResource) {
+				assertEquals("this is a test", echoResource.echo("this is a test"));				
+			}
+		});
 	}
 
 	/*
 	 * Shows the problem addressed in:
 	 * https://github.com/restlet/restlet-framework-java/issues/441
 	 */
-	public void testEchoPoint() throws Exception {
-		final JaxRsClientTest clientTest = startSocketServerDaemon();
-
-		// give the server a chance to come up before using it
-		while (!_serverStarted.get()) {
-			Thread.sleep(100);
-			System.out.println("waiting for the server to start...");
-		}
-
-		EchoResource echoResource = JaxRsClientResource.createJaxRsClient(
-				"http://localhost:" + clientTest.getServerPort(),
-				EchoResource.class);
-
-		assertEquals(1, echoResource.echoPointHeaderParam(new Point(1, 2)).x);
-
-		assertEquals(3, echoResource.echoPointQueryParam(new Point(3, 4)).x);
-
-		synchronized (lock) {
-			clientTest.stopServer();
-			_serverStarted.set(false);
-		}
+	public void testEchoPointHeaderParam() throws Exception {
+		performEchoTest(new EchoTest() {
+			@Override
+			public void performTest(EchoResource echoResource) {
+				assertEquals(1, echoResource.echoPointHeaderParam(new Point(1, 2)).x);				
+			}
+		});
 	}
+	
+	public void testEchoPointQueryParam() throws Exception {
+		performEchoTest(new EchoTest() {
+			@Override
+			public void performTest(EchoResource echoResource) {
+				assertEquals(3, echoResource.echoPointQueryParam(new Point(3, 4)).x);
+			}
+		});
+	}
+	
+	public void testEchoPointPathParam() throws Exception {
+		performEchoTest(new EchoTest() {
+			@Override
+			public void performTest(EchoResource echoResource) {
+				assertEquals(5, echoResource.echoPointPathParam(new Point(5, 6)).x);
+			}
+		});
+	}
+	
+	public void testEchoPointCookieParam() throws Exception {
+		performEchoTest(new EchoTest() {
+			@Override
+			public void performTest(EchoResource echoResource) {
+				assertEquals(7, echoResource.echoPointCookieParam(new Point(7,8)).x);
+			}
+		});
+	}	
+	
+	//TODO - regex path params are not quite ready
+//	public void testRegexPathParam() throws Exception {
+//		performEchoTest(new EchoTest() {
+//			@Override
+//			public void performTest(EchoResource echoResource) {
+//				assertEquals("this_Is_A_Test123", echoResource.echoStringRegexPathParam("this_Is_A_Test123"));
+//			}
+//		});
+//	}	
 
 	private JaxRsClientTest startSocketServerDaemon()
 			throws InterruptedException {
@@ -158,6 +168,31 @@ public class JaxRsClientTest extends JaxRsTestCase {
 		t.start();
 
 		return clientTest;
+	}
+	
+	private void performEchoTest(EchoTest echoTest) throws Exception {
+		final JaxRsClientTest clientTest = startSocketServerDaemon();
+
+		// give the server a chance to come up before using it
+		while (!_serverStarted.get()) {
+			Thread.sleep(100);
+			System.out.println("waiting for the server to start...");
+		}
+
+		EchoResource echoResource = JaxRsClientResource.createJaxRsClient(
+				"http://localhost:" + clientTest.getServerPort(),
+				EchoResource.class);
+
+		echoTest.performTest(echoResource);
+
+		synchronized (lock) {
+			clientTest.stopServer();
+			_serverStarted.set(false);
+		}
+	}
+	
+	private static interface EchoTest {
+		void performTest(EchoResource echoResource);
 	}
 
 }

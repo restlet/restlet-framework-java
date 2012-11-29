@@ -19,5 +19,20 @@ public class EchoResourceImpl implements EchoResource{
 	public Point echoPointQueryParam(Point point) {
 		return point;
 	}
+
+	@Override
+	public Point echoPointPathParam(Point point) {
+		return point;
+	}
+
+	@Override
+	public String echoStringRegexPathParam(String input) {
+		return input;
+	}
+
+	@Override
+	public Point echoPointCookieParam(Point point) {
+		return point;
+	}
 	 
 }
