@@ -436,9 +436,11 @@ public class HeaderUtils {
         if (request.getClientInfo().getAgent() != null) {
             addHeader(HeaderConstants.HEADER_USER_AGENT, request
                     .getClientInfo().getAgent(), headers);
+            // [ifndef gwt]
         } else {
             addHeader(HeaderConstants.HEADER_USER_AGENT, Engine.VERSION_HEADER,
                     headers);
+            // [enddef]
         }
 
         // [ifndef gwt]
