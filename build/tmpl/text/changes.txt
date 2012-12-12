@@ -14,7 +14,8 @@ Changes log
 	  - Added OBAP (OSGi Bundle Access Protocol) client connector
 	    to allow access to resources from other OSGi bundles.
         Use "obap://{bundleSymbolicName}/{pathToResource}"
-        Added to the "org.restlet.ext.osgi" extension (OSGi edition). 
+        Added to the "org.restlet.ext.osgi" extension (OSGi edition).
+      - Added additional content type mappings to the JAX-RS module client.	
     - Misc
       - Updated Eclipse projects to use JavaSE 6.0 and simple Java 
         build rather than PDE/OSGi (removed manifest.mf files) or 
