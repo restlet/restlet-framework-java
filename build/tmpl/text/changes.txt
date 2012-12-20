@@ -9,11 +9,13 @@ Changes log
          Contributed by Jeff Plourde.
        - Fixed internal HTTP connector to enable handling of asynchronous
          client requests. Contributed by Florian Buclkers
-	   - Fixed controllerSleepTimeMs default value in documentation for 
-	     internal HTTP connector.
-	   - 
+       - Fixed controllerSleepTimeMs default value in documentation for 
+         internal HTTP connector.
+       - Fixed generation of requests in GWT edition, using the browser agent
+         name by default.
     - API changes
     - Misc
+       - Prevent logging of verbose stack trace. Reported by Grzegorz Godlewski.
 
 - 2.1.0 (09/20/2012)
     - Bug fixed
