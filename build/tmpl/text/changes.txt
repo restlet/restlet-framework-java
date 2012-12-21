@@ -20,7 +20,9 @@ Changes log
        - Took care of the IPV6 addresses. Reported by Laurent Rustuel.
        - Added support of multiple levels of $expand.
          Contributed by Emmanuel Liossis. 
-
+       - Fixed potential infinite loops while reading headers
+         (issues #599 and #656). Reported by weiweiwang.
+      
     - API changes
     - Misc
        - Prevent logging of verbose stack trace. Reported by Grzegorz Godlewski.

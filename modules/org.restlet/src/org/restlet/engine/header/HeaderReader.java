@@ -303,6 +303,7 @@ public class HeaderReader<V> {
             skipSpaces();
 
             do {
+                int i = index;
                 // Read the first value
                 V nextValue = readValue();
                 if (canAdd(nextValue, values)) {
@@ -312,6 +313,11 @@ public class HeaderReader<V> {
 
                 // Attempt to skip the value separator
                 skipValueSeparator();
+                if (i == index) {
+                    // Infinite loop
+                    throw new IOException(
+                            "The reading of one header initiates an infinite loop");
+                }
             } while (peek() != -1);
         } catch (IOException ioe) {
             Context.getCurrentLogger().log(Level.INFO,
@@ -497,8 +503,8 @@ public class HeaderReader<V> {
      * @return The next pair as a parameter.
      * @throws IOException
      */
-    public <NV extends NamedValue<String>> NV readNamedValue(Class<NV> resultClass)
-            throws IOException {
+    public <NV extends NamedValue<String>> NV readNamedValue(
+            Class<NV> resultClass) throws IOException {
         NV result = null;
         String name = readToken();
         int nextChar = read();
