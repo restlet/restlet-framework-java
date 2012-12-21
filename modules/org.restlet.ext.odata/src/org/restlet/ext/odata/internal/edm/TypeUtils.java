@@ -34,6 +34,7 @@
 package org.restlet.ext.odata.internal.edm;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Date;
