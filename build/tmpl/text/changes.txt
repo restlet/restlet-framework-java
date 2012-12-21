@@ -14,7 +14,7 @@ Changes log
        - Fixed generation of requests in GWT edition, using the browser agent
          name by default.
        - Fixed implementation of method "getAttribute" by the ClientResource 
-         and ServerResource classes (issue #695).
+         and ServerResource classes (issue #695). Reported by Dennis Mitchell.
     - API changes
     - Misc
        - Prevent logging of verbose stack trace. Reported by Grzegorz Godlewski.
