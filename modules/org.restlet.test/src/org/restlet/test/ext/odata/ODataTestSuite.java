@@ -50,8 +50,11 @@ public class ODataTestSuite extends TestSuite {
      */
     public static Test suite() {
         TestSuite result = new TestSuite("OData extension");
+
         result.addTestSuite(ODataCafeTestCase.class);
         result.addTestSuite(ODataCafeCustoFeedsTestCase.class);
+        result.addTestSuite(ODataDeepExpandTestCase.class);
+
         return result;
     }
 }
