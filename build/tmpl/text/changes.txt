@@ -13,7 +13,9 @@ Changes log
       Reported by Martin Grohmann.
     - Took care of the IPV6 addresses. Reported by Laurent Rustuel.
     - Added support of multiple levels of $expand.
-      Contributed by Emmanuel Liossis. 
+      Contributed by Emmanuel Liossis.
+    - Fixed potential infinite loops while reading headers
+      (issues #599 and #656). Reported by weiweiwang.
 - 2.0.15 (2012-08-23)
     - Bug fixed
        - Fixed bug in Reference#getParentRef with relative URIs.
