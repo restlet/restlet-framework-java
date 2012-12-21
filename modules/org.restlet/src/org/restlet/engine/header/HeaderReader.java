@@ -303,6 +303,8 @@ public class HeaderReader<V> {
             skipSpaces();
 
             do {
+                int i = index;
+                
                 // Read the first value
                 V nextValue = readValue();
                 if (canAdd(nextValue, values)) {
@@ -312,6 +314,11 @@ public class HeaderReader<V> {
 
                 // Attempt to skip the value separator
                 skipValueSeparator();
+                if (i == index) {
+                    // Infinite loop
+                    throw new IOException(
+                            "The reading of one header initiates an infinite loop");
+                }
             } while (peek() != -1);
         } catch (IOException ioe) {
             Context.getCurrentLogger().log(Level.INFO,
