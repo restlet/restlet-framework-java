@@ -46,7 +46,7 @@ import org.restlet.representation.Representation;
 public class RangeWriter extends HeaderWriter<Range> {
 
     /**
-     * Format {@code ranges} as a Range header value
+     * Formats {@code ranges} as a Range header value
      * 
      * @param ranges
      *            List of ranges to format
@@ -57,7 +57,7 @@ public class RangeWriter extends HeaderWriter<Range> {
     }
 
     /**
-     * Format {@code range} as a Content-Range header value
+     * Formats {@code range} as a Content-Range header value.
      * 
      * @param range
      *            Range to format
@@ -66,7 +66,7 @@ public class RangeWriter extends HeaderWriter<Range> {
      * @return {@code range} formatted
      */
     public static String write(Range range, long size) {
-        StringBuilder b = new StringBuilder("bytes ");
+        StringBuilder b = new StringBuilder(range.getUnitName() + " ");
 
         if (range.getIndex() >= Range.INDEX_FIRST) {
             b.append(range.getIndex());
@@ -116,7 +116,7 @@ public class RangeWriter extends HeaderWriter<Range> {
     }
 
     /**
-     * Format {@code ranges} as a Range header value
+     * Formats {@code ranges} as a Range header value
      * 
      * @param ranges
      *            List of ranges to format
@@ -127,7 +127,7 @@ public class RangeWriter extends HeaderWriter<Range> {
             return this;
         }
 
-        append("bytes=");
+        append(ranges.get(0) + "=");
 
         for (int i = 0; i < ranges.size(); i++) {
             if (i > 0) {
