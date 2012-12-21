@@ -22,6 +22,8 @@ Changes log
          Contributed by Emmanuel Liossis. 
        - Fixed potential infinite loops while reading headers
          (issues #599 and #656). Reported by weiweiwang.
+       - Fixed reading of Via header (issue #599).
+         Reported by Nicolas Rinaudo.
       
     - API changes
     - Misc
