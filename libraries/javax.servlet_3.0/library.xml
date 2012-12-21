@@ -5,10 +5,11 @@
 	<homeUri>http://java.sun.com/products/servlet/index.jsp</homeUri>
 	<downloadUri>http://java.sun.com/products/servlet/download.html</downloadUri>
 	<provider>Oracle Inc.</provider>
-	
+
 	<package name="javax.servlet">
 		<maven>
-			<artifactId>servlet-api</artifactId>
+		    <artifactId>servlet-api</artifactId>
+		    <version>3.0-alpha-1</version>
 		</maven>
 	</package>
 	<distributions>
