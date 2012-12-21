@@ -24,7 +24,9 @@ Changes log
          (issues #599 and #656). Reported by weiweiwang.
        - Fixed reading of Via header (issue #599).
          Reported by Nicolas Rinaudo.
-      
+       - Strict conneg should evaluate media type parameters (issue #559, #652).
+         Reported by Andy Dennie.
+         
     - API changes
     - Misc
        - Prevent logging of verbose stack trace. Reported by Grzegorz Godlewski.
