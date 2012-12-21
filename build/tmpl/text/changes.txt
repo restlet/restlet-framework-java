@@ -7,8 +7,10 @@ Changes log
     - Updated book examples based on the printed "Restlet in Action" book.
     - Fixed character set issue with FreeMarker templates.
       Contributed by Martin Svensson.
-	- Fixed error in OData pagination support.
-	  Reported by Tiago Martins.
+    - Fixed error in OData pagination support.
+      Reported by Tiago Martins.
+    - Fixed conversion Java Double/EDM.Double types in OData extension.
+      Reported by Martin Grohmann.
 
 - 2.0.15 (2012-08-23)
     - Bug fixed

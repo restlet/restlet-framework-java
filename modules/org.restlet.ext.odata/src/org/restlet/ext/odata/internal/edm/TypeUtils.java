@@ -62,12 +62,12 @@ public class TypeUtils {
             .getNumberInstance(Locale.US);
 
     /** Formater for the EDM Double type. */
-    public static final NumberFormat doubleFormat = DecimalFormat
-            .getNumberInstance(Locale.US);
+    public static final NumberFormat doubleFormat = new DecimalFormat(
+            "0.###############", new DecimalFormatSymbols(Locale.US));
 
     /** Formater for the EDM Single type. */
-    public static final NumberFormat singleFormat = DecimalFormat
-            .getNumberInstance(Locale.US);
+    public static final NumberFormat singleFormat = new DecimalFormat(
+            "0.#######", new DecimalFormatSymbols(Locale.US));
 
     /** Formater for the EDM Time type. */
     public static final NumberFormat timeFormat = DecimalFormat
