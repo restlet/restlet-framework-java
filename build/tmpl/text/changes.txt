@@ -15,6 +15,8 @@ Changes log
          name by default.
        - Fixed implementation of method "getAttribute" by the ClientResource 
          and ServerResource classes (issue #695). Reported by Dennis Mitchell.
+       - Fixed conversion Java Double/EDM.Double types in OData extension.
+         Reported by Martin Grohmann.
     - API changes
     - Misc
        - Prevent logging of verbose stack trace. Reported by Grzegorz Godlewski.
