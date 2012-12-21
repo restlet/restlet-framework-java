@@ -11,6 +11,7 @@ Changes log
       Reported by Tiago Martins.
     - Fixed conversion Java Double/EDM.Double types in OData extension.
       Reported by Martin Grohmann.
+    - Took care of the IPV6 addresses. Reported by Laurent Rustuel.
 
 - 2.0.15 (2012-08-23)
     - Bug fixed

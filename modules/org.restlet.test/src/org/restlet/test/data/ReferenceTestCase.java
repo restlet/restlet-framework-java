@@ -477,13 +477,16 @@ public class ReferenceTestCase extends RestletTestCase {
      * Test port getting/setting.
      */
     public void testPort() throws Exception {
-        final Reference ref = getDefaultReference();
+        Reference ref = getDefaultReference();
         int port = 8080;
         ref.setHostPort(port);
         assertEquals(port, ref.getHostPort());
         port = 9090;
         ref.setHostPort(port);
         assertEquals(port, ref.getHostPort());
+        
+        ref = new Reference("http://[::1]:8182");
+        assertEquals(8182, ref.getHostPort());
     }
 
     public void testProtocolConstructors() {
@@ -682,6 +685,13 @@ public class ReferenceTestCase extends RestletTestCase {
         reference.setUserInfo("login:password");
         assertEquals("login:password@localhost:81", reference.getAuthority());
         assertEquals("localhost", reference.getHostDomain());
+        assertEquals(81, reference.getHostPort());
+        assertEquals("login:password", reference.getUserInfo());
+
+        reference.setHostDomain("[::1]");
+        assertEquals("login:password@[::1]:81",
+                reference.getAuthority());
+        assertEquals("[::1]", reference.getHostDomain());
         assertEquals(81, reference.getHostPort());
         assertEquals("login:password", reference.getUserInfo());
 
