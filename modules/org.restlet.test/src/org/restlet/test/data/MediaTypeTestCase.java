@@ -161,6 +161,95 @@ public class MediaTypeTestCase extends RestletTestCase {
         assertFalse(mt2.includes(mt1));
 
         assertFalse(mt1.includes(null));
+
+        /*
+         * test inclusion for media types with parameters. The rule is: media
+         * type A includes media type B iff for each parameter name/value pair
+         * in A, B contains the same parameter name/value pair
+         */
+
+        // set up test data
+
+        MediaType typeWithNoParams = new MediaType("application/sometype");
+
+        Series<Parameter> singleParam = new Series<Parameter>(Parameter.class);
+        singleParam.add(new Parameter("name1", "value1"));
+        MediaType typeWithSingleParam = new MediaType("application/sometype",
+                singleParam);
+
+        Series<Parameter> singleMatchingParam = new Series<Parameter>(
+                Parameter.class);
+        singleMatchingParam.add(new Parameter("name1", "value1"));
+        MediaType typeWithSingleMatchingParam = new MediaType(
+                "application/sometype", singleMatchingParam);
+
+        Series<Parameter> singleNonMatchingParamValue = new Series<Parameter>(
+                Parameter.class);
+        singleNonMatchingParamValue.add(new Parameter("name1", "value2"));
+        MediaType typeWithSingleNonMatchingParamValue = new MediaType(
+                "application/sometype", singleNonMatchingParamValue);
+
+        Series<Parameter> singleNonMatchingParamName = new Series<Parameter>(
+                Parameter.class);
+        singleNonMatchingParamName.add(new Parameter("name2", "value2"));
+        MediaType typeWithSingleNonMatchingParamName = new MediaType(
+                "application/sometype", singleNonMatchingParamName);
+
+        Series<Parameter> twoParamsOneMatches = new Series<Parameter>(
+                Parameter.class);
+        twoParamsOneMatches.add(new Parameter("name1", "value1"));
+        twoParamsOneMatches.add(new Parameter("name2", "value2"));
+        MediaType typeWithTwoParamsOneMatches = new MediaType(
+                "application/sometype", twoParamsOneMatches);
+
+        // SCENARIO 1: test whether type with no params includes type with one
+        // param
+
+        assertTrue(typeWithNoParams.includes(typeWithSingleParam, true));
+        assertTrue(typeWithNoParams.includes(typeWithSingleParam, false));
+
+        // SCENARIO 2: test whether type with one param includes type with no
+        // params
+
+        assertTrue(typeWithSingleParam.includes(typeWithNoParams, true));
+        assertFalse(typeWithSingleParam.includes(typeWithNoParams, false));
+
+        // SCENARIO 3: test whether type with single param includes type with
+        // matching single param.
+        // Note that this is distinct from testing whether a type includes
+        // itself, as there is a special check for that.
+        assertTrue(typeWithSingleParam.includes(typeWithSingleMatchingParam,
+                true));
+        assertTrue(typeWithSingleParam.includes(typeWithSingleMatchingParam,
+                false));
+
+        // SCENARIO 4: test whether type with single param includes type with
+        // single param having different name
+        assertTrue(typeWithSingleParam.includes(
+                typeWithSingleNonMatchingParamName, true));
+        assertFalse(typeWithSingleParam.includes(
+                typeWithSingleNonMatchingParamName, false));
+
+        // SCENARIO 5: test whether type with single param includes type with
+        // single param having same name but different value
+        assertTrue(typeWithSingleParam.includes(
+                typeWithSingleNonMatchingParamValue, true));
+        assertFalse(typeWithSingleParam.includes(
+                typeWithSingleNonMatchingParamValue, false));
+
+        // SCENARIO 6: test whether type with single param includes type with
+        // two params, one matching
+        assertTrue(typeWithSingleParam.includes(typeWithTwoParamsOneMatches,
+                true));
+        assertTrue(typeWithSingleParam.includes(typeWithTwoParamsOneMatches,
+                false));
+
+        // SCENARIO 7: test whether type with two params includes type with
+        // single matching param
+        assertTrue(typeWithTwoParamsOneMatches.includes(typeWithSingleParam,
+                true));
+        assertFalse(typeWithTwoParamsOneMatches.includes(typeWithSingleParam,
+                false));
     }
 
     public void testMostSpecificMediaType() {
