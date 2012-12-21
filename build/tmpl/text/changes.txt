@@ -26,6 +26,9 @@ Changes log
          Reported by Nicolas Rinaudo.
        - Strict conneg should evaluate media type parameters (issue #559, #652).
          Reported and contributed by Andy Dennie.
+       - Fixed CookieAuthenticator which should redirect the user's browser to the 
+         getLoginFormPath() when the credentials are missing or stale (issue #697).
+         Reported and contributed by Tim Peierls.
          
     - API changes
     - Misc
