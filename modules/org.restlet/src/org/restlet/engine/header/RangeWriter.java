@@ -66,7 +66,9 @@ public class RangeWriter extends HeaderWriter<Range> {
      * @return {@code range} formatted
      */
     public static String write(Range range, long size) {
-        StringBuilder b = new StringBuilder("bytes ");
+        StringBuilder b = new StringBuilder();
+        b.append(range.getUnitName());
+        b.append(' ');
 
         if (range.getIndex() >= Range.INDEX_FIRST) {
             b.append(range.getIndex());
