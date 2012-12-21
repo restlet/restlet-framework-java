@@ -25,7 +25,7 @@ Changes log
        - Fixed reading of Via header (issue #599).
          Reported by Nicolas Rinaudo.
        - Strict conneg should evaluate media type parameters (issue #559, #652).
-         Reported by Andy Dennie.
+         Reported and contributed by Andy Dennie.
          
     - API changes
     - Misc
