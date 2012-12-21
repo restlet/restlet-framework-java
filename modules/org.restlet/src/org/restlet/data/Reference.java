@@ -1156,7 +1156,7 @@ public class Reference {
         if (authority != null) {
             final int index1 = authority.indexOf('@');
             // We must prevent the case where the userinfo part contains ':'
-            final int index = authority.indexOf(':',
+            final int index = authority.lastIndexOf(':',
                     (index1 == -1 ? 0 : index1));
 
             if (index != -1) {

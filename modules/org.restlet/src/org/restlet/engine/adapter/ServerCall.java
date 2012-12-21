@@ -337,12 +337,26 @@ public abstract class ServerCall extends Call {
                 HeaderConstants.HEADER_HOST, true);
 
         if (host != null) {
-            int colonIndex = host.indexOf(':');
+            int colonIndex = host.lastIndexOf(':');
+            int closeBracketIndex = host.indexOf(']');
 
-            if (colonIndex != -1) {
+            // http://localhost:8080/
+            if (colonIndex != -1 && closeBracketIndex == -1) {
                 super.setHostDomain(host.substring(0, colonIndex));
                 super.setHostPort(Integer.valueOf(host
                         .substring(colonIndex + 1)));
+            }
+            // http://[::1]:8080/
+            else if (colonIndex != -1 && closeBracketIndex != -1
+                    && closeBracketIndex < colonIndex) {
+                super.setHostDomain(host.substring(0, closeBracketIndex + 1));
+                super.setHostPort(Integer.valueOf(host
+                        .substring(colonIndex + 1)));
+            }
+            // http://[::1]/
+            else if (colonIndex != -1 && closeBracketIndex != -1) {
+                super.setHostDomain(host.substring(0, closeBracketIndex + 1));
+                super.setHostPort(getProtocol().getDefaultPort());
             } else {
                 super.setHostDomain(host);
                 super.setHostPort(getProtocol().getDefaultPort());
