@@ -12,7 +12,8 @@ Changes log
     - Fixed conversion Java Double/EDM.Double types in OData extension.
       Reported by Martin Grohmann.
     - Took care of the IPV6 addresses. Reported by Laurent Rustuel.
-
+    - Added support of multiple levels of $expand.
+      Contributed by Emmanuel Liossis. 
 - 2.0.15 (2012-08-23)
     - Bug fixed
        - Fixed bug in Reference#getParentRef with relative URIs.
