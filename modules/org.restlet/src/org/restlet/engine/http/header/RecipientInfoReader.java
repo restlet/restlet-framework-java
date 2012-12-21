@@ -74,6 +74,11 @@ public class RecipientInfoReader extends HeaderReader<RecipientInfo> {
         RecipientInfo result = new RecipientInfo();
         String protocolToken = readToken();
 
+        if (protocolToken == null || "".equals(protocolToken)) {
+            throw new IOException(
+                    "Unexpected empty protocol token for while reading recipient info header, please check the value.");
+        }
+        
         if (peek() == '/') {
             read();
             result.setProtocol(new Protocol(protocolToken, protocolToken, null,
@@ -94,5 +99,11 @@ public class RecipientInfoReader extends HeaderReader<RecipientInfo> {
         }
 
         return result;
+    }
+
+    @Override
+    protected boolean canAdd(RecipientInfo value,
+            Collection<RecipientInfo> values) {
+        return super.canAdd(value, values);
     }
 }
