@@ -39,6 +39,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -73,6 +75,15 @@ public class BufferingRepresentation extends WrapperRepresentation {
     public BufferingRepresentation(Representation bufferedRepresentation) {
         super(bufferedRepresentation);
         setTransient(false);
+    }
+    
+    @Override
+    public boolean isAvailable() {
+    	try {    		
+    		buffer();
+    	} catch (IOException e) {};
+    	
+    	return isBuffered();
     }
 
     /**
@@ -189,6 +200,13 @@ public class BufferingRepresentation extends WrapperRepresentation {
         if (getText() != null) {
             writer.write(getText());
         }
+    }
+    
+    @Override
+    public void write(WritableByteChannel writableChannel) throws IOException {
+    	buffer();
+    	
+    	writableChannel.write(ByteBuffer.wrap(getBuffer()));
     }
 
 }
