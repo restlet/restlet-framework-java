@@ -1,0 +1,2673 @@
+<?xml version='1.0' encoding='utf-8'?>
+<edmx:Edmx Version="1.0"
+	xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+	<edmx:DataServices m:DataServiceVersion="2.0"
+		xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata">
+		<Schema Namespace="org.restlet.test.ext.odata.deepexpand.modelContainer"
+			xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+			<EntityContainer Name="org.restlet.test.ext.odata.deepexpand.modelEntities"
+				m:IsDefaultEntityContainer="true">
+				<EntitySet Name="Address" EntityType="org.restlet.test.ext.odata.deepexpand.model.Address" />
+				<EntitySet Name="Group" EntityType="org.restlet.test.ext.odata.deepexpand.model.Group" />
+				<EntitySet Name="Division" EntityType="org.restlet.test.ext.odata.deepexpand.model.Division" />
+				<EntitySet Name="Branch" EntityType="org.restlet.test.ext.odata.deepexpand.model.Branch" />
+				<EntitySet Name="Job" EntityType="org.restlet.test.ext.odata.deepexpand.model.Job" />
+				<EntitySet Name="JobPostingPartSpecialPayable"
+					EntityType="org.restlet.test.ext.odata.deepexpand.model.JobPostingPartSpecialPayable" />
+				<EntitySet Name="ReportType" EntityType="org.restlet.test.ext.odata.deepexpand.model.ReportType" />
+				<EntitySet Name="Report" EntityType="org.restlet.test.ext.odata.deepexpand.model.Report" />
+				<EntitySet Name="University" EntityType="org.restlet.test.ext.odata.deepexpand.model.University" />
+				<EntitySet Name="JobPosting" EntityType="org.restlet.test.ext.odata.deepexpand.model.JobPosting" />
+				<EntitySet Name="Requirement" EntityType="org.restlet.test.ext.odata.deepexpand.model.Requirement" />
+				<EntitySet Name="JobPartSpecialPayable"
+					EntityType="org.restlet.test.ext.odata.deepexpand.model.JobPartSpecialPayable" />
+				<EntitySet Name="Lesson" EntityType="org.restlet.test.ext.odata.deepexpand.model.Lesson" />
+				<EntitySet Name="Multilingual"
+					EntityType="org.restlet.test.ext.odata.deepexpand.model.Multilingual" />
+				<EntitySet Name="Student" EntityType="org.restlet.test.ext.odata.deepexpand.model.Student" />
+				<EntitySet Name="Company" EntityType="org.restlet.test.ext.odata.deepexpand.model.Company" />
+				<EntitySet Name="FinancialSource"
+					EntityType="org.restlet.test.ext.odata.deepexpand.model.FinancialSource" />
+				<EntitySet Name="Department" EntityType="org.restlet.test.ext.odata.deepexpand.model.Department" />
+				<EntitySet Name="Person" EntityType="org.restlet.test.ext.odata.deepexpand.model.Person" />
+				<EntitySet Name="Permission" EntityType="org.restlet.test.ext.odata.deepexpand.model.Permission" />
+				<EntitySet Name="InsuranceContract"
+					EntityType="org.restlet.test.ext.odata.deepexpand.model.InsuranceContract" />
+				<EntitySet Name="Invitation" EntityType="org.restlet.test.ext.odata.deepexpand.model.Invitation" />
+				<EntitySet Name="Literal" EntityType="org.restlet.test.ext.odata.deepexpand.model.Literal" />
+				<EntitySet Name="JobPart" EntityType="org.restlet.test.ext.odata.deepexpand.model.JobPart" />
+				<EntitySet Name="Attachment" EntityType="org.restlet.test.ext.odata.deepexpand.model.Attachment" />
+				<EntitySet Name="EntityAccess"
+					EntityType="org.restlet.test.ext.odata.deepexpand.model.EntityAccess" />
+				<EntitySet Name="Category" EntityType="org.restlet.test.ext.odata.deepexpand.model.Category" />
+				<EntitySet Name="EMail" EntityType="org.restlet.test.ext.odata.deepexpand.model.EMail" />
+				<EntitySet Name="Location" EntityType="org.restlet.test.ext.odata.deepexpand.model.Location" />
+				<EntitySet Name="Role" EntityType="org.restlet.test.ext.odata.deepexpand.model.Role" />
+				<EntitySet Name="Payment" EntityType="org.restlet.test.ext.odata.deepexpand.model.Payment" />
+				<EntitySet Name="Nationality" EntityType="org.restlet.test.ext.odata.deepexpand.model.Nationality" />
+				<EntitySet Name="CompanyPerson"
+					EntityType="org.restlet.test.ext.odata.deepexpand.model.CompanyPerson" />
+				<EntitySet Name="AuthenticatedUser"
+					EntityType="org.restlet.test.ext.odata.deepexpand.model.AuthenticatedUser" />
+				<EntitySet Name="Telephone" EntityType="org.restlet.test.ext.odata.deepexpand.model.Telephone" />
+				<EntitySet Name="CoOp" EntityType="org.restlet.test.ext.odata.deepexpand.model.CoOp" />
+				<EntitySet Name="FacultyUser" EntityType="org.restlet.test.ext.odata.deepexpand.model.FacultyUser" />
+				<EntitySet Name="Registration"
+					EntityType="org.restlet.test.ext.odata.deepexpand.model.Registration" />
+				<EntitySet Name="JobPostingPart"
+					EntityType="org.restlet.test.ext.odata.deepexpand.model.JobPostingPart" />
+				<EntitySet Name="Language" EntityType="org.restlet.test.ext.odata.deepexpand.model.Language" />
+				<EntitySet Name="Professor" EntityType="org.restlet.test.ext.odata.deepexpand.model.Professor" />
+				<EntitySet Name="ActivitySector"
+					EntityType="org.restlet.test.ext.odata.deepexpand.model.ActivitySector" />
+				<AssociationSet Name="FK_Address_Person"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Address_Person">
+					<End EntitySet="Address" Role="Address" />
+					<End EntitySet="Person" Role="Person" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Address_Location"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Address_Location">
+					<End EntitySet="Address" Role="Address" />
+					<End EntitySet="Location" Role="Location" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Group_CoOp"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Group_CoOp">
+					<End EntitySet="Group" Role="Group" />
+					<End EntitySet="CoOp" Role="CoOp" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Group_Job"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Group_Job">
+					<End EntitySet="Group" Role="Group" />
+					<End EntitySet="Job" Role="Job" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Division_Department"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Division_Department">
+					<End EntitySet="Division" Role="Division" />
+					<End EntitySet="Department" Role="Department" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Division_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Division_Multilingual">
+					<End EntitySet="Division" Role="Division" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Branch_Company"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Branch_Company">
+					<End EntitySet="Branch" Role="Branch" />
+					<End EntitySet="Company" Role="Company" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Branch_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Branch_Multilingual">
+					<End EntitySet="Branch" Role="Branch" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Job_Professor"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Job_Professor">
+					<End EntitySet="Job" Role="Job" />
+					<End EntitySet="Professor" Role="Professor" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Job_JobPosting"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Job_JobPosting">
+					<End EntitySet="Job" Role="Job" />
+					<End EntitySet="JobPosting" Role="JobPosting" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Job_Group"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Job_Group">
+					<End EntitySet="Job" Role="Job" />
+					<End EntitySet="Group" Role="Group" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPostingPartSpecialPayable_FinancialSource"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPartSpecialPayable_FinancialSource">
+					<End EntitySet="JobPostingPartSpecialPayable" Role="JobPostingPartSpecialPayable" />
+					<End EntitySet="FinancialSource" Role="FinancialSource" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPostingPartSpecialPayable_JobPostingPart"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPartSpecialPayable_JobPostingPart">
+					<End EntitySet="JobPostingPartSpecialPayable" Role="JobPostingPartSpecialPayable" />
+					<End EntitySet="JobPostingPart" Role="JobPostingPart" />
+				</AssociationSet>
+				<AssociationSet Name="FK_ReportType_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_ReportType_Multilingual">
+					<End EntitySet="ReportType" Role="ReportType" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_ReportType_Multilingual_1"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_ReportType_Multilingual_1">
+					<End EntitySet="ReportType" Role="ReportType" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Report_CoOp"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Report_CoOp">
+					<End EntitySet="Report" Role="Report" />
+					<End EntitySet="CoOp" Role="CoOp" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Report_Registration"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Report_Registration">
+					<End EntitySet="Report" Role="Report" />
+					<End EntitySet="Registration" Role="Registration" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Report_Group"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Report_Group">
+					<End EntitySet="Report" Role="Report" />
+					<End EntitySet="Group" Role="Group" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Report_ReportType"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Report_ReportType">
+					<End EntitySet="Report" Role="Report" />
+					<End EntitySet="ReportType" Role="ReportType" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Report_AuthenticatedUser"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Report_AuthenticatedUser">
+					<End EntitySet="Report" Role="Report" />
+					<End EntitySet="AuthenticatedUser" Role="AuthenticatedUser" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Report_JobPart"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Report_JobPart">
+					<End EntitySet="Report" Role="Report" />
+					<End EntitySet="JobPart" Role="JobPart" />
+				</AssociationSet>
+				<AssociationSet Name="FK_University_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_University_Multilingual">
+					<End EntitySet="University" Role="University" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPosting_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_Multilingual">
+					<End EntitySet="JobPosting" Role="JobPosting" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPosting_Multilingual_1"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_Multilingual_1">
+					<End EntitySet="JobPosting" Role="JobPosting" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPosting_Professor"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_Professor">
+					<End EntitySet="JobPosting" Role="JobPosting" />
+					<End EntitySet="Professor" Role="Professor" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPosting_Company"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_Company">
+					<End EntitySet="JobPosting" Role="JobPosting" />
+					<End EntitySet="Company" Role="Company" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPosting_CompanyPerson"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_CompanyPerson">
+					<End EntitySet="JobPosting" Role="JobPosting" />
+					<End EntitySet="CompanyPerson" Role="CompanyPerson" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPosting_CoOp"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_CoOp">
+					<End EntitySet="JobPosting" Role="JobPosting" />
+					<End EntitySet="CoOp" Role="CoOp" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Requirement_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Requirement_Multilingual">
+					<End EntitySet="Requirement" Role="Requirement" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Requirement_CoOp"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Requirement_CoOp">
+					<End EntitySet="Requirement" Role="Requirement" />
+					<End EntitySet="CoOp" Role="CoOp" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPartSpecialPayable_JobPart"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPartSpecialPayable_JobPart">
+					<End EntitySet="JobPartSpecialPayable" Role="JobPartSpecialPayable" />
+					<End EntitySet="JobPart" Role="JobPart" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPartSpecialPayable_FinancialSource"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPartSpecialPayable_FinancialSource">
+					<End EntitySet="JobPartSpecialPayable" Role="JobPartSpecialPayable" />
+					<End EntitySet="FinancialSource" Role="FinancialSource" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Lesson_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Lesson_Multilingual">
+					<End EntitySet="Lesson" Role="Lesson" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Lesson_Department"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Lesson_Department">
+					<End EntitySet="Lesson" Role="Lesson" />
+					<End EntitySet="Department" Role="Department" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Student_Language"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Student_Language">
+					<End EntitySet="Student" Role="Student" />
+					<End EntitySet="Language" Role="Language" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Student_Registration"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Student_Registration">
+					<End EntitySet="Student" Role="Student" />
+					<End EntitySet="Registration" Role="Registration" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Student_Department"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Student_Department">
+					<End EntitySet="Student" Role="Student" />
+					<End EntitySet="Department" Role="Department" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Student_Nationality"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Student_Nationality">
+					<End EntitySet="Student" Role="Student" />
+					<End EntitySet="Nationality" Role="Nationality" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Student_CoOp"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Student_CoOp">
+					<End EntitySet="Student" Role="Student" />
+					<End EntitySet="CoOp" Role="CoOp" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Student_Location"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Student_Location">
+					<End EntitySet="Student" Role="Student" />
+					<End EntitySet="Location" Role="Location" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Company_CompanyPerson"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Company_CompanyPerson">
+					<End EntitySet="Company" Role="Company" />
+					<End EntitySet="CompanyPerson" Role="CompanyPerson" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Company_Branch"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Company_Branch">
+					<End EntitySet="Company" Role="Company" />
+					<End EntitySet="Branch" Role="Branch" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Company_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Company_Multilingual">
+					<End EntitySet="Company" Role="Company" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Company_ActivitySector"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Company_ActivitySector">
+					<End EntitySet="Company" Role="Company" />
+					<End EntitySet="ActivitySector" Role="ActivitySector" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Company_Category"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Company_Category">
+					<End EntitySet="Company" Role="Company" />
+					<End EntitySet="Category" Role="Category" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Company_Multilingual_1"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Company_Multilingual_1">
+					<End EntitySet="Company" Role="Company" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Department_University"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Department_University">
+					<End EntitySet="Department" Role="Department" />
+					<End EntitySet="University" Role="University" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Department_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Department_Multilingual">
+					<End EntitySet="Department" Role="Department" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Person_Language"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Person_Language">
+					<End EntitySet="Person" Role="Person" />
+					<End EntitySet="Language" Role="Language" />
+				</AssociationSet>
+				<AssociationSet Name="FK_InsuranceContract_Company"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_InsuranceContract_Company">
+					<End EntitySet="InsuranceContract" Role="InsuranceContract" />
+					<End EntitySet="Company" Role="Company" />
+				</AssociationSet>
+				<AssociationSet Name="FK_InsuranceContract_CoOp"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_InsuranceContract_CoOp">
+					<End EntitySet="InsuranceContract" Role="InsuranceContract" />
+					<End EntitySet="CoOp" Role="CoOp" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Invitation_Registration"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Invitation_Registration">
+					<End EntitySet="Invitation" Role="Invitation" />
+					<End EntitySet="Registration" Role="Registration" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Invitation_Group"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Invitation_Group">
+					<End EntitySet="Invitation" Role="Invitation" />
+					<End EntitySet="Group" Role="Group" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Invitation_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Invitation_Multilingual">
+					<End EntitySet="Invitation" Role="Invitation" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Literal_Language"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Literal_Language">
+					<End EntitySet="Literal" Role="Literal" />
+					<End EntitySet="Language" Role="Language" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Literal_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Literal_Multilingual">
+					<End EntitySet="Literal" Role="Literal" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPart_CompanyPerson"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPart_CompanyPerson">
+					<End EntitySet="JobPart" Role="JobPart" />
+					<End EntitySet="CompanyPerson" Role="CompanyPerson" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPart_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPart_Multilingual">
+					<End EntitySet="JobPart" Role="JobPart" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPart_Job"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPart_Job">
+					<End EntitySet="JobPart" Role="JobPart" />
+					<End EntitySet="Job" Role="Job" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPart_Branch"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPart_Branch">
+					<End EntitySet="JobPart" Role="JobPart" />
+					<End EntitySet="Branch" Role="Branch" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPart_Location"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPart_Location">
+					<End EntitySet="JobPart" Role="JobPart" />
+					<End EntitySet="Location" Role="Location" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Attachment_InsuranceContract"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Attachment_InsuranceContract">
+					<End EntitySet="Attachment" Role="Attachment" />
+					<End EntitySet="InsuranceContract" Role="InsuranceContract" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Attachment_Report"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Attachment_Report">
+					<End EntitySet="Attachment" Role="Attachment" />
+					<End EntitySet="Report" Role="Report" />
+				</AssociationSet>
+				<AssociationSet Name="FK_EntityAccess_Permission"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_EntityAccess_Permission">
+					<End EntitySet="EntityAccess" Role="EntityAccess" />
+					<End EntitySet="Permission" Role="Permission" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Category_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Category_Multilingual">
+					<End EntitySet="Category" Role="Category" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Category_Category"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Category_Category">
+					<End EntitySet="Category" Role="Category" />
+					<End EntitySet="Category" Role="Category1" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Location_Location"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Location_Location">
+					<End EntitySet="Location" Role="Location" />
+					<End EntitySet="Location" Role="Location1" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Payment_FinancialSource"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Payment_FinancialSource">
+					<End EntitySet="Payment" Role="Payment" />
+					<End EntitySet="FinancialSource" Role="FinancialSource" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Payment_Registration"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Payment_Registration">
+					<End EntitySet="Payment" Role="Payment" />
+					<End EntitySet="Registration" Role="Registration" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Payment_JobPart"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Payment_JobPart">
+					<End EntitySet="Payment" Role="Payment" />
+					<End EntitySet="JobPart" Role="JobPart" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Nationality_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Nationality_Multilingual">
+					<End EntitySet="Nationality" Role="Nationality" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_CompanyPerson_Language"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_CompanyPerson_Language">
+					<End EntitySet="CompanyPerson" Role="CompanyPerson" />
+					<End EntitySet="Language" Role="Language" />
+				</AssociationSet>
+				<AssociationSet Name="FK_CompanyPerson_Company"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_CompanyPerson_Company">
+					<End EntitySet="CompanyPerson" Role="CompanyPerson" />
+					<End EntitySet="Company" Role="Company" />
+				</AssociationSet>
+				<AssociationSet Name="FK_AuthenticatedUser_Language"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_AuthenticatedUser_Language">
+					<End EntitySet="AuthenticatedUser" Role="AuthenticatedUser" />
+					<End EntitySet="Language" Role="Language" />
+				</AssociationSet>
+				<AssociationSet Name="FK_AuthenticatedUser_CoOp"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_AuthenticatedUser_CoOp">
+					<End EntitySet="AuthenticatedUser" Role="AuthenticatedUser" />
+					<End EntitySet="CoOp" Role="CoOp" />
+				</AssociationSet>
+				<AssociationSet Name="FK_AuthenticatedUser_Department"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_AuthenticatedUser_Department">
+					<End EntitySet="AuthenticatedUser" Role="AuthenticatedUser" />
+					<End EntitySet="Department" Role="Department" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Telephone_Person"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Telephone_Person">
+					<End EntitySet="Telephone" Role="Telephone" />
+					<End EntitySet="Person" Role="Person" />
+				</AssociationSet>
+				<AssociationSet Name="FK_CoOp_Professor"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Professor">
+					<End EntitySet="CoOp" Role="CoOp" />
+					<End EntitySet="Professor" Role="Professor" />
+				</AssociationSet>
+				<AssociationSet Name="FK_CoOp_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Multilingual">
+					<End EntitySet="CoOp" Role="CoOp" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_CoOp_Lesson"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Lesson">
+					<End EntitySet="CoOp" Role="CoOp" />
+					<End EntitySet="Lesson" Role="Lesson" />
+				</AssociationSet>
+				<AssociationSet Name="FK_CoOp_Professor_1"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Professor_1">
+					<End EntitySet="CoOp" Role="CoOp" />
+					<End EntitySet="Professor" Role="Professor" />
+				</AssociationSet>
+				<AssociationSet Name="FK_CoOp_Professor_2"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Professor_2">
+					<End EntitySet="CoOp" Role="CoOp" />
+					<End EntitySet="Professor" Role="Professor" />
+				</AssociationSet>
+				<AssociationSet Name="FK_FacultyUser_Language"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_FacultyUser_Language">
+					<End EntitySet="FacultyUser" Role="FacultyUser" />
+					<End EntitySet="Language" Role="Language" />
+				</AssociationSet>
+				<AssociationSet Name="FK_FacultyUser_CoOp"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_FacultyUser_CoOp">
+					<End EntitySet="FacultyUser" Role="FacultyUser" />
+					<End EntitySet="CoOp" Role="CoOp" />
+				</AssociationSet>
+				<AssociationSet Name="FK_FacultyUser_Division"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_FacultyUser_Division">
+					<End EntitySet="FacultyUser" Role="FacultyUser" />
+					<End EntitySet="Division" Role="Division" />
+				</AssociationSet>
+				<AssociationSet Name="FK_FacultyUser_Department"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_FacultyUser_Department">
+					<End EntitySet="FacultyUser" Role="FacultyUser" />
+					<End EntitySet="Department" Role="Department" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Registration_Student"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Registration_Student">
+					<End EntitySet="Registration" Role="Registration" />
+					<End EntitySet="Student" Role="Student" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Registration_InsuranceContract"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Registration_InsuranceContract">
+					<End EntitySet="Registration" Role="Registration" />
+					<End EntitySet="InsuranceContract" Role="InsuranceContract" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Registration_Group"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Registration_Group">
+					<End EntitySet="Registration" Role="Registration" />
+					<End EntitySet="Group" Role="Group" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Registration_CoOp"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Registration_CoOp">
+					<End EntitySet="Registration" Role="Registration" />
+					<End EntitySet="CoOp" Role="CoOp" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPostingPart_Location"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPart_Location">
+					<End EntitySet="JobPostingPart" Role="JobPostingPart" />
+					<End EntitySet="Location" Role="Location" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPostingPart_Branch"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPart_Branch">
+					<End EntitySet="JobPostingPart" Role="JobPostingPart" />
+					<End EntitySet="Branch" Role="Branch" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPostingPart_CompanyPerson"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPart_CompanyPerson">
+					<End EntitySet="JobPostingPart" Role="JobPostingPart" />
+					<End EntitySet="CompanyPerson" Role="CompanyPerson" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPostingPart_Multilingual"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPart_Multilingual">
+					<End EntitySet="JobPostingPart" Role="JobPostingPart" />
+					<End EntitySet="Multilingual" Role="Multilingual" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPostingPart_JobPosting"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPart_JobPosting">
+					<End EntitySet="JobPostingPart" Role="JobPostingPart" />
+					<End EntitySet="JobPosting" Role="JobPosting" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Professor_Language"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Professor_Language">
+					<End EntitySet="Professor" Role="Professor" />
+					<End EntitySet="Language" Role="Language" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Professor_Division"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Professor_Division">
+					<End EntitySet="Professor" Role="Professor" />
+					<End EntitySet="Division" Role="Division" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Professor_Department"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Professor_Department">
+					<End EntitySet="Professor" Role="Professor" />
+					<End EntitySet="Department" Role="Department" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Professor_CoOp"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Professor_CoOp">
+					<End EntitySet="Professor" Role="Professor" />
+					<End EntitySet="CoOp" Role="CoOp" />
+				</AssociationSet>
+				<AssociationSet Name="FK_ActivitySector_ActivitySector"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_ActivitySector_ActivitySector">
+					<End EntitySet="ActivitySector" Role="ActivitySector" />
+					<End EntitySet="ActivitySector" Role="ActivitySector1" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Group_Professor"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Group_Professor">
+					<End EntitySet="Group" Role="Group" />
+					<End EntitySet="Professor" Role="Professor" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Branch_CompanyPerson"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Branch_CompanyPerson">
+					<End EntitySet="Branch" Role="Branch" />
+					<End EntitySet="CompanyPerson" Role="CompanyPerson" />
+				</AssociationSet>
+				<AssociationSet Name="FK_ReportType_Role"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_ReportType_Role">
+					<End EntitySet="ReportType" Role="ReportType" />
+					<End EntitySet="Role" Role="Role" />
+				</AssociationSet>
+				<AssociationSet Name="FK_JobPosting_Registration"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_Registration">
+					<End EntitySet="JobPosting" Role="JobPosting" />
+					<End EntitySet="Registration" Role="Registration" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Requirement_Registration"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Requirement_Registration">
+					<End EntitySet="Requirement" Role="Requirement" />
+					<End EntitySet="Registration" Role="Registration" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Telephone_Student"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Telephone_Student">
+					<End EntitySet="Telephone" Role="Telephone" />
+					<End EntitySet="Student" Role="Student" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Address_Student"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Address_Student">
+					<End EntitySet="Address" Role="Address" />
+					<End EntitySet="Student" Role="Student" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Student_Role"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Student_Role">
+					<End EntitySet="Student" Role="Student" />
+					<End EntitySet="Role" Role="Role" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Report_Student"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Report_Student">
+					<End EntitySet="Report" Role="Report" />
+					<End EntitySet="Student" Role="Student" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Company_CoOp"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Company_CoOp">
+					<End EntitySet="Company" Role="Company" />
+					<End EntitySet="CoOp" Role="CoOp" />
+				</AssociationSet>
+				<AssociationSet Name="FK_FinancialSource_CoOp"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_FinancialSource_CoOp">
+					<End EntitySet="FinancialSource" Role="FinancialSource" />
+					<End EntitySet="CoOp" Role="CoOp" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Permission_Role"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Permission_Role">
+					<End EntitySet="Permission" Role="Permission" />
+					<End EntitySet="Role" Role="Role" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Invitation_Registration_1"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Invitation_Registration_1">
+					<End EntitySet="Invitation" Role="Invitation" />
+					<End EntitySet="Registration" Role="Registration" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Category_Registration"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Category_Registration">
+					<End EntitySet="Category" Role="Category" />
+					<End EntitySet="Registration" Role="Registration" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Location_Registration"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Location_Registration">
+					<End EntitySet="Location" Role="Location" />
+					<End EntitySet="Registration" Role="Registration" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Role_AuthenticatedUser"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Role_AuthenticatedUser">
+					<End EntitySet="Role" Role="Role" />
+					<End EntitySet="AuthenticatedUser" Role="AuthenticatedUser" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Address_CompanyPerson"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Address_CompanyPerson">
+					<End EntitySet="Address" Role="Address" />
+					<End EntitySet="CompanyPerson" Role="CompanyPerson" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Telephone_CompanyPerson"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Telephone_CompanyPerson">
+					<End EntitySet="Telephone" Role="Telephone" />
+					<End EntitySet="CompanyPerson" Role="CompanyPerson" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Address_AuthenticatedUser"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Address_AuthenticatedUser">
+					<End EntitySet="Address" Role="Address" />
+					<End EntitySet="AuthenticatedUser" Role="AuthenticatedUser" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Telephone_AuthenticatedUser"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Telephone_AuthenticatedUser">
+					<End EntitySet="Telephone" Role="Telephone" />
+					<End EntitySet="AuthenticatedUser" Role="AuthenticatedUser" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Address_FacultyUser"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Address_FacultyUser">
+					<End EntitySet="Address" Role="Address" />
+					<End EntitySet="FacultyUser" Role="FacultyUser" />
+				</AssociationSet>
+				<AssociationSet Name="FK_FacultyUser_Role"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_FacultyUser_Role">
+					<End EntitySet="FacultyUser" Role="FacultyUser" />
+					<End EntitySet="Role" Role="Role" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Report_FacultyUser"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Report_FacultyUser">
+					<End EntitySet="Report" Role="Report" />
+					<End EntitySet="FacultyUser" Role="FacultyUser" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Telephone_FacultyUser"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Telephone_FacultyUser">
+					<End EntitySet="Telephone" Role="Telephone" />
+					<End EntitySet="FacultyUser" Role="FacultyUser" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Telephone_Professor"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Telephone_Professor">
+					<End EntitySet="Telephone" Role="Telephone" />
+					<End EntitySet="Professor" Role="Professor" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Address_Professor"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Address_Professor">
+					<End EntitySet="Address" Role="Address" />
+					<End EntitySet="Professor" Role="Professor" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Professor_Role"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Professor_Role">
+					<End EntitySet="Professor" Role="Professor" />
+					<End EntitySet="Role" Role="Role" />
+				</AssociationSet>
+				<AssociationSet Name="FK_Report_Professor"
+					Association="org.restlet.test.ext.odata.deepexpand.model.FK_Report_Professor">
+					<End EntitySet="Report" Role="Report" />
+					<End EntitySet="Professor" Role="Professor" />
+				</AssociationSet>
+			</EntityContainer>
+		</Schema>
+		<Schema Namespace="org.restlet.test.ext.odata.deepexpand.model"
+			xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+			<EntityType Name="Address">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="city" Type="Edm.String" Nullable="false" />
+				<Property Name="country" Type="Edm.String" Nullable="false" />
+				<Property Name="poBox" Type="Edm.String" Nullable="true" />
+				<Property Name="street" Type="Edm.String" Nullable="false" />
+				<Property Name="number" Type="Edm.String" Nullable="false" />
+				<Property Name="geoLocation" Type="org.restlet.test.ext.odata.deepexpand.model.GeoLocation"
+					Nullable="false" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="type" Type="Edm.String" Nullable="false" />
+				<NavigationProperty Name="person"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Address_Person"
+					FromRole="Address" ToRole="Person" />
+				<NavigationProperty Name="location"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Address_Location"
+					FromRole="Address" ToRole="Location" />
+			</EntityType>
+			<EntityType Name="Group">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="grade" Type="Edm.Single" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="passed" Type="Edm.Boolean" Nullable="false" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="isPendingFormation" Type="Edm.Boolean"
+					Nullable="true" />
+				<Property Name="gradeDate" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="comments" Type="Edm.String" Nullable="true"
+					MaxLength="4095" />
+				<NavigationProperty Name="coOp"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Group_CoOp" FromRole="Group"
+					ToRole="CoOp" />
+				<NavigationProperty Name="job"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Group_Job" FromRole="Group"
+					ToRole="Job" />
+				<NavigationProperty Name="supervisingProfessors"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Group_Professor"
+					FromRole="Group" ToRole="Professor" />
+				<NavigationProperty Name="invitations"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Invitation_Group"
+					FromRole="Group" ToRole="Invitation" />
+				<NavigationProperty Name="registrations"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Registration_Group"
+					FromRole="Group" ToRole="Registration" />
+				<NavigationProperty Name="reports"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_Group"
+					FromRole="Group" ToRole="Report" />
+			</EntityType>
+			<EntityType Name="Division">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<NavigationProperty Name="department"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Division_Department"
+					FromRole="Division" ToRole="Department" />
+				<NavigationProperty Name="name"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Division_Multilingual"
+					FromRole="Division" ToRole="Multilingual" />
+				<NavigationProperty Name="facultyUsers"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_FacultyUser_Division"
+					FromRole="Division" ToRole="FacultyUser" />
+			</EntityType>
+			<EntityType Name="Branch">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="fax" Type="Edm.String" Nullable="true" />
+				<Property Name="telephone" Type="Edm.String" Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="address"
+					Type="org.restlet.test.ext.odata.deepexpand.model.EmbeddableAddress" Nullable="false" />
+				<NavigationProperty Name="company"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Branch_Company"
+					FromRole="Branch" ToRole="Company" />
+				<NavigationProperty Name="name"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Branch_Multilingual"
+					FromRole="Branch" ToRole="Multilingual" />
+				<NavigationProperty Name="jobPostingParts"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPart_Branch"
+					FromRole="Branch" ToRole="JobPostingPart" />
+				<NavigationProperty Name="persons"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Branch_CompanyPerson"
+					FromRole="Branch" ToRole="CompanyPerson" />
+				<NavigationProperty Name="jobParts"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPart_Branch"
+					FromRole="Branch" ToRole="JobPart" />
+			</EntityType>
+			<EntityType Name="Job">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="state" Type="Edm.String" Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="endDate" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="comments" Type="Edm.String" Nullable="true" />
+				<Property Name="startDate" Type="Edm.DateTime" Nullable="true" />
+				<NavigationProperty Name="supervisingProfessor"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Job_Professor"
+					FromRole="Job" ToRole="Professor" />
+				<NavigationProperty Name="jobPosting"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Job_JobPosting"
+					FromRole="Job" ToRole="JobPosting" />
+				<NavigationProperty Name="group"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Job_Group" FromRole="Job"
+					ToRole="Group" />
+				<NavigationProperty Name="jobParts"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPart_Job"
+					FromRole="Job" ToRole="JobPart" />
+			</EntityType>
+			<EntityType Name="JobPostingPartSpecialPayable">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="paidDays" Type="Edm.Int32" Nullable="false" />
+				<NavigationProperty Name="financialSource"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPartSpecialPayable_FinancialSource"
+					FromRole="JobPostingPartSpecialPayable" ToRole="FinancialSource" />
+				<NavigationProperty Name="jobPostingPart"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPartSpecialPayable_JobPostingPart"
+					FromRole="JobPostingPartSpecialPayable" ToRole="JobPostingPart" />
+			</EntityType>
+			<EntityType Name="ReportType">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="_final" Type="Edm.Boolean" Nullable="true" />
+				<Property Name="factoryClassName" Type="Edm.String"
+					Nullable="true" />
+				<Property Name="isAggregate" Type="Edm.Boolean" Nullable="true" />
+				<Property Name="scope" Type="Edm.String" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="codeName" Type="Edm.String" Nullable="true" />
+				<NavigationProperty Name="comments"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_ReportType_Multilingual"
+					FromRole="ReportType" ToRole="Multilingual" />
+				<NavigationProperty Name="name"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_ReportType_Multilingual_1"
+					FromRole="ReportType" ToRole="Multilingual" />
+				<NavigationProperty Name="reports"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_ReportType"
+					FromRole="ReportType" ToRole="Report" />
+				<NavigationProperty Name="roles"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_ReportType_Role"
+					FromRole="ReportType" ToRole="Role" />
+			</EntityType>
+			<EntityType Name="Report">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="comments" Type="Edm.String" Nullable="true"
+					MaxLength="2048" />
+				<Property Name="title" Type="Edm.String" Nullable="false" />
+				<Property Name="grade" Type="Edm.Single" Nullable="true" />
+				<Property Name="dateSubmitted" Type="Edm.DateTime"
+					Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<NavigationProperty Name="coOp"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_CoOp"
+					FromRole="Report" ToRole="CoOp" />
+				<NavigationProperty Name="registration"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_Registration"
+					FromRole="Report" ToRole="Registration" />
+				<NavigationProperty Name="group"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_Group"
+					FromRole="Report" ToRole="Group" />
+				<NavigationProperty Name="reportType"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_ReportType"
+					FromRole="Report" ToRole="ReportType" />
+				<NavigationProperty Name="reportedBy"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_AuthenticatedUser"
+					FromRole="Report" ToRole="AuthenticatedUser" />
+				<NavigationProperty Name="jobPart"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_JobPart"
+					FromRole="Report" ToRole="JobPart" />
+				<NavigationProperty Name="attachments"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Attachment_Report"
+					FromRole="Report" ToRole="Attachment" />
+			</EntityType>
+			<EntityType Name="University">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="address"
+					Type="org.restlet.test.ext.odata.deepexpand.model.EmbeddableAddress" Nullable="false" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<NavigationProperty Name="name"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_University_Multilingual"
+					FromRole="University" ToRole="Multilingual" />
+				<NavigationProperty Name="departments"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Department_University"
+					FromRole="University" ToRole="Department" />
+			</EntityType>
+			<EntityType Name="JobPosting">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="benefits" Type="org.restlet.test.ext.odata.deepexpand.model.Benefits"
+					Nullable="false" />
+				<Property Name="seatsNumber" Type="Edm.Int32" Nullable="false" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<NavigationProperty Name="description"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_Multilingual"
+					FromRole="JobPosting" ToRole="Multilingual" />
+				<NavigationProperty Name="name"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_Multilingual_1"
+					FromRole="JobPosting" ToRole="Multilingual" />
+				<NavigationProperty Name="supervisingProfessor"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_Professor"
+					FromRole="JobPosting" ToRole="Professor" />
+				<NavigationProperty Name="company"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_Company"
+					FromRole="JobPosting" ToRole="Company" />
+				<NavigationProperty Name="managingCompanyPerson"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_CompanyPerson"
+					FromRole="JobPosting" ToRole="CompanyPerson" />
+				<NavigationProperty Name="coOp"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_CoOp"
+					FromRole="JobPosting" ToRole="CoOp" />
+				<NavigationProperty Name="jobPostingParts"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPart_JobPosting"
+					FromRole="JobPosting" ToRole="JobPostingPart" />
+				<NavigationProperty Name="preferredByRegistrations"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_Registration"
+					FromRole="JobPosting" ToRole="Registration" />
+				<NavigationProperty Name="jobs"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Job_JobPosting"
+					FromRole="JobPosting" ToRole="Job" />
+			</EntityType>
+			<EntityType Name="Requirement">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="type" Type="Edm.String" Nullable="false" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<NavigationProperty Name="name"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Requirement_Multilingual"
+					FromRole="Requirement" ToRole="Multilingual" />
+				<NavigationProperty Name="coOp"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Requirement_CoOp"
+					FromRole="Requirement" ToRole="CoOp" />
+				<NavigationProperty Name="fullfillingRegistrations"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Requirement_Registration"
+					FromRole="Requirement" ToRole="Registration" />
+			</EntityType>
+			<EntityType Name="JobPartSpecialPayable">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="paidDays" Type="Edm.Int32" Nullable="false" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<NavigationProperty Name="jobPart"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPartSpecialPayable_JobPart"
+					FromRole="JobPartSpecialPayable" ToRole="JobPart" />
+				<NavigationProperty Name="financialSource"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPartSpecialPayable_FinancialSource"
+					FromRole="JobPartSpecialPayable" ToRole="FinancialSource" />
+			</EntityType>
+			<EntityType Name="Lesson">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<NavigationProperty Name="name"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Lesson_Multilingual"
+					FromRole="Lesson" ToRole="Multilingual" />
+				<NavigationProperty Name="department"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Lesson_Department"
+					FromRole="Lesson" ToRole="Department" />
+				<NavigationProperty Name="coOps"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Lesson"
+					FromRole="Lesson" ToRole="CoOp" />
+			</EntityType>
+			<EntityType Name="Multilingual">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<NavigationProperty Name="literals"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Literal_Multilingual"
+					FromRole="Multilingual" ToRole="Literal" />
+			</EntityType>
+			<EntityType Name="Student">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="taxDepartment" Type="Edm.String" Nullable="true" />
+				<Property Name="hasSpecialNeeds" Type="Edm.Boolean"
+					Nullable="false" />
+				<Property Name="serialNumber" Type="Edm.String" Nullable="false" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="socialSecurityId" Type="Edm.String"
+					Nullable="true" />
+				<Property Name="idIssuer" Type="Edm.String" Nullable="true" />
+				<Property Name="iban" Type="Edm.String" Nullable="true" />
+				<Property Name="idNumber" Type="Edm.String" Nullable="true" />
+				<Property Name="idIssueDate" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="ethnicMinority" Type="Edm.Boolean"
+					Nullable="false" />
+				<Property Name="admissionDate" Type="Edm.DateTime"
+					Nullable="true" />
+				<Property Name="email" Type="Edm.String" Nullable="true" />
+				<Property Name="motherName" Type="Edm.String" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="notes" Type="Edm.String" Nullable="true" />
+				<Property Name="workExperience" Type="Edm.String" Nullable="true" />
+				<Property Name="userName" Type="Edm.String" Nullable="true" />
+				<Property Name="religiousMinority" Type="Edm.Boolean"
+					Nullable="false" />
+				<Property Name="fatherName" Type="Edm.String" Nullable="true" />
+				<Property Name="taxId" Type="Edm.String" Nullable="true" />
+				<Property Name="gender" Type="Edm.String" Nullable="true" />
+				<Property Name="taxDivision" Type="Edm.String" Nullable="true" />
+				<Property Name="name" Type="Edm.String" Nullable="false" />
+				<Property Name="dateOfBirth" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="publicClerk" Type="Edm.Boolean" Nullable="false" />
+				<Property Name="surname" Type="Edm.String" Nullable="false" />
+				<Property Name="ama" Type="Edm.String" Nullable="true" />
+				<Property Name="immigrant" Type="Edm.Boolean" Nullable="false" />
+				<Property Name="idType" Type="Edm.String" Nullable="true" />
+				<Property Name="hasOtherDegree" Type="Edm.Boolean"
+					Nullable="false" />
+				<NavigationProperty Name="preferredLanguage"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Student_Language"
+					FromRole="Student" ToRole="Language" />
+				<NavigationProperty Name="activeRegistration"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Student_Registration"
+					FromRole="Student" ToRole="Registration" />
+				<NavigationProperty Name="department"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Student_Department"
+					FromRole="Student" ToRole="Department" />
+				<NavigationProperty Name="nationality"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Student_Nationality"
+					FromRole="Student" ToRole="Nationality" />
+				<NavigationProperty Name="defaultCoOp"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Student_CoOp"
+					FromRole="Student" ToRole="CoOp" />
+				<NavigationProperty Name="issuerLocation"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Student_Location"
+					FromRole="Student" ToRole="Location" />
+				<NavigationProperty Name="telephones"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Telephone_Student"
+					FromRole="Student" ToRole="Telephone" />
+				<NavigationProperty Name="addresses"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Address_Student"
+					FromRole="Student" ToRole="Address" />
+				<NavigationProperty Name="roles"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Student_Role"
+					FromRole="Student" ToRole="Role" />
+				<NavigationProperty Name="reports"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_Student"
+					FromRole="Student" ToRole="Report" />
+				<NavigationProperty Name="registrations"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Registration_Student"
+					FromRole="Student" ToRole="Registration" />
+			</EntityType>
+			<EntityType Name="Company">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="taxDivision" Type="Edm.String" Nullable="true" />
+				<Property Name="webSite" Type="Edm.String" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="offersCompensation" Type="Edm.Boolean"
+					Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="taxCode" Type="Edm.String" Nullable="true" />
+				<Property Name="email" Type="Edm.String" Nullable="true" />
+				<NavigationProperty Name="contactPerson"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Company_CompanyPerson"
+					FromRole="Company" ToRole="CompanyPerson" />
+				<NavigationProperty Name="centralBranch"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Company_Branch"
+					FromRole="Company" ToRole="Branch" />
+				<NavigationProperty Name="name"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Company_Multilingual"
+					FromRole="Company" ToRole="Multilingual" />
+				<NavigationProperty Name="activitySector"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Company_ActivitySector"
+					FromRole="Company" ToRole="ActivitySector" />
+				<NavigationProperty Name="category"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Company_Category"
+					FromRole="Company" ToRole="Category" />
+				<NavigationProperty Name="comments"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Company_Multilingual_1"
+					FromRole="Company" ToRole="Multilingual" />
+				<NavigationProperty Name="coOps"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Company_CoOp"
+					FromRole="Company" ToRole="CoOp" />
+				<NavigationProperty Name="branches"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Branch_Company"
+					FromRole="Company" ToRole="Branch" />
+				<NavigationProperty Name="persons"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_CompanyPerson_Company"
+					FromRole="Company" ToRole="CompanyPerson" />
+				<NavigationProperty Name="jobPostings"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_Company"
+					FromRole="Company" ToRole="JobPosting" />
+				<NavigationProperty Name="insuranceContracts"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_InsuranceContract_Company"
+					FromRole="Company" ToRole="InsuranceContract" />
+			</EntityType>
+			<EntityType Name="FinancialSource">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="code" Type="Edm.String" Nullable="false" />
+				<Property Name="name" Type="Edm.String" Nullable="false" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="description" Type="Edm.String" Nullable="false" />
+				<NavigationProperty Name="payments"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Payment_FinancialSource"
+					FromRole="FinancialSource" ToRole="Payment" />
+				<NavigationProperty Name="coOps"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_FinancialSource_CoOp"
+					FromRole="FinancialSource" ToRole="CoOp" />
+				<NavigationProperty Name="jobPostingPartSpecialPayables"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPartSpecialPayable_FinancialSource"
+					FromRole="FinancialSource" ToRole="JobPostingPartSpecialPayable" />
+				<NavigationProperty Name="jobPartSpecialPayables"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPartSpecialPayable_FinancialSource"
+					FromRole="FinancialSource" ToRole="JobPartSpecialPayable" />
+			</EntityType>
+			<EntityType Name="Department">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<NavigationProperty Name="university"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Department_University"
+					FromRole="Department" ToRole="University" />
+				<NavigationProperty Name="name"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Department_Multilingual"
+					FromRole="Department" ToRole="Multilingual" />
+				<NavigationProperty Name="divisions"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Division_Department"
+					FromRole="Department" ToRole="Division" />
+				<NavigationProperty Name="authenticatedUsers"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_AuthenticatedUser_Department"
+					FromRole="Department" ToRole="AuthenticatedUser" />
+				<NavigationProperty Name="lessons"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Lesson_Department"
+					FromRole="Department" ToRole="Lesson" />
+			</EntityType>
+			<EntityType Name="Person">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="gender" Type="Edm.String" Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="name" Type="Edm.String" Nullable="false" />
+				<Property Name="dateOfBirth" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="surname" Type="Edm.String" Nullable="false" />
+				<Property Name="email" Type="Edm.String" Nullable="true" />
+				<Property Name="motherName" Type="Edm.String" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="notes" Type="Edm.String" Nullable="true" />
+				<Property Name="fatherName" Type="Edm.String" Nullable="true" />
+				<NavigationProperty Name="preferredLanguage"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Person_Language"
+					FromRole="Person" ToRole="Language" />
+				<NavigationProperty Name="addresses"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Address_Person"
+					FromRole="Person" ToRole="Address" />
+				<NavigationProperty Name="telephones"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Telephone_Person"
+					FromRole="Person" ToRole="Telephone" />
+			</EntityType>
+			<EntityType Name="Permission">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="managerName" Type="Edm.String" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="name" Type="Edm.String" Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="comment" Type="Edm.String" Nullable="true" />
+				<NavigationProperty Name="roles"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Permission_Role"
+					FromRole="Permission" ToRole="Role" />
+				<NavigationProperty Name="entityAccesses"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_EntityAccess_Permission"
+					FromRole="Permission" ToRole="EntityAccess" />
+			</EntityType>
+			<EntityType Name="InsuranceContract">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="name" Type="Edm.String" Nullable="false" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<NavigationProperty Name="insuranceCompany"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_InsuranceContract_Company"
+					FromRole="InsuranceContract" ToRole="Company" />
+				<NavigationProperty Name="coop"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_InsuranceContract_CoOp"
+					FromRole="InsuranceContract" ToRole="CoOp" />
+				<NavigationProperty Name="attachments"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Attachment_InsuranceContract"
+					FromRole="InsuranceContract" ToRole="Attachment" />
+				<NavigationProperty Name="registrations"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Registration_InsuranceContract"
+					FromRole="InsuranceContract" ToRole="Registration" />
+			</EntityType>
+			<EntityType Name="Invitation">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="date" Type="Edm.DateTime" Nullable="true" />
+				<NavigationProperty Name="sender"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Invitation_Registration"
+					FromRole="Invitation" ToRole="Registration" />
+				<NavigationProperty Name="group"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Invitation_Group"
+					FromRole="Invitation" ToRole="Group" />
+				<NavigationProperty Name="text"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Invitation_Multilingual"
+					FromRole="Invitation" ToRole="Multilingual" />
+				<NavigationProperty Name="recepients"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Invitation_Registration_1"
+					FromRole="Invitation" ToRole="Registration" />
+			</EntityType>
+			<EntityType Name="Literal">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="isDefault" Type="Edm.Boolean" Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="text" Type="Edm.String" Nullable="true"
+					MaxLength="511" />
+				<NavigationProperty Name="language"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Literal_Language"
+					FromRole="Literal" ToRole="Language" />
+				<NavigationProperty Name="multilingual"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Literal_Multilingual"
+					FromRole="Literal" ToRole="Multilingual" />
+			</EntityType>
+			<EntityType Name="JobPart">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="comments" Type="Edm.String" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="expeditionGeoLocation" Type="org.restlet.test.ext.odata.deepexpand.model.GeoLocation"
+					Nullable="false" />
+				<Property Name="siteType" Type="Edm.String" Nullable="false" />
+				<Property Name="startDate" Type="Edm.DateTime" Nullable="false" />
+				<Property Name="endDate" Type="Edm.DateTime" Nullable="false" />
+				<Property Name="paidDays" Type="Edm.Int32" Nullable="false" />
+				<NavigationProperty Name="managingCompanyPerson"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPart_CompanyPerson"
+					FromRole="JobPart" ToRole="CompanyPerson" />
+				<NavigationProperty Name="description"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPart_Multilingual"
+					FromRole="JobPart" ToRole="Multilingual" />
+				<NavigationProperty Name="job"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPart_Job"
+					FromRole="JobPart" ToRole="Job" />
+				<NavigationProperty Name="branch"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPart_Branch"
+					FromRole="JobPart" ToRole="Branch" />
+				<NavigationProperty Name="expeditionLocation"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPart_Location"
+					FromRole="JobPart" ToRole="Location" />
+				<NavigationProperty Name="specialPayables"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPartSpecialPayable_JobPart"
+					FromRole="JobPart" ToRole="JobPartSpecialPayable" />
+				<NavigationProperty Name="payments"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Payment_JobPart"
+					FromRole="JobPart" ToRole="Payment" />
+				<NavigationProperty Name="reports"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_JobPart"
+					FromRole="JobPart" ToRole="Report" />
+			</EntityType>
+			<EntityType Name="Attachment">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="contentType" Type="Edm.String" Nullable="true" />
+				<Property Name="content" Type="Edm.Binary" Nullable="false" />
+				<Property Name="name" Type="Edm.String" Nullable="false" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<NavigationProperty Name="insuranceContract"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Attachment_InsuranceContract"
+					FromRole="Attachment" ToRole="InsuranceContract" />
+				<NavigationProperty Name="report"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Attachment_Report"
+					FromRole="Attachment" ToRole="Report" />
+			</EntityType>
+			<EntityType Name="EntityAccess">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="ownReadable" Type="Edm.Boolean" Nullable="false" />
+				<Property Name="readable" Type="Edm.Boolean" Nullable="false" />
+				<Property Name="accessingAllDepartments" Type="Edm.Boolean"
+					Nullable="false" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="entityName" Type="Edm.String" Nullable="true" />
+				<Property Name="writable" Type="Edm.Boolean" Nullable="false" />
+				<Property Name="ownWritable" Type="Edm.Boolean" Nullable="false" />
+				<NavigationProperty Name="permission"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_EntityAccess_Permission"
+					FromRole="EntityAccess" ToRole="Permission" />
+			</EntityType>
+			<EntityType Name="Category">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="path" Type="Edm.String" Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<NavigationProperty Name="name"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Category_Multilingual"
+					FromRole="Category" ToRole="Multilingual" />
+				<NavigationProperty Name="parentCategory"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Category_Category"
+					FromRole="Category" ToRole="Category1" />
+				<NavigationProperty Name="preferredByRegistrations"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Category_Registration"
+					FromRole="Category" ToRole="Registration" />
+				<NavigationProperty Name="companies"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Company_Category"
+					FromRole="Category" ToRole="Company" />
+				<NavigationProperty Name="childCategories"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Category_Category"
+					FromRole="Category1" ToRole="Category" />
+			</EntityType>
+			<EntityType Name="EMail">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="comment" Type="Edm.String" Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="address" Type="Edm.String" Nullable="true" />
+			</EntityType>
+			<EntityType Name="Location">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="type" Type="Edm.String" Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="name" Type="Edm.String" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="path" Type="Edm.String" Nullable="true" />
+				<NavigationProperty Name="parentLocation"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Location_Location"
+					FromRole="Location" ToRole="Location1" />
+				<NavigationProperty Name="issuedIdStudents"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Student_Location"
+					FromRole="Location" ToRole="Student" />
+				<NavigationProperty Name="jobPostingPartsInExpedition"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPart_Location"
+					FromRole="Location" ToRole="JobPostingPart" />
+				<NavigationProperty Name="jobPartsInExpedition"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPart_Location"
+					FromRole="Location" ToRole="JobPart" />
+				<NavigationProperty Name="childLocations"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Location_Location"
+					FromRole="Location1" ToRole="Location" />
+				<NavigationProperty Name="preferredByRegistrations"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Location_Registration"
+					FromRole="Location" ToRole="Registration" />
+			</EntityType>
+			<EntityType Name="Role">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="comment" Type="Edm.String" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="name" Type="Edm.String" Nullable="true" />
+				<NavigationProperty Name="permissions"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Permission_Role"
+					FromRole="Role" ToRole="Permission" />
+				<NavigationProperty Name="reportType"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_ReportType_Role"
+					FromRole="Role" ToRole="ReportType" />
+				<NavigationProperty Name="users"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Role_AuthenticatedUser"
+					FromRole="Role" ToRole="AuthenticatedUser" />
+			</EntityType>
+			<EntityType Name="Payment">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="endDate" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="amount" Type="Edm.Decimal" Nullable="false" />
+				<Property Name="startDate" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="paymentDate" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="state" Type="Edm.String" Nullable="false" />
+				<Property Name="comment" Type="Edm.String" Nullable="true" />
+				<Property Name="type" Type="Edm.String" Nullable="false" />
+				<NavigationProperty Name="source"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Payment_FinancialSource"
+					FromRole="Payment" ToRole="FinancialSource" />
+				<NavigationProperty Name="registration"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Payment_Registration"
+					FromRole="Payment" ToRole="Registration" />
+				<NavigationProperty Name="jobPart"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Payment_JobPart"
+					FromRole="Payment" ToRole="JobPart" />
+			</EntityType>
+			<EntityType Name="Nationality">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="code" Type="Edm.String" Nullable="false"
+					MaxLength="4" />
+				<NavigationProperty Name="name"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Nationality_Multilingual"
+					FromRole="Nationality" ToRole="Multilingual" />
+				<NavigationProperty Name="students"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Student_Nationality"
+					FromRole="Nationality" ToRole="Student" />
+			</EntityType>
+			<EntityType Name="CompanyPerson">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="gender" Type="Edm.String" Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="name" Type="Edm.String" Nullable="false" />
+				<Property Name="dateOfBirth" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="surname" Type="Edm.String" Nullable="false" />
+				<Property Name="salutation" Type="Edm.String" Nullable="false" />
+				<Property Name="motherName" Type="Edm.String" Nullable="true" />
+				<Property Name="email" Type="Edm.String" Nullable="true" />
+				<Property Name="position" Type="Edm.String" Nullable="true" />
+				<Property Name="active" Type="Edm.Boolean" Nullable="false" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="notes" Type="Edm.String" Nullable="true" />
+				<Property Name="fatherName" Type="Edm.String" Nullable="true" />
+				<NavigationProperty Name="preferredLanguage"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_CompanyPerson_Language"
+					FromRole="CompanyPerson" ToRole="Language" />
+				<NavigationProperty Name="company"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_CompanyPerson_Company"
+					FromRole="CompanyPerson" ToRole="Company" />
+				<NavigationProperty Name="managedJobParts"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPart_CompanyPerson"
+					FromRole="CompanyPerson" ToRole="JobPart" />
+				<NavigationProperty Name="managedJobPostings"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_CompanyPerson"
+					FromRole="CompanyPerson" ToRole="JobPosting" />
+				<NavigationProperty Name="managedJobPostingParts"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPart_CompanyPerson"
+					FromRole="CompanyPerson" ToRole="JobPostingPart" />
+				<NavigationProperty Name="branches"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Branch_CompanyPerson"
+					FromRole="CompanyPerson" ToRole="Branch" />
+				<NavigationProperty Name="addresses"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Address_CompanyPerson"
+					FromRole="CompanyPerson" ToRole="Address" />
+				<NavigationProperty Name="telephones"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Telephone_CompanyPerson"
+					FromRole="CompanyPerson" ToRole="Telephone" />
+			</EntityType>
+			<EntityType Name="AuthenticatedUser">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="gender" Type="Edm.String" Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="name" Type="Edm.String" Nullable="false" />
+				<Property Name="dateOfBirth" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="surname" Type="Edm.String" Nullable="false" />
+				<Property Name="motherName" Type="Edm.String" Nullable="true" />
+				<Property Name="email" Type="Edm.String" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="notes" Type="Edm.String" Nullable="true" />
+				<Property Name="userName" Type="Edm.String" Nullable="true" />
+				<Property Name="fatherName" Type="Edm.String" Nullable="true" />
+				<NavigationProperty Name="preferredLanguage"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_AuthenticatedUser_Language"
+					FromRole="AuthenticatedUser" ToRole="Language" />
+				<NavigationProperty Name="defaultCoOp"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_AuthenticatedUser_CoOp"
+					FromRole="AuthenticatedUser" ToRole="CoOp" />
+				<NavigationProperty Name="department"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_AuthenticatedUser_Department"
+					FromRole="AuthenticatedUser" ToRole="Department" />
+				<NavigationProperty Name="addresses"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Address_AuthenticatedUser"
+					FromRole="AuthenticatedUser" ToRole="Address" />
+				<NavigationProperty Name="roles"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Role_AuthenticatedUser"
+					FromRole="AuthenticatedUser" ToRole="Role" />
+				<NavigationProperty Name="reports"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_AuthenticatedUser"
+					FromRole="AuthenticatedUser" ToRole="Report" />
+				<NavigationProperty Name="telephones"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Telephone_AuthenticatedUser"
+					FromRole="AuthenticatedUser" ToRole="Telephone" />
+			</EntityType>
+			<EntityType Name="Telephone">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="number" Type="Edm.String" Nullable="false" />
+				<Property Name="comment" Type="Edm.String" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="type" Type="Edm.String" Nullable="false" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<NavigationProperty Name="person"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Telephone_Person"
+					FromRole="Telephone" ToRole="Person" />
+			</EntityType>
+			<EntityType Name="CoOp">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="endDate" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="startDate" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="jobDurationDays" Type="Edm.Int32" Nullable="false" />
+				<Property Name="isGroupCoOp" Type="Edm.Boolean" Nullable="false" />
+				<Property Name="allowLocationPreferences" Type="Edm.Boolean"
+					Nullable="false" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="maxGroupSize" Type="Edm.Int32" Nullable="false" />
+				<Property Name="supportingInvitations" Type="Edm.Boolean"
+					Nullable="false" />
+				<Property Name="academicYear" Type="Edm.Int32" Nullable="false" />
+				<Property Name="isInsideUniversity" Type="Edm.Boolean"
+					Nullable="false" />
+				<Property Name="allowJobPostingsPreferences" Type="Edm.Boolean"
+					Nullable="false" />
+				<Property Name="hasGroupGrade" Type="Edm.Boolean" Nullable="false" />
+				<Property Name="paymentOrderAmount" Type="Edm.Decimal"
+					Nullable="true" />
+				<Property Name="semester" Type="Edm.Int32" Nullable="false" />
+				<Property Name="paymentOrderDate" Type="Edm.DateTime"
+					Nullable="true" />
+				<Property Name="inRegistration" Type="Edm.Boolean"
+					Nullable="false" />
+				<Property Name="active" Type="Edm.Boolean" Nullable="false" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="allowCategoryPreferences" Type="Edm.Boolean"
+					Nullable="false" />
+				<Property Name="setup" Type="Edm.Boolean" Nullable="false" />
+				<Property Name="gradePolicy" Type="Edm.String" Nullable="false" />
+				<NavigationProperty Name="institutionalDirector"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Professor"
+					FromRole="CoOp" ToRole="Professor" />
+				<NavigationProperty Name="name"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Multilingual"
+					FromRole="CoOp" ToRole="Multilingual" />
+				<NavigationProperty Name="lesson"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Lesson"
+					FromRole="CoOp" ToRole="Lesson" />
+				<NavigationProperty Name="academicDirector"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Professor_1"
+					FromRole="CoOp" ToRole="Professor" />
+				<NavigationProperty Name="scientificDirector"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Professor_2"
+					FromRole="CoOp" ToRole="Professor" />
+				<NavigationProperty Name="insuranceContracts"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_InsuranceContract_CoOp"
+					FromRole="CoOp" ToRole="InsuranceContract" />
+				<NavigationProperty Name="supervisingProfessors"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Professor_CoOp"
+					FromRole="CoOp" ToRole="Professor" />
+				<NavigationProperty Name="requirements"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Requirement_CoOp"
+					FromRole="CoOp" ToRole="Requirement" />
+				<NavigationProperty Name="companies"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Company_CoOp"
+					FromRole="CoOp" ToRole="Company" />
+				<NavigationProperty Name="groups"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Group_CoOp" FromRole="CoOp"
+					ToRole="Group" />
+				<NavigationProperty Name="financialSources"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_FinancialSource_CoOp"
+					FromRole="CoOp" ToRole="FinancialSource" />
+				<NavigationProperty Name="jobPostings"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_CoOp"
+					FromRole="CoOp" ToRole="JobPosting" />
+				<NavigationProperty Name="reports"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_CoOp"
+					FromRole="CoOp" ToRole="Report" />
+				<NavigationProperty Name="registrations"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Registration_CoOp"
+					FromRole="CoOp" ToRole="Registration" />
+				<NavigationProperty Name="authenticatedUsers"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_AuthenticatedUser_CoOp"
+					FromRole="CoOp" ToRole="AuthenticatedUser" />
+			</EntityType>
+			<EntityType Name="FacultyUser">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="gender" Type="Edm.String" Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="name" Type="Edm.String" Nullable="false" />
+				<Property Name="dateOfBirth" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="surname" Type="Edm.String" Nullable="false" />
+				<Property Name="motherName" Type="Edm.String" Nullable="true" />
+				<Property Name="email" Type="Edm.String" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="notes" Type="Edm.String" Nullable="true" />
+				<Property Name="userName" Type="Edm.String" Nullable="true" />
+				<Property Name="fatherName" Type="Edm.String" Nullable="true" />
+				<NavigationProperty Name="preferredLanguage"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_FacultyUser_Language"
+					FromRole="FacultyUser" ToRole="Language" />
+				<NavigationProperty Name="defaultCoOp"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_FacultyUser_CoOp"
+					FromRole="FacultyUser" ToRole="CoOp" />
+				<NavigationProperty Name="division"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_FacultyUser_Division"
+					FromRole="FacultyUser" ToRole="Division" />
+				<NavigationProperty Name="department"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_FacultyUser_Department"
+					FromRole="FacultyUser" ToRole="Department" />
+				<NavigationProperty Name="addresses"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Address_FacultyUser"
+					FromRole="FacultyUser" ToRole="Address" />
+				<NavigationProperty Name="roles"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_FacultyUser_Role"
+					FromRole="FacultyUser" ToRole="Role" />
+				<NavigationProperty Name="reports"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_FacultyUser"
+					FromRole="FacultyUser" ToRole="Report" />
+				<NavigationProperty Name="telephones"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Telephone_FacultyUser"
+					FromRole="FacultyUser" ToRole="Telephone" />
+			</EntityType>
+			<EntityType Name="Registration">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="registrationDate" Type="Edm.DateTime"
+					Nullable="true" />
+				<Property Name="gradeDate" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="preferredEnd" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="grade" Type="Edm.Single" Nullable="true" />
+				<Property Name="supervisionSatisfactionRate" Type="Edm.Int32"
+					Nullable="true" />
+				<Property Name="preferredStart" Type="Edm.DateTime"
+					Nullable="true" />
+				<Property Name="hostSatisfactionRate" Type="Edm.Int32"
+					Nullable="true" />
+				<Property Name="qualifiedForAssigmnent" Type="Edm.Boolean"
+					Nullable="false" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="qualifiedForCompletion" Type="Edm.Boolean"
+					Nullable="false" />
+				<Property Name="subjectSatisfactionRate" Type="Edm.Int32"
+					Nullable="true" />
+				<Property Name="priority" Type="Edm.Single" Nullable="true" />
+				<Property Name="passed" Type="Edm.Boolean" Nullable="false" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<NavigationProperty Name="student"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Registration_Student"
+					FromRole="Registration" ToRole="Student" />
+				<NavigationProperty Name="insuranceContract"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Registration_InsuranceContract"
+					FromRole="Registration" ToRole="InsuranceContract" />
+				<NavigationProperty Name="group"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Registration_Group"
+					FromRole="Registration" ToRole="Group" />
+				<NavigationProperty Name="coop"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Registration_CoOp"
+					FromRole="Registration" ToRole="CoOp" />
+				<NavigationProperty Name="payments"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Payment_Registration"
+					FromRole="Registration" ToRole="Payment" />
+				<NavigationProperty Name="meetsRequirements"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Requirement_Registration"
+					FromRole="Registration" ToRole="Requirement" />
+				<NavigationProperty Name="preferredCategories"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Category_Registration"
+					FromRole="Registration" ToRole="Category" />
+				<NavigationProperty Name="receivedInvitations"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Invitation_Registration"
+					FromRole="Registration" ToRole="Invitation" />
+				<NavigationProperty Name="preferredJobPostings"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_Registration"
+					FromRole="Registration" ToRole="JobPosting" />
+				<NavigationProperty Name="preferredLocations"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Location_Registration"
+					FromRole="Registration" ToRole="Location" />
+				<NavigationProperty Name="reports"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_Registration"
+					FromRole="Registration" ToRole="Report" />
+				<NavigationProperty Name="sentInvitations"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Invitation_Registration"
+					FromRole="Registration" ToRole="Invitation" />
+			</EntityType>
+			<EntityType Name="JobPostingPart">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="startDay" Type="Edm.Int32" Nullable="false" />
+				<Property Name="siteType" Type="Edm.String" Nullable="false" />
+				<Property Name="durationDays" Type="Edm.Int32" Nullable="false" />
+				<Property Name="paidDays" Type="Edm.Int32" Nullable="false" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="expeditionGeoLocation" Type="org.restlet.test.ext.odata.deepexpand.model.GeoLocation"
+					Nullable="false" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<NavigationProperty Name="expeditionLocation"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPart_Location"
+					FromRole="JobPostingPart" ToRole="Location" />
+				<NavigationProperty Name="branch"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPart_Branch"
+					FromRole="JobPostingPart" ToRole="Branch" />
+				<NavigationProperty Name="managingCompanyPerson"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPart_CompanyPerson"
+					FromRole="JobPostingPart" ToRole="CompanyPerson" />
+				<NavigationProperty Name="description"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPart_Multilingual"
+					FromRole="JobPostingPart" ToRole="Multilingual" />
+				<NavigationProperty Name="jobPosting"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPart_JobPosting"
+					FromRole="JobPostingPart" ToRole="JobPosting" />
+				<NavigationProperty Name="specialPayables"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPostingPartSpecialPayable_JobPostingPart"
+					FromRole="JobPostingPart" ToRole="JobPostingPartSpecialPayable" />
+			</EntityType>
+			<EntityType Name="Language">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="_default" Type="Edm.Boolean" Nullable="false" />
+				<Property Name="name" Type="Edm.String" Nullable="true" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="localeCode" Type="Edm.String" Nullable="true" />
+				<NavigationProperty Name="preferredByPersons"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Person_Language"
+					FromRole="Language" ToRole="Person" />
+			</EntityType>
+			<EntityType Name="Professor">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="rank" Type="Edm.String" Nullable="true" />
+				<Property Name="motherName" Type="Edm.String" Nullable="true" />
+				<Property Name="email" Type="Edm.String" Nullable="true" />
+				<Property Name="tracking" Type="org.restlet.test.ext.odata.deepexpand.model.Tracking"
+					Nullable="true" />
+				<Property Name="notes" Type="Edm.String" Nullable="true" />
+				<Property Name="userName" Type="Edm.String" Nullable="true" />
+				<Property Name="fatherName" Type="Edm.String" Nullable="true" />
+				<Property Name="gender" Type="Edm.String" Nullable="true" />
+				<Property Name="name" Type="Edm.String" Nullable="false" />
+				<Property Name="dateOfBirth" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="surname" Type="Edm.String" Nullable="false" />
+				<NavigationProperty Name="preferredLanguage"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Professor_Language"
+					FromRole="Professor" ToRole="Language" />
+				<NavigationProperty Name="division"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Professor_Division"
+					FromRole="Professor" ToRole="Division" />
+				<NavigationProperty Name="department"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Professor_Department"
+					FromRole="Professor" ToRole="Department" />
+				<NavigationProperty Name="defaultCoOp"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Professor_CoOp"
+					FromRole="Professor" ToRole="CoOp" />
+				<NavigationProperty Name="supervisedJobPostings"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_JobPosting_Professor"
+					FromRole="Professor" ToRole="JobPosting" />
+				<NavigationProperty Name="supervisedGroups"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Group_Professor"
+					FromRole="Professor" ToRole="Group" />
+				<NavigationProperty Name="scientificallyDirectedCoOps"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Professor"
+					FromRole="Professor" ToRole="CoOp" />
+				<NavigationProperty Name="supervisedJobs"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Job_Professor"
+					FromRole="Professor" ToRole="Job" />
+				<NavigationProperty Name="telephones"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Telephone_Professor"
+					FromRole="Professor" ToRole="Telephone" />
+				<NavigationProperty Name="academicallyDirectedCoOps"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Professor"
+					FromRole="Professor" ToRole="CoOp" />
+				<NavigationProperty Name="institutionallyDirectedCoOps"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Professor"
+					FromRole="Professor" ToRole="CoOp" />
+				<NavigationProperty Name="addresses"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Address_Professor"
+					FromRole="Professor" ToRole="Address" />
+				<NavigationProperty Name="roles"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Professor_Role"
+					FromRole="Professor" ToRole="Role" />
+				<NavigationProperty Name="reports"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Report_Professor"
+					FromRole="Professor" ToRole="Report" />
+				<NavigationProperty Name="supervisedCoOps"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_CoOp_Professor"
+					FromRole="Professor" ToRole="CoOp" />
+			</EntityType>
+			<EntityType Name="ActivitySector">
+				<Key>
+					<PropertyRef Name="id" />
+				</Key>
+				<Property Name="description" Type="Edm.String" Nullable="false"
+					MaxLength="1023" />
+				<Property Name="id" Type="Edm.Int32" Nullable="false" />
+				<Property Name="code" Type="Edm.String" Nullable="true" />
+				<NavigationProperty Name="parentActivitySector"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_ActivitySector_ActivitySector"
+					FromRole="ActivitySector" ToRole="ActivitySector1" />
+				<NavigationProperty Name="childActivitySectors"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_ActivitySector_ActivitySector"
+					FromRole="ActivitySector1" ToRole="ActivitySector" />
+				<NavigationProperty Name="companies"
+					Relationship="org.restlet.test.ext.odata.deepexpand.model.FK_Company_ActivitySector"
+					FromRole="ActivitySector" ToRole="Company" />
+			</EntityType>
+			<ComplexType Name="Tracking">
+				<Property Name="created" Type="Edm.DateTime" Nullable="true" />
+				<Property Name="modified" Type="Edm.DateTime" Nullable="true" />
+			</ComplexType>
+			<ComplexType Name="Benefits">
+				<Property Name="transportationOffered" Type="Edm.Boolean"
+					Nullable="false" />
+				<Property Name="salaryOffered" Type="Edm.Boolean" Nullable="false" />
+				<Property Name="insuranceOffered" Type="Edm.Boolean"
+					Nullable="false" />
+				<Property Name="accommodationOffered" Type="Edm.Boolean"
+					Nullable="false" />
+			</ComplexType>
+			<ComplexType Name="EmbeddableAddress">
+				<Property Name="country" Type="Edm.String" Nullable="true" />
+				<Property Name="geoLocation" Type="org.restlet.test.ext.odata.deepexpand.model.GeoLocation"
+					Nullable="false" />
+				<Property Name="number" Type="Edm.String" Nullable="true" />
+				<Property Name="city" Type="Edm.String" Nullable="true" />
+				<Property Name="type" Type="Edm.String" Nullable="true" />
+				<Property Name="street" Type="Edm.String" Nullable="true" />
+				<Property Name="poBox" Type="Edm.String" Nullable="true" />
+			</ComplexType>
+			<ComplexType Name="GeoLocation">
+				<Property Name="latitude" Type="Edm.Double" Nullable="false" />
+				<Property Name="longtitude" Type="Edm.Double" Nullable="false" />
+			</ComplexType>
+			<Association Name="FK_Address_Person">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Address" Multiplicity="*"
+					Role="Address" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Person" Multiplicity="0..1"
+					Role="Person" />
+			</Association>
+			<Association Name="FK_Address_Location">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Address" Multiplicity="*"
+					Role="Address" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Location" Multiplicity="0..1"
+					Role="Location" />
+			</Association>
+			<Association Name="FK_Group_CoOp">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Group" Multiplicity="*"
+					Role="Group" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="0..1"
+					Role="CoOp" />
+			</Association>
+			<Association Name="FK_Group_Job">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Group" Multiplicity="*"
+					Role="Group" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Job" Multiplicity="0..1"
+					Role="Job" />
+			</Association>
+			<Association Name="FK_Division_Department">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Division" Multiplicity="*"
+					Role="Division" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Department"
+					Multiplicity="0..1" Role="Department" />
+			</Association>
+			<Association Name="FK_Division_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Division" Multiplicity="*"
+					Role="Division" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_Branch_Company">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Branch" Multiplicity="*"
+					Role="Branch" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Company" Multiplicity="0..1"
+					Role="Company" />
+			</Association>
+			<Association Name="FK_Branch_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Branch" Multiplicity="*"
+					Role="Branch" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_Job_Professor">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Job" Multiplicity="*"
+					Role="Job" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Professor" Multiplicity="0..1"
+					Role="Professor" />
+			</Association>
+			<Association Name="FK_Job_JobPosting">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Job" Multiplicity="*"
+					Role="Job" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPosting"
+					Multiplicity="0..1" Role="JobPosting" />
+			</Association>
+			<Association Name="FK_Job_Group">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Job" Multiplicity="*"
+					Role="Job" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Group" Multiplicity="0..1"
+					Role="Group" />
+			</Association>
+			<Association Name="FK_JobPostingPartSpecialPayable_FinancialSource">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPostingPartSpecialPayable"
+					Multiplicity="*" Role="JobPostingPartSpecialPayable" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.FinancialSource"
+					Multiplicity="0..1" Role="FinancialSource" />
+			</Association>
+			<Association Name="FK_JobPostingPartSpecialPayable_JobPostingPart">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPostingPartSpecialPayable"
+					Multiplicity="*" Role="JobPostingPartSpecialPayable" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPostingPart"
+					Multiplicity="0..1" Role="JobPostingPart" />
+			</Association>
+			<Association Name="FK_ReportType_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.ReportType"
+					Multiplicity="*" Role="ReportType" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_ReportType_Multilingual_1">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.ReportType"
+					Multiplicity="*" Role="ReportType" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_Report_CoOp">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Report" Multiplicity="*"
+					Role="Report" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="0..1"
+					Role="CoOp" />
+			</Association>
+			<Association Name="FK_Report_Registration">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Report" Multiplicity="*"
+					Role="Report" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Registration"
+					Multiplicity="0..1" Role="Registration" />
+			</Association>
+			<Association Name="FK_Report_Group">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Report" Multiplicity="*"
+					Role="Report" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Group" Multiplicity="0..1"
+					Role="Group" />
+			</Association>
+			<Association Name="FK_Report_ReportType">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Report" Multiplicity="*"
+					Role="Report" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.ReportType"
+					Multiplicity="0..1" Role="ReportType" />
+			</Association>
+			<Association Name="FK_Report_AuthenticatedUser">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Report" Multiplicity="*"
+					Role="Report" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.AuthenticatedUser"
+					Multiplicity="0..1" Role="AuthenticatedUser" />
+			</Association>
+			<Association Name="FK_Report_JobPart">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Report" Multiplicity="*"
+					Role="Report" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPart" Multiplicity="0..1"
+					Role="JobPart" />
+			</Association>
+			<Association Name="FK_University_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.University"
+					Multiplicity="*" Role="University" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_JobPosting_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPosting"
+					Multiplicity="*" Role="JobPosting" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_JobPosting_Multilingual_1">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPosting"
+					Multiplicity="*" Role="JobPosting" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_JobPosting_Professor">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPosting"
+					Multiplicity="*" Role="JobPosting" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Professor" Multiplicity="0..1"
+					Role="Professor" />
+			</Association>
+			<Association Name="FK_JobPosting_Company">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPosting"
+					Multiplicity="*" Role="JobPosting" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Company" Multiplicity="0..1"
+					Role="Company" />
+			</Association>
+			<Association Name="FK_JobPosting_CompanyPerson">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPosting"
+					Multiplicity="*" Role="JobPosting" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CompanyPerson"
+					Multiplicity="0..1" Role="CompanyPerson" />
+			</Association>
+			<Association Name="FK_JobPosting_CoOp">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPosting"
+					Multiplicity="*" Role="JobPosting" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="0..1"
+					Role="CoOp" />
+			</Association>
+			<Association Name="FK_Requirement_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Requirement"
+					Multiplicity="*" Role="Requirement" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_Requirement_CoOp">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Requirement"
+					Multiplicity="*" Role="Requirement" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="0..1"
+					Role="CoOp" />
+			</Association>
+			<Association Name="FK_JobPartSpecialPayable_JobPart">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPartSpecialPayable"
+					Multiplicity="*" Role="JobPartSpecialPayable" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPart" Multiplicity="0..1"
+					Role="JobPart" />
+			</Association>
+			<Association Name="FK_JobPartSpecialPayable_FinancialSource">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPartSpecialPayable"
+					Multiplicity="*" Role="JobPartSpecialPayable" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.FinancialSource"
+					Multiplicity="0..1" Role="FinancialSource" />
+			</Association>
+			<Association Name="FK_Lesson_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Lesson" Multiplicity="*"
+					Role="Lesson" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_Lesson_Department">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Lesson" Multiplicity="*"
+					Role="Lesson" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Department"
+					Multiplicity="0..1" Role="Department" />
+			</Association>
+			<Association Name="FK_Student_Language">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Student" Multiplicity="*"
+					Role="Student" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Language" Multiplicity="0..1"
+					Role="Language" />
+			</Association>
+			<Association Name="FK_Student_Registration">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Student" Multiplicity="*"
+					Role="Student" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Registration"
+					Multiplicity="0..1" Role="Registration" />
+			</Association>
+			<Association Name="FK_Student_Department">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Student" Multiplicity="*"
+					Role="Student" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Department"
+					Multiplicity="0..1" Role="Department" />
+			</Association>
+			<Association Name="FK_Student_Nationality">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Student" Multiplicity="*"
+					Role="Student" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Nationality"
+					Multiplicity="0..1" Role="Nationality" />
+			</Association>
+			<Association Name="FK_Student_CoOp">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Student" Multiplicity="*"
+					Role="Student" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="0..1"
+					Role="CoOp" />
+			</Association>
+			<Association Name="FK_Student_Location">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Student" Multiplicity="*"
+					Role="Student" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Location" Multiplicity="0..1"
+					Role="Location" />
+			</Association>
+			<Association Name="FK_Company_CompanyPerson">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Company" Multiplicity="*"
+					Role="Company" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CompanyPerson"
+					Multiplicity="0..1" Role="CompanyPerson" />
+			</Association>
+			<Association Name="FK_Company_Branch">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Company" Multiplicity="*"
+					Role="Company" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Branch" Multiplicity="0..1"
+					Role="Branch" />
+			</Association>
+			<Association Name="FK_Company_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Company" Multiplicity="*"
+					Role="Company" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_Company_ActivitySector">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Company" Multiplicity="*"
+					Role="Company" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.ActivitySector"
+					Multiplicity="0..1" Role="ActivitySector" />
+			</Association>
+			<Association Name="FK_Company_Category">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Company" Multiplicity="*"
+					Role="Company" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Category" Multiplicity="0..1"
+					Role="Category" />
+			</Association>
+			<Association Name="FK_Company_Multilingual_1">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Company" Multiplicity="*"
+					Role="Company" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_Department_University">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Department"
+					Multiplicity="*" Role="Department" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.University"
+					Multiplicity="0..1" Role="University" />
+			</Association>
+			<Association Name="FK_Department_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Department"
+					Multiplicity="*" Role="Department" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_Person_Language">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Person" Multiplicity="*"
+					Role="Person" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Language" Multiplicity="0..1"
+					Role="Language" />
+			</Association>
+			<Association Name="FK_InsuranceContract_Company">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.InsuranceContract"
+					Multiplicity="*" Role="InsuranceContract" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Company" Multiplicity="0..1"
+					Role="Company" />
+			</Association>
+			<Association Name="FK_InsuranceContract_CoOp">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.InsuranceContract"
+					Multiplicity="*" Role="InsuranceContract" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="0..1"
+					Role="CoOp" />
+			</Association>
+			<Association Name="FK_Invitation_Registration">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Invitation"
+					Multiplicity="*" Role="Invitation" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Registration"
+					Multiplicity="0..1" Role="Registration" />
+			</Association>
+			<Association Name="FK_Invitation_Group">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Invitation"
+					Multiplicity="*" Role="Invitation" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Group" Multiplicity="0..1"
+					Role="Group" />
+			</Association>
+			<Association Name="FK_Invitation_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Invitation"
+					Multiplicity="*" Role="Invitation" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_Literal_Language">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Literal" Multiplicity="*"
+					Role="Literal" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Language" Multiplicity="0..1"
+					Role="Language" />
+			</Association>
+			<Association Name="FK_Literal_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Literal" Multiplicity="*"
+					Role="Literal" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_JobPart_CompanyPerson">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPart" Multiplicity="*"
+					Role="JobPart" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CompanyPerson"
+					Multiplicity="0..1" Role="CompanyPerson" />
+			</Association>
+			<Association Name="FK_JobPart_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPart" Multiplicity="*"
+					Role="JobPart" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_JobPart_Job">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPart" Multiplicity="*"
+					Role="JobPart" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Job" Multiplicity="0..1"
+					Role="Job" />
+			</Association>
+			<Association Name="FK_JobPart_Branch">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPart" Multiplicity="*"
+					Role="JobPart" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Branch" Multiplicity="0..1"
+					Role="Branch" />
+			</Association>
+			<Association Name="FK_JobPart_Location">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPart" Multiplicity="*"
+					Role="JobPart" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Location" Multiplicity="0..1"
+					Role="Location" />
+			</Association>
+			<Association Name="FK_Attachment_InsuranceContract">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Attachment"
+					Multiplicity="*" Role="Attachment" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.InsuranceContract"
+					Multiplicity="0..1" Role="InsuranceContract" />
+			</Association>
+			<Association Name="FK_Attachment_Report">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Attachment"
+					Multiplicity="*" Role="Attachment" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Report" Multiplicity="0..1"
+					Role="Report" />
+			</Association>
+			<Association Name="FK_EntityAccess_Permission">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.EntityAccess"
+					Multiplicity="*" Role="EntityAccess" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Permission"
+					Multiplicity="0..1" Role="Permission" />
+			</Association>
+			<Association Name="FK_Category_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Category" Multiplicity="*"
+					Role="Category" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_Category_Category">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Category" Multiplicity="*"
+					Role="Category" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Category" Multiplicity="0..1"
+					Role="Category1" />
+			</Association>
+			<Association Name="FK_Location_Location">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Location" Multiplicity="*"
+					Role="Location" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Location" Multiplicity="0..1"
+					Role="Location1" />
+			</Association>
+			<Association Name="FK_Payment_FinancialSource">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Payment" Multiplicity="*"
+					Role="Payment" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.FinancialSource"
+					Multiplicity="0..1" Role="FinancialSource" />
+			</Association>
+			<Association Name="FK_Payment_Registration">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Payment" Multiplicity="*"
+					Role="Payment" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Registration"
+					Multiplicity="0..1" Role="Registration" />
+			</Association>
+			<Association Name="FK_Payment_JobPart">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Payment" Multiplicity="*"
+					Role="Payment" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPart" Multiplicity="0..1"
+					Role="JobPart" />
+			</Association>
+			<Association Name="FK_Nationality_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Nationality"
+					Multiplicity="*" Role="Nationality" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_CompanyPerson_Language">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CompanyPerson"
+					Multiplicity="*" Role="CompanyPerson" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Language" Multiplicity="0..1"
+					Role="Language" />
+			</Association>
+			<Association Name="FK_CompanyPerson_Company">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CompanyPerson"
+					Multiplicity="*" Role="CompanyPerson" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Company" Multiplicity="0..1"
+					Role="Company" />
+			</Association>
+			<Association Name="FK_AuthenticatedUser_Language">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.AuthenticatedUser"
+					Multiplicity="*" Role="AuthenticatedUser" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Language" Multiplicity="0..1"
+					Role="Language" />
+			</Association>
+			<Association Name="FK_AuthenticatedUser_CoOp">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.AuthenticatedUser"
+					Multiplicity="*" Role="AuthenticatedUser" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="0..1"
+					Role="CoOp" />
+			</Association>
+			<Association Name="FK_AuthenticatedUser_Department">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.AuthenticatedUser"
+					Multiplicity="*" Role="AuthenticatedUser" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Department"
+					Multiplicity="0..1" Role="Department" />
+			</Association>
+			<Association Name="FK_Telephone_Person">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Telephone" Multiplicity="*"
+					Role="Telephone" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Person" Multiplicity="0..1"
+					Role="Person" />
+			</Association>
+			<Association Name="FK_CoOp_Professor">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="*"
+					Role="CoOp" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Professor" Multiplicity="0..1"
+					Role="Professor" />
+			</Association>
+			<Association Name="FK_CoOp_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="*"
+					Role="CoOp" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_CoOp_Lesson">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="*"
+					Role="CoOp" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Lesson" Multiplicity="0..1"
+					Role="Lesson" />
+			</Association>
+			<Association Name="FK_CoOp_Professor_1">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="*"
+					Role="CoOp" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Professor" Multiplicity="0..1"
+					Role="Professor" />
+			</Association>
+			<Association Name="FK_CoOp_Professor_2">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="*"
+					Role="CoOp" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Professor" Multiplicity="0..1"
+					Role="Professor" />
+			</Association>
+			<Association Name="FK_FacultyUser_Language">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.FacultyUser"
+					Multiplicity="*" Role="FacultyUser" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Language" Multiplicity="0..1"
+					Role="Language" />
+			</Association>
+			<Association Name="FK_FacultyUser_CoOp">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.FacultyUser"
+					Multiplicity="*" Role="FacultyUser" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="0..1"
+					Role="CoOp" />
+			</Association>
+			<Association Name="FK_FacultyUser_Division">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.FacultyUser"
+					Multiplicity="*" Role="FacultyUser" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Division" Multiplicity="0..1"
+					Role="Division" />
+			</Association>
+			<Association Name="FK_FacultyUser_Department">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.FacultyUser"
+					Multiplicity="*" Role="FacultyUser" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Department"
+					Multiplicity="0..1" Role="Department" />
+			</Association>
+			<Association Name="FK_Registration_Student">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Registration"
+					Multiplicity="*" Role="Registration" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Student" Multiplicity="0..1"
+					Role="Student" />
+			</Association>
+			<Association Name="FK_Registration_InsuranceContract">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Registration"
+					Multiplicity="*" Role="Registration" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.InsuranceContract"
+					Multiplicity="0..1" Role="InsuranceContract" />
+			</Association>
+			<Association Name="FK_Registration_Group">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Registration"
+					Multiplicity="*" Role="Registration" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Group" Multiplicity="0..1"
+					Role="Group" />
+			</Association>
+			<Association Name="FK_Registration_CoOp">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Registration"
+					Multiplicity="*" Role="Registration" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="0..1"
+					Role="CoOp" />
+			</Association>
+			<Association Name="FK_JobPostingPart_Location">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPostingPart"
+					Multiplicity="*" Role="JobPostingPart" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Location" Multiplicity="0..1"
+					Role="Location" />
+			</Association>
+			<Association Name="FK_JobPostingPart_Branch">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPostingPart"
+					Multiplicity="*" Role="JobPostingPart" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Branch" Multiplicity="0..1"
+					Role="Branch" />
+			</Association>
+			<Association Name="FK_JobPostingPart_CompanyPerson">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPostingPart"
+					Multiplicity="*" Role="JobPostingPart" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CompanyPerson"
+					Multiplicity="0..1" Role="CompanyPerson" />
+			</Association>
+			<Association Name="FK_JobPostingPart_Multilingual">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPostingPart"
+					Multiplicity="*" Role="JobPostingPart" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Multilingual"
+					Multiplicity="0..1" Role="Multilingual" />
+			</Association>
+			<Association Name="FK_JobPostingPart_JobPosting">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPostingPart"
+					Multiplicity="*" Role="JobPostingPart" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPosting"
+					Multiplicity="0..1" Role="JobPosting" />
+			</Association>
+			<Association Name="FK_Professor_Language">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Professor" Multiplicity="*"
+					Role="Professor" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Language" Multiplicity="0..1"
+					Role="Language" />
+			</Association>
+			<Association Name="FK_Professor_Division">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Professor" Multiplicity="*"
+					Role="Professor" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Division" Multiplicity="0..1"
+					Role="Division" />
+			</Association>
+			<Association Name="FK_Professor_Department">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Professor" Multiplicity="*"
+					Role="Professor" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Department"
+					Multiplicity="0..1" Role="Department" />
+			</Association>
+			<Association Name="FK_Professor_CoOp">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Professor" Multiplicity="*"
+					Role="Professor" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="0..1"
+					Role="CoOp" />
+			</Association>
+			<Association Name="FK_ActivitySector_ActivitySector">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.ActivitySector"
+					Multiplicity="*" Role="ActivitySector" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.ActivitySector"
+					Multiplicity="0..1" Role="ActivitySector1" />
+			</Association>
+			<Association Name="FK_Group_Professor">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Group" Multiplicity="*"
+					Role="Group" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Professor" Multiplicity="*"
+					Role="Professor" />
+			</Association>
+			<Association Name="FK_Branch_CompanyPerson">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Branch" Multiplicity="*"
+					Role="Branch" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CompanyPerson"
+					Multiplicity="*" Role="CompanyPerson" />
+			</Association>
+			<Association Name="FK_ReportType_Role">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.ReportType"
+					Multiplicity="*" Role="ReportType" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Role" Multiplicity="*"
+					Role="Role" />
+			</Association>
+			<Association Name="FK_JobPosting_Registration">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.JobPosting"
+					Multiplicity="*" Role="JobPosting" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Registration"
+					Multiplicity="*" Role="Registration" />
+			</Association>
+			<Association Name="FK_Requirement_Registration">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Requirement"
+					Multiplicity="*" Role="Requirement" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Registration"
+					Multiplicity="*" Role="Registration" />
+			</Association>
+			<Association Name="FK_Telephone_Student">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Telephone" Multiplicity="*"
+					Role="Telephone" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Student" Multiplicity="0..1"
+					Role="Student" />
+			</Association>
+			<Association Name="FK_Address_Student">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Address" Multiplicity="*"
+					Role="Address" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Student" Multiplicity="0..1"
+					Role="Student" />
+			</Association>
+			<Association Name="FK_Student_Role">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Student" Multiplicity="*"
+					Role="Student" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Role" Multiplicity="*"
+					Role="Role" />
+			</Association>
+			<Association Name="FK_Report_Student">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Report" Multiplicity="*"
+					Role="Report" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Student" Multiplicity="0..1"
+					Role="Student" />
+			</Association>
+			<Association Name="FK_Company_CoOp">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Company" Multiplicity="*"
+					Role="Company" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="*"
+					Role="CoOp" />
+			</Association>
+			<Association Name="FK_FinancialSource_CoOp">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.FinancialSource"
+					Multiplicity="*" Role="FinancialSource" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CoOp" Multiplicity="*"
+					Role="CoOp" />
+			</Association>
+			<Association Name="FK_Permission_Role">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Permission"
+					Multiplicity="*" Role="Permission" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Role" Multiplicity="*"
+					Role="Role" />
+			</Association>
+			<Association Name="FK_Invitation_Registration_1">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Invitation"
+					Multiplicity="*" Role="Invitation" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Registration"
+					Multiplicity="*" Role="Registration" />
+			</Association>
+			<Association Name="FK_Category_Registration">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Category" Multiplicity="*"
+					Role="Category" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Registration"
+					Multiplicity="*" Role="Registration" />
+			</Association>
+			<Association Name="FK_Location_Registration">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Location" Multiplicity="*"
+					Role="Location" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Registration"
+					Multiplicity="*" Role="Registration" />
+			</Association>
+			<Association Name="FK_Role_AuthenticatedUser">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Role" Multiplicity="*"
+					Role="Role" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.AuthenticatedUser"
+					Multiplicity="*" Role="AuthenticatedUser" />
+			</Association>
+			<Association Name="FK_Address_CompanyPerson">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Address" Multiplicity="*"
+					Role="Address" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CompanyPerson"
+					Multiplicity="0..1" Role="CompanyPerson" />
+			</Association>
+			<Association Name="FK_Telephone_CompanyPerson">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Telephone" Multiplicity="*"
+					Role="Telephone" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.CompanyPerson"
+					Multiplicity="0..1" Role="CompanyPerson" />
+			</Association>
+			<Association Name="FK_Address_AuthenticatedUser">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Address" Multiplicity="*"
+					Role="Address" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.AuthenticatedUser"
+					Multiplicity="0..1" Role="AuthenticatedUser" />
+			</Association>
+			<Association Name="FK_Telephone_AuthenticatedUser">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Telephone" Multiplicity="*"
+					Role="Telephone" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.AuthenticatedUser"
+					Multiplicity="0..1" Role="AuthenticatedUser" />
+			</Association>
+			<Association Name="FK_Address_FacultyUser">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Address" Multiplicity="*"
+					Role="Address" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.FacultyUser"
+					Multiplicity="0..1" Role="FacultyUser" />
+			</Association>
+			<Association Name="FK_FacultyUser_Role">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.FacultyUser"
+					Multiplicity="*" Role="FacultyUser" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Role" Multiplicity="*"
+					Role="Role" />
+			</Association>
+			<Association Name="FK_Report_FacultyUser">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Report" Multiplicity="*"
+					Role="Report" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.FacultyUser"
+					Multiplicity="0..1" Role="FacultyUser" />
+			</Association>
+			<Association Name="FK_Telephone_FacultyUser">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Telephone" Multiplicity="*"
+					Role="Telephone" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.FacultyUser"
+					Multiplicity="0..1" Role="FacultyUser" />
+			</Association>
+			<Association Name="FK_Telephone_Professor">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Telephone" Multiplicity="*"
+					Role="Telephone" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Professor" Multiplicity="0..1"
+					Role="Professor" />
+			</Association>
+			<Association Name="FK_Address_Professor">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Address" Multiplicity="*"
+					Role="Address" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Professor" Multiplicity="0..1"
+					Role="Professor" />
+			</Association>
+			<Association Name="FK_Professor_Role">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Professor" Multiplicity="*"
+					Role="Professor" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Role" Multiplicity="*"
+					Role="Role" />
+			</Association>
+			<Association Name="FK_Report_Professor">
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Report" Multiplicity="*"
+					Role="Report" />
+				<End Type="org.restlet.test.ext.odata.deepexpand.model.Professor" Multiplicity="0..1"
+					Role="Professor" />
+			</Association>
+		</Schema>
+	</edmx:DataServices>
+</edmx:Edmx>
