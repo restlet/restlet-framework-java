@@ -51,6 +51,7 @@ public class HttpProtocolHelper extends ProtocolHelper {
         Method.register(Method.GET);
         Method.register(Method.HEAD);
         Method.register(Method.OPTIONS);
+        Method.register(Method.PATCH);
         Method.register(Method.POST);
         Method.register(Method.PUT);
         Method.register(Method.TRACE);
