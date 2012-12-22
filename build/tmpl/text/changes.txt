@@ -8,7 +8,7 @@ Changes log
        - Fixed arrays serialization in GWT edition.
          Contributed by Jeff Plourde.
        - Fixed internal HTTP connector to enable handling of asynchronous
-         client requests. Contributed by Florian Buclkers
+         client requests. Contributed by Florian Bucklers
        - Fixed controllerSleepTimeMs default value in documentation for 
          internal HTTP connector.
        - Fixed generation of requests in GWT edition, using the browser agent
@@ -18,7 +18,9 @@ Changes log
        - Fixed conversion Java Double/EDM.Double types in OData extension.
          Reported by Martin Grohmann.
        - Took care of the IPV6 addresses. Reported by Laurent Rustuel.
-
+       - Add missing implementation in BufferingRepresentation for issue #681.
+         Contributed by Florian Bucklers.
+       - 
     - API changes
     - Misc
        - Prevent logging of verbose stack trace. Reported by Grzegorz Godlewski.

@@ -651,16 +651,18 @@ public class Query<T> implements Iterable<T> {
             // result = new FeedParser<T>(getFeed(), this.entityClass,
             // ((Metadata) getService().getMetadata())).parse();
             // Detect server-paging mode.
-            nextPage = null;
+            setNextPage(null);
+
             for (Link link : getFeed().getLinks()) {
                 if (Relation.NEXT.equals(link.getRel())) {
-                    nextPage = link.getHref();
+                    setNextPage(link.getHref());
                     break;
                 }
             }
-            if (nextPage != null) {
-                result = new EntryIterator<T>(this.service, result, nextPage,
-                        entityClass);
+
+            if (getNextPage() != null) {
+                result = new EntryIterator<T>(this.service, result,
+                        getNextPage(), entityClass);
             }
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
@@ -715,6 +717,16 @@ public class Query<T> implements Iterable<T> {
      */
     private void setFeed(Feed feed) {
         this.feed = feed;
+    }
+
+    /**
+     * Sets the reference to the next page (used in server-paging mode).
+     * 
+     * @param nextPage
+     *            The reference to the next page.
+     */
+    private void setNextPage(Reference nextPage) {
+        this.nextPage = nextPage;
     }
 
     /**

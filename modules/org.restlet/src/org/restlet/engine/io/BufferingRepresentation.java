@@ -38,6 +38,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
@@ -76,15 +77,6 @@ public class BufferingRepresentation extends WrapperRepresentation {
         super(bufferedRepresentation);
         setTransient(false);
     }
-    
-    @Override
-    public boolean isAvailable() {
-    	try {    		
-    		buffer();
-    	} catch (IOException e) {};
-    	
-    	return isBuffered();
-    }
 
     /**
      * Buffers the content of the wrapped entity.
@@ -117,12 +109,15 @@ public class BufferingRepresentation extends WrapperRepresentation {
         return buffer;
     }
 
-    @SuppressWarnings("resource")
     @Override
     public java.nio.channels.ReadableByteChannel getChannel()
             throws IOException {
-        InputStream is = getStream();
-        return (is != null) ? new InputStreamChannel(is) : null;
+        return org.restlet.engine.io.NioUtils.getChannel(getStream());
+    }
+
+    @Override
+    public Reader getReader() throws IOException {
+        return BioUtils.getReader(getStream(), getCharacterSet());
     }
 
     @Override
@@ -158,6 +153,18 @@ public class BufferingRepresentation extends WrapperRepresentation {
         return null;
     }
 
+    @Override
+    public boolean isAvailable() {
+        try {
+            buffer();
+        } catch (IOException e) {
+            Context.getCurrentLogger().log(Level.FINER,
+                    "Unable to buffer the wrapped representation", e);
+        }
+
+        return isBuffered();
+    }
+
     /**
      * Indicates if the wrapped entity has been already buffered.
      * 
@@ -190,23 +197,28 @@ public class BufferingRepresentation extends WrapperRepresentation {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         buffer();
-        outputStream.write(getBuffer());
+
+        if (getBuffer() != null) {
+            outputStream.write(getBuffer());
+        }
+    }
+
+    @Override
+    public void write(WritableByteChannel writableChannel) throws IOException {
+        buffer();
+
+        if (getBuffer() != null) {
+            writableChannel.write(ByteBuffer.wrap(getBuffer()));
+        }
     }
 
     @Override
     public void write(Writer writer) throws IOException {
-        buffer();
+        String text = getText();
 
-        if (getText() != null) {
-            writer.write(getText());
+        if (text != null) {
+            writer.write(text);
         }
-    }
-    
-    @Override
-    public void write(WritableByteChannel writableChannel) throws IOException {
-    	buffer();
-    	
-    	writableChannel.write(ByteBuffer.wrap(getBuffer()));
     }
 
 }

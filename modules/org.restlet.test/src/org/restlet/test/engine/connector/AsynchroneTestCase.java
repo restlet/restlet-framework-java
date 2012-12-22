@@ -78,7 +78,6 @@ public class AsynchroneTestCase extends RestletTestCase {
         final CountDownLatch latch = new CountDownLatch(count);
 
         final Uniform responseHandler = new Uniform() {
-            @Override
             public void handle(Request request, Response response) {
                 String item = request.getResourceRef().getQueryAsForm()
                         .getFirstValue("item");
