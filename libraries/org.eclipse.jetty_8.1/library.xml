@@ -47,6 +47,6 @@
 		<distribution id="classic" />
 	</distributions>
 	<javadocs>
-		<link href="http://download.eclipse.org/jetty/stable-7/apidocs/" />
+		<link href="http://download.eclipse.org/jetty/stable-8/apidocs/" />
 	</javadocs>
 </library>

@@ -48,7 +48,6 @@ import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Link;
 import org.restlet.ext.atom.Relation;
 import org.restlet.ext.odata.internal.EntryContentHandler;
-import org.restlet.ext.odata.internal.EntryIterator;
 import org.restlet.ext.odata.internal.FeedContentHandler;
 import org.restlet.ext.odata.internal.edm.EntityType;
 import org.restlet.ext.odata.internal.edm.Metadata;
@@ -71,6 +70,88 @@ import org.restlet.util.Series;
  * @param <T>
  */
 public class Query<T> implements Iterable<T> {
+
+    /**
+     * Iterator that transparently supports sever-side paging.
+     * 
+     * @author Thierry Boileau
+     * 
+     * @param <T>
+     */
+    private class EntryIterator<E> implements Iterator<E> {
+
+        /** The class of the listed objects. */
+        private Class<?> entityClass;
+
+        /** The inner iterator. */
+        private Iterator<E> iterator;
+
+        /** The reference to the next page. */
+        private Reference nextPage;
+
+        /** The underlying service. */
+        private Service service;
+
+        /**
+         * Constructor.
+         * 
+         * @param service
+         *            The underlying service.
+         * @param iterator
+         *            The inner iterator.
+         * @param nextPage
+         *            The reference to the next page.
+         * @param entityClass
+         *            The class of the listed objects.
+         */
+        public EntryIterator(Service service, Iterator<E> iterator,
+                Reference nextPage, Class<?> entityClass) {
+            super();
+            this.iterator = iterator;
+            this.nextPage = nextPage;
+            this.service = service;
+            this.entityClass = entityClass;
+        }
+
+        @SuppressWarnings("unchecked")
+        public boolean hasNext() {
+            boolean result = false;
+
+            if (iterator != null) {
+                result = iterator.hasNext();
+            }
+
+            if (!result && nextPage != null) {
+                // Get the next page.
+                Query<E> query = service.createQuery(nextPage.toString(),
+                        (Class<E>) entityClass);
+                iterator = query.iterator();
+                if (iterator != null) {
+                    result = iterator.hasNext();
+                }
+                // Set the reference to the next page
+                nextPage = null;
+            }
+
+            return result;
+        }
+
+        public E next() {
+            E result = null;
+            if (iterator != null) {
+                if (iterator.hasNext()) {
+                    result = iterator.next();
+                }
+            }
+            return result;
+        }
+
+        public void remove() {
+            if (iterator != null) {
+                iterator.remove();
+            }
+        }
+    }
 
     // Defines the type of the current query. It has an impact on how to parse
     // the result.
@@ -570,18 +651,18 @@ public class Query<T> implements Iterable<T> {
             // result = new FeedParser<T>(getFeed(), this.entityClass,
             // ((Metadata) getService().getMetadata())).parse();
             // Detect server-paging mode.
-            nextPage = null;
+            setNextPage(null);
 
             for (Link link : getFeed().getLinks()) {
                 if (Relation.NEXT.equals(link.getRel())) {
-                    nextPage = link.getHref();
+                    setNextPage(link.getHref());
                     break;
                 }
             }
 
-            if (nextPage != null) {
-                result = new EntryIterator<T>(this.service, result, nextPage,
-                        entityClass);
+            if (getNextPage() != null) {
+                result = new EntryIterator<T>(this.service, result,
+                        getNextPage(), entityClass);
             }
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
@@ -636,6 +717,16 @@ public class Query<T> implements Iterable<T> {
      */
     private void setFeed(Feed feed) {
         this.feed = feed;
+    }
+
+    /**
+     * Sets the reference to the next page (used in server-paging mode).
+     * 
+     * @param nextPage
+     *            The reference to the next page.
+     */
+    public void setNextPage(Reference nextPage) {
+        this.nextPage = nextPage;
     }
 
     /**

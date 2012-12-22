@@ -41,6 +41,7 @@ import org.restlet.engine.Engine;
  * Marker class. All Restlet tests should be derived from this class.
  * 
  * @author Lars Heuer (heuer[at]semagia.com)
+ * @author Jerome Louvel
  */
 public abstract class RestletTestCase extends TestCase {
 
@@ -63,6 +64,10 @@ public abstract class RestletTestCase extends TestCase {
         super.setUp();
         System.out.println("Setting up test " + getClass().getName() + "#"
                 + getName());
+        setUpEngine();
+    }
+
+    protected void setUpEngine() {
         Engine.clearThreadLocalVariables();
 
         // Restore a clean engine
@@ -80,6 +85,10 @@ public abstract class RestletTestCase extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
+        tearDownEngine();
+    }
+
+    protected void tearDownEngine() {
         Engine.clearThreadLocalVariables();
     }
 }

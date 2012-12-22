@@ -89,7 +89,9 @@ public abstract class ServerInboundWay extends InboundWay {
 
     @Override
     protected boolean hasIoInterest() {
-        return (getIoState() == IoState.IDLE) && getConnection().isPipelining();
+        return (getMessageState() == MessageState.START)
+                || ((getIoState() == IoState.IDLE) && getConnection()
+                        .isPipelining());
     }
 
     @Override

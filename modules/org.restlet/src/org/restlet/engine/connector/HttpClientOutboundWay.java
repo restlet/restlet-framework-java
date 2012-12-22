@@ -112,10 +112,10 @@ public class HttpClientOutboundWay extends ClientOutboundWay {
 
         if (message != null) {
             Request request = message.getRequest();
-            Queue<Response> inboundMessages = ((HttpClientInboundWay) getConnection()
-                    .getInboundWay()).getMessages();
 
             if (request.isExpectingResponse()) {
+                Queue<Response> inboundMessages = ((HttpClientInboundWay) getConnection()
+                        .getInboundWay()).getMessages();
                 inboundMessages.add(message);
                 getConnection().getInboundWay().setMessageState(
                         MessageState.START);
