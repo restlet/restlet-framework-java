@@ -33,6 +33,8 @@
 
 package org.restlet.test.ext.odata;
 
+import org.restlet.test.ext.odata.deepexpand.ODataDeepExpandTestCase;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

@@ -779,6 +779,16 @@ public class EntryContentHandler<T> extends EntryReader {
                 else
                     inlineEntryHandler.startEntry(entry);
                 break;
+            case CONTENT:
+                break;
+            case ENTRY:
+                break;
+            case PROPERTIES:
+                break;
+            case PROPERTY:
+                break;
+            default:
+                break;
             }
         } else {
             this.states = new ArrayList<State>();

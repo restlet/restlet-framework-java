@@ -177,6 +177,18 @@ public final class Method implements Comparable<Method> {
             BASE_HTTP + "#sec9.2", true, true);
 
     /**
+     * Requests that the origin server applies partial modifications contained
+     * in the entity enclosed in the request to the resource identified by the
+     * request URI.
+     * 
+     * @see <a href="http://tools.ietf.org/html/rfc5789">HTTP PATCH RFC 5789</a>
+     */
+    public static final Method PATCH = new Method(
+            "PATCH",
+            "Requests that the origin server applies partial modifications to the resource identified by the request URI",
+            "http://tools.ietf.org/html/rfc5789", false, false);
+
+    /**
      * Requests that the origin server accepts the entity enclosed in the
      * request as a new subordinate of the resource identified by the request
      * URI.

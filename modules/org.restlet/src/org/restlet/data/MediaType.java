@@ -148,6 +148,10 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_JSON = register(
             "application/json", "JavaScript Object Notation document");
 
+    // [ifndef gwt] member
+    public static final MediaType APPLICATION_JSON_PATCH = register(
+            "application/json-patch", "JSON patch document");
+
     public static final MediaType APPLICATION_JSON_SMILE = register(
             "application/x-json-smile",
             "JavaScript Object Notation smile document");
