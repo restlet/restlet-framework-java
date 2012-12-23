@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.2 Milestone 1 (12/23/2012)
     - Bug fixed
       - 
     - Enhancements
