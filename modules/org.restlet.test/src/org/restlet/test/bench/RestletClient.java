@@ -24,6 +24,7 @@ public class RestletClient {
         // helper = new org.restlet.ext.httpclient.HttpClientHelper(null);
         // helper = new org.restlet.ext.net.HttpClientHelper(null);
         Engine.getInstance().getRegisteredClients().add(0, helper);
+        // [ifdef jse] instruction
         Engine.setLogLevel(Level.FINEST);
 
         for (int i = 0; i < 1; i++) {
