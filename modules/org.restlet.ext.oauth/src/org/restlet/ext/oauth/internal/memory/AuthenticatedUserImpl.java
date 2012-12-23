@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.oauth.internal;
+package org.restlet.ext.oauth.internal.memory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.restlet.ext.oauth.AuthenticatedUser;
 import org.restlet.ext.oauth.Client;
+import org.restlet.ext.oauth.internal.Token;
 import org.restlet.security.Role;
 
 /**
@@ -49,7 +50,7 @@ import org.restlet.security.Role;
  * 
  * @author Kristoffer Gronowski
  */
-public class AuthenticatedUserImpl extends AuthenticatedUser {
+public class AuthenticatedUserImpl implements AuthenticatedUser {
 
     private final Client client;
 
@@ -61,7 +62,7 @@ public class AuthenticatedUserImpl extends AuthenticatedUser {
 
     private volatile Token token;
 
-    private volatile String password; // optional for oauth password flow
+    private volatile char[] password; // optional for oauth password flow
 
     public AuthenticatedUserImpl(String userId, Client client) {
         id = userId;
@@ -143,12 +144,12 @@ public class AuthenticatedUserImpl extends AuthenticatedUser {
     }
 
     @Override
-    public String getPassword() {
+    public char[] getPassword() {
         return password;
     }
 
     @Override
-    public void setPassword(String password) {
+    public void setPassword(char[] password) {
         this.password = password;
     }
 
@@ -171,5 +172,10 @@ public class AuthenticatedUserImpl extends AuthenticatedUser {
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+    @Override
+    public boolean persist() {
+        return true;
     }
 }

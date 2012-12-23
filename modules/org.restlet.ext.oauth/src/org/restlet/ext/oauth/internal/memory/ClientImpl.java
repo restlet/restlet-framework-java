@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.oauth.internal;
+package org.restlet.ext.oauth.internal.memory;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -48,7 +48,7 @@ import org.restlet.ext.oauth.Client;
  * 
  * @author Kristoffer Gronowski
  */
-public class ClientImpl extends Client {
+public class ClientImpl implements Client {
 
     private final String clientId;
 

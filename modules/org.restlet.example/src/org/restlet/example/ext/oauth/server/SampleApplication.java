@@ -30,32 +30,43 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+package org.restlet.example.ext.oauth.server;
 
-package org.restlet.ext.oauth;
+import org.restlet.Application;
+import org.restlet.Restlet;
+import org.restlet.data.Reference;
+import org.restlet.ext.oauth.security.TokenVerifier;
+import org.restlet.routing.Router;
+import org.restlet.security.ChallengeAuthenticator;
 
 /**
- * Utility class for formating OAuth errors
- * 
- * <b>Originally written by Kristoffer Gronowski, Heavily modified for update to draft30.</b>
+ * Simple OAuth 2.0 protected application.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
- * @see <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-30">
- * The OAuth 2.0 Authorization Framework draft-ietf-oauth-v2-30</a>
- * @see <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-22">
- * Bearer Token Usage</a>
  */
-public enum OAuthError {
-
-    access_denied, // 4.1.2.1 & 4.2.2.1 
-    invalid_client, // 5.2
-    invalid_grant, // 5.2
-    invalid_request, // 4.1.2.1 & 4.2.2.1 & 5.2
-    invalid_scope, // 4.1.2.1 & 4.2.2.1 & 5.2
-    unauthorized_client, // 4.1.2.1 & 4.2.2.1 & 5.2
-    unsupported_grant_type, // 5.2
-    unsupported_response_type, // 4.1.2.1 & 4.2.2.1
-    server_error,   // 4.1.2.1 & 4.2.2.1
+public class SampleApplication extends Application {
     
-    invalid_token,      // Bearer 3.1
-    insufficient_scope  // Bearer 3.1
+    @Override
+    public synchronized Restlet createInboundRoot() {
+        Router router = new Router(getContext());
+        
+        router.attach("/status", StatusServerResource.class);
+        
+        /*
+         * Since Role#hashCode and Role#equals are not implemented,
+         * RoleAuthorizer cannot be used.
+         */
+//        RoleAuthorizer roleAuthorizer = new RoleAuthorizer();
+//        roleAuthorizer.setAuthorizedRoles(Scopes.toRoles("status"));
+//        roleAuthorizer.setNext(router);
+        
+        ChallengeAuthenticator bearerAuthenticator =
+                new ChallengeAuthenticator(getContext(), TokenVerifier.HTTP_BEARER, "OAuth2Sample");
+        bearerAuthenticator.setVerifier(
+                new TokenVerifier(
+                    new Reference("riap://component/oauth/token_auth")));
+        bearerAuthenticator.setNext(router);
+        
+        return bearerAuthenticator;
+    }
 }

@@ -30,24 +30,18 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
-
-package org.restlet.ext.oauth.internal;
-
-import org.json.JSONObject;
-import org.restlet.data.MediaType;
-import org.restlet.representation.StringRepresentation;
+package org.restlet.example.ext.oauth.server;
 
 /**
- * @author esvmart
- * 
- * Temporary fix due to problems in the implementation of the
- * Json Extension, removed once the bug is fixed.
+ *
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class JsonStringRepresentation extends StringRepresentation{
-    
-    public JsonStringRepresentation(JSONObject obj){
-        super(obj.toString(), MediaType.APPLICATION_JSON);
-        //this.setCharacterSet(CharacterSet.UTF_8);
-    }
+public class MongoUtil {
 
+    public static String toString(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        return obj.toString();
+    }
 }

@@ -30,23 +30,46 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+package org.restlet.example.ext.oauth.server;
 
-package org.restlet.ext.oauth;
+import com.mongodb.DB;
+import com.mongodb.Mongo;
+import org.restlet.Component;
+import org.restlet.data.Protocol;
 
 /**
- * Defines the supported types of responses to a grant request.
- * 
- * @author Kristoffer Gronowski
+ *
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public enum ResponseType {
-    
-    /**
-     * Defined in 4.1 Authorization Code Grant.
-     */
-    code,
+public class OAuth2Sample {
 
-    /**
-     * Defined in 4.2 Implicit Grant.
-     */
-    token
+    private static Mongo mongo;
+    
+    public static Mongo getMongo() {
+        return mongo;
+    }
+    
+    public static DB getDefaultDB() {
+        return mongo.getDB("oauth2");
+    }
+    
+    public static void main(String[] args) throws Exception {
+        // Setup MongoDB
+        mongo = new Mongo("localhost", 27017);
+
+        // Setup Restlet
+        Component component = new Component();
+        component.getClients().add(Protocol.HTTP);
+        component.getClients().add(Protocol.HTTPS);
+        component.getClients().add(Protocol.RIAP);
+        component.getClients().add(Protocol.CLAP);
+        component.getServers().add(Protocol.HTTP, 8080);
+
+        component.getDefaultHost().attach("/sample", new SampleApplication());
+        OAuth2ServerApplication app = new OAuth2ServerApplication();
+        component.getDefaultHost().attach("/oauth", app);
+        component.getInternalRouter().attach("/oauth", app);
+        
+        component.start();
+    }
 }

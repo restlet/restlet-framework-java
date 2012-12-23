@@ -41,14 +41,14 @@ package org.restlet.ext.oauth;
  * 
  * @author Kristoffer Gronowski
  */
-public abstract class Client extends UserStore {
+public interface Client extends UserStore {
 
     /**
      * Client id that the client has registered at the auth provider.
      * 
      * @return the stored client id
      */
-    public abstract String getClientId();
+    public String getClientId();
 
     /**
      * Client secret that the client has registered at the auth provider.
@@ -56,14 +56,14 @@ public abstract class Client extends UserStore {
      * @return the stored client secret
      */
 
-    public abstract String getClientSecret();
+    public String getClientSecret();
 
     /**
      * Redirect URL that the client has registered at the auth provider.
      * 
      * @return redirect callback url for code and token flows.
      */
-    public abstract String getRedirectUri();
+    public String getRedirectUri();
 
     /**
      * Human readable name of the application that this client represents It can
@@ -71,5 +71,5 @@ public abstract class Client extends UserStore {
      * 
      * @return name of the application.
      */
-    public abstract String getApplicationName();
+    public String getApplicationName();
 }
