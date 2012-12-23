@@ -75,7 +75,6 @@ import org.restlet.test.regression.RegressionTestSuite;
 import org.restlet.test.representation.AppendableRepresentationTestCase;
 import org.restlet.test.representation.DigesterRepresentationTestCase;
 import org.restlet.test.representation.RangeRepresentationTestCase;
-import org.restlet.test.resource.ResourceTestSuite;
 import org.restlet.test.routing.FilterTestCase;
 import org.restlet.test.routing.RedirectTestCase;
 import org.restlet.test.routing.RouteListTestCase;
@@ -106,7 +105,10 @@ public class RestletTestSuite extends TestSuite {
 
     /** Constructor. */
     public RestletTestSuite() {
-        addTest(ResourceTestSuite.suite());
+        // [ifdef jse]
+        addTest(org.restlet.test.resource.ResourceTestSuite.suite());
+        // [enddef]
+        
         addTest(ServiceTestSuite.suite());
         addTestSuite(AppendableRepresentationTestCase.class);
         addTestSuite(AtomTestCase.class);
