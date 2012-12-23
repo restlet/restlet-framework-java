@@ -30,3 +30,11 @@ Changes log
         Suggested by Tim Peierls.
       - Added conveniency add(...) method signature without Reference 
         parameters in RdfClientResource.
+      - Added Method.PATCH constant and @Patch annotation based on RFC 5789.
+        Suggested by Brian Sletten.
+      - Added MediaType.APPLICATION_JSON_PATCH constant based on internet
+        draft for "application/json-patch" media type.
+      - Added ChallengeScheme.HTTP_OAUTH_BEARER and HTTP_OAUTH_MAC constants
+        to support the final OAuth 2.0 RFC.
+        
+        

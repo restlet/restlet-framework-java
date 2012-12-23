@@ -78,109 +78,7 @@ import org.restlet.resource.ClientResource;
  * @author Kristoffer Gronowski
  */
 public enum Flow {
-    NONE, PASSWORD, REFRESH;
-
-    /*
-     * public static OAuthUser userAgent(OAuthParameters params, String
-     * callbackUri, String state, org.restlet.Client c) { OAuthUser result =
-     * null;
-     * 
-     * Form form = new Form(); form.add(OAuthServerResource.RESPONSE_TYPE,
-     * OAuthServerResource.ResponseType.token.name());
-     * form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
-     * form.add(OAuthServerResource.REDIR_URI, callbackUri);
-     * 
-     * if (params.getRoles() != null && params.getRoles().size() > 0) {
-     * form.add(OAuthServerResource.SCOPE, Scopes.toScope(params.getRoles())); }
-     * 
-     * if (state != null && state.length() > 0) {
-     * form.add(OAuthServerResource.STATE, state); }
-     * 
-     * String q = form.getQueryString(); Reference redirRef = new
-     * Reference(params.getBaseRef(), params.getAuthorizePath(), q, null);
-     * ClientResource authResource = new CookieCopyClientResource(
-     * redirRef.toUri()); authResource.setNext(c);
-     * authResource.setFollowingRedirects(false); // token is in a 3xx
-     * Representation r = authResource.get();
-     * 
-     * int maxRedirCnt = 10; // Stop the maddness if out of hand... int cnt = 0;
-     * 
-     * while (authResource.getStatus().isRedirection()) { String fragment =
-     * authResource.getLocationRef().getFragment(); if (fragment != null &&
-     * fragment.length() > 0) { Form f = new Form(fragment);
-     * 
-     * String accessToken = f .getFirstValue(OAuthServerResource.ACCESS_TOKEN);
-     * 
-     * String refreshToken = f
-     * .getFirstValue(OAuthServerResource.REFRESH_TOKEN);
-     * 
-     * long expiresIn = 0; String exp =
-     * f.getFirstValue(OAuthServerResource.EXPIRES_IN);
-     * 
-     * if (exp != null && exp.length() > 0) { expiresIn = Long.parseLong(exp); }
-     * 
-     * if (accessToken != null && accessToken.length() > 0) {
-     * Context.getCurrentLogger().info(
-     * "Successful UserAgent flow : AccessToken = " + accessToken +
-     * " RefreshToken = " + refreshToken + " ExpiresIn = " + expiresIn); result
-     * = new OAuthUser(null, accessToken, refreshToken, expiresIn);
-     * result.setState(f.getFirstValue(OAuthServerResource.STATE)); break; }
-     * else { // String error = // f.getFirstValue(OAuthResource.ACCESS_TOKEN);
-     * // TODO throw exception.... } }
-     * 
-     * if (++cnt >= maxRedirCnt) break;
-     * 
-     * Context.getCurrentLogger().info( "Redir to = " +
-     * authResource.getLocationRef());
-     * authResource.setReference(authResource.getLocationRef());
-     * 
-     * // FOR TESTING!!!! if (cnt == 1) {
-     * 
-     * for (CookieSetting cs : authResource.getCookieSettings()) {
-     * 
-     * authResource.getCookies().add(cs.getName(), cs.getValue()); } }
-     * 
-     * r = authResource.get(); // Check if it is a OpenID form forward try { r =
-     * OpenIdFormFrowarder.handleFormRedirect(r, authResource); } catch
-     * (IOException e) { Context.getCurrentLogger().log(Level.WARNING,
-     * "Failed in OpenID FW", e); } }
-     * 
-     * r.release(); authResource.release();
-     * 
-     * return result; }
-     */
-    private static OAuthUser noneFlow(OAuthParameters params,
-            org.restlet.Client c) {
-        OAuthUser result = null;
-
-        Form form = new Form();
-        form.add(OAuthServerResource.GRANT_TYPE,
-                GrantType.none.name());
-        form.add(OAuthServerResource.CLIENT_ID, params.getClientId());
-        form.add(OAuthServerResource.CLIENT_SECRET, params.getClientSecret());
-
-        if (params.getRoles() != null && params.getRoles().size() > 0) {
-            form.add(OAuthServerResource.SCOPE,
-                    Scopes.toScope(params.getRoles()));
-        }
-
-        ClientResource tokenResource = new CookieCopyClientResource(
-                params.getBaseRef() + params.getAccessTokenPath());
-        tokenResource.setNext(c);
-        Context.getCurrentLogger().fine(
-                "Sending NoneFlow form : " + form.getQueryString());
-
-        Representation body = tokenResource.post(form.getWebRepresentation());
-
-        if (tokenResource.getStatus().isSuccess()) {
-            result = OAuthUser.createJson(body);
-        }
-
-        body.release();
-        tokenResource.release();
-
-        return result;
-    }
+    PASSWORD, REFRESH;
 
     /**
      * Checks the credentials and returns a completed OAuth user.
@@ -328,10 +226,6 @@ public enum Flow {
             String refreshToken, org.restlet.Client client) {
         if (this == Flow.PASSWORD) {
             return passwordFlow(params, username, password, client);
-        } else if (this == Flow.NONE) {
-            return noneFlow(params, client);
-            // } else if (this == Flow.USERAGENT) {
-            // return userAgent(params, callbackUri, state, c);
         } else if (this == Flow.REFRESH) {
             return refreshToken(params, refreshToken, client);
         }

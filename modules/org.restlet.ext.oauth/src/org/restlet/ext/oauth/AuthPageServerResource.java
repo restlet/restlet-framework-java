@@ -36,14 +36,11 @@ package org.restlet.ext.oauth;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.data.Status;
 import org.restlet.ext.freemarker.ContextTemplateLoader;
 import org.restlet.ext.freemarker.TemplateRepresentation;
-import org.restlet.ext.oauth.OAuthError;
 import org.restlet.ext.oauth.internal.AuthSession;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.EmptyRepresentation;
@@ -51,6 +48,10 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 
 import freemarker.template.Configuration;
+import java.util.HashSet;
+import java.util.Set;
+import org.restlet.data.CacheDirective;
+import org.restlet.ext.oauth.internal.Token;
 
 /**
  * Helper class to the AuhorizationResource Handles Authorization requests. By
@@ -149,8 +150,11 @@ import freemarker.template.Configuration;
  * @author Kristoffer Gronowski
  */
 
-public class AuthPageServerResource extends OAuthServerResource {
+public class AuthPageServerResource extends AuthorizationBaseServerResource {
 
+    private static final String ACTION_ACCEPT = "Accept";
+    private static final String ACTION_REJECT = "Reject";
+    
     /**
      * Entry point to the AuthPageResource. The AuthorizationResource dispatches
      * the call to this method. Should also be invoked by an eventual HTML page
@@ -162,7 +166,7 @@ public class AuthPageServerResource extends OAuthServerResource {
      */
 
     @Get("html")
-    public Representation showPage() {
+    public Representation showPage() throws OAuthException {
         String action = getQuery().getFirstValue("action");
         // Came back after user interacted with the page
         if (action != null) {
@@ -195,16 +199,16 @@ public class AuthPageServerResource extends OAuthServerResource {
                 }
             }
 
-            getResponse().setCacheDirectives(noCache);
+            addCacheDirective(getResponse(), CacheDirective.noCache());
             return getPage(authPage);
         }
         getLogger().fine("accepting scopes since no authPage: " + authPage);
         // No page automatically accept all the scopes requested
-        handleAction("Accept", getQuery().getValuesArray("scope"));
+        handleAction(ACTION_ACCEPT, getQuery().getValuesArray("scope"));
         getLogger().fine("action handled");
         return new EmptyRepresentation(); // Will redirect
     }
-
+ 
     /**
      * 
      * Helper method to handle a FORM response. Returns with setting a 307 with
@@ -216,23 +220,13 @@ public class AuthPageServerResource extends OAuthServerResource {
      * @param scopes
      *            the scopes that was approved.
      */
-    protected void handleAction(String action, String[] scopes) {
-        // TODO: should maybe be removed
-        String sessionId = (String) getRequest().getAttributes().get(
-                ClientCookieID);
-        if (sessionId == null)
-            sessionId = getCookies().getFirstValue(ClientCookieID);
+    protected void handleAction(String action, String[] scopes) throws OAuthException {
+        // TODO: SessionId should maybe be removed
+        AuthSession session = getAuthSession();
 
-        ConcurrentMap<String, Object> attribs = getContext().getAttributes();
-        AuthSession session = (sessionId == null) ? null
-                : (AuthSession) attribs.get(sessionId);
-
-        if ("Reject".equals(action)) {
-            setStatus(Status.CLIENT_ERROR_FORBIDDEN);
-            sendError(session, OAuthError.access_denied, session.getState(),
-                    "Rejected.", null);
+        if (action.equals(ACTION_REJECT)) {
             getLogger().fine("Rejected.");
-            return;
+            throw new OAuthException(OAuthError.access_denied, "Rejected.", null);
         }
         getLogger().fine("Accepting scopes - in handleAction");
         Client client = session.getClient();
@@ -240,48 +234,77 @@ public class AuthPageServerResource extends OAuthServerResource {
 
         String redirUrl = session.getDynamicCallbackURI();
         getLogger().fine("OAuth2 get dynamic callback = " + redirUrl);
-        if (redirUrl == null || redirUrl.length() == 0)
+        if (redirUrl == null || redirUrl.isEmpty()) {
             redirUrl = client.getRedirectUri();
-
-        String location = null;
-        ResponseType flow = session.getAuthFlow();
-
-        if (flow.equals(ResponseType.token)) {
-            location = generateAgentToken(id, client, redirUrl);
-        } else if (flow.equals(ResponseType.code)) {
-            location = generateCode(id, client, redirUrl);
         }
-
-        // Following scopes were approved
-        AuthenticatedUser user = client.findUser(session.getScopeOwner());
-        if (user == null) {
-            setStatus(Status.CLIENT_ERROR_NOT_FOUND, "Can't find User id : "
-                    + session.getScopeOwner());
+        
+        final AuthenticatedUser user;
+        if (client.containsUser(id)) {
+            user = client.findUser(id);
+        } else {
+            user = client.createUser(id);
         }
+        
+        // Make sure each scope does not duplicate.
+        Set<String> scopeSet = new HashSet<String>();
+        scopeSet.addAll(Arrays.asList(scopes));
 
-        // clear scopes.... if user wants to downgrade
+        // Refresh scopes.
         user.revokeRoles();
-
-        // TODO compare scopes and add an error if some were not approved.
-        // Scope parameter should be appended only if different.
-
-        for (String s : scopes) {
+        for (String s : scopeSet) {
             getLogger().fine("Adding scope = " + s + " to user = " + id);
             user.addRole(Scopes.toRole(s), "");
         }
-
-        String state = session.getState();
-        if (state != null && state.length() > 0) {
-            // Setting state information back.
-            Reference stateful = new Reference(location);
-            stateful.addQueryParameter(OAuthServerResource.STATE, state);
-            location = stateful.toString();
-        }
-        // Reset the state
-        session.setState(null);
+        
         // Save the user if using DB
         user.persist();
 
+        // Create redirection
+        final Reference location = new Reference(redirUrl);
+        
+        String state = session.getState();
+        if (state != null && !state.isEmpty()) {
+            // Setting state information back.
+            location.addQueryParameter(STATE, state);
+        }
+        
+        // Add query parameters for each flow.
+        ResponseType flow = session.getAuthFlow();
+        if (flow.equals(ResponseType.token)) {
+            Token token = generator.generateToken(user, tokenTimeSec);
+            location.addQueryParameter(TOKEN_TYPE, TOKEN_TYPE_BEARER);
+            location.addQueryParameter(ACCESS_TOKEN, token.getToken());
+            long expiresIn = token.getExpirePeriod();
+            if (expiresIn != Token.UNLIMITED) {
+                location.addQueryParameter(EXPIRES_IN, Long.toString(expiresIn));
+            }
+            String[] granted = scopeSet.toArray(new String[0]);
+            if (!Arrays.equals(session.getRequestedScope(), granted)) {
+                // OPTIONAL, if identical to the scope requested by the client,
+                // otherwise REQUIRED. (4.2.2. Access Token Response)
+                location.addQueryParameter(SCOPE, Scopes.toString(granted));
+            }
+        } else if (flow.equals(ResponseType.code)) {
+            String code = generator.generateCode(user);
+            location.addQueryParameter(CODE, code);
+        }
+
+        // Reset the state
+        session.setState(null);
+        
+        /* We might don't need to do this.
+        // Sets the no-store Cache-Control header
+        addCacheDirective(getResponse(), CacheDirective.noStore());
+        // TODO: Set Pragma: no-cache
+        */
+
+        if (flow.equals(ResponseType.token)) {
+            // Use fragment for Implicit Grant
+            location.setFragment(location.getQuery());
+            location.setQuery("");
+        }
+        
+        getLogger().fine("Redirecting to -> " + location);
         redirectTemporary(location);
     }
 
@@ -335,44 +358,4 @@ public class AuthPageServerResource extends OAuthServerResource {
         result.setDataModel(data);
         return result;
     }
-
-    /**
-     * 
-     * Helper method to format error responses according to OAuth2 spec.
-     * 
-     * @param session
-     *            local server session object
-     * @param error
-     *            code, one of the valid from spec
-     * @param state
-     *            state parameter as presented in the initial auth request
-     * @param description
-     *            any text describing the error
-     * @param errorUri
-     *            uri to a page with more description about the error
-     */
-
-    protected void sendError(AuthSession session, OAuthError error,
-            String state, String description, String errorUri) {
-        String redirUri = session.getDynamicCallbackURI();
-
-        Reference cb = new Reference(redirUri);
-        cb.addQueryParameter("error", error.name());
-        if (state != null && state.length() > 0) {
-            cb.addQueryParameter("state", state);
-        }
-        if (description != null && description.length() > 0) {
-            cb.addQueryParameter("error_description", description);
-        }
-        if (errorUri != null && errorUri.length() > 0) {
-            cb.addQueryParameter("error_uri", errorUri);
-        }
-        redirectTemporary(cb.toString());
-
-        // cleanup cookie..
-        ConcurrentMap<String, Object> attribs = getContext().getAttributes();
-        attribs.remove(session.getId());
-
-    }
-
 }

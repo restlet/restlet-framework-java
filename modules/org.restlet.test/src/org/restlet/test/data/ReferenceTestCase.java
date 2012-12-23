@@ -139,19 +139,6 @@ public class ReferenceTestCase extends RestletTestCase {
         reference.setSegments(segments); // must not produce NPE
     }
 
-    public void testEncoding() {
-        // String uri1 = "/workspaces/W1​/content/Sin título.xml";
-        // String uri1rfe =
-        // "%2Fworkspaces%2FW1%E2%80%8B%2Fcontent%2FSin%20t%C3%ADtulo.xml";
-        // String uri1xxe =
-        // "/workspaces/W1​/content/Sin%20t%C3%83%C2%ADtulo.xml";
-        // String uri1msd = "/workspaces/W1/conte​nt/Sin%20t%EDtulo.xm​l";
-
-        // assertEquals(uri1, Reference.decode(uri1rfe));
-        // assertEquals(uri1, Reference.decode(uri1xxe));
-        // assertEquals(uri1, Reference.decode(uri1msd));
-    }
-
     /**
      * Equality tests.
      */
@@ -188,6 +175,10 @@ public class ReferenceTestCase extends RestletTestCase {
         host = "restlet.org";
         ref.setHostDomain(host);
         assertEquals(host, ref.getHostDomain());
+        
+        
+        Reference ref2 = new Reference("http://[::1]:8182");
+        assertEquals("[::1]", ref2.getHostDomain());
     }
 
     public void testMatrix() {
@@ -477,13 +468,16 @@ public class ReferenceTestCase extends RestletTestCase {
      * Test port getting/setting.
      */
     public void testPort() throws Exception {
-        final Reference ref = getDefaultReference();
+        Reference ref = getDefaultReference();
         int port = 8080;
         ref.setHostPort(port);
         assertEquals(port, ref.getHostPort());
         port = 9090;
         ref.setHostPort(port);
         assertEquals(port, ref.getHostPort());
+        
+        ref = new Reference("http://[::1]:8182");
+        assertEquals(8182, ref.getHostPort());
     }
 
     public void testProtocolConstructors() {
@@ -634,7 +628,7 @@ public class ReferenceTestCase extends RestletTestCase {
      * Test scheme specific part getting/setting.
      */
     public void testSchemeSpecificPart() throws Exception {
-        Reference ref = getDefaultReference();
+        final Reference ref = getDefaultReference();
         String part = "//www.restlet.org";
         assertEquals(part, ref.getSchemeSpecificPart());
         part = "//www.restlet.net";
@@ -685,6 +679,13 @@ public class ReferenceTestCase extends RestletTestCase {
         assertEquals(81, reference.getHostPort());
         assertEquals("login:password", reference.getUserInfo());
 
+        reference.setHostDomain("[::1]");
+        assertEquals("login:password@[::1]:81",
+                reference.getAuthority());
+        assertEquals("[::1]", reference.getHostDomain());
+        assertEquals(81, reference.getHostPort());
+        assertEquals("login:password", reference.getUserInfo());
+        
         reference.setHostDomain("www.example.com");
         assertEquals("login:password@www.example.com:81",
                 reference.getAuthority());

@@ -337,7 +337,8 @@ public abstract class ServerCall extends Call {
                 HeaderConstants.HEADER_HOST, true);
 
         if (host != null) {
-            int colonIndex = host.indexOf(':');
+            // Take care of IPV6 addresses
+            int colonIndex = host.indexOf(':', host.indexOf(']'));
 
             if (colonIndex != -1) {
                 super.setHostDomain(host.substring(0, colonIndex));

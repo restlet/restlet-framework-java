@@ -13,6 +13,7 @@
 		<dependency type="library" id="junit" />
 		<dependency type="library" id="rome" />
 		<dependency type="library" id="testng" />
+		<dependency type="library" id="mongodb" />
 		<dependency type="module" id="core" />
 		<dependency type="module" id="atom" />
 		<dependency type="module" id="fileupload" />

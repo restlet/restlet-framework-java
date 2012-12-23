@@ -73,171 +73,174 @@ import org.restlet.util.Series;
  */
 public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> {
 
-	private ClientResource clientResource;
+    private ClientResource clientResource;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param clientResource
-	 *            The client resource.
-	 * @param resourceInterface
-	 *            The annotated resource interface.
-	 */
-	public JaxRsClientInvocationHandler(ClientResource clientResource,
-			Class<? extends T> resourceInterface) {
-		super(clientResource, resourceInterface, JaxRsAnnotationUtils
-				.getInstance());
+    /**
+     * Constructor.
+     * 
+     * @param clientResource
+     *            The client resource.
+     * @param resourceInterface
+     *            The annotated resource interface.
+     */
+    public JaxRsClientInvocationHandler(ClientResource clientResource,
+            Class<? extends T> resourceInterface) {
+        super(clientResource, resourceInterface, JaxRsAnnotationUtils
+                .getInstance());
 
-		this.clientResource = clientResource;
-	}
+        this.clientResource = clientResource;
+    }
 
-	@Override
-	protected Request getRequest(Method javaMethod, Object[] args)
-			throws Throwable {
-		Request request = super.getRequest(javaMethod, args);
+    @Override
+    protected Request getRequest(Method javaMethod, Object[] args)
+            throws Throwable {
+        Request request = super.getRequest(javaMethod, args);
 
-		setRequestPathToAnnotationPath(javaMethod, request);
+        setRequestPathToAnnotationPath(javaMethod, request);
 
-		setRequestParams(javaMethod, args, request);
+        setRequestParams(javaMethod, args, request);
 
-		return request;
-	}
+        return request;
+    }
 
-	private void setRequestParams(Method javaMethod, Object[] args,
-			Request request) throws IllegalMethodParamTypeException {
+    private void setRequestParams(Method javaMethod, Object[] args,
+            Request request) throws IllegalMethodParamTypeException {
 
-		int argIndex = 0;
+        int argIndex = 0;
 
-		Annotation[][] parameterAnnotations = javaMethod
-				.getParameterAnnotations();
-		for (Annotation[] annotations : parameterAnnotations) {
+        Annotation[][] parameterAnnotations = javaMethod
+                .getParameterAnnotations();
+        for (Annotation[] annotations : parameterAnnotations) {
 
-			String representationAsText = getRepresentationAsText(args[argIndex]);
+            String representationAsText = getRepresentationAsText(args[argIndex]);
 
-			if (representationAsText != null) {
-				for (Annotation annotation : annotations) {
-					if (annotation instanceof HeaderParam) {
-						addHeaderParam(request, representationAsText,
-								annotation);
-						argIndex++;
-					} else if (annotation instanceof QueryParam) {
-						addQueryParam(request, representationAsText, annotation);
-						argIndex++;
-					} else if (annotation instanceof FormParam) {
+            if (representationAsText != null) {
+                for (Annotation annotation : annotations) {
+                    if (annotation instanceof HeaderParam) {
+                        addHeaderParam(request, representationAsText,
+                                annotation);
+                        argIndex++;
+                    } else if (annotation instanceof QueryParam) {
+                        addQueryParam(request, representationAsText, annotation);
+                        argIndex++;
+                    } else if (annotation instanceof FormParam) {
 
-						// TODO
-						argIndex++;
-					} else if (annotation instanceof CookieParam) {
-						addCookieParam(request, representationAsText,
-								annotation);
-						argIndex++;
-					} else if (annotation instanceof MatrixParam) {
+                        // TODO
+                        argIndex++;
+                    } else if (annotation instanceof CookieParam) {
+                        addCookieParam(request, representationAsText,
+                                annotation);
+                        argIndex++;
+                    } else if (annotation instanceof MatrixParam) {
 
-						// TODO
-						argIndex++;
-					} else if (annotation instanceof PathParam) {
-						addPathParam(request, representationAsText, annotation);
-						argIndex++;
-					}
-				}
-			}
-		}
+                        // TODO
+                        argIndex++;
+                    } else if (annotation instanceof PathParam) {
+                        addPathParam(request, representationAsText, annotation);
+                        argIndex++;
+                    }
+                }
+            }
+        }
 
-		// TODO - possibly throw an exception if the arg count != processed
-		// annotations?
-	}
+        // TODO - possibly throw an exception if the arg count != processed
+        // annotations?
+    }
 
-	private void addPathParam(Request request, String representationAsText,
-			Annotation annotation) {
-		String paramName = ((PathParam) annotation).value();
-		String existingPath = Reference.decode(request.getResourceRef().getPath());
+    private void addPathParam(Request request, String representationAsText,
+            Annotation annotation) {
+        String paramName = ((PathParam) annotation).value();
+        String existingPath = Reference.decode(request.getResourceRef()
+                .getPath());
 
-		String simplePathParam = String.format("{%s}", paramName);
-		if (existingPath.contains(simplePathParam)) {
-			existingPath = existingPath.replace(simplePathParam,
-					Reference.encode(representationAsText));
-		}
+        String simplePathParam = String.format("{%s}", paramName);
+        if (existingPath.contains(simplePathParam)) {
+            existingPath = existingPath.replace(simplePathParam,
+                    Reference.encode(representationAsText));
+        }
 
-		// TODO - allow regex path params - this code *mostly* works, but not quite
-//		String regexPathParam = String.format(".*\\{%s:(.+)\\}.*", paramName);
-//		try {
-//			if (existingPath.matches(regexPathParam)) {
-//				Matcher matcher = Pattern.compile(regexPathParam).matcher(
-//						existingPath);
-//				String pattern = matcher.group(1);
-//				
-//				/* I'm not sure how much sense it makes to match on the 
-//				 * textual form of the representation, unless it is a String...
-//				 */
-//				if (representationAsText.matches(pattern)) {
-//					existingPath = existingPath.replace(regexPathParam,
-//							Reference.encode(representationAsText));
-//				}
-//			}
-//		} catch (PatternSyntaxException pse) {
-//			// something is not right in the param definition, skip it
-//			pse.printStackTrace();
-//			return;
-//		}
+        // TODO - allow regex path params - this code *mostly* works, but not
+        // quite
+        // String regexPathParam = String.format(".*\\{%s:(.+)\\}.*",
+        // paramName);
+        // try {
+        // if (existingPath.matches(regexPathParam)) {
+        // Matcher matcher = Pattern.compile(regexPathParam).matcher(
+        // existingPath);
+        // String pattern = matcher.group(1);
+        //
+        // /* I'm not sure how much sense it makes to match on the
+        // * textual form of the representation, unless it is a String...
+        // */
+        // if (representationAsText.matches(pattern)) {
+        // existingPath = existingPath.replace(regexPathParam,
+        // Reference.encode(representationAsText));
+        // }
+        // }
+        // } catch (PatternSyntaxException pse) {
+        // // something is not right in the param definition, skip it
+        // pse.printStackTrace();
+        // return;
+        // }
 
-		request.getResourceRef().setPath(existingPath);
-	}
+        request.getResourceRef().setPath(existingPath);
+    }
 
-	private void addCookieParam(Request request, String representationAsText,
-			Annotation annotation) {
-		Series<Cookie> cookies = request.getCookies();
-		if (cookies == null) {
-			cookies = new Series<Cookie>(Cookie.class);
-		}
+    private void addCookieParam(Request request, String representationAsText,
+            Annotation annotation) {
+        Series<Cookie> cookies = request.getCookies();
+        if (cookies == null) {
+            cookies = new Series<Cookie>(Cookie.class);
+        }
 
-		cookies.add(new Cookie(((CookieParam) annotation).value(),
-				representationAsText));
+        cookies.add(new Cookie(((CookieParam) annotation).value(),
+                representationAsText));
 
-		request.setCookies(cookies);
-	}
+        request.setCookies(cookies);
+    }
 
-	private void addQueryParam(Request request, String representationAsText,
-			Annotation annotation) {
-		request.getResourceRef().addQueryParameter(
-				new Parameter(((QueryParam) annotation).value(),
-						representationAsText));
-	}
+    private void addQueryParam(Request request, String representationAsText,
+            Annotation annotation) {
+        request.getResourceRef().addQueryParameter(
+                new Parameter(((QueryParam) annotation).value(),
+                        representationAsText));
+    }
 
-	private void addHeaderParam(Request request, String representationAsText,
-			Annotation annotation) {
-		Util.getHttpHeaders(request).add(((HeaderParam) annotation).value(),
-				representationAsText);
-	}
+    private void addHeaderParam(Request request, String representationAsText,
+            Annotation annotation) {
+        Util.getHttpHeaders(request).add(((HeaderParam) annotation).value(),
+                representationAsText);
+    }
 
-	private String getRepresentationAsText(Object value) {
-		Class<? extends Object> clazz = value.getClass();
-		boolean isPrimitiveOrWrapped = clazz.isPrimitive()
-				|| ClassUtils.wrapperToPrimitive(clazz) != null;
-		if(isPrimitiveOrWrapped || clazz == String.class){
-			return String.valueOf(value);
-		}
+    private String getRepresentationAsText(Object value) {
+        Class<? extends Object> clazz = value.getClass();
+        boolean isPrimitiveOrWrapped = clazz.isPrimitive()
+                || ClassUtils.wrapperToPrimitive(clazz) != null;
+        if (isPrimitiveOrWrapped || clazz == String.class) {
+            return String.valueOf(value);
+        }
 
-		String representationAsText = null;
-		Representation representation = clientResource.getApplication()
-				.getConverterService().toRepresentation(value);
-		try {
-			representationAsText = representation.getText();
-		} catch (IOException exception) {
-			throw new WebApplicationException(exception);
-		}
-		return representationAsText;
-	}
+        String representationAsText = null;
+        Representation representation = clientResource.getApplication()
+                .getConverterService().toRepresentation(value);
+        try {
+            representationAsText = representation.getText();
+        } catch (IOException exception) {
+            throw new WebApplicationException(exception);
+        }
+        return representationAsText;
+    }
 
-	private void setRequestPathToAnnotationPath(Method javaMethod,
-			Request request) {
-		Path methodPathAnnotation = javaMethod.getAnnotation(Path.class);
-		if (methodPathAnnotation != null) {
-			String methodPath = methodPathAnnotation.value();
-			if (methodPath != null && methodPath.length() > 0) {
-				request.getResourceRef().setPath(
-						request.getResourceRef().getPath() + "/" + methodPath);
-			}
-		}
-	}
+    private void setRequestPathToAnnotationPath(Method javaMethod,
+            Request request) {
+        Path methodPathAnnotation = javaMethod.getAnnotation(Path.class);
+        if (methodPathAnnotation != null) {
+            String methodPath = methodPathAnnotation.value();
+            if (methodPath != null && methodPath.length() > 0) {
+                request.getResourceRef().setPath(
+                        request.getResourceRef().getPath() + "/" + methodPath);
+            }
+        }
+    }
 
 }
