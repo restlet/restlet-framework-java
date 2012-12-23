@@ -118,8 +118,7 @@ public class RangeFilter extends Filter {
                             }
                         } else if (request.getRanges().size() > 1) {
                             // Return a server error as this feature isn't
-                            // supported
-                            // yet
+                            // supported yet
                             response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
                             getLogger()
                                     .warning(
