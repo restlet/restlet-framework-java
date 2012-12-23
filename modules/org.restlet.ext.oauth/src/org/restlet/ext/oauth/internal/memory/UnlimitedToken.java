@@ -31,16 +31,17 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.oauth.internal;
+package org.restlet.ext.oauth.internal.memory;
 
 import org.restlet.ext.oauth.AuthenticatedUser;
+import org.restlet.ext.oauth.internal.Token;
 
 /**
  * Token that never expires but that can be revoked/deleted.
  * 
  * @author Kristoffer Gronowski
  */
-public class UnlimitedToken extends Token {
+public class UnlimitedToken implements Token {
 
     private volatile String token;
 
@@ -75,6 +76,14 @@ public class UnlimitedToken extends Token {
     public AuthenticatedUser getUser() {
         return user;
     }
+    
+    public long getExpirePeriod() {
+        return UNLIMITED;
+    }
+
+    public String getRefreshToken() {
+        return null;
+    }
 
     /**
      * Generic package method since the Token can be revoked and re-issued or
@@ -83,7 +92,6 @@ public class UnlimitedToken extends Token {
      * 
      * @param token
      */
-    @Override
     void setToken(String token) {
         this.token = token;
     }

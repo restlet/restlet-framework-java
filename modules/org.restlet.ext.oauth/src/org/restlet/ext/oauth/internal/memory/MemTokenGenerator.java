@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.oauth.internal;
+package org.restlet.ext.oauth.internal.memory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +40,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.restlet.ext.oauth.AuthenticatedUser;
+import org.restlet.ext.oauth.internal.Token;
+import org.restlet.ext.oauth.internal.TokenGenerator;
 
 /**
  * TokenGenerator implementation that keeps tokens in memory. Note that tokens

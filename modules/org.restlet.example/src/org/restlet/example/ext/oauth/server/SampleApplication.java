@@ -30,50 +30,43 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
-
-package org.restlet.test.ext.oauth.app;
+package org.restlet.example.ext.oauth.server;
 
 import org.restlet.Application;
-import org.restlet.Client;
-import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.data.Parameter;
+import org.restlet.data.Reference;
+import org.restlet.ext.oauth.security.TokenVerifier;
 import org.restlet.routing.Router;
-import org.restlet.util.Series;
+import org.restlet.security.ChallengeAuthenticator;
 
-public class OAuthMultipleUserProtectedTestApplication extends Application {
-
-    private String protocol;
-    private int oauthServerPort;
-    private Client c;
+/**
+ * Simple OAuth 2.0 protected application.
+ * 
+ * @author Shotaro Uchida <fantom@xmaker.mx>
+ */
+public class SampleApplication extends Application {
     
-    public OAuthMultipleUserProtectedTestApplication(){
-        this("http", 8081, null);
-    }
-    
-    public OAuthMultipleUserProtectedTestApplication(String protocol,
-            int oauthServerPort, Series <Parameter> params){
-        this.protocol = protocol;
-        this.oauthServerPort = oauthServerPort;
-        if(params != null){
-            this.c = new Client(protocol);
-            this.c.setContext(new Context());
-            this.c.getContext().getParameters().addAll(params);
-        }
-    }
     @Override
     public synchronized Restlet createInboundRoot() {
-        Context ctx = getContext();
-        Router router = new Router(ctx);
-        // TODO Fix oauth test code.
-//
-//
-//        OAuthAuthorizer auth2 = new OAuthAuthorizer(
-//                    protocol+"://localhost:"+oauthServerPort+"/oauth/validate", false, c);
-//        //System.out.println("attaching resource");
-//        auth2.setNext(ScopedDummyResource.class);
-//        router.attach("/scoped/{oauth-user}", auth2);
-        return router;
+        Router router = new Router(getContext());
+        
+        router.attach("/status", StatusServerResource.class);
+        
+        /*
+         * Since Role#hashCode and Role#equals are not implemented,
+         * RoleAuthorizer cannot be used.
+         */
+//        RoleAuthorizer roleAuthorizer = new RoleAuthorizer();
+//        roleAuthorizer.setAuthorizedRoles(Scopes.toRoles("status"));
+//        roleAuthorizer.setNext(router);
+        
+        ChallengeAuthenticator bearerAuthenticator =
+                new ChallengeAuthenticator(getContext(), TokenVerifier.HTTP_BEARER, "OAuth2Sample");
+        bearerAuthenticator.setVerifier(
+                new TokenVerifier(
+                    new Reference("riap://component/oauth/token_auth")));
+        bearerAuthenticator.setNext(router);
+        
+        return bearerAuthenticator;
     }
-
 }
