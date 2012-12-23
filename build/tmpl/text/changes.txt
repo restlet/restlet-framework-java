@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- - 2.1.1 (12/23/2012)
     - Bug fixed
        - Fixed arrays serialization in GWT edition.
          Contributed by Jeff Plourde.
