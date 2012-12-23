@@ -77,7 +77,6 @@ import org.restlet.test.regression.RegressionTestSuite;
 import org.restlet.test.representation.AppendableRepresentationTestCase;
 import org.restlet.test.representation.DigesterRepresentationTestCase;
 import org.restlet.test.representation.RangeRepresentationTestCase;
-import org.restlet.test.resource.ResourceTestSuite;
 import org.restlet.test.routing.FilterTestCase;
 import org.restlet.test.routing.RedirectTestCase;
 import org.restlet.test.routing.RouteListTestCase;
@@ -106,7 +105,6 @@ public class RestletTestSuite extends TestSuite {
 
     /** Constructor. */
     public RestletTestSuite() {
-        addTest(ResourceTestSuite.suite());
         addTest(ServiceTestSuite.suite());
         addTestSuite(AppendableRepresentationTestCase.class);
         addTestSuite(AtomTestCase.class);
@@ -146,6 +144,10 @@ public class RestletTestSuite extends TestSuite {
         addTest(HtmlTestSuite.suite());
         addTest(ODataTestSuite.suite());
         addTest(WadlTestSuite.suite());
+
+        // [ifdef jse]
+        addTest(org.restlet.test.resource.ResourceTestSuite.suite());
+        // [enddef]
 
         // Tests based on extension only supported by the JEE edition.
         // [ifdef jee]
