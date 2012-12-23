@@ -1,0 +1,19 @@
+<library id="mongodb" symbolicName="com.mongodb">
+	<name>Mongo DB</name>
+	<description>Mongo DB driver</description>
+	<version>2.10</version>
+	<release>1</release>
+	<homeUri>http://www.mongodb.org/</homeUri>
+	<downloadUri>https://github.com/mongodb/mongo-java-driver/downloads</downloadUri>
+	<provider>MongoDB</provider>
+
+	<package id="mongodb" name="org.mongodb">
+		<maven>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

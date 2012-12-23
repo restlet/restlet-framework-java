@@ -50,24 +50,26 @@ import org.restlet.ext.oauth.Client;
 import org.restlet.ext.oauth.ClientStore;
 import org.restlet.ext.oauth.ClientStoreFactory;
 import org.restlet.ext.oauth.OAuthServerResource;
-import org.restlet.ext.oauth.ValidationServerResource;
-import org.restlet.ext.oauth.internal.MemClientStore;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 
 public class OAuthMultipleUserTestApplication extends Application {
-	public static final String TEST_USER = "dummyUser";
-	public static final String TEST_PASS = "dummyPassword";
-	
+    public static final String TEST_USER = "dummyUser";
+
+    public static final String TEST_PASS = "dummyPassword";
+
     private long timeout = 0; // unlimited
+
     private String protocol = null;
+
     private int port;
 
     public OAuthMultipleUserTestApplication(long timeout) {
         this(timeout, "http", 8080);
     }
-    
-    public OAuthMultipleUserTestApplication(long timeout, String protocol, int port) {
+
+    public OAuthMultipleUserTestApplication(long timeout, String protocol,
+            int port) {
         this.timeout = timeout;
         this.protocol = protocol;
         this.port = port;
@@ -87,22 +89,24 @@ public class OAuthMultipleUserTestApplication extends Application {
 
         // Setup a test to check against in-mem auth server
         Object[] params = { new ScheduledThreadPoolExecutor(5) };
-        ClientStoreFactory.setClientStoreImpl(MemClientStore.class, params);
+        ClientStoreFactory.setClientStoreImpl(
+                org.restlet.ext.oauth.internal.memory.MemClientStore.class,
+                params);
 
         ClientStore<?> clientStore = ClientStoreFactory.getInstance();
-        
+
         Client client = clientStore.createClient("client1234", "secret1234",
                 protocol + "://localhost:" + port + "/");
-        
-        //Create 10 users:
-        Map <String, String> verifierUsers = new HashMap <String, String> ();
-        for(int i = 1; i < 10; i++){
-            //Bootstrap for password flow test...
-            AuthenticatedUser user = client.createUser("user"+i);
-            user.setPassword("pass"+i);
-            verifierUsers.put("user"+i, "pass"+i);
+
+        // Create 10 users:
+        Map<String, String> verifierUsers = new HashMap<String, String>();
+        for (int i = 1; i < 10; i++) {
+            // Bootstrap for password flow test...
+            AuthenticatedUser user = client.createUser("user" + i);
+            user.setPassword(("pass" + i).toCharArray());
+            verifierUsers.put("user" + i, "pass" + i);
         }
-        
+
         attribs.put(ClientStore.class.getCanonicalName(), clientStore);
 
         Router router = new Router(ctx);
@@ -114,7 +118,8 @@ public class OAuthMultipleUserTestApplication extends Application {
         au.setNext(AuthorizationServerResource.class);
         router.attach("/authorize", au);
         router.attach("/access_token", AccessTokenServerResource.class);
-        router.attach("/validate", ValidationServerResource.class);
+        // TODO Fix oauth test case
+        // router.attach("/validate", ValidationServerResource.class);
         router.attach("/auth_page", AuthPageServerResource.class);
 
         return router;
