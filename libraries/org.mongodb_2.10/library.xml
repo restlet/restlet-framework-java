@@ -1,4 +1,4 @@
-<library id="mongodb" symbolicName="com.mongodb">
+<library id="mongodb" symbolicName="org.mongodb">
 	<name>Mongo DB</name>
 	<description>Mongo DB driver</description>
 	<version>2.10</version>
@@ -9,7 +9,6 @@
 
 	<package id="mongodb" name="org.mongodb">
 		<maven>
-			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
 		</maven>
 	</package>
