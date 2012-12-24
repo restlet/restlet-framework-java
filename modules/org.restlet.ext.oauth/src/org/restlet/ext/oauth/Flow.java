@@ -36,7 +36,6 @@ package org.restlet.ext.oauth;
 import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.ext.oauth.internal.CookieCopyClientResource;
-import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 

@@ -28,7 +28,8 @@ import org.json.JSONObject;
  */
 public class OAuthException extends Exception {
     
-    private OAuthError error;
+	private static final long serialVersionUID = 1L;
+	private OAuthError error;
     private String description;
     private String errorUri;
     

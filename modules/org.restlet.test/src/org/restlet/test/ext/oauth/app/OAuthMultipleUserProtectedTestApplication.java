@@ -53,8 +53,8 @@ public class OAuthMultipleUserProtectedTestApplication extends Application {
     
     public OAuthMultipleUserProtectedTestApplication(String protocol,
             int oauthServerPort, Series <Parameter> params){
-        this.protocol = protocol;
-        this.oauthServerPort = oauthServerPort;
+        this.setProtocol(protocol);
+        this.setOauthServerPort(oauthServerPort);
         if(params != null){
             this.c = new Client(protocol);
             this.c.setContext(new Context());
@@ -75,5 +75,21 @@ public class OAuthMultipleUserProtectedTestApplication extends Application {
 //        router.attach("/scoped/{oauth-user}", auth2);
         return router;
     }
+
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(String protocol) {
+		this.protocol = protocol;
+	}
+
+	public int getOauthServerPort() {
+		return oauthServerPort;
+	}
+
+	public void setOauthServerPort(int oauthServerPort) {
+		this.oauthServerPort = oauthServerPort;
+	}
 
 }

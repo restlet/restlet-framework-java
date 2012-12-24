@@ -13,19 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.restlet.ext.oauth.security;
+package org.restlet.ext.oauth;
 
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
-import org.restlet.ext.oauth.Client;
-import org.restlet.ext.oauth.ClientStore;
-import org.restlet.ext.oauth.ClientStoreFactory;
-import org.restlet.ext.oauth.OAuthError;
-import org.restlet.ext.oauth.OAuthException;
-import org.restlet.ext.oauth.OAuthServerResource;
 import org.restlet.security.SecretVerifier;
 import org.restlet.security.User;
 import org.restlet.security.Verifier;

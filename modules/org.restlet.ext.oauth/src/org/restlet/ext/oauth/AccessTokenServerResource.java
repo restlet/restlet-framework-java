@@ -35,6 +35,7 @@ package org.restlet.ext.oauth;
 
 
 import java.util.Arrays;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.CacheDirective;
