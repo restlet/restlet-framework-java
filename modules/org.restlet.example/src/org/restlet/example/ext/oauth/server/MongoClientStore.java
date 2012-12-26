@@ -49,57 +49,58 @@ import org.restlet.ext.oauth.internal.memory.MemTokenGenerator;
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class MongoClientStore extends ClientStore<MemTokenGenerator> {
-    
-    private DBCollection clients;
-    
-    public MongoClientStore() {
-        // FIXME: Use own TokenGenerator
-        super(new MemTokenGenerator(new ScheduledThreadPoolExecutor(5)));
-        clients = OAuth2Sample.getDefaultDB().getCollection("clients");
-    }
 
-    @Override
-    public Client createClient(String clientId, String redirectUri) {
-        return createClient(clientId, null, redirectUri);
-    }
+	private DBCollection clients;
 
-    @Override
-    public Client createClient(String clientId, String clientSecret, String redirectUri) {
-        DBObject client = new BasicDBObject()
-                .append("_id", clientId)
-                .append(MongoClient.CLIENT_SECRET, clientSecret)
-                .append(MongoClient.REDIRECT_URI, redirectUri);
-        clients.insert(client);
-        return new MongoClient(client);
-    }
+	public MongoClientStore() {
+		// FIXME: Use own TokenGenerator
+		super(new MemTokenGenerator(new ScheduledThreadPoolExecutor(5)));
+		clients = OAuth2Sample.getDefaultDB().getCollection("clients");
+	}
 
-    @Override
-    public void deleteClient(String id) {
-        clients.findAndRemove(new BasicDBObject("_id", id));
-    }
+	@Override
+	public Client createClient(String clientId, String redirectUri) {
+		return createClient(clientId, null, redirectUri);
+	}
 
-    @Override
-    public Client findById(String id) {
-        DBObject client = clients.findOne(new BasicDBObject("_id", id));
-        if (client == null) {
-            return null;
-        }
-        return new MongoClient(client);
-    }
+	@Override
+	public Client createClient(String clientId, String clientSecret,
+			String redirectUri) {
+		DBObject client = new BasicDBObject().append("_id", clientId)
+				.append(MongoClient.CLIENT_SECRET, clientSecret)
+				.append(MongoClient.REDIRECT_URI, redirectUri);
+		clients.insert(client);
+		return new MongoClient(client);
+	}
 
-    @Override
-    public Collection<? extends Client> findClientsForUser(String userId) {
-        ArrayList list = new ArrayList();
-        DBCollection authUsers = OAuth2Sample.getDefaultDB().getCollection("authenticated_users");
-        
-        DBCursor cursor = authUsers.find(new BasicDBObject("_id.user_id", userId));
-        while (cursor.hasNext()) {
-            DBObject authUser = cursor.next();
-            list.add(new MongoClient(
-                        clients.findOne(new BasicDBObject("_id", authUser.get("client_id"))
-                    )));
-        }
-        return list;
-    }
+	@Override
+	public void deleteClient(String id) {
+		clients.findAndRemove(new BasicDBObject("_id", id));
+	}
+
+	@Override
+	public Client findById(String id) {
+		DBObject client = clients.findOne(new BasicDBObject("_id", id));
+		if (client == null) {
+			return null;
+		}
+		return new MongoClient(client);
+	}
+
+	@Override
+	public Collection<? extends Client> findClientsForUser(String userId) {
+		ArrayList<MongoClient> list = new ArrayList<MongoClient>();
+		DBCollection authUsers = OAuth2Sample.getDefaultDB().getCollection(
+				"authenticated_users");
+
+		DBCursor cursor = authUsers.find(new BasicDBObject("_id.user_id",
+				userId));
+		while (cursor.hasNext()) {
+			DBObject authUser = cursor.next();
+			list.add(new MongoClient(clients.findOne(new BasicDBObject("_id",
+					authUser.get("client_id")))));
+		}
+		return list;
+	}
 
 }

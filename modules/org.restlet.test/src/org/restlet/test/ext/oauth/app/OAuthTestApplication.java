@@ -48,7 +48,6 @@ import org.restlet.ext.oauth.Client;
 import org.restlet.ext.oauth.ClientStore;
 import org.restlet.ext.oauth.ClientStoreFactory;
 import org.restlet.ext.oauth.OAuthServerResource;
-import org.restlet.ext.oauth.internal.memory.MemClientStore;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 
@@ -87,7 +86,8 @@ public class OAuthTestApplication extends Application {
         attribs.put(OAuthServerResource.TOKEN_SERVER_MAX_TIME_SEC, timeout);
 
         // Setup a test to check against in-mem auth server
-        Object[] params = { new ScheduledThreadPoolExecutor(5) };
+        @SuppressWarnings("unused")
+		Object[] params = { new ScheduledThreadPoolExecutor(5) };
 
         // TODO fix oauth test case
 //        ClientStoreFactory.setClientStoreImpl(MemClientStore.class, params);

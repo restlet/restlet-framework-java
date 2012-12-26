@@ -35,7 +35,7 @@ package org.restlet.example.ext.oauth.server;
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.data.Reference;
-import org.restlet.ext.oauth.security.TokenVerifier;
+import org.restlet.ext.oauth.TokenVerifier;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 

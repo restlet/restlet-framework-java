@@ -132,7 +132,7 @@ public abstract class ClientStoreFactory {
      *            class reference of a class implementing ClientStore
      */
     public static void setClientStoreImpl(Class<? extends ClientStore<?>> impl) {
-        setClientStoreImpl(impl, null);
+        setClientStoreImpl(impl);
     }
 
     /**

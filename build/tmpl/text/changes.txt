@@ -5,11 +5,15 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Enhancements
-      - 
+      - Upgraded Servlet API to version 3.0.1.
     - API changes
-      - 
+      - Refactored the OAuth extension to prevent the 
+        org.restlet.ext.oauth.security subpackage.
+    - Bug fixed
+      - The same ones as in version 2.1.2.
     - Misc
-      - 
+      - Updated the links to the user guide in the wiki
+
 
 - 2.2 Milestone 1 (12/24/2012)
     - Enhancements
@@ -40,7 +44,11 @@ Changes log
         draft for "application/json-patch" media type.
       - Added ChallengeScheme.HTTP_OAUTH_BEARER and HTTP_OAUTH_MAC constants
         to support the final OAuth 2.0 RFC.
+    - Bug fixed
+      - The same ones as in version 2.1.1.
     - Misc
       - Updated Eclipse projects to use JavaSE 6.0 and simple Java 
         build rather than PDE/OSGi (removed manifest.mf files) or 
-        Maven (removed pom.xml files)
+        Maven (removed pom.xml files).
+      - Of course, Maven is still supported via our Maven repository,
+        the previous change is only for Restlet committers.

@@ -8,8 +8,8 @@
 
 	<package name="javax.servlet">
 		<maven>
-		    <artifactId>servlet-api</artifactId>
-		    <version>3.0-alpha-1</version>
+		    <artifactId>javax.servlet-api</artifactId>
+		    <version>3.0.1</version>
 		</maven>
 	</package>
 	<distributions>

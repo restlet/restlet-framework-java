@@ -35,11 +35,8 @@ package org.restlet.test.ext.oauth.app;
 
 import org.restlet.Client;
 import org.restlet.Context;
-import org.restlet.Restlet;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.routing.Router;
-import org.restlet.security.Authorizer;
 import org.restlet.util.Series;
 
 /**

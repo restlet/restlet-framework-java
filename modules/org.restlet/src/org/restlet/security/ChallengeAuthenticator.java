@@ -51,7 +51,7 @@ import org.restlet.data.Status;
  * @see ChallengeScheme
  * @see ChallengeRequest
  * @see ChallengeResponse
- * @see <a href="http://wiki.restlet.org/docs_2.1/112-restlet.html">User Guide -
+ * @see <a href="http://wiki.restlet.org/docs_2.2/112-restlet.html">User Guide -
  *      Authentication</a>
  * @author Jerome Louvel
  */

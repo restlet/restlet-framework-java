@@ -33,16 +33,12 @@
 
 package org.restlet.test.ext.oauth.app;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Parameter;
 import org.restlet.routing.Router;
-import org.restlet.security.Role;
 import org.restlet.util.Series;
 
 public class OAuthProtectedTestApplication extends Application {
@@ -91,5 +87,13 @@ public class OAuthProtectedTestApplication extends Application {
 
         return router;
     }
+
+	public String getProtocol() {
+		return protocol;
+	}
+
+	public int getPort() {
+		return port;
+	}
 
 }

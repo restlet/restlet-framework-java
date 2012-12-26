@@ -63,7 +63,7 @@ import org.restlet.resource.Resource;
  * Then, just create a instance of your class and set it on your Component or
  * Application via the setStatusService() methods.
  * 
- * @see <a href="http://wiki.restlet.org/docs_2.1/202-restlet.html">User
+ * @see <a href="http://wiki.restlet.org/docs_2.2/202-restlet.html">User
  *      Guide</a>
  * @author Jerome Louvel
  */

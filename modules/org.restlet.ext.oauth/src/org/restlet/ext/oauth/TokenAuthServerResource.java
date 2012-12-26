@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.restlet.ext.oauth.security;
+package org.restlet.ext.oauth;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.ext.oauth.AuthenticatedUser;
-import org.restlet.ext.oauth.OAuthError;
-import org.restlet.ext.oauth.OAuthException;
-import org.restlet.ext.oauth.OAuthServerResource;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.ext.oauth.internal.Token;
 import org.restlet.ext.oauth.internal.memory.ExpireToken;

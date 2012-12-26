@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.restlet.ext.oauth.security;
+package org.restlet.ext.oauth;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +30,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.ext.oauth.OAuthServerResource;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;

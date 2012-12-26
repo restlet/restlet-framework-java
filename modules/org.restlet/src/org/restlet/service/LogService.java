@@ -81,7 +81,7 @@ import org.restlet.routing.Template;
  * For custom access log format, see the syntax to use and the list of available
  * variable names in {@link org.restlet.routing.Template}. <br>
  * 
- * @see <a href="http://wiki.restlet.org/docs_2.1/201-restlet.html">User Guide -
+ * @see <a href="http://wiki.restlet.org/docs_2.2/201-restlet.html">User Guide -
  *      Access logging</a>
  * @see <a
  *      href="http://download.oracle.com/javase/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>

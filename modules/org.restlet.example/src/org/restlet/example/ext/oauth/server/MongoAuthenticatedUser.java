@@ -71,13 +71,14 @@ public class MongoAuthenticatedUser implements AuthenticatedUser {
         return client;
     }
     
-    private List getScopes() {
+    @SuppressWarnings("unchecked")
+	private List<Object> getScopes() {
         Object scopes = authUser.get("scopes");
         if (scopes == null) {
             scopes = new BasicDBList();
             authUser.put("scopes", scopes);
         }
-        return (List) scopes;
+        return (List<Object>) scopes;
     }
 
     @Override
@@ -87,7 +88,7 @@ public class MongoAuthenticatedUser implements AuthenticatedUser {
 
     @Override
     public List<Role> getGrantedRoles() {
-        ArrayList roles = new ArrayList();
+        ArrayList<Role> roles = new ArrayList<Role>();
         for (Object scope : getScopes()) {
             roles.add(new Role(scope.toString()));
         }
