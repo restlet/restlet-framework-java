@@ -4,6 +4,10 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bug fixed
+       - 
+    - Misc
+       - 
 
 - 2.1.1 (12/23/2012)
     - Bug fixed
@@ -37,10 +41,8 @@ Changes log
        - Prevent logging of verbose stack trace. Reported by Grzegorz Godlewski.
 
 - 2.1.0 (09/20/2012)
-    - Bug fixed
-       - Added support of GWT 2.5.
-    - API changes
     - Misc
+       - Added support of GWT 2.5.
     
 - 2.1 Release Candidate 6 (08/22/2012)
     - Bug fixed
