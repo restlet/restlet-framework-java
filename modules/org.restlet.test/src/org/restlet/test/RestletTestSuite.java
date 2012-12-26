@@ -62,6 +62,7 @@ import org.restlet.test.ext.emf.EmfTestSuite;
 import org.restlet.test.ext.freemarker.FreeMarkerTestCase;
 import org.restlet.test.ext.gwt.GwtConverterTestCase;
 import org.restlet.test.ext.html.HtmlTestSuite;
+import org.restlet.test.ext.jackson.JacksonTestCase;
 import org.restlet.test.ext.jaxb.JaxbBasicConverterTestCase;
 import org.restlet.test.ext.jaxb.JaxbIntegrationConverterTestCase;
 import org.restlet.test.ext.jaxrs.JaxRsTestSuite;
@@ -119,6 +120,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(FormTestCase.class);
         addTestSuite(FreeMarkerTestCase.class);
         addTestSuite(GwtConverterTestCase.class);
+        addTestSuite(JacksonTestCase.class);
         addTestSuite(JaxbBasicConverterTestCase.class);
         addTestSuite(JaxbIntegrationConverterTestCase.class);
         addTestSuite(LanguageTestCase.class);
