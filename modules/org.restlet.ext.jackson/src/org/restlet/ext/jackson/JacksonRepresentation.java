@@ -34,26 +34,35 @@
 package org.restlet.ext.jackson;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.OutputStream;
 
 import org.restlet.data.MediaType;
+import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.WriterRepresentation;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.dataformat.csv.CsvFactory;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.fasterxml.jackson.dataformat.smile.SmileFactory;
+import com.fasterxml.jackson.dataformat.xml.XmlFactory;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 /**
  * Representation based on the Jackson library. It can serialize and deserialize
- * automatically in JSON.
+ * automatically in JSON, JSON binary (Smile), XML, YAML and CSV.
  * 
  * @see <a href="http://jackson.codehaus.org/">Jackson project</a>
  * @author Jerome Louvel
  * @param <T>
  *            The type to wrap.
  */
-public class JacksonRepresentation<T> extends WriterRepresentation {
+public class JacksonRepresentation<T> extends OutputRepresentation {
 
     /** The (parsed) object to format. */
     private T object;
@@ -61,11 +70,20 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
     /** The object class to instantiate. */
     private Class<T> objectClass;
 
-    /** The JSON representation to parse. */
-    private Representation jsonRepresentation;
+    /** The representation to parse. */
+    private Representation representation;
 
     /** The modifiable Jackson object mapper. */
     private ObjectMapper objectMapper;
+
+    /** The modifiable Jackson object writer. */
+    private ObjectWriter objectWriter;
+
+    /** The modifiable Jackson object reader. */
+    private ObjectReader objectReader;
+
+    /** The modifiable Jackson CSV schema. */
+    private CsvSchema csvSchema;
 
     /**
      * Constructor.
@@ -81,8 +99,11 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
         this.object = object;
         this.objectClass = (Class<T>) ((object == null) ? null : object
                 .getClass());
-        this.jsonRepresentation = null;
+        this.representation = null;
         this.objectMapper = null;
+        this.objectReader = null;
+        this.objectWriter = null;
+        this.csvSchema = null;
     }
 
     /**
@@ -96,12 +117,15 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
         super(representation.getMediaType());
         this.object = null;
         this.objectClass = objectClass;
-        this.jsonRepresentation = representation;
+        this.representation = representation;
         this.objectMapper = null;
+        this.objectReader = null;
+        this.objectWriter = null;
+        this.csvSchema = null;
     }
 
     /**
-     * Constructor.
+     * Constructor for the JSON media type.
      * 
      * @param object
      *            The object to format.
@@ -111,15 +135,108 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
     }
 
     /**
-     * Creates a Jackson object mapper based on a media type. By default, it
-     * calls {@link ObjectMapper#ObjectMapper(JsonFactory)}.
+     * Creates a Jackson CSV schema based on a mapper and the current object
+     * class.
+     * 
+     * @param csvMapper
+     *            The source CSV mapper.
+     * @return
+     */
+    protected CsvSchema createCsvSchema(CsvMapper csvMapper) {
+        return csvMapper.schemaFor(getObjectClass());
+    }
+
+    /**
+     * Creates a Jackson object mapper based on a media type. It supports JSON,
+     * JSON Smile, XML, YAML and CSV.
      * 
      * @return The Jackson object mapper.
      */
     protected ObjectMapper createObjectMapper() {
-        JsonFactory jsonFactory = new JsonFactory();
-        jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
-        return new ObjectMapper(jsonFactory);
+        ObjectMapper result = null;
+
+        if (MediaType.APPLICATION_JSON.isCompatible(getMediaType())) {
+            JsonFactory jsonFactory = new JsonFactory();
+            jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+            result = new ObjectMapper(jsonFactory);
+        } else if (MediaType.APPLICATION_JSON_SMILE
+                .isCompatible(getMediaType())) {
+            SmileFactory smileFactory = new SmileFactory();
+            smileFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+            result = new ObjectMapper(smileFactory);
+        } else if (MediaType.APPLICATION_XML.isCompatible(getMediaType())
+                || MediaType.TEXT_XML.isCompatible(getMediaType())) {
+            XmlFactory xmlFactory = new XmlFactory();
+            xmlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+            result = new XmlMapper(xmlFactory);
+        } else if (MediaType.APPLICATION_YAML.isCompatible(getMediaType())) {
+            YAMLFactory yamlFactory = new YAMLFactory();
+            yamlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+            result = new ObjectMapper(yamlFactory);
+        } else if (MediaType.TEXT_CSV.isCompatible(getMediaType())) {
+            CsvFactory csvFactory = new CsvFactory();
+            csvFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+            result = new CsvMapper(csvFactory);
+        } else {
+            JsonFactory jsonFactory = new JsonFactory();
+            jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
+            result = new ObjectMapper(jsonFactory);
+        }
+
+        return result;
+    }
+
+    /**
+     * Creates a Jackson object reader based on a mapper. Has a special handling
+     * for CSV media types.
+     * 
+     * @return The Jackson object reader.
+     */
+    protected ObjectReader createObjectReader() {
+        ObjectReader result = null;
+
+        if (MediaType.TEXT_CSV.isCompatible(getMediaType())) {
+            CsvMapper csvMapper = (CsvMapper) getObjectMapper();
+            CsvSchema csvSchema = createCsvSchema(csvMapper);
+            result = csvMapper.reader(getObjectClass()).with(csvSchema);
+        } else {
+            result = getObjectMapper().reader(getObjectClass());
+        }
+
+        return result;
+    }
+
+    /**
+     * Creates a Jackson object writer based on a mapper. Has a special handling
+     * for CSV media types.
+     * 
+     * @return The Jackson object writer.
+     */
+    protected ObjectWriter createObjectWriter() {
+        ObjectWriter result = null;
+
+        if (MediaType.TEXT_CSV.isCompatible(getMediaType())) {
+            CsvMapper csvMapper = (CsvMapper) getObjectMapper();
+            CsvSchema csvSchema = createCsvSchema(csvMapper);
+            result = csvMapper.writer(csvSchema);
+        } else {
+            result = getObjectMapper().writerWithType(getObjectClass());
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the modifiable Jackson CSV schema.
+     * 
+     * @return The modifiable Jackson CSV schema.
+     */
+    public CsvSchema getCsvSchema() {
+        if (this.csvSchema == null) {
+            this.csvSchema = createCsvSchema((CsvMapper) getObjectMapper());
+        }
+
+        return this.csvSchema;
     }
 
     /**
@@ -134,9 +251,9 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
 
         if (this.object != null) {
             result = this.object;
-        } else if (this.jsonRepresentation != null) {
-            result = getObjectMapper().readValue(
-                    this.jsonRepresentation.getStream(), this.objectClass);
+        } else if (this.representation != null) {
+            result = getObjectReader().readValue(
+                    this.representation.getStream());
         }
 
         return result;
@@ -163,6 +280,44 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
         }
 
         return this.objectMapper;
+    }
+
+    /**
+     * Returns the modifiable Jackson object reader. Useful to customize
+     * deserialization.
+     * 
+     * @return The modifiable Jackson object reader.
+     */
+    public ObjectReader getObjectReader() {
+        if (this.objectReader == null) {
+            this.objectReader = createObjectReader();
+        }
+
+        return this.objectReader;
+    }
+
+    /**
+     * Returns the modifiable Jackson object writer. Useful to customize
+     * serialization.
+     * 
+     * @return The modifiable Jackson object writer.
+     */
+    public ObjectWriter getObjectWriter() {
+        if (this.objectWriter == null) {
+            this.objectWriter = createObjectWriter();
+        }
+
+        return this.objectWriter;
+    }
+
+    /**
+     * Sets the Jackson CSV schema.
+     * 
+     * @param csvSchema
+     *            The Jackson CSV schema.
+     */
+    public void setCsvSchema(CsvSchema csvSchema) {
+        this.csvSchema = csvSchema;
     }
 
     /**
@@ -195,12 +350,32 @@ public class JacksonRepresentation<T> extends WriterRepresentation {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * Sets the Jackson object reader.
+     * 
+     * @param objectReader
+     *            The Jackson object reader.
+     */
+    public void setObjectReader(ObjectReader objectReader) {
+        this.objectReader = objectReader;
+    }
+
+    /**
+     * Sets the Jackson object writer.
+     * 
+     * @param objectWriter
+     *            The Jackson object writer.
+     */
+    public void setObjectWriter(ObjectWriter objectWriter) {
+        this.objectWriter = objectWriter;
+    }
+
     @Override
-    public void write(Writer writer) throws IOException {
-        if (jsonRepresentation != null) {
-            jsonRepresentation.write(writer);
+    public void write(OutputStream outputStream) throws IOException {
+        if (representation != null) {
+            representation.write(outputStream);
         } else if (object != null) {
-            getObjectMapper().writeValue(writer, object);
+            getObjectWriter().writeValue(outputStream, object);
         }
     }
 }

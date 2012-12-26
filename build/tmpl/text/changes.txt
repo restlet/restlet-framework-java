@@ -9,6 +9,10 @@ Changes log
     - API changes
       - Refactored the OAuth extension to prevent the 
         org.restlet.ext.oauth.security subpackage.
+      - Refactored the JacksonRepresentation to merge the 
+        JacksonSmileRepresentation back into the 
+        JacksonRepresentation. Also improved extensibility
+        and default behavior of the CSV serialization format.
     - Bug fixed
       - The same ones as in version 2.1.2.
     - Misc
@@ -21,6 +25,8 @@ Changes log
       - Upgraded JAX-RS to version 1.1.1.
       - Upgraded Servlet API to version 3.0.
       - Upgraded Jackson to version 2.1.0 and Woodstox to 4.1.4.
+        Now supporting JSON binary (Smile), XML, YAML and CSV
+        serialization format based on the media type.
       - Added OBAP (OSGi Bundle Access Protocol) client connector
         to allow access to resources from other OSGi bundles.
         Use "obap://{bundleSymbolicName}/{pathToResource}"
