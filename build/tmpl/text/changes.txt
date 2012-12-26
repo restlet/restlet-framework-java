@@ -1,4 +1,4 @@
-   
+﻿   
 ===========
 Changes log  
 ===========
@@ -22,10 +22,10 @@ Changes log
        - Took care of the IPV6 addresses. Reported by Laurent Rustuel.
        - Add missing implementation in BufferingRepresentation for issue #681.
          Contributed by Florian Bucklers.
-       - Added support of multiple levels of $expand.
+       - Added support of multiple levels of $expand in OData extension.
          Contributed by Emmanuel Liossis. 
        - Fixed potential infinite loops while reading headers
-         (issues #599 and #656). Reported by weiweiwang.
+         (issues #599 and #656). Reported by Wei Wei Wang.
        - Fixed reading of Via header (issue #599).
          Reported by Nicolas Rinaudo.
        - Strict conneg should evaluate media type parameters (issue #559, #652).
@@ -33,7 +33,6 @@ Changes log
        - Fixed CookieAuthenticator which should redirect the user's browser to the 
          getLoginFormPath() when the credentials are missing or stale (issue #697).
          Reported and contributed by Tim Peierls.
-    - API changes
     - Misc
        - Prevent logging of verbose stack trace. Reported by Grzegorz Godlewski.
 
