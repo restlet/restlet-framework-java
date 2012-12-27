@@ -189,8 +189,8 @@ public class Engine {
             try {
                 LogManager.getLogManager().readConfiguration(
                         new ByteArrayInputStream(sb.toString().getBytes()));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Throwable t) {
+                t.printStackTrace();
             }
         }
 

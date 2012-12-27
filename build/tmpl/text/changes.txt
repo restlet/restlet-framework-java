@@ -5,7 +5,8 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
-       - 
+       - Log initialization issue in engine with GAE edition fixed.
+         Occurred in production.
     - Misc
        - 
 
