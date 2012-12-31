@@ -85,8 +85,9 @@ public class ConnectionController extends Controller implements Runnable,
      * 
      * @param conn
      *            The connection to control.
+     * @throws IOException
      */
-    protected void controlConnection(Connection<?> conn) {
+    protected void controlConnection(Connection<?> conn) throws IOException {
         if (getHelper().getLogger().isLoggable(Level.FINEST)) {
             getHelper().getLogger().log(Level.FINEST,
                     "Connection status: " + conn);
@@ -103,6 +104,8 @@ public class ConnectionController extends Controller implements Runnable,
             conn.onTimeOut();
         } else if (conn.updateState()) {
             getUpdatedRegistrations().add(conn.getRegistration());
+        } else if (conn.isReady()) {
+            conn.onSelected(conn.getRegistration());
         }
     }
 
@@ -112,7 +115,7 @@ public class ConnectionController extends Controller implements Runnable,
      * @throws IOException
      */
     protected void controlConnections() throws IOException {
-        for (Connection<?> connection: getHelper().getConnections()) {
+        for (Connection<?> connection : getHelper().getConnections()) {
             controlConnection(connection);
         }
     }
@@ -163,7 +166,8 @@ public class ConnectionController extends Controller implements Runnable,
         registerKeys();
         getHelper().getLogger().log(Level.FINEST, "updateKeys()");
         updateKeys();
-        getHelper().getLogger().log(Level.FINEST, "selectKeys(sleepTime)");
+        getHelper().getLogger().log(Level.FINEST,
+                "selectKeys(" + sleepTime + ")");
         selectKeys(sleepTime);
     }
 
@@ -205,8 +209,10 @@ public class ConnectionController extends Controller implements Runnable,
         // Notify the selected way
         try {
             if (getHelper().getLogger().isLoggable(Level.FINEST)) {
-                getHelper().getLogger().log(Level.FINEST,
-                        "NIO selection detected for key: " + selectedKey);
+                getHelper().getLogger().log(
+                        Level.FINEST,
+                        "NIO selection detected for key: "
+                                + selectedKey.attachment());
             }
 
             if (selectedKey.attachment() != null) {
@@ -281,8 +287,11 @@ public class ConnectionController extends Controller implements Runnable,
             ClosedByInterruptException {
         // Select the connections ready for NIO operations
         if (getHelper().getLogger().isLoggable(Level.FINER)) {
-            getHelper().getLogger().log(Level.FINER,
-                    "NIO controller about to sleep " + sleepTime + " ms...");
+            getHelper().getLogger().log(
+                    Level.FINER,
+                    "NIO controller about to sleep " + sleepTime
+                            + " ms, selecting among "
+                            + getSelector().keys().size() + " keys...\n");
         }
 
         int selectCount = getSelector().select(sleepTime);

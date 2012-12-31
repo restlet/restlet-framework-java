@@ -105,6 +105,8 @@ public class ServerConnectionController extends ConnectionController {
 
                 if (socketChannel != null) {
                     socketChannel.configureBlocking(false);
+                    getHelper().configure(socketChannel.socket());
+
                     int connectionsCount = getHelper().getConnections().size();
 
                     if ((getHelper().getMaxTotalConnections() == -1)
@@ -154,7 +156,7 @@ public class ServerConnectionController extends ConnectionController {
     @Override
     protected void doInit() {
         super.doInit();
-        
+
         // Register interest in NIO accept events
         try {
             getHelper().getServerSocketChannel().register(getSelector(),
@@ -164,7 +166,7 @@ public class ServerConnectionController extends ConnectionController {
                     "Unexpected error while registering an NIO selection key",
                     ioe);
         }
-        
+
         this.latch.countDown();
     }
 }

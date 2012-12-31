@@ -522,6 +522,16 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
+     * Indicates if at least one way is in the {@link IoState#READY} state.
+     * 
+     * @return True if at least one way is in the {@link IoState#READY} state.
+     */
+    protected boolean isReady() {
+        return (getInboundWay().getIoState() == IoState.READY)
+                || (getOutboundWay().getIoState() == IoState.READY);
+    }
+
+    /**
      * Indicates if it is a server-side connection.
      * 
      * @return True if it is a server-side connection.
@@ -560,7 +570,7 @@ public class Connection<T extends Connector> implements SelectionListener {
         getInboundWay().onError(status);
         getOutboundWay().onError(status);
         close(false);
-        
+
         // Give the controller a hint to clean up the closed connection
         getHelper().getController().wakeup();
     }
@@ -575,7 +585,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * @param selectionRegistration
      *            The selected registration.
      */
-    public void onSelected(SelectionRegistration selectionRegistration)
+    public void onSelected(SelectionRegistration registration)
             throws IOException {
         try {
             onActivity();
@@ -590,15 +600,8 @@ public class Connection<T extends Connector> implements SelectionListener {
                 }
 
                 getLogger().finer(
-                        trace + "connection (state | inbound | outbound): "
+                        trace + "connection (state | empty | registration): "
                                 + toString());
-
-                if (this.registration != null) {
-                    getLogger()
-                            .finer(trace
-                                    + "NIO selection (interest | ready | cancelled): "
-                                    + this.registration.toString());
-                }
             }
 
             if (registration == null) {
@@ -634,7 +637,7 @@ public class Connection<T extends Connector> implements SelectionListener {
             // Keep looping while ways are ready
             // Useful for SSL connections that can alternate between ways
             // without going back to NIO selection.
-            boolean readyFound;
+            boolean readyFound = false;
 
             do {
                 readyFound = false;
@@ -642,14 +645,26 @@ public class Connection<T extends Connector> implements SelectionListener {
                 synchronized (getInboundWay().getBuffer().getLock()) {
                     if (getInboundWay().getIoState() == IoState.READY) {
                         readyFound = true;
+
+                        if (getLogger().isLoggable(Level.FINEST)) {
+                            getLogger().finest(
+                                    "Entering into a connection READY loop");
+                        }
+
                         getInboundWay().onSelected(
                                 getInboundWay().getRegistration());
                     }
                 }
 
                 synchronized (getOutboundWay().getBuffer().getLock()) {
-                    if (getInboundWay().getIoState() == IoState.READY) {
+                    if (getOutboundWay().getIoState() == IoState.READY) {
                         readyFound = true;
+
+                        if (getLogger().isLoggable(Level.FINEST)) {
+                            getLogger().finest(
+                                    "Entering into a connection READY loop");
+                        }
+
                         getOutboundWay().onSelected(
                                 getOutboundWay().getRegistration());
                     }
@@ -770,12 +785,13 @@ public class Connection<T extends Connector> implements SelectionListener {
 
     @Override
     public String toString() {
-        return getState() + " | " + getInboundWay() + " | " + getOutboundWay()
-                + " | " + isEmpty() + "|" + getRegistration();
+        return getState() + " | " + isEmpty() + " | " + getRegistration();
     }
 
     /**
      * Updates the connection states.
+     * 
+     * @return True if the state was changed.
      */
     public boolean updateState() {
         boolean result = true;
