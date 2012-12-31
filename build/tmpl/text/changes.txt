@@ -7,6 +7,8 @@ Changes log
     - Bug fixed
        - Log initialization issue in engine with GAE edition fixed.
          Occurred in production.
+       - Internal HTTP connector didn't properly configure the
+         socket. Factorized client side logic.
     - Misc
        - 
 
