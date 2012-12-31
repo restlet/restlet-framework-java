@@ -9,6 +9,7 @@ Changes log
          Occurred in production.
        - Internal HTTP connector didn't properly configure the
          socket. Factorized client side logic.
+       - Fixed HTTPS issues in internal connector.
     - Misc
        - 
 

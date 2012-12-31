@@ -269,6 +269,10 @@ public class SslConnection<T extends Connector> extends Connection<T> {
     private void handleSslHandshake() throws IOException {
         HandshakeStatus hs = getSslHandshakeStatus();
 
+        if (getLogger().isLoggable(Level.FINER)) {
+            getLogger().log(Level.FINER, "Handling SSL handshake: " + hs);
+        }
+
         if (hs != HandshakeStatus.NOT_HANDSHAKING) {
             switch (getSslHandshakeStatus()) {
             case FINISHED:
@@ -300,6 +304,11 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      * @throws IOException
      */
     public synchronized void handleSslResult() throws IOException {
+        if (getLogger().isLoggable(Level.FINER)) {
+            getLogger().log(Level.FINER,
+                    "Handling SSL result: " + getSslEngineStatus());
+        }
+
         switch (getSslEngineStatus()) {
         case BUFFER_OVERFLOW:
             if (getLogger().isLoggable(Level.FINER)) {
@@ -398,10 +407,8 @@ public class SslConnection<T extends Connector> extends Connection<T> {
                     }
 
                     if (getLogger().isLoggable(Level.FINER)) {
-                        getLogger().log(
-                                Level.FINER,
-                                "Done running delegated tasks. "
-                                        + SslConnection.this.toString());
+                        getLogger().log(Level.FINER,
+                                "Done running delegated tasks");
                     }
 
                     try {
@@ -410,6 +417,8 @@ public class SslConnection<T extends Connector> extends Connection<T> {
                         getLogger().log(Level.INFO,
                                 "Unable to handle SSL handshake", e);
                     }
+
+                    getHelper().getController().wakeup();
                 }
             });
         }
