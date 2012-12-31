@@ -118,6 +118,16 @@ public class SimpleCall extends ServerCall {
     }
 
     @Override
+    public void flushBuffers() {
+        try {
+            // Commit the response if not already done
+            this.response.commit();
+        } catch (Exception ex) {
+            getLogger().log(Level.WARNING, "Unable to flush the response", ex);
+        }
+    }
+    
+    @Override
     public void complete() {
         try {
             // Commit the response
@@ -317,12 +327,12 @@ public class SimpleCall extends ServerCall {
             throws IOException {
         // this.response.clear();
         for (Header header : getResponseHeaders()) {
-            this.response.add(header.getName(), header.getValue());
+            this.response.addValue(header.getName(), header.getValue());
         }
 
         // Set the status
         this.response.setCode(getStatusCode());
-        this.response.setText(getReasonPhrase());
+        this.response.setDescription(getReasonPhrase());
 
         // Ensure the HEAD response sends back the right Content-length header.
         if (!Method.HEAD.equals(restletResponse.getRequest().getMethod())

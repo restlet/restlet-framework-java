@@ -209,6 +209,11 @@ public class HttpInboundRequest extends Request implements InboundRequest {
         getConnection().close(false);
         return true;
     }
+    
+    @Override
+    public void flushBuffers() {
+        getConnection().getOutboundWay().flushBuffer();
+    }
 
     @Override
     public synchronized void commit(Response response) {

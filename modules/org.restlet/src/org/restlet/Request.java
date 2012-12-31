@@ -347,6 +347,12 @@ public class Request extends Message {
     }
 
     /**
+     * Asks the underlying connector to immediately flush the network buffers.
+     */
+    public void flushBuffers() {
+    }
+
+    /**
      * Returns the authentication response sent by a client to an origin server.
      * Note that when used with HTTP connectors, this property maps to the
      * "Authorization" header.

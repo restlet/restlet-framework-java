@@ -86,6 +86,7 @@ public class JettyCall extends ServerCall {
         try {
             getConnection().getEndPoint().close();
         } catch (IOException e) {
+            getLogger().log(Level.FINEST, "Unable to abort the connection", e);
         }
 
         return true;
@@ -105,6 +106,16 @@ public class JettyCall extends ServerCall {
             this.connection.completeResponse();
         } catch (IOException ex) {
             getLogger().log(Level.FINE, "Unable to complete the response", ex);
+        }
+    }
+
+    @Override
+    public void flushBuffers() {
+        try {
+            getConnection().flushResponse();
+            getConnection().getEndPoint().flush();
+        } catch (Exception e) {
+            getLogger().log(Level.FINE, "Unable to flush the response", e);
         }
     }
 

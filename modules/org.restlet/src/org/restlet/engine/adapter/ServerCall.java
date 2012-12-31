@@ -113,6 +113,13 @@ public abstract class ServerCall extends Call {
     }
 
     /**
+     * Flushes the buffers onto the network so that for example you can
+     * force headers to be written before the entity is becoming available.
+     */
+    public void flushBuffers() {
+    }
+
+    /**
      * Returns the chain of client SSL certificates, if available and
      * accessible.
      * 

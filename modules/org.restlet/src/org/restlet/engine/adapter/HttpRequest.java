@@ -203,6 +203,11 @@ public class HttpRequest extends Request {
     }
 
     @Override
+    public void flushBuffers() {
+        getHttpCall().flushBuffers();
+    }
+
+    @Override
     public List<CacheDirective> getCacheDirectives() {
         List<CacheDirective> result = super.getCacheDirectives();
 

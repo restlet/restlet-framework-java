@@ -35,6 +35,8 @@ package org.restlet.engine.connector;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketException;
 import java.nio.channels.SocketChannel;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -91,6 +93,34 @@ import org.restlet.Connector;
  * <td>Indicates if connections should be pooled to save instantiation time.</td>
  * </tr>
  * <tr>
+ * <td>socketKeepAlive</td>
+ * <td>boolean</td>
+ * <td>true</td>
+ * <td>Indicates if a TCP connection should be automatically kept alive after 2
+ * hours of inactivity.</td>
+ * </tr>
+ * <tr>
+ * <td>socketOobInline</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if urgent TCP data received on the socket will be received
+ * through the socket input stream.</td>
+ * </tr>
+ * <tr>
+ * <td>socketLingerTimeMs</td>
+ * <td>int</td>
+ * <td>-1</td>
+ * <td>Time to block when a socket close is requested or -1 to not block at all.
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>socketNoDelay</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Enables Nagle's algorithm if set to false, preventing sending of small
+ * TCP packets.</td>
+ * </tr>
+ * <tr>
  * <td>socketReceiveBufferSize</td>
  * <td>int</td>
  * <td>8192</td>
@@ -103,6 +133,19 @@ import org.restlet.Connector;
  * <td>true</td>
  * <td>Indicates if sockets can be reused right away even if they are busy (in
  * TIME_WAIT or 2MSL wait state).</td>
+ * </tr>
+ * <tr>
+ * <td>socketSendBufferSize</td>
+ * <td>int</td>
+ * <td>8192</td>
+ * <td>The hinted size of the underlying TCP buffers used by the platform for
+ * outbound network I/O.</td>
+ * </tr>
+ * <tr>
+ * <td>socketTrafficClass</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>Type of service to set in IP packets.</td>
  * </tr>
  * </table>
  * 
@@ -296,6 +339,38 @@ public abstract class ConnectionHelper<T extends Connector> extends
     }
 
     /**
+     * Configures a given socket based on the helper parameters.
+     * 
+     * @param socket
+     *            The socket to configure.
+     * @throws SocketException
+     */
+    public void configure(Socket socket) throws SocketException {
+        socket.setKeepAlive(isSocketKeepAlive());
+        socket.setOOBInline(isSocketOobInline());
+        socket.setReceiveBufferSize(getSocketReceiveBufferSize());
+        socket.setReuseAddress(isSocketReuseAddress());
+        socket.setSoLinger(getSocketLingerTimeMs() > 0, getSocketLingerTimeMs());
+        socket.setSendBufferSize(getSocketSendBufferSize());
+        socket.setSoTimeout(getMaxIoIdleTimeMs());
+        socket.setTcpNoDelay(isSocketNoDelay());
+        socket.setTrafficClass(getSocketTrafficClass());
+    }
+
+    /**
+     * Returns the time to block when a socket close is requested or -1 to not
+     * block at all.
+     * 
+     * @return The time to block when a socket close is requested or -1 to not
+     *         block at all.
+     */
+    public int getSocketLingerTimeMs() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "socketLingerTimeMs", "-1"));
+
+    }
+
+    /**
      * Returns the hinted size of the underlying TCP buffers used by the
      * platform for inbound network I/O.
      * 
@@ -305,6 +380,30 @@ public abstract class ConnectionHelper<T extends Connector> extends
     public int getSocketReceiveBufferSize() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "socketReceiveBufferSize", "8192"));
+
+    }
+
+    /**
+     * Returns the hinted size of the underlying TCP buffers used by the
+     * platform for outbound network I/O.
+     * 
+     * @return The hinted size of the underlying TCP buffers used by the
+     *         platform for outbound network I/O.
+     */
+    public int getSocketSendBufferSize() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "socketSendBufferSize", "8192"));
+
+    }
+
+    /**
+     * Returns the type of service to set in IP packets.
+     * 
+     * @return The type of service to set in IP packets.
+     */
+    public int getSocketTrafficClass() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "socketTrafficClass", "0"));
 
     }
 
@@ -347,6 +446,41 @@ public abstract class ConnectionHelper<T extends Connector> extends
      *         proxy.
      */
     public abstract boolean isProxying();
+
+    /**
+     * Indicates if a TCP connection should be automatically kept alive after 2
+     * hours of inactivity.
+     * 
+     * @return True if a TCP connection should be automatically kept alive after
+     *         2 hours of inactivity.
+     */
+    public boolean isSocketKeepAlive() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "socketKeepAlive", "true"));
+    }
+
+    /**
+     * Enables Nagle's algorithm if set to false, preventing sending of small
+     * TCP packets.
+     * 
+     * @return True if Nagle's algorithm should be disabled.
+     */
+    public boolean isSocketNoDelay() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "socketNoDelay", "false"));
+    }
+
+    /**
+     * Indicates if urgent TCP data received on the socket will be received
+     * through the socket input stream.
+     * 
+     * @return True if urgent TCP data received on the socket will be received
+     *         through the socket input stream.
+     */
+    public boolean isSocketOobInline() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "socketOobInline", "false"));
+    }
 
     /**
      * Indicates if sockets can be reused right away even if they are busy (in
