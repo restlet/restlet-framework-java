@@ -78,7 +78,7 @@ public class EntryContentHandler<T> extends EntryReader {
     private AssociationEnd association;
 
     /** The path of the current XML element relatively to the Entry. */
-    List<String> eltPath;
+    private List<String> eltPath;
 
     /** The entity targeted by this entry. */
     private T entity;
@@ -96,13 +96,13 @@ public class EntryContentHandler<T> extends EntryReader {
     private Entry inlineEntry;
 
     /** Used to parsed Atom link elements that contains entries. */
-    EntryContentHandler<T> inlineEntryHandler;
+    private EntryContentHandler<T> inlineEntryHandler;
 
     /** The currently parsed inline feed. */
     private Feed inlineFeed;
 
     /** Used to parsed Atom link elements that contains feeds. */
-    FeedContentHandler<T> inlineFeedHandler;
+    private FeedContentHandler<T> inlineFeedHandler;
 
     /** The currently parsed inline link. */
     private Link inlineLink;
@@ -123,10 +123,10 @@ public class EntryContentHandler<T> extends EntryReader {
     private List<String> propertyPath;
 
     /** Gleans text content. */
-    StringBuilder sb = null;
+    private StringBuilder sb = null;
 
     /** Heap of states. */
-    List<State> states;
+    private List<State> states;
 
     /**
      * Constructor.
@@ -739,9 +739,12 @@ public class EntryContentHandler<T> extends EntryReader {
 
                 // Check if this path is mapped.
                 for (Mapping m : metadata.getMappings()) {
-                    if (entityType != null && entityType.equals(m.getType())
-                            && m.getNsUri() != null && m.getNsUri().equals(uri)
-                            && str.equals(m.getValueNodePath())) {
+                    if (entityType != null
+                            && entityType.equals(m.getType())
+                            && m.getNsUri() != null
+                            && m.getNsUri().equals(uri)
+                            && (str.equals(m.getValueNodePath()) || str
+                                    .equals("entry/" + m.getValueNodePath()))) {
                         if (m.isAttributeValue()) {
                             String value = attrs.getValue(m
                                     .getValueAttributeName());

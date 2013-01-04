@@ -10,6 +10,8 @@ Changes log
        - Internal HTTP connector didn't properly configure the
          socket. Factorized client side logic.
        - Fixed HTTPS issues in internal connector.
+       - Fixed discovering and setting of attributes from OData 
+         representations.
     - Misc
        - 
 
