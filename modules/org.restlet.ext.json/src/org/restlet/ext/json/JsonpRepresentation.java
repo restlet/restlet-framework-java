@@ -53,7 +53,7 @@ import org.restlet.util.WrapperRepresentation;
  * 
  * @author Mark Kharitonov
  */
-public class JsonpRepresentation1 extends WrapperRepresentation {
+public class JsonpRepresentation extends WrapperRepresentation {
     /** The name of the JavaScript callback method. */
     private final String callback;
 
@@ -69,7 +69,7 @@ public class JsonpRepresentation1 extends WrapperRepresentation {
      *            The actual status code.
      * @param wrappedRepresentation
      */
-    public JsonpRepresentation1(String callback, Status status,
+    public JsonpRepresentation(String callback, Status status,
             Representation wrappedRepresentation) {
         super(wrappedRepresentation);
         this.callback = callback;

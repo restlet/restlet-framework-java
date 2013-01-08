@@ -47,7 +47,7 @@ import org.restlet.routing.Filter;
  * parameter in the URI query string with the name of your JavaScrip callback
  * method.
  * 
- * See {@link JsonpRepresentation1} for the actual wrapper representation used
+ * See {@link JsonpRepresentation} for the actual wrapper representation used
  * internally.
  * 
  * @author Mark Kharitonov
@@ -80,7 +80,7 @@ public class JsonpFilter extends Filter {
             if (entity != null
                     && ("text".equals(entity.getMediaType().getMainType()) || MediaType.APPLICATION_JSON
                             .equals(entity.getMediaType()))) {
-                response.setEntity(new JsonpRepresentation1(callback, response
+                response.setEntity(new JsonpRepresentation(callback, response
                         .getStatus(), response.getEntity()));
                 response.setStatus(Status.SUCCESS_OK);
             }
