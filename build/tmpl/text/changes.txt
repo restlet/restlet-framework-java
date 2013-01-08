@@ -5,6 +5,13 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
+       - Log initialization issue in engine with GAE edition fixed.
+         Occurred in production.
+       - Internal HTTP connector didn't properly configure the
+         socket. Factorized client side logic.
+       - Fixed HTTPS issues in internal connector.
+       - Fixed discovering and setting of attributes from OData 
+         representations.
        - Fixed potential flushing issue with wrapped representations.
     - Misc
 
@@ -25,10 +32,10 @@ Changes log
        - Took care of the IPV6 addresses. Reported by Laurent Rustuel.
        - Add missing implementation in BufferingRepresentation for issue #681.
          Contributed by Florian Bucklers.
-       - Added support of multiple levels of $expand.
+       - Added support of multiple levels of $expand in OData extension.
          Contributed by Emmanuel Liossis. 
        - Fixed potential infinite loops while reading headers
-         (issues #599 and #656). Reported by weiweiwang.
+         (issues #599 and #656). Reported by Wei Wei Wang.
        - Fixed reading of Via header (issue #599).
          Reported by Nicolas Rinaudo.
        - Strict conneg should evaluate media type parameters (issue #559, #652).
@@ -40,10 +47,8 @@ Changes log
        - Prevent logging of verbose stack trace. Reported by Grzegorz Godlewski.
 
 - 2.1.0 (09/20/2012)
-    - Bug fixed
-       - Added support of GWT 2.5.
-    - API changes
     - Misc
+       - Added support of GWT 2.5.
     
 - 2.1 Release Candidate 6 (08/22/2012)
     - Bug fixed

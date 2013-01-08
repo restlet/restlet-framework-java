@@ -301,9 +301,10 @@ public class HeaderReader<V> {
         try {
             // Skip leading spaces
             skipSpaces();
-
+            boolean cont = true;
             do {
                 int i = index;
+
                 // Read the first value
                 V nextValue = readValue();
                 if (canAdd(nextValue, values)) {
@@ -313,12 +314,14 @@ public class HeaderReader<V> {
 
                 // Attempt to skip the value separator
                 skipValueSeparator();
-                if (i == index) {
+                if (index == -1) {
+                    cont = false;
+                } else if (i == index) {
                     // Infinite loop
                     throw new IOException(
                             "The reading of one header initiates an infinite loop");
                 }
-            } while (peek() != -1);
+            } while (cont);
         } catch (IOException ioe) {
             Context.getCurrentLogger().log(Level.INFO,
                     "Unable to read a header", ioe);

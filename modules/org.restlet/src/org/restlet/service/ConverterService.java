@@ -51,10 +51,13 @@ import org.restlet.resource.Resource;
 
 /**
  * Application service converting between representation and regular Java
- * objects. The conversion can work in both directions.<br>
+ * objects. The conversion can work in both directions. Actual converters can be
+ * plugged into the engine to support this service.<br>
  * <br>
- * By default, the following conversions are supported. Additional ones can be
- * plugged into the engine.
+ * Root object classes used for conversion shouldn't be generic classes
+ * otherwise important contextual type information will be missing at runtime
+ * due to Java type erasure mechanism. If needed, create a fully resolved
+ * subclasses and/or a container classes.
  * 
  * @author Jerome Louvel
  */

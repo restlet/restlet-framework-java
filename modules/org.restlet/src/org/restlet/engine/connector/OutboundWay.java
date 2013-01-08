@@ -595,4 +595,11 @@ public abstract class OutboundWay extends Way {
      */
     protected abstract void writeStartLine() throws IOException;
 
+    /**
+     * Flush buffers onto the network.
+     */
+    public void flushBuffer() {
+
+    }
+
 }
