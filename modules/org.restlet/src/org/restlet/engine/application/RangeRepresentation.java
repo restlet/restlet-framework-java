@@ -150,7 +150,9 @@ public class RangeRepresentation extends WrapperRepresentation {
 
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        write(NioUtils.getStream(writableChannel));
+        OutputStream os = NioUtils.getStream(writableChannel);
+        write(os);
+        os.flush();
     }
 
 }

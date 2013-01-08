@@ -288,13 +288,15 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        write(NioUtils.getStream(writableChannel));
+        OutputStream os = NioUtils.getStream(writableChannel);
+        write(os);
+        os.flush();
     }
 
     @Override
     public void write(Writer writer) throws IOException {
         OutputStream os = BioUtils.getStream(writer, getCharacterSet());
         write(os);
-        os.flush()
+        os.flush();
     }
 }
