@@ -302,8 +302,7 @@ public final class BioUtils {
      *            The stream character set.
      * @return An input stream based on a given character reader.
      */
-    public static InputStream getInputStream(Reader reader,
-            CharacterSet characterSet) {
+    public static InputStream getStream(Reader reader, CharacterSet characterSet) {
         InputStream result = null;
 
         try {
@@ -327,7 +326,7 @@ public final class BioUtils {
      *            from.
      * @return A stream with the representation's content.
      */
-    public static InputStream getInputStream(final Representation representation) {
+    public static InputStream getStream(final Representation representation) {
         InputStream result = null;
 
         if (Edition.CURRENT != Edition.GAE) {
@@ -392,7 +391,7 @@ public final class BioUtils {
      *            The character set used to write on the output stream.
      * @return the output stream of the writer
      */
-    public static java.io.OutputStream getOutputStream(java.io.Writer writer,
+    public static java.io.OutputStream getStream(java.io.Writer writer,
             CharacterSet characterSet) {
         return new WriterOutputStream(writer, characterSet);
     }

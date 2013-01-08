@@ -7,6 +7,8 @@ Changes log
     - Enhancements
        - Upgraded Servlet API to version 3.0.1.
        - Updated Simple HTTP server library to version 5.0.4.
+       - Added a JSONP filter that can automatically wrap JSON representations.
+         Contributed by Mark Kharitonov, with support from Cyril Lakech.
     - API changes
        - Refactored the OAuth extension to prevent the 
          org.restlet.ext.oauth.security subpackage.
