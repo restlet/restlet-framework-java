@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
@@ -261,9 +262,18 @@ public class DecodeRepresentation extends WrapperRepresentation {
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         if (isDecoding()) {
-            write(NioUtils.getStream(writableChannel));
+            OutputStream os = NioUtils.getStream(writableChannel);
+            write(os);
+            os.flush();
         } else {
             getWrappedRepresentation().write(writableChannel);
         }
+    }
+
+    @Override
+    public void write(Writer writer) throws IOException {
+        OutputStream os = BioUtils.getOutputStream(writer, getCharacterSet());
+        write(os);
+        os.flush();
     }
 }

@@ -5,6 +5,11 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bug fixed
+       - Fixed potential flushing issue with wrapped representations.
+    - Misc
+
+- 2.1.1 (12/23/2012)
+    - Bug fixed
        - Fixed arrays serialization in GWT edition.
          Contributed by Jeff Plourde.
        - Fixed internal HTTP connector to enable handling of asynchronous
@@ -31,7 +36,6 @@ Changes log
        - Fixed CookieAuthenticator which should redirect the user's browser to the 
          getLoginFormPath() when the credentials are missing or stale (issue #697).
          Reported and contributed by Tim Peierls.
-    - API changes
     - Misc
        - Prevent logging of verbose stack trace. Reported by Grzegorz Godlewski.
 

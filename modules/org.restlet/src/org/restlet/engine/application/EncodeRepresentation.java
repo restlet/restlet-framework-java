@@ -266,6 +266,18 @@ public class EncodeRepresentation extends WrapperRepresentation {
     }
 
     @Override
+    public void write(java.io.Writer writer) throws IOException {
+        if (canEncode()) {
+            OutputStream os = BioUtils.getOutputStream(writer,
+                    getCharacterSet());
+            write(os);
+            os.flush();
+        } else {
+            getWrappedRepresentation().write(writer);
+        }
+    }
+
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         if (canEncode()) {
             DeflaterOutputStream encoderOutputStream = null;
@@ -278,7 +290,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
                 @SuppressWarnings("resource")
                 final ZipOutputStream stream = new ZipOutputStream(outputStream);
                 String name = "entry";
-                
+
                 if (getWrappedRepresentation().getDisposition() != null) {
                     name = getWrappedRepresentation()
                             .getDisposition()
@@ -286,7 +298,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
                             .getFirstValue(Disposition.NAME_FILENAME, true,
                                     name);
                 }
-                
+
                 stream.putNextEntry(new ZipEntry(name));
                 encoderOutputStream = stream;
             } else if (this.encoding.equals(Encoding.IDENTITY)) {
@@ -313,18 +325,6 @@ public class EncodeRepresentation extends WrapperRepresentation {
             os.flush();
         } else {
             getWrappedRepresentation().write(writableChannel);
-        }
-    }
-
-    @Override
-    public void write(java.io.Writer writer) throws IOException {
-        if (canEncode()) {
-            OutputStream os = BioUtils.getOutputStream(writer,
-                    getCharacterSet());
-            write(os);
-            os.flush();
-        } else {
-            getWrappedRepresentation().write(writer);
         }
     }
 
