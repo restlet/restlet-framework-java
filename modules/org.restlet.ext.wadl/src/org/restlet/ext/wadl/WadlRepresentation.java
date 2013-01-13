@@ -876,13 +876,6 @@ public class WadlRepresentation extends SaxRepresentation {
         this.application = resource.createApplication();
     }
 
-    // [ifndef android] method
-    @Override
-    public Object evaluate(String expression,
-            javax.xml.namespace.QName returnType) throws Exception {
-        return null;
-    }
-
     /**
      * Returns the root element of the WADL document.
      * 

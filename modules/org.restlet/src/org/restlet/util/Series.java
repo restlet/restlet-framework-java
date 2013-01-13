@@ -215,20 +215,6 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
     // public abstract T createEntry(String name, String value);
     // [enddef]
 
-    // [ifndef gwt] method
-    /**
-     * Creates a new series.
-     * 
-     * @param delegate
-     *            Optional delegate series.
-     * @return A new series.
-     * @deprecated Use {@link Series#Series(Class, List)} constructor instead.
-     */
-    @Deprecated
-    public Series<T> createSeries(List<T> delegate) {
-        return new Series<T>(this.entryClass, delegate);
-    }
-
     // [ifdef gwt] uncomment
     // /**
     // * Creates a new series.

@@ -98,18 +98,6 @@ public class XstreamRepresentation<T> extends WriterRepresentation {
      * 
      * @param representation
      *            The representation to parse.
-     * @deprecated Use {@link #XstreamRepresentation(Representation, Class)}
-     *             instead.
-     */
-    public XstreamRepresentation(Representation representation) {
-        this(representation, null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param representation
-     *            The representation to parse.
      * @param targetClass
      *            The target class of the object to serialize.
      */

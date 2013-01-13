@@ -708,11 +708,7 @@ public class DefaultSslContextFactory extends SslContextFactory {
                 System.getProperty("javax.net.ssl.keyStoreType")));
         setNeedClientAuthentication(Boolean.parseBoolean(helperParameters
                 .getFirstValue("needClientAuthentication", true, "false")));
-
-        // Support deprecated "sslProtocol" name
-        setProtocol(helperParameters.getFirstValue("protocol", true,
-                helperParameters.getFirstValue("sslProtocol", true, "TLS")));
-
+        setProtocol(helperParameters.getFirstValue("protocol", true, "TLS"));
         setSecureRandomAlgorithm(helperParameters.getFirstValue(
                 "secureRandomAlgorithm", true));
         setTrustManagerAlgorithm(helperParameters.getFirstValue(

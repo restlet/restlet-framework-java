@@ -253,7 +253,7 @@ public class RdfRepresentation extends WriterRepresentation {
                 new RdfTurtleReader(rdfRepresentation, graphHandler).parse();
             } else if (MediaType.valueOf("text/rdf+n3").equals(
                     rdfRepresentation.getMediaType())) {
-                // Deprecated media type still in usage
+                // Old media type still in usage
                 new RdfN3Reader(rdfRepresentation, graphHandler).parse();
             }
             // Parsing for other media types goes here.

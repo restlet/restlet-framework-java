@@ -122,9 +122,9 @@ public class ClapClientHelper extends LocalClientHelper {
 
             if (url != null) {
                 try {
-                    Representation output = new InputRepresentation(url
-                            .openStream(), metadataService
-                            .getDefaultMediaType());
+                    Representation output = new InputRepresentation(
+                            url.openStream(),
+                            metadataService.getDefaultMediaType());
                     output.setLocationRef(request.getResourceRef());
                     output.setModificationDate(modificationDate);
 
@@ -135,8 +135,7 @@ public class ClapClientHelper extends LocalClientHelper {
                         output.setExpirationDate(null);
                     } else if (timeToLive > 0) {
                         output.setExpirationDate(new Date(System
-                                .currentTimeMillis()
-                                + (1000L * timeToLive)));
+                                .currentTimeMillis() + (1000L * timeToLive)));
                     }
 
                     // Update the metadata based on file extensions
@@ -182,15 +181,7 @@ public class ClapClientHelper extends LocalClientHelper {
                 if (classLoaderAttribute != null) {
                     classLoader = (ClassLoader) classLoaderAttribute;
                 } else {
-                    // Old name to be deprecated
-                    classLoaderAttribute = request.getAttributes().get(
-                            "org.restlet.clap.classloader");
-
-                    if (classLoaderAttribute != null) {
-                        classLoader = (ClassLoader) classLoaderAttribute;
-                    } else {
-                        classLoader = getClass().getClassLoader();
-                    }
+                    classLoader = getClass().getClassLoader();
                 }
             } else if (cr.getClapAuthorityType() == LocalReference.CLAP_SYSTEM) {
                 classLoader = ClassLoader.getSystemClassLoader();

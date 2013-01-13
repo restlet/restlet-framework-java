@@ -177,17 +177,6 @@ public class JaxRsApplication extends org.restlet.Application {
     }
 
     /**
-     * Returns the {@link Authenticator}.
-     * 
-     * @return the {@link Authenticator}.
-     * @deprecated Use {@link #getAuthenticator()} instead.
-     */
-    @Deprecated
-    public Authenticator getGuard() {
-        return this.authenticator;
-    }
-
-    /**
      * Returns the used {@link JaxRsRestlet}.
      * 
      * @return the used {@link JaxRsRestlet}.
@@ -254,21 +243,6 @@ public class JaxRsApplication extends org.restlet.Application {
     public void setContext(Context context) {
         super.setContext(context);
         this.jaxRsRestlet.setContext(context);
-    }
-
-    /**
-     * Sets the {@link Authenticator} to use. This should be called before the
-     * root Restlet is created.
-     * <p>
-     * This replaced the guard set via {@link #setGuard(Authenticator)}.
-     * 
-     * @param authenticator
-     *            The {@link Authenticator} to use.
-     * @deprecated Use {@link #setAuthenticator(Authenticator)} instead.
-     */
-    @Deprecated
-    public void setGuard(Authenticator authenticator) {
-        this.authenticator = authenticator;
     }
 
     /**

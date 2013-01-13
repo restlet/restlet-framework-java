@@ -19,6 +19,7 @@ Changes log
        - Added Request/Response.flushBuffers() method to attempt
          to force network buffers to be flushed out.
          Suggested by Yan Pujante.
+       - Removed all code deprecated in branch 2.1.s
     - Bug fixed
        - The same ones as in version 2.1.2.
     - Misc

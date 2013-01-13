@@ -259,7 +259,7 @@ public class JsonRepresentation extends WriterRepresentation {
             return (JSONTokener) this.jsonValue;
         }
 
-        return toJsonTokener();
+        return new JSONTokener(getJsonText());
     }
 
     @Override
@@ -308,19 +308,6 @@ public class JsonRepresentation extends WriterRepresentation {
      */
     public void setIndentingSize(int indentFactor) {
         this.indentingSize = indentFactor;
-    }
-
-    /**
-     * Converts the representation to a JSON tokener. This method will trigger
-     * the serialization of any wrapped JSON tokener.
-     * 
-     * @return The converted JSON tokener.
-     * @throws JSONException
-     * @deprecated Use {@link #getJsonTokener()} instead.
-     */
-    @Deprecated
-    public JSONTokener toJsonTokener() throws JSONException {
-        return new JSONTokener(getJsonText());
     }
 
     @Override

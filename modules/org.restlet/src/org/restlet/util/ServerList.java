@@ -39,8 +39,6 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.resource.Finder;
-import org.restlet.resource.ServerResource;
 
 /**
  * Modifiable list of server connectors.
@@ -160,21 +158,6 @@ public final class ServerList extends WrapperList<Server> {
      */
     public void setContext(Context context) {
         this.context = context;
-    }
-
-    /**
-     * Sets the next Restlet as a Finder for a given resource class. When the
-     * call is delegated to the Finder instance, a new instance of the resource
-     * class will be created and will actually handle the request.
-     * 
-     * @param nextClass
-     *            The next resource class to attach.
-     * @deprecated To be removed.
-     */
-    @Deprecated
-    public void setNext(Class<? extends ServerResource> nextClass) {
-        setNext(Finder.createFinder(nextClass, Finder.class, getContext(),
-                getContext().getLogger()));
     }
 
     /**

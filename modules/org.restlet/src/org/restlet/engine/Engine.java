@@ -139,7 +139,7 @@ public class Engine {
      * Clears the current Restlet Engine altogether.
      */
     public static synchronized void clear() {
-        setInstance(null);
+        instance = null;
     }
 
     // [ifndef gwt] method
@@ -354,21 +354,8 @@ public class Engine {
         }
         // [enddef]
         Engine result = new Engine(discoverPlugins);
-        org.restlet.engine.Engine.setInstance(result);
+        instance = result;
         return result;
-    }
-
-    /**
-     * Sets the registered Restlet engine.
-     * 
-     * @param engine
-     *            The registered Restlet engine.
-     * @deprecated Use the {@link #register()} and {@link #register(boolean)}
-     *             methods instead.
-     */
-    @Deprecated
-    public static synchronized void setInstance(Engine engine) {
-        instance = engine;
     }
 
     // [ifdef jse,android,osgi] method
@@ -452,7 +439,7 @@ public class Engine {
      */
     public Engine(boolean discoverHelpers) {
         // Prevent engine initialization code from recreating other engines
-        setInstance(this);
+        instance = this;
 
         // Instantiate the logger facade
         if (Edition.CURRENT == Edition.GWT) {

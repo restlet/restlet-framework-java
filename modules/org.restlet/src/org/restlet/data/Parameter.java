@@ -36,7 +36,6 @@ package org.restlet.data;
 import java.io.IOException;
 
 import org.restlet.engine.util.SystemUtils;
-import org.restlet.util.Couple;
 import org.restlet.util.NamedValue;
 
 /**
@@ -45,9 +44,13 @@ import org.restlet.util.NamedValue;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("deprecation")
-public class Parameter extends Couple<String, String> implements
-        Comparable<Parameter>, NamedValue<String> {
+public class Parameter implements Comparable<Parameter>, NamedValue<String> {
+
+    /** The first object. */
+    private volatile String name;
+
+    /** The second object. */
+    private volatile String value;
 
     /**
      * Creates a parameter.
@@ -83,7 +86,8 @@ public class Parameter extends Couple<String, String> implements
      *            The value.
      */
     public Parameter(String name, String value) {
-        super(name, value);
+        this.name = name;
+        this.value = value;
     }
 
     /*
@@ -162,7 +166,7 @@ public class Parameter extends Couple<String, String> implements
      * @see org.restlet.data.NamedValue#getName()
      */
     public String getName() {
-        return getFirst();
+        return this.name;
     }
 
     /*
@@ -171,7 +175,7 @@ public class Parameter extends Couple<String, String> implements
      * @see org.restlet.data.NamedValue#getValue()
      */
     public String getValue() {
-        return getSecond();
+        return this.value;
     }
 
     /** {@inheritDoc} */
@@ -186,7 +190,7 @@ public class Parameter extends Couple<String, String> implements
      * @see org.restlet.data.NamedValue#setName(java.lang.String)
      */
     public void setName(String name) {
-        setFirst(name);
+        this.name = name;
     }
 
     /*
@@ -195,7 +199,7 @@ public class Parameter extends Couple<String, String> implements
      * @see org.restlet.data.NamedValue#setValue(java.lang.String)
      */
     public void setValue(String value) {
-        setSecond(value);
+        this.value = value;
     }
 
     @Override

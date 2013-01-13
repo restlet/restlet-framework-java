@@ -325,40 +325,6 @@ public abstract class XmlRepresentation extends WriterRepresentation
 
     // [ifndef android] method
     /**
-     * Evaluates an XPath expression and returns the result as in the given
-     * return type.
-     * 
-     * @param returnType
-     *            The qualified name of the return type.
-     * @return The evaluation result.
-     * @see javax.xml.xpath.XPathException
-     * @see javax.xml.xpath.XPathConstants
-     * @deprecated Use the {@link #getBoolean(String)},
-     *             {@link #getNumber(String)}, {@link #getText(String)},
-     *             {@link #getNode(String)} and {@link #getNodes(String)}
-     *             methods instead.
-     */
-    @Deprecated
-    public Object evaluate(String expression,
-            javax.xml.namespace.QName returnType) throws Exception {
-        Object result = null;
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext(this);
-        Document xmlDocument = getDocument();
-
-        if (xmlDocument != null) {
-            result = xpath.evaluate(expression, xmlDocument, returnType);
-        } else {
-            throw new Exception(
-                    "Unable to obtain a DOM document for the XML representation. "
-                            + "XPath evaluation cancelled.");
-        }
-
-        return result;
-    }
-
-    // [ifndef android] method
-    /**
      * Evaluates an XPath expression as a boolean. If the evaluation fails, null
      * will be returned.
      * 
@@ -393,8 +359,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
             dbf.setCoalescing(isCoalescing());
             dbf.setExpandEntityReferences(isExpandingEntityRefs());
             dbf.setIgnoringComments(isIgnoringComments());
-            dbf
-                    .setIgnoringElementContentWhitespace(isIgnoringExtraWhitespaces());
+            dbf.setIgnoringElementContentWhitespace(isIgnoringExtraWhitespaces());
 
             try {
                 dbf.setXIncludeAware(isXIncludeAware());
@@ -405,7 +370,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
 
             // [ifndef android]
             javax.xml.validation.Schema xsd = getSchema();
-            
+
             if (xsd != null) {
                 dbf.setSchema(xsd);
             }
@@ -544,8 +509,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
         boolean found = false;
 
         for (Iterator<String> iterator = getNamespaces().keySet().iterator(); iterator
-                .hasNext()
-                && !found;) {
+                .hasNext() && !found;) {
             String key = iterator.next();
             if (getNamespaces().get(key).equals(namespaceURI)) {
                 found = true;
@@ -639,7 +603,20 @@ public abstract class XmlRepresentation extends WriterRepresentation
     private Object internalEval(String expression,
             javax.xml.namespace.QName returnType) {
         try {
-            return evaluate(expression, returnType);
+            Object result = null;
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            xpath.setNamespaceContext(this);
+            Document xmlDocument = getDocument();
+
+            if (xmlDocument != null) {
+                result = xpath.evaluate(expression, xmlDocument, returnType);
+            } else {
+                throw new Exception(
+                        "Unable to obtain a DOM document for the XML representation. "
+                                + "XPath evaluation cancelled.");
+            }
+
+            return result;
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
