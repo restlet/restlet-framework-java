@@ -55,7 +55,6 @@ public interface Client extends UserStore {
      * 
      * @return the stored client secret
      */
-
     public String getClientSecret();
 
     /**

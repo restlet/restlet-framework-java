@@ -33,7 +33,6 @@
 
 package org.restlet.ext.oauth;
 
-
 import java.util.Arrays;
 
 import org.json.JSONException;
@@ -55,10 +54,11 @@ import org.restlet.security.User;
  * Server resource used to acquire an OAuth token. A code, or refresh token can
  * be exchanged for a working token. This resource also supports the none flow.
  * 
- * Note: at the moment Client Credentials Grant is not supported.
- * Implements OAuth 2.0 draft 30
+ * Note: at the moment Client Credentials Grant is not supported. Implements
+ * OAuth 2.0 draft 30
  * 
  * Example. Attach an AccessTokenServerResource
+ * 
  * <pre>
  * {
  *      &#064;code
@@ -70,9 +70,8 @@ import org.restlet.security.User;
  * }
  * </pre>
  * 
- * <b>Originally written by Kristoffer Gronowski, Heavily modified for update to draft30.</b>
- * 
- * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @author Kristoffer Gronowski (original author)
+ * @author Shotaro Uchida <fantom@xmaker.mx> (update to draft 30)
  * 
  * @see <a
  *      href="http://tools.ietf.org/html/draft-ietf-oauth-v2-30#section-3.2">OAuth
@@ -81,27 +80,31 @@ import org.restlet.security.User;
 public class AccessTokenServerResource extends OAuthServerResource {
 
     /**
-     * Handles the {@link Post} request.
-     * The client MUST use the HTTP "POST" method
-     * when making access token requests. (3.2. Token Endpoint)
+     * Handles the {@link Post} request. The client MUST use the HTTP "POST"
+     * method when making access token requests. (3.2. Token Endpoint)
      * 
-     * @param input HTML form formated token request per oauth-v2 spec.
+     * @param input
+     *            HTML form formated token request per oauth-v2 spec.
      * @return JSON response with token or error.
      */
     @Post("form:json")
-    public Representation requestToken(Representation input) throws OAuthException {
+    public Representation requestToken(Representation input)
+            throws OAuthException {
         getLogger().fine("Grant request");
         final Form params = new Form(input);
-        
+
         User clientCredential = getRequest().getClientInfo().getUser();
         if (clientCredential == null) {
             getLogger().warning("Client ID is missing! No Authenticator?");
-            throw new OAuthException(OAuthError.server_error, "No Client Credential.", null);
+            throw new OAuthException(OAuthError.server_error,
+                    "No Client Credential.", null);
         }
-        
+
         Client client = clients.findById(clientCredential.getIdentifier());
-        getLogger().fine("Requested by authenticated client " + client.getClientId());
+        getLogger().fine(
+                "Requested by authenticated client " + client.getClientId());
         final GrantType grantType = getGrantType(params);
+
         switch (grantType) {
         case authorization_code:
             getLogger().info("Authorization Code Grant");
@@ -114,13 +117,15 @@ public class AccessTokenServerResource extends OAuthServerResource {
             return doRefreshFlow(client, params);
         default:
             getLogger().warning("Unsupported flow: " + grantType);
-            throw new OAuthException(OAuthError.unsupported_grant_type, "Flow not supported", null);
+            throw new OAuthException(OAuthError.unsupported_grant_type,
+                    "Flow not supported", null);
         }
     }
-    
+
     /**
      * Handle errors as described in 5.2 Error Response.
-     * @param t 
+     * 
+     * @param t
      */
     @Override
     protected void doCatch(Throwable t) {
@@ -132,13 +137,13 @@ public class AccessTokenServerResource extends OAuthServerResource {
         addCacheDirective(getResponse(), CacheDirective.noStore());
         // TODO: Set Pragma: no-cache
     }
-    
+
     /**
      * Get request parameter "grant_type".
      * 
      * @param params
      * @return
-     * @throws OAuthException 
+     * @throws OAuthException
      */
     protected GrantType getGrantType(Form params) throws OAuthException {
         String typeString = params.getFirstValue(GRANT_TYPE);
@@ -148,18 +153,20 @@ public class AccessTokenServerResource extends OAuthServerResource {
             getLogger().fine("Found flow - " + type);
             return type;
         } catch (IllegalArgumentException iae) {
-            throw new OAuthException(OAuthError.unsupported_grant_type, "Unsupported flow", null);
+            throw new OAuthException(OAuthError.unsupported_grant_type,
+                    "Unsupported flow", null);
         } catch (NullPointerException npe) {
-            throw new OAuthException(OAuthError.invalid_request, "No grant_type parameter found.", null);
+            throw new OAuthException(OAuthError.invalid_request,
+                    "No grant_type parameter found.", null);
         }
     }
-    
+
     /**
      * Get request parameter "code".
      * 
      * @param params
      * @return
-     * @throws OAuthException 
+     * @throws OAuthException
      */
     protected String getCode(Form params) throws OAuthException {
         String code = params.getFirstValue(CODE);
@@ -169,13 +176,13 @@ public class AccessTokenServerResource extends OAuthServerResource {
         }
         return code;
     }
-    
+
     /**
      * Get request parameter "username".
      * 
      * @param params
      * @return
-     * @throws OAuthException 
+     * @throws OAuthException
      */
     protected String getUsername(Form params) throws OAuthException {
         String username = params.getFirstValue(USERNAME);
@@ -185,13 +192,13 @@ public class AccessTokenServerResource extends OAuthServerResource {
         }
         return username;
     }
-    
+
     /**
      * Get request parameter "password".
      * 
      * @param params
      * @return
-     * @throws OAuthException 
+     * @throws OAuthException
      */
     protected String getPassword(Form params) throws OAuthException {
         String password = params.getFirstValue(PASSWORD);
@@ -201,13 +208,13 @@ public class AccessTokenServerResource extends OAuthServerResource {
         }
         return password;
     }
-    
+
     /**
      * Get request parameter "refresh_token".
      * 
      * @param params
      * @return
-     * @throws OAuthException 
+     * @throws OAuthException
      */
     protected String getRefreshToken(Form params) throws OAuthException {
         String token = params.getFirstValue(REFRESH_TOKEN);
@@ -217,17 +224,20 @@ public class AccessTokenServerResource extends OAuthServerResource {
         }
         return token;
     }
-    
+
     /**
-     * Response JSON document with valid token.
-     * The format of the JSON document is according to 5.1. Successful Response.
+     * Response JSON document with valid token. The format of the JSON document
+     * is according to 5.1. Successful Response.
      * 
-     * @param token The token.
-     * @param scopes The list of scopes.
+     * @param token
+     *            The token.
+     * @param scopes
+     *            The list of scopes.
      * @return An instance of {@link Token} equivalent to the given token.
      * @throws ResourceException
      */
-    protected Representation responseTokenRepresentation(Token token, String scopes) throws ResourceException {
+    protected Representation responseTokenRepresentation(Token token,
+            String scopes) throws ResourceException {
         JSONObject response = new JSONObject();
 
         try {
@@ -245,7 +255,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
                     "Failed to generate JSON", e);
         }
-        
+
         // Sets the no-store Cache-Control header
         addCacheDirective(getResponse(), CacheDirective.noStore());
         // TODO: Set Pragma: no-cache
@@ -265,7 +275,8 @@ public class AccessTokenServerResource extends OAuthServerResource {
      * @return The result of the flow.
      * @throws IllegalArgumentException
      */
-    private Representation doAuthCodeFlow(Client client, Form params) throws IllegalArgumentException, OAuthException {
+    private Representation doAuthCodeFlow(Client client, Form params)
+            throws IllegalArgumentException, OAuthException {
         // TODO could add a cookie match on the owner but could fail if code is
         // sent to other entity
         // unauthorized_client, right now this is only performed if
@@ -277,7 +288,8 @@ public class AccessTokenServerResource extends OAuthServerResource {
         // 5 min timeout on tokens, 0 for unlimited
         Token token = generator.exchangeForToken(code, tokenTimeSec);
 
-        // XXX: Required only if NOT identical to the scope requested by the client.
+        // XXX: Required only if NOT identical to the scope requested by the
+        // client.
         String scopes = Scopes.toScope(token.getUser().getGrantedRoles());
 
         return responseTokenRepresentation(token, scopes);
@@ -295,7 +307,8 @@ public class AccessTokenServerResource extends OAuthServerResource {
      * @return The result of the flow.
      */
     // XXX: Client might be optional for client type "public".
-    private Representation doPasswordFlow(Client client, Form params) throws OAuthException {
+    private Representation doPasswordFlow(Client client, Form params)
+            throws OAuthException {
         AuthenticatedUser user = client.findUser(getUsername(params));
         if (user == null) {
             throw new OAuthException(OAuthError.invalid_request,
@@ -307,13 +320,14 @@ public class AccessTokenServerResource extends OAuthServerResource {
             throw new OAuthException(OAuthError.invalid_grant,
                     "Password not correct.", null);
         }
-        
+
         String[] requestedScope = getScope(params);
         refreshUserScopesAndPersist(user, requestedScope);
 
         Token token = this.generator.generateToken(user, this.tokenTimeSec);
-        
-        return responseTokenRepresentation(token, Scopes.toString(requestedScope));
+
+        return responseTokenRepresentation(token,
+                Scopes.toString(requestedScope));
     }
 
     /**
@@ -327,7 +341,8 @@ public class AccessTokenServerResource extends OAuthServerResource {
      *            The authentication parameters.
      * @return The result of the flow.
      */
-    private Representation doRefreshFlow(Client client, Form params) throws OAuthException {
+    private Representation doRefreshFlow(Client client, Form params)
+            throws OAuthException {
         Token token = generator.findToken(getRefreshToken(params));
 
         if ((token != null) && (token instanceof ExpireToken)) {
@@ -336,39 +351,46 @@ public class AccessTokenServerResource extends OAuthServerResource {
             // Make sure that the user owning the token is owned by this client
             if (client.containsUser(user.getId())) {
                 String scope = params.getFirstValue(SCOPE);
-                
+
                 /*
-                 * The requested scope MUST NOT include any scope
-                 * not originally granted by the resource owner, and if omitted is
-                 * treated as equal to the scope originally granted by the
-                 * resource owner. (6. Refreshing an Access Token)
+                 * The requested scope MUST NOT include any scope not originally
+                 * granted by the resource owner, and if omitted is treated as
+                 * equal to the scope originally granted by the resource owner.
+                 * (6. Refreshing an Access Token)
                  */
                 if (scope != null && !scope.isEmpty()) {
                     String[] requestedScopes = Scopes.parseScope(scope);
-                    String[] grantedScopes = Scopes.parseScope(user.getGrantedRoles());
-                    if (!Arrays.asList(grantedScopes).containsAll(Arrays.asList(requestedScopes))) {
-                        throw new OAuthException(OAuthError.invalid_scope,
-                                "Requested scopes contains which is not originally granted by the resource owner.", null);
+                    String[] grantedScopes = Scopes.parseScope(user
+                            .getGrantedRoles());
+                    if (!Arrays.asList(grantedScopes).containsAll(
+                            Arrays.asList(requestedScopes))) {
+                        throw new OAuthException(
+                                OAuthError.invalid_scope,
+                                "Requested scopes contains which is not originally granted by the resource owner.",
+                                null);
                     }
                     refreshUserScopesAndPersist(user, requestedScopes);
                 }
-                
+
                 // refresh the token
                 generator.refreshToken((ExpireToken) token);
 
                 return responseTokenRepresentation(token, scope);
             } else { // error not owner
                 // XXX:
-                throw new OAuthException(OAuthError.unauthorized_client, "User does not match.", null);
+                throw new OAuthException(OAuthError.unauthorized_client,
+                        "User does not match.", null);
 
             }
         } else { // error no such token.
             // XXX:
-            throw new OAuthException(OAuthError.invalid_grant, "Refresh token.", null);
+            throw new OAuthException(OAuthError.invalid_grant,
+                    "Refresh token.", null);
         }
     }
-    
-    private static void refreshUserScopesAndPersist(AuthenticatedUser user, String[] scopes) {
+
+    private static void refreshUserScopesAndPersist(AuthenticatedUser user,
+            String[] scopes) {
         user.revokeRoles();
         for (String s : scopes) {
             user.addRole(Scopes.toRole(s), "");

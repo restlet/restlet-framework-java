@@ -46,7 +46,8 @@ import org.restlet.security.Role;
  */
 public class Scopes {
 
-    public static String toScope(List<Role> roles) throws IllegalArgumentException {
+    public static String toScope(List<Role> roles)
+            throws IllegalArgumentException {
         if (roles == null || roles.isEmpty()) {
             return "";
         }
@@ -59,7 +60,7 @@ public class Scopes {
         }
         return sb.substring(1);
     }
-    
+
     public static String toString(String[] scopes) {
         StringBuilder sb = new StringBuilder();
         for (String scope : scopes) {
@@ -104,6 +105,7 @@ public class Scopes {
         }
         return new String[0];
     }
+
     public static String[] parseScope(List<Role> roles) {
         String[] scopes = new String[roles.size()];
         for (int i = 0; i < roles.size(); i++) {

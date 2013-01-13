@@ -137,7 +137,7 @@ public class OAuthProxy extends Filter {
      * @param params
      *            The OAuth parameters.
      * @param useBasicSecret
-     *            If true use http basic authentication otherwise use form
+     *            If true use HTTP BASIC authentication otherwise use form
      *            based.
      * @param ctx
      *            The Restlet context.
@@ -225,10 +225,10 @@ public class OAuthProxy extends Filter {
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
                 response.setEntity(repr);
                 break;
-//            case redirect_uri_mismatch:
-//                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
-//                response.setEntity(repr);
-//                break;
+            // case redirect_uri_mismatch:
+            // response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
+            // response.setEntity(repr);
+            // break;
             case access_denied:
                 response.setStatus(Status.CLIENT_ERROR_FORBIDDEN, error);
                 response.setEntity(repr);
@@ -317,12 +317,17 @@ public class OAuthProxy extends Filter {
 
             try {
                 Representation input = form.getWebRepresentation();
-                tokenResource.getClientInfo().getAcceptedMediaTypes().add(new Preference<MediaType>(MediaType.APPLICATION_JSON));
+                tokenResource
+                        .getClientInfo()
+                        .getAcceptedMediaTypes()
+                        .add(new Preference<MediaType>(
+                                MediaType.APPLICATION_JSON));
                 Representation body = tokenResource.post(input);
 
                 if (tokenResource.getStatus().isSuccess()) {
                     // Store away the user
-                    OAuthUser authUser = OAuthUser.createJson(request.getClientInfo().getUser(), body);
+                    OAuthUser authUser = OAuthUser.createJson(request
+                            .getClientInfo().getUser(), body);
 
                     if (authUser != null) {
                         request.getClientInfo().setUser(authUser);

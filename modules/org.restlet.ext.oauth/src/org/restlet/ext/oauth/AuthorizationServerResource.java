@@ -58,6 +58,7 @@ import org.restlet.security.User;
  * Implements OAuth 2.0 draft 30
  * 
  * The following example shows how to set up a simple Authorization Service.
+ * 
  * <pre>
  * {
  *      &#064;code
@@ -72,13 +73,15 @@ import org.restlet.security.User;
  * }
  * </pre>
  * 
- * <b>Originally written by Martin Svensson, Heavily modified for update to draft30.</b>
+ * @author Kristoffer Gronowski (original author)
+ * @author Shotaro Uchida <fantom@xmaker.mx> (update to draft 30)
  * 
- * @author Shotaro Uchida <fantom@xmaker.mx>
- * 
- * @see <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-30#section-3.1">OAuth 2 draft 30</a>
+ * @see <a
+ *      href="http://tools.ietf.org/html/draft-ietf-oauth-v2-30#section-3.1">OAuth
+ *      2 draft 30</a>
  */
-public class AuthorizationServerResource extends AuthorizationBaseServerResource {
+public class AuthorizationServerResource extends
+        AuthorizationBaseServerResource {
 
     /**
      * Checks that all incoming requests have a type parameter. Requires
@@ -95,21 +98,20 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
             client = getClient(params);
             redirectURI = getRedirectURI(params, client);
         } catch (OAuthException ex) {
-           /* 
-            * MUST NOT automatically redirect the user-agent to the invalid redirection URI.
-            * (see 3.1.2.4. Invalid Endpoint)
-            */
+            /*
+             * MUST NOT automatically redirect the user-agent to the invalid
+             * redirection URI. (see 3.1.2.4. Invalid Endpoint)
+             */
             return getErrorPage(
-                    HttpOAuthHelper.getErrorPageTemplate(getContext()),
-                    ex);
+                    HttpOAuthHelper.getErrorPageTemplate(getContext()), ex);
         } catch (Exception ex) {
             // All other exception should be caught as server_error.
-            OAuthException oex = new OAuthException(OAuthError.server_error, ex.getMessage(), null);
+            OAuthException oex = new OAuthException(OAuthError.server_error,
+                    ex.getMessage(), null);
             return getErrorPage(
-                    HttpOAuthHelper.getErrorPageTemplate(getContext()), 
-                    oex);
+                    HttpOAuthHelper.getErrorPageTemplate(getContext()), oex);
         }
-        
+
         final AuthSession session;
         try {
             ResponseType responseType = getResponseType(params);
@@ -121,22 +123,25 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
             ungetAuthSession();
             throw ex;
         }
-        
+
         if (session.getScopeOwner() == null) {
             // Redirect to login page.
-            Reference ref = new Reference("." + HttpOAuthHelper.getLoginPage(getContext()));
-            ref.addQueryParameter("continue", getRequest().getOriginalRef().toString(true, false));
+            Reference ref = new Reference("."
+                    + HttpOAuthHelper.getLoginPage(getContext()));
+            ref.addQueryParameter("continue", getRequest().getOriginalRef()
+                    .toString(true, false));
             redirectTemporary(ref.toString());
             return new EmptyRepresentation();
         }
 
         return doPostAuthorization(session);
     }
-    
+
     /**
      * Handle the authorization request.
      * 
-     * @param session The OAuth session.
+     * @param session
+     *            The OAuth session.
      * 
      * @return The result as a {@link Representation}.
      */
@@ -154,7 +159,8 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
         }
 
         // Granted
-        AuthenticatedUser user = session.getClient().findUser(session.getScopeOwner());
+        AuthenticatedUser user = session.getClient().findUser(
+                session.getScopeOwner());
 
         if (user != null) { // null before first code generated
             // scopes = OAuthUtils.roluser.getGrantedScopes();
@@ -176,13 +182,13 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
         dispatcher.handle(getRequest(), getResponse());
         return getResponseEntity();
     }
-    
+
     /**
      * Get request parameter "response_type".
      * 
      * @param params
      * @return
-     * @throws OAuthException 
+     * @throws OAuthException
      */
     protected ResponseType getResponseType(Form params) throws OAuthException {
         // check response type:
@@ -193,21 +199,24 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
             getLogger().fine("Found flow - " + type);
             return type;
         } catch (IllegalArgumentException iae) {
-            throw new OAuthException(OAuthError.unsupported_response_type, "Unsupported flow", null);
+            throw new OAuthException(OAuthError.unsupported_response_type,
+                    "Unsupported flow", null);
         } catch (NullPointerException npe) {
-            throw new OAuthException(OAuthError.invalid_request, "No response_type parameter found.", null);
+            throw new OAuthException(OAuthError.invalid_request,
+                    "No response_type parameter found.", null);
         }
     }
-    
+
     /**
      * Get request parameter "redirect_uri".
      * 
      * @param params
      * @param client
      * @return
-     * @throws OAuthException 
+     * @throws OAuthException
      */
-    protected String getRedirectURI(Form params, Client client) throws OAuthException {
+    protected String getRedirectURI(Form params, Client client)
+            throws OAuthException {
         // check redir:
         String redirUri = params.getFirstValue(REDIR_URI);
         if (redirUri == null || redirUri.isEmpty()) {
@@ -216,35 +225,39 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
             // we use the one provided during client registration.
             redirUri = client.getRedirectUri();
             if (redirUri == null) {
-                /* if no redirection URI has been registered,
-                 * the client MUST include a redirection URI with the
-                 * authorization request using the "redirect_uri" request parameter.
-                 * (See 3.1.2.3. Dynamic Configuration)
+                /*
+                 * if no redirection URI has been registered, the client MUST
+                 * include a redirection URI with the authorization request
+                 * using the "redirect_uri" request parameter. (See 3.1.2.3.
+                 * Dynamic Configuration)
                  */
                 throw new OAuthException(OAuthError.invalid_request,
                         "Client MUST include a redirection URI.", null);
             }
         } else if (!redirUri.startsWith(client.getRedirectUri())) {
-            // The provided uri is no based on the uri with the client registration.
-            throw new OAuthException(OAuthError.invalid_request, "Callback URI does not match.", null);
+            // The provided uri is no based on the uri with the client
+            // registration.
+            throw new OAuthException(OAuthError.invalid_request,
+                    "Callback URI does not match.", null);
         }
         return redirUri;
     }
-    
-    private AuthSession getAuthSession(Client client, ResponseType responseType, String redirectURI) {
+
+    private AuthSession getAuthSession(Client client,
+            ResponseType responseType, String redirectURI) {
         AuthSession session = getAuthSession();
 
         session = setupSession(session, client, responseType, redirectURI);
-        
+
         User scopeOwner = getRequest().getClientInfo().getUser();
         if (scopeOwner != null) {
             // If user information is present, use as scope owner.
             session.setScopeOwner(scopeOwner.getIdentifier());
         }
-        
+
         return session;
     }
-    
+
     private void ungetAuthSession() {
         String sessionId = getCookies().getFirstValue(ClientCookieID);
         // cleanup cookie..
@@ -257,14 +270,20 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
 
     /**
      * Sets up a session.
-     *
-     * @param in  The OAuth session.
-     * @param client The OAuth client.
-     * @param flow The glow.
-     * @param redirUri The redirection URI.
-     * @param params The authentication parameters.
+     * 
+     * @param in
+     *            The OAuth session.
+     * @param client
+     *            The OAuth client.
+     * @param flow
+     *            The glow.
+     * @param redirUri
+     *            The redirection URI.
+     * @param params
+     *            The authentication parameters.
      */
-    protected AuthSession setupSession(AuthSession in, Client client, ResponseType flow, String redirUri) {
+    protected AuthSession setupSession(AuthSession in, Client client,
+            ResponseType flow, String redirUri) {
         getLogger().fine("Base ref = " + getReference().getParentRef());
         getLogger().fine("OAuth2 session = " + in);
 
@@ -273,12 +292,14 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
         if (session == null) {
             session = new AuthSession(getContext().getAttributes(),
                     new ScheduledThreadPoolExecutor(5));
-            CookieSetting cs = new CookieSetting(ClientCookieID, session.getId());
+            CookieSetting cs = new CookieSetting(ClientCookieID,
+                    session.getId());
             // TODO create a secure mode setting, update all cookies
             // cs.setAccessRestricted(true);
             // cs.setSecure(true);
             getCookieSettings().add(cs);
-            getLogger().fine("Setting cookie in SetupSession - " + session.getId());
+            getLogger().fine(
+                    "Setting cookie in SetupSession - " + session.getId());
         }
 
         session.setClient(client);
@@ -294,7 +315,7 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
         if (state != null && !state.isEmpty()) {
             session.setState(state);
         }
-        
+
         return session;
     }
 }

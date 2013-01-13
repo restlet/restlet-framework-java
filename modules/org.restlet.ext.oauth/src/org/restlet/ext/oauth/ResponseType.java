@@ -39,7 +39,7 @@ package org.restlet.ext.oauth;
  * @author Kristoffer Gronowski
  */
 public enum ResponseType {
-    
+
     /**
      * Defined in 4.1 Authorization Code Grant.
      */

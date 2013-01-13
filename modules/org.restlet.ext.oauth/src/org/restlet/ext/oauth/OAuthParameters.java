@@ -53,6 +53,7 @@ import org.restlet.security.Role;
  * @author Kristoffer Gronowski
  */
 public class OAuthParameters {
+
     private volatile String accessTokenPath = "access_token";
 
     private volatile String authorizePath = "authorize";

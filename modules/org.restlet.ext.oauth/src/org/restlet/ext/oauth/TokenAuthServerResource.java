@@ -1,18 +1,36 @@
-/*
- * Copyright 2012 Shotaro Uchida <fantom@xmaker.mx>.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/**
+ * Copyright 2005-2012 Restlet S.A.S.
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
+ * 1.0 (the "Licenses"). You can select the license that you prefer but you may
+ * not use this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the Apache 2.0 license at
+ * http://www.opensource.org/licenses/apache-2.0
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.restlet.com/products/restlet-framework
+ * 
+ * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.ext.oauth;
 
 import org.json.JSONException;
@@ -29,28 +47,29 @@ import org.restlet.resource.ResourceException;
 
 /**
  * Token "Authenticate" Resource for internal use.
- *
+ * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class TokenAuthServerResource extends OAuthServerResource {
 
     public static final String LOCAL_ACCESS_ONLY = "localOnly";
-    
+
     private boolean isLocalAcessOnly() {
         String lo = (String) getContext().getAttributes()
                 .get(LOCAL_ACCESS_ONLY);
         return (lo != null) && (lo.length() > 0) && Boolean.parseBoolean(lo);
     }
-    
+
     @Override
     protected void doCatch(Throwable t) {
         final OAuthException oex = OAuthException.toOAuthException(t);
-        // XXX: Generally, we only communicate with TokenVerifier. So we don't need HTTP 400 code.
-//        getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+        // XXX: Generally, we only communicate with TokenVerifier. So we don't
+        // need HTTP 400 code.
+        // getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         getResponse().setStatus(Status.SUCCESS_OK);
         getResponse().setEntity(responseErrorRepresentation(oex));
     }
-    
+
     @Post("json")
     public Representation authenticate(Representation input) throws Exception {
         getLogger().fine("In Authenticate resource");
@@ -63,47 +82,54 @@ public class TokenAuthServerResource extends OAuthServerResource {
                         "Auth server only allows local resource validation");
             }
         }
-        
+
         JSONObject call = new JsonRepresentation(input).getJsonObject();
-        
+
         if (!call.has(TOKEN_TYPE)) {
-            throw new OAuthException(OAuthError.invalid_request, "No token_type", null);
+            throw new OAuthException(OAuthError.invalid_request,
+                    "No token_type", null);
         }
         String tokenType = call.getString(TOKEN_TYPE);
-        
+
         final Token token;
         if (tokenType.equals(OAuthServerResource.TOKEN_TYPE_BEARER)) {
             token = validateBearerToken(call);
-        }/* else if (tokenType.equals(OAuthServerResource.TOKEN_TYPE_MAC)) {
-            // TODO
-        }*/ else {
-            throw new OAuthException(OAuthError.invalid_request, "Unsupported token_type", null);
+        }/*
+          * else if (tokenType.equals(OAuthServerResource.TOKEN_TYPE_MAC)) { //
+          * TODO }
+          */else {
+            throw new OAuthException(OAuthError.invalid_request,
+                    "Unsupported token_type", null);
         }
-        
+
         AuthenticatedUser user = token.getUser();
         if (user == null) {
             // Revoked?
-            throw new OAuthException(OAuthError.invalid_token, "AuthenticatedUser not found", null);
+            throw new OAuthException(OAuthError.invalid_token,
+                    "AuthenticatedUser not found", null);
         }
-        
+
         String scope = Scopes.toScope(user.getGrantedRoles());
         JSONObject resp = new JSONObject();
         resp.put(USERNAME, user.getId());
         resp.put(SCOPE, scope);
-        
+
         return new JsonRepresentation(resp);
     }
-    
-    private Token validateBearerToken(JSONObject call) throws JSONException, OAuthException {
+
+    private Token validateBearerToken(JSONObject call) throws JSONException,
+            OAuthException {
         String token = call.get(ACCESS_TOKEN).toString();
 
-        getLogger().fine("In Validator resource - searching for token = " + token);
+        getLogger().fine(
+                "In Validator resource - searching for token = " + token);
         Token t = this.generator.findToken(token);
 
         if (t == null) {
-            throw new OAuthException(OAuthError.invalid_token, "Token not found.", null);
+            throw new OAuthException(OAuthError.invalid_token,
+                    "Token not found.", null);
         }
-        
+
         getLogger().fine("In Validator resource - got token = " + t);
 
         if (t instanceof ExpireToken) {
@@ -111,11 +137,13 @@ public class TokenAuthServerResource extends OAuthServerResource {
             ExpireToken et = (ExpireToken) t;
 
             if (!token.equals(et.getToken())) {
-                getLogger().warning("Should not use the refresh_token to sign!");
-                throw new OAuthException(OAuthError.invalid_token, "Invalid Token.", null);
+                getLogger()
+                        .warning("Should not use the refresh_token to sign!");
+                throw new OAuthException(OAuthError.invalid_token,
+                        "Invalid Token.", null);
             }
         }
-        
+
         return t;
     }
 }

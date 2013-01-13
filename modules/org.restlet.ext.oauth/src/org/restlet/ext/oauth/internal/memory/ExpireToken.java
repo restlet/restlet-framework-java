@@ -51,7 +51,7 @@ public class ExpireToken implements Token {
     private final long expireTime;
 
     private final String refreshToken;
-    
+
     private final AuthenticatedUser user;
 
     private volatile String token;

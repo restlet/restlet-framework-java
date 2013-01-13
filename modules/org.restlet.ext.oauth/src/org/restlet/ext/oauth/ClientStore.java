@@ -37,8 +37,6 @@ import java.util.Collection;
 
 import org.restlet.ext.oauth.internal.TokenGenerator;
 
-// import org.restlet.Context;
-
 /**
  * Abstract class that defines a client store for the Authentication Server. The
  * following code adds a client to a store when you create your inbound root

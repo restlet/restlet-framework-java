@@ -76,7 +76,7 @@ public class UnlimitedToken implements Token {
     public AuthenticatedUser getUser() {
         return user;
     }
-    
+
     public long getExpirePeriod() {
         return UNLIMITED;
     }

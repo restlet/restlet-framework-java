@@ -36,17 +36,16 @@ package org.restlet.ext.oauth;
 /**
  * Utility class for formating OAuth errors
  * 
- * <b>Originally written by Kristoffer Gronowski, Heavily modified for update to draft30.</b>
- * 
- * @author Shotaro Uchida <fantom@xmaker.mx>
- * @see <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-30">
- * The OAuth 2.0 Authorization Framework draft-ietf-oauth-v2-30</a>
+ * @author Kristoffer Gronowski (original author)
+ * @author Shotaro Uchida <fantom@xmaker.mx> (update to draft 30)
+ * @see <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-30"> The OAuth
+ *      2.0 Authorization Framework draft-ietf-oauth-v2-30</a>
  * @see <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-22">
- * Bearer Token Usage</a>
+ *      Bearer Token Usage</a>
  */
 public enum OAuthError {
 
-    access_denied, // 4.1.2.1 & 4.2.2.1 
+    access_denied, // 4.1.2.1 & 4.2.2.1
     invalid_client, // 5.2
     invalid_grant, // 5.2
     invalid_request, // 4.1.2.1 & 4.2.2.1 & 5.2
@@ -54,8 +53,8 @@ public enum OAuthError {
     unauthorized_client, // 4.1.2.1 & 4.2.2.1 & 5.2
     unsupported_grant_type, // 5.2
     unsupported_response_type, // 4.1.2.1 & 4.2.2.1
-    server_error,   // 4.1.2.1 & 4.2.2.1
-    
-    invalid_token,      // Bearer 3.1
-    insufficient_scope  // Bearer 3.1
+    server_error, // 4.1.2.1 & 4.2.2.1
+
+    invalid_token, // Bearer 3.1
+    insufficient_scope // Bearer 3.1
 }
