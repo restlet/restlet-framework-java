@@ -1268,17 +1268,6 @@ public final class Status {
     }
 
     /**
-     * Returns the name of this status.
-     * 
-     * @return The name of this status.
-     * @deprecated Use {@link #getReasonPhrase()} instead.
-     */
-    @Deprecated
-    public String getName() {
-        return getReasonPhrase();
-    }
-
-    /**
      * Returns the reason phrase of this status. When supported by the HTTP
      * server connector, this is returned in the first line of the HTTP
      * response, next to to the status code.

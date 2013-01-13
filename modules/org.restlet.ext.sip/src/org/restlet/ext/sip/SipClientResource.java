@@ -52,13 +52,13 @@ import org.restlet.resource.Resource;
  * Client-side resource for the sip protocol. Acts like a proxy of a target
  * resource.<br>
  * <br>
- * This class changes the semantics of the {@link Resource#getRequest()}
- * and {@link Resource#getResponse()} methods. Since a clientResource may
- * receive severals responses for a single request (in case of interim
- * response), the {@link #getResponse()} method returns the last received
- * response object. The Request object returned by the {@link #getRequest()} is
- * actually a prototype which is cloned (except the representation) just before
- * the {@link #handle()} method is called.<br>
+ * This class changes the semantics of the {@link Resource#getRequest()} and
+ * {@link Resource#getResponse()} methods. Since a clientResource may receive
+ * severals responses for a single request (in case of interim response), the
+ * {@link #getResponse()} method returns the last received response object. The
+ * Request object returned by the {@link #getRequest()} is actually a prototype
+ * which is cloned (except the representation) just before the {@link #handle()}
+ * method is called.<br>
  * <br>
  * Users must be aware that by most representations can only be read or written
  * once. Some others, such as {@link StringRepresentation} stored the entity in
@@ -360,8 +360,8 @@ public class SipClientResource extends ClientResource {
     }
 
     @Override
-    public Request createRequest(Request prototype) {
-        return new SipRequest((SipRequest) prototype);
+    public Request createRequest() {
+        return new SipRequest(getRequest());
     }
 
     @Override

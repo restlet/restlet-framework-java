@@ -73,9 +73,8 @@ public class ClientHelper extends ConnectorHelper<Client> {
      * 
      * @return The connection timeout.
      */
-    @SuppressWarnings("deprecation")
     public int getSocketConnectTimeoutMs() {
-        int result = getHelped().getConnectTimeout();
+        int result = 0;
 
         if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
             result = Integer.parseInt(getHelpedParameters().getFirstValue(

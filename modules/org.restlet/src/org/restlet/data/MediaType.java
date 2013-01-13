@@ -485,10 +485,6 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_XMI = register(
             "application/xmi+xml", "XMI document");
 
-    @Deprecated
-    public static final MediaType APPLICATION_XMI_XML = register(
-            "application/xmi+xml", "XMI document");
-
     public static final MediaType APPLICATION_XML = register("application/xml",
             "XML document");
 

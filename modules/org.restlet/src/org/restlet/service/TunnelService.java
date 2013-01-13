@@ -477,18 +477,6 @@ public class TunnelService extends Service {
     }
 
     /**
-     * Indicates if the method can be tunneled via the header.
-     * 
-     * @param headersTunnel
-     *            True if the method can be tunneled via the header.
-     * @deprecated Use {@link #setHeadersTunnel(boolean)} method instead.
-     */
-    @Deprecated
-    public void setHeaderTunnel(boolean headersTunnel) {
-        setHeadersTunnel(headersTunnel);
-    }
-
-    /**
      * Sets the name of the parameter containing the accepted language.
      * 
      * @param parameterName

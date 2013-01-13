@@ -235,7 +235,6 @@ public class ServerAdapter extends Adapter {
      *            The low-level HTTP call.
      * @return A new high-level uniform request.
      */
-    @SuppressWarnings("deprecation")
     public HttpRequest toRequest(ServerCall httpCall) {
         HttpRequest result = new HttpRequest(getContext(), httpCall);
         result.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
@@ -250,18 +249,12 @@ public class ServerAdapter extends Adapter {
             List<Certificate> clientCertificates = httpCall.getCertificates();
 
             if (clientCertificates != null) {
-                result.getAttributes().put(
-                        HeaderConstants.ATTRIBUTE_HTTPS_CLIENT_CERTIFICATES,
-                        clientCertificates);
                 result.getClientInfo().setCertificates(clientCertificates);
             }
 
             String cipherSuite = httpCall.getCipherSuite();
 
             if (cipherSuite != null) {
-                result.getAttributes().put(
-                        HeaderConstants.ATTRIBUTE_HTTPS_CIPHER_SUITE,
-                        cipherSuite);
                 result.getClientInfo().setCipherSuite(cipherSuite);
             }
 

@@ -42,11 +42,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Context;
-import org.restlet.Request;
 import org.restlet.engine.Engine;
 import org.restlet.engine.io.IoUtils;
-import org.restlet.representation.Variant;
-import org.restlet.service.MetadataService;
 
 /**
  * Client specific data related to a call. When extracted from a request, most
@@ -797,89 +794,6 @@ public final class ClientInfo {
      */
     public MediaType getPreferredMediaType(List<MediaType> supported) {
         return getPreferredMetadata(supported, getAcceptedMediaTypes());
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Returns the best variant for a given resource according the the client
-     * preferences: accepted languages, accepted character sets, accepted media
-     * types and accepted encodings. A default language is provided in case the
-     * variants don't match the client preferences.
-     * 
-     * Note that the {@link org.restlet.service.ConnegService} and
-     * {@link MetadataService} of the parent application are first looked up. If
-     * no parent application is found, a new instance of those services is
-     * created and the
-     * {@link org.restlet.service.ConnegService#getPreferredVariant(List, Request, org.restlet.service.MetadataService)}
-     * method is called.
-     * 
-     * @param variants
-     *            The list of variants to compare.
-     * @return The best variant.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
-     * @deprecated Use {@link org.restlet.service.ConnegService} instead.
-     */
-    @Deprecated
-    public Variant getPreferredVariant(List<? extends Variant> variants) {
-        org.restlet.service.ConnegService connegService = null;
-        MetadataService metadataService = null;
-        org.restlet.Application app = org.restlet.Application.getCurrent();
-
-        if (app == null) {
-            connegService = new org.restlet.service.ConnegService();
-            metadataService = new MetadataService();
-        } else {
-            connegService = app.getConnegService();
-            metadataService = app.getMetadataService();
-        }
-
-        Request request = new Request();
-        request.setClientInfo(this);
-        return connegService.getPreferredVariant(variants, request,
-                metadataService);
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Returns the best variant for a given resource according the the client
-     * preferences: accepted languages, accepted character sets, accepted media
-     * types and accepted encodings. A default language is provided in case the
-     * variants don't match the client preferences.
-     * 
-     * Note that the {@link org.restlet.service.ConnegService} of the parent
-     * application is first looked up. If no parent application is found, a new
-     * instance is created and the
-     * {@link org.restlet.service.ConnegService#getPreferredVariant(List, Request, org.restlet.service.MetadataService)}
-     * method is called.
-     * 
-     * @param variants
-     *            The list of variants to compare.
-     * @param metadataService
-     *            The metadata service.
-     * @return The best variant.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
-     * @deprecated Use the {@link #getPreferredVariant(List)} method instead.
-     */
-    @Deprecated
-    public Variant getPreferredVariant(List<? extends Variant> variants,
-            org.restlet.service.MetadataService metadataService) {
-        org.restlet.service.ConnegService connegService = null;
-        org.restlet.Application app = org.restlet.Application.getCurrent();
-
-        if (app == null) {
-            connegService = new org.restlet.service.ConnegService();
-        } else {
-            connegService = app.getConnegService();
-        }
-
-        Request request = new Request();
-        request.setClientInfo(this);
-        return connegService.getPreferredVariant(variants, request,
-                metadataService);
     }
 
     // [ifndef gwt] method

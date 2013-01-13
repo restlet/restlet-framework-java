@@ -268,18 +268,6 @@ public class LogService extends Service {
     }
 
     /**
-     * Returns the format used.
-     * 
-     * @return The format used, or null if the default one is used.
-     * @see org.restlet.routing.Template for format syntax and variables.
-     * @deprecated Use the {@link #getResponseLogFormat()} method instead.
-     */
-    @Deprecated
-    public String getLogFormat() {
-        return getResponseLogFormat();
-    }
-
-    /**
      * Returns the URI template of loggable resource references. Returns null by
      * default, meaning the all requests are loggable, independant of their
      * target resource URI reference.
@@ -401,20 +389,6 @@ public class LogService extends Service {
     }
 
     /**
-     * Sets the format to use when logging responses. The default format matches
-     * the one of IIS 6.
-     * 
-     * @param responseLogFormat
-     *            The format to use when logging responses.
-     * @see org.restlet.routing.Template for format syntax and variables.
-     * @deprecated Use {@link #setResponseLogFormat(String)} instead.
-     */
-    @Deprecated
-    public void setLogFormat(String responseLogFormat) {
-        setResponseLogFormat(responseLogFormat);
-    }
-
-    /**
      * Sets the URI template of loggable resource references.
      * 
      * @param loggableTemplateRef
@@ -489,8 +463,8 @@ public class LogService extends Service {
     public synchronized void start() throws Exception {
         super.start();
 
-        this.responseLogTemplate = (getLogFormat() == null) ? null
-                : new Template(getLogFormat());
+        this.responseLogTemplate = (getResponseLogFormat() == null) ? null
+                : new Template(getResponseLogFormat());
 
         if (getLogPropertiesRef() != null) {
             Representation logProperties = new ClientResource(getContext(),

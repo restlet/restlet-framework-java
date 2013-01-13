@@ -48,12 +48,6 @@ import org.restlet.security.Role;
  */
 public interface AuthenticatedUser {
 
-    /**
-     * Adds a scope for this user given a specified owner.
-     */
-    // @Deprecated
-    // public abstract void addScope(String scope, String owner);
-
     public void addRole(Role r, String owner);
 
     /**

@@ -98,8 +98,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("deprecation")
-public abstract class ServerResource extends UniformResource {
+public abstract class ServerResource extends Resource {
 
     /** Indicates if annotations are supported. */
     private volatile boolean annotated;

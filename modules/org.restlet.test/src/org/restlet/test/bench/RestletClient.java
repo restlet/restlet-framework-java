@@ -20,6 +20,8 @@ public class RestletClient {
             IOException {
         ConnectorHelper<Client> helper;
         helper = new org.restlet.engine.connector.HttpClientHelper(null);
+        Engine.getInstance().getRegisteredClients().add(0, helper);
+
         helper = new org.restlet.ext.ssl.HttpsClientHelper(null);
         // helper = new org.restlet.ext.httpclient.HttpClientHelper(null);
         // helper = new org.restlet.ext.net.HttpClientHelper(null);
@@ -28,11 +30,11 @@ public class RestletClient {
         Engine.setLogLevel(Level.FINEST);
 
         for (int i = 0; i < 1; i++) {
-            ClientResource cr = new ClientResource(
+            ClientResource cr = new ClientResource("http://www.restlet.org"
             // "https://www.amazon.com/gp/css/homepage.html"
-                    "https://github.com/restlet/restlet-framework-java");
+            // "https://github.com/restlet/restlet-framework-java"
+            );
             cr.get().write(System.out);
         }
     }
-
 }

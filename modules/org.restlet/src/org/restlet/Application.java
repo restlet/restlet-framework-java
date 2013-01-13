@@ -386,19 +386,6 @@ public class Application extends Restlet {
     }
 
     /**
-     * Sets the client root Resource class.
-     * 
-     * @param clientRootClass
-     *            The client root {@link ServerResource} subclass.
-     * @deprecated Use {@link #setOutboundRoot(Class)} instead
-     */
-    @Deprecated
-    public synchronized void setClientRoot(
-            Class<? extends ServerResource> clientRootClass) {
-        setOutboundRoot(clientRootClass);
-    }
-
-    /**
      * Sets the connector service.
      * 
      * @param connectorService

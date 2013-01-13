@@ -88,19 +88,6 @@ public abstract class SecretVerifier implements Verifier {
      */
     protected User createUser(String identifier, Request request,
             Response response) {
-        return createUser(identifier);
-    }
-
-    /**
-     * Called back to create a new user when valid credentials are provided.
-     * 
-     * @param identifier
-     *            The user identifier.
-     * @return The {@link User} instance created.
-     * @deprecated
-     */
-    @Deprecated
-    protected User createUser(String identifier) {
         return new User(identifier);
     }
 

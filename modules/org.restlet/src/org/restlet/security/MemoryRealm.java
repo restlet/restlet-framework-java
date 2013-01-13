@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.Request;
+import org.restlet.Response;
 import org.restlet.data.ClientInfo;
 import org.restlet.engine.security.RoleMapping;
 
@@ -86,7 +88,8 @@ public class MemoryRealm extends Realm {
     private class DefaultVerifier extends SecretVerifier {
 
         @Override
-        protected User createUser(String identifier) {
+        protected User createUser(String identifier, Request request,
+                Response response) {
             User result = new User(identifier);
 
             // Find the reference user

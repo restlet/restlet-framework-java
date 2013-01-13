@@ -80,8 +80,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-@SuppressWarnings("deprecation")
-public class ClientResource extends UniformResource {
+public class ClientResource extends Resource {
 
     // [ifndef gwt] method
     /**
@@ -558,20 +557,7 @@ public class ClientResource extends UniformResource {
      * @see #getRequest()
      */
     public Request createRequest() {
-        return createRequest(getRequest());
-    }
-
-    /**
-     * Creates a new request by cloning the given one.
-     * 
-     * @param prototype
-     *            The prototype request.
-     * @return The new response.
-     * @deprecated Use {@link #createRequest()} instead
-     */
-    @Deprecated
-    public Request createRequest(Request prototype) {
-        return new Request(prototype);
+        return new Request(getRequest());
     }
 
     /**
@@ -1119,23 +1105,6 @@ public class ClientResource extends UniformResource {
     protected Representation handle(Method method, Representation entity,
             MediaType mediaType) {
         return handle(method, entity, new ClientInfo(mediaType));
-    }
-
-    /**
-     * Handles the call by invoking the next handler. Then a new response is
-     * created and the {@link #handle(Request, Response, List, int, Uniform)}
-     * method is invoked and the response set as the latest response with
-     * {@link #setResponse(Response)}.
-     * 
-     * @param request
-     *            The request to handle.
-     * @return The response created.
-     * @see #getNext()
-     * @deprecated Use the {@link #handleOutbound(Request)} method instead
-     */
-    @Deprecated
-    public Response handle(Request request) {
-        return handleOutbound(request);
     }
 
     /**

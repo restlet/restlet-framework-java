@@ -63,7 +63,6 @@ public class HttpsInboundRequest extends HttpInboundRequest {
      * @param protocol
      *            The protocol name and version.
      */
-    @SuppressWarnings("deprecation")
     public HttpsInboundRequest(Context context, Connection<Server> connection,
             String methodName, String resourceUri, String protocol) {
         super(context, connection, methodName, resourceUri, protocol);
@@ -71,20 +70,15 @@ public class HttpsInboundRequest extends HttpInboundRequest {
         // Set the SSL certificates
         List<Certificate> clientCertificates = getConnection()
                 .getSslClientCertificates();
-        if (clientCertificates != null) {
-            getAttributes().put(
-                    HeaderConstants.ATTRIBUTE_HTTPS_CLIENT_CERTIFICATES,
-                    clientCertificates);
 
+        if (clientCertificates != null) {
             // TODO: To be moved in a ClientInfo subclass
             getClientInfo().setCertificates(clientCertificates);
         }
 
         String cipherSuite = getConnection().getSslCipherSuite();
-        if (cipherSuite != null) {
-            getAttributes().put(HeaderConstants.ATTRIBUTE_HTTPS_CIPHER_SUITE,
-                    cipherSuite);
 
+        if (cipherSuite != null) {
             // TODO: To be moved in a ClientInfo subclass
             getClientInfo().setCipherSuite(cipherSuite);
         }

@@ -88,6 +88,8 @@ import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
 import org.restlet.security.Role;
+import org.restlet.service.ConnegService;
+import org.restlet.service.MetadataService;
 
 /**
  * Contains all request specific data of the interfaces injectable for &#64;
@@ -1213,7 +1215,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      *             if variants is null or empty.
      * @see javax.ws.rs.core.Request#selectVariant(List)
      */
-    @SuppressWarnings("deprecation")
     public Variant selectVariant(List<Variant> variants)
             throws IllegalArgumentException {
         if ((variants == null) || variants.isEmpty()) {
@@ -1222,8 +1223,22 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
         List<org.restlet.representation.Variant> restletVariants = Converter
                 .toRestletVariants(variants);
-        org.restlet.representation.Variant bestRestlVar = this.request
-                .getClientInfo().getPreferredVariant(restletVariants);
+
+        ConnegService connegService = null;
+        MetadataService metadataService = null;
+        org.restlet.Application app = org.restlet.Application.getCurrent();
+
+        if (app == null) {
+            connegService = new org.restlet.service.ConnegService();
+            metadataService = new MetadataService();
+        } else {
+            connegService = app.getConnegService();
+            metadataService = app.getMetadataService();
+        }
+
+        org.restlet.representation.Variant bestRestlVar = 
+                connegService.getPreferredVariant(restletVariants, this.request,
+                        metadataService);
         Variant bestVariant = Converter.toJaxRsVariant(bestRestlVar);
         Set<Dimension> dimensions = this.response.getDimensions();
 
