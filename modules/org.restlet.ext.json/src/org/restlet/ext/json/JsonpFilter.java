@@ -69,7 +69,7 @@ public class JsonpFilter extends Filter {
      * query string, containing the name of the JavaScript callback method.
      */
     @Override
-    protected void afterHandle(Request request, Response response) {
+    public void afterHandle(Request request, Response response) {
         // Check the presence of the callback parameter
         String callback = request.getResourceRef().getQueryAsForm()
                 .getFirstValue("callback");
