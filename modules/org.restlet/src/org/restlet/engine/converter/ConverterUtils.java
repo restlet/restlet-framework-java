@@ -33,6 +33,7 @@
 
 package org.restlet.engine.converter;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -132,9 +133,10 @@ public class ConverterUtils {
      * @param targetVariant
      *            The expected representation metadata.
      * @return The list of variants that can be converted.
+     * @throws IOException
      */
     public static List<VariantInfo> getVariants(Class<?> sourceClass,
-            Variant targetVariant) {
+            Variant targetVariant) throws IOException {
         List<VariantInfo> result = null;
 
         for (ConverterHelper ch : Engine.getInstance()

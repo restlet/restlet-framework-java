@@ -33,6 +33,7 @@
 
 package org.restlet.resource;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -1032,12 +1033,16 @@ public class ClientResource extends Resource {
         request.setClientInfo(clientInfo);
 
         if (entity != null) {
-            List<? extends Variant> entityVariants = cs.getVariants(
-                    entity.getClass(), null);
-            request.setEntity(toRepresentation(
-                    entity,
-                    getConnegService().getPreferredVariant(entityVariants,
-                            request, getMetadataService())));
+            List<? extends Variant> entityVariants;
+            try {
+                entityVariants = cs.getVariants(entity.getClass(), null);
+                request.setEntity(toRepresentation(
+                        entity,
+                        getConnegService().getPreferredVariant(entityVariants,
+                                request, getMetadataService())));
+            } catch (IOException e) {
+                throw new ResourceException(e);
+            }
         } else {
             request.setEntity(null);
         }
@@ -1397,6 +1402,81 @@ public class ClientResource extends Resource {
     }
 
     /**
+     * Patches a resource with the given object as delta state. Automatically
+     * serializes the object using the
+     * {@link org.restlet.service.ConverterService}.
+     * 
+     * @param entity
+     *            The object entity containing the patch.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see <a href="https://tools.ietf.org/html/rfc5789">HTTP PATCH method</a>
+     */
+    public Representation patch(Object entity) throws ResourceException {
+        try {
+            return patch(toRepresentation(entity, null));
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Patches a resource with the given object as delta state. Automatically
+     * serializes the object using the
+     * {@link org.restlet.service.ConverterService}.
+     * 
+     * @param entity
+     *            The object entity containing the patch.
+     * @param resultClass
+     *            The class of the response entity.
+     * @return The response object entity.
+     * @throws ResourceException
+     * @see <a href="https://tools.ietf.org/html/rfc5789">HTTP PATCH method</a>
+     */
+    public <T> T patch(Object entity, Class<T> resultClass)
+            throws ResourceException {
+        return handle(Method.PATCH, entity, resultClass);
+    }
+
+    /**
+     * Patches a resource with the given object as delta state. Automatically
+     * serializes the object using the
+     * {@link org.restlet.service.ConverterService}.
+     * 
+     * @param entity
+     *            The object entity containing the patch.
+     * @param mediaType
+     *            The media type of the representation to retrieve.
+     * @return The response object entity.
+     * @throws ResourceException
+     * @see <a href="https://tools.ietf.org/html/rfc5789">HTTP PATCH method</a>
+     */
+    public Representation patch(Object entity, MediaType mediaType)
+            throws ResourceException {
+        try {
+            return handle(Method.PATCH, toRepresentation(entity, null),
+                    mediaType);
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
+    }
+
+    /**
+     * Patches a resource with the given representation as delta state. If a
+     * success status is not returned, then a resource exception is thrown.
+     * 
+     * @param entity
+     *            The request entity containing the patch.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see <a href="https://tools.ietf.org/html/rfc5789">HTTP PATCH method</a>
+     */
+    public Representation patch(Representation entity) throws ResourceException {
+        return handle(Method.PATCH, entity);
+    }
+
+    /**
      * Posts an object entity. Automatically serializes the object using the
      * {@link org.restlet.service.ConverterService}.
      * 
@@ -1409,7 +1489,11 @@ public class ClientResource extends Resource {
      *      POST method</a>
      */
     public Representation post(Object entity) throws ResourceException {
-        return post(toRepresentation(entity, null));
+        try {
+            return post(toRepresentation(entity, null));
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
     }
 
     // [ifndef gwt] method
@@ -1448,7 +1532,12 @@ public class ClientResource extends Resource {
      */
     public Representation post(Object entity, MediaType mediaType)
             throws ResourceException {
-        return handle(Method.POST, toRepresentation(entity, null), mediaType);
+        try {
+            return handle(Method.POST, toRepresentation(entity, null),
+                    mediaType);
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
     }
 
     /**
@@ -1480,7 +1569,11 @@ public class ClientResource extends Resource {
      *      PUT method</a>
      */
     public Representation put(Object entity) throws ResourceException {
-        return put(toRepresentation(entity, null));
+        try {
+            return put(toRepresentation(entity, null));
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
     }
 
     // [ifndef gwt] method
@@ -1519,7 +1612,11 @@ public class ClientResource extends Resource {
      */
     public Representation put(Object entity, MediaType mediaType)
             throws ResourceException {
-        return handle(Method.PUT, toRepresentation(entity, null), mediaType);
+        try {
+            return handle(Method.PUT, toRepresentation(entity, null), mediaType);
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
     }
 
     /**
@@ -1672,38 +1769,6 @@ public class ClientResource extends Resource {
     public void setChallengeResponse(ChallengeScheme scheme,
             final String identifier, String secret) {
         setChallengeResponse(new ChallengeResponse(scheme, identifier, secret));
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Sets the proxy authentication response sent by a client to an origin
-     * server.
-     * 
-     * @param challengeResponse
-     *            The proxy authentication response sent by a client to an
-     *            origin server.
-     * @see Request#setProxyChallengeResponse(ChallengeResponse)
-     */
-    public void setProxyChallengeResponse(ChallengeResponse challengeResponse) {
-        getRequest().setProxyChallengeResponse(challengeResponse);
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Sets the proxy authentication response sent by a client to an origin
-     * server given a scheme, identifier and secret.
-     * 
-     * @param scheme
-     *            The challenge scheme.
-     * @param identifier
-     *            The user identifier, such as a login name or an access key.
-     * @param secret
-     *            The user secret, such as a password or a secret key.
-     */
-    public void setProxyChallengeResponse(ChallengeScheme scheme,
-            final String identifier, String secret) {
-        setProxyChallengeResponse(new ChallengeResponse(scheme, identifier,
-                secret));
     }
 
     /**
@@ -1884,6 +1949,38 @@ public class ClientResource extends Resource {
      */
     public void setProtocol(Protocol protocol) {
         getRequest().setProtocol(protocol);
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Sets the proxy authentication response sent by a client to an origin
+     * server.
+     * 
+     * @param challengeResponse
+     *            The proxy authentication response sent by a client to an
+     *            origin server.
+     * @see Request#setProxyChallengeResponse(ChallengeResponse)
+     */
+    public void setProxyChallengeResponse(ChallengeResponse challengeResponse) {
+        getRequest().setProxyChallengeResponse(challengeResponse);
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Sets the proxy authentication response sent by a client to an origin
+     * server given a scheme, identifier and secret.
+     * 
+     * @param scheme
+     *            The challenge scheme.
+     * @param identifier
+     *            The user identifier, such as a login name or an access key.
+     * @param secret
+     *            The user secret, such as a password or a secret key.
+     */
+    public void setProxyChallengeResponse(ChallengeScheme scheme,
+            final String identifier, String secret) {
+        setProxyChallengeResponse(new ChallengeResponse(scheme, identifier,
+                secret));
     }
 
     /**

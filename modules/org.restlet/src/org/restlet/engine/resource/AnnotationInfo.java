@@ -33,6 +33,7 @@
 
 package org.restlet.engine.resource;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
@@ -405,10 +406,12 @@ public class AnnotationInfo {
      * @param metadataService
      *            The metadata service to use.
      * @return A list of request variants.
+     * @throws IOException
      */
     @SuppressWarnings("unchecked")
     public List<Variant> getRequestVariants(MetadataService metadataService,
-            org.restlet.service.ConverterService converterService) {
+            org.restlet.service.ConverterService converterService)
+            throws IOException {
         List<Variant> result = null;
         Class<?>[] classes = getJavaInputTypes();
 
@@ -417,6 +420,7 @@ public class AnnotationInfo {
 
             if (result == null) {
                 Class<?> inputClass = classes[0];
+
                 if (inputClass != null) {
                     result = (List<Variant>) converterService.getVariants(
                             inputClass, null);
@@ -445,10 +449,12 @@ public class AnnotationInfo {
      * @param converterService
      *            The converter service to use.
      * @return A list of response variants.
+     * @throws IOException
      */
     @SuppressWarnings("unchecked")
     public List<Variant> getResponseVariants(MetadataService metadataService,
-            org.restlet.service.ConverterService converterService) {
+            org.restlet.service.ConverterService converterService)
+            throws IOException {
         List<Variant> result = null;
 
         if ((getJavaOutputType() != null)
@@ -573,10 +579,12 @@ public class AnnotationInfo {
      * @param converterService
      *            The converter service to use.
      * @return True if the annotated method is compatible.
+     * @throws IOException
      */
     public boolean isCompatible(Method restletMethod, Form queryParams,
             Representation requestEntity, MetadataService metadataService,
-            org.restlet.service.ConverterService converterService) {
+            org.restlet.service.ConverterService converterService)
+            throws IOException {
         boolean result = true;
 
         // Verify query parameters
@@ -616,10 +624,12 @@ public class AnnotationInfo {
      *            The converter service to use.
      * @return True if the given request entity is compatible with the annotated
      *         method described.
+     * @throws IOException
      */
     public boolean isCompatibleRequestEntity(Representation requestEntity,
             MetadataService metadataService,
-            org.restlet.service.ConverterService converterService) {
+            org.restlet.service.ConverterService converterService)
+            throws IOException {
         boolean result = true;
 
         if ((requestEntity != null) && requestEntity.isAvailable()) {

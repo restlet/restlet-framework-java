@@ -44,7 +44,7 @@ import org.restlet.test.RestletTestCase;
 
 public class ConverterTestCase extends RestletTestCase {
 
-    public void testObjectToRepresentation() {
+    public void testObjectToRepresentation() throws IOException {
         ConverterService cs = new ConverterService();
         Feed feed = new Feed();
         Representation representation = cs.toRepresentation(feed);

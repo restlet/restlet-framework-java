@@ -33,6 +33,7 @@
 
 package org.restlet.resource;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,7 @@ import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.Variant;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
+import org.restlet.service.ConverterService;
 import org.restlet.util.Series;
 
 /**
@@ -169,12 +171,18 @@ public abstract class ServerResource extends Resource {
      */
     protected Representation delete() throws ResourceException {
         Representation result = null;
-        AnnotationInfo annotationInfo = getAnnotation(Method.DELETE);
+        AnnotationInfo annotationInfo;
 
-        if (annotationInfo != null) {
-            result = doHandle(annotationInfo, null);
-        } else {
-            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        try {
+            annotationInfo = getAnnotation(Method.DELETE);
+
+            if (annotationInfo != null) {
+                result = doHandle(annotationInfo, null);
+            } else {
+                doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            }
+        } catch (IOException e) {
+            throw new ResourceException(e);
         }
 
         return result;
@@ -299,7 +307,8 @@ public abstract class ServerResource extends Resource {
                                     .equals(getStatus()))) {
                         doError(Status.CLIENT_ERROR_NOT_FOUND);
                     } else {
-                        // Keep the current status as the developer might prefer
+                        // Keep the current status as the developer might
+                        // prefer
                         // a special status like 'method not authorized'.
                     }
                 } else {
@@ -370,12 +379,18 @@ public abstract class ServerResource extends Resource {
      */
     private RepresentationInfo doGetInfo() throws ResourceException {
         RepresentationInfo result = null;
-        AnnotationInfo annotationInfo = getAnnotation(Method.GET);
+        AnnotationInfo annotationInfo;
 
-        if (annotationInfo != null) {
-            result = doHandle(annotationInfo, null);
-        } else {
-            result = getInfo();
+        try {
+            annotationInfo = getAnnotation(Method.GET);
+
+            if (annotationInfo != null) {
+                result = doHandle(annotationInfo, null);
+            } else {
+                result = getInfo();
+            }
+        } catch (IOException e) {
+            throw new ResourceException(e);
         }
 
         return result;
@@ -429,6 +444,8 @@ public abstract class ServerResource extends Resource {
         } else {
             if (method.equals(Method.PUT)) {
                 result = put(getRequestEntity());
+            } else if (method.equals(Method.PATCH)) {
+                result = patch(getRequestEntity());
             } else if (isExisting()) {
                 if (method.equals(Method.GET)) {
                     result = get();
@@ -469,6 +486,7 @@ public abstract class ServerResource extends Resource {
 
         // Invoke the annotated method and get the resulting object.
         Object resultObject = null;
+
         try {
             if (parameterTypes.length > 0) {
                 List<Object> parameters = new ArrayList<Object>();
@@ -504,6 +522,11 @@ public abstract class ServerResource extends Resource {
             } else {
                 resultObject = annotationInfo.getJavaMethod().invoke(this);
             }
+
+            if (resultObject != null) {
+                result = toRepresentation(resultObject, variant);
+            }
+
         } catch (IllegalArgumentException e) {
             throw new ResourceException(e);
         } catch (IllegalAccessException e) {
@@ -514,10 +537,8 @@ public abstract class ServerResource extends Resource {
             }
 
             throw new ResourceException(e.getTargetException());
-        }
-
-        if (resultObject != null) {
-            result = toRepresentation(resultObject, variant);
+        } catch (IOException e) {
+            throw new ResourceException(e);
         }
 
         return result;
@@ -537,25 +558,31 @@ public abstract class ServerResource extends Resource {
      * @param entity
      *            The request entity (can be null, or unavailable).
      * @return The response entity.
-     * @throws ResourceException
+     * @throws IOException
      */
     private Representation doHandle(Method method, Form query,
-            Representation entity) {
+            Representation entity) throws ResourceException {
         Representation result = null;
 
-        if (getAnnotation(method) != null) {
-            // We know the method is supported, let's check the entity.
-            AnnotationInfo annotationInfo = getAnnotation(method, query, entity);
+        try {
+            if (getAnnotation(method) != null) {
+                // We know the method is supported, let's check the entity.
+                AnnotationInfo annotationInfo = getAnnotation(method, query,
+                        entity);
 
-            if (annotationInfo != null) {
-                result = doHandle(annotationInfo, null);
+                if (annotationInfo != null) {
+                    result = doHandle(annotationInfo, null);
+                } else {
+                    // The request entity is not supported.
+                    doError(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+                }
             } else {
-                // The request entity is not supported.
-                doError(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE);
+                doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
             }
-        } else {
-            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        } catch (IOException e) {
+            throw new ResourceException(e);
         }
+
         return result;
     }
 
@@ -580,6 +607,8 @@ public abstract class ServerResource extends Resource {
         } else {
             if (method.equals(Method.PUT)) {
                 result = put(getRequestEntity(), variant);
+            } else if (method.equals(Method.PATCH)) {
+                result = patch(getRequestEntity(), variant);
             } else if (isExisting()) {
                 if (method.equals(Method.GET)) {
                     if (variant instanceof Representation) {
@@ -643,7 +672,8 @@ public abstract class ServerResource extends Resource {
                 doError(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
                 result = describeVariants();
             } else {
-                // Update the variant dimensions used for content negotiation
+                // Update the variant dimensions used for content
+                // negotiation
                 updateDimensions();
                 result = doHandle(preferredVariant);
             }
@@ -671,12 +701,18 @@ public abstract class ServerResource extends Resource {
      */
     protected Representation get() throws ResourceException {
         Representation result = null;
-        AnnotationInfo annotationInfo = getAnnotation(Method.GET);
+        AnnotationInfo annotationInfo;
 
-        if (annotationInfo != null) {
-            result = doHandle(annotationInfo, null);
-        } else {
-            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+        try {
+            annotationInfo = getAnnotation(Method.GET);
+
+            if (annotationInfo != null) {
+                result = doHandle(annotationInfo, null);
+            } else {
+                doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            }
+        } catch (IOException e) {
+            throw new ResourceException(e);
         }
 
         return result;
@@ -718,8 +754,9 @@ public abstract class ServerResource extends Resource {
      * @param method
      *            The method to match.
      * @return The annotation descriptor.
+     * @throws IOException
      */
-    private AnnotationInfo getAnnotation(Method method) {
+    private AnnotationInfo getAnnotation(Method method) throws IOException {
         return getAnnotation(method, getQuery(), null);
     }
 
@@ -733,9 +770,10 @@ public abstract class ServerResource extends Resource {
      * @param entity
      *            The request entity or null.
      * @return The annotation descriptor.
+     * @throws IOException
      */
     private AnnotationInfo getAnnotation(Method method, Form query,
-            Representation entity) {
+            Representation entity) throws IOException {
         if (isAnnotated()) {
             return AnnotationUtils.getInstance().getAnnotation(
                     getAnnotations(), method, query, entity,
@@ -848,6 +886,7 @@ public abstract class ServerResource extends Resource {
      * based on annotated methods.
      * 
      * @return The modifiable list of variants.
+     * @throws IOException
      */
     public List<Variant> getVariants() {
         return getVariants(getMethod());
@@ -875,43 +914,52 @@ public abstract class ServerResource extends Resource {
                 method = (Method.HEAD.equals(method)) ? Method.GET : method;
 
                 for (AnnotationInfo annotationInfo : getAnnotations()) {
-                    if (annotationInfo.isCompatible(method, getQuery(),
-                            getRequestEntity(), getMetadataService(),
-                            getConverterService())) {
-                        annoVariants = annotationInfo.getResponseVariants(
-                                getMetadataService(), getConverterService());
+                    try {
+                        if (annotationInfo.isCompatible(method, getQuery(),
+                                getRequestEntity(), getMetadataService(),
+                                getConverterService())) {
+                            annoVariants = annotationInfo
+                                    .getResponseVariants(getMetadataService(),
+                                            getConverterService());
 
-                        if (annoVariants != null) {
-                            // Compute an affinity score between this annotation
-                            // and the input entity.
-                            float score = 0.5f;
-                            if ((getRequest().getEntity() != null)
-                                    && getRequest().getEntity().isAvailable()) {
-                                MediaType emt = getRequest().getEntity()
-                                        .getMediaType();
-                                List<MediaType> amts = getMetadataService()
-                                        .getAllMediaTypes(
-                                                annotationInfo.getInput());
-                                if (amts != null) {
-                                    for (MediaType amt : amts) {
-                                        if (amt.equals(emt)) {
-                                            score = 1.0f;
-                                        } else if (amt.includes(emt)) {
-                                            score = Math.max(0.8f, score);
-                                        } else if (amt.isCompatible(emt)) {
-                                            score = Math.max(0.6f, score);
+                            if (annoVariants != null) {
+                                // Compute an affinity score between this
+                                // annotation
+                                // and the input entity.
+                                float score = 0.5f;
+                                if ((getRequest().getEntity() != null)
+                                        && getRequest().getEntity()
+                                                .isAvailable()) {
+                                    MediaType emt = getRequest().getEntity()
+                                            .getMediaType();
+                                    List<MediaType> amts = getMetadataService()
+                                            .getAllMediaTypes(
+                                                    annotationInfo.getInput());
+                                    if (amts != null) {
+                                        for (MediaType amt : amts) {
+                                            if (amt.equals(emt)) {
+                                                score = 1.0f;
+                                            } else if (amt.includes(emt)) {
+                                                score = Math.max(0.8f, score);
+                                            } else if (amt.isCompatible(emt)) {
+                                                score = Math.max(0.6f, score);
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            for (Variant v : annoVariants) {
-                                VariantInfo vi = new VariantInfo(v,
-                                        annotationInfo);
-                                vi.setInputScore(score);
-                                result.add(vi);
+                                for (Variant v : annoVariants) {
+                                    VariantInfo vi = new VariantInfo(v,
+                                            annotationInfo);
+                                    vi.setInputScore(score);
+                                    result.add(vi);
+                                }
                             }
                         }
+                    } catch (IOException e) {
+                        getLogger().log(Level.FINE,
+                                "Unable to get variants from annotation", e);
+
                     }
                 }
             }
@@ -1116,15 +1164,21 @@ public abstract class ServerResource extends Resource {
      */
     protected Representation options() throws ResourceException {
         Representation result = null;
-        AnnotationInfo annotationInfo = getAnnotation(Method.OPTIONS);
+        AnnotationInfo annotationInfo;
 
-        // Updates the list of allowed methods
-        updateAllowedMethods();
+        try {
+            annotationInfo = getAnnotation(Method.OPTIONS);
 
-        if (annotationInfo != null) {
-            result = doHandle(annotationInfo, null);
-        } else {
-            doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            // Updates the list of allowed methods
+            updateAllowedMethods();
+
+            if (annotationInfo != null) {
+                result = doHandle(annotationInfo, null);
+            } else {
+                doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            }
+        } catch (IOException e) {
+            throw new ResourceException(e);
         }
 
         return result;
@@ -1161,6 +1215,51 @@ public abstract class ServerResource extends Resource {
         }
 
         return result;
+    }
+
+    /**
+     * Apply a patch entity to the current representation of the resource
+     * retrieved by calling {@link #get()}. By default, the
+     * {@link ConverterService#applyPatch(Representation, Representation)}
+     * method is used and then the {@link #put(Representation)} method called.
+     * 
+     * @param entity
+     *            The patch entity to apply.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see <a href="https://tools.ietf.org/html/rfc5789">HTTP PATCH method</a>
+     */
+    protected Representation patch(Representation entity)
+            throws ResourceException {
+        try {
+            return put(getConverterService().applyPatch(get(), entity));
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
+    }
+
+    /**
+     * Apply a patch entity to the current representation of the resource
+     * retrieved by calling {@link #get()}. By default, the
+     * {@link ConverterService#applyPatch(Representation, Representation)}
+     * method is used and then the {@link #put(Representation, Variant)} method
+     * called.
+     * 
+     * @param entity
+     *            The patch entity to apply.
+     * @param variant
+     *            The variant of the response entity.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see <a href="https://tools.ietf.org/html/rfc5789">HTTP PATCH method</a>
+     */
+    protected Representation patch(Representation entity, Variant variant)
+            throws ResourceException {
+        try {
+            return put(getConverterService().applyPatch(get(), entity), variant);
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        }
     }
 
     /**

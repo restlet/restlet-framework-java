@@ -216,18 +216,21 @@ public class JaxRsClientInvocationHandler<T> extends ClientInvocationHandler<T> 
         Class<? extends Object> clazz = value.getClass();
         boolean isPrimitiveOrWrapped = clazz.isPrimitive()
                 || ClassUtils.wrapperToPrimitive(clazz) != null;
+
         if (isPrimitiveOrWrapped || clazz == String.class) {
             return String.valueOf(value);
         }
 
         String representationAsText = null;
-        Representation representation = clientResource.getApplication()
-                .getConverterService().toRepresentation(value);
+
         try {
+            Representation representation = clientResource.getApplication()
+                    .getConverterService().toRepresentation(value);
             representationAsText = representation.getText();
-        } catch (IOException exception) {
-            throw new WebApplicationException(exception);
+        } catch (IOException e) {
+            throw new WebApplicationException(e);
         }
+
         return representationAsText;
     }
 

@@ -51,7 +51,7 @@ import org.restlet.test.RestletTestCase;
  */
 public class JaxbBasicConverterTestCase extends RestletTestCase {
 
-    public void testObjectionToRepresentation() {
+    public void testObjectionToRepresentation() throws IOException {
         ConverterService cs = new ConverterService();
         Representation rep = cs.toRepresentation(new Sample(), new Variant(
                 MediaType.APPLICATION_XML), null);

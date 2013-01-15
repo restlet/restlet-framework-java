@@ -20,6 +20,14 @@ Changes log
          to force network buffers to be flushed out.
          Suggested by Yan Pujante.
        - Removed all code deprecated in branch 2.1.
+       - Added patch-related methods to the ConverterService:
+         applyPatch(Representation original, Representation patch) : Representation
+         revertPatch(Representation modified, Representation patch) : Representation
+         createPatch(Representation original, Representation modified) : Representation
+       - Added patch(..) methods to ClientResource. Suggested by Brian Sletten.
+       - Added patch(..) to ServerResource relying by default on the 
+         ConverterService and on the put(..) methods. Suggested by Brian Sletten.
+       - Added IOException declaration to all the ConverterService methods.
     - Bug fixed
        - The same ones as in version 2.1.2.
     - Misc

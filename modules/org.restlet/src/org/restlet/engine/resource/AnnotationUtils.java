@@ -33,6 +33,7 @@
 
 package org.restlet.engine.resource;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -116,8 +117,8 @@ public class AnnotationUtils {
                     }
                 }
 
-                result.add(new AnnotationInfo(initialResourceClass, restletMethod,
-                        javaMethod, value));
+                result.add(new AnnotationInfo(initialResourceClass,
+                        restletMethod, javaMethod, value));
 
             }
         }
@@ -138,7 +139,8 @@ public class AnnotationUtils {
      * @return The annotation descriptors.
      */
     private List<AnnotationInfo> addAnnotations(
-            List<AnnotationInfo> descriptors, Class<?> clazz, Class<?> initialClass) {
+            List<AnnotationInfo> descriptors, Class<?> clazz,
+            Class<?> initialClass) {
         List<AnnotationInfo> result = descriptors;
 
         if (clazz != null && !ServerResource.class.equals(clazz)) {
@@ -150,12 +152,14 @@ public class AnnotationUtils {
             // Inspect the current class
             if (clazz.isInterface()) {
                 for (java.lang.reflect.Method javaMethod : clazz.getMethods()) {
-                    addAnnotationDescriptors(result, clazz, initialClass, javaMethod);
+                    addAnnotationDescriptors(result, clazz, initialClass,
+                            javaMethod);
                 }
             } else {
                 for (java.lang.reflect.Method javaMethod : clazz
                         .getDeclaredMethods()) {
-                    addAnnotationDescriptors(result, clazz, initialClass, javaMethod);
+                    addAnnotationDescriptors(result, clazz, initialClass,
+                            javaMethod);
                 }
             }
 
@@ -164,7 +168,8 @@ public class AnnotationUtils {
 
             if (interfaces != null) {
                 for (Class<?> interfaceClass : interfaces) {
-                    result = addAnnotations(result, interfaceClass, initialClass);
+                    result = addAnnotations(result, interfaceClass,
+                            initialClass);
                 }
             }
 
@@ -221,11 +226,13 @@ public class AnnotationUtils {
      * @param converterService
      *            The converter service to use.
      * @return The annotation descriptor.
+     * @throws IOException
      */
     public AnnotationInfo getAnnotation(List<AnnotationInfo> annotations,
             Method restletMethod, Form query, Representation entity,
             MetadataService metadataService,
-            org.restlet.service.ConverterService converterService) {
+            org.restlet.service.ConverterService converterService)
+            throws IOException {
         if (annotations != null) {
             for (AnnotationInfo annotationInfo : annotations) {
                 if (annotationInfo.isCompatible(restletMethod, query, entity,

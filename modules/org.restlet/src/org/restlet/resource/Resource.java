@@ -853,8 +853,10 @@ public abstract class Resource {
      * @param target
      *            The target representation variant.
      * @return The wrapper representation.
+     * @throws IOException
      */
-    public Representation toRepresentation(Object source, Variant target) {
+    public Representation toRepresentation(Object source, Variant target)
+            throws IOException {
         Representation result = null;
 
         if (source != null) {
