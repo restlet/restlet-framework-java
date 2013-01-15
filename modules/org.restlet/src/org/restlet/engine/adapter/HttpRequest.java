@@ -33,6 +33,7 @@
 
 package org.restlet.engine.adapter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -203,7 +204,7 @@ public class HttpRequest extends Request {
     }
 
     @Override
-    public void flushBuffers() {
+    public void flushBuffers() throws IOException {
         getHttpCall().flushBuffers();
     }
 

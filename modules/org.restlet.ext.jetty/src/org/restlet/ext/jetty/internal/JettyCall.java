@@ -110,13 +110,8 @@ public class JettyCall extends ServerCall {
     }
 
     @Override
-    public void flushBuffers() {
-        try {
-            getConnection().flushResponse();
-            getConnection().getEndPoint().flush();
-        } catch (Exception e) {
-            getLogger().log(Level.FINE, "Unable to flush the response", e);
-        }
+    public void flushBuffers() throws IOException {
+        getConnection().flushResponse();
     }
 
     @Override

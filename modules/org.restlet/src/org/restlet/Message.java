@@ -33,6 +33,7 @@
 
 package org.restlet;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -104,6 +105,14 @@ public abstract class Message {
         this.onSent = null;
         this.recipientsInfo = null;
         this.warnings = null;
+    }
+
+    /**
+     * Asks the underlying connector to immediately flush the network buffers.
+     * 
+     * @throws IOException
+     */
+    public void flushBuffers() throws IOException {
     }
 
     /**

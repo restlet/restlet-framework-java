@@ -97,6 +97,11 @@ public class ServletCall extends ServerCall {
         this.response = response;
     }
 
+    @Override
+    public void flushBuffers() throws IOException {
+        getResponse().flushBuffer();
+    }
+
     /**
      * Constructor.
      * 

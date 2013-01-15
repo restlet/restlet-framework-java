@@ -33,6 +33,7 @@
 
 package org.restlet;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -194,8 +195,11 @@ public class Response extends Message {
      * Asks the server connector to immediately flush the network buffers. Note
      * that this calls back {@link Request#flushBuffers()} on the parent request
      * which holds the link with the underlying network connection.
+     * 
+     * @throws IOException
      */
-    public void flushBuffers() {
+    @Override
+    public void flushBuffers() throws IOException {
         getRequest().flushBuffers();
     }
 

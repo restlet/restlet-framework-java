@@ -113,10 +113,12 @@ public abstract class ServerCall extends Call {
     }
 
     /**
-     * Flushes the buffers onto the network so that for example you can
-     * force headers to be written before the entity is becoming available.
+     * Flushes the buffers onto the network so that for example you can force
+     * headers to be written before the entity is becoming available.
+     * 
+     * @throws IOException
      */
-    public void flushBuffers() {
+    public void flushBuffers() throws IOException {
     }
 
     /**

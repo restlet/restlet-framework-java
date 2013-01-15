@@ -118,15 +118,10 @@ public class SimpleCall extends ServerCall {
     }
 
     @Override
-    public void flushBuffers() {
-        try {
-            // Commit the response if not already done
-            this.response.commit();
-        } catch (Exception ex) {
-            getLogger().log(Level.WARNING, "Unable to flush the response", ex);
-        }
+    public void flushBuffers() throws IOException {
+        this.response.commit();
     }
-    
+
     @Override
     public void complete() {
         try {
