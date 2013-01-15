@@ -83,6 +83,7 @@ public class HeaderUtils {
                     HeaderConstants.HEADER_ACCEPT_CHARSET,
                     HeaderConstants.HEADER_ACCEPT_ENCODING,
                     HeaderConstants.HEADER_ACCEPT_LANGUAGE,
+                    HeaderConstants.HEADER_ACCEPT_PATCH,
                     HeaderConstants.HEADER_ACCEPT_RANGES,
                     HeaderConstants.HEADER_AGE, HeaderConstants.HEADER_ALLOW,
                     HeaderConstants.HEADER_AUTHENTICATION_INFO,
@@ -355,6 +356,12 @@ public class HeaderUtils {
         if (!clientInfo.getAcceptedLanguages().isEmpty()) {
             addHeader(HeaderConstants.HEADER_ACCEPT_LANGUAGE,
                     PreferenceWriter.write(clientInfo.getAcceptedLanguages()),
+                    headers);
+        }
+
+        if (!clientInfo.getAcceptedPatches().isEmpty()) {
+            addHeader(HeaderConstants.HEADER_ACCEPT_PATCH,
+                    PreferenceWriter.write(clientInfo.getAcceptedPatches()),
                     headers);
         }
 
@@ -1020,7 +1027,7 @@ public class HeaderUtils {
     public static boolean isLinearWhiteSpace(int character) {
         return (isCarriageReturn(character) || isSpace(character)
                 || isLineFeed(character) || HeaderUtils
-                .isHorizontalTab(character));
+                    .isHorizontalTab(character));
     }
 
     /**

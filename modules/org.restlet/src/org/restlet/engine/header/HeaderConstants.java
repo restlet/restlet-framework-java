@@ -87,6 +87,8 @@ public final class HeaderConstants {
 
     public static final String HEADER_ACCEPT_LANGUAGE = "Accept-Language";
 
+    public static final String HEADER_ACCEPT_PATCH = "Accept-Patch";
+
     public static final String HEADER_ACCEPT_RANGES = "Accept-Ranges";
 
     public static final String HEADER_AGE = "Age";

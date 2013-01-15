@@ -383,6 +383,8 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
                         HeaderConstants.HEADER_ACCEPT_ENCODING);
                 String acceptLanguage = getHeaders().getValues(
                         HeaderConstants.HEADER_ACCEPT_LANGUAGE);
+                String acceptPatch = getHeaders().getValues(
+                        HeaderConstants.HEADER_ACCEPT_PATCH);
                 String expect = getHeaders().getValues(
                         HeaderConstants.HEADER_EXPECT);
 
@@ -413,6 +415,12 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
 
                 try {
                     PreferenceReader.addMediaTypes(acceptMediaType, result);
+                } catch (Exception e) {
+                    this.context.getLogger().log(Level.INFO, e.getMessage());
+                }
+
+                try {
+                    PreferenceReader.addPatches(acceptPatch, result);
                 } catch (Exception e) {
                     this.context.getLogger().log(Level.INFO, e.getMessage());
                 }

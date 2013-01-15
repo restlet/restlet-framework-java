@@ -27,6 +27,8 @@ Changes log
        - Added patch(..) methods to ClientResource. Suggested by Brian Sletten.
        - Added patch(..) to ServerResource relying by default on the 
          ConverterService and on the put(..) methods. Suggested by Brian Sletten.
+       - Added ClientInfo.acceptedPatches property and HTTP header writing/reading
+         logic for "Accept-Patch".
        - Added IOException declaration to all the ConverterService methods.
     - Bug fixed
        - The same ones as in version 2.1.2.

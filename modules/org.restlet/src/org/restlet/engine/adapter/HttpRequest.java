@@ -262,6 +262,8 @@ public class HttpRequest extends Request {
                     .getValues(HeaderConstants.HEADER_ACCEPT_ENCODING);
             String acceptLanguage = getHttpCall().getRequestHeaders()
                     .getValues(HeaderConstants.HEADER_ACCEPT_LANGUAGE);
+            String acceptPatch = getHttpCall().getRequestHeaders().getValues(
+                    HeaderConstants.HEADER_ACCEPT_PATCH);
             String expect = getHttpCall().getRequestHeaders().getValues(
                     HeaderConstants.HEADER_EXPECT);
 
@@ -290,6 +292,12 @@ public class HttpRequest extends Request {
 
             try {
                 PreferenceReader.addMediaTypes(acceptMediaType, result);
+            } catch (Exception e) {
+                this.context.getLogger().log(Level.INFO, e.getMessage());
+            }
+
+            try {
+                PreferenceReader.addPatches(acceptPatch, result);
             } catch (Exception e) {
                 this.context.getLogger().log(Level.INFO, e.getMessage());
             }

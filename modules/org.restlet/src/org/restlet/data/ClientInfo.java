@@ -240,6 +240,9 @@ public final class ClientInfo {
     /** The media preferences. */
     private volatile List<Preference<MediaType>> acceptedMediaTypes;
 
+    /** The patch preferences. */
+    private volatile List<Preference<MediaType>> acceptedPatches;
+
     /** The immediate IP addresses. */
     private volatile String address;
 
@@ -310,6 +313,7 @@ public final class ClientInfo {
         this.acceptedEncodings = null;
         this.acceptedLanguages = null;
         this.acceptedMediaTypes = null;
+        this.acceptedPatches = null;
         this.forwardedAddresses = null;
         this.from = null;
         // [ifndef gwt]
@@ -483,6 +487,29 @@ public final class ClientInfo {
     }
 
     /**
+     * Returns the modifiable list of patch preferences. Creates a new instance
+     * if no one has been set.<br>
+     * <br>
+     * Note that when used with HTTP connectors, this property maps to the
+     * "Accept-Patch" header.
+     * 
+     * @return The patch preferences.
+     */
+    public List<Preference<MediaType>> getAcceptedPatches() {
+        // Lazy initialization with double-check.
+        List<Preference<MediaType>> a = this.acceptedPatches;
+        if (a == null) {
+            synchronized (this) {
+                a = this.acceptedPatches;
+                if (a == null) {
+                    this.acceptedPatches = a = new CopyOnWriteArrayList<Preference<MediaType>>();
+                }
+            }
+        }
+        return a;
+    }
+
+    /**
      * Returns the immediate client's IP address. If the real client is
      * separated from the server by a proxy server, this will return the IP
      * address of the proxy.
@@ -542,7 +569,7 @@ public final class ClientInfo {
                 for (String string : ClientInfo.getUserAgentTemplates()) {
                     template = new org.restlet.routing.Template(string,
                             org.restlet.routing.Template.MODE_EQUALS);
-                    
+
                     // Update the predefined variables.
                     template.getVariables().put("agentName", agentName);
                     template.getVariables().put("agentVersion", agentVersion);
@@ -553,7 +580,7 @@ public final class ClientInfo {
                             agentCommentAttribute);
                     template.getVariables().put("facultativeData",
                             facultativeData);
-                    
+
                     // Parse the template
                     if (template.parse(getAgent(), map) > -1) {
                         for (String key : map.keySet()) {
@@ -798,6 +825,19 @@ public final class ClientInfo {
 
     // [ifndef gwt] method
     /**
+     * Returns the preferred patch among a list of supported ones, based on the
+     * client preferences.
+     * 
+     * @param supported
+     *            The supported patches.
+     * @return The preferred patch.
+     */
+    public MediaType getPreferredPatch(List<MediaType> supported) {
+        return getPreferredMetadata(supported, getAcceptedPatches());
+    }
+
+    // [ifndef gwt] method
+    /**
      * Returns the additional client principals. Note that {@link #getUser()}
      * and {@link #getRoles()} methods already return user and role principals.
      * 
@@ -947,6 +987,21 @@ public final class ClientInfo {
             List<Preference<MediaType>> ac = getAcceptedMediaTypes();
             ac.clear();
             ac.addAll(acceptedMediaTypes);
+        }
+    }
+
+    /**
+     * Sets the patch preferences. Note that when used with HTTP connectors,
+     * this property maps to the "Accept-Patch" header.
+     * 
+     * @param acceptedPatches
+     *            The media type preferences.
+     */
+    public void setAcceptedPatches(List<Preference<MediaType>> acceptedPatches) {
+        synchronized (this) {
+            List<Preference<MediaType>> ac = getAcceptedPatches();
+            ac.clear();
+            ac.addAll(acceptedPatches);
         }
     }
 
