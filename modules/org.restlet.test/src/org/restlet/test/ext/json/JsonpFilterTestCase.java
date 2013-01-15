@@ -1,6 +1,41 @@
+/**
+ * Copyright 2005-2013 Restlet S.A.S.
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
+ * 1.0 (the "Licenses"). You can select the license that you prefer but you may
+ * not use this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the Apache 2.0 license at
+ * http://www.opensource.org/licenses/apache-2.0
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.restlet.com/products/restlet-framework
+ * 
+ * Restlet is a registered trademark of Restlet S.A.S.
+ */
+
 package org.restlet.test.ext.json;
 
+import static org.restlet.data.Status.SUCCESS_OK;
 import junit.framework.Assert;
+
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.MediaType;
@@ -10,17 +45,15 @@ import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.json.JsonpFilter;
 import org.restlet.ext.json.JsonpRepresentation;
 import org.restlet.ext.xml.DomRepresentation;
-import org.restlet.ext.xml.XmlRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
-import org.xml.sax.InputSource;
 
-import java.io.IOException;
-import java.io.Writer;
-
-import static org.restlet.data.Status.SUCCESS_OK;
-
+/**
+ * Test case for the {@link JsonpFilter} class.
+ * 
+ * @author Cyril Lakech
+ */
 public class JsonpFilterTestCase extends RestletTestCase {
 
     public void testAfterHandle() {
@@ -38,11 +71,13 @@ public class JsonpFilterTestCase extends RestletTestCase {
         filter.afterHandle(request, response);
 
         Representation actual = response.getEntity();
-        Representation expected = new JsonpRepresentation(callback, SUCCESS_OK, new JsonRepresentation(jsonString));
+        Representation expected = new JsonpRepresentation(callback, SUCCESS_OK,
+                new JsonRepresentation(jsonString));
 
         Assert.assertTrue(actual instanceof JsonpRepresentation);
         Assert.assertEquals(expected, actual);
-        Assert.assertEquals(SUCCESS_OK, ((JsonpRepresentation) actual).getStatus());
+        Assert.assertEquals(SUCCESS_OK,
+                ((JsonpRepresentation) actual).getStatus());
     }
 
     public void testAfterHandleText() {
@@ -60,11 +95,13 @@ public class JsonpFilterTestCase extends RestletTestCase {
         filter.afterHandle(request, response);
 
         Representation actual = response.getEntity();
-        Representation expected = new JsonpRepresentation(callback, SUCCESS_OK, new StringRepresentation(jsonString, MediaType.TEXT_HTML));
+        Representation expected = new JsonpRepresentation(callback, SUCCESS_OK,
+                new StringRepresentation(jsonString, MediaType.TEXT_HTML));
 
         Assert.assertTrue(actual instanceof JsonpRepresentation);
         Assert.assertEquals(expected, actual);
-        Assert.assertEquals(SUCCESS_OK, ((JsonpRepresentation) actual).getStatus());
+        Assert.assertEquals(SUCCESS_OK,
+                ((JsonpRepresentation) actual).getStatus());
     }
 
     public void testAfterHandle_without_callback_should_return_entity_unchanged() {
@@ -85,7 +122,8 @@ public class JsonpFilterTestCase extends RestletTestCase {
         Assert.assertEquals(expected, actual);
     }
 
-    public void testAfterHandle_with_other_mediatype_should_return_entity_unchanged() throws Exception {
+    public void testAfterHandle_with_other_mediatype_should_return_entity_unchanged()
+            throws Exception {
 
         JsonpFilter filter = new JsonpFilter(null);
 
@@ -94,7 +132,8 @@ public class JsonpFilterTestCase extends RestletTestCase {
         ref.addQueryParameter(callback, "test");
         Request request = new Request(Method.GET, ref);
         Response response = new Response(request);
-        final DomRepresentation expected = new DomRepresentation(MediaType.APPLICATION_XML);
+        final DomRepresentation expected = new DomRepresentation(
+                MediaType.APPLICATION_XML);
         response.setEntity(expected);
 
         filter.afterHandle(request, response);

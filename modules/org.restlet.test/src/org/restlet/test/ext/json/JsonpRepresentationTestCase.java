@@ -1,6 +1,44 @@
+/**
+ * Copyright 2005-2013 Restlet S.A.S.
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
+ * 1.0 (the "Licenses"). You can select the license that you prefer but you may
+ * not use this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the Apache 2.0 license at
+ * http://www.opensource.org/licenses/apache-2.0
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.restlet.com/products/restlet-framework
+ * 
+ * Restlet is a registered trademark of Restlet S.A.S.
+ */
+
 package org.restlet.test.ext.json;
 
+import static org.restlet.data.Status.SUCCESS_OK;
+
+import java.io.ByteArrayOutputStream;
+
 import junit.framework.Assert;
+
 import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.json.JsonpRepresentation;
@@ -8,31 +46,36 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.test.RestletTestCase;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.Writer;
-
-import static org.restlet.data.Status.SUCCESS_OK;
-
+/**
+ * Test case for the {@link JsonpRepresentation} class.
+ * 
+ * @author Cyril Lakech
+ */
 public class JsonpRepresentationTestCase extends RestletTestCase {
 
-    public static final String CALLBACK          = "callback";
-    public static final String JSON_SAMPLE       = "{'attribute': value}";
+    public static final String CALLBACK = "callback";
+
+    public static final String JSON_SAMPLE = "{'attribute': value}";
+
     public static final String JSONP_STATUS_BODY = "({status:,body:});";
 
     public void testGetSizeJson() throws Exception {
-        JsonpRepresentation jsonpRepresentation = new JsonpRepresentation(CALLBACK, SUCCESS_OK, new JsonRepresentation(JSON_SAMPLE));
+        JsonpRepresentation jsonpRepresentation = new JsonpRepresentation(
+                CALLBACK, SUCCESS_OK, new JsonRepresentation(JSON_SAMPLE));
 
         long actual = jsonpRepresentation.getSize();
 
-        long expected = JSON_SAMPLE.length() + Integer.toString(SUCCESS_OK.getCode()).length() + CALLBACK.length() + JSONP_STATUS_BODY.length();
+        long expected = JSON_SAMPLE.length()
+                + Integer.toString(SUCCESS_OK.getCode()).length()
+                + CALLBACK.length() + JSONP_STATUS_BODY.length();
 
         Assert.assertEquals(expected, actual);
     }
 
     public void testGetSize_with_text_is_UNKNOWN_SIZE() throws Exception {
-        JsonpRepresentation jsonpRepresentation = new JsonpRepresentation(CALLBACK, SUCCESS_OK, new StringRepresentation(JSON_SAMPLE, MediaType.TEXT_HTML));
+        JsonpRepresentation jsonpRepresentation = new JsonpRepresentation(
+                CALLBACK, SUCCESS_OK, new StringRepresentation(JSON_SAMPLE,
+                        MediaType.TEXT_HTML));
 
         long actual = jsonpRepresentation.getSize();
 
@@ -42,7 +85,8 @@ public class JsonpRepresentationTestCase extends RestletTestCase {
     }
 
     public void testWrite() throws Exception {
-        JsonpRepresentation jsonpRepresentation = new JsonpRepresentation(CALLBACK, SUCCESS_OK, new JsonRepresentation(JSON_SAMPLE));
+        JsonpRepresentation jsonpRepresentation = new JsonpRepresentation(
+                CALLBACK, SUCCESS_OK, new JsonRepresentation(JSON_SAMPLE));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -53,9 +97,13 @@ public class JsonpRepresentationTestCase extends RestletTestCase {
         Assert.assertEquals(expected, out.toString());
     }
 
-    // with a text representation, apostrophe are escaped and text is embeded between 2 apostrophe
-    public void testWrite_with_text_then_apostrophe_are_escaped() throws Exception {
-        JsonpRepresentation jsonpRepresentation = new JsonpRepresentation(CALLBACK, SUCCESS_OK, new StringRepresentation("whatever'with'apostrophe'", MediaType.TEXT_HTML));
+    // with a text representation, apostrophe are escaped and text is embedded
+    // between 2 apostrophe
+    public void testWrite_with_text_then_apostrophe_are_escaped()
+            throws Exception {
+        JsonpRepresentation jsonpRepresentation = new JsonpRepresentation(
+                CALLBACK, SUCCESS_OK, new StringRepresentation(
+                        "whatever'with'apostrophe'", MediaType.TEXT_HTML));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 

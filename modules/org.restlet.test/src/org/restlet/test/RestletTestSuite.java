@@ -66,6 +66,7 @@ import org.restlet.test.ext.jackson.JacksonTestCase;
 import org.restlet.test.ext.jaxb.JaxbBasicConverterTestCase;
 import org.restlet.test.ext.jaxb.JaxbIntegrationConverterTestCase;
 import org.restlet.test.ext.jaxrs.JaxRsTestSuite;
+import org.restlet.test.ext.json.JsonTestSuite;
 import org.restlet.test.ext.odata.ODataTestSuite;
 import org.restlet.test.ext.sip.SipTests;
 import org.restlet.test.ext.spring.SpringTestSuite;
@@ -146,6 +147,7 @@ public class RestletTestSuite extends TestSuite {
         addTest(HtmlTestSuite.suite());
         addTest(ODataTestSuite.suite());
         addTest(WadlTestSuite.suite());
+        addTest(JsonTestSuite.suite());
 
         // [ifdef jse]
         addTest(org.restlet.test.resource.ResourceTestSuite.suite());

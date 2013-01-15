@@ -8,7 +8,7 @@ Changes log
        - Upgraded Servlet API to version 3.0.1.
        - Updated Simple HTTP server library to version 5.0.4.
        - Added a JSONP filter that can automatically wrap JSON representations.
-         Contributed by Mark Kharitonov, with support from Cyril Lakech.
+         Contributed by Mark Kharitonov and Cyril Lakech.
     - API changes
        - Refactored the OAuth extension to prevent the 
          org.restlet.ext.oauth.security subpackage.
@@ -19,12 +19,11 @@ Changes log
        - Added Request/Response.flushBuffers() method to attempt
          to force network buffers to be flushed out.
          Suggested by Yan Pujante.
-       - Removed all code deprecated in branch 2.1.s
+       - Removed all code deprecated in branch 2.1.
     - Bug fixed
        - The same ones as in version 2.1.2.
     - Misc
        - Updated the links to the user guide in the wiki.
-
 
 - 2.2 Milestone 1 (12/24/2012)
     - Enhancements
