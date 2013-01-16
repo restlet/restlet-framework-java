@@ -277,7 +277,7 @@ public class DefaultConverter extends ConverterHelper {
                         IOException ioe = new IOException(
                                 "Unable to create the Object representation");
                         ioe.initCause(e);
-                        result = null;
+                        throw ioe;
                     }
                 }
             }

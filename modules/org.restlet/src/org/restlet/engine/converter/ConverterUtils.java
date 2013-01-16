@@ -133,16 +133,22 @@ public class ConverterUtils {
      * @param targetVariant
      *            The expected representation metadata.
      * @return The list of variants that can be converted.
-     * @throws IOException
      */
     public static List<VariantInfo> getVariants(Class<?> sourceClass,
-            Variant targetVariant) throws IOException {
+            Variant targetVariant) {
         List<VariantInfo> result = null;
 
         for (ConverterHelper ch : Engine.getInstance()
                 .getRegisteredConverters()) {
             if (ch != null) {
-                result = ch.addVariants(sourceClass, targetVariant, result);
+                try {
+                    result = ch.addVariants(sourceClass, targetVariant, result);
+                } catch (IOException e) {
+                    Context.getCurrentLogger().log(
+                            Level.FINE,
+                            "Unable get the variants of the " + ch
+                                    + " converter helper.", e);
+                }
             }
         }
 

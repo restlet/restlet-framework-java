@@ -99,25 +99,6 @@ public class ConverterService extends Service {
     }
 
     /**
-     * Reverts a patch representation from a modified representation in order to
-     * obtain the initial one. The patch must have a recognized media type in
-     * order for the {@link ConverterService} to be able to process it.
-     * 
-     * @param modified
-     *            The modified representation from which the patch must be
-     *            reverted.
-     * @param patch
-     *            The patch representation to revert.
-     * @return The initial representation.
-     * @throws IOException
-     */
-    public Representation revertPatch(Representation modified,
-            Representation patch) throws IOException {
-
-        return null;
-    }
-
-    /**
      * Creates a patch representation by calculating a diff between initial and
      * modified representations.
      * 
@@ -164,6 +145,19 @@ public class ConverterService extends Service {
     }
 
     /**
+     * Returns the list of patch media types available for the given
+     * representation types.
+     * 
+     * @param representationType
+     *            The representation media type or null for all supported patch
+     *            types.
+     * @return The list of patch media types available.
+     */
+    public List<MediaType> getPatchTypes(MediaType representationType) {
+        return null;
+    }
+
+    /**
      * Returns the list of variants that can be converted from a given object
      * class.
      * 
@@ -177,6 +171,25 @@ public class ConverterService extends Service {
     public List<? extends Variant> getVariants(Class<?> source, Variant target)
             throws IOException {
         return ConverterUtils.getVariants(source, target);
+    }
+
+    /**
+     * Reverts a patch representation from a modified representation in order to
+     * obtain the initial one. The patch must have a recognized media type in
+     * order for the {@link ConverterService} to be able to process it.
+     * 
+     * @param modified
+     *            The modified representation from which the patch must be
+     *            reverted.
+     * @param patch
+     *            The patch representation to revert.
+     * @return The initial representation.
+     * @throws IOException
+     */
+    public Representation revertPatch(Representation modified,
+            Representation patch) throws IOException {
+
+        return null;
     }
 
     /**
