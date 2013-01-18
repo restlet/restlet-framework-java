@@ -13,6 +13,10 @@ ServerResource instances:
     established by the injector from which the `FinderFactory` was obtained.
     
 The first approach is more lightweight, but it relies on static injection and
-does not permit constructor injection.
+does not permit constructor injection. Read about it [here](
+  http://tembrel.blogspot.com/2012/03/restlet-guice-extension-considered.html
+).
 
-The second approach is more complicated, but more flexible.
+The second approach is more complicated, but more flexible. Read about it [here](
+  http://tembrel.blogspot.com/2009/05/dependency-injection-in-restlet-20-with.html
+).
