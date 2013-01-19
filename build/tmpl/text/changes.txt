@@ -41,6 +41,8 @@ Changes log
          Role(Application, String) and Role(Application, String, String) as 
          replacements, using Application.getCurrent() to workaround the lack of 
          Application parameter in deprecated constructors.
+       - Added findRoles/map/unmap methods with an Application argument to the
+         MemoryRealm class for conveniency.
     - Bug fixed
        - The same ones as in version 2.1.2.
     - Misc

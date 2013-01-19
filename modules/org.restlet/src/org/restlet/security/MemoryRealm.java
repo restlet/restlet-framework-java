@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.Application;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ClientInfo;
@@ -216,6 +217,84 @@ public class MemoryRealm extends Realm {
     }
 
     /**
+     * Finds the roles mapped to given user groups.
+     * 
+     * @param application
+     *            The parent application.
+     * @param userGroups
+     *            The user groups.
+     * @return The roles found.
+     */
+    public Set<Role> findRoles(Application application, Group userGroup) {
+        Set<Role> result = new HashSet<Role>();
+        Object source;
+
+        for (RoleMapping mapping : getRoleMappings()) {
+            source = mapping.getSource();
+
+            if ((userGroup != null) && userGroup.equals(source)) {
+                if (mapping.getTarget().getApplication() == application) {
+                    result.add(mapping.getTarget());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Finds the roles mapped to given user groups.
+     * 
+     * @param application
+     *            The parent application.
+     * @param userGroups
+     *            The user groups.
+     * @return The roles found.
+     */
+    public Set<Role> findRoles(Application application, Set<Group> userGroups) {
+        Set<Role> result = new HashSet<Role>();
+        Object source;
+
+        for (RoleMapping mapping : getRoleMappings()) {
+            source = mapping.getSource();
+
+            if ((userGroups != null) && userGroups.contains(source)) {
+                if (mapping.getTarget().getApplication() == application) {
+                    result.add(mapping.getTarget());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Finds the roles mapped to a given user, for a specific application.
+     * 
+     * @param application
+     *            The parent application.
+     * @param user
+     *            The user.
+     * @return The roles found.
+     */
+    public Set<Role> findRoles(Application application, User user) {
+        Set<Role> result = new HashSet<Role>();
+        Object source;
+
+        for (RoleMapping mapping : getRoleMappings()) {
+            source = mapping.getSource();
+
+            if ((user != null) && user.equals(source)) {
+                if (mapping.getTarget().getApplication() == application) {
+                    result.add(mapping.getTarget());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Finds the roles mapped to given user group.
      * 
      * @param userGroup
@@ -224,8 +303,8 @@ public class MemoryRealm extends Realm {
      */
     public Set<Role> findRoles(Group userGroup) {
         Set<Role> result = new HashSet<Role>();
-
         Object source;
+
         for (RoleMapping mapping : getRoleMappings()) {
             source = mapping.getSource();
 
@@ -246,8 +325,8 @@ public class MemoryRealm extends Realm {
      */
     public Set<Role> findRoles(Set<Group> userGroups) {
         Set<Role> result = new HashSet<Role>();
-
         Object source;
+
         for (RoleMapping mapping : getRoleMappings()) {
             source = mapping.getSource();
 
@@ -268,8 +347,8 @@ public class MemoryRealm extends Realm {
      */
     public Set<Role> findRoles(User user) {
         Set<Role> result = new HashSet<Role>();
-
         Object source;
+
         for (RoleMapping mapping : getRoleMappings()) {
             source = mapping.getSource();
 
@@ -347,6 +426,22 @@ public class MemoryRealm extends Realm {
      * 
      * @param user
      *            The source user.
+     * @param application
+     *            The parent application.
+     * @param roleName
+     *            The target role name.
+     */
+    public void map(User user, Application app, String roleName) {
+        Role role = (app == null) ? null : app.getRole(roleName);
+        role = (role == null) ? new Role(app, roleName) : role;
+        map(user, role);
+    }
+
+    /**
+     * Maps a user defined in a component to a role defined in the application.
+     * 
+     * @param user
+     *            The source user.
      * @param role
      *            The target role.
      */
@@ -398,6 +493,24 @@ public class MemoryRealm extends Realm {
      * 
      * @param group
      *            The source group.
+     * @param application
+     *            The parent application.
+     * @param roleName
+     *            The target role name.
+     */
+    public void unmap(Group group, Application application, String roleName) {
+        Role role = (application == null) ? null : application
+                .getRole(roleName);
+        role = (role == null) ? new Role(application, roleName) : role;
+        unmap(group, role);
+    }
+
+    /**
+     * Unmaps a group defined in a component from a role defined in the
+     * application.
+     * 
+     * @param group
+     *            The source group.
      * @param role
      *            The target role.
      */
@@ -416,6 +529,7 @@ public class MemoryRealm extends Realm {
      */
     private void unmap(Object source, Role role) {
         RoleMapping mapping;
+
         for (int i = getRoleMappings().size(); i >= 0; i--) {
             mapping = getRoleMappings().get(i);
 
@@ -424,6 +538,24 @@ public class MemoryRealm extends Realm {
                 getRoleMappings().remove(i);
             }
         }
+    }
+
+    /**
+     * Unmaps a user defined in a component from a role defined in the
+     * application.
+     * 
+     * @param user
+     *            The source user.
+     * @param application
+     *            The parent application.
+     * @param roleName
+     *            The target role name.
+     */
+    public void unmap(User user, Application application, String roleName) {
+        Role role = (application == null) ? null : application
+                .getRole(roleName);
+        role = (role == null) ? new Role(application, roleName) : role;
+        unmap(user, role);
     }
 
     /**
