@@ -35,6 +35,12 @@ Changes log
        - Added Role.application property to make it more explicit what is required
          for role equality and to make the MemoryRealm class less ambiguous.
          Reported by Tim Peierls, Martin Svensson, Peter Ansell and others.
+       - Deprecated Role.ALL constant which wasn't compatible with the fact that 
+         roles have specific applications as parent.
+       - Deprecated constructors Role(String) and Role(String, String) and added 
+         Role(Application, String) and Role(Application, String, String) as 
+         replacements, using Application.getCurrent() to workaround the lack of 
+         Application parameter in deprecated constructors.
     - Bug fixed
        - The same ones as in version 2.1.2.
     - Misc

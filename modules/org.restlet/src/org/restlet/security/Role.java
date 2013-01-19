@@ -102,7 +102,19 @@ public class Role implements Principal {
      * the {@link Application#getCurrent()} method.
      */
     public Role() {
-        this(null, null);
+        this(Application.getCurrent(), null, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param application
+     *            The parent application.
+     * @param name
+     *            The name.
+     */
+    public Role(Application application, String name) {
+        this(application, name, null);
     }
 
     /**
@@ -128,9 +140,11 @@ public class Role implements Principal {
      * 
      * @param name
      *            The name.
+     * @deprecated Use {@link Role#Role(Application, String)} instead.
      */
+    @Deprecated
     public Role(String name) {
-        this(name, null);
+        this(Application.getCurrent(), name, null);
     }
 
     /**
@@ -141,7 +155,9 @@ public class Role implements Principal {
      *            The name.
      * @param description
      *            The description.
+     * @deprecated Use {@link Role#Role(Application, String, String)} instead.
      */
+    @Deprecated
     public Role(String name, String description) {
         this(Application.getCurrent(), name, description);
     }

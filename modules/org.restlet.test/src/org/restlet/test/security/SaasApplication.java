@@ -59,10 +59,10 @@ public class SaasApplication extends Application {
     public SaasApplication(Context context) {
         super(context);
 
-        Role admin = new Role("admin", "Application administrators");
+        Role admin = new Role(this, "admin", "Application administrators");
         getRoles().add(admin);
 
-        Role user = new Role("user", "Application users");
+        Role user = new Role(this, "user", "Application users");
         getRoles().add(user);
     }
 

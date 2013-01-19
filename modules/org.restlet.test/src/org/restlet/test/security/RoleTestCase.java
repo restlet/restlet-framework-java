@@ -60,8 +60,8 @@ public class RoleTestCase extends RestletTestCase {
         Role role4 = new Role(app2, "role", "one description");
         assertFalse(role1.equals(role4));
 
-        Role role10 = new Role("role10", "");
-        Role role11 = new Role("role11", "");
+        Role role10 = new Role(app1, "role10", "");
+        Role role11 = new Role(app1, "role11", "");
 
         role1.getChildRoles().add(role10);
         role1.getChildRoles().add(role11);

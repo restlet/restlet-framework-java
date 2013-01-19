@@ -56,8 +56,8 @@ public class MailServerApplication extends Application {
         setAuthor("The Restlet Team");
 
         // Declare the supported roles
-        getRoles().add(new Role("CFO"));
-        getRoles().add(new Role("User"));
+        getRoles().add(new Role(this, "CFO"));
+        getRoles().add(new Role(this, "User"));
     }
 
     /**
