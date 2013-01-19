@@ -7,7 +7,7 @@ ServerResource instances:
         https://github.com/Tembrel/restlet-framework-java/blob/guice-integration/incubator/org.restlet.ext.guice/src/org/restlet/ext/guice/SelfInjectingServerResource.java
     ) will be injected if an instance of [SelfInjectingServerResourceModule](
         https://github.com/Tembrel/restlet-framework-java/blob/guice-integration/incubator/org.restlet.ext.guice/src/org/restlet/ext/guice/SelfInjectingServerResourceModule.java   
-    )is 
+    ) is 
     passed to the Guice injector creation call.
     
 2.  A `Finder` instance returned by a [FinderFactory](
