@@ -33,6 +33,7 @@
 
 package org.restlet.ext.oauth.internal.memory;
 
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.oauth.AuthenticatedUser;
 import org.restlet.ext.oauth.internal.Token;
 
@@ -108,6 +109,6 @@ public class UnlimitedToken implements Token {
 
     @Override
     public int hashCode() {
-        return token.hashCode();
+        return SystemUtils.hashCode(getToken());
     }
 }

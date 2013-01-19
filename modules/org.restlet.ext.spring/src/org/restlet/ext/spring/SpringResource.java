@@ -36,6 +36,7 @@ package org.restlet.ext.spring;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.Representation;
 import org.springframework.core.io.AbstractResource;
 
@@ -131,7 +132,7 @@ public class SpringResource extends AbstractResource {
      */
     @Override
     public int hashCode() {
-        return this.representation.hashCode();
+        return SystemUtils.hashCode(this.representation);
     }
 
     /**

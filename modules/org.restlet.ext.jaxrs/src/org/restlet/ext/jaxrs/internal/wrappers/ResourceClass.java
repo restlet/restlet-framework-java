@@ -52,6 +52,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
 
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalParamTypeException;
@@ -358,7 +359,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     @Override
     public int hashCode() {
-        return this.jaxRsClass.hashCode();
+        return SystemUtils.hashCode(this.jaxRsClass);
     }
 
     /**

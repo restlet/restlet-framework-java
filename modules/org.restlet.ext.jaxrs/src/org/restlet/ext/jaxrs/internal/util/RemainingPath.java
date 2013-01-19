@@ -33,6 +33,8 @@
 
 package org.restlet.ext.jaxrs.internal.util;
 
+import org.restlet.engine.util.SystemUtils;
+
 /**
  * This class contains the remaining path for a request. It does not contain any
  * matrix parameterand has no '/' t the start.
@@ -109,7 +111,7 @@ public class RemainingPath implements Comparable<RemainingPath> {
 
     @Override
     public int hashCode() {
-        return this.remainingPart.hashCode();
+        return SystemUtils.hashCode(this.remainingPart);
     }
 
     /**

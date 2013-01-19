@@ -40,6 +40,20 @@ package org.restlet.engine.util;
  */
 public class SystemUtils {
 
+    /**
+     * Indicates if both fields are equal. For this to be true, they must either
+     * be both null or return true to the {@link Object#equals(Object)} method.
+     * 
+     * @param source
+     *            The source field.
+     * @param target
+     *            The target field.
+     * @return
+     */
+    public static boolean equals(Object source, Object target) {
+        return (target == source) || (target != null && target.equals(source));
+    }
+
     // [ifndef gwt] method
     /**
      * Parses the "java.version" system property and returns the first digit of
@@ -118,7 +132,7 @@ public class SystemUtils {
      * @return The hash code of a set of objects.
      */
     public static int hashCode(Object... objects) {
-        int result = 1;
+        int result = 17;
 
         if (objects != null) {
             for (final Object obj : objects) {
@@ -129,13 +143,6 @@ public class SystemUtils {
         return result;
     }
 
-    /**
-     * Private constructor to ensure that the class acts as a true utility class
-     * i.e. it isn't instantiable and extensible.
-     */
-    private SystemUtils() {
-    }
-
     // [ifndef gwt] method
     /**
      * Indicates if the current operating system is in the Windows family.
@@ -144,6 +151,13 @@ public class SystemUtils {
      */
     public static boolean isWindows() {
         return System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
+    }
+
+    /**
+     * Private constructor to ensure that the class acts as a true utility class
+     * i.e. it isn't instantiable and extensible.
+     */
+    private SystemUtils() {
     }
 
 }

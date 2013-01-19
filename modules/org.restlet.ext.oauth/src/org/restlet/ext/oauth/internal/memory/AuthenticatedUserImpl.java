@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.oauth.AuthenticatedUser;
 import org.restlet.ext.oauth.Client;
 import org.restlet.ext.oauth.internal.Token;
@@ -171,7 +172,7 @@ public class AuthenticatedUserImpl implements AuthenticatedUser {
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return SystemUtils.hashCode(id);
     }
 
     @Override

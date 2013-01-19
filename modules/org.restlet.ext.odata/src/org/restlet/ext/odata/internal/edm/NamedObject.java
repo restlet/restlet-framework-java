@@ -33,6 +33,7 @@
 
 package org.restlet.ext.odata.internal.edm;
 
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.odata.internal.reflect.ReflectUtils;
 
 /**
@@ -93,7 +94,7 @@ public class NamedObject {
 
     @Override
     public int hashCode() {
-        return this.name.hashCode();
+        return SystemUtils.hashCode(this.name);
     }
 
     @Override

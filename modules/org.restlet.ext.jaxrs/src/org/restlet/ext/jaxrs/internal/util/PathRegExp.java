@@ -43,6 +43,7 @@ import java.util.regex.Pattern;
 
 import javax.ws.rs.Path;
 
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
@@ -303,7 +304,7 @@ public class PathRegExp {
 
     @Override
     public int hashCode() {
-        return this.pattern.pattern().hashCode();
+        return SystemUtils.hashCode(this.pattern);
     }
 
     /**

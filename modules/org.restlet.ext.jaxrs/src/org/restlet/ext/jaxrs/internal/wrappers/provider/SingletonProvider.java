@@ -49,6 +49,7 @@ import javax.ws.rs.ext.Providers;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
@@ -280,7 +281,7 @@ public class SingletonProvider extends AbstractProviderWrapper implements
 
     @Override
     public final int hashCode() {
-        return this.jaxRsProvider.hashCode();
+        return SystemUtils.hashCode(this.jaxRsProvider);
     }
 
     /**

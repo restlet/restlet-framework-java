@@ -30,6 +30,11 @@ Changes log
        - Added ClientInfo.acceptedPatches property and HTTP header writing/reading
          logic for "Accept-Patch".
        - Added IOException declaration to all the ConverterService methods.
+       - Restored Role.equals(..) and hashCode(..) methods so that two roles with the
+         same parent application, name and child roles are equals.
+       - Added Role.application property to make it more explicit what is required
+         for role equality and to make the MemoryRealm class less ambiguous.
+         Reported by Tim Peierls, Martin Svensson, Peter Ansell and others.
     - Bug fixed
        - The same ones as in version 2.1.2.
     - Misc

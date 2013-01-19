@@ -43,6 +43,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Providers;
 
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.jaxrs.InstantiateException;
 import org.restlet.ext.jaxrs.ObjectFactory;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
@@ -74,29 +75,29 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
 
     /**
      * @param providerConstructor
-     *                the constructor to use.
+     *            the constructor to use.
      * @param jaxRsProviderClass
-     *                class for exception message.
+     *            class for exception message.
      * @param tlContext
-     *                The tread local wrapped call context
+     *            The tread local wrapped call context
      * @param allProviders
-     *                all entity providers. <<<<<<< .mine =======
+     *            all entity providers. <<<<<<< .mine =======
      * @param allResolvers
-     *                all available {@link ContextResolver}s. >>>>>>> .r3440
+     *            all available {@link ContextResolver}s. >>>>>>> .r3440
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @param logger
-     *                the logger to use
+     *            the logger to use
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
-     *                 if the constructor throws an Throwable
+     *             if the constructor throws an Throwable
      * @throws InstantiateException
      * @throws MissingAnnotationException
      * @throws WebApplicationException
      * @throws IllegalConstrParamTypeException
-     *                 if one of the fields or bean setters annotated with &#64;
-     *                 {@link Context} has a type that must not be annotated
-     *                 with &#64;{@link Context}.
+     *             if one of the fields or bean setters annotated with &#64;
+     *             {@link Context} has a type that must not be annotated with
+     *             &#64;{@link Context}.
      * @throws IllegalPathParamTypeException
      * @throws MissingConstructorException
      */
@@ -183,10 +184,10 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
      * thrown.
      * 
      * @param jaxRsProviderClass
-     *                the JAX-RS provider class.
+     *            the JAX-RS provider class.
      * @param objectFactory
-     *                The object factory is responsible for the provider
-     *                instantiation, if given.
+     *            The object factory is responsible for the provider
+     *            instantiation, if given.
      * @param tlContext
      * @param allProviders
      * @param extensionBackwardMapping
@@ -359,7 +360,7 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
      */
     @Override
     public int hashCode() {
-        return this.jaxRsProviderClass.hashCode();
+        return SystemUtils.hashCode(this.jaxRsProviderClass);
     }
 
     /**

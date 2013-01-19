@@ -79,6 +79,7 @@ import org.restlet.data.Language;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.jaxrs.ExtendedUriBuilder;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
@@ -1114,9 +1115,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     @Override
     public int hashCode() {
-        return this.getBaseUriStr().hashCode()
-                ^ this.getPathSegments().hashCode()
-                ^ this.getPathParameters().hashCode();
+        return SystemUtils.hashCode(getBaseUriStr(), getPathSegments(),
+                getPathParameters());
     }
 
     /**
@@ -1236,8 +1236,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             metadataService = app.getMetadataService();
         }
 
-        org.restlet.representation.Variant bestRestlVar = 
-                connegService.getPreferredVariant(restletVariants, this.request,
+        org.restlet.representation.Variant bestRestlVar = connegService
+                .getPreferredVariant(restletVariants, this.request,
                         metadataService);
         Variant bestVariant = Converter.toJaxRsVariant(bestRestlVar);
         Set<Dimension> dimensions = this.response.getDimensions();

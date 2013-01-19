@@ -33,6 +33,8 @@
 
 package org.restlet.ext.atom;
 
+import org.restlet.engine.util.SystemUtils;
+
 /**
  * Enumeration of relation types.
  * 
@@ -338,7 +340,7 @@ public class Relation {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
+        return SystemUtils.hashCode(getName());
     }
 
     @Override

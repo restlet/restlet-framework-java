@@ -41,6 +41,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 
 import org.restlet.data.Reference;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.jaxrs.internal.util.EncodeOrCheck;
 import org.restlet.ext.jaxrs.internal.util.Util;
 
@@ -193,7 +194,7 @@ public class PathSegmentImpl implements PathSegment {
 
     @Override
     public int hashCode() {
-        return this.path.hashCode() ^ getMatrixParameters().hashCode();
+        return SystemUtils.hashCode(getPath(), getMatrixParameters());
     }
 
     /**

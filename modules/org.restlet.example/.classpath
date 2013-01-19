@@ -32,7 +32,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.rome"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.sdc"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.servlet"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.simple"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.sip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.slf4j"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.spring"/>

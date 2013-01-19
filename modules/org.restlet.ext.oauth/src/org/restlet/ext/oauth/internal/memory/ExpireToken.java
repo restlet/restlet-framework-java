@@ -35,6 +35,7 @@ package org.restlet.ext.oauth.internal.memory;
 
 import java.util.concurrent.ScheduledFuture;
 
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.oauth.AuthenticatedUser;
 import org.restlet.ext.oauth.internal.Token;
 
@@ -48,7 +49,7 @@ import org.restlet.ext.oauth.internal.Token;
  */
 public class ExpireToken implements Token {
 
-    private final long expireTime;
+    private final long expirePeriod;
 
     private final String refreshToken;
 
@@ -63,7 +64,7 @@ public class ExpireToken implements Token {
         this.refreshToken = refreshToken;
         this.token = token;
         this.user = user;
-        expireTime = expTimeSec;
+        expirePeriod = expTimeSec;
     }
 
     public void setFuture(ScheduledFuture<?> future) {
@@ -75,7 +76,7 @@ public class ExpireToken implements Token {
     }
 
     public long getExpirePeriod() {
-        return expireTime;
+        return expirePeriod;
     }
 
     public String getRefreshToken() {
@@ -105,13 +106,13 @@ public class ExpireToken implements Token {
         if (obj instanceof ExpireToken) {
             ExpireToken t = (ExpireToken) obj;
             return (refreshToken.equals(t.refreshToken))
-                    && (expireTime == t.expireTime);
+                    && (expirePeriod == t.expirePeriod);
         }
         return super.equals(obj);
     }
 
     @Override
     public int hashCode() {
-        return refreshToken.hashCode();
+        return SystemUtils.hashCode(getRefreshToken(), getExpirePeriod());
     }
 }
