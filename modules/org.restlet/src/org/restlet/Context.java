@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 
 import org.restlet.data.Parameter;
@@ -138,6 +139,10 @@ public class Context {
      * Restlet default authorization model.
      */
     private volatile org.restlet.security.Verifier defaultVerifier;
+
+    // [ifndef gwt] method
+    /** The executor service. */
+    private volatile ScheduledExecutorService executorService;
 
     /**
      * Constructor. Writes log messages to "org.restlet".
@@ -262,6 +267,16 @@ public class Context {
         return this.defaultVerifier;
     }
 
+    // [ifndef gwt] method
+    /**
+     * Returns the executor service.
+     * 
+     * @return The executor service.
+     */
+    public ScheduledExecutorService getExecutorService() {
+        return this.executorService;
+    }
+
     /**
      * Returns the logger.
      * 
@@ -354,6 +369,17 @@ public class Context {
      */
     public void setDefaultVerifier(org.restlet.security.Verifier verifier) {
         this.defaultVerifier = verifier;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Sets the executor service.
+     * 
+     * @param executorService
+     *            The executor service.
+     */
+    public void setExecutorService(ScheduledExecutorService executorService) {
+        this.executorService = executorService;
     }
 
     /**

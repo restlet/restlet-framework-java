@@ -43,6 +43,11 @@ Changes log
          Application parameter in deprecated constructors.
        - Added findRoles/map/unmap methods with an Application argument to the
          MemoryRealm class for conveniency.
+       - Added Component.taskService property and deprecated+disabled the 
+         Application.taskService. The same task service/thread pool can then be shared 
+         by multiple applications inside the same component/JVM.
+       - Added Context.executorService property to be able to invoke the parent task
+         service without actually being able to control it (start/stop).
     - Bug fixed
        - The same ones as in version 2.1.2.
     - Misc

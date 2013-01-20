@@ -105,6 +105,7 @@ import org.restlet.util.ServiceList;
  * <ul>
  * <li>"logService" to configure access logging.</li>
  * <li>"statusService" to provide common representations for exception status.</li>
+ * <li>"taskService" to run tasks asynchronously.</li>
  * </ul>
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
@@ -195,6 +196,10 @@ public class Component extends Restlet {
             getStatusService().setContext(childContext);
             this.clients.setContext(childContext);
             this.servers.setContext(childContext);
+
+            // [ifndef gae]
+            this.services.add(new org.restlet.service.TaskService());
+            // [enddef]
         }
     }
 
@@ -384,6 +389,17 @@ public class Component extends Restlet {
         return getServices().get(StatusService.class);
     }
 
+    /**
+     * Returns a task service to run concurrent tasks. The service is enabled by
+     * default.
+     * 
+     * @return A task service.
+     */
+    // [ifndef gae] method
+    public org.restlet.service.TaskService getTaskService() {
+        return getServices().get(org.restlet.service.TaskService.class);
+    }
+
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
@@ -517,6 +533,17 @@ public class Component extends Restlet {
      */
     public void setStatusService(StatusService statusService) {
         getServices().set(statusService);
+    }
+
+    /**
+     * Sets the task service.
+     * 
+     * @param taskService
+     *            The task service.
+     */
+    // [ifndef gae] method
+    public void setTaskService(org.restlet.service.TaskService taskService) {
+        getServices().set(taskService);
     }
 
     /**

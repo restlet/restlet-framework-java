@@ -232,15 +232,41 @@ public class TaskService extends Service implements ScheduledExecutorService {
      * Constructor. Set the core pool size to 4 by default.
      */
     public TaskService() {
-        this(4);
+        this(true);
+    }
+
+    /**
+     * Constructor. The default minimum size
+     * 
+     * @param enabled
+     *            True if the service has been enabled.
+     */
+    public TaskService(boolean enabled) {
+        this(enabled, 4);
+    }
+
+    /**
+     * Constructor. The default minimum size
+     * 
+     * @param enabled
+     *            True if the service has been enabled.
+     * @param corePoolSize
+     *            The core pool size defining the maximum number of threads.
+     */
+    public TaskService(boolean enabled, int corePoolSize) {
+        super(enabled);
+        this.corePoolSize = corePoolSize;
+        this.shutdownAllowed = false;
     }
 
     /**
      * Constructor.
+     * 
+     * @param corePoolSize
+     *            The core pool size defining the maximum number of threads.
      */
     public TaskService(int corePoolSize) {
-        this.corePoolSize = corePoolSize;
-        this.shutdownAllowed = false;
+        this(true, corePoolSize);
     }
 
     /**
