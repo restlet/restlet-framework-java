@@ -100,7 +100,7 @@ public class Role implements Principal {
 
     /**
      * Default constructor. Note that the parent application is retrieved using
-     * the {@link Application#getCurrent()} method.
+     * the {@link Application#getCurrent()} method if available or is null.
      */
     public Role() {
         this(Application.getCurrent(), null, null);
@@ -110,7 +110,7 @@ public class Role implements Principal {
      * Constructor.
      * 
      * @param application
-     *            The parent application.
+     *            The parent application or null.
      * @param name
      *            The name.
      */
@@ -122,7 +122,7 @@ public class Role implements Principal {
      * Constructor.
      * 
      * @param application
-     *            The parent application.
+     *            The parent application or null.
      * @param name
      *            The name.
      * @param description

@@ -220,12 +220,19 @@ public class MemoryRealm extends Realm {
      * Finds the roles mapped to given user groups.
      * 
      * @param application
-     *            The parent application.
+     *            The parent application. Can't be null.
      * @param userGroups
      *            The user groups.
      * @return The roles found.
+     * @throws IllegalArgumentException
+     *             If application is null.
      */
     public Set<Role> findRoles(Application application, Group userGroup) {
+        if (application == null) {
+            throw new IllegalArgumentException(
+                    "The application argument can't be null");
+        }
+
         Set<Role> result = new HashSet<Role>();
         Object source;
 
@@ -246,12 +253,19 @@ public class MemoryRealm extends Realm {
      * Finds the roles mapped to given user groups.
      * 
      * @param application
-     *            The parent application.
+     *            The parent application. Can't be null.
      * @param userGroups
      *            The user groups.
      * @return The roles found.
+     * @throws IllegalArgumentException
+     *             If application is null.
      */
     public Set<Role> findRoles(Application application, Set<Group> userGroups) {
+        if (application == null) {
+            throw new IllegalArgumentException(
+                    "The application argument can't be null");
+        }
+
         Set<Role> result = new HashSet<Role>();
         Object source;
 
@@ -272,12 +286,19 @@ public class MemoryRealm extends Realm {
      * Finds the roles mapped to a given user, for a specific application.
      * 
      * @param application
-     *            The parent application.
+     *            The parent application. Can't be null.
      * @param user
      *            The user.
      * @return The roles found.
+     * @throws IllegalArgumentException
+     *             If application is null.
      */
     public Set<Role> findRoles(Application application, User user) {
+        if (application == null) {
+            throw new IllegalArgumentException(
+                    "The application argument can't be null");
+        }
+
         Set<Role> result = new HashSet<Role>();
         Object source;
 
@@ -427,13 +448,21 @@ public class MemoryRealm extends Realm {
      * @param user
      *            The source user.
      * @param application
-     *            The parent application.
+     *            The parent application. Can't be null.
      * @param roleName
      *            The target role name.
+     * @throws IllegalArgumentException
+     *             If application is null.
      */
-    public void map(User user, Application app, String roleName) {
-        Role role = (app == null) ? null : app.getRole(roleName);
-        role = (role == null) ? new Role(app, roleName) : role;
+    public void map(User user, Application application, String roleName) {
+        if (application == null) {
+            throw new IllegalArgumentException(
+                    "The application argument can't be null");
+        }
+
+        Role role = (application == null) ? null : application
+                .getRole(roleName);
+        role = (role == null) ? new Role(application, roleName) : role;
         map(user, role);
     }
 
@@ -494,11 +523,18 @@ public class MemoryRealm extends Realm {
      * @param group
      *            The source group.
      * @param application
-     *            The parent application.
+     *            The parent application. Can't be null.
      * @param roleName
      *            The target role name.
+     * @throws IllegalArgumentException
+     *             If application is null.
      */
     public void unmap(Group group, Application application, String roleName) {
+        if (application == null) {
+            throw new IllegalArgumentException(
+                    "The application argument can't be null");
+        }
+
         Role role = (application == null) ? null : application
                 .getRole(roleName);
         role = (role == null) ? new Role(application, roleName) : role;
@@ -547,11 +583,18 @@ public class MemoryRealm extends Realm {
      * @param user
      *            The source user.
      * @param application
-     *            The parent application.
+     *            The parent application. Can't be null.
      * @param roleName
      *            The target role name.
+     * @throws IllegalArgumentException
+     *             If application is null.
      */
     public void unmap(User user, Application application, String roleName) {
+        if (application == null) {
+            throw new IllegalArgumentException(
+                    "The application argument can't be null");
+        }
+
         Role role = (application == null) ? null : application
                 .getRole(roleName);
         role = (role == null) ? new Role(application, roleName) : role;
