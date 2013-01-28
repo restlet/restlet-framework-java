@@ -30,31 +30,36 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
-
-package org.restlet.ext.oauth;
+package org.restlet.ext.oauth.internal;
 
 /**
- * Utility class for formating OAuth errors
- * 
- * @author Shotaro Uchida <fantom@xmaker.mx>
- * @author Kristoffer Gronowski
- * @see <a href="http://tools.ietf.org/html/rfc6749">
- * The OAuth 2.0 Authorization Framework</a>
- * @see <a href="http://tools.ietf.org/html/rfc6750">
- * Bearer Token Usage</a>
+ *
+ * @author Shotaro Uchida <suchida@valleycampus.com>
  */
-public enum OAuthError {
-
-    access_denied, // 4.1.2.1 & 4.2.2.1 
-    invalid_client, // 5.2
-    invalid_grant, // 5.2
-    invalid_request, // 4.1.2.1 & 4.2.2.1 & 5.2
-    invalid_scope, // 4.1.2.1 & 4.2.2.1 & 5.2
-    unauthorized_client, // 4.1.2.1 & 4.2.2.1 & 5.2
-    unsupported_grant_type, // 5.2
-    unsupported_response_type, // 4.1.2.1 & 4.2.2.1
-    server_error,   // 4.1.2.1 & 4.2.2.1
+public class RedirectionURI {
+ 
+    private final String uri;
+    private final boolean dynamicConfigured;
     
-    invalid_token,      // Bearer 3.1
-    insufficient_scope  // Bearer 3.1
+    public RedirectionURI(String uri) {
+        this(uri, false);
+    }
+    
+    public RedirectionURI(String uri, boolean dynamicConfigured) {
+        this.uri = uri;
+        this.dynamicConfigured = dynamicConfigured;
+    }
+    
+    @Override
+    public String toString() {
+        return getURI();
+    }
+    
+    public String getURI() {
+        return uri;
+    }
+    
+    public boolean isDynamicConfigured() {
+        return dynamicConfigured;
+    }
 }

@@ -33,20 +33,18 @@
 
 package org.restlet.ext.oauth;
 
-import java.util.List;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import org.restlet.data.CookieSetting;
+import org.restlet.ext.oauth.internal.Client;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.ext.oauth.internal.AuthSession;
+import org.restlet.ext.oauth.internal.RedirectionURI;
 import org.restlet.ext.oauth.internal.Scopes;
+import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.routing.Redirector;
-import org.restlet.security.Role;
 import org.restlet.security.User;
 
 /**
@@ -55,7 +53,7 @@ import org.restlet.security.User;
  * 
  * This Resource is controlled by to Context Attribute Parameters
  * 
- * Implements OAuth 2.0 draft 30
+ * Implements OAuth 2.0 (RFC6749)
  * 
  * The following example shows how to set up a simple Authorization Service.
  * <pre>
@@ -72,28 +70,53 @@ import org.restlet.security.User;
  * }
  * </pre>
  * 
- * <b>Originally written by Martin Svensson, Heavily modified for update to draft30.</b>
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @author Martin Svensson
  * 
- * @see <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-30#section-3.1">OAuth 2 draft 30</a>
+ * @see <a href="http://tools.ietf.org/html/rfc6749#section-3.1">OAuth 2.0</a>
  */
 public class AuthorizationServerResource extends AuthorizationBaseServerResource {
-
+    
+    /*
+     * The authorization server MUST support the use of the HTTP "GET"
+     * method [RFC2616] for the authorization endpoint and MAY support the
+     * use of the "POST" method as well. (3.1. Authorization Endpoint)
+     */
+    public static final String PARAMETER_SUPPORT_POST = "supportPost";
+    
+    @Post("html")
+    public Representation requestAuthorization(Representation input) throws OAuthException {
+        Object supportPost = getContext().getAttributes().get(PARAMETER_SUPPORT_POST);
+        if (!Boolean.parseBoolean(supportPost.toString())) {
+            throw new OAuthException(OAuthError.invalid_request,
+                    "Authorization endpoint does NOT support the use of the POST method.", null);
+        }
+        
+        return requestAuthorization(new Form(input));
+    }
+    
+    @Get("html")
+    public Representation requestAuthorization() throws OAuthException {
+        return requestAuthorization(getQuery());
+    }
+    
     /**
      * Checks that all incoming requests have a type parameter. Requires
      * response_type, client_id and redirect_uri parameters. For the code flow
      * client_secret is also mandatory.
      */
-    @Get("html")
-    @Post("html")
-    public Representation represent() throws OAuthException {
-        final Form params = getQuery();
+    public Representation requestAuthorization(Form params) throws OAuthException {
+        AuthSession session = getAuthSession();
+        if (session != null) {
+            return doPostAuthorization(session, clients.findById(session.getClientId()));
+        }
+        
         final Client client;
-        final String redirectURI;
+        final RedirectionURI redirectURI;
         try {
             client = getClient(params);
-            redirectURI = getRedirectURI(params, client);
+            redirectURI = getRedirectionURI(params, client);
         } catch (OAuthException ex) {
            /* 
             * MUST NOT automatically redirect the user-agent to the invalid redirection URI.
@@ -109,28 +132,49 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
                     HttpOAuthHelper.getErrorPageTemplate(getContext()), 
                     oex);
         }
+
+        // Start Session
+        session = setupAuthSession(redirectURI);
         
-        final AuthSession session;
+        // Setup session attributes
         try {
-            ResponseType responseType = getResponseType(params);
-            // TODO: check if unauthorized_client
-            session = getAuthSession(client, responseType, redirectURI);
+            ResponseType[] responseTypes = getResponseType(params);
+            if (responseTypes.length != 1) {
+                throw new OAuthException(OAuthError.unsupported_response_type,
+                        "Extension response types are not supported.", null);
+            }
+            if (!client.isResponseTypeAllowed(responseTypes[0])) {
+                throw new OAuthException(OAuthError.unauthorized_client,
+                        "Unauthorized response type.", null);
+            }
+            session.setAuthFlow(responseTypes[0]);
+            session.setClientId(client.getClientId());
             String[] scope = getScope(params);
             session.setRequestedScope(scope);
+            String state = getState(params);
+            if (state != null && !state.isEmpty()) {
+                session.setState(state);
+            }
         } catch (OAuthException ex) {
             ungetAuthSession();
             throw ex;
         }
         
+        User scopeOwner = getRequest().getClientInfo().getUser();
+        if (scopeOwner != null) {
+            // If user information is present, use as scope owner.
+            session.setScopeOwner(scopeOwner.getIdentifier());
+        }
+        
         if (session.getScopeOwner() == null) {
             // Redirect to login page.
             Reference ref = new Reference("." + HttpOAuthHelper.getLoginPage(getContext()));
-            ref.addQueryParameter("continue", getRequest().getOriginalRef().toString(true, false));
+            ref.addQueryParameter("continue", getRequest().getOriginalRef().toString(true, false)); // XXX: Don't need full query.
             redirectTemporary(ref.toString());
             return new EmptyRepresentation();
         }
 
-        return doPostAuthorization(session);
+        return doPostAuthorization(session, client);
     }
     
     /**
@@ -140,29 +184,23 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
      * 
      * @return The result as a {@link Representation}.
      */
-    protected Representation doPostAuthorization(AuthSession session) {
+    protected Representation doPostAuthorization(AuthSession session, Client client) {
         Reference ref = new Reference("riap://application"
                 + HttpOAuthHelper.getAuthPage(getContext()));
         getLogger().fine("Name = " + getApplication().getInboundRoot());
-        ref.addQueryParameter("client", session.getClient().getClientId());
-        // Requested
+        ref.addQueryParameter("client", session.getClientId());
+        
+        // Requested scope should not be null.
         String[] scopes = session.getRequestedScope();
-
-        if (scopes != null && scopes.length > 0) {
-            for (String s : scopes)
-                ref.addQueryParameter("scope", s);
+        for (String s : scopes) {
+            ref.addQueryParameter("scope", s);
         }
 
-        // Granted
-        AuthenticatedUser user = session.getClient().findUser(session.getScopeOwner());
-
-        if (user != null) { // null before first code generated
-            // scopes = OAuthUtils.roluser.getGrantedScopes();
-            List<Role> roles = user.getGrantedRoles();
-            if (roles != null && roles.size() > 0) {
-                for (Role r : roles) {
-                    ref.addQueryParameter("grantedScope", Scopes.toScope(r));
-                }
+        // XXX
+        Token token = tokens.findToken(client, session.getScopeOwner());
+        if (token != null && !token.isExpired()) {
+            for (String s : token.getScope()) {
+                ref.addQueryParameter("grantedScope", s);
             }
         }
 
@@ -170,9 +208,7 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
         getLogger().fine("Redir = " + ref);
         Redirector dispatcher = new Redirector(getContext(), ref.toString(),
                 Redirector.MODE_SERVER_OUTBOUND);
-        // getRequest().setCookies(getResponse().getCookieSettings().get
-        // getRequest().setCookies(cookies)
-        getRequest().getAttributes().put(ClientCookieID, session.getId());
+        // XXX: Remove? getRequest().getAttributes().put(ClientCookieID, session.getId());
         dispatcher.handle(getRequest(), getResponse());
         return getResponseEntity();
     }
@@ -184,117 +220,78 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
      * @return
      * @throws OAuthException 
      */
-    protected ResponseType getResponseType(Form params) throws OAuthException {
-        // check response type:
-        String typeString = params.getFirstValue(RESPONSE_TYPE);
-
-        try {
-            ResponseType type = Enum.valueOf(ResponseType.class, typeString);
-            getLogger().fine("Found flow - " + type);
-            return type;
-        } catch (IllegalArgumentException iae) {
-            throw new OAuthException(OAuthError.unsupported_response_type, "Unsupported flow", null);
-        } catch (NullPointerException npe) {
+    protected ResponseType[] getResponseType(Form params) throws OAuthException {
+        String responseType = params.getFirstValue(RESPONSE_TYPE);
+        if (responseType == null || responseType.isEmpty()) {
             throw new OAuthException(OAuthError.invalid_request, "No response_type parameter found.", null);
         }
+        /* 
+         * Extension response types MAY contain a space-delimited (%x20) list of values
+         * (3.1.1. Response Type)
+         */
+        String[] typesString = Scopes.parseScope(responseType);   // The same format as scope.
+        ResponseType[] types = new ResponseType[typesString.length];
+
+        for (int i = 0; i < typesString.length; i++) {
+            try {
+                ResponseType type = Enum.valueOf(ResponseType.class, typesString[i]);
+                getLogger().fine("Found flow - " + type);
+                types[i] = type;
+            } catch (IllegalArgumentException iae) {
+                throw new OAuthException(OAuthError.unsupported_response_type, "Unsupported flow", null);
+            }
+        }
+        
+        return types;
     }
     
     /**
-     * Get request parameter "redirect_uri".
+     * Get request parameter "redirect_uri". (See 3.1.2.3. Dynamic Configuration)
      * 
      * @param params
      * @param client
      * @return
      * @throws OAuthException 
      */
-    protected String getRedirectURI(Form params, Client client) throws OAuthException {
-        // check redir:
-        String redirUri = params.getFirstValue(REDIR_URI);
-        if (redirUri == null || redirUri.isEmpty()) {
-            // As described in draft30 4.1.1., redirect_uri is OPTIONAL.
-            // If the optional parameter redirect_uri is not provided,
-            // we use the one provided during client registration.
-            redirUri = client.getRedirectUri();
-            if (redirUri == null) {
-                /* if no redirection URI has been registered,
-                 * the client MUST include a redirection URI with the
-                 * authorization request using the "redirect_uri" request parameter.
-                 * (See 3.1.2.3. Dynamic Configuration)
-                 */
+    protected RedirectionURI getRedirectionURI(Form params, Client client) throws OAuthException {
+        String redirectURI = params.getFirstValue(REDIR_URI);
+        String[] redirectURIs = client.getRedirectURIs();
+        
+        /* 
+         * If multiple redirection URIs have been registered, if only part of
+         * the redirection URI has been registered, or if no redirection URI has
+         * been registered, the client MUST include a redirection URI with the
+         * authorization request using the "redirect_uri" request parameter.
+         * (See 3.1.2.3. Dynamic Configuration)
+         */
+        if (redirectURIs == null || redirectURIs.length != 1) {
+            if (redirectURI == null || redirectURI.isEmpty()) {
                 throw new OAuthException(OAuthError.invalid_request,
                         "Client MUST include a redirection URI.", null);
             }
-        } else if (!redirUri.startsWith(client.getRedirectUri())) {
-            // The provided uri is no based on the uri with the client registration.
-            throw new OAuthException(OAuthError.invalid_request, "Callback URI does not match.", null);
-        }
-        return redirUri;
-    }
-    
-    private AuthSession getAuthSession(Client client, ResponseType responseType, String redirectURI) {
-        AuthSession session = getAuthSession();
-
-        session = setupSession(session, client, responseType, redirectURI);
-        
-        User scopeOwner = getRequest().getClientInfo().getUser();
-        if (scopeOwner != null) {
-            // If user information is present, use as scope owner.
-            session.setScopeOwner(scopeOwner.getIdentifier());
+        } else {
+            if (redirectURI == null || redirectURI.isEmpty()) {
+                // If the optional parameter redirect_uri is not provided,
+                // we use the one provided during client registration.
+                return new RedirectionURI(redirectURIs[0]);
+            }
         }
         
-        return session;
-    }
-    
-    private void ungetAuthSession() {
-        String sessionId = getCookies().getFirstValue(ClientCookieID);
-        // cleanup cookie..
-        if (sessionId != null && sessionId.length() > 0) {
-            ConcurrentMap<String, Object> attribs = getContext()
-                    .getAttributes();
-            attribs.remove(sessionId);
-        }
-    }
-
-    /**
-     * Sets up a session.
-     *
-     * @param in  The OAuth session.
-     * @param client The OAuth client.
-     * @param flow The glow.
-     * @param redirUri The redirection URI.
-     * @param params The authentication parameters.
-     */
-    protected AuthSession setupSession(AuthSession in, Client client, ResponseType flow, String redirUri) {
-        getLogger().fine("Base ref = " + getReference().getParentRef());
-        getLogger().fine("OAuth2 session = " + in);
-
-        AuthSession session = in;
-
-        if (session == null) {
-            session = new AuthSession(getContext().getAttributes(),
-                    new ScheduledThreadPoolExecutor(5));
-            CookieSetting cs = new CookieSetting(ClientCookieID, session.getId());
-            // TODO create a secure mode setting, update all cookies
-            // cs.setAccessRestricted(true);
-            // cs.setSecure(true);
-            getCookieSettings().add(cs);
-            getLogger().fine("Setting cookie in SetupSession - " + session.getId());
-        }
-
-        session.setClient(client);
-        session.setAuthFlow(flow);
-
-        if (!redirUri.equals(client.getRedirectUri())) {
-            session.setDynamicCallbackURI(redirUri);
-            getLogger().fine("OAuth2 set dynamic callback = " + redirUri);
-        }
-
-        // Save away the state
-        String state = getCookies().getFirstValue(STATE);
-        if (state != null && !state.isEmpty()) {
-            session.setState(state);
+        /*
+         * When a redirection URI is included in an authorization request, the
+         * authorization server MUST compare and match the value received
+         * against at least one of the registered redirection URIs (or URI
+         * components) as defined in [RFC3986] Section 6, if any redirection
+         * URIs were registered.
+         * (See 3.1.2.3. Dynamic Configuration)
+         */
+        for (String uri : redirectURIs) {
+            if (redirectURI.startsWith(uri)) {
+                return new RedirectionURI(redirectURI, true);
+            }
         }
         
-        return session;
+        // The provided uri is no based on the uri with the client registration.
+        throw new OAuthException(OAuthError.invalid_request, "Callback URI does not match.", null);
     }
 }

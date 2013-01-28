@@ -33,67 +33,57 @@
 
 package org.restlet.ext.oauth.internal;
 
+import java.util.Map;
+import org.restlet.ext.oauth.GrantType;
+import org.restlet.ext.oauth.ResponseType;
+
 /**
- * Abstract Token that must be extended by all token implementations
+ * A POJO representing a OAuth client_id. Each client can have collected a
+ * number of authenticated users to allow working on their behalf.
+ * 
+ * Implementors should implement the storage and retrieval.
  * 
  * @author Kristoffer Gronowski
- * @author Shotaro Uchida
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public interface Token {
+public interface Client {
+    
+    public static final String PROPERTY_APPLICATION_NAME = "application_name";
+    public static final String PROPERTY_DESCRIPTION = "description";
+    public static final String PROPERTY_SUPPORTED_FLOWS = "supported_flows";
 
-    /**
-     * The access token issued by the authorization server. (5.1. 'access_token')
-     * 
-     * @return the actual token to be used for OAuth invocations.
-     */
-    public String getAccessToken();
-
-    /**
-     * The type of the token.
-     * 
-     * @return 
-     */
-    public String getTokenType();
+    public static enum ClientType {
+        CONFIDENTIAL,
+        PUBLIC
+    }
     
     /**
-     * The lifetime in seconds of the access token.
+     * Client id that the client has registered at the auth provider.
      * 
-     * @return
-     */
-    public int getExpirePeriod();
-    
-    /**
-     * The refresh token. (5.1. 'refresh_token')
-     * 
-     * @return null if refresh token was not issued.
-     */
-    public String getRefreshToken();
-
-    /**
-     * The actual granted scope. Must not be null.
-     * 
-     * @return 
-     */
-    public String[] getScope();
-    
-    /**
-     * The resource owner name associated with this token.
-     * 
-     * @return null if the resource owner is the client. (i.e. client_credentials grant.)
-     */
-    public String getUsername();
-    
-    /**
-     * The client associated with this token.
-     * 
-     * @return 
+     * @return the stored client id
      */
     public String getClientId();
-    
+
     /**
-     * Check if the token is expired.
+     * Client secret that the client has registered at the auth provider.
      * 
-     * @return true if this token is expired.
+     * @return the stored client secret
      */
-    public boolean isExpired();
+
+    public char[] getClientSecret();
+
+    /**
+     * Redirect URL that the client has registered at the auth provider.
+     * 
+     * @return redirect callback url for code and token flows.
+     */
+    public String[] getRedirectURIs();
+
+    public Map getProperties();
+    
+    public boolean isResponseTypeAllowed(ResponseType responseType);
+    
+    public boolean isGrantTypeAllowed(GrantType grantType);
+    
+    public ClientType getClientType();
 }

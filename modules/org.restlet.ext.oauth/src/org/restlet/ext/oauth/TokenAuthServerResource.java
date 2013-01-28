@@ -1,28 +1,43 @@
-/*
- * Copyright 2012 Shotaro Uchida <fantom@xmaker.mx>.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/**
+ * Copyright 2005-2012 Restlet S.A.S.
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
+ * 1.0 (the "Licenses"). You can select the license that you prefer but you may
+ * not use this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the Apache 2.0 license at
+ * http://www.opensource.org/licenses/apache-2.0
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.restlet.com/products/restlet-framework
+ * 
+ * Restlet is a registered trademark of Restlet S.A.S.
  */
 package org.restlet.ext.oauth;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.ext.oauth.internal.Token;
-import org.restlet.ext.oauth.internal.memory.ExpireToken;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
@@ -73,49 +88,17 @@ public class TokenAuthServerResource extends OAuthServerResource {
         
         final Token token;
         if (tokenType.equals(OAuthServerResource.TOKEN_TYPE_BEARER)) {
-            token = validateBearerToken(call);
+            token = tokens.validateToken(call.get(ACCESS_TOKEN).toString());
         }/* else if (tokenType.equals(OAuthServerResource.TOKEN_TYPE_MAC)) {
             // TODO
         }*/ else {
             throw new OAuthException(OAuthError.invalid_request, "Unsupported token_type", null);
         }
         
-        AuthenticatedUser user = token.getUser();
-        if (user == null) {
-            // Revoked?
-            throw new OAuthException(OAuthError.invalid_token, "AuthenticatedUser not found", null);
-        }
-        
-        String scope = Scopes.toScope(user.getGrantedRoles());
         JSONObject resp = new JSONObject();
-        resp.put(USERNAME, user.getId());
-        resp.put(SCOPE, scope);
+        resp.put(USERNAME, token.getUsername());
+        resp.put(SCOPE, Scopes.toString(token.getScope()));
         
         return new JsonRepresentation(resp);
-    }
-    
-    private Token validateBearerToken(JSONObject call) throws JSONException, OAuthException {
-        String token = call.get(ACCESS_TOKEN).toString();
-
-        getLogger().fine("In Validator resource - searching for token = " + token);
-        Token t = this.generator.findToken(token);
-
-        if (t == null) {
-            throw new OAuthException(OAuthError.invalid_token, "Token not found.", null);
-        }
-        
-        getLogger().fine("In Validator resource - got token = " + t);
-
-        if (t instanceof ExpireToken) {
-            // check that the right token was used
-            ExpireToken et = (ExpireToken) t;
-
-            if (!token.equals(et.getToken())) {
-                getLogger().warning("Should not use the refresh_token to sign!");
-                throw new OAuthException(OAuthError.invalid_token, "Invalid Token.", null);
-            }
-        }
-        
-        return t;
     }
 }

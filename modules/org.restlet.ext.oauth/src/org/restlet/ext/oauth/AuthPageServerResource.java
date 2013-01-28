@@ -33,6 +33,7 @@
 
 package org.restlet.ext.oauth;
 
+import org.restlet.ext.oauth.internal.Client;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -48,8 +49,6 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
 
 import freemarker.template.Configuration;
-import java.util.HashSet;
-import java.util.Set;
 import org.restlet.data.CacheDirective;
 import org.restlet.ext.oauth.internal.Token;
 
@@ -148,6 +147,7 @@ import org.restlet.ext.oauth.internal.Token;
  * root.
  * 
  * @author Kristoffer Gronowski
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 
 public class AuthPageServerResource extends AuthorizationBaseServerResource {
@@ -194,7 +194,7 @@ public class AuthPageServerResource extends AuthorizationBaseServerResource {
                     // requested...
                     getLogger().fine(
                             "All scopes already approved. - skip auth page.");
-                    handleAction("Accept", scopesArray);
+                    handleAction(ACTION_ACCEPT, scopesArray);
                     return new EmptyRepresentation(); // Will redirect
                 }
             }
@@ -217,50 +217,24 @@ public class AuthPageServerResource extends AuthorizationBaseServerResource {
      * 
      * @param action
      *            as interacted by the user.
-     * @param scopes
+     * @param grantedScope
      *            the scopes that was approved.
      */
-    protected void handleAction(String action, String[] scopes) throws OAuthException {
+    protected void handleAction(String action, String[] grantedScope) throws OAuthException {
         // TODO: SessionId should maybe be removed
         AuthSession session = getAuthSession();
+        session.setGrantedScope(grantedScope);
 
         if (action.equals(ACTION_REJECT)) {
             getLogger().fine("Rejected.");
             throw new OAuthException(OAuthError.access_denied, "Rejected.", null);
         }
         getLogger().fine("Accepting scopes - in handleAction");
-        Client client = session.getClient();
-        String id = session.getScopeOwner();
-
-        String redirUrl = session.getDynamicCallbackURI();
-        getLogger().fine("OAuth2 get dynamic callback = " + redirUrl);
-        if (redirUrl == null || redirUrl.isEmpty()) {
-            redirUrl = client.getRedirectUri();
-        }
-        
-        final AuthenticatedUser user;
-        if (client.containsUser(id)) {
-            user = client.findUser(id);
-        } else {
-            user = client.createUser(id);
-        }
-        
-        // Make sure each scope does not duplicate.
-        Set<String> scopeSet = new HashSet<String>();
-        scopeSet.addAll(Arrays.asList(scopes));
-
-        // Refresh scopes.
-        user.revokeRoles();
-        for (String s : scopeSet) {
-            getLogger().fine("Adding scope = " + s + " to user = " + id);
-            user.addRole(Scopes.toRole(s), "");
-        }
-        
-        // Save the user if using DB
-        user.persist();
+        Client client = clients.findById(session.getClientId());
+        String scopeOwner = session.getScopeOwner();
 
         // Create redirection
-        final Reference location = new Reference(redirUrl);
+        final Reference location = new Reference(session.getRedirectionURI().getURI());
         
         String state = session.getState();
         if (state != null && !state.isEmpty()) {
@@ -271,21 +245,18 @@ public class AuthPageServerResource extends AuthorizationBaseServerResource {
         // Add query parameters for each flow.
         ResponseType flow = session.getAuthFlow();
         if (flow.equals(ResponseType.token)) {
-            Token token = generator.generateToken(user, tokenTimeSec);
-            location.addQueryParameter(TOKEN_TYPE, TOKEN_TYPE_BEARER);
-            location.addQueryParameter(ACCESS_TOKEN, token.getToken());
-            long expiresIn = token.getExpirePeriod();
-            if (expiresIn != Token.UNLIMITED) {
-                location.addQueryParameter(EXPIRES_IN, Long.toString(expiresIn));
-            }
-            String[] granted = scopeSet.toArray(new String[0]);
-            if (!Arrays.equals(session.getRequestedScope(), granted)) {
+            Token token = tokens.generateToken(client, scopeOwner, grantedScope);
+            location.addQueryParameter(TOKEN_TYPE, token.getTokenType());
+            location.addQueryParameter(ACCESS_TOKEN, token.getAccessToken());
+            location.addQueryParameter(EXPIRES_IN, Integer.toString(token.getExpirePeriod()));
+            String[] scope = token.getScope();
+            if (!Scopes.isIdentical(scope, session.getRequestedScope())) {
                 // OPTIONAL, if identical to the scope requested by the client,
                 // otherwise REQUIRED. (4.2.2. Access Token Response)
-                location.addQueryParameter(SCOPE, Scopes.toString(granted));
+                location.addQueryParameter(SCOPE, Scopes.toString(scope));
             }
         } else if (flow.equals(ResponseType.code)) {
-            String code = generator.generateCode(user);
+            String code = tokens.storeSession(session);
             location.addQueryParameter(CODE, code);
         }
 
@@ -349,8 +320,8 @@ public class AuthPageServerResource extends AuthorizationBaseServerResource {
         // TODO check with Restlet lead
         data.put("clientId", clientId);
         data.put("clientDescription", client.toString());
-        data.put("clientCallback", client.getRedirectUri());
-        data.put("clientName", client.getApplicationName());
+        data.put("clientCallback", client.getRedirectURIs());
+        data.put("clientProperties", client.getProperties());
         // scopes
         data.put("requestingScopes", scopes);
         data.put("grantedScopes", previousScopes);

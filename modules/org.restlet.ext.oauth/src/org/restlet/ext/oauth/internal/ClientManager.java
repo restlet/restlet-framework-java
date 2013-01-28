@@ -33,67 +33,58 @@
 
 package org.restlet.ext.oauth.internal;
 
+import java.util.Map;
+import org.restlet.ext.oauth.internal.Client.ClientType;
+
 /**
- * Abstract Token that must be extended by all token implementations
+ * Abstract class that defines a client store for the Authentication Server. The
+ * following code adds a client to a store when you create your inbound root
+ * 
+ * <pre>
+ * {
+ * &#064;code
+ * public synchronized Restlet createInboundRoot(){
+ *   ClientManager clientStore = ClientStoreFactory.getInstance();
+ *   clientStore.createClient(&quot;1234567890&quot;,&quot;1234567890&quot;,
+ *    &quot;http://localhost:8080&quot;);
+ *  
+ *   attribs.put(ClientManager.class.getCanonicalName(), clientStore);
+ * }
+ * }
+ * </pre>
  * 
  * @author Kristoffer Gronowski
- * @author Shotaro Uchida
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public interface Token {
+public interface ClientManager {
 
     /**
-     * The access token issued by the authorization server. (5.1. 'access_token')
+     * Used for creating a data entry representation for a oauth client
      * 
-     * @return the actual token to be used for OAuth invocations.
+     * @param clientType
+     * @param redirectURIs
+     * @param properties
+     * @return 
      */
-    public String getAccessToken();
+    public Client createClient(ClientType clientType, String[] redirectURIs, Map properties);
 
     /**
-     * The type of the token.
+     * Delete a client_id from the implementing backed database.
      * 
-     * @return 
+     * @param id
+     *            client_id of the client to remove
      */
-    public String getTokenType();
-    
-    /**
-     * The lifetime in seconds of the access token.
-     * 
-     * @return
-     */
-    public int getExpirePeriod();
-    
-    /**
-     * The refresh token. (5.1. 'refresh_token')
-     * 
-     * @return null if refresh token was not issued.
-     */
-    public String getRefreshToken();
+
+    public void deleteClient(String id);
 
     /**
-     * The actual granted scope. Must not be null.
+     * Search for a client_id if present in the database.
      * 
-     * @return 
+     * @param id
+     *            client_id to search for.
+     * @return client POJO or null if not found.
      */
-    public String[] getScope();
+
+    public Client findById(String id);
     
-    /**
-     * The resource owner name associated with this token.
-     * 
-     * @return null if the resource owner is the client. (i.e. client_credentials grant.)
-     */
-    public String getUsername();
-    
-    /**
-     * The client associated with this token.
-     * 
-     * @return 
-     */
-    public String getClientId();
-    
-    /**
-     * Check if the token is expired.
-     * 
-     * @return true if this token is expired.
-     */
-    public boolean isExpired();
 }

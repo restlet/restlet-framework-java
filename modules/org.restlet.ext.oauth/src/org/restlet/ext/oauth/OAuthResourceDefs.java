@@ -30,51 +30,37 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
-
 package org.restlet.ext.oauth;
 
 /**
- * The user store interface represents the entry point where user requests are
- * created, searched and removed. It is an excellent indicator where to modify
- * when implementing another persistence model.
- * 
- * @author Kristoffer Gronowski
+ *
+ * @author Shotaro Uchida <suchida@valleycampus.com>
  */
-public interface UserStore {
-
-    /**
-     * Indicates of the OAuth server contains a given user.
-     * 
-     * @param id
-     *            The identifier of the user.
-     * @return true if the OAuth server contains a given user.
+public interface OAuthResourceDefs {
+    
+    /*
+     * OAuth 2.0 (RFC6749) parameters.
      */
-    public boolean containsUser(String id);
-
-    /**
-     * Creates a user and return it.
-     * 
-     * @param id
-     *            The user id.
-     * @return The created instance of {@link AuthenticatedUser}.
+    public static final String CLIENT_ID = "client_id";
+    public static final String CLIENT_SECRET = "client_secret";
+    public static final String RESPONSE_TYPE = "response_type";
+    public static final String SCOPE = "scope";
+    public static final String STATE = "state";
+    public static final String REDIR_URI = "redirect_uri";
+    public static final String ERROR = "error";
+    public static final String ERROR_DESC = "error_description";
+    public static final String ERROR_URI = "error_uri";
+    public static final String GRANT_TYPE = "grant_type";
+    public static final String CODE = "code";
+    public static final String ACCESS_TOKEN = "access_token";
+    public static final String TOKEN_TYPE = "token_type";
+    public static final String EXPIRES_IN = "expires_in";
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
+    public static final String REFRESH_TOKEN = "refresh_token";
+    /*
+     * Token Types
      */
-    public AuthenticatedUser createUser(String id);
-
-    /**
-     * Retrieves a given user according to the given identifier.
-     * 
-     * @param id
-     *            The user's identifier.
-     * @return The given user according to the given identifier.
-     */
-    public AuthenticatedUser findUser(String id);
-
-    /**
-     * Revoke/delete a user according to its id.
-     * 
-     * @param id
-     *            The identifier of the user to revoke/delete.
-     */
-    public void revokeUser(String id); // Same as delete a user.
-
+    public static final String TOKEN_TYPE_BEARER = "Bearer";
+    public static final String TOKEN_TYPE_MAC = "mac";
 }

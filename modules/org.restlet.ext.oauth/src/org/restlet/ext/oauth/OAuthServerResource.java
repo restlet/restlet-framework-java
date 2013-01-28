@@ -44,8 +44,9 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.Scopes;
-import org.restlet.ext.oauth.internal.Token;
-import org.restlet.ext.oauth.internal.TokenGenerator;
+import org.restlet.ext.oauth.internal.Client;
+import org.restlet.ext.oauth.internal.ClientManager;
+import org.restlet.ext.oauth.internal.TokenManager;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
@@ -53,50 +54,17 @@ import org.restlet.resource.ServerResource;
 
 /**
  * Base class for common resources used by the OAuth server side.
- *
- * <b>Originally written by Kristoffer Gronowski, Heavily modified for update to draft30.</b>
+ * Implements OAuth 2.0 (RFC6749)
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
+ * @author Kristoffer Gronowski
  */
-public abstract class OAuthServerResource extends ServerResource {
-
-    /*
-     * OAuth 2.0 draft30 parameters.
-     */
-    public static final String CLIENT_ID = "client_id";
-    public static final String CLIENT_SECRET = "client_secret";
-    public static final String RESPONSE_TYPE = "response_type";
-    public static final String SCOPE = "scope";
-    public static final String STATE = "state";
-    public static final String REDIR_URI = "redirect_uri";
-    public static final String ERROR = "error";
-    public static final String ERROR_DESC = "error_description";
-    public static final String ERROR_URI = "error_uri";
-    public static final String GRANT_TYPE = "grant_type";
-    public static final String CODE = "code";
-    public static final String ACCESS_TOKEN = "access_token";
-    public static final String TOKEN_TYPE = "token_type";
-    public static final String EXPIRES_IN = "expires_in";
-    public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
-    public static final String REFRESH_TOKEN = "refresh_token";
-    /*
-     * Token Types
-     */
-    public static final String TOKEN_TYPE_BEARER = "Bearer";
-    public static final String TOKEN_TYPE_MAC = "mac";
-    /*
-     * Other params (old)
-     */
-    public static final String AUTONOMOUS_USER = "__autonomous";
-    public static final String ClientCookieID = "_cid";
-    public static final String TOKEN_SERVER_MAX_TIME_SEC = "_token_server_max_time_sec";
-    public static final String TOKEN_SERVER_TIME_SEC = "_token_server_time_sec";
+public abstract class OAuthServerResource extends ServerResource implements OAuthResourceDefs {
     
-    protected volatile ClientStore<?> clients;
-    protected volatile TokenGenerator generator;
-    protected volatile long tokenMaxTimeSec = Token.UNLIMITED;
-    protected volatile long tokenTimeSec = Token.UNLIMITED;
+    public static final String PARAMETER_DEFAULT_SCOPE = "defaultScope";
+    
+    protected volatile ClientManager clients;
+    protected volatile TokenManager tokens;
 
     /**
      * Default constructor.
@@ -110,34 +78,10 @@ public abstract class OAuthServerResource extends ServerResource {
         super.doInit();
         Context ctx = getContext();
         ConcurrentMap<String, Object> attribs = ctx.getAttributes();
-        clients = ClientStoreFactory.getInstance();
+        clients = (ClientManager) attribs.get(ClientManager.class.getName());
+        tokens = (TokenManager) attribs.get(TokenManager.class.getName());
 
         getLogger().fine("Found client store = " + clients);
-
-        generator = clients.getTokenGenerator();
-        getLogger().fine("Found token generator = " + generator);
-
-        if (attribs.containsKey(TOKEN_SERVER_TIME_SEC)) {
-            tokenTimeSec = (Long) attribs.get(TOKEN_SERVER_TIME_SEC);
-        }
-
-        if (attribs.containsKey(TOKEN_SERVER_MAX_TIME_SEC)) {
-            tokenMaxTimeSec = (Long) attribs.get(TOKEN_SERVER_MAX_TIME_SEC);
-        }
-        generator.setMaxTokenTime(tokenMaxTimeSec);
-    }
-
-    /**
-     * Returns the value of the first parameter found with the given name.
-     *
-     * @param parameter The parameter name.
-     * @param defaultValue The default value to return if no matching parameter found or if the
-     * parameter has a null value.
-     * @return The value of the first parameter found with the given name or the default value.
-     */
-    protected String getParameter(String parameter, String defaultValue) {
-        String val = (String) this.getContext().getAttributes().get(parameter);
-        return val != null ? val : defaultValue;
     }
     
     /**
@@ -181,7 +125,7 @@ public abstract class OAuthServerResource extends ServerResource {
              * indicating an invalid scope...
              * (draft-ietf-oauth-v2-30 3.3.)
              */
-            Object defaultScope = getParameter("defaultScope", null);
+            Object defaultScope = getContext().getAttributes().get(PARAMETER_DEFAULT_SCOPE);
             if (defaultScope == null || defaultScope.toString().isEmpty()) {
                 throw new OAuthException(OAuthError.invalid_scope, "Scope has not provided.", null);
             }

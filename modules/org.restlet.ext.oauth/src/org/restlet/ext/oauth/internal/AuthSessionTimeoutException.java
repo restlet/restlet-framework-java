@@ -30,46 +30,12 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
-
-package org.restlet.ext.oauth;
+package org.restlet.ext.oauth.internal;
 
 /**
- * A POJO representing a OAuth client_id. Each client can have collected a
- * number of authenticated users to allow working on their behalf.
- * 
- * Implementors should implement the storage and retrieval.
- * 
- * @author Kristoffer Gronowski
+ *
+ * @author Shotaro Uchida <suchida@valleycampus.com>
  */
-public interface Client extends UserStore {
-
-    /**
-     * Client id that the client has registered at the auth provider.
-     * 
-     * @return the stored client id
-     */
-    public String getClientId();
-
-    /**
-     * Client secret that the client has registered at the auth provider.
-     * 
-     * @return the stored client secret
-     */
-
-    public String getClientSecret();
-
-    /**
-     * Redirect URL that the client has registered at the auth provider.
-     * 
-     * @return redirect callback url for code and token flows.
-     */
-    public String getRedirectUri();
-
-    /**
-     * Human readable name of the application that this client represents It can
-     * be useful for UI components to be presented.
-     * 
-     * @return name of the application.
-     */
-    public String getApplicationName();
+public class AuthSessionTimeoutException extends Exception {
+    
 }

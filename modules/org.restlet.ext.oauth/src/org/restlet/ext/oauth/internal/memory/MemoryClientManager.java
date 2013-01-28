@@ -30,44 +30,32 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
-
 package org.restlet.ext.oauth.internal.memory;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-
-import org.restlet.ext.oauth.Client;
-import org.restlet.ext.oauth.ClientStore;
+import org.restlet.ext.oauth.internal.AbstractClientManager;
+import org.restlet.ext.oauth.internal.Client;
+import org.restlet.ext.oauth.internal.Client.ClientType;
 
 /**
- * In memory client store is keeping client_id, client_secret and redirict URL
- * Note that clients will not be persisted after a JVM restart.
+ * Memory implementation of ClientManager interface.
  * 
- * @author Kristoffer Gronowski
+ * @author Shotaro Uchida <suchida@valleycampus.com>
  */
-public class MemClientStore extends ClientStore<MemTokenGenerator> {
+public class MemoryClientManager extends AbstractClientManager {
 
     private final Map<String, Client> clients = new ConcurrentHashMap<String, Client>();
-
-    public MemClientStore() {
-        super(new MemTokenGenerator(new ScheduledThreadPoolExecutor(5)));
-    }
-
-    public MemClientStore(ScheduledThreadPoolExecutor executor) {
-        super(new MemTokenGenerator(executor));
-    }
-
-    public Client createClient(String clientId, String redirectUri) {
-        return createClient(clientId, null, redirectUri);
-    }
-
-    public Client createClient(String clientId, String clientSecret,
-            String redirectUri) {
-        Client client = new ClientImpl(clientId, clientSecret, redirectUri);
-        clients.put(clientId, client);
+    
+    protected Client createClient(String clientId, char[] clientSecret, ClientType clientType, String[] redirectURIs, Map properties) {
+        MemoryClient client = new MemoryClient(UUID.randomUUID().toString(), clientType, redirectURIs, properties);
+        if (clientSecret != null) {
+            client.setClientSecret(clientSecret);
+        }
+        
+        clients.put(client.getClientId(), client);
+        
         return client;
     }
 
@@ -77,15 +65,5 @@ public class MemClientStore extends ClientStore<MemTokenGenerator> {
 
     public Client findById(String id) {
         return clients.get(id);
-    }
-
-    @Override
-    public Collection<Client> findClientsForUser(String userid) {
-        ArrayList<Client> result = new ArrayList<Client>();
-        for (Client c : clients.values()) {
-            if (c.containsUser(userid))
-                result.add(c);
-        }
-        return result;
     }
 }

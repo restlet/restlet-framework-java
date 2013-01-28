@@ -34,6 +34,7 @@
 package org.restlet.ext.oauth.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -104,11 +105,18 @@ public class Scopes {
         }
         return new String[0];
     }
+    
     public static String[] parseScope(List<Role> roles) {
         String[] scopes = new String[roles.size()];
         for (int i = 0; i < roles.size(); i++) {
             scopes[i] = roles.get(i).getName();
         }
         return scopes;
+    }
+    
+    public static boolean isIdentical(String[] a, String[] b) {
+        List al = Arrays.asList(a);
+        List bl = Arrays.asList(b);
+        return al.containsAll(bl) && bl.containsAll(al);
     }
 }

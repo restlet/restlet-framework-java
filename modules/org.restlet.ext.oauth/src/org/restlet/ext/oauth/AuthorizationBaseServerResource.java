@@ -1,27 +1,48 @@
-/*
- * Copyright 2012 Shotaro Uchida <fantom@xmaker.mx>.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/**
+ * Copyright 2005-2012 Restlet S.A.S.
+ * 
+ * The contents of this file are subject to the terms of one of the following
+ * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
+ * 1.0 (the "Licenses"). You can select the license that you prefer but you may
+ * not use this file except in compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the Apache 2.0 license at
+ * http://www.opensource.org/licenses/apache-2.0
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.opensource.org/licenses/lgpl-3.0
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.opensource.org/licenses/lgpl-2.1
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.opensource.org/licenses/cddl1
+ * 
+ * You can obtain a copy of the EPL 1.0 license at
+ * http://www.opensource.org/licenses/eclipse-1.0
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royalty free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.restlet.com/products/restlet-framework
+ * 
+ * Restlet is a registered trademark of Restlet S.A.S.
  */
 package org.restlet.ext.oauth;
 
 import freemarker.template.Configuration;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentMap;
+import org.restlet.data.CookieSetting;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.ext.freemarker.ContextTemplateLoader;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.ext.oauth.internal.AuthSession;
+import org.restlet.ext.oauth.internal.AuthSessionTimeoutException;
+import org.restlet.ext.oauth.internal.RedirectionURI;
 import org.restlet.representation.Representation;
 
 /**
@@ -33,11 +54,19 @@ import org.restlet.representation.Representation;
  */
 public class AuthorizationBaseServerResource extends OAuthServerResource {
     
+    private static final String ClientCookieID = "_cid";
+    
     @Override
     protected void doCatch(Throwable t) {
         final OAuthException oex = OAuthException.toOAuthException(t);
-        AuthSession session = getAuthSession();
-        if (session == null) {
+        AuthSession session = null;
+        try {
+            session = getAuthSession();
+        } catch (OAuthException ignore) {
+            // FIXME
+        }
+        if (session == null || session.getAuthFlow() == null) {
+            // Session was revoked or not established.
             Representation resp = getErrorPage(
                     HttpOAuthHelper.getErrorPageTemplate(getContext()),
                     oex);
@@ -51,37 +80,81 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
              * "application/x-www-form-urlencoded" format, per Appendix B:
              * (4.2.2.1. Error Response)
              */
-            String redirectURI = session.getDynamicCallbackURI();
-            if (redirectURI == null) {
-                redirectURI = session.getClient().getRedirectUri();
-            }
             // Use fragment component for Implicit Grant (4.2.2.1. Error Response)
             boolean fragment = session.getAuthFlow().equals(ResponseType.token);
-            sendError(redirectURI, oex, session.getState(), fragment);
+            sendError(session.getRedirectionURI().getURI(), oex, session.getState(), fragment);
         }
     }
     
     /**
-     * Get current authentication session.
-     * @return Current AuthSession
+     * Sets up a new authorization session.
+     *
+     * @param redirectUri The redirection URI.
      */
-    protected AuthSession getAuthSession() {
-        // Get some basic information
-        String sessionId = getCookies().getFirstValue(ClientCookieID);
-        getLogger().fine("sessionId = " + sessionId);
+    protected AuthSession setupAuthSession(RedirectionURI redirectUri) {
+        getLogger().fine("Base ref = " + getReference().getParentRef());
+        
+        AuthSession session = AuthSession.newAuthSession();
+        session.setRedirectionURI(redirectUri);
 
-        AuthSession session = (sessionId == null) ? null
-                : (AuthSession) getContext().getAttributes().get(sessionId);
+        CookieSetting cs = new CookieSetting(ClientCookieID, session.getId());
+        // TODO create a secure mode setting, update all cookies
+        // cs.setAccessRestricted(true);
+        // cs.setSecure(true);
+        getCookieSettings().add(cs);
+        getLogger().fine("Setting cookie in SetupSession - " + session.getId());
+
+        getContext().getAttributes().put(session.getId(), session);
+        
         return session;
     }
     
     /**
-     *
+     * Get current authorization session.
+     * @return Current AuthSession
+     */
+    protected AuthSession getAuthSession() throws OAuthException {
+        // Get some basic information
+        String sessionId = getCookies().getFirstValue(ClientCookieID);
+        getLogger().fine("sessionId = " + sessionId);
+        
+        AuthSession session = (sessionId == null) ? null
+                : (AuthSession) getContext().getAttributes().get(sessionId);
+        
+        if (session == null) {
+            return null;
+        }
+        
+        try {
+            session.updateActivity();
+        } catch (AuthSessionTimeoutException ex) {
+            // Remove timeout session
+            getContext().getAttributes().remove(sessionId);
+            throw new OAuthException(OAuthError.server_error, "Session timeout", null);
+        }
+        
+        return session;
+    }
+    
+    /**
+     * Unget current authorization session.
+     */
+    protected void ungetAuthSession() {
+        String sessionId = getCookies().getFirstValue(ClientCookieID);
+        // cleanup cookie..
+        if (sessionId != null && sessionId.length() > 0) {
+            ConcurrentMap<String, Object> attribs = getContext()
+                    .getAttributes();
+            attribs.remove(sessionId);
+        }
+    }
+    
+    /**
      * Helper method to format error responses according to OAuth2 spec. (Redirect)
      *
      * @param redirectURI redirection URI to send error
      * @param ex Any OAuthException with error
-     * @param state state parameter as presented in the initial auth request
+     * @param state state parameter as presented in the initial authorize request
      * @param fragment true if use URL Fragment.
      */
     protected void sendError(String redirectURI, OAuthException ex, String state, boolean fragment) {
@@ -106,7 +179,6 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
     }
     
     /**
-     *
      * Helper method to format error responses according to OAuth2 spec. (Non Redirect)
      *
      * @param errPage errorPage template name
@@ -124,7 +196,6 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
         data.put(ERROR, ex.getError().name());
         data.put(ERROR_DESC, ex.getErrorDescription());
         data.put(ERROR_URI, ex.getErrorURI());
-        //data.put(STATE, state);
 
         response.setDataModel(data);
 
