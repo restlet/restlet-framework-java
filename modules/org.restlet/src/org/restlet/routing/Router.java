@@ -668,6 +668,62 @@ public class Router extends Restlet {
     }
 
     /**
+     * Attaches a permanent redirection to this router based on a given URI
+     * pattern. The client is expected to reuse the same method for the new
+     * request.
+     * 
+     * @param pathTemplate
+     *            The URI path template that must match the relative part of the
+     *            resource URI.
+     * @param targetUri
+     *            The target URI.
+     * @return The created route.
+     */
+    public TemplateRoute redirectPermanent(String pathTemplate, String targetUri) {
+        return attach(pathTemplate, new Redirector(getContext(), targetUri,
+                Redirector.MODE_CLIENT_PERMANENT));
+    }
+
+    /**
+     * Attaches a redirection to this router based on a given URI pattern. It
+     * redirects the client to a different URI that SHOULD be retrieved using a
+     * GET method on that resource. This method exists primarily to allow the
+     * output of a POST-activated script to redirect the user agent to a
+     * selected resource. The new URI is not a substitute reference for the
+     * originally requested resource.
+     * 
+     * @param pathTemplate
+     *            The URI path template that must match the relative part of the
+     *            resource URI.
+     * @param targetUri
+     *            The target URI.
+     * @return The created route.
+     */
+
+    public TemplateRoute redirectSeeOther(String pathTemplate, String targetUri) {
+        return attach(pathTemplate, new Redirector(getContext(), targetUri,
+                Redirector.MODE_CLIENT_SEE_OTHER));
+    }
+
+    /**
+     * Attaches a temporary redirection to this router based on a given URI
+     * pattern. The client is expected to reuse the same method for the new
+     * request.
+     * 
+     * @param pathTemplate
+     *            The URI path template that must match the relative part of the
+     *            resource URI.
+     * @param targetUri
+     *            The target URI.
+     * @return The created route.
+     */
+
+    public TemplateRoute redirectTemporary(String pathTemplate, String targetUri) {
+        return attach(pathTemplate, new Redirector(getContext(), targetUri,
+                Redirector.MODE_CLIENT_TEMPORARY));
+    }
+
+    /**
      * Sets the default matching mode to use when selecting routes based on
      * URIs. By default it is set to {@link Template#MODE_EQUALS}.
      * 

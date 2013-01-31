@@ -361,11 +361,10 @@ public final class BioUtils {
                 }
             };
 
-            org.restlet.Application application = org.restlet.Application
-                    .getCurrent();
+            org.restlet.Context context = org.restlet.Context.getCurrent();
 
-            if (application != null && application.getTaskService() != null) {
-                application.getTaskService().execute(task);
+            if (context != null && context.getExecutorService() != null) {
+                context.getExecutorService().execute(task);
             } else {
                 new Thread(task, "Restlet-PipedOutputStream").start();
             }
@@ -461,11 +460,10 @@ public final class BioUtils {
                 }
             };
 
-            org.restlet.Application application = org.restlet.Application
-                    .getCurrent();
+            org.restlet.Context context = org.restlet.Context.getCurrent();
 
-            if (application != null && application.getTaskService() != null) {
-                application.getTaskService().execute(task);
+            if (context != null && context.getExecutorService() != null) {
+                context.getExecutorService().execute(task);
             } else {
                 new Thread(task, "Restlet-PipeWriter").start();
             }

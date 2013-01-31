@@ -59,6 +59,7 @@ public class ComponentContext extends Context {
         this.componentHelper = componentHelper;
         setClientDispatcher(new ComponentClientDispatcher(this));
         setServerDispatcher(new ComponentServerDispatcher(this));
+        setExecutorService(componentHelper.getHelped().getTaskService());
     }
 
     @Override

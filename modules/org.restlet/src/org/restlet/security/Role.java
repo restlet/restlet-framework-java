@@ -46,12 +46,13 @@ import org.restlet.engine.util.SystemUtils;
  * recommended that those role don't reflect an actual organization, but more
  * the functional requirements of your application.
  * 
- * Also, two roles are not considered equals if they belong to the same parent
- * application and have the same the name and child roles.
+ * Two roles are considered equals if they belong to the same parent application
+ * and have the same name and child roles. The description isn't used for
+ * equality assessment.
  * 
- * Since version 2.2, they need to be the same Java object. In order to prevent
- * the multiplication of equal Role instances, you should try to call
- * {@link Application#getRole(String)} method but this isn't mandatory anymore.
+ * Since version 2.2, they don't need to be the same Java objects anymore. In
+ * order to prevent the multiplication of equivalent {@link Role} instances, you
+ * should try to call {@link Application#getRole(String)} method.
  * 
  * @author Jerome Louvel
  * @author Tim Peierls
@@ -130,7 +131,7 @@ public class Role implements Principal {
 
     /**
      * Default constructor. Note that the parent application is retrieved using
-     * the {@link Application#getCurrent()} method.
+     * the {@link Application#getCurrent()} method if available or is null.
      */
     public Role() {
         this(Application.getCurrent(), null, null);
@@ -140,7 +141,7 @@ public class Role implements Principal {
      * Constructor.
      * 
      * @param application
-     *            The parent application.
+     *            The parent application or null.
      * @param name
      *            The name.
      */
@@ -152,7 +153,7 @@ public class Role implements Principal {
      * Constructor.
      * 
      * @param application
-     *            The parent application.
+     *            The parent application or null.
      * @param name
      *            The name.
      * @param description

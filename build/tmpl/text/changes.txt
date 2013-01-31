@@ -47,6 +47,11 @@ Changes log
        - Added getRole(String) method to ServerResource.
        - Refactored GaeEnroler constructors to require proper Role instances or 
          parent Application.
+       - Added Component.taskService property and deprecated+disabled the 
+         Application.taskService. The same task service/thread pool can then be shared 
+         by multiple applications inside the same component/JVM.
+       - Added Context.executorService property to be able to invoke the parent task
+         service without actually being able to control it (start/stop).
     - Bug fixed
        - The same ones as in version 2.1.2.
     - Misc
