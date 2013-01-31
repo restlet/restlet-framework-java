@@ -229,14 +229,15 @@ public class TaskService extends Service implements ScheduledExecutorService {
     private volatile int corePoolSize;
 
     /**
-     * Constructor. Set the core pool size to 4 by default.
+     * Constructor. Enables the service and set the core pool size to 4 by
+     * default.
      */
     public TaskService() {
         this(true);
     }
 
     /**
-     * Constructor. The default minimum size
+     * Constructor. Set the core pool size to 4 by default.
      * 
      * @param enabled
      *            True if the service has been enabled.
