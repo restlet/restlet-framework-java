@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.restlet.Application;
 import org.restlet.security.Role;
 
 /**
@@ -82,6 +83,15 @@ public class Scopes {
         return rname;
     }
 
+    /**
+     * Creates a {@link Role} from a scope name.
+     * 
+     * @param scope
+     * @return
+     * @deprecated Use {@link Role#get(Application, String, String)}
+     *             instead.
+     */
+    @Deprecated
     public static Role toRole(String scope) {
         return new Role(scope, null);
     }
@@ -89,9 +99,11 @@ public class Scopes {
     public static List<Role> toRoles(String scopes) {
         String[] tmp = parseScope(scopes);
         List<Role> toRet = new ArrayList<Role>(tmp.length);
+
         for (String scope : tmp) {
-            toRet.add(new Role(scope, null));
+            toRet.add(toRole(scope));
         }
+
         return toRet;
     }
 

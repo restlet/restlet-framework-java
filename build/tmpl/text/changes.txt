@@ -43,6 +43,10 @@ Changes log
          Application parameter in deprecated constructors.
        - Added findRoles/map/unmap methods with an Application argument to the
          MemoryRealm class for conveniency.
+       - Added static get(...) methods to Role.
+       - Added getRole(String) method to ServerResource.
+       - Refactored GaeEnroler constructors to require proper Role instances or 
+         parent Application.
     - Bug fixed
        - The same ones as in version 2.1.2.
     - Misc

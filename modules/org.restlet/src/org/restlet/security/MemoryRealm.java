@@ -431,10 +431,8 @@ public class MemoryRealm extends Realm {
      * @param roleName
      *            The target role name.
      */
-    public void map(User user, Application app, String roleName) {
-        Role role = (app == null) ? null : app.getRole(roleName);
-        role = (role == null) ? new Role(app, roleName) : role;
-        map(user, role);
+    public void map(User user, Application application, String roleName) {
+        map(user, Role.get(application, roleName, null));
     }
 
     /**
@@ -499,10 +497,7 @@ public class MemoryRealm extends Realm {
      *            The target role name.
      */
     public void unmap(Group group, Application application, String roleName) {
-        Role role = (application == null) ? null : application
-                .getRole(roleName);
-        role = (role == null) ? new Role(application, roleName) : role;
-        unmap(group, role);
+        unmap(group, Role.get(application, roleName, null));
     }
 
     /**
@@ -552,10 +547,7 @@ public class MemoryRealm extends Realm {
      *            The target role name.
      */
     public void unmap(User user, Application application, String roleName) {
-        Role role = (application == null) ? null : application
-                .getRole(roleName);
-        role = (role == null) ? new Role(application, roleName) : role;
-        unmap(user, role);
+        unmap(user, Role.get(application, roleName, null));
     }
 
     /**

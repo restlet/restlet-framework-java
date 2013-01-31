@@ -64,6 +64,7 @@ import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.Variant;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Router;
+import org.restlet.security.Role;
 import org.restlet.service.ConverterService;
 import org.restlet.util.Series;
 
@@ -880,6 +881,19 @@ public abstract class ServerResource extends Resource {
     }
 
     /**
+     * Retrieves an existing role or creates a new one if needed based on its
+     * name. Note that a null description will be set if the role has to be
+     * created.
+     * 
+     * @param name
+     *            The role name to find or create.
+     * @return The role found or created.
+     */
+    public Role getRole(String name) {
+        return Role.get(getApplication(), name);
+    }
+
+    /**
      * Returns a modifiable list of exposed variants for the current request
      * method. You can declare variants manually by updating the result list ,
      * by overriding this method. By default, the variants will be provided
@@ -1137,8 +1151,7 @@ public abstract class ServerResource extends Resource {
      * @return True if the authenticated subject is in the given role.
      */
     public boolean isInRole(String roleName) {
-        return getClientInfo().getRoles().contains(
-                getApplication().getRole(roleName));
+        return getClientInfo().getRoles().contains(getRole(roleName));
     }
 
     /**

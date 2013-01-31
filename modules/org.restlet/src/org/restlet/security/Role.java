@@ -85,6 +85,37 @@ public class Role implements Principal {
 
     };
 
+    /**
+     * Finds an existing role or creates a new one if needed. Note that a null
+     * description will be set if the role has to be created.
+     * 
+     * @param application
+     *            The parent application.
+     * @param name
+     *            The role name to find or create.
+     * @return The role found or created.
+     */
+    public static Role get(Application application, String name) {
+        return get(application, name, null);
+    }
+
+    /**
+     * Finds an existing role or creates a new one if needed.
+     * 
+     * @param application
+     *            The parent application.
+     * @param name
+     *            The role name to find or create.
+     * @param description
+     *            The role description if one needs to be created.
+     * @return The role found or created.
+     */
+    public static Role get(Application application, String name,
+            String description) {
+        Role role = (application == null) ? null : application.getRole(name);
+        return (role == null) ? new Role(application, name, description) : role;
+    }
+
     /** The parent application. */
     private volatile Application application;
 

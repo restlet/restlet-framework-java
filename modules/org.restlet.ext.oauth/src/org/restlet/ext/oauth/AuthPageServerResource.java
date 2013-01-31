@@ -258,7 +258,7 @@ public class AuthPageServerResource extends AuthorizationBaseServerResource {
         user.revokeRoles();
         for (String s : scopeSet) {
             getLogger().fine("Adding scope = " + s + " to user = " + id);
-            user.addRole(Scopes.toRole(s), "");
+            user.addRole(getRole(s), "");
         }
 
         // Save the user if using DB

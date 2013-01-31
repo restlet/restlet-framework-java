@@ -369,6 +369,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
                                 "Requested scopes contains which is not originally granted by the resource owner.",
                                 null);
                     }
+
                     refreshUserScopesAndPersist(user, requestedScopes);
                 }
 
@@ -389,12 +390,14 @@ public class AccessTokenServerResource extends OAuthServerResource {
         }
     }
 
-    private static void refreshUserScopesAndPersist(AuthenticatedUser user,
+    private void refreshUserScopesAndPersist(AuthenticatedUser user,
             String[] scopes) {
         user.revokeRoles();
+
         for (String s : scopes) {
-            user.addRole(Scopes.toRole(s), "");
+            user.addRole(getRole(s), "");
         }
+
         user.persist();
     }
 }
