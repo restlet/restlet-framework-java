@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -36,6 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.data.Form;
 
 /**
  * Exception that represents OAuth 2.0 (RFC6749) Errors.
@@ -53,12 +54,14 @@ public class OAuthException extends Exception {
     private String errorUri;
     
     public OAuthException(OAuthError error, String description, String errorUri) {
+        super(error.name());
         this.error = error;
         this.description = description;
         this.errorUri = errorUri;
     }
     
     private OAuthException(OAuthError error) {
+        super(error.name());
         this.error = error;
     }
     
@@ -82,6 +85,14 @@ public class OAuthException extends Exception {
         if (result.has(OAuthResourceDefs.ERROR_URI)) {
             ex.errorUri = result.getString(OAuthResourceDefs.ERROR_URI);
         }
+        return ex;
+    }
+    
+    public static OAuthException toOAuthException(Form params) {
+        OAuthError error = Enum.valueOf(OAuthError.class, params.getFirstValue(OAuthResourceDefs.ERROR));
+        OAuthException ex = new OAuthException(error);
+        ex.description = params.getFirstValue(OAuthResourceDefs.ERROR_DESC);
+        ex.errorUri = params.getFirstValue(OAuthResourceDefs.ERROR_URI);
         return ex;
     }
     

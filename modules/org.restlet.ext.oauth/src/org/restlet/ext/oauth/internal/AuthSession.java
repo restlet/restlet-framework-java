@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -71,6 +71,15 @@ public class AuthSession {
 
     private AuthSession() {
         this.attribs = new ConcurrentHashMap<String, Object>();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof AuthSession)) {
+            return false;
+        }
+        AuthSession e = (AuthSession) obj;
+        return this.attribs.equals(e.attribs);
     }
 
     /**

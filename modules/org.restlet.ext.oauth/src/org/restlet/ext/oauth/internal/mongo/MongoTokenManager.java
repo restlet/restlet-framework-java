@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -52,7 +52,7 @@ import org.restlet.ext.oauth.internal.Token;
 /**
  * MongoDB implementation of TokenManager interface.
  * 
- * @author Shotaro Uchida <suchida@valleycampus.com>
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class MongoTokenManager  extends AbstractTokenManager implements OAuthResourceDefs {
     
@@ -68,10 +68,12 @@ public class MongoTokenManager  extends AbstractTokenManager implements OAuthRes
         DBObject token = tokens.findOne(createQuery(client, username));
         if (token == null) {
             token = new BasicDBObject();
+            token.put(CLIENT_ID, client.getClientId());
+            if (username != null) {
+                token.put(USERNAME, username);
+            }
         }
         
-        token.put(CLIENT_ID, client.getClientId());
-        token.put(USERNAME, username);
         token.put(SCOPE, Arrays.asList(scope));
         token.put(EXPIRES_IN, getExpirePeriod());
         token.put(TOKEN_TYPE, TOKEN_TYPE_BEARER);

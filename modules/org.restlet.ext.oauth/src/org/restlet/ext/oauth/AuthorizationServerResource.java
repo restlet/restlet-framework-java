@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -39,7 +39,7 @@ import org.restlet.data.Reference;
 import org.restlet.ext.oauth.internal.AuthSession;
 import org.restlet.ext.oauth.internal.RedirectionURI;
 import org.restlet.ext.oauth.internal.Scopes;
-import org.restlet.ext.oauth.internal.Token;
+import org.restlet.ext.oauth.internal.ServerToken;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Get;
@@ -197,7 +197,7 @@ public class AuthorizationServerResource extends AuthorizationBaseServerResource
         }
 
         // XXX
-        Token token = tokens.findToken(client, session.getScopeOwner());
+        ServerToken token = (ServerToken) tokens.findToken(client, session.getScopeOwner());
         if (token != null && !token.isExpired()) {
             for (String s : token.getScope()) {
                 ref.addQueryParameter("grantedScope", s);

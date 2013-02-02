@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -47,11 +47,11 @@ import org.restlet.ext.oauth.internal.Token;
 /**
  * Memory implementation of TokenManager interface.
  * 
- * @author Shotaro Uchida <suchida@valleycampus.com>
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class MemoryTokenManager extends AbstractTokenManager {
 
-    private final Map<String, Token> tokens = new ConcurrentHashMap<String, Token>();
+    private final Map<String, MemoryToken> tokens = new ConcurrentHashMap<String, MemoryToken>();
     private final Map<String, AuthSession> sessions = new ConcurrentHashMap<String, AuthSession>();
 
     public Token generateToken(Client client, String username, String[] scope) throws OAuthException {
@@ -69,7 +69,7 @@ public class MemoryTokenManager extends AbstractTokenManager {
     }
 
     public Token refreshToken(Client client, String refreshToken, String[] scope) throws OAuthException {
-        Token token = findTokenByRefreshToken(refreshToken);
+        MemoryToken token = findTokenByRefreshToken(refreshToken);
         if (token == null) {
             throw new OAuthException(OAuthError.invalid_grant, "Invalid refresh token.", null);
         }
@@ -135,7 +135,7 @@ public class MemoryTokenManager extends AbstractTokenManager {
     }
 
     public Token validateToken(String accessToken) throws OAuthException {
-        Token token = tokens.get(accessToken);
+        MemoryToken token = tokens.get(accessToken);
         if (token == null) {
             throw new OAuthException(OAuthError.invalid_token, "The access token revoked.", null);
         }
@@ -146,7 +146,7 @@ public class MemoryTokenManager extends AbstractTokenManager {
     }
 
     public Token findToken(Client client, String username) {
-        for (Token token : tokens.values()) {
+        for (MemoryToken token : tokens.values()) {
             if (
                     token.getClientId().equals(client.getClientId()) &&
                     (
@@ -160,8 +160,8 @@ public class MemoryTokenManager extends AbstractTokenManager {
         return null;
     }
     
-    protected Token findTokenByRefreshToken(String refreshToken) {
-        for (Token token : tokens.values()) {
+    protected MemoryToken findTokenByRefreshToken(String refreshToken) {
+        for (MemoryToken token : tokens.values()) {
             if (token.getRefreshToken().equals(refreshToken)) {
                 return token;
             }
@@ -171,7 +171,7 @@ public class MemoryTokenManager extends AbstractTokenManager {
 
     public Token[] findTokens(String username) {
         ArrayList<Token> list = new ArrayList<Token>();
-        for (Token token : tokens.values()) {
+        for (MemoryToken token : tokens.values()) {
             if (/*!token.isExpired() &&*/
                     token.getUsername() != null
                     && token.getUsername().equals(username)) {
@@ -183,7 +183,7 @@ public class MemoryTokenManager extends AbstractTokenManager {
     
     public Token[] findTokens(Client client) {
         ArrayList<Token> list = new ArrayList<Token>();
-        for (Token token : tokens.values()) {
+        for (MemoryToken token : tokens.values()) {
             if (/*!token.isExpired() &&*/
                     token.getClientId().equals(client.getClientId())) {
                 list.add(token);

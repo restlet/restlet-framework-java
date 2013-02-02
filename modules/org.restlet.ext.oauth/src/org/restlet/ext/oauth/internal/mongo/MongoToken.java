@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -35,14 +35,14 @@ package org.restlet.ext.oauth.internal.mongo;
 import com.mongodb.DBObject;
 import java.util.List;
 import org.restlet.ext.oauth.OAuthResourceDefs;
-import org.restlet.ext.oauth.internal.Token;
+import org.restlet.ext.oauth.internal.ServerToken;
 
 /**
  * MongoDB implementation of Token interface.
  * 
- * @author Shotaro Uchida <suchida@valleycampus.com>
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class MongoToken implements Token, OAuthResourceDefs {
+public class MongoToken implements ServerToken, OAuthResourceDefs {
 
     public static final String TIMESTAMP = "timestamp";
     private DBObject token;

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -38,6 +38,7 @@ import org.restlet.data.Status;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.oauth.internal.Scopes;
 import org.restlet.ext.oauth.internal.Token;
+import org.restlet.ext.oauth.internal.ServerToken;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ResourceException;
@@ -96,7 +97,7 @@ public class TokenAuthServerResource extends OAuthServerResource {
         }
         
         JSONObject resp = new JSONObject();
-        resp.put(USERNAME, token.getUsername());
+        resp.put(USERNAME, ((ServerToken) token).getUsername());
         resp.put(SCOPE, Scopes.toString(token.getScope()));
         
         return new JsonRepresentation(resp);

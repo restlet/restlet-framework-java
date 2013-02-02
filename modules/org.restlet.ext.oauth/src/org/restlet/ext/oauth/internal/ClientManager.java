@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -37,7 +37,7 @@ import java.util.Map;
 import org.restlet.ext.oauth.internal.Client.ClientType;
 
 /**
- * Abstract class that defines a client store for the Authentication Server. The
+ * Abstract class that defines a client store for the Authorization Server. The
  * following code adds a client to a store when you create your inbound root
  * 
  * <pre>

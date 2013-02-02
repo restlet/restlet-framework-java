@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -36,6 +36,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import org.restlet.engine.util.Base64;
@@ -45,7 +46,7 @@ import org.restlet.ext.oauth.internal.Client.ClientType;
 
 /**
  *
- * @author Shotaro Uchida <suchida@valleycampus.com>
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public abstract class AbstractClientManager implements ClientManager {
     
@@ -76,6 +77,10 @@ public abstract class AbstractClientManager implements ClientManager {
     }
     
     public Client createClient(ClientType clientType, String[] redirectURIs, Map properties) {
+        if (properties == null) {
+            properties = new HashMap();
+        }
+        
         Object flows = properties.get(Client.PROPERTY_SUPPORTED_FLOWS);
         if (flows == null) {
             flows = defaultSupportedFlow.get(clientType);
