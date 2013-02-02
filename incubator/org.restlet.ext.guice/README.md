@@ -4,14 +4,14 @@ This extension provides two independent ways to inject Restlet
 ServerResource instances:
 
 1.  Members (methods and fields) of resources extending [SelfInjectingServerResource](
-        https://github.com/Tembrel/restlet-framework-java/blob/guice-integration/incubator/org.restlet.ext.guice/src/org/restlet/ext/guice/SelfInjectingServerResource.java
+        https://github.com/restlet/restlet-framework-java/blob/guice-integration/incubator/org.restlet.ext.guice/src/org/restlet/ext/guice/SelfInjectingServerResource.java
     ) will be injected if an instance of [SelfInjectingServerResourceModule](
-        https://github.com/Tembrel/restlet-framework-java/blob/guice-integration/incubator/org.restlet.ext.guice/src/org/restlet/ext/guice/SelfInjectingServerResourceModule.java   
+        https://github.com/restlet/restlet-framework-java/blob/guice-integration/incubator/org.restlet.ext.guice/src/org/restlet/ext/guice/SelfInjectingServerResourceModule.java   
     ) is 
     passed to the Guice injector creation call.
     
 2.  A `Finder` instance returned by a [FinderFactory](
-        https://github.com/Tembrel/restlet-framework-java/blob/guice-integration/incubator/org.restlet.ext.guice/src/org/restlet/ext/guice/FinderFactory.java
+        https://github.com/restlet/restlet-framework-java/blob/guice-integration/incubator/org.restlet.ext.guice/src/org/restlet/ext/guice/FinderFactory.java
     ) method call will create
     and inject resource instances determined by the type argument (and optional
     annotation argument) passed to that method call, according to the bindings 
