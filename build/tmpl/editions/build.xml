@@ -463,9 +463,34 @@
 			<!-- Create the Manifest -->
 			<mkdir dir="@{dir}/META-INF" />
 			<delete failonerror="false" file="@{dir}/META-INF/MANIFEST.MF" />
+			<manifest file="@{dir}/META-INF/MANIFEST.MF">
+				<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
+				<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
+				<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
+				<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
+				<attribute id="Import-Package" name="Import-Package" value="org.osgi.framework" />
+				<section name="${mod-@{name}-id}">
+					<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
+					<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
+					<attribute name="Implementation-Vendor" value="${vendor}" />
+				</section>
+			</manifest>
+			<if>
+				<isset property="mod-@{name}-activator" />
+				<then>
+					<manifest file="@{dir}/META-INF/MANIFEST.MF" mode="update">
+						<attribute id="Bundle-Activator" name="Bundle-Activator" value="${mod-@{name}-activator}" />
+					</manifest>
+				</then>
+			</if>
 			<if>
 				<equals arg1="@{source}" arg2="true" />
 				<then>
+					<manifest file="@{dir}/META-INF/MANIFEST.MF" mode="update">
+						<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
+					</manifest>
+				</then>
+				<else>
 					<condition property="include-@{name}-pattern" value="org/restlet/test/**">
 						<equals arg1="@{name}" arg2="core-test" />
 					</condition>
@@ -480,306 +505,242 @@
 					<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
 						<map from="${mod}/${mod-@{name}-id}/src/" to='' />
 					</pathconvert>
-					<if>
-						<isset property="mod-@{name}-activator" />
-						<then>
-							<manifest file="@{dir}/META-INF/MANIFEST.MF">
-								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-								<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
-								<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
-								<attribute id="Import-Package" name="Import-Package" value="org.osgi.framework" />
-								<attribute id="Bundle-Activator" name="Bundle-Activator" value="${mod-@{name}-activator}" />
-								<section name="${mod-@{name}-id}">
-									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-									<attribute name="Implementation-Vendor" value="${vendor}" />
-								</section>
-							</manifest>
-						</then>
-						<else>
-							<manifest file="@{dir}/META-INF/MANIFEST.MF">
-								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-								<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
-								<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
-								<section name="${mod-@{name}-id}">
-									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-									<attribute name="Implementation-Vendor" value="${vendor}" />
-								</section>
-							</manifest>
-						</else>
-					</if>
-				</then>
-				<else>
-					<if>
-						<isset property="mod-@{name}-activator" />
-						<then>
-							<manifest file="@{dir}/META-INF/MANIFEST.MF">
-								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-								<attribute id="Bundle-Activator" name="Bundle-Activator" value="${mod-@{name}-activator}" />
-								<section name="${mod-@{name}-id}">
-									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-									<attribute name="Implementation-Vendor" value="${vendor}" />
-								</section>
-							</manifest>
-						</then>
-						<else>
-							<manifest file="@{dir}/META-INF/MANIFEST.MF">
-								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-								<section name="${mod-@{name}-id}">
-									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-									<attribute name="Implementation-Vendor" value="${vendor}" />
-								</section>
-							</manifest>
-						</else>
-					</if>
+					<manifest file="@{dir}/META-INF/MANIFEST.MF" mode="update">
+						<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
+					</manifest>
 				</else>
 			</if>
-		</sequential>
-	</macrodef>
+			</sequential>
+		</macrodef>
 
-	<!-- Package a module -->
-	<macrodef name="stageModule">
-		<attribute name="name" />
-		<attribute name="includeSource" default="false" />
-		<sequential>
-			<mkdir dir="${temp}/jar-extras/@{name}" />
-			<if>
-				<istrue value="${do-p2}" />
-				<then>
-					<generateModuleManifest name="@{name}" dir="${temp}/jar-extras/@{name}" />
-				</then>
-			</if>
+		<!-- Package a module -->
+		<macrodef name="stageModule">
+			<attribute name="name" />
+			<attribute name="includeSource" default="false" />
+			<sequential>
+				<mkdir dir="${temp}/jar-extras/@{name}" />
+				<if>
+					<istrue value="${do-p2}" />
+					<then>
+						<generateModuleManifest name="@{name}" dir="${temp}/jar-extras/@{name}" />
+					</then>
+				</if>
 
-			<!-- Create plugin jar -->
-			<mkdir dir="${dist-classic}/lib" />
-			<condition property="source-exclude-patterns-@{name}" value="**/package.html, **/*.java">
-				<equals arg1="@{includeSource}" arg2="false" />
-			</condition>
-			<property name="source-exclude-patterns-@{name}" value="**/package.html" />
-			<delete failonerror="false" file="${dist-classic}/lib/${mod-@{name}-id}.jar" />
-			<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
-				<fileset dir="${classes}/${mod-@{name}-id}" />
-				<fileset dir="${temp}/jar-extras/@{name}" />
-				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${source-exclude-patterns-@{name}}" />
-			</jar>
-			<!-- Update the manifest file -->
-			<if>
-				<istrue value="${do-p2}" />
-				<then>
-					<bndwrap jars="${dist-classic}/lib/${mod-@{name}-id}.jar" output="${dist-classic}/lib/${mod-@{name}-id}.jar" />
-				</then>
-			</if>
+				<!-- Create plugin jar -->
+				<mkdir dir="${dist-classic}/lib" />
+				<condition property="source-exclude-patterns-@{name}" value="**/package.html, **/*.java">
+					<equals arg1="@{includeSource}" arg2="false" />
+				</condition>
+				<property name="source-exclude-patterns-@{name}" value="**/package.html" />
+				<delete failonerror="false" file="${dist-classic}/lib/${mod-@{name}-id}.jar" />
+				<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
+					<fileset dir="${classes}/${mod-@{name}-id}" />
+					<fileset dir="${temp}/jar-extras/@{name}" />
+					<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${source-exclude-patterns-@{name}}" />
+				</jar>
+				<!-- Update the manifest file -->
+				<if>
+					<istrue value="${do-p2}" />
+					<then>
+						<bndwrap jars="${dist-classic}/lib/${mod-@{name}-id}.jar" output="${dist-classic}/lib/${mod-@{name}-id}.jar" />
+					</then>
+				</if>
 
-			<!-- Create extension source jar file -->
-			<mkdir dir="${dist-classic}/src" />
-			<copy todir="${dist-classic}/src/${mod-@{name}-id}">
-				<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${excludes}" />
-			</copy>
-		</sequential>
-	</macrodef>
-
-	<!-- Generate the Maven 2.x files for a hosted library -->
-	<macrodef name="maven2Library">
-		<attribute name="name" />
-		<sequential>
-			<propertyregex property="lib-dir-@{name}-maven-groupId" input="${lib-@{name}-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" />
-			<property name="lib-dir-@{name}-maven" value="${dist-maven2}/${lib-dir-@{name}-maven-groupId}/${lib-@{name}-maven-artifactId}/${lib-@{name}-maven-version}" />
-			<mkdir dir="${lib-dir-@{name}-maven}" />
-
-			<copy file="${libs}/${lib-@{name}-root}/${lib-@{name}-package}.jar" tofile="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.jar" overwrite="true" />
-			<copy file="${poms}/${lib-@{name}-package}.pom" tofile="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.pom" overwrite="true" />
-			<checksum file="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.jar" algorithm="MD5" fileext=".md5" />
-			<checksum file="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.jar" algorithm="SHA" fileext=".sha1" />
-			<checksum file="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.pom" algorithm="MD5" fileext=".md5" />
-			<checksum file="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.pom" algorithm="SHA" fileext=".sha1" />
-		</sequential>
-	</macrodef>
-
-	<macrodef name="maven2Module">
-		<attribute name="name" />
-		<sequential>
-			<propertyregex property="mod-dir-maven-groupId" input="${mod-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" />
-
-			<!-- All files generated from the modules are stamped with the current full version number -->
-			<property name="mod-dir-@{name}-maven" value="${dist-maven2}/${mod-dir-maven-groupId}/${mod-@{name}-id}/${version-maven}" />
-			<mkdir dir="${mod-dir-@{name}-maven}" />
-
-			<copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.jar" overwrite="true" />
-
-			<jar destfile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-sources.jar" filesetmanifest="merge">
-				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*" />
-			</jar>
-
-			<copy file="${poms}/${mod-@{name}-id}.pom" tofile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" overwrite="true" />
-			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.jar" algorithm="MD5" fileext=".md5" />
-			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.jar" algorithm="SHA" fileext=".sha1" />
-			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-sources.jar" algorithm="MD5" fileext=".md5" />
-			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-sources.jar" algorithm="SHA" fileext=".sha1" />
-			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" algorithm="MD5" fileext=".md5" />
-			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" algorithm="SHA" fileext=".sha1" />
-		</sequential>
-	</macrodef>
-
-	<macrodef name="p22Module">
-		<attribute name="name" />
-		<sequential>
-			<!-- Generation of bundle and feature. -->
-			<copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${dist-p2}/plugins/${mod-@{name}-id}_${eclipse-version-full}.jar" />
-			<copy file="${temp}/p2/feature.@{name}.xml" tofile="${dist-p2}/features/feature.xml" />
-			<zip destfile="${dist-p2}/features/${mod-@{name}-id}_${eclipse-version-full}.jar" basedir="${dist-p2}/features" includes="feature.xml" update="false" />
-			<delete file="${dist-p2}/features/feature.xml" />
-			<!-- Generation of source bundle. -->
-			<delete dir="${temp}/@{name}" />
-			<mkdir dir="${temp}/@{name}" />
-			<copy todir="${temp}/@{name}" overwrite="true">
-				<fileset dir="${mod}/${mod-@{name}-id}/src" />
-			</copy>
-
-			<mkdir dir="${temp}/@{name}/META-INF" />
-			<manifest file="${temp}/@{name}/META-INF/MANIFEST.MF" mode="replace">
-				<attribute id="Eclipse-SourceBundle" name="Eclipse-SourceBundle" value="${mod-@{name}-id};version=${eclipse-version-full}" />
-				<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}.source" />
-				<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-			</manifest>
-			<zip destfile="${dist-p2}/plugins/${mod-@{name}-id}.source_${eclipse-version-full}.jar" basedir="${temp}/@{name}" update="false" />
-			<delete dir="${temp}/@{name}" />
-		</sequential>
-	</macrodef>
-
-	<macrodef name="p22Library">
-		<attribute name="name" />
-		<sequential>
-			<copy todir="${dist-p2}/plugins" overwrite="true">
-				<fileset dir="${libs}/${lib-@{name}-root}" />
-				<mapper type="glob" from="*.jar" to="*_${eclipse-version-full}.jar" />
-			</copy>
-		</sequential>
-	</macrodef>
-
-	<!-- ===================== -->
-	<!-- ===  Ant Targets  === -->
-	<!-- ===================== -->
-
-	<!-- GENERAL targets -->
-	<target name="build" depends="generate, verify, integrate, stage, package" description="Full build." />
-	<target name="rebuild" depends="clean, generate, verify, integrate, stage, package" description="Full build from scratch." />
-
-	<!-- CLEAN target -->
-	<target name="clean" description="Clean the staging area.">
-		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
-			<fileset dir="${dist-base}">
-				<include name="*/${dist-path}/**/*" />
-				<include name="*/${dist-path}" />
-			</fileset>
-		</delete>
-		<!-- Delete the classes and Javadoc directories, etc -->
-		<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
-			<fileset dir="${temp}" />
-		</delete>
-	</target>
-
-	<!-- GENERATE target -->
-	<target name="generate" depends="generate-classes, generate-backport, generate-templates, generate-javadocs" description="Generate files." />
-
-	<target name="generate-sources" description="Generate the sources.">
-		<!-- @generate-sources@ -->
-		<!-- Generate libraries -->
-		<if>
-			<istrue value="${do-eclipse-pde}" />
-			<then>
-				<copy todir="${lib}" overwrite="true" includeEmptyDirs="false">
-					<fileset dir="${libs}" />
+				<!-- Create extension source jar file -->
+				<mkdir dir="${dist-classic}/src" />
+				<copy todir="${dist-classic}/src/${mod-@{name}-id}">
+					<fileset dir="${mod}/${mod-@{name}-id}/src" excludes="${excludes}" />
 				</copy>
-				<antcall target="generate-modules-eclipse-artifacts" inheritall="true" />
-				<antcall target="generate-libraries-eclipse-artifacts" inheritall="true" />
-			</then>
-		</if>
-	</target>
+			</sequential>
+		</macrodef>
 
-	<target name="generate-templates" description="Generate template-based files.">
-		<!-- Generate the Changes file -->
-		<copy file="${tmpl}/text/changes.txt" todir="${docs}" overwrite="true">
-			<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
-		</copy>
+		<!-- Generate the Maven 2.x files for a hosted library -->
+		<macrodef name="maven2Library">
+			<attribute name="name" />
+			<sequential>
+				<propertyregex property="lib-dir-@{name}-maven-groupId" input="${lib-@{name}-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" />
+				<property name="lib-dir-@{name}-maven" value="${dist-maven2}/${lib-dir-@{name}-maven-groupId}/${lib-@{name}-maven-artifactId}/${lib-@{name}-maven-version}" />
+				<mkdir dir="${lib-dir-@{name}-maven}" />
 
-		<!-- Generate the NSIS files -->
-		<copy file="${tmpl}/nsis/common.nsh" todir="${temp}" overwrite="true" />
-		<copy file="${tmpl}/nsis/setup.nsi" todir="${temp}" overwrite="true">
-			<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
-		</copy>
-	</target>
+				<copy file="${libs}/${lib-@{name}-root}/${lib-@{name}-package}.jar" tofile="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.jar" overwrite="true" />
+				<copy file="${poms}/${lib-@{name}-package}.pom" tofile="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.pom" overwrite="true" />
+				<checksum file="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.jar" algorithm="MD5" fileext=".md5" />
+				<checksum file="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.jar" algorithm="SHA" fileext=".sha1" />
+				<checksum file="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.pom" algorithm="MD5" fileext=".md5" />
+				<checksum file="${lib-dir-@{name}-maven}/${lib-@{name}-maven-artifactId}-${lib-@{name}-maven-version}.pom" algorithm="SHA" fileext=".sha1" />
+			</sequential>
+		</macrodef>
 
-	<target name="generate-libraries-eclipse-artifacts" if="do-eclipse-pde" description="Generates the manifest.mf files for the libraries">
-		<!-- Generate eclipse .classpath, .project, .properties files -->
-		<echo message="Generate eclipse .classpath, .project, .properties files" />
-		<fmpp sourceroot="${tmpl}/eclipse" outputroot="${lib}" dataroot="${build-dir}" expert="true">
-			<data expandproperties="true">
+		<macrodef name="maven2Module">
+			<attribute name="name" />
+			<sequential>
+				<propertyregex property="mod-dir-maven-groupId" input="${mod-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" />
+
+				<!-- All files generated from the modules are stamped with the current full version number -->
+				<property name="mod-dir-@{name}-maven" value="${dist-maven2}/${mod-dir-maven-groupId}/${mod-@{name}-id}/${version-maven}" />
+				<mkdir dir="${mod-dir-@{name}-maven}" />
+
+				<copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.jar" overwrite="true" />
+
+				<jar destfile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-sources.jar" filesetmanifest="merge">
+					<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*" />
+				</jar>
+
+				<copy file="${poms}/${mod-@{name}-id}.pom" tofile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" overwrite="true" />
+				<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.jar" algorithm="MD5" fileext=".md5" />
+				<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.jar" algorithm="SHA" fileext=".sha1" />
+				<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-sources.jar" algorithm="MD5" fileext=".md5" />
+				<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-sources.jar" algorithm="SHA" fileext=".sha1" />
+				<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" algorithm="MD5" fileext=".md5" />
+				<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" algorithm="SHA" fileext=".sha1" />
+			</sequential>
+		</macrodef>
+
+		<macrodef name="p22Module">
+			<attribute name="name" />
+			<sequential>
+				<!-- Generation of bundle and feature. -->
+				<copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${dist-p2}/plugins/${mod-@{name}-id}_${eclipse-version-full}.jar" />
+				<copy file="${temp}/p2/feature.@{name}.xml" tofile="${dist-p2}/features/feature.xml" />
+				<zip destfile="${dist-p2}/features/${mod-@{name}-id}_${eclipse-version-full}.jar" basedir="${dist-p2}/features" includes="feature.xml" update="false" />
+				<delete file="${dist-p2}/features/feature.xml" />
+				<!-- Generation of source bundle. -->
+				<delete dir="${temp}/@{name}" />
+				<mkdir dir="${temp}/@{name}" />
+				<copy todir="${temp}/@{name}" overwrite="true">
+					<fileset dir="${mod}/${mod-@{name}-id}/src" />
+				</copy>
+
+				<mkdir dir="${temp}/@{name}/META-INF" />
+				<manifest file="${temp}/@{name}/META-INF/MANIFEST.MF" mode="replace">
+					<attribute id="Eclipse-SourceBundle" name="Eclipse-SourceBundle" value="${mod-@{name}-id};version=${eclipse-version-full}" />
+					<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}.source" />
+					<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
+				</manifest>
+				<zip destfile="${dist-p2}/plugins/${mod-@{name}-id}.source_${eclipse-version-full}.jar" basedir="${temp}/@{name}" update="false" />
+				<delete dir="${temp}/@{name}" />
+			</sequential>
+		</macrodef>
+
+		<macrodef name="p22Library">
+			<attribute name="name" />
+			<sequential>
+				<copy todir="${dist-p2}/plugins" overwrite="true">
+					<fileset dir="${libs}/${lib-@{name}-root}" />
+					<mapper type="glob" from="*.jar" to="*_${eclipse-version-full}.jar" />
+				</copy>
+			</sequential>
+		</macrodef>
+
+		<!-- ===================== -->
+		<!-- ===  Ant Targets  === -->
+		<!-- ===================== -->
+
+		<!-- GENERAL targets -->
+		<target name="build" depends="generate, verify, integrate, stage, package" description="Full build." />
+		<target name="rebuild" depends="clean, generate, verify, integrate, stage, package" description="Full build from scratch." />
+
+		<!-- CLEAN target -->
+		<target name="clean" description="Clean the staging area.">
+			<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
+				<fileset dir="${dist-base}">
+					<include name="*/${dist-path}/**/*" />
+					<include name="*/${dist-path}" />
+				</fileset>
+			</delete>
+			<!-- Delete the classes and Javadoc directories, etc -->
+			<delete includeEmptyDirs="true" verbose="false" quiet="false" failonerror="false">
+				<fileset dir="${temp}" />
+			</delete>
+		</target>
+
+		<!-- GENERATE target -->
+		<target name="generate" depends="generate-classes, generate-backport, generate-templates, generate-javadocs" description="Generate files." />
+
+		<target name="generate-sources" description="Generate the sources.">
+			<!-- @generate-sources@ -->
+			<!-- Generate libraries -->
+			<if>
+				<istrue value="${do-eclipse-pde}" />
+				<then>
+					<copy todir="${lib}" overwrite="true" includeEmptyDirs="false">
+						<fileset dir="${libs}" />
+					</copy>
+					<antcall target="generate-modules-eclipse-artifacts" inheritall="true" />
+					<antcall target="generate-libraries-eclipse-artifacts" inheritall="true" />
+				</then>
+			</if>
+		</target>
+
+		<target name="generate-templates" description="Generate template-based files.">
+			<!-- Generate the Changes file -->
+			<copy file="${tmpl}/text/changes.txt" todir="${docs}" overwrite="true">
+				<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
+			</copy>
+
+			<!-- Generate the NSIS files -->
+			<copy file="${tmpl}/nsis/common.nsh" todir="${temp}" overwrite="true" />
+			<copy file="${tmpl}/nsis/setup.nsi" todir="${temp}" overwrite="true">
+				<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
+			</copy>
+		</target>
+
+		<target name="generate-libraries-eclipse-artifacts" if="do-eclipse-pde" description="Generates the manifest.mf files for the libraries">
+			<!-- Generate eclipse .classpath, .project, .properties files -->
+			<echo message="Generate eclipse .classpath, .project, .properties files" />
+			<fmpp sourceroot="${tmpl}/eclipse" outputroot="${lib}" dataroot="${build-dir}" expert="true">
+				<data expandproperties="true">
 				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 				project: get(values, "project")
 				ant: antProperties()
 			</data>
-			<include name="library.classpath.tmpl" />
-			<include name="library.project.tmpl" />
-			<include name="library.build.properties.tmpl" />
-		</fmpp>
-		<delete file="${lib}/library.classpath.tmpl" />
-		<delete file="${lib}/library.project.tmpl" />
-		<delete file="${lib}/library.build.properties.tmpl" />
-		<!-- Generate bnd definition files -->
-		<echo message="Generate bnd definition files" />
-		<copy file="${tmpl}/bundles/bndbis.bnd" todir="${temp}/definitions/libs" />
-		<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/libs" dataroot="${build-dir}" expert="true">
-			<data expandproperties="true">
+				<include name="library.classpath.tmpl" />
+				<include name="library.project.tmpl" />
+				<include name="library.build.properties.tmpl" />
+			</fmpp>
+			<delete file="${lib}/library.classpath.tmpl" />
+			<delete file="${lib}/library.project.tmpl" />
+			<delete file="${lib}/library.build.properties.tmpl" />
+			<!-- Generate bnd definition files -->
+			<echo message="Generate bnd definition files" />
+			<copy file="${tmpl}/bundles/bndbis.bnd" todir="${temp}/definitions/libs" />
+			<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/libs" dataroot="${build-dir}" expert="true">
+				<data expandproperties="true">
 				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 				project: get(values, "project")
 				ant: antProperties()
 			</data>
-			<include name="bndLibrary.tmpl" />
-		</fmpp>
-		<delete file="${temp}/definitions/libs/bndLibrary.tmpl" />
-		<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/libs" dataroot="${build-dir}" expert="true">
-			<data expandproperties="true">
+				<include name="bndLibrary.tmpl" />
+			</fmpp>
+			<delete file="${temp}/definitions/libs/bndLibrary.tmpl" />
+			<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/libs" dataroot="${build-dir}" expert="true">
+				<data expandproperties="true">
 				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 				project: get(values, "project")
 				ant: antProperties()
 			</data>
-			<include name="bndGlobalLibrary.tmpl" />
-		</fmpp>
-		<delete file="${temp}/definitions/libs/bndGlobalLibrary.tmpl" />
+				<include name="bndGlobalLibrary.tmpl" />
+			</fmpp>
+			<delete file="${temp}/definitions/libs/bndGlobalLibrary.tmpl" />
 
-		<!-- Generate ant manifest generation script -->
-		<echo message="Generate ant manifest generation script" />
-		<fmpp sourcefile="${tmpl}/bundles/extractmanifestLibrary.tmpl" outputfile="${lib}/extractmanifestLibrary.xml" dataroot="${build-dir}" expert="true">
-			<data expandproperties="true">
+			<!-- Generate ant manifest generation script -->
+			<echo message="Generate ant manifest generation script" />
+			<fmpp sourcefile="${tmpl}/bundles/extractmanifestLibrary.tmpl" outputfile="${lib}/extractmanifestLibrary.xml" dataroot="${build-dir}" expert="true">
+				<data expandproperties="true">
 				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 				project: get(values, "project")
 				ant: antProperties()
 			</data>
-		</fmpp>
-		<ant antfile="${lib}/extractmanifestLibrary.xml" dir="${lib}" inheritAll="true" />
-		<delete file="${lib}/extractmanifestLibrary.tmpl" />
-	</target>
+			</fmpp>
+			<ant antfile="${lib}/extractmanifestLibrary.xml" dir="${lib}" inheritAll="true" />
+			<delete file="${lib}/extractmanifestLibrary.tmpl" />
+		</target>
 
-	<target name="generate-modules-eclipse-artifacts" if="do-eclipse-pde" description="Generates the manifest.mf files for the unique source code">
-		<!-- Generate the P2 feature files. -->
-		<echo message="Generate the P2 feature files" />
-		<fmpp sourceroot="${tmpl}/eclipse" outputroot="${temp}/p2" dataroot="${build-dir}">
-			<data expandproperties="true">
+		<target name="generate-modules-eclipse-artifacts" if="do-eclipse-pde" description="Generates the manifest.mf files for the unique source code">
+			<!-- Generate the P2 feature files. -->
+			<echo message="Generate the P2 feature files" />
+			<fmpp sourceroot="${tmpl}/eclipse" outputroot="${temp}/p2" dataroot="${build-dir}">
+				<data expandproperties="true">
 				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 				project: get(values, "project")
 				editions: get(values, "editions")
@@ -788,307 +749,307 @@
 				currentYear: ${current-year}
 				ant: antProperties()
    			</data>
-			<include name="feature.tmpl" />
-		</fmpp>
+				<include name="feature.tmpl" />
+			</fmpp>
 
-		<!-- Generate eclipse .classpath, .project, .properties files -->
-		<echo message="Generate eclipse .classpath, .project, .properties files" />
-		<fmpp sourceroot="${tmpl}/eclipse" outputroot="${mod}" dataroot="${build-dir}" expert="true">
-			<data expandproperties="true">
+			<!-- Generate eclipse .classpath, .project, .properties files -->
+			<echo message="Generate eclipse .classpath, .project, .properties files" />
+			<fmpp sourceroot="${tmpl}/eclipse" outputroot="${mod}" dataroot="${build-dir}" expert="true">
+				<data expandproperties="true">
 				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 				project: get(values, "project")
 				editions: get(values, "editions")
    				edition: get(editions, ${edition})
 				ant: antProperties()
 			</data>
-			<include name="module.classpath.tmpl" />
-			<include name="module.project.tmpl" />
-			<include name="module.build.properties.tmpl" />
-		</fmpp>
-		<delete file="${mod}/module.classpath.tmpl" />
-		<delete file="${temp}/module.project.tmpl" />
-		<delete file="${temp}/module.build.properties.tmpl" />
+				<include name="module.classpath.tmpl" />
+				<include name="module.project.tmpl" />
+				<include name="module.build.properties.tmpl" />
+			</fmpp>
+			<delete file="${mod}/module.classpath.tmpl" />
+			<delete file="${temp}/module.project.tmpl" />
+			<delete file="${temp}/module.build.properties.tmpl" />
 
-		<!-- Generate bnd definition files -->
-		<echo message="Generate bnd definition files" />
-		<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/modules" dataroot="${build-dir}" expert="true">
-			<data expandproperties="true">
+			<!-- Generate bnd definition files -->
+			<echo message="Generate bnd definition files" />
+			<fmpp sourceroot="${tmpl}/bundles" outputroot="${temp}/definitions/modules" dataroot="${build-dir}" expert="true">
+				<data expandproperties="true">
 				values: dataLoader.ForgeLoader("project.xml", "../modules", "../libraries")
 				project: get(values, "project")
 				ant: antProperties()
 			</data>
-			<include name="bndModule.tmpl" />
-		</fmpp>
-		<delete file="${temp}/definitions/modules/bndModule.tmpl" />
-	</target>
+				<include name="bndModule.tmpl" />
+			</fmpp>
+			<delete file="${temp}/definitions/modules/bndModule.tmpl" />
+		</target>
 
-	<!-- COMPILE target -->
-	<target name="generate-classes" description="Compile the Java source files.">
-		<mkdir dir="${classes}" />
-		<for param="module" delimiter=" " list="${modules-sorted-by-dep}">
-			<sequential>
-				<compileModule name="@{module}" />
-				<!-- @generate-classes-extras@ -->
-			</sequential>
-		</for>
-	</target>
+		<!-- COMPILE target -->
+		<target name="generate-classes" description="Compile the Java source files.">
+			<mkdir dir="${classes}" />
+			<for param="module" delimiter=" " list="${modules-sorted-by-dep}">
+				<sequential>
+					<compileModule name="@{module}" />
+					<!-- @generate-classes-extras@ -->
+				</sequential>
+			</for>
+		</target>
 
-	<!-- GENERATE-BACKPORT target -->
-	<target name="generate-backport" if="do-backport" depends="generate-classes" description="Backport classes using Retrotranslator.">
-		<for param="module" delimiter=" " list="${modules}">
-			<sequential>
-				<backportModule name="@{module}" failonwarning="@{backport-failonwarning}" />
-			</sequential>
-		</for>
-	</target>
+		<!-- GENERATE-BACKPORT target -->
+		<target name="generate-backport" if="do-backport" depends="generate-classes" description="Backport classes using Retrotranslator.">
+			<for param="module" delimiter=" " list="${modules}">
+				<sequential>
+					<backportModule name="@{module}" failonwarning="@{backport-failonwarning}" />
+				</sequential>
+			</for>
+		</target>
 
-	<target name="generate-javadocs" if="do-javadoc" depends="generate-classes" description="Generate the Javadocs.">
-		<!-- Generate the javadocs overview files -->
-		<copy todir="${temp}/javadocs-overviews" overwrite="true">
-			<fileset dir="${tmpl}/javadocs" includes="*.tmpl" />
-			<globmapper from="*.tmpl" to="*.html" />
-			<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
-		</copy>
-		<!-- @generate-javadocs@ -->
-	</target>
+		<target name="generate-javadocs" if="do-javadoc" depends="generate-classes" description="Generate the Javadocs.">
+			<!-- Generate the javadocs overview files -->
+			<copy todir="${temp}/javadocs-overviews" overwrite="true">
+				<fileset dir="${tmpl}/javadocs" includes="*.tmpl" />
+				<globmapper from="*.tmpl" to="*.html" />
+				<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
+			</copy>
+			<!-- @generate-javadocs@ -->
+		</target>
 
-	<!-- umlgraph target -->
-	<target name="umlgraph">
-		<!-- Generate UML graphics for the Restlet API -->
-		<javadoc packagenames="org.restlet.*" excludepackagenames="${exclude-packages}" destdir="${uml-reports-api}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet API ${version-full}" doctitle="Restlet API ${version-full}" overview="${temp}/javadocs/overview-api.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
-			<sourcepath>
-				<pathelement path="${mod}/${mod-core-id}/src/" />
-			</sourcepath>
+		<!-- umlgraph target -->
+		<target name="umlgraph">
+			<!-- Generate UML graphics for the Restlet API -->
+			<javadoc packagenames="org.restlet.*" excludepackagenames="${exclude-packages}" destdir="${uml-reports-api}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet API ${version-full}" doctitle="Restlet API ${version-full}" overview="${temp}/javadocs/overview-api.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
+				<sourcepath>
+					<pathelement path="${mod}/${mod-core-id}/src/" />
+				</sourcepath>
 
-			<bottom>Copyright &#169; 2005-2012 Restlet S.A.S.</bottom>
+				<bottom>Copyright &#169; 2005-2012 Restlet S.A.S.</bottom>
 
-			<group title="Restlet API">
-				<package name="org.restlet*" />
-			</group>
+				<group title="Restlet API">
+					<package name="org.restlet*" />
+				</group>
 
-			<link href="http://download.oracle.com/javase/1.5.0/docs/api/" />
-			<doclet name="org.umlgraph.doclet.UmlGraphDoc" path="${tools}/umlgraph/umlgraph.jar">
-				<param name="-attributes" />
-				<param name="-operations" />
-				<param name="-qualify" />
-				<param name="-types" />
-				<param name="-visibility" />
-			</doclet>
-		</javadoc>
-		<apply executable="dot" dest="${uml-reports-api}" parallel="false" failifexecutionfails="false" failonerror="false" verbose="false">
-			<arg value="-Tpng" />
-			<arg value="-o" />
-			<targetfile />
-			<srcfile />
-			<fileset dir="${uml-reports-api}" includes="*.dot" />
-			<mapper type="glob" from="*.dot" to="*.png" />
-		</apply>
-		<delete verbose="false" quiet="true">
-			<fileset dir="${uml-reports-api}" includes="**/*.dot, **/*.map" />
-		</delete>
-	</target>
+				<link href="http://download.oracle.com/javase/1.5.0/docs/api/" />
+				<doclet name="org.umlgraph.doclet.UmlGraphDoc" path="${tools}/umlgraph/umlgraph.jar">
+					<param name="-attributes" />
+					<param name="-operations" />
+					<param name="-qualify" />
+					<param name="-types" />
+					<param name="-visibility" />
+				</doclet>
+			</javadoc>
+			<apply executable="dot" dest="${uml-reports-api}" parallel="false" failifexecutionfails="false" failonerror="false" verbose="false">
+				<arg value="-Tpng" />
+				<arg value="-o" />
+				<targetfile />
+				<srcfile />
+				<fileset dir="${uml-reports-api}" includes="*.dot" />
+				<mapper type="glob" from="*.dot" to="*.png" />
+			</apply>
+			<delete verbose="false" quiet="true">
+				<fileset dir="${uml-reports-api}" includes="**/*.dot, **/*.map" />
+			</delete>
+		</target>
 
-	<!-- VERIFY target -->
-	<target name="verify" if="do-verify" depends="verify-ant, verify-tests, verify-findbugs, verify-checkstyle" description="Verify build." />
+		<!-- VERIFY target -->
+		<target name="verify" if="do-verify" depends="verify-ant, verify-tests, verify-findbugs, verify-checkstyle" description="Verify build." />
 
-	<target name="verify-ant" if="ant-old" description="Check the Ant version for potential issues with JUnit.">
-		<echo message="For easier integration with JUnit, we recommand usage of Ant 1.7 or higher." />
-		<echo message="Otherwise, make sure that you have JUnit's JAR into you Ant's lib directory." />
-		<echo message="Current version: ${ant.version}" />
-	</target>
+		<target name="verify-ant" if="ant-old" description="Check the Ant version for potential issues with JUnit.">
+			<echo message="For easier integration with JUnit, we recommand usage of Ant 1.7 or higher." />
+			<echo message="Otherwise, make sure that you have JUnit's JAR into you Ant's lib directory." />
+			<echo message="Current version: ${ant.version}" />
+		</target>
 
-	<target name="verify-tests" if="do-verify" depends="verify-ant" description="Execute the tests suites.">
-		<mkdir dir="${temp}/test" />
+		<target name="verify-tests" if="do-verify" depends="verify-ant" description="Execute the tests suites.">
+			<mkdir dir="${temp}/test" />
 
-		<echo>See the JUnit log file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.</echo>
-		<junit printsummary="true" fork="true" timeout="60000" haltonfailure="false" haltonerror="false" filtertrace="true" showoutput="${verbose}" errorproperty="errorprop" failureproperty="failprop">
-			<classpath>
-				<path location="${mod}/${mod-core-test-id}/src" />
-				<path refid="mod-core-test-path" />
-			</classpath>
-			<formatter type="plain" />
-			<test name="org.restlet.test.RestletTestSuite" todir="${temp}/test" />
-		</junit>
+			<echo>See the JUnit log file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.</echo>
+			<junit printsummary="true" fork="true" timeout="60000" haltonfailure="false" haltonerror="false" filtertrace="true" showoutput="${verbose}" errorproperty="errorprop" failureproperty="failprop">
+				<classpath>
+					<path location="${mod}/${mod-core-test-id}/src" />
+					<path refid="mod-core-test-path" />
+				</classpath>
+				<formatter type="plain" />
+				<test name="org.restlet.test.RestletTestSuite" todir="${temp}/test" />
+			</junit>
 
-		<fail if="failprop" message="At least one failure during junit tests." taskname="verify-tests" />
-		<fail if="errorprop" message="At least one error during junit tests." taskname="verify-tests" />
-	</target>
+			<fail if="failprop" message="At least one failure during junit tests." taskname="verify-tests" />
+			<fail if="errorprop" message="At least one error during junit tests." taskname="verify-tests" />
+		</target>
 
-	<target name="verify-findbugs" if="do-findbugs" description="Attempts to find bugs.">
-		<mkdir dir="${temp}/findbugs" />
-		<for param="module" delimiter=" " list="${modules}">
-			<sequential>
-				<findbugsModule name="${module" />
-			</sequential>
-		</for>
-	</target>
+		<target name="verify-findbugs" if="do-findbugs" description="Attempts to find bugs.">
+			<mkdir dir="${temp}/findbugs" />
+			<for param="module" delimiter=" " list="${modules}">
+				<sequential>
+					<findbugsModule name="${module" />
+				</sequential>
+			</for>
+		</target>
 
-	<target name="verify-checkstyle" if="do-checkstyle" description="Check the style of the code.">
-		<mkdir dir="${temp}/checkstyle" />
-		<for param="module" delimiter=" " list="${modules}">
-			<sequential>
-				<checkstyleModule name="${module" />
-			</sequential>
-		</for>
-	</target>
+		<target name="verify-checkstyle" if="do-checkstyle" description="Check the style of the code.">
+			<mkdir dir="${temp}/checkstyle" />
+			<for param="module" delimiter=" " list="${modules}">
+				<sequential>
+					<checkstyleModule name="${module" />
+				</sequential>
+			</for>
+		</target>
 
-	<!-- Integrate target -->
-	<target name="integrate" depends="" description="Integrate files from other projects." />
+		<!-- Integrate target -->
+		<target name="integrate" depends="" description="Integrate files from other projects." />
 
-	<!-- STAGE target -->
-	<target name="stage" description="Stage the packaging step.">
-		<antcall target="stage-classic" />
-		<antcall target="stage-maven" />
-		<antcall target="stage-p2" />
-	</target>
+		<!-- STAGE target -->
+		<target name="stage" description="Stage the packaging step.">
+			<antcall target="stage-classic" />
+			<antcall target="stage-maven" />
+			<antcall target="stage-p2" />
+		</target>
 
-	<!-- STAGE-CLASSIC target (Stage the packaging step) -->
-	<target name="stage-classic" description="Stage the packaging step of classic distribution.">
-		<!-- Prepare distribution directories -->
-		<delete dir="${dist-classic}" verbose="false" quiet="true" includeEmptyDirs="true" />
-		<mkdir dir="${dist-classic}/lib" />
-		<!-- <mkdir dir="${dist-classic}/lib/poms" /> -->
-		<mkdir dir="${dist-classic}/src" />
+		<!-- STAGE-CLASSIC target (Stage the packaging step) -->
+		<target name="stage-classic" description="Stage the packaging step of classic distribution.">
+			<!-- Prepare distribution directories -->
+			<delete dir="${dist-classic}" verbose="false" quiet="true" includeEmptyDirs="true" />
+			<mkdir dir="${dist-classic}/lib" />
+			<!-- <mkdir dir="${dist-classic}/lib/poms" /> -->
+			<mkdir dir="${dist-classic}/src" />
 
-		<!-- Copy the binaries -->
-		<if>
-			<equals arg1="${edition}" arg2="jse" />
-			<then>
-				<mkdir dir="${dist-classic}/bin" />
-				<copy todir="${dist-classic}/bin">
-					<fileset dir="${bin}" />
-				</copy>
-			</then>
-		</if>
+			<!-- Copy the binaries -->
+			<if>
+				<equals arg1="${edition}" arg2="jse" />
+				<then>
+					<mkdir dir="${dist-classic}/bin" />
+					<copy todir="${dist-classic}/bin">
+						<fileset dir="${bin}" />
+					</copy>
+				</then>
+			</if>
 
-		<!-- Copy the Javadoc -->
-		<if>
-			<istrue value="${do-javadoc}" />
-			<then>
-				<copy todir="${dist-classic}/docs/api">
-					<fileset dir="${docs-api}" />
-				</copy>
-				<copy todir="${dist-classic}/docs/engine">
-					<fileset dir="${docs-engine}" />
-				</copy>
-				<mkdir dir="${docs-ext}" />
-				<copy todir="${dist-classic}/docs/ext">
-					<fileset dir="${docs-ext}" />
-				</copy>
-			</then>
-		</if>
+			<!-- Copy the Javadoc -->
+			<if>
+				<istrue value="${do-javadoc}" />
+				<then>
+					<copy todir="${dist-classic}/docs/api">
+						<fileset dir="${docs-api}" />
+					</copy>
+					<copy todir="${dist-classic}/docs/engine">
+						<fileset dir="${docs-engine}" />
+					</copy>
+					<mkdir dir="${docs-ext}" />
+					<copy todir="${dist-classic}/docs/ext">
+						<fileset dir="${docs-ext}" />
+					</copy>
+				</then>
+			</if>
 
-		<!-- Copy text notes -->
-		<copy file="${docs}/changes.txt" tofile="${dist-classic}/changes.txt" />
-		<copy file="${tmpl}/text/copyright.txt" tofile="${dist-classic}/copyright.txt" />
-		<copy file="dependencies.txt" tofile="${dist-classic}/lib/readme.txt">
-			<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
-		</copy>
-		<copy file="${tmpl}/text/docs.txt" tofile="${dist-classic}/docs/readme.txt" />
-		<copy file="${tmpl}/text/src.txt" tofile="${dist-classic}/src/readme.txt" />
-		<copy file="${tmpl}/text/license.txt" tofile="${dist-classic}/license.txt" />
-		<copy file="${tmpl}/text/readme.txt" tofile="${dist-classic}/readme.txt" />
-		<copy file="${tmpl}/text/trademarks.txt" tofile="${dist-classic}/trademarks.txt" />
+			<!-- Copy text notes -->
+			<copy file="${docs}/changes.txt" tofile="${dist-classic}/changes.txt" />
+			<copy file="${tmpl}/text/copyright.txt" tofile="${dist-classic}/copyright.txt" />
+			<copy file="dependencies.txt" tofile="${dist-classic}/lib/readme.txt">
+				<filterset begintoken="@" endtoken="@" filtersfile="filterset.properties" />
+			</copy>
+			<copy file="${tmpl}/text/docs.txt" tofile="${dist-classic}/docs/readme.txt" />
+			<copy file="${tmpl}/text/src.txt" tofile="${dist-classic}/src/readme.txt" />
+			<copy file="${tmpl}/text/license.txt" tofile="${dist-classic}/license.txt" />
+			<copy file="${tmpl}/text/readme.txt" tofile="${dist-classic}/readme.txt" />
+			<copy file="${tmpl}/text/trademarks.txt" tofile="${dist-classic}/trademarks.txt" />
 
-		<!-- Copy the build properties files. -->
-		<copy todir="${dist-classic}/src">
-			<fileset dir="${basedir}" includes="*.properties" />
-		</copy>
+			<!-- Copy the build properties files. -->
+			<copy todir="${dist-classic}/src">
+				<fileset dir="${basedir}" includes="*.properties" />
+			</copy>
 
-		<!-- Packages libraries -->
-		<for param="library" delimiter=" " list="${libraries-classic}">
-			<sequential>
-				<stageLibrary name="@{library}" />
-			</sequential>
-		</for>
+			<!-- Packages libraries -->
+			<for param="library" delimiter=" " list="${libraries-classic}">
+				<sequential>
+					<stageLibrary name="@{library}" />
+				</sequential>
+			</for>
 
-		<!-- Package modules -->
+			<!-- Package modules -->
 
-		<!-- Complete the jar file with extra files -->
-		<!-- @stage-extras@ -->
-		<!-- @stage-modules@ -->
-	</target>
+			<!-- Complete the jar file with extra files -->
+			<!-- @stage-extras@ -->
+			<!-- @stage-modules@ -->
+		</target>
 
-	<target name="stage-maven" depends="stage-classic, stage-maven-2" if="do-maven" description="Generate the maven distributions." />
+		<target name="stage-maven" depends="stage-classic, stage-maven-2" if="do-maven" description="Generate the maven distributions." />
 
-	<!-- STAGE-MAVEN-2 target -->
-	<target name="stage-maven-2" if="do-maven" description="Generate the maven-2.x distributions.">
-		<delete dir="${dist-maven2}" verbose="false" quiet="true" includeEmptyDirs="true" />
-		<for param="module" delimiter=" " list="${modules}">
-			<sequential>
-				<maven2Module name="@{module}" />
-			</sequential>
-		</for>
-		<for param="package" delimiter=" " list="${packages-maven}">
-			<sequential>
-				<maven2Library name="@{package}" />
-			</sequential>
-		</for>
+		<!-- STAGE-MAVEN-2 target -->
+		<target name="stage-maven-2" if="do-maven" description="Generate the maven-2.x distributions.">
+			<delete dir="${dist-maven2}" verbose="false" quiet="true" includeEmptyDirs="true" />
+			<for param="module" delimiter=" " list="${modules}">
+				<sequential>
+					<maven2Module name="@{module}" />
+				</sequential>
+			</for>
+			<for param="package" delimiter=" " list="${packages-maven}">
+				<sequential>
+					<maven2Library name="@{package}" />
+				</sequential>
+			</for>
 
-		<!-- Add the parent pom -->
-		<property name="mod-restlet-parent-version-maven" value="${version-maven}" />
-		<propertyregex property="mod-restlet-parent-dir-maven-groupId" input="${parent-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" />
+			<!-- Add the parent pom -->
+			<property name="mod-restlet-parent-version-maven" value="${version-maven}" />
+			<propertyregex property="mod-restlet-parent-dir-maven-groupId" input="${parent-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" />
 
-		<!-- All files generated from the modules are stampped with the current full version number -->
-		<property name="mod-dir-restlet-parent-maven2" value="${dist-maven2}/${mod-restlet-parent-dir-maven-groupId}/${parent-maven-artifactId}/${version-maven}" />
-		<mkdir dir="${mod-dir-restlet-parent-maven2}" />
+			<!-- All files generated from the modules are stampped with the current full version number -->
+			<property name="mod-dir-restlet-parent-maven2" value="${dist-maven2}/${mod-restlet-parent-dir-maven-groupId}/${parent-maven-artifactId}/${version-maven}" />
+			<mkdir dir="${mod-dir-restlet-parent-maven2}" />
 
-		<copy file="${poms}/${parent-maven-artifactId}.pom" tofile="${mod-dir-restlet-parent-maven2}/${parent-maven-artifactId}-${mod-restlet-parent-version-maven}.pom" overwrite="true" />
-		<checksum file="${mod-dir-restlet-parent-maven2}/${parent-maven-artifactId}-${mod-restlet-parent-version-maven}.pom" algorithm="MD5" fileext=".md5" />
-		<checksum file="${mod-dir-restlet-parent-maven2}/${parent-maven-artifactId}-${mod-restlet-parent-version-maven}.pom" algorithm="SHA" fileext=".sha1" />
-	</target>
+			<copy file="${poms}/${parent-maven-artifactId}.pom" tofile="${mod-dir-restlet-parent-maven2}/${parent-maven-artifactId}-${mod-restlet-parent-version-maven}.pom" overwrite="true" />
+			<checksum file="${mod-dir-restlet-parent-maven2}/${parent-maven-artifactId}-${mod-restlet-parent-version-maven}.pom" algorithm="MD5" fileext=".md5" />
+			<checksum file="${mod-dir-restlet-parent-maven2}/${parent-maven-artifactId}-${mod-restlet-parent-version-maven}.pom" algorithm="SHA" fileext=".sha1" />
+		</target>
 
-	<!-- STAGE-P2 target -->
-	<target name="stage-p2" if="do-p2" description="Generate the p2 distribution.">
-		<for param="module" delimiter=" " list="${modules-p2}">
-			<sequential>
-				<p22Module name="@{module}" />
-			</sequential>
-		</for>
-		<for param="library" delimiter=" " list="${libraries-p2}">
-			<sequential>
-				<p22Library name="@{library}" />
-			</sequential>
-		</for>
-	</target>
+		<!-- STAGE-P2 target -->
+		<target name="stage-p2" if="do-p2" description="Generate the p2 distribution.">
+			<for param="module" delimiter=" " list="${modules-p2}">
+				<sequential>
+					<p22Module name="@{module}" />
+				</sequential>
+			</for>
+			<for param="library" delimiter=" " list="${libraries-p2}">
+				<sequential>
+					<p22Library name="@{library}" />
+				</sequential>
+			</for>
+		</target>
 
-	<!-- PACKAGE target -->
-	<target name="package" if="do-package" depends="package-classic, package-maven, package-p2" description="Generate the distribution.">
-		<!-- copy final artifacts to the final distribution directory -->
-		<move file="${dist-base}/restlet-${edition}-${version-compact}.zip" todir="${final-dist-base}" />
-		<!-- do not fail on error if the exe does not exist in builds that didn't run the nsis task -->
-		<move file="${dist-base}/restlet-${edition}-${version-compact}.exe" todir="${final-dist-base}" failonerror="false" />
-	</target>
+		<!-- PACKAGE target -->
+		<target name="package" if="do-package" depends="package-classic, package-maven, package-p2" description="Generate the distribution.">
+			<!-- copy final artifacts to the final distribution directory -->
+			<move file="${dist-base}/restlet-${edition}-${version-compact}.zip" todir="${final-dist-base}" />
+			<!-- do not fail on error if the exe does not exist in builds that didn't run the nsis task -->
+			<move file="${dist-base}/restlet-${edition}-${version-compact}.exe" todir="${final-dist-base}" failonerror="false" />
+		</target>
 
-	<target name="package-classic" if="do-package" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions.">
-		<move todir="${final-dist-classic}">
-			<fileset dir="${dist-classic}" />
-		</move>
-	</target>
+		<target name="package-classic" if="do-package" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions.">
+			<move todir="${final-dist-classic}">
+				<fileset dir="${dist-classic}" />
+			</move>
+		</target>
 
-	<target name="package-maven" if="do-package" description="Generate the maven distributions.">
-		<move todir="${final-dist-maven2}">
-			<fileset dir="${dist-maven2}" />
-		</move>
-	</target>
+		<target name="package-maven" if="do-package" description="Generate the maven distributions.">
+			<move todir="${final-dist-maven2}">
+				<fileset dir="${dist-maven2}" />
+			</move>
+		</target>
 
-	<target name="package-p2" if="do-package-p2" description="Generate the p2 distributions.">
-		<move todir="${final-dist-p2}">
-			<fileset dir="${dist-p2}" />
-		</move>
-	</target>
+		<target name="package-p2" if="do-package-p2" description="Generate the p2 distributions.">
+			<move todir="${final-dist-p2}">
+				<fileset dir="${dist-p2}" />
+			</move>
+		</target>
 
-	<!-- PACKAGE-ZIP target (generation of final Zip file) -->
-	<target name="package-classic-zip" if="do-package" description="Generate the final zip file for the classic distribution.">
-		<delete file="${dist-base}/restlet-${edition}-${version-compact}.zip" />
-		<zip destfile="${dist-base}/restlet-${edition}-${version-compact}.zip" basedir="${dist-base}/classic" includes="${dist-path}/**/*" />
-	</target>
+		<!-- PACKAGE-ZIP target (generation of final Zip file) -->
+		<target name="package-classic-zip" if="do-package" description="Generate the final zip file for the classic distribution.">
+			<delete file="${dist-base}/restlet-${edition}-${version-compact}.zip" />
+			<zip destfile="${dist-base}/restlet-${edition}-${version-compact}.zip" basedir="${dist-base}/classic" includes="${dist-path}/**/*" />
+		</target>
 
-	<!-- PACKAGE-NSIS target (generation of Windows installer) -->
-	<target name="package-classic-nsis" if="do-nsis" description="Generate the windows installer for the classic distribution.">
-		<nsis path="${nsis-makensis-path}" script="${temp}/setup.nsi" verbosity="2" uninstallfilelist="${dist-classic}/uninstall.log">
-			<fileset dir="${dist-classic}" includes="**/*" />
-		</nsis>
-	</target>
+		<!-- PACKAGE-NSIS target (generation of Windows installer) -->
+		<target name="package-classic-nsis" if="do-nsis" description="Generate the windows installer for the classic distribution.">
+			<nsis path="${nsis-makensis-path}" script="${temp}/setup.nsi" verbosity="2" uninstallfilelist="${dist-classic}/uninstall.log">
+				<fileset dir="${dist-classic}" includes="**/*" />
+			</nsis>
+		</target>
 
-</project>
+	</project>
