@@ -406,9 +406,33 @@
 			<!-- Create the Manifest -->
 			<mkdir dir="@{dir}/META-INF" />
 			<delete failonerror="false" file="@{dir}/META-INF/MANIFEST.MF" />
+			<manifest file="@{dir}/META-INF/MANIFEST.MF">
+				<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
+				<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
+				<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet" />
+				<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
+				<section name="${mod-@{name}-id}">
+					<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
+					<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
+					<attribute name="Implementation-Vendor" value="${vendor}" />
+				</section>
+			</manifest>
+			<if>
+				<isset property="mod-@{name}-activator" />
+				<then>
+					<manifest file="@{dir}/META-INF/MANIFEST.MF" mode="update">
+						<attribute id="Bundle-Activator" name="Bundle-Activator" value="${mod-@{name}-activator}" />
+					</manifest>
+				</then>
+			</if>
 			<if>
 				<equals arg1="@{source}" arg2="true" />
 				<then>
+					<manifest file="@{dir}/META-INF/MANIFEST.MF" mode="update">
+						<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
+					</manifest>
+				</then>
+				<else>
 					<condition property="include-@{name}-pattern" value="org/restlet/test/**">
 						<equals arg1="@{name}" arg2="core-test" />
 					</condition>
@@ -423,73 +447,9 @@
 					<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
 						<map from="${mod}/${mod-@{name}-id}/src/" to='' />
 					</pathconvert>
-					<if>
-						<isset property="mod-@{name}-activator" />
-						<then>
-							<manifest file="@{dir}/META-INF/MANIFEST.MF">
-								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-								<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
-								<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
-								<attribute id="Import-Package" name="Import-Package" value="org.osgi.framework" />
-								<attribute id="Bundle-Activator" name="Bundle-Activator" value="${mod-@{name}-activator}" />
-								<section name="${mod-@{name}-id}">
-									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-									<attribute name="Implementation-Vendor" value="${vendor}" />
-								</section>
-							</manifest>
-						</then>
-						<else>
-							<manifest file="@{dir}/META-INF/MANIFEST.MF">
-								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-								<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
-								<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
-								<section name="${mod-@{name}-id}">
-									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-									<attribute name="Implementation-Vendor" value="${vendor}" />
-								</section>
-							</manifest>
-						</else>
-					</if>
-				</then>
-				<else>
-					<if>
-						<isset property="mod-@{name}-activator" />
-						<then>
-							<manifest file="@{dir}/META-INF/MANIFEST.MF">
-								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-								<attribute id="Bundle-Activator" name="Bundle-Activator" value="${mod-@{name}-activator}" />
-								<section name="${mod-@{name}-id}">
-									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-									<attribute name="Implementation-Vendor" value="${vendor}" />
-								</section>
-							</manifest>
-						</then>
-						<else>
-							<manifest file="@{dir}/META-INF/MANIFEST.MF">
-								<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
-								<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-								<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
-								<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
-								<section name="${mod-@{name}-id}">
-									<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
-									<attribute name="Implementation-Version" value="${version-full} (build ${build.number})" />
-									<attribute name="Implementation-Vendor" value="${vendor}" />
-								</section>
-							</manifest>
-						</else>
-					</if>
+					<manifest file="@{dir}/META-INF/MANIFEST.MF" mode="update">
+						<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
+					</manifest>
 				</else>
 			</if>
 		</sequential>
