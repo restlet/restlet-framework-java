@@ -107,7 +107,7 @@ public class TransformerTestCase extends RestletTestCase {
      * @throws Exception
      */
     public void parallelTestTransform() throws Exception {
-        final Component comp = new Component();
+        Component comp = new Component();
         final TransformRepresentation tr = new TransformRepresentation(comp.getContext(),
                 this.source, this.xslt);
         final FailureTracker tracker = new FailureTracker();
@@ -149,4 +149,5 @@ public class TransformerTestCase extends RestletTestCase {
 
         assertEquals(this.output, result);
     }
+    
 }

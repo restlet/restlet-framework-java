@@ -72,9 +72,7 @@ import org.restlet.test.ext.sip.SipTests;
 import org.restlet.test.ext.spring.SpringTestSuite;
 import org.restlet.test.ext.velocity.VelocityTestCase;
 import org.restlet.test.ext.wadl.WadlTestSuite;
-import org.restlet.test.ext.xml.ResolvingTransformerTestCase;
-import org.restlet.test.ext.xml.RestletXmlTestCase;
-import org.restlet.test.ext.xml.TransformerTestCase;
+import org.restlet.test.ext.xml.XmlTestSuite;
 import org.restlet.test.regression.RegressionTestSuite;
 import org.restlet.test.representation.AppendableRepresentationTestCase;
 import org.restlet.test.representation.DigesterRepresentationTestCase;
@@ -128,9 +126,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(MediaTypeTestCase.class);
         addTestSuite(ProductTokenTestCase.class);
         addTestSuite(ReferenceTestCase.class);
-        addTestSuite(ResolvingTransformerTestCase.class);
         addTestSuite(RestartTestCase.class);
-        addTestSuite(RestletXmlTestCase.class);
         addTestSuite(RiapTestCase.class);
         addTestSuite(RouteListTestCase.class);
         addTestSuite(DigestVerifierTestCase.class);
@@ -138,7 +134,6 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(RoleTestCase.class);
         addTestSuite(StatusTestCase.class);
         addTestSuite(TemplateTestCase.class);
-        addTestSuite(TransformerTestCase.class);
         addTestSuite(ValidatorTestCase.class);
         addTestSuite(VelocityTestCase.class);
         addTest(RegressionTestSuite.suite());
@@ -147,6 +142,7 @@ public class RestletTestSuite extends TestSuite {
         addTest(HtmlTestSuite.suite());
         addTest(ODataTestSuite.suite());
         addTest(WadlTestSuite.suite());
+        addTest(XmlTestSuite.suite());
         addTest(JsonTestSuite.suite());
 
         // [ifdef jse]

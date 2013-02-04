@@ -127,10 +127,11 @@ public class TransformRepresentation extends WriterRepresentation {
                 }
             };
 
-            result = new SAXSource(reader, null);
+            result = new SAXSource(reader, new InputSource(
+                    representation.getReader()));
         } else {
             // Prepare the source and result documents
-            result = new SAXSource(new InputSource(representation.getStream()));
+            result = new SAXSource(new InputSource(representation.getReader()));
         }
 
         // Copy the representation's URI as an XML system ID.
