@@ -138,7 +138,9 @@ public class RangeRepresentation extends WrapperRepresentation {
     // [ifndef gwt] method
     @Override
     public void write(java.io.Writer writer) throws IOException {
-        write(BioUtils.getOutputStream(writer, getCharacterSet()));
+        OutputStream os = BioUtils.getOutputStream(writer, getCharacterSet());
+        write(os);
+        os.flush();
     }
 
     @Override
@@ -148,7 +150,9 @@ public class RangeRepresentation extends WrapperRepresentation {
 
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        write(NioUtils.getStream(writableChannel));
+        OutputStream os = NioUtils.getStream(writableChannel);
+        write(os);
+        os.flush();
     }
 
 }

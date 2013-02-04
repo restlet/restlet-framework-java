@@ -9,4 +9,4 @@ http://www.restlet.org
 
 ## Copyright
 
-Copyright 2005-2012 Restlet SAS
+Copyright 2005-2013 Restlet SAS

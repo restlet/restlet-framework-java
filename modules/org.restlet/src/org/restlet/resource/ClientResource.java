@@ -739,7 +739,7 @@ public class ClientResource extends UniformResource {
      * @return The response attribute value.
      */
     public String getAttribute(String name) {
-        Object value = getRequestAttributes().get(name);
+        Object value = getResponseAttributes().get(name);
         return (value == null) ? null : value.toString();
     }
 
