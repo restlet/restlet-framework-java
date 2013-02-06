@@ -9,8 +9,6 @@ Changes log
        - Updated Simple HTTP server library to version 5.0.4.
        - Added a JSONP filter that can automatically wrap JSON representations.
          Contributed by Mark Kharitonov and Cyril Lakech.
-       - Added support for parsing IPv6 when parsing host URI in internal HTTP server.
-         Contributed by Jun Hou.
     - API changes
        - Refactored the OAuth extension to prevent the 
          org.restlet.ext.oauth.security subpackage.

@@ -677,7 +677,7 @@ public class HttpInboundRequest extends Request implements InboundRequest {
         int hostPort = -1;
 
         if (host != null) {
-            // decide whether the address is IPv4 or IPv6
+            // Decide whether the address is IPv4 or IPv6
             int rightSquareBracketIndex = host.indexOf(']');
             boolean ipv4 = (rightSquareBracketIndex == -1);
 
