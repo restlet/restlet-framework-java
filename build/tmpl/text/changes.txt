@@ -13,6 +13,8 @@ Changes log
        - Fixed discovering and setting of attributes from OData 
          representations.
        - Fixed potential flushing issue with wrapped representations.
+       - Added support for parsing IPv6 when parsing host URI in internal HTTP server.
+         Contributed by Jun Hou.
     - Misc
        - Fixed bug when chaining Transformer or TransformRepresentation
          objects. Reported by Brian Sletten.
