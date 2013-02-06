@@ -677,14 +677,47 @@ public class HttpInboundRequest extends Request implements InboundRequest {
         int hostPort = -1;
 
         if (host != null) {
-            int colonIndex = host.indexOf(':');
+            // decide whether the address is IPv4 or IPv6
+            int rightSquareBracketIndex = host.indexOf(']');
+            boolean ipv4 = (rightSquareBracketIndex == -1);
 
-            if (colonIndex != -1) {
-                hostDomain = host.substring(0, colonIndex);
-                hostPort = Integer.valueOf(host.substring(colonIndex + 1));
+            if (ipv4) {
+                // IPv4 address handling.
+                int colonIndex = host.indexOf(':');
+
+                if (colonIndex != -1) {
+                    hostDomain = host.substring(0, colonIndex);
+                    hostPort = Integer.valueOf(host.substring(colonIndex + 1));
+                } else {
+                    hostDomain = host;
+                    hostPort = getProtocol().getDefaultPort();
+                }
+
+                Context.getCurrentLogger().fine(
+                        "HttpInboundRequest::setHeaders, IPv4 hostDomain: "
+                                + hostDomain + ", hostPort: " + hostPort);
             } else {
-                hostDomain = host;
-                hostPort = getProtocol().getDefaultPort();
+                // IPv6 address handling.
+                //
+                // Two possible cases, host == "[::1]:8182" --using the 8182
+                // port. host == "[::1]" ------ using the default port 80.
+                //
+                // For IPv6 address, we use ']' to separate the domain and the
+                // port, because it's unique.
+                if (rightSquareBracketIndex + 1 < host.length()) {
+                    // Using specified port
+                    hostDomain = host.substring(0, rightSquareBracketIndex + 1);
+                    hostPort = Integer.valueOf(host
+                            .substring(rightSquareBracketIndex + 2));
+                } else if (rightSquareBracketIndex + 1 == host.length()) {
+                    // Must be using default port 80,
+                    hostDomain = host;
+                    hostPort = getProtocol().getDefaultPort();
+                }
+
+                Context.getCurrentLogger().fine(
+                        "HttpInboundRequest::setHeaders, IPv6 hostDomain: "
+                                + hostDomain + ", hostPort: " + hostPort);
             }
         } else {
             Protocol serverProtocol = getConnection().getHelper().getHelped()
