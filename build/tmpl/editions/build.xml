@@ -199,11 +199,18 @@
 		</and>
 	</condition>
 
-
 	<!-- Set the property that will enable the package target -->
 	<condition property="do-package-p2">
 		<and>
 			<istrue value="${do-p2}" />
+			<istrue value="${package}" />
+		</and>
+	</condition>
+
+	<!-- Set the property that will enable the package target -->
+	<condition property="do-package-maven">
+		<and>
+			<istrue value="${do-maven}" />
 			<istrue value="${package}" />
 		</and>
 	</condition>
@@ -1016,9 +1023,11 @@
 		<!-- PACKAGE target -->
 		<target name="package" if="do-package" depends="package-classic, package-maven, package-p2" description="Generate the distribution.">
 			<!-- copy final artifacts to the final distribution directory -->
-			<move file="${dist-base}/restlet-${edition}-${version-compact}.zip" todir="${final-dist-base}" />
-			<!-- do not fail on error if the exe does not exist in builds that didn't run the nsis task -->
-			<move file="${dist-base}/restlet-${edition}-${version-compact}.exe" todir="${final-dist-base}" failonerror="false" />
+			<move todir="${final-dist-base}">
+				<fileset dir="${dist-base}">
+					<include name="restlet-${edition}-${version-compact}.*"/>
+				</fileset>
+			</move>
 		</target>
 
 		<target name="package-classic" if="do-package" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions.">
@@ -1027,7 +1036,7 @@
 			</move>
 		</target>
 
-		<target name="package-maven" if="do-package" description="Generate the maven distributions.">
+		<target name="package-maven" if="do-package-maven" description="Generate the maven distributions.">
 			<move todir="${final-dist-maven2}">
 				<fileset dir="${dist-maven2}" />
 			</move>
