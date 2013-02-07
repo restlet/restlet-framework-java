@@ -26,7 +26,7 @@
 
 	<!-- General properties -->
 	<property name="author" value="Jerome Louvel" />
-	<property name="vendor" value="Restlet S.A.S." />
+	<property name="vendor" value="Restlet" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
 	<property name="mod-maven-groupId" value="org.restlet.${edition}" />
 
@@ -416,7 +416,7 @@
 			<manifest file="@{dir}/META-INF/MANIFEST.MF">
 				<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
 				<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-				<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet" />
+				<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="${vendor}" />
 				<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
 				<section name="${mod-@{name}-id}">
 					<attribute name="Implementation-Title" value="${mod-@{name}-id}" />
@@ -761,7 +761,7 @@
 				<pathelement path="${mod}/${mod-core-id}/src/" />
 			</sourcepath>
 
-			<bottom>Copyright &#169; 2005-2013 Restlet S.A.S.</bottom>
+			<bottom>Copyright &#169; 2005-2013 Restlet</bottom>
 
 			<group title="Restlet API">
 				<package name="org.restlet*" />
