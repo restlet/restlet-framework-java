@@ -161,7 +161,7 @@ public final class DateUtils {
      * 
      * @param date
      *            The date to format.
-     * @param format
+     * @param formats
      *            The array of date formats to use.
      * @return The formatted date.
      */

@@ -582,7 +582,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * {@link SelectionRegistration#onSelected(int)} on the inbound or outbound
      * way.
      * 
-     * @param selectionRegistration
+     * @param registration
      *            The selected registration.
      */
     public void onSelected(SelectionRegistration registration)

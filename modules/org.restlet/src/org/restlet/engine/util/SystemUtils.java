@@ -48,7 +48,7 @@ public class SystemUtils {
      *            The source field.
      * @param target
      *            The target field.
-     * @return
+     * @return True if both fields are equals.
      */
     public static boolean equals(Object source, Object target) {
         return (target == source) || (target != null && target.equals(source));
