@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0"?>
 
-<!-- =========================================================
-     Restlet build script - Copyright 2005-2012 Restlet S.A.S.
-     ========================================================= -->
+<!-- ==================================================
+     Restlet build script - Copyright 2005-2013 Restlet
+     ================================================== -->
 
 <project name="Restlet Framework - @edition@" default="rebuild">
 	<!-- ============================ -->
@@ -26,7 +26,7 @@
 
 	<!-- General properties -->
 	<property name="author" value="Jerome Louvel" />
-	<property name="vendor" value="Restlet S.A.S." />
+	<property name="vendor" value="Restlet" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
 	<property name="mod-maven-groupId" value="org.restlet.${edition}" />
 
@@ -199,11 +199,18 @@
 		</and>
 	</condition>
 
-
 	<!-- Set the property that will enable the package target -->
 	<condition property="do-package-p2">
 		<and>
 			<istrue value="${do-p2}" />
+			<istrue value="${package}" />
+		</and>
+	</condition>
+
+	<!-- Set the property that will enable the package target -->
+	<condition property="do-package-maven">
+		<and>
+			<istrue value="${do-maven}" />
 			<istrue value="${package}" />
 		</and>
 	</condition>
@@ -466,7 +473,7 @@
 			<manifest file="@{dir}/META-INF/MANIFEST.MF">
 				<attribute id="Bundle-SymbolicName" name="Bundle-SymbolicName" value="${mod-@{name}-id}" />
 				<attribute id="Bundle-Version" name="Bundle-Version" value="${eclipse-version-full}" />
-				<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="Restlet S.A.S." />
+				<attribute id="Bundle-Vendor" name="Bundle-Vendor" value="${vendor}" />
 				<attribute id="Bundle-RequiredExecutionEnvironment" name="Bundle-RequiredExecutionEnvironment" value="${bundle.required-execution-environment}" />
 				<attribute id="Import-Package" name="Import-Package" value="org.osgi.framework" />
 				<section name="${mod-@{name}-id}">
@@ -821,7 +828,7 @@
 					<pathelement path="${mod}/${mod-core-id}/src/" />
 				</sourcepath>
 
-				<bottom>Copyright &#169; 2005-2012 Restlet S.A.S.</bottom>
+				<bottom>Copyright &#169; 2005-2013 Restlet</bottom>
 
 				<group title="Restlet API">
 					<package name="org.restlet*" />
@@ -1016,9 +1023,11 @@
 		<!-- PACKAGE target -->
 		<target name="package" if="do-package" depends="package-classic, package-maven, package-p2" description="Generate the distribution.">
 			<!-- copy final artifacts to the final distribution directory -->
-			<move file="${dist-base}/restlet-${edition}-${version-compact}.zip" todir="${final-dist-base}" />
-			<!-- do not fail on error if the exe does not exist in builds that didn't run the nsis task -->
-			<move file="${dist-base}/restlet-${edition}-${version-compact}.exe" todir="${final-dist-base}" failonerror="false" />
+			<move todir="${final-dist-base}">
+				<fileset dir="${dist-base}">
+					<include name="restlet-${edition}-${version-compact}.*"/>
+				</fileset>
+			</move>
 		</target>
 
 		<target name="package-classic" if="do-package" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions.">
@@ -1027,7 +1036,7 @@
 			</move>
 		</target>
 
-		<target name="package-maven" if="do-package" description="Generate the maven distributions.">
+		<target name="package-maven" if="do-package-maven" description="Generate the maven distributions.">
 			<move todir="${final-dist-maven2}">
 				<fileset dir="${dist-maven2}" />
 			</move>
