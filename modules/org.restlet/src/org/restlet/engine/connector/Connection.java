@@ -215,8 +215,8 @@ public class Connection<T extends Connector> implements SelectionListener {
      *            The response to commit.
      */
     public void commit(Response response) {
-        getHelper().getOutboundMessages().add(response);
-        getHelper().getController().wakeup();
+        response.setCommitted(true);
+        getHelper().addOutboundMessage(response);
     }
 
     /**

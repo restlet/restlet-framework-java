@@ -120,14 +120,14 @@ public class UriInfoTest extends TestCase {
      */
     static ThreadLocalizedUriInfo newUriInfo(Reference resourceRef,
             Reference rootRef) {
-        final Request request = new Request();
+        Request request = new Request();
         request.setResourceRef(resourceRef);
         request.setOriginalRef(resourceRef);
         request.setRootRef(rootRef);
-        final Response response = new Response(request);
+        Response response = new Response(request);
         Response.setCurrent(response);
-        final CallContext callContext = new CallContext(request, response);
-        final ThreadLocalizedContext tlContext = new ThreadLocalizedContext();
+        CallContext callContext = new CallContext(request, response);
+        ThreadLocalizedContext tlContext = new ThreadLocalizedContext();
         tlContext.set(callContext);
         return new ThreadLocalizedUriInfo(tlContext);
     }

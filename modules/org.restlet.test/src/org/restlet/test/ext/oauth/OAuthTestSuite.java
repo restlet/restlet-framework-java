@@ -33,21 +33,24 @@
 
 package org.restlet.test.ext.oauth;
 
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+/**
+ * Suite with all OAuth unit tests.
+ * 
+ * @author Jerome Louvel
+ */
+public class OAuthTestSuite extends TestSuite {
 
-public class OAuthTestSuite extends TestSuite{
-    
-    public static Test suite(){
+    public static Test suite() {
         TestSuite result = new TestSuite("OAuth Extension");
         result.addTestSuite(AuthorizationServerTestCase.class);
         result.addTestSuite(AuthorizationServerHttpsTestCase.class);
         result.addTestSuite(TimedTokenTestCase.class);
         result.addTestSuite(TimedTokenHttpsTestCase.class);
         result.addTestSuite(TokenGeneratorTestCase.class);
-        //result.addTestSuite(MultipleUserAuthorizationServerTestCase.class);
+        // result.addTestSuite(MultipleUserAuthorizationServerTestCase.class);
         result.addTestSuite(MultipleUserAuthorizationServerHttpsTestCase.class);
         return result;
     }

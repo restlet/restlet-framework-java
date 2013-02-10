@@ -50,6 +50,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.engine.Edition;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 
 /**
@@ -227,12 +228,13 @@ public class NioUtils {
                 }
             };
 
-            org.restlet.Application application = org.restlet.Application
-                    .getCurrent();
-            if (application != null && application.getTaskService() != null) {
-                application.getTaskService().execute(task);
+            org.restlet.Context context = org.restlet.Context.getCurrent();
+
+            if (context != null && context.getExecutorService() != null) {
+                context.getExecutorService().execute(task);
             } else {
-                new Thread(task, "Restlet-PipedWritableChannel").start();
+                Engine.createThreadWithLocalVariables(task, "Restlet-NioUtils")
+                        .start();
             }
 
             result = pipe.source();

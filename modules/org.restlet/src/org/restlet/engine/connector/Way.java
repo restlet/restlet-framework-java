@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Message;
 import org.restlet.Response;
@@ -47,6 +48,7 @@ import org.restlet.engine.io.BufferProcessor;
 import org.restlet.engine.io.BufferState;
 import org.restlet.engine.io.CompletionListener;
 import org.restlet.engine.io.IoState;
+import org.restlet.routing.VirtualHost;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
 import org.restlet.util.Series;
@@ -424,6 +426,17 @@ public abstract class Way implements SelectionListener, CompletionListener,
      */
     public void onSelected(SelectionRegistration selectionRegistration) {
         try {
+            // Restore thread local variables
+            if (getMessage() != null) {
+                Response.setCurrent(getMessage());
+                Application.setCurrent((Application) getMessage()
+                        .getAttributes().get("org.restlet.application"));
+                Context.setCurrent((Context) getMessage().getAttributes().get(
+                        "org.restlet.context"));
+                VirtualHost.setCurrent((Integer) getMessage().getAttributes()
+                        .get("org.restlet.virtualHost"));
+            }
+
             // Adjust states
             if (getIoState() != IoState.READY) {
                 setIoState(IoState.PROCESSING);

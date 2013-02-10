@@ -62,12 +62,11 @@ public class GetTestCase extends BaseConnectorsTestCase {
 
     @Override
     protected void call(String uri) throws Exception {
-        final Request request = new Request(Method.GET, uri);
+        Request request = new Request(Method.GET, uri);
         Client c = new Client(Protocol.HTTP);
-        final Response r = c.handle(request);
-
-        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
-                .getStatus());
+        Response r = c.handle(request);
+        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK,
+                r.getStatus());
         assertEquals("Hello world", r.getEntity().getText());
         c.stop();
     }

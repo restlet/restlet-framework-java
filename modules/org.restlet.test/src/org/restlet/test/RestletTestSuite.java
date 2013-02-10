@@ -68,7 +68,7 @@ import org.restlet.test.ext.jaxb.JaxbIntegrationConverterTestCase;
 import org.restlet.test.ext.jaxrs.JaxRsTestSuite;
 import org.restlet.test.ext.json.JsonTestSuite;
 import org.restlet.test.ext.odata.ODataTestSuite;
-import org.restlet.test.ext.sip.SipTests;
+import org.restlet.test.ext.sip.SipTestSuite;
 import org.restlet.test.ext.spring.SpringTestSuite;
 import org.restlet.test.ext.velocity.VelocityTestCase;
 import org.restlet.test.ext.wadl.WadlTestSuite;
@@ -140,6 +140,7 @@ public class RestletTestSuite extends TestSuite {
         addTest(CryptoTestSuite.suite());
         addTest(EmfTestSuite.suite());
         addTest(HtmlTestSuite.suite());
+        addTest(JaxRsTestSuite.suite());
         addTest(ODataTestSuite.suite());
         addTest(WadlTestSuite.suite());
         addTest(XmlTestSuite.suite());
@@ -173,8 +174,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(SecurityTestCase.class);
         addTestSuite(TemplateFilterTestCase.class);
 
-        addTest(JaxRsTestSuite.suite());
-        addTest(SipTests.suite());
+        addTest(SipTestSuite.suite());
         addTest(SpringTestSuite.suite());
         addTest(EngineTestSuite.suite());
         // [enddef]

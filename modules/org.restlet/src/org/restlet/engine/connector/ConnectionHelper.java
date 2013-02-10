@@ -41,7 +41,11 @@ import java.nio.channels.SocketChannel;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.Application;
 import org.restlet.Connector;
+import org.restlet.Context;
+import org.restlet.Response;
+import org.restlet.routing.VirtualHost;
 
 /**
  * Connector helper using network connections. Here is the list of parameters
@@ -174,6 +178,32 @@ public abstract class ConnectionHelper<T extends Connector> extends
     }
 
     /**
+     * Add the outbound message to the queue and wake up the IO controller.
+     * 
+     * @param response
+     *            The outbound message.
+     */
+    public void addOutboundMessage(Response response) {
+        if (Application.getCurrent() != null) {
+            response.getAttributes().put("org.restlet.application",
+                    Application.getCurrent());
+        }
+
+        if (Context.getCurrent() != null) {
+            response.getAttributes().put("org.restlet.context",
+                    Context.getCurrent());
+        }
+
+        if (VirtualHost.getCurrent() != null) {
+            response.getAttributes().put("org.restlet.virtualHost",
+                    VirtualHost.getCurrent());
+        }
+
+        getOutboundMessages().add(response);
+        getController().wakeup();
+    }
+
+    /**
      * Checks in the connection back into the pool.
      * 
      * @param connection
@@ -213,6 +243,25 @@ public abstract class ConnectionHelper<T extends Connector> extends
         }
 
         return result;
+    }
+
+    /**
+     * Configures a given socket based on the helper parameters.
+     * 
+     * @param socket
+     *            The socket to configure.
+     * @throws SocketException
+     */
+    public void configure(Socket socket) throws SocketException {
+        socket.setKeepAlive(isSocketKeepAlive());
+        socket.setOOBInline(isSocketOobInline());
+        socket.setReceiveBufferSize(getSocketReceiveBufferSize());
+        socket.setReuseAddress(isSocketReuseAddress());
+        socket.setSoLinger(getSocketLingerTimeMs() > 0, getSocketLingerTimeMs());
+        socket.setSendBufferSize(getSocketSendBufferSize());
+        socket.setSoTimeout(getMaxIoIdleTimeMs());
+        socket.setTcpNoDelay(isSocketNoDelay());
+        socket.setTrafficClass(getSocketTrafficClass());
     }
 
     /**
@@ -336,25 +385,6 @@ public abstract class ConnectionHelper<T extends Connector> extends
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "maxTotalConnections", "-1"));
 
-    }
-
-    /**
-     * Configures a given socket based on the helper parameters.
-     * 
-     * @param socket
-     *            The socket to configure.
-     * @throws SocketException
-     */
-    public void configure(Socket socket) throws SocketException {
-        socket.setKeepAlive(isSocketKeepAlive());
-        socket.setOOBInline(isSocketOobInline());
-        socket.setReceiveBufferSize(getSocketReceiveBufferSize());
-        socket.setReuseAddress(isSocketReuseAddress());
-        socket.setSoLinger(getSocketLingerTimeMs() > 0, getSocketLingerTimeMs());
-        socket.setSendBufferSize(getSocketSendBufferSize());
-        socket.setSoTimeout(getMaxIoIdleTimeMs());
-        socket.setTcpNoDelay(isSocketNoDelay());
-        socket.setTrafficClass(getSocketTrafficClass());
     }
 
     /**

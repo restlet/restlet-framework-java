@@ -54,7 +54,7 @@ import org.restlet.security.Authenticator;
  * <ul>
  * <li>Add your {@link Application}(s) by calling {@link #add(Application)}.</li>
  * <li>If you need authentication, set a {@link Authenticator} see
- * {@link #setGuard(Authenticator)}.</li>
+ * {@link #setAuthenticator(Authenticator)}.</li>
  * </ul>
  * At least add the JaxRsApplication to a {@link Component}.
  * </p>
@@ -98,13 +98,30 @@ public class JaxRsApplication extends org.restlet.Application {
     }
 
     /**
+     * Creates an new JaxRsApplication. Attach JAX-RS-{@link Application}s by
+     * using {@link #add(Application)}.
+     * 
+     * @param context
+     *            The application's dedicated context based on the protected
+     *            parent component's context.
+     * @param appConfig
+     * @throws IllegalArgumentException
+     */
+    public JaxRsApplication(Context context,
+            javax.ws.rs.core.Application appConfig)
+            throws IllegalArgumentException {
+        this(context);
+        add(appConfig);
+    }
+
+    /**
      * 
      * @param appConfig
      * @throws IllegalArgumentException
      */
     public JaxRsApplication(javax.ws.rs.core.Application appConfig)
             throws IllegalArgumentException {
-        add(appConfig);
+        this(Context.getCurrent(), appConfig);
     }
 
     /**
@@ -130,25 +147,34 @@ public class JaxRsApplication extends org.restlet.Application {
                     "The ApplicationConfig must not be null");
         }
 
-        final JaxRsRestlet jaxRsRestlet = this.jaxRsRestlet;
-        final Set<Class<?>> classes = appConfig.getClasses();
-        final Set<Object> singletons = appConfig.getSingletons();
+        JaxRsRestlet jaxRsRestlet = this.jaxRsRestlet;
         boolean everythingFine = true;
 
-        if (singletons != null) {
-            for (final Object singleton : singletons) {
-                // LATER test: check, if a singelton is also available in the
-                // classes -> ignore or whatever
-                if (singleton != null
-                        && !classes.contains(singleton.getClass())) {
-                    everythingFine &= jaxRsRestlet.addSingleton(singleton);
+        if (jaxRsRestlet == null) {
+            everythingFine = false;
+            getLogger()
+                    .warning(
+                            "No JAX-RS to Restlet adapter available to handle to calls.");
+        } else {
+            Set<Class<?>> classes = appConfig.getClasses();
+            Set<Object> singletons = appConfig.getSingletons();
+
+            if (singletons != null) {
+                for (Object singleton : singletons) {
+                    // LATER test: check, if a singleton is also available in
+                    // the
+                    // classes -> ignore or whatever
+                    if (singleton != null
+                            && !classes.contains(singleton.getClass())) {
+                        everythingFine &= jaxRsRestlet.addSingleton(singleton);
+                    }
                 }
             }
-        }
 
-        if (classes != null) {
-            for (final Class<?> clazz : classes) {
-                everythingFine &= jaxRsRestlet.addClass(clazz);
+            if (classes != null) {
+                for (Class<?> clazz : classes) {
+                    everythingFine &= jaxRsRestlet.addClass(clazz);
+                }
             }
         }
 
@@ -173,6 +199,17 @@ public class JaxRsApplication extends org.restlet.Application {
      * @return the {@link Authenticator}.
      */
     public Authenticator getAuthenticator() {
+        return this.authenticator;
+    }
+
+    /**
+     * Returns the {@link Authenticator}.
+     * 
+     * @return the {@link Authenticator}.
+     * @deprecated Use {@link #getAuthenticator()} instead.
+     */
+    @Deprecated
+    public Authenticator getGuard() {
         return this.authenticator;
     }
 
@@ -243,6 +280,21 @@ public class JaxRsApplication extends org.restlet.Application {
     public void setContext(Context context) {
         super.setContext(context);
         this.jaxRsRestlet.setContext(context);
+    }
+
+    /**
+     * Sets the {@link Authenticator} to use. This should be called before the
+     * root Restlet is created.
+     * <p>
+     * This replaced the guard set via {@link #setGuard(Authenticator)}.
+     * 
+     * @param authenticator
+     *            The {@link Authenticator} to use.
+     * @deprecated Use {@link #setAuthenticator(Authenticator)} instead.
+     */
+    @Deprecated
+    public void setGuard(Authenticator authenticator) {
+        this.authenticator = authenticator;
     }
 
     /**

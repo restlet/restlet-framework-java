@@ -52,6 +52,7 @@ Changes log
          by multiple applications inside the same component/JVM.
        - Added Context.executorService property to be able to invoke the parent task
          service without actually being able to control it (start/stop).
+       - Added JaxRsApplication(Context, Application) constructor.
     - Bug fixed
        - The same ones as in version 2.1.2.
     - Misc

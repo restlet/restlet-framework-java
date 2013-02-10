@@ -48,6 +48,7 @@ import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Range;
 import org.restlet.engine.Edition;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 
 /**
@@ -362,7 +363,8 @@ public final class BioUtils {
             if (context != null && context.getExecutorService() != null) {
                 context.getExecutorService().execute(task);
             } else {
-                new Thread(task, "Restlet-PipeWriter").start();
+                Engine.createThreadWithLocalVariables(task, "Restlet-BioUtils")
+                        .start();
             }
 
             result = pipedReader;
@@ -465,7 +467,8 @@ public final class BioUtils {
             if (context != null && context.getExecutorService() != null) {
                 context.getExecutorService().execute(task);
             } else {
-                new Thread(task, "Restlet-PipedOutputStream").start();
+                Engine.createThreadWithLocalVariables(task, "Restlet-BioUtils")
+                        .start();
             }
 
             result = pipe.getInputStream();

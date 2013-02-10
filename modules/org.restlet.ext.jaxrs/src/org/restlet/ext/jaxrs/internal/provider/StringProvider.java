@@ -47,6 +47,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CharacterSet;
@@ -95,17 +96,28 @@ public class StringProvider extends AbstractProvider<CharSequence> {
      *         no character set is available.
      */
     private String getCurrentResponseEntityCharset() {
-        Representation entity = Response.getCurrent().getEntity();
+        String result = null;
+        Response rsp = Response.getCurrent();
 
-        if (entity == null)
-            return null;
+        if (rsp == null) {
+            Context.getCurrentLogger().warning(
+                    "Unable to find the current response");
+        } else {
+            Representation entity = Response.getCurrent().getEntity();
 
-        CharacterSet characterSet = entity.getCharacterSet();
+            if (entity == null)
+                return null;
 
-        if (characterSet == null)
-            return null;
+            CharacterSet characterSet = entity.getCharacterSet();
 
-        return characterSet.toString();
+            if (characterSet == null)
+                return null;
+
+            result = characterSet.toString();
+        }
+
+        return result;
+
     }
 
     /**
