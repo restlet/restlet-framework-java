@@ -250,7 +250,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public InputStream getStream() throws IOException {
         if (canEncode()) {
-            return BioUtils.getInputStream(this);
+            return BioUtils.getStream(this);
         } else {
             return getWrappedRepresentation().getStream();
         }
@@ -268,7 +268,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public void write(java.io.Writer writer) throws IOException {
         if (canEncode()) {
-            OutputStream os = BioUtils.getOutputStream(writer,
+            OutputStream os = BioUtils.getStream(writer,
                     getCharacterSet());
             write(os);
             os.flush();

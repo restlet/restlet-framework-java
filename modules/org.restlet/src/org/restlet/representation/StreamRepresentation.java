@@ -82,7 +82,7 @@ public abstract class StreamRepresentation extends Representation {
     // [ifndef gwt] method
     @Override
     public void write(java.io.Writer writer) throws IOException {
-        OutputStream os = BioUtils.getOutputStream(writer, getCharacterSet());
+        OutputStream os = BioUtils.getStream(writer, getCharacterSet());
         write(os);
         os.flush();
     }

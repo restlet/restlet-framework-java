@@ -439,15 +439,13 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                 request.getAttributes().put(CONNECTOR_LATCH, latch);
 
                 // Add the message to the outbound queue for processing
-                getOutboundMessages().add(response);
-                getController().wakeup();
+                addOutboundMessage(response);
 
                 // Await on the latch
                 latch.await();
             } else {
                 // Add the message to the outbound queue for processing
-                getOutboundMessages().add(response);
-                getController().wakeup();
+                addOutboundMessage(response);
             }
         } catch (Exception e) {
             getLogger().log(

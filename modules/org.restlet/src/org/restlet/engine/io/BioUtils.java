@@ -48,6 +48,7 @@ import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Range;
 import org.restlet.engine.Edition;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 
 /**
@@ -292,111 +293,6 @@ public final class BioUtils {
         // return representation.getSize();
     }
 
-    // [ifndef gwt] method
-    /**
-     * Returns an input stream based on a given character reader.
-     * 
-     * @param reader
-     *            The character reader.
-     * @param characterSet
-     *            The stream character set.
-     * @return An input stream based on a given character reader.
-     */
-    public static InputStream getInputStream(Reader reader,
-            CharacterSet characterSet) {
-        InputStream result = null;
-
-        try {
-            result = new ReaderInputStream(reader, characterSet);
-        } catch (IOException e) {
-            Context.getCurrentLogger().log(Level.WARNING,
-                    "Unable to create the reader input stream", e);
-        }
-
-        return result;
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Returns an input stream based on the given representation's content and
-     * its write(OutputStream) method. Internally, it uses a writer thread and a
-     * pipe stream.
-     * 
-     * @param representation
-     *            the representation to get the {@link java.io.OutputStream}
-     *            from.
-     * @return A stream with the representation's content.
-     */
-    public static InputStream getInputStream(final Representation representation) {
-        InputStream result = null;
-
-        if (Edition.CURRENT != Edition.GAE) {
-            // [ifndef gae]
-            if (representation == null) {
-                return null;
-            }
-
-            final PipeStream pipe = new PipeStream();
-            final java.io.OutputStream os = pipe.getOutputStream();
-
-            // Creates a thread that will handle the task of continuously
-            // writing the representation into the input side of the pipe
-            Runnable task = new Runnable() {
-                public void run() {
-                    try {
-                        representation.write(os);
-                        os.flush();
-                    } catch (IOException ioe) {
-                        Context.getCurrentLogger()
-                                .log(Level.WARNING,
-                                        "Error while writing to the piped input stream.",
-                                        ioe);
-                    } finally {
-                        try {
-                            os.close();
-                        } catch (IOException ioe2) {
-                            Context.getCurrentLogger().log(Level.WARNING,
-                                    "Error while closing the pipe.", ioe2);
-                        }
-                    }
-                }
-            };
-
-            org.restlet.Application application = org.restlet.Application
-                    .getCurrent();
-
-            if (application != null && application.getTaskService() != null) {
-                application.getTaskService().execute(task);
-            } else {
-                new Thread(task, "Restlet-PipedOutputStream").start();
-            }
-
-            result = pipe.getInputStream();
-            // [enddef]
-        } else {
-            Context.getCurrentLogger()
-                    .log(Level.WARNING,
-                            "The GAE edition is unable to get an InputStream out of an OutputRepresentation.");
-        }
-
-        return result;
-    }
-
-    // [ifndef gwt] method
-    /**
-     * Returns an output stream based on a given writer.
-     * 
-     * @param writer
-     *            The writer.
-     * @param characterSet
-     *            The character set used to write on the output stream.
-     * @return the output stream of the writer
-     */
-    public static java.io.OutputStream getOutputStream(java.io.Writer writer,
-            CharacterSet characterSet) {
-        return new WriterOutputStream(writer, characterSet);
-    }
-
     /**
      * Returns a reader from an input stream and a character set.
      * 
@@ -468,7 +364,8 @@ public final class BioUtils {
             if (application != null && application.getTaskService() != null) {
                 application.getTaskService().execute(task);
             } else {
-                new Thread(task, "Restlet-PipeWriter").start();
+                Engine.createThreadWithLocalVariables(task, "Restlet-BioUtils")
+                        .start();
             }
 
             result = pipedReader;
@@ -480,6 +377,111 @@ public final class BioUtils {
         }
         return result;
 
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns an output stream based on a given writer.
+     * 
+     * @param writer
+     *            The writer.
+     * @param characterSet
+     *            The character set used to write on the output stream.
+     * @return the output stream of the writer
+     */
+    public static java.io.OutputStream getStream(java.io.Writer writer,
+            CharacterSet characterSet) {
+        return new WriterOutputStream(writer, characterSet);
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns an input stream based on a given character reader.
+     * 
+     * @param reader
+     *            The character reader.
+     * @param characterSet
+     *            The stream character set.
+     * @return An input stream based on a given character reader.
+     */
+    public static InputStream getStream(Reader reader, CharacterSet characterSet) {
+        InputStream result = null;
+
+        try {
+            result = new ReaderInputStream(reader, characterSet);
+        } catch (IOException e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to create the reader input stream", e);
+        }
+
+        return result;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Returns an input stream based on the given representation's content and
+     * its write(OutputStream) method. Internally, it uses a writer thread and a
+     * pipe stream.
+     * 
+     * @param representation
+     *            the representation to get the {@link java.io.OutputStream}
+     *            from.
+     * @return A stream with the representation's content.
+     */
+    public static InputStream getStream(final Representation representation) {
+        InputStream result = null;
+
+        if (Edition.CURRENT != Edition.GAE) {
+            // [ifndef gae]
+            if (representation == null) {
+                return null;
+            }
+
+            final PipeStream pipe = new PipeStream();
+            final java.io.OutputStream os = pipe.getOutputStream();
+
+            // Creates a thread that will handle the task of continuously
+            // writing the representation into the input side of the pipe
+            Runnable task = new Runnable() {
+                public void run() {
+                    try {
+                        representation.write(os);
+                        os.flush();
+                    } catch (IOException ioe) {
+                        Context.getCurrentLogger()
+                                .log(Level.WARNING,
+                                        "Error while writing to the piped input stream.",
+                                        ioe);
+                    } finally {
+                        try {
+                            os.close();
+                        } catch (IOException ioe2) {
+                            Context.getCurrentLogger().log(Level.WARNING,
+                                    "Error while closing the pipe.", ioe2);
+                        }
+                    }
+                }
+            };
+
+            org.restlet.Application application = org.restlet.Application
+                    .getCurrent();
+
+            if (application != null && application.getTaskService() != null) {
+                application.getTaskService().execute(task);
+            } else {
+                Engine.createThreadWithLocalVariables(task, "Restlet-BioUtils")
+                        .start();
+            }
+
+            result = pipe.getInputStream();
+            // [enddef]
+        } else {
+            Context.getCurrentLogger()
+                    .log(Level.WARNING,
+                            "The GAE edition is unable to get an InputStream out of an OutputRepresentation.");
+        }
+
+        return result;
     }
 
     // [ifndef gwt] method

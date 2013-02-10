@@ -31,27 +31,21 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.ext.oauth;
+package org.restlet.test.ext.jaxrs;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * Suite with all OAuth unit tests.
+ * Suite with all JAX-RS unit tests. Actually only some of the tests for now.
  * 
  * @author Jerome Louvel
  */
-public class OAuthTestSuite extends TestSuite {
+public class JaxRsTestSuite extends TestSuite {
 
     public static Test suite() {
-        TestSuite result = new TestSuite("OAuth Extension");
-        result.addTestSuite(AuthorizationServerTestCase.class);
-        result.addTestSuite(AuthorizationServerHttpsTestCase.class);
-        result.addTestSuite(TimedTokenTestCase.class);
-        result.addTestSuite(TimedTokenHttpsTestCase.class);
-        result.addTestSuite(TokenGeneratorTestCase.class);
-        // result.addTestSuite(MultipleUserAuthorizationServerTestCase.class);
-        result.addTestSuite(MultipleUserAuthorizationServerHttpsTestCase.class);
+        TestSuite result = new TestSuite("JAX-RS Extension");
+        result.addTestSuite(QueryTestCase.class);
         return result;
     }
 

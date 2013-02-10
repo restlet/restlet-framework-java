@@ -42,7 +42,7 @@ import junit.framework.TestSuite;
  * 
  * @author Jerome Louvel
  */
-public class SipTests extends TestCase {
+public class SipTestSuite extends TestCase {
 
     public static Test suite() {
         final TestSuite suite = new TestSuite();

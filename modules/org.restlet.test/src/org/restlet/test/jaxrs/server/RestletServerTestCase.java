@@ -360,17 +360,21 @@ public abstract class RestletServerTestCase extends TestCase {
      */
     public Response accessServer(Request request) {
         final Reference reference = request.getResourceRef();
+
         if (reference.getBaseRef() == null) {
             reference.setBaseRef(reference.getHostIdentifier());
         }
         request.setOriginalRef(reference.getTargetRef());
         final Restlet connector = getClientConnector();
+
         if (shouldAccessWithoutTcp()) {
             final String hostDomain = request.getResourceRef().getHostDomain();
             getHttpHeaders(request).add("host", hostDomain);
         }
+
         Response response = new Response(request);
         connector.handle(request, response);
+
         if (!usingTcp && request.getMethod().equals(Method.HEAD)) {
             response.setEntity(new WrapperRepresentation(response.getEntity()) {
 
@@ -492,6 +496,7 @@ public abstract class RestletServerTestCase extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         Engine.clearThreadLocalVariables();
+
         if (shouldStartServerInSetUp()) {
             startServer(createApplication());
         }

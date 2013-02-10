@@ -15,6 +15,12 @@ Changes log
        - Fixed potential flushing issue with wrapped representations.
        - Added support for parsing IPv6 when parsing host URI in internal HTTP server.
          Contributed by Jun Hou. Reported by Reddy Lakshman and Neha Saini.
+       - Fixed JaxRsApplication(Application) constructor with a JaxRsRestlet adapter.
+       - Fixed NPE while issuing 405 responses in the JAX-RS extension.
+         Reported by Daniel Halperin
+       - The current response, application, context and virtual host are now properly
+         restored when the representation is called back to be written by the internal
+         HTTP connector.
     - Misc
        - Fixed bug when chaining Transformer or TransformRepresentation
          objects. Reported by Brian Sletten.

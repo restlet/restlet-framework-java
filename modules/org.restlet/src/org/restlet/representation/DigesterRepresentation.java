@@ -295,7 +295,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     @Override
     public void write(Writer writer) throws IOException {
-        OutputStream os = BioUtils.getOutputStream(writer, getCharacterSet());
+        OutputStream os = BioUtils.getStream(writer, getCharacterSet());
         write(os);
         os.flush();
     }
