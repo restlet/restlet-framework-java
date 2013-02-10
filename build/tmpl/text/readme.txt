@@ -66,4 +66,4 @@ Scalability
     * Supports asynchronous request processing, decoupled from IO operations. Unlike the Servlet API, the Restlet applications don't have a direct control on the outputstream, they only provide output representation to be written by the server connector.
 
 
-Copyright 2005-2012 Restlet S.A.S. Restlet is a registered trademark of Restlet S.A.S.
+Copyright 2005-2013 Restlet S.A.S. Restlet is a registered trademark of Restlet S.A.S.
