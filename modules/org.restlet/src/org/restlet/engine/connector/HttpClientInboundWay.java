@@ -112,17 +112,6 @@ public class HttpClientInboundWay extends ClientInboundWay {
         return super.isEmpty() && getMessages().isEmpty();
     }
 
-    /**
-     * Indicates if the {@link IoState#READY} state can be granted.
-     * 
-     * @return True if the {@link IoState#READY} state can be granted.
-     */
-    protected boolean isReady() {
-        return getBuffer().canDrain()
-                && ((getMessageState() == MessageState.BODY) && (getEntityRegistration()
-                        .getSelectionListener() != null));
-    }
-
     @Override
     public void onMessageCompleted(boolean endDetected) throws IOException {
         getMessages().remove(getMessage());
