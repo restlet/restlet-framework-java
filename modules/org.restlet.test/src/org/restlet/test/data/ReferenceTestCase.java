@@ -175,8 +175,6 @@ public class ReferenceTestCase extends RestletTestCase {
         host = "restlet.org";
         ref.setHostDomain(host);
         assertEquals(host, ref.getHostDomain());
-        
-        
         Reference ref2 = new Reference("http://[::1]:8182");
         assertEquals("[::1]", ref2.getHostDomain());
     }
@@ -475,7 +473,6 @@ public class ReferenceTestCase extends RestletTestCase {
         port = 9090;
         ref.setHostPort(port);
         assertEquals(port, ref.getHostPort());
-        
         ref = new Reference("http://[::1]:8182");
         assertEquals(8182, ref.getHostPort());
     }
@@ -658,6 +655,18 @@ public class ReferenceTestCase extends RestletTestCase {
         assertEquals("http://localhost:1234/test/last", ref.toString());
     }
 
+    public void testTargetRef() {
+        Reference ref = new Reference(
+                "http://twitter.com?status=RT @gamasutra:  Devil May Cry : Born Again http://www.gamasutra.com/view/feature/177267/");
+        Reference targetRef = new Reference(
+                new Reference(
+                        "http://www.gamasutra.com/view/feature/177267/devil_may_cry_born_again.php"),
+                ref).getTargetRef();
+        assertEquals(
+                "http://twitter.com?status=RT%20@gamasutra:%20%20Devil%20May%20Cry%20:%20Born%20Again%20http:?status=RT%20@gamasutra:%20%20Devil%20May%20Cry%20:%20Born%20Again%20http://www.gamasutra.com/view/feature/177267/",
+                targetRef.toString());
+    }
+
     /**
      * Test references that are unequal.
      */
@@ -680,12 +689,11 @@ public class ReferenceTestCase extends RestletTestCase {
         assertEquals("login:password", reference.getUserInfo());
 
         reference.setHostDomain("[::1]");
-        assertEquals("login:password@[::1]:81",
-                reference.getAuthority());
+        assertEquals("login:password@[::1]:81", reference.getAuthority());
         assertEquals("[::1]", reference.getHostDomain());
         assertEquals(81, reference.getHostPort());
         assertEquals("login:password", reference.getUserInfo());
-        
+
         reference.setHostDomain("www.example.com");
         assertEquals("login:password@www.example.com:81",
                 reference.getAuthority());

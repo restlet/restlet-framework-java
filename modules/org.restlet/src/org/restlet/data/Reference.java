@@ -1372,20 +1372,22 @@ public class Reference {
      */
     public String getPath() {
         String result = null;
-        final String part = isRelative() ? getRelativePart()
+        String part = isRelative() ? getRelativePart()
                 : getSchemeSpecificPart();
 
         if (part != null) {
             if (part.startsWith("//")) {
                 // Authority found
-                final int index1 = part.indexOf('/', 2);
+                int index1 = part.indexOf('/', 2);
 
                 if (index1 != -1) {
                     // Path found
-                    final int index2 = part.indexOf('?');
+                    int index2 = part.indexOf('?');
+
                     if (index2 != -1) {
                         // Query found
-                        result = part.substring(index1, index2);
+                        result = part.substring(Math.min(index1, index2),
+                                index2);
                     } else {
                         // No query found
                         result = part.substring(index1);
@@ -1395,7 +1397,8 @@ public class Reference {
                 }
             } else {
                 // No authority found
-                final int index = part.indexOf('?');
+                int index = part.indexOf('?');
+
                 if (index != -1) {
                     // Query found
                     result = part.substring(0, index);
@@ -2200,9 +2203,10 @@ public class Reference {
     public Reference normalize() {
         // 1. The input buffer is initialized with the now-appended path
         // components and the output buffer is initialized to the empty string.
-        final StringBuilder output = new StringBuilder();
-        final StringBuilder input = new StringBuilder();
-        final String path = getPath();
+        StringBuilder output = new StringBuilder();
+        StringBuilder input = new StringBuilder();
+        String path = getPath();
+
         if (path != null) {
             input.append(path);
         }

@@ -21,6 +21,9 @@ Changes log
        - The current response, application, context and virtual host are now properly
          restored when the representation is called back to be written by the internal
          HTTP connector.
+       - Fixed bug in Reference when no path existing but the query string has some
+         '/' characters in it. getPath() returns StringOutOfBounds exceptions.
+         Reported by Nicolas Rinaudo.
     - Misc
        - Fixed bug when chaining Transformer or TransformRepresentation
          objects. Reported by Brian Sletten.
