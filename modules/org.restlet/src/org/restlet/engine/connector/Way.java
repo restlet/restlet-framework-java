@@ -305,13 +305,15 @@ public abstract class Way implements SelectionListener, CompletionListener,
     }
 
     /**
-     * Indicates if we want to be selected for IO processing when the socket is
-     * ready.
+     * Indicates if we want to be selected for IO processing when the socket
+     * related socket is prepared.
      * 
      * @return True if we want to be selected for IO processing when the socket
      *         is ready.
      */
-    protected abstract boolean hasIoInterest();
+    protected boolean hasIoInterest() {
+        return getIoState() != IoState.READY;
+    }
 
     /**
      * Indicates if the way is available to handle new messages.
@@ -442,15 +444,11 @@ public abstract class Way implements SelectionListener, CompletionListener,
 
             if (getLogger().isLoggable(Level.FINER)) {
                 if (this instanceof InboundWay) {
-                    getLogger()
-                            .log(Level.FINER,
-                                    "Inbound way selected. Processing IO for : "
-                                            + this);
+                    getLogger().log(Level.FINER,
+                            "Processing IO for inbound way: " + this);
                 } else {
-                    getLogger().log(
-                            Level.FINER,
-                            "Outbound way selected. Processing IO for : "
-                                    + this);
+                    getLogger().log(Level.FINER,
+                            "Processing IO for outbound way: " + this);
                 }
             }
 
