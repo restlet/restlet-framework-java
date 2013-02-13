@@ -16,7 +16,6 @@
 	<property file="build.properties" />
 
 	<!-- General properties -->
-
 	<!-- Increment the build number -->
 	<buildnumber />
 
@@ -42,6 +41,14 @@
 	<property name="editions-dir" location="editions" />
 	<property name="modules" location="../modules" />
 	<property name="libs" location="../libraries" />
+
+	<!-- Version properties -->
+	<loadproperties srcFile="${tmpl}/config/version.${meta.release-type}.properties">
+		<filterchain>
+			<expandproperties/>
+		</filterchain>
+	</loadproperties>
+
 	<property name="parent-maven-groupId" value="org.restlet" />
 	<property name="parent-maven-artifactId" value="org.restlet.parent" />
 	<property name="parent-maven-version" value="${version-maven}" />
