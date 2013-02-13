@@ -52,7 +52,6 @@
 			<expandproperties/>
 		</filterchain>
 	</loadproperties>
-	<echo>version-manifest-prefix => ${version-manifest-prefix}</echo>
 
 	<!-- Miscellaneous Maven properties -->
 	<property name="mod-maven-groupId" value="org.restlet.${edition}" />
