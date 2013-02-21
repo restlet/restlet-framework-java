@@ -366,6 +366,7 @@ public class MetadataService extends Service {
         ext(dm, "htm", MediaType.TEXT_HTML);
         ext(dm, "html", MediaType.TEXT_HTML);
         ext(dm, "json", MediaType.APPLICATION_JSON);
+        ext(dm, "jsonsmile", MediaType.APPLICATION_JSON_SMILE);
         ext(dm, "txt", MediaType.TEXT_PLAIN, true);
         ext(dm, "xhtml", MediaType.APPLICATION_XHTML);
         ext(dm, "xml", MediaType.TEXT_XML);
