@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.2 Milestone 2 (02/28/2013)
     - Enhancements
        - Upgraded Servlet API to version 3.0.1.
        - Updated Simple HTTP server library to version 5.0.4.
