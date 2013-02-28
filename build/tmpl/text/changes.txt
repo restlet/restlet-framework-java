@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.1.2 (02/28/2013)
     - Bug fixed
        - Log initialization issue in engine with GAE edition fixed.
          Occurred in production.
