@@ -59,6 +59,7 @@ public class ComponentContext extends Context {
         this.componentHelper = componentHelper;
         setClientDispatcher(new ComponentClientDispatcher(this));
         setServerDispatcher(new ComponentServerDispatcher(this));
+        // [ifndef gae] instruction
         setExecutorService(componentHelper.getHelped().getTaskService());
     }
 

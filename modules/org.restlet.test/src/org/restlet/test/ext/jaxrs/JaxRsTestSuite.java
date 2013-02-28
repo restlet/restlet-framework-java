@@ -50,7 +50,9 @@ public class JaxRsTestSuite extends TestCase {
         TestSuite mySuite = new TestSuite("JAX-RS extension");
         mySuite.addTest(AllClassTests.suite());
         mySuite.addTest(AllServiceTests.suite());
+        // [ifndef jee]
         mySuite.addTestSuite(QueryTestCase.class);
+        // [enddef]
         return mySuite;
     }
 

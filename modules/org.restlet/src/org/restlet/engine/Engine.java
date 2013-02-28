@@ -47,7 +47,6 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Request;
@@ -57,7 +56,6 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.log.LoggerFacade;
-import org.restlet.routing.VirtualHost;
 
 /**
  * Engine supporting the Restlet API. The engine acts as a registry of various
@@ -144,6 +142,7 @@ public class Engine {
         instance = null;
     }
 
+    // [ifndef gwt] method
     /**
      * Creates a new standalone thread with local Restlet thread variable
      * properly set.
@@ -158,9 +157,9 @@ public class Engine {
     public static Thread createThreadWithLocalVariables(
             final Runnable runnable, String name) {
         // Save the thread local variables
-        final Application currentApplication = Application.getCurrent();
+        final org.restlet.Application currentApplication = org.restlet.Application.getCurrent();
         final Context currentContext = Context.getCurrent();
-        final Integer currentVirtualHost = VirtualHost.getCurrent();
+        final Integer currentVirtualHost = org.restlet.routing.VirtualHost.getCurrent();
         final Response currentResponse = Response.getCurrent();
 
         return new Thread(new Runnable() {
@@ -170,8 +169,8 @@ public class Engine {
                 // Copy the thread local variables
                 Response.setCurrent(currentResponse);
                 Context.setCurrent(currentContext);
-                VirtualHost.setCurrent(currentVirtualHost);
-                Application.setCurrent(currentApplication);
+                org.restlet.routing.VirtualHost.setCurrent(currentVirtualHost);
+                org.restlet.Application.setCurrent(currentApplication);
 
                 try {
                     // Run the user task

@@ -140,7 +140,7 @@ public class Context {
      */
     private volatile org.restlet.security.Verifier defaultVerifier;
 
-    // [ifndef gwt] method
+    // [ifndef gwt] member
     /** The executor service. */
     private volatile ScheduledExecutorService executorService;
 
