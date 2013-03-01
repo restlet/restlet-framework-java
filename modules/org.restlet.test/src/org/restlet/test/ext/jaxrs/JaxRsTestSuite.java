@@ -45,7 +45,9 @@ public class JaxRsTestSuite extends TestSuite {
 
     public static Test suite() {
         TestSuite result = new TestSuite("JAX-RS Extension");
+        // [ifndef jee]
         result.addTestSuite(QueryTestCase.class);
+        // [enddef]
         return result;
     }
 

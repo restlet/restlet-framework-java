@@ -89,6 +89,7 @@
          <exclude name="src/org/restlet/test/engine/SslBaseConnectorsTestCase.java" />
          <exclude name="src/org/restlet/test/engine/SslClientContextGetTestCase.java" />
          <exclude name="src/org/restlet/test/engine/SslGetTestCase.java" />
+         <exclude name="src/org/restlet/test/ext/jaxrs/QueryTestCase*" />
          <exclude name="src/org/restlet/test/resource/**" />
          <exclude name="src/org/restlet/test/ext/ssl/**" />
          <exclude name="src/org/restlet/test/ext/oauth/**" />
