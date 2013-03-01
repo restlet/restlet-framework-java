@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -30,29 +30,38 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+package org.restlet.example.ext.oauth.client;
 
-package org.restlet.example.ext.oauth.experimental;
-
+import java.io.IOException;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.restlet.ext.json.JsonRepresentation;
+import org.restlet.ext.oauth.ProtectedClientResource;
+import org.restlet.ext.oauth.internal.Token;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
 /**
- * Resource that returns the same static content.
- * 
- * @author Kristoffer Gronowski
+ *
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class StaticServerResource extends ServerResource {
-
-    private final Representation page;
-
-    public StaticServerResource(Representation page) {
-        this.page = page;
-    }
-
-    @Get("html")
-    public Representation represent() {
-        getLogger().info("Returning page - " + page);
-        return page;
+public class FacebookMeServerResource extends ServerResource {
+    
+    @Get
+    public Representation getMe() throws IOException, JSONException {
+        Token token = (Token) getRequest().getAttributes().get(Token.class.getName());
+        if (token == null) {
+            return new StringRepresentation("Token not found!");
+        }
+        
+        ProtectedClientResource me = new ProtectedClientResource("https://graph.facebook.com/me");
+        me.setUseBodyMethod(true);
+        me.setToken(token);
+        
+        JSONObject result = new JsonRepresentation(me.get()).getJsonObject();
+        
+        return new StringRepresentation("Hello " + result.getString("name"));
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -30,18 +30,33 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
-package org.restlet.example.ext.oauth.server;
+package org.restlet.example.ext.oauth.client;
+
+import org.restlet.ext.oauth.ProtectedClientResource;
+import org.restlet.ext.oauth.internal.Token;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.Get;
+import org.restlet.resource.ServerResource;
 
 /**
  *
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class MongoUtil {
-
-    public static String toString(Object obj) {
-        if (obj == null) {
-            return null;
+public class GoogleContactsServerResource extends ServerResource {
+    
+    @Get
+    public Representation getContacts(){
+        Token token = (Token) getRequest().getAttributes().get(Token.class.getName());
+        if (token == null) {
+            return new StringRepresentation("Token not found!");
         }
-        return obj.toString();
+        
+        ProtectedClientResource contacts =
+                new ProtectedClientResource("https://www.google.com/m8/feeds/contacts/default/full");
+        contacts.setUseBodyMethod(false);
+        contacts.setToken(token);
+        
+        return contacts.get();
     }
 }

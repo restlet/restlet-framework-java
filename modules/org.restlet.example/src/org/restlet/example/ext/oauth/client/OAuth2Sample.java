@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -30,25 +30,26 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+package org.restlet.example.ext.oauth.client;
 
-package org.restlet.example.ext.oauth.experimental;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.restlet.Component;
+import org.restlet.data.Protocol;
 
 /**
- * Not supported yet.
- * 
- * @author Kristoffer Gronowski
+ *
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
+public class OAuth2Sample {
+    
+    public static void main(String[] args) throws Exception {
+        // Setup Restlet
+        Component component = new Component();
+        component.getClients().add(Protocol.HTTP);
+        component.getClients().add(Protocol.HTTPS);
+        component.getServers().add(Protocol.HTTP, 8888);
 
-// It would only make sense to add this once oauth moves out of incubator.
-// This annotation would be useful if scanned by the restlet Application
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface ClientAuthStore {
-
+        component.getDefaultHost().attach("/sample", new SampleApplication());
+        
+        component.start();
+    }
 }
