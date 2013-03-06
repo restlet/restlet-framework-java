@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+       - Fixed issue #734 - Implementations of XmlHttpRequest in IE versions prior to IE10 turn 
+         204 status into 1223. Reported by Koen Maes.
 
 - 2.1.2 (02/28/2013)
     - Bug fixed
