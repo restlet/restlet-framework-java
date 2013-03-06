@@ -206,8 +206,16 @@ public class GwtClientCall extends ClientCall {
 
 	@Override
 	public int getStatusCode() {
-		return (getResponse() == null) ? getErrorStatusCode() : getResponse()
-				.getStatusCode();
+		int result = -1;
+		if (getResponse() == null) {
+			result = getErrorStatusCode();
+		} else if (1223 == getResponse().getStatusCode()) {
+			//  IE XMLHTTP implementations turn 204 response code into bogus 1223 status code
+			result = 204;
+		} else {
+			result = getResponse().getStatusCode();
+		}
+		return result;
 	}
 
 	@Override
