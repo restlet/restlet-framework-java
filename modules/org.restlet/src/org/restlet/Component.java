@@ -186,6 +186,10 @@ public class Component extends Restlet {
         this.services = new ServiceList(getContext());
 
         if (Engine.getInstance() != null) {
+            // [ifndef gae] instruction
+            // To be done before setting the helper...
+            this.services.add(new org.restlet.service.TaskService());
+
             this.helper = new ComponentHelper(this);
             Context childContext = getContext().createChildContext();
             this.defaultHost = new VirtualHost(childContext);
@@ -196,10 +200,6 @@ public class Component extends Restlet {
             getStatusService().setContext(childContext);
             this.clients.setContext(childContext);
             this.servers.setContext(childContext);
-
-            // [ifndef gae]
-            this.services.add(new org.restlet.service.TaskService());
-            // [enddef]
         }
     }
 
