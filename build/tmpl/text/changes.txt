@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+
 - 2.2 Milestone 3 (03/07/2013)
     - Bug fixed
        - Fixed issue #737 - ExecutorService not set when calling WriterRepresentation#write.
