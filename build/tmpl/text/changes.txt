@@ -4,8 +4,11 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bug fixed
        - Fixed issue #734 - Implementations of XmlHttpRequest in IE versions prior to IE10 turn 
          204 status into 1223. Reported by Koen Maes.
+    - Misc
+       - 
 
 - 2.1.2 (02/28/2013)
     - Bug fixed
@@ -28,11 +31,8 @@ Changes log
        - Fixed bug in Reference when no path existing but the query string has some
          '/' characters in it. getPath() returns StringOutOfBounds exceptions.
          Reported by Nicolas Rinaudo.
-    - Misc
        - Fixed bug when chaining Transformer or TransformRepresentation
          objects. Reported by Brian Sletten.
-    - Misc
-       - 
 
 - 2.1.1 (12/23/2012)
     - Bug fixed
