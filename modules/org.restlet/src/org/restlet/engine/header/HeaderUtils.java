@@ -122,7 +122,6 @@ public class HeaderUtils {
                     HeaderConstants.HEADER_VARY, HeaderConstants.HEADER_VIA,
                     HeaderConstants.HEADER_WARNING,
                     HeaderConstants.HEADER_WWW_AUTHENTICATE)));
-
     /**
      * Set of unsupported headers that will be covered in future versions.
      */
@@ -612,6 +611,33 @@ public class HeaderUtils {
         Series<Header> additionalHeaders = (Series<Header>) response
                 .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
         addExtensionHeaders(headers, additionalHeaders);
+    }
+
+    /**
+     * Copies extension headers into a response.
+     * 
+     * @param headers
+     *            The headers to copy.
+     * @param response
+     *            The response to update.
+     */
+    @SuppressWarnings("unchecked")
+    public static void copyExtensionHeaders(Series<Header> headers,
+            Response response) {
+        if (headers != null) {
+            Series<Header> extensionHeaders = (Series<Header>) response
+                    .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
+            if (extensionHeaders == null) {
+                extensionHeaders = new Series<Header>(Header.class);
+                response.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
+                        extensionHeaders);
+            }
+            for (Header header : headers) {
+                if (!STANDARD_HEADERS.contains(header.getName())) {
+                    extensionHeaders.add(header);
+                }
+            }
+        }
     }
 
     /**

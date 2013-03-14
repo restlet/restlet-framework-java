@@ -329,7 +329,7 @@ public class Util {
         HeaderUtils.copyResponseTransportHeaders(headers, restletResponse);
         HeaderUtils.extractEntityHeaders(headers, restletResponse.getEntity());
 
-        // Copy extension headers
+        // Copy extension headers, from jax-rs response attributes, and jax-rs api
         @SuppressWarnings("unchecked")
         Series<Header> extensionHeaders = (Series<Header>) jaxRsHeaders
                 .getFirst(HeaderConstants.ATTRIBUTE_HEADERS);
@@ -339,6 +339,7 @@ public class Util {
             attributes.put(HeaderConstants.ATTRIBUTE_HEADERS, extensionHeaders);
             restletResponse.setAttributes(attributes);
         }
+        HeaderUtils.copyExtensionHeaders(headers, restletResponse);
     }
 
     /**

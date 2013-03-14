@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+       - Fixed issue #739 - copy extension headers from JAX-RS api to restlet response.
+         Reported by Mark Kharitonov.
 
 - 2.2 Milestone 3 (03/07/2013)
     - Bug fixed
