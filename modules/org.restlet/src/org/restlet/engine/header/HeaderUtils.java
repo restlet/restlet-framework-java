@@ -608,6 +608,33 @@ public class HeaderUtils {
     }
 
     /**
+     * Copies extension headers into a response.
+     * 
+     * @param headers
+     *            The headers to copy.
+     * @param response
+     *            The response to update.
+     */
+    @SuppressWarnings("unchecked")
+    public static void copyExtensionHeaders(Series<Header> headers,
+            Response response) {
+        if (headers != null) {
+            Series<Header> extensionHeaders = (Series<Header>) response
+                    .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
+            if (extensionHeaders == null) {
+                extensionHeaders = new Series<Header>(Header.class);
+                response.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
+                        extensionHeaders);
+            }
+            for (Header header : headers) {
+                if (!STANDARD_HEADERS.contains(header.getName())) {
+                    extensionHeaders.add(header);
+                }
+            }
+        }
+    }
+
+    /**
      * Copies headers into a response.
      * 
      * @param headers
@@ -1020,7 +1047,7 @@ public class HeaderUtils {
     public static boolean isLinearWhiteSpace(int character) {
         return (isCarriageReturn(character) || isSpace(character)
                 || isLineFeed(character) || HeaderUtils
-                .isHorizontalTab(character));
+                    .isHorizontalTab(character));
     }
 
     /**

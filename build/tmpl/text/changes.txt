@@ -7,6 +7,8 @@ Changes log
     - Bug fixed
        - Fixed issue #734 - Implementations of XmlHttpRequest in IE versions prior to IE10 turn 
          204 status into 1223. Reported by Koen Maes.
+       - Fixed issue #739 - copy extension headers from JAX-RS api to restlet response.
+         Reported by Mark Kharitonov.
     - Misc
        - 
 
