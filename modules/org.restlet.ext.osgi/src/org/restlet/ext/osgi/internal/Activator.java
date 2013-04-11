@@ -33,6 +33,8 @@
 
 package org.restlet.ext.osgi.internal;
 
+import java.util.logging.Logger;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -49,10 +51,15 @@ import org.restlet.ext.osgi.ObapClientHelper;
  */
 public class Activator implements BundleActivator {
 
+    private static Logger logger = Logger.getLogger("org.restlet.ext.osgi");
+
     @Override
     public void start(BundleContext context) throws Exception {
         for (Bundle bundle : context.getBundles()) {
-            ObapClientHelper.register(bundle);
+            if (!ObapClientHelper.register(bundle)) {
+                logger.warning("OBAP client helper can't register this bundle: "
+                        + bundle.getBundleId() + " at location " + bundle.getLocation());
+            }
         }
 
         // Listen to installed bundles
@@ -60,7 +67,12 @@ public class Activator implements BundleActivator {
             public void bundleChanged(BundleEvent event) {
                 switch (event.getType()) {
                 case BundleEvent.INSTALLED:
-                    ObapClientHelper.register(event.getBundle());
+                    if (!ObapClientHelper.register(event.getBundle())) {
+                        logger.warning("OBAP client helper can't register this bundle: "
+                                + event.getBundle().getBundleId()
+                                + " at location "
+                                + event.getBundle().getLocation());
+                    }
                     break;
                 }
             }

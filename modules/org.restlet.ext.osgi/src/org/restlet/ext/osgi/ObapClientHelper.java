@@ -70,9 +70,16 @@ public class ObapClientHelper extends LocalClientHelper {
      * 
      * @param bundle
      *            The bundle to register.
+     * 
+     * @return True if the bundle was successfully registered.
      */
-    public static void register(Bundle bundle) {
-        BUNDLE_CACHE.put(bundle.getSymbolicName(), bundle);
+    public static boolean register(Bundle bundle) {
+        boolean result = false;
+        if (bundle != null && bundle.getSymbolicName() != null) {
+            BUNDLE_CACHE.put(bundle.getSymbolicName(), bundle);
+            result = true;
+        }
+        return result;
     }
 
     /**
@@ -195,6 +202,9 @@ public class ObapClientHelper extends LocalClientHelper {
         if (scheme.equalsIgnoreCase(Protocol.OBAP.getSchemeName())) {
             Bundle bundle = BUNDLE_CACHE.get(request.getResourceRef()
                     .getAuthority());
+            getLogger().info(
+                    "Look for bundle "
+                            + request.getResourceRef().getAuthority());
             handleBundle(request, response, bundle);
         } else {
             throw new IllegalArgumentException(
