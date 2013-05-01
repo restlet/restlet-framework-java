@@ -58,58 +58,58 @@ public class OAuthParameters implements OAuthResourceDefs {
         return form.getQueryString();
     }
     
-    protected OAuthParameters clientId(String clientId) {
-        form.add(CLIENT_ID, clientId);
-        return this;
-    }
-    
-    protected OAuthParameters clientSecret(String clientSecret) {
-        form.add(CLIENT_SECRET, clientSecret);
-        return this;
-    }
+//    protected OAuthParameters clientId(String clientId) {
+//        form.add(CLIENT_ID, clientId);
+//        return this;
+//    }
+//    
+//    protected OAuthParameters clientSecret(String clientSecret) {
+//        form.add(CLIENT_SECRET, clientSecret);
+//        return this;
+//    }
     
     public OAuthParameters responseType(ResponseType responseType) {
-        form.add(RESPONSE_TYPE, responseType.name());
+        add(RESPONSE_TYPE, responseType.name());
         return this;
     }
     
     public OAuthParameters grantType(GrantType grantType) {
-        form.add(GRANT_TYPE, grantType.name());
+        add(GRANT_TYPE, grantType.name());
         return this;
     }
     
     public OAuthParameters code(String code) {
-        form.add(CODE, code);
+        add(CODE, code);
         return this;
     }
     
     public OAuthParameters redirectURI(String redirectURI) {
-        form.add(REDIR_URI, redirectURI);
+        add(REDIR_URI, redirectURI);
         return this;
     }
     
     public OAuthParameters username(String username) {
-        form.add(USERNAME, username);
+        add(USERNAME, username);
         return this;
     }
     
     public OAuthParameters password(String password) {
-        form.add(PASSWORD, password);
+        add(PASSWORD, password);
         return this;
     }
     
     public OAuthParameters refreshToken(String refreshToken) {
-        form.add(REFRESH_TOKEN, refreshToken);
+        add(REFRESH_TOKEN, refreshToken);
         return this;
     }
     
     public OAuthParameters scope(String[] scope) {
-        form.add(SCOPE, Scopes.toString(scope));
+        add(SCOPE, Scopes.toString(scope));
         return this;
     }
     
     public OAuthParameters state(String state) {
-        form.add(STATE, state);
+        add(STATE, state);
         return this;
     }
     

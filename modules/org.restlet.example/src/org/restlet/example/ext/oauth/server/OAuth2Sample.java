@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -32,31 +32,49 @@
  */
 package org.restlet.example.ext.oauth.server;
 
-import com.mongodb.DB;
-import com.mongodb.Mongo;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
+import org.restlet.ext.oauth.internal.Client;
+import org.restlet.ext.oauth.internal.Client.ClientType;
+import org.restlet.ext.oauth.internal.ClientManager;
+import org.restlet.ext.oauth.internal.TokenManager;
+import org.restlet.ext.oauth.internal.memory.MemoryClientManager;
+import org.restlet.ext.oauth.internal.memory.MemoryTokenManager;
 
 /**
  *
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class OAuth2Sample {
-
-    private static Mongo mongo;
     
-    public static Mongo getMongo() {
-        return mongo;
+    private static SampleUserManager userManager;
+    private static ClientManager clientManager;
+    private static TokenManager tokenManager;
+    
+    protected static SampleUserManager getSampleUserManager() {
+        return userManager;
     }
     
-    public static DB getDefaultDB() {
-        return mongo.getDB("oauth2");
+    protected static ClientManager getClientManager() {
+        return clientManager;
+    }
+    
+    protected static TokenManager getTokenManager() {
+        return tokenManager;
     }
     
     public static void main(String[] args) throws Exception {
-        // Setup MongoDB
-        mongo = new Mongo("localhost", 27017);
-
+        userManager = new SampleUserManager();
+        userManager.addUser("alice").setPassword("abcdef".toCharArray());
+        userManager.addUser("bob").setPassword("123456".toCharArray());
+        
+        clientManager = new MemoryClientManager();
+        Client client = clientManager.createClient(ClientType.CONFIDENTIAL, null, null);
+        System.out.println("SampleClient: client_id=" + client.getClientId()
+                + ", client_secret=" + String.copyValueOf(client.getClientSecret()));
+        
+        tokenManager = new MemoryTokenManager();
+        
         // Setup Restlet
         Component component = new Component();
         component.getClients().add(Protocol.HTTP);

@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -30,18 +30,22 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
-
 package org.restlet.test.ext.oauth;
 
-/**
- * @author esvmart
- *
- */
-public class MultipleUserAuthorizationServerHttpsTestCase extends
-        MultipleUserAuthorizationServerTestCase {
-    
-    public MultipleUserAuthorizationServerHttpsTestCase(){
-        super(true);
-    }
+import javax.naming.AuthenticationException;
+import org.restlet.ext.oauth.internal.ResourceOwnerManager;
 
+/**
+ *
+ * @author Shotaro Uchida <fantom@xmaker.mx>
+ */
+public class StubResourceOwnerManager extends OAuthTestBase implements ResourceOwnerManager {
+
+    public String authenticate(String username, char[] password) throws AuthenticationException {
+       if (!username.equals(STUB_USERNAME) || !String.valueOf(password).equals(STUB_PASSWORD)) {
+            throw new AuthenticationException("Username or password is not correct");
+       }
+       return STUB_USERNAME;
+    }
+    
 }

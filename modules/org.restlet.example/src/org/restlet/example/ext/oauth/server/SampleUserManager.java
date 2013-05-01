@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -30,35 +30,37 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+package org.restlet.example.ext.oauth.server;
 
-package org.restlet.test.ext.oauth.app;
+import java.util.HashSet;
 
-import org.restlet.data.MediaType;
-import org.restlet.ext.oauth.OAuthUser;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
-import org.restlet.resource.ServerResource;
-
-public class DummyResource extends ServerResource {
-
-    @Get
-    public Representation getDummy() {
-        org.restlet.security.User u = getRequest().getClientInfo().getUser();
-        if (u != null && u instanceof OAuthUser)
-            getContext().getAttributes().put("testuser", u);
-            //OAuthClientTestApplication.user = (OAuthUser) u;
-        return new StringRepresentation("TestSuccessful", MediaType.TEXT_HTML);
+/**
+ *
+ * @author Shotaro Uchida <fantom@xmaker.mx>
+ */
+public class SampleUserManager {
+    
+    private HashSet<SampleUser> userSet;
+    
+    public SampleUserManager() {
+        userSet = new HashSet<SampleUser>();
     }
-
-    @Post("form")
-    public Representation postDummy(Representation input) {
-        org.restlet.security.User u = getRequest().getClientInfo().getUser();
-        if (u != null && u instanceof OAuthUser){
-            getContext().getAttributes().put("testuser", u);
-            //OAuthClientTestApplication.user = (OAuthUser) u;
+    
+    public SampleUser addUser(String id) {
+        SampleUser user = new SampleUser(id);
+        if (!userSet.contains(user)) {
+            userSet.add(user);
+            return user;
         }
-        return new StringRepresentation("Dummy");
+        return null;
+    }
+    
+    public SampleUser findUserById(String id) {
+        for (SampleUser user : userSet) {
+            if (user.getId().equals(id)) {
+                return user;
+            }
+        }
+        return null;
     }
 }

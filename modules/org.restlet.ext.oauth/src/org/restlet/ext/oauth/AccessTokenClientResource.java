@@ -106,9 +106,9 @@ public class AccessTokenClientResource extends ClientResource implements OAuthRe
     }
     
     protected void setupBodyClientCredentials(OAuthParameters parameters) {
-        parameters.clientId(clientId);
+        parameters.add(CLIENT_ID, clientId);
         if (clientSecret != null) {
-            parameters.clientSecret(clientSecret);
+            parameters.add(CLIENT_SECRET, clientSecret);
         }
     }
 

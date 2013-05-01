@@ -33,7 +33,6 @@
 
 package org.restlet.ext.oauth;
 
-import java.util.Arrays;
 import javax.naming.AuthenticationException;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -149,6 +148,7 @@ public class AccessTokenServerResource extends OAuthServerResource {
      */
     @Override
     protected void doCatch(Throwable t) {
+        t.printStackTrace();    // FIXME
         final OAuthException oex = OAuthException.toOAuthException(t);
         // The authorization server responds with an HTTP 400 (Bad Request)
         getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);

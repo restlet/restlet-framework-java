@@ -49,18 +49,18 @@ public class SampleApplication extends Application  {
         Router router = new Router(getContext());
         
         OAuthProxy facebookProxy = new OAuthProxy(getContext());
-        facebookProxy.setClientId("yourFacebookClientId");
-        facebookProxy.setClientSecret("yourFacebookClientSecret");
-        facebookProxy.setRedirectURI("http://localhost:8888/sample/facebook");
+        facebookProxy.setClientId("103465123140853");
+        facebookProxy.setClientSecret("b97c74c5ea1b6e87256805a54b53184b");
+        facebookProxy.setRedirectURI("http://ale.valleycampus.net:8888/sample/facebook");
         facebookProxy.setAuthorizationURI("https://www.facebook.com/dialog/oauth");
         facebookProxy.setTokenURI("https://graph.facebook.com/oauth/access_token");
         facebookProxy.setNext(FacebookMeServerResource.class);
         router.attach("/facebook", facebookProxy);
         
         OAuthProxy googleProxy = new OAuthProxy(getContext(), false);
-        googleProxy.setClientId("yourGoogleClientId");
-        googleProxy.setClientSecret("yourGoogleClientSecret");
-        googleProxy.setRedirectURI("http://localhost:8888/sample/google");
+        googleProxy.setClientId("69444012865.apps.googleusercontent.com");
+        googleProxy.setClientSecret("SJ9XWwAY4ognMNMXmq6db_hE");
+        googleProxy.setRedirectURI("http://ale.valleycampus.net:8888/sample/google");
         googleProxy.setAuthorizationURI("https://accounts.google.com/o/oauth2/auth");
         googleProxy.setTokenURI("https://accounts.google.com/o/oauth2/token");
         googleProxy.setScope(new String[] {"https://www.google.com/m8/feeds/"});

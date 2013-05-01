@@ -51,7 +51,7 @@ public class FacebookAccessTokenClientResource extends AccessTokenClientResource
     }
     
     @Override
-    public Token requestToken(OAuthParameters parameters) throws OAuthException, IOException, JSONException {
+    public Token requestToken(OAuthParameters parameters) throws OAuthException {
         // Graph API MUST use body method.
         setupBodyClientCredentials(parameters);
         

@@ -190,7 +190,7 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
     protected OAuthParameters createAuthorizationRequest() {
         OAuthParameters parameters = new OAuthParameters()
                 .responseType(ResponseType.code)
-                .clientId(getClientId());
+                .add(CLIENT_ID, getClientId());
         if (redirectURI != null) {
             parameters.redirectURI(redirectURI);
         }

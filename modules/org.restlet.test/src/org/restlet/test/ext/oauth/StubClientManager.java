@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -30,40 +30,28 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
-
-package org.restlet.test.ext.oauth.app;
+package org.restlet.test.ext.oauth;
 
 import java.util.Map;
-
-import org.restlet.security.SecretVerifier;
+import org.restlet.ext.oauth.internal.Client;
+import org.restlet.ext.oauth.internal.Client.ClientType;
+import org.restlet.ext.oauth.internal.ClientManager;
 
 /**
- * @author esvmart
- * 
+ *
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class MultipleVerifier extends SecretVerifier {
+public class StubClientManager extends OAuthTestBase implements ClientManager {
+        
+    public Client createClient(ClientType clientType, String[] redirectURIs, Map properties) {return null;}
 
-    private final Map<String, String> users;
+    public void deleteClient(String id) {}
 
-    public MultipleVerifier(Map<String, String> users) {
-        this.users = users;
+    public Client findById(String id) {
+        if (id.equals(STUB_CLIENT_ID)) {
+            return STUB_CLIENT;
+        } else {
+            return null;
+        }
     }
-
-    @Override
-    public int verify(String identifier, char[] secret) {
-        if (users == null)
-            return RESULT_UNKNOWN;
-
-        if (identifier == null || secret == null)
-            return RESULT_UNKNOWN;
-
-        String pass = users.get(identifier);
-
-        if (pass == null)
-            return RESULT_UNKNOWN;
-
-        return compare(pass.toCharArray(), secret) ? RESULT_VALID
-                : RESULT_INVALID;
-    }
-
 }

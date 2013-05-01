@@ -32,42 +32,74 @@
  */
 package org.restlet.example.ext.oauth.server;
 
-import org.restlet.Application;
-import org.restlet.Restlet;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Reference;
-import org.restlet.ext.oauth.TokenVerifier;
-import org.restlet.routing.Router;
-import org.restlet.security.ChallengeAuthenticator;
-
 /**
- * Simple OAuth 2.0 protected application.
- * 
+ *
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class SampleApplication extends Application {
+public class SampleUser {
+    
+    private final String id;
+    private char[] password;
+    private String status;
+
+    public SampleUser(String id) {
+        this.id = id;
+    }
     
     @Override
-    public synchronized Restlet createInboundRoot() {
-        Router router = new Router(getContext());
-        
-        router.attach("/status", StatusServerResource.class);
-        
-        /*
-         * Since Role#hashCode and Role#equals are not implemented,
-         * RoleAuthorizer cannot be used.
-         */
-//        RoleAuthorizer roleAuthorizer = new RoleAuthorizer();
-//        roleAuthorizer.setAuthorizedRoles(Scopes.toRoles("status"));
-//        roleAuthorizer.setNext(router);
-        
-        ChallengeAuthenticator bearerAuthenticator =
-                new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_OAUTH_BEARER, "OAuth2Sample");
-        bearerAuthenticator.setVerifier(
-                new TokenVerifier(
-                    new Reference("riap://component/oauth/token_auth")));
-        bearerAuthenticator.setNext(router);
-        
-        return bearerAuthenticator;
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + (this.id != null ? this.id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final SampleUser other = (SampleUser) obj;
+        if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @return the status
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    /**
+     * @return the password
+     */
+    public char[] getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(char[] password) {
+        this.password = password;
     }
 }

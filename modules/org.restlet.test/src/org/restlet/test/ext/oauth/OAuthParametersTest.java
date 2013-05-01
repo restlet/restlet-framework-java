@@ -30,44 +30,47 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
-package org.restlet.example.ext.oauth.server;
+package org.restlet.test.ext.oauth;
 
-import org.restlet.Application;
-import org.restlet.Restlet;
-import org.restlet.data.ChallengeScheme;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.restlet.data.Form;
 import org.restlet.data.Reference;
-import org.restlet.ext.oauth.TokenVerifier;
-import org.restlet.routing.Router;
-import org.restlet.security.ChallengeAuthenticator;
+import org.restlet.ext.oauth.OAuthParameters;
+import org.restlet.representation.Representation;
 
 /**
- * Simple OAuth 2.0 protected application.
- * 
+ *
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class SampleApplication extends Application {
+public class OAuthParametersTest {
     
-    @Override
-    public synchronized Restlet createInboundRoot() {
-        Router router = new Router(getContext());
-        
-        router.attach("/status", StatusServerResource.class);
-        
-        /*
-         * Since Role#hashCode and Role#equals are not implemented,
-         * RoleAuthorizer cannot be used.
-         */
-//        RoleAuthorizer roleAuthorizer = new RoleAuthorizer();
-//        roleAuthorizer.setAuthorizedRoles(Scopes.toRoles("status"));
-//        roleAuthorizer.setNext(router);
-        
-        ChallengeAuthenticator bearerAuthenticator =
-                new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_OAUTH_BEARER, "OAuth2Sample");
-        bearerAuthenticator.setVerifier(
-                new TokenVerifier(
-                    new Reference("riap://component/oauth/token_auth")));
-        bearerAuthenticator.setNext(router);
-        
-        return bearerAuthenticator;
+    private OAuthParameters parameters;
+    
+    @Before
+    public void setUp() {
+        parameters = new OAuthParameters()
+                .add("foo", "val1")
+                .add("bar", "val2")
+                .add("buz", "val3");
+    }
+    
+    @Test
+    public void testToRepresentation() {
+        Representation representation = parameters.toRepresentation();
+        Form form = new Form(representation);
+        assertEquals("val1", form.getFirstValue("foo"));
+        assertEquals("val2", form.getFirstValue("bar"));
+        assertEquals("val3", form.getFirstValue("buz"));
+    }
+    
+    @Test
+    public void testToReference() {
+        Reference reference = parameters.toReference("http://localhost/test");
+        Form form = reference.getQueryAsForm();
+        assertEquals("val1", form.getFirstValue("foo"));
+        assertEquals("val2", form.getFirstValue("bar"));
+        assertEquals("val3", form.getFirstValue("buz"));
     }
 }

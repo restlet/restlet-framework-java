@@ -66,15 +66,15 @@ import org.restlet.security.Verifier;
  */
 public class TokenVerifier implements Verifier {
     
-    public static final ChallengeScheme HTTP_BEARER =
-            new ChallengeScheme("HTTP_BEARER", "Bearer", "The OAuth 2.0 Authorization Framework: Bearer Token Usage");
-    public static final ChallengeScheme HTTP_MAC =
-            new ChallengeScheme("HTTP_MAC", "MAC", "MAC Access Authentication");
+//    public static final ChallengeScheme HTTP_BEARER =
+//            new ChallengeScheme("HTTP_BEARER", "Bearer", "The OAuth 2.0 Authorization Framework: Bearer Token Usage");
+//    public static final ChallengeScheme HTTP_MAC =
+//            new ChallengeScheme("HTTP_MAC", "MAC", "MAC Access Authentication");
     
     private Reference authReference;
     private boolean acceptBodyMethod = false;   // 2.2. Form-Encoded Body Parameter
     private boolean acceptQueryMethod = false;  // 2.3. URI Query Parameter
-    private Logger logger = Logger.getLogger(TokenVerifier.class.getName());
+    private static final Logger logger = Logger.getLogger(TokenVerifier.class.getName());
     
     public TokenVerifier(Reference authReference) {
         this.authReference = authReference;
@@ -102,7 +102,7 @@ public class TokenVerifier implements Verifier {
                 }
                 logger.config("Verify: Bearer (Alternative)");
                 authRequest = createBearerAuthRequest(bearer);
-            } else if (cr.getScheme().equals(HTTP_BEARER)) {
+            } else if (ChallengeScheme.HTTP_OAUTH_BEARER.equals(cr.getScheme())) {
                 logger.config("Verify: Bearer");
                 final String bearer = cr.getRawValue();
                 if (bearer == null || bearer.isEmpty()) {
@@ -180,7 +180,8 @@ public class TokenVerifier implements Verifier {
             return null;
         }
 
-        if (!request.getEntity().getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
+        Representation entity = request.getEntity();
+        if (entity != null && !MediaType.APPLICATION_WWW_FORM.equals(entity.getMediaType())) {
             return null;
         }
 

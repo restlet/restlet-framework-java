@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2012 Restlet S.A.S.
+ * Copyright 2005-2013 Restlet S.A.S.
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
@@ -43,8 +43,6 @@ import org.restlet.ext.oauth.HttpOAuthHelper;
 import org.restlet.ext.oauth.TokenAuthServerResource;
 import org.restlet.ext.oauth.internal.ClientManager;
 import org.restlet.ext.oauth.internal.TokenManager;
-import org.restlet.ext.oauth.internal.memory.MemoryClientManager;
-import org.restlet.ext.oauth.internal.memory.MemoryTokenManager;
 import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
@@ -60,8 +58,8 @@ public class OAuth2ServerApplication extends Application {
     public synchronized Restlet createInboundRoot(){
         Router router = new Router(getContext());
         
-        getContext().getAttributes().put(ClientManager.class.getName(), new MemoryClientManager());
-        getContext().getAttributes().put(TokenManager.class.getName(), new MemoryTokenManager());
+        getContext().getAttributes().put(ClientManager.class.getName(), OAuth2Sample.getClientManager());
+        getContext().getAttributes().put(TokenManager.class.getName(), OAuth2Sample.getTokenManager());
         
         // Setup Authorize Endpoint
         router.attach("/authorize", AuthorizationServerResource.class);
