@@ -56,7 +56,15 @@ public abstract class ResourceProvider extends RestletProvider implements
     protected void activate(ComponentContext context) {
         @SuppressWarnings("unchecked")
         Dictionary<String, Object> properties = context.getProperties();
-        paths = (String[]) properties.get("paths");
+        Object pathsProperty = properties.get("paths");
+        
+        if(pathsProperty instanceof String) {
+        	paths = new String[1];
+        	paths[0] = (String) pathsProperty;
+        }
+        else
+        	paths = (String[]) properties.get("paths");
+        
         matchingMode = (Integer) properties.get("matchingMode");
         
         if (matchingMode == null)
