@@ -79,7 +79,7 @@ public class MemoryClient implements Client {
     }
 
     public boolean isResponseTypeAllowed(ResponseType responseType) {
-        return isResponseTypeAllowed(responseType);
+        return isFlowSupported(responseType);
     }
 
     public boolean isGrantTypeAllowed(GrantType grantType) {
