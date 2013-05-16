@@ -480,6 +480,9 @@
 					<generateModuleManifest name="@{name}" dir="${temp}/jar-extras/@{name}" />
 				</then>
 			</if>
+			<copy todir="${temp}/jar-extras/@{name}" failonerror="false">
+				<fileset dir="${mod}/${mod-@{name}-id}/" includes="OSGI-INF/**" />
+			</copy>
 
 			<!-- Create plugin jar -->
 			<mkdir dir="${dist-classic}/lib" />
