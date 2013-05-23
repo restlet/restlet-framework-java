@@ -86,7 +86,12 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
      */
     protected AuthSession getAuthSession() {
         // Get some basic information
-        String sessionId = getCookies().getFirstValue(ClientCookieID);
+        String sessionId = (String) getRequest().getAttributes().get(
+                ClientCookieID);
+        
+        if (sessionId == null)
+            sessionId = getCookies().getFirstValue(ClientCookieID);
+        
         getLogger().fine("sessionId = " + sessionId);
 
         AuthSession session = (sessionId == null) ? null
