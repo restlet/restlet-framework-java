@@ -39,6 +39,7 @@ import org.osgi.service.component.ComponentContext;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.resource.Finder;
+import org.restlet.routing.Template;
 
 /**
  * @author Bryan Hunt
@@ -49,11 +50,25 @@ public abstract class ResourceProvider extends RestletProvider implements
     private Finder finder;
 
     private String[] paths;
-
+    
+    private Integer matchingMode;
+    
     protected void activate(ComponentContext context) {
         @SuppressWarnings("unchecked")
         Dictionary<String, Object> properties = context.getProperties();
-        paths = (String[]) properties.get("paths");
+        Object pathsProperty = properties.get("paths");
+        
+        if(pathsProperty instanceof String) {
+        	paths = new String[1];
+        	paths[0] = (String) pathsProperty;
+        }
+        else
+        	paths = (String[]) properties.get("paths");
+        
+        matchingMode = (Integer) properties.get("matchingMode");
+        
+        if (matchingMode == null)
+        	matchingMode = Template.MODE_EQUALS;
     }
 
     protected abstract Finder createFinder(Context context);
@@ -75,5 +90,10 @@ public abstract class ResourceProvider extends RestletProvider implements
     @Override
     public String[] getPaths() {
         return paths.clone();
+    }
+    
+    @Override
+    public int getMatchingMode() {
+    	return matchingMode;
     }
 }
