@@ -38,6 +38,7 @@ import java.util.HashSet;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
+import org.restlet.routing.TemplateRoute;
 
 /**
  * @author Bryan Hunt
@@ -58,9 +59,10 @@ public class RouterProvider extends RestletProvider implements IRouterProvider {
     }
 
     private void attachResource(IResourceProvider resourceProvider) {
-        for (String path : resourceProvider.getPaths())
-            router.attach(path,
-                    resourceProvider.getInboundRoot(router.getContext()));
+        for (String path : resourceProvider.getPaths()) {
+        	TemplateRoute templateRoute = router.attach(path, resourceProvider.getInboundRoot(router.getContext()));
+        	templateRoute.setMatchingMode(resourceProvider.getMatchingMode());
+        }
     }
 
     public void bindDefaultResourceProvider(IResourceProvider resourceProvider) {
