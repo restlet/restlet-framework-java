@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - Gson
+Bundle-SymbolicName: org.restlet.ext.gson
+Bundle-Version: 2.2
+Bundle-Vendor: Restlet S.A.S.
+Export-Package: org.restlet.ext.gson
+Import-Package: 
+ org.restlet,
+ org.restlet.data,
+ org.restlet.engine,
+ org.restlet.engine.converter,
+ org.restlet.engine.resource,
+ org.restlet.representation,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
