@@ -60,8 +60,8 @@ import org.restlet.util.Series;
  * }
  * </pre>
  * 
- * Here is the list of parameters that are supported. They should be set
- * before an OAuth2Server or Client is started:
+ * Here is the list of parameters that are supported. They should be set before
+ * an OAuth2Server or Client is started:
  * <table>
  * <tr>
  * <th>Parameter name</th>
@@ -196,21 +196,26 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRequest(ChallengeWriter cw,
-            ChallengeRequest challenge, Response response,
-            Series<Header> httpHeaders) throws IOException {
+    public void formatRequest(ChallengeWriter cw, ChallengeRequest challenge,
+            Response response, Series<Header> httpHeaders) throws IOException {
         // Format the parameters WWW-Authenticate: OAuth realm='Example
         // Service', error='expired-token'
-        cw.append("realm='");
-        cw.append(challenge.getRealm());
-        cw.append("'");
-
-        for (Parameter p : challenge.getParameters()) {
-            cw.append(", ");
-            cw.append(p.getName());
-            cw.append("='");
-            cw.append(p.getValue());
+        if (challenge.getRealm() != null) {
+            cw.append("realm='");
+            cw.append(challenge.getRealm());
             cw.append("'");
+
+            for (Parameter p : challenge.getParameters()) {
+                cw.append(", ");
+                cw.append(p.getName());
+                cw.append("='");
+                cw.append(p.getValue());
+                cw.append("'");
+            }
+        } else {
+            getLogger()
+                    .warning(
+                            "The realm directive is required for all authentication schemes that issue a challenge.");
         }
     }
 

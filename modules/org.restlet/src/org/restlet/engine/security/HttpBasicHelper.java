@@ -66,18 +66,20 @@ public class HttpBasicHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRequest(ChallengeWriter cw,
-            ChallengeRequest challenge, Response response,
-            Series<Header> httpHeaders) throws IOException {
+    public void formatRequest(ChallengeWriter cw, ChallengeRequest challenge,
+            Response response, Series<Header> httpHeaders) throws IOException {
         if (challenge.getRealm() != null) {
             cw.appendQuotedChallengeParameter("realm", challenge.getRealm());
+        } else {
+            getLogger()
+                    .warning(
+                            "The realm directive is required for all authentication schemes that issue a challenge.");
         }
     }
 
     @Override
-    public void formatResponse(ChallengeWriter cw,
-            ChallengeResponse challenge, Request request,
-            Series<Header> httpHeaders) {
+    public void formatResponse(ChallengeWriter cw, ChallengeResponse challenge,
+            Request request, Series<Header> httpHeaders) {
         try {
             if (challenge == null) {
                 throw new RuntimeException(
