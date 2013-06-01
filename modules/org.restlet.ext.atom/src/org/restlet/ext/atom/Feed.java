@@ -457,7 +457,7 @@ public class Feed extends SaxRepresentation {
      *            The information about rights held in and over an feed.
      */
     public void setRights(String rights) {
-        setRights(rights);
+        setRights(new Text(rights));
     }
 
     /**
