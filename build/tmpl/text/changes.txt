@@ -9,7 +9,8 @@ Changes log
          204 status into 1223. Reported by Koen Maes.
        - Fixed issue #739 - copy extension headers from JAX-RS api to restlet response.
          Reported by Mark Kharitonov.
-       - Fixed issue #727 generation of JSON extension for GWT edition.
+      - Fixed issue #727 generation of JSON extension for GWT edition.
+      - Fixed issue #757 - Infinite Loop in Feed.
     - Misc
        - Added log warning when an authentication scheme does not define a "realm" parameter.
          Reported by Loïc Oudot (#759).
