@@ -33,45 +33,47 @@
 
 package org.restlet.ext.oauth.internal;
 
-import org.restlet.ext.oauth.AuthenticatedUser;
-
 /**
  * Abstract Token that must be extended by all token implementations
  * 
  * @author Kristoffer Gronowski
- * 
- * @see UnlimitedToken
- * @see ExpireToken
+ * @author Shotaro Uchida
  */
 public interface Token {
 
     /**
-     * Value indicating that the Token should not expire
-     */
-    public static final long UNLIMITED = 0;
-
-    /**
+     * The access token issued by the authorization server. (5.1. 'access_token')
      * 
      * @return the actual token to be used for OAuth invocations.
      */
-    public String getToken();
+    public String getAccessToken();
 
     /**
+     * The type of the token.
      * 
-     * @return the user that is the owner of this token
+     * @return 
      */
-    public AuthenticatedUser getUser();
+    public String getTokenType();
     
-    public long getExpirePeriod();
+    /**
+     * The lifetime in seconds of the access token.
+     * 
+     * @return
+     */
+    public int getExpirePeriod();
     
+    /**
+     * The refresh token. (5.1. 'refresh_token')
+     * 
+     * @return null if refresh token was not issued.
+     */
     public String getRefreshToken();
 
     /**
-     * Generic package method since the Token can be revoked and re-issued or
-     * just persisted and re-instantiated.
+     * The actual granted scope. Must not be null.
      * 
-     * 
-     * @param token
+     * @return 
      */
-    //void setToken(String token);
+    public String[] getScope();
+
 }

@@ -30,67 +30,93 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
-
 package org.restlet.ext.oauth;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.data.Form;
 
 /**
- * Exception that represents OAuth 2.0 (draft30) Errors.
+ * Exception that represents OAuth 2.0 (RFC6749) Errors.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
- * @see <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-30">The OAuth
- *      2.0 Authorization Framework draft-ietf-oauth-v2-30</a>
+ * @see <a
+ *      href="http://tools.ietf.org/html/rfc6749">The OAuth 2.0 Authorization Framework
+ *      (RFC6749)</a>
  */
 public class OAuthException extends Exception {
-
+    
     private static final long serialVersionUID = 1L;
-
     private OAuthError error;
-
     private String description;
-
     private String errorUri;
-
+    
     public OAuthException(OAuthError error, String description, String errorUri) {
+        super(error.name());
         this.error = error;
         this.description = description;
         this.errorUri = errorUri;
     }
-
+    
+    private OAuthException(OAuthError error) {
+        super(error.name());
+        this.error = error;
+    }
+    
     public static OAuthException toOAuthException(Throwable t) {
         if (t instanceof OAuthException) {
             return (OAuthException) t;
         } else if (t.getCause() instanceof OAuthException) {
             return (OAuthException) t.getCause();
         } else {
-            return new OAuthException(OAuthError.server_error, t.getMessage(),
-                    null);
+            Logger.getLogger(OAuthException.class.getName()).log(Level.SEVERE, "Internal Server Error", t);
+            return new OAuthException(OAuthError.server_error, t.getMessage(), null);
         }
     }
-
+    
+    public static OAuthException toOAuthException(JSONObject result) throws JSONException {
+        OAuthError error = Enum.valueOf(OAuthError.class, result.getString(OAuthResourceDefs.ERROR));
+        OAuthException ex = new OAuthException(error);
+        if (result.has(OAuthResourceDefs.ERROR_DESC)) {
+            ex.description = result.getString(OAuthResourceDefs.ERROR_DESC);
+        }
+        if (result.has(OAuthResourceDefs.ERROR_URI)) {
+            ex.errorUri = result.getString(OAuthResourceDefs.ERROR_URI);
+        }
+        return ex;
+    }
+    
+    public static OAuthException toOAuthException(Form params) {
+        OAuthError error = Enum.valueOf(OAuthError.class, params.getFirstValue(OAuthResourceDefs.ERROR));
+        OAuthException ex = new OAuthException(error);
+        ex.description = params.getFirstValue(OAuthResourceDefs.ERROR_DESC);
+        ex.errorUri = params.getFirstValue(OAuthResourceDefs.ERROR_URI);
+        return ex;
+    }
+    
     public OAuthError getError() {
         return error;
     }
-
+    
     public String getErrorDescription() {
         return description;
     }
-
+    
     public String getErrorURI() {
         return errorUri;
     }
-
+    
     public JSONObject createErrorDocument() throws JSONException {
         JSONObject result = new JSONObject();
 
-        result.put(OAuthServerResource.ERROR, error.name());
+        result.put(OAuthResourceDefs.ERROR, error.name());
         if ((description != null) && (description.length() > 0)) {
-            result.put(OAuthServerResource.ERROR_DESC, description);
+            result.put(OAuthResourceDefs.ERROR_DESC, description);
         }
         if ((errorUri != null) && (errorUri.length() > 0)) {
-            result.put(OAuthServerResource.ERROR_URI, errorUri);
+            result.put(OAuthResourceDefs.ERROR_URI, errorUri);
         }
 
         return result;

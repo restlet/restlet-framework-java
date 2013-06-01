@@ -30,196 +30,112 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
-
 package org.restlet.ext.oauth;
 
-import java.util.List;
-
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.restlet.data.Form;
 import org.restlet.data.Reference;
-import org.restlet.security.Role;
+import org.restlet.ext.oauth.internal.Scopes;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ResourceException;
 
 /**
- * Container for OAuth2 Parameters. It contains the following information
- * <ul>
- * <li>baseRef - defaults to "http://localhost:8080/oauth/"</a>
- * <li>authorizePath - defaults to "authorize"
- * <li>
- * <li>accessTokenPath - defaults to "access_token"</li>
- * <li>scope - string with space delimited scopes</li>
- * <li>clientId</li>
- * <li>clientSecret</li>
- * </ul>
- * 
- * @author Kristoffer Gronowski
+ *
+ * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class OAuthParameters {
-
-    private volatile String accessTokenPath = "access_token";
-
-    private volatile String authorizePath = "authorize";
-
-    private final Reference baseRef;
-
-    /** The client identifier. */
-    private final String clientId;
-
-    /** The client password. */
-    // TODO should be an array of chars. char[]
-    private final String clientSecret;
-
-    private volatile String owner = null;
-
-    private volatile List<Role> roles;
-
-    /**
-     * Constructor.
-     * 
-     * @param clientId
-     *            The client identifier.
-     * @param clientSecret
-     *            The client password.
-     */
-    public OAuthParameters(String clientId, String clientSecret) {
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.baseRef = new Reference("http://localhost:8080/oauth/");
+public class OAuthParameters implements OAuthResourceDefs {
+    
+    private Form form;
+    
+    public OAuthParameters() {
+        form = new Form();
     }
 
-    /**
-     * Constructor.
-     * 
-     * @param clientId
-     *            The client identifier.
-     * @param clientSecret
-     *            The client password.
-     * @param baseRef
-     *            The base reference.
-     */
-    public OAuthParameters(String clientId, String clientSecret, String baseRef) {
-        // this(clientId, clientSecret);
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.baseRef = new Reference(baseRef);
+    @Override
+    public String toString() {
+        return form.getQueryString();
     }
-
-    /**
-     * Constructor.
-     * 
-     * @param clientId
-     *            The client identifier.
-     * @param clientSecret
-     *            The client password.
-     * @param baseRef
-     *            The base reference.
-     * @param roles
-     *            The list of user roles.
-     */
-    public OAuthParameters(String clientId, String clientSecret,
-            String baseRef, List<Role> roles) {
-        this(clientId, clientSecret, baseRef);
-        this.roles = roles;
+    
+//    protected OAuthParameters clientId(String clientId) {
+//        form.add(CLIENT_ID, clientId);
+//        return this;
+//    }
+//    
+//    protected OAuthParameters clientSecret(String clientSecret) {
+//        form.add(CLIENT_SECRET, clientSecret);
+//        return this;
+//    }
+    
+    public OAuthParameters responseType(ResponseType responseType) {
+        add(RESPONSE_TYPE, responseType.name());
+        return this;
     }
-
-    /**
-     * Returns the access token path.
-     * 
-     * @return The access token path.
-     */
-    public String getAccessTokenPath() {
-        return accessTokenPath;
+    
+    public OAuthParameters grantType(GrantType grantType) {
+        add(GRANT_TYPE, grantType.name());
+        return this;
     }
-
-    /**
-     * Returns the authorize path.
-     * 
-     * @return The authorize path.
-     */
-    public String getAuthorizePath() {
-        return authorizePath;
+    
+    public OAuthParameters code(String code) {
+        add(CODE, code);
+        return this;
     }
-
-    /**
-     * Returns the base reference.
-     * 
-     * @return The base reference.
-     */
-    public Reference getBaseRef() {
-        return baseRef;
+    
+    public OAuthParameters redirectURI(String redirectURI) {
+        add(REDIR_URI, redirectURI);
+        return this;
     }
-
-    /**
-     * Returns the client identifier.
-     * 
-     * @return The client identifier.
-     */
-    public String getClientId() {
-        return clientId;
+    
+    public OAuthParameters username(String username) {
+        add(USERNAME, username);
+        return this;
     }
-
-    /**
-     * Returns the client secret.
-     * 
-     * @return The client secret.
-     */
-    public String getClientSecret() {
-        return clientSecret;
+    
+    public OAuthParameters password(String password) {
+        add(PASSWORD, password);
+        return this;
     }
-
-    /**
-     * Returns the owner.
-     * 
-     * @return The owner.
-     */
-    public String getOwner() {
-        return owner;
+    
+    public OAuthParameters refreshToken(String refreshToken) {
+        add(REFRESH_TOKEN, refreshToken);
+        return this;
     }
-
-    /**
-     * Returns the list of roles.
-     * 
-     * @return The list of roles.
-     */
-    public List<Role> getRoles() {
-        return roles;
+    
+    public OAuthParameters scope(String[] scope) {
+        add(SCOPE, Scopes.toString(scope));
+        return this;
     }
-
-    /**
-     * Sets the access token path.
-     * 
-     * @param accessTokenPath
-     *            The access token path.
-     */
-    public void setAccessTokenPath(String accessTokenPath) {
-        this.accessTokenPath = accessTokenPath;
+    
+    public OAuthParameters state(String state) {
+        add(STATE, state);
+        return this;
     }
-
-    /**
-     * Sets the authorize path.
-     * 
-     * @param authorizePath
-     *            The authorize path.
-     */
-    public void setAuthorizePath(String authorizePath) {
-        this.authorizePath = authorizePath;
+    
+    public OAuthParameters add(String name, String value) {
+        form.add(name, value);
+        return this;
     }
-
-    /**
-     * Sets the owner.
-     * 
-     * @param owner
-     *            The owner.
-     */
-    public void setOwner(String owner) {
-        this.owner = owner;
+    
+    public Representation toRepresentation() {
+        return form.getWebRepresentation();
     }
-
-    /**
-     * Sets the list of roles.
-     * 
-     * @param roles
-     *            The list of roles.
-     */
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
+    
+    public Reference toReference(String uri) {
+        String query;
+        try {
+            query = form.encode();
+        } catch (IOException ex) {
+            Logger.getLogger(OAuthParameters.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ResourceException(ex);
+        }
+        Reference reference = new Reference(uri);
+        reference.setQuery(query);
+        return reference;
+    }
+    
+    protected Form toForm() {
+        return form;
     }
 }

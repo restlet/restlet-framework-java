@@ -32,5 +32,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xstream"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.simple"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.gson"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.hamcrest"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

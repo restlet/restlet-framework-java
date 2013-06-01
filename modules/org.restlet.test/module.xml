@@ -11,6 +11,7 @@
 
 	<dependencies>
 		<dependency type="library" id="junit" />
+		<dependency type="library" id="hamcrest" />
 		<dependency type="module" id="atom" />
 		<dependency type="module" id="crypto" />
 		<dependency type="module" id="core" />

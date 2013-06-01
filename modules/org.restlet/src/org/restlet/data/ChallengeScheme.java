@@ -110,12 +110,12 @@ public final class ChallengeScheme {
 
     /** OAuth Bearer HTTP scheme. */
     public static final ChallengeScheme HTTP_OAUTH_BEARER = new ChallengeScheme(
-            "HTTP_OAuth_Bearer", "Bearer",
+            "HTTP_Bearer", "Bearer",
             "OAuth 2.0 bearer token authentication");
 
     /** OAuth MAC HTTP scheme. */
     public static final ChallengeScheme HTTP_OAUTH_MAC = new ChallengeScheme(
-            "HTTP_OAuth_MAC", "Mac",
+            "HTTP_MAC", "Mac",
             "OAuth 2.0 message authentication code authentication");
 
     /** Basic POP scheme. Based on the USER/PASS commands. */

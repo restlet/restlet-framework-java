@@ -34,10 +34,10 @@
 package org.restlet.ext.oauth.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.restlet.Application;
 import org.restlet.security.Role;
 
 /**
@@ -47,8 +47,7 @@ import org.restlet.security.Role;
  */
 public class Scopes {
 
-    public static String toScope(List<Role> roles)
-            throws IllegalArgumentException {
+    public static String toScope(List<Role> roles) throws IllegalArgumentException {
         if (roles == null || roles.isEmpty()) {
             return "";
         }
@@ -61,7 +60,7 @@ public class Scopes {
         }
         return sb.substring(1);
     }
-
+    
     public static String toString(String[] scopes) {
         StringBuilder sb = new StringBuilder();
         for (String scope : scopes) {
@@ -83,15 +82,6 @@ public class Scopes {
         return rname;
     }
 
-    /**
-     * Creates a {@link Role} from a scope name.
-     * 
-     * @param scope
-     * @return
-     * @deprecated Use {@link Role#get(Application, String, String)}
-     *             instead.
-     */
-    @Deprecated
     public static Role toRole(String scope) {
         return new Role(scope, null);
     }
@@ -99,11 +89,9 @@ public class Scopes {
     public static List<Role> toRoles(String scopes) {
         String[] tmp = parseScope(scopes);
         List<Role> toRet = new ArrayList<Role>(tmp.length);
-
         for (String scope : tmp) {
-            toRet.add(toRole(scope));
+            toRet.add(new Role(scope, null));
         }
-
         return toRet;
     }
 
@@ -117,12 +105,18 @@ public class Scopes {
         }
         return new String[0];
     }
-
+    
     public static String[] parseScope(List<Role> roles) {
         String[] scopes = new String[roles.size()];
         for (int i = 0; i < roles.size(); i++) {
             scopes[i] = roles.get(i).getName();
         }
         return scopes;
+    }
+    
+    public static boolean isIdentical(String[] a, String[] b) {
+        List al = Arrays.asList(a);
+        List bl = Arrays.asList(b);
+        return al.containsAll(bl) && bl.containsAll(al);
     }
 }

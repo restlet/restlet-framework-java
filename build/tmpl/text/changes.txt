@@ -7,6 +7,8 @@ Changes log
     - Enhancements
        - Added GSon extension (#586).
          Contributed by Neal Mi.
+       - OAuth extension has been upgraded to support final OAuth 2.0 specification.
+         Contributed by Shotaro Uchida.
     - Bug fixed
        - Fixed issue #739 - copy extension headers from JAX-RS api to restlet response.
          Reported by Mark Kharitonov.

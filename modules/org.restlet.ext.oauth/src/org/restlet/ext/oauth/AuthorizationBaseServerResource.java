@@ -30,86 +30,134 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
-
 package org.restlet.ext.oauth;
 
 import freemarker.template.Configuration;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentMap;
+import org.restlet.data.CookieSetting;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.ext.freemarker.ContextTemplateLoader;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.ext.oauth.internal.AuthSession;
+import org.restlet.ext.oauth.internal.AuthSessionTimeoutException;
+import org.restlet.ext.oauth.internal.RedirectionURI;
 import org.restlet.representation.Representation;
 
 /**
- * Base Restlet resource class for Authorization service resource. Handle errors
- * according to OAuth2.0 specification, and manage AuthSession. Authorization
- * Endndpoint, Authorization pages, and Login pages should extends this class.
+ * Base Restlet resource class for Authorization service resource.
+ * Handle errors according to OAuth2.0 specification, and manage AuthSession.
+ * Authorization Endndpoint, Authorization pages, and Login pages should extends this class.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class AuthorizationBaseServerResource extends OAuthServerResource {
-
+    
+    private static final String ClientCookieID = "_cid";
+    
     @Override
     protected void doCatch(Throwable t) {
         final OAuthException oex = OAuthException.toOAuthException(t);
-        AuthSession session = getAuthSession();
-        if (session == null) {
+        AuthSession session = null;
+        try {
+            session = getAuthSession();
+        } catch (OAuthException ignore) {
+            // FIXME
+        }
+        if (session == null || session.getAuthFlow() == null) {
+            // Session was revoked or not established.
             Representation resp = getErrorPage(
-                    HttpOAuthHelper.getErrorPageTemplate(getContext()), oex);
+                    HttpOAuthHelper.getErrorPageTemplate(getContext()),
+                    oex);
             getResponse().setEntity(resp);
         } else {
-            /*
+            /* 
              * If the resource owner denies the access request or if the request
-             * fails for reasons other than a missing or invalid redirection
-             * URI, the authorization server informs the client by adding the
-             * following parameters to the query component of the redirection
-             * URI using the "application/x-www-form-urlencoded" format, per
-             * Appendix B: (4.2.2.1. Error Response)
+             * fails for reasons other than a missing or invalid redirection URI,
+             * the authorization server informs the client by adding the following
+             * parameters to the query component of the redirection URI using the
+             * "application/x-www-form-urlencoded" format, per Appendix B:
+             * (4.2.2.1. Error Response)
              */
-            String redirectURI = session.getDynamicCallbackURI();
-            if (redirectURI == null) {
-                redirectURI = session.getClient().getRedirectUri();
-            }
-            // Use fragment component for Implicit Grant (4.2.2.1. Error
-            // Response)
+            // Use fragment component for Implicit Grant (4.2.2.1. Error Response)
             boolean fragment = session.getAuthFlow().equals(ResponseType.token);
-            sendError(redirectURI, oex, session.getState(), fragment);
+            sendError(session.getRedirectionURI().getURI(), oex, session.getState(), fragment);
         }
     }
-
+    
     /**
-     * Get current authentication session.
-     * 
+     * Sets up a new authorization session.
+     *
+     * @param redirectUri The redirection URI.
+     */
+    protected AuthSession setupAuthSession(RedirectionURI redirectUri) {
+        getLogger().fine("Base ref = " + getReference().getParentRef());
+        
+        AuthSession session = AuthSession.newAuthSession();
+        session.setRedirectionURI(redirectUri);
+
+        CookieSetting cs = new CookieSetting(ClientCookieID, session.getId());
+        // TODO create a secure mode setting, update all cookies
+        // cs.setAccessRestricted(true);
+        // cs.setSecure(true);
+        getCookieSettings().add(cs);
+        getLogger().fine("Setting cookie in SetupSession - " + session.getId());
+
+        getContext().getAttributes().put(session.getId(), session);
+        
+        return session;
+    }
+    
+    /**
+     * Get current authorization session.
      * @return Current AuthSession
      */
-    protected AuthSession getAuthSession() {
+    protected AuthSession getAuthSession() throws OAuthException {
         // Get some basic information
         String sessionId = getCookies().getFirstValue(ClientCookieID);
         getLogger().fine("sessionId = " + sessionId);
-
+        
         AuthSession session = (sessionId == null) ? null
                 : (AuthSession) getContext().getAttributes().get(sessionId);
+        
+        if (session == null) {
+            return null;
+        }
+        
+        try {
+            session.updateActivity();
+        } catch (AuthSessionTimeoutException ex) {
+            // Remove timeout session
+            getContext().getAttributes().remove(sessionId);
+            throw new OAuthException(OAuthError.server_error, "Session timeout", null);
+        }
+        
         return session;
     }
-
+    
     /**
-     * 
-     * Helper method to format error responses according to OAuth2 spec.
-     * (Redirect)
-     * 
-     * @param redirectURI
-     *            redirection URI to send error
-     * @param ex
-     *            Any OAuthException with error
-     * @param state
-     *            state parameter as presented in the initial auth request
-     * @param fragment
-     *            true if use URL Fragment.
+     * Unget current authorization session.
      */
-    protected void sendError(String redirectURI, OAuthException ex,
-            String state, boolean fragment) {
+    protected void ungetAuthSession() {
+        String sessionId = getCookies().getFirstValue(ClientCookieID);
+        // cleanup cookie..
+        if (sessionId != null && sessionId.length() > 0) {
+            ConcurrentMap<String, Object> attribs = getContext()
+                    .getAttributes();
+            attribs.remove(sessionId);
+        }
+    }
+    
+    /**
+     * Helper method to format error responses according to OAuth2 spec. (Redirect)
+     *
+     * @param redirectURI redirection URI to send error
+     * @param ex Any OAuthException with error
+     * @param state state parameter as presented in the initial authorize request
+     * @param fragment true if use URL Fragment.
+     */
+    protected void sendError(String redirectURI, OAuthException ex, String state, boolean fragment) {
         Reference cb = new Reference(redirectURI);
         cb.addQueryParameter(ERROR, ex.getError().name());
         if (state != null && state.length() > 0) {
@@ -129,24 +177,18 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
         }
         redirectTemporary(cb);
     }
-
+    
     /**
-     * 
-     * Helper method to format error responses according to OAuth2 spec. (Non
-     * Redirect)
-     * 
-     * @param errPage
-     *            errorPage template name
-     * @param ex
-     *            Any OAuthException with error
+     * Helper method to format error responses according to OAuth2 spec. (Non Redirect)
+     *
+     * @param errPage errorPage template name
+     * @param ex Any OAuthException with error
      */
     protected Representation getErrorPage(String errPage, OAuthException ex) {
         Configuration config = new Configuration();
-        config.setTemplateLoader(new ContextTemplateLoader(getContext(),
-                "clap:///"));
+        config.setTemplateLoader(new ContextTemplateLoader(getContext(), "clap:///"));
         getLogger().fine("loading: " + errPage);
-        TemplateRepresentation response = new TemplateRepresentation(errPage,
-                config, MediaType.TEXT_HTML);
+        TemplateRepresentation response = new TemplateRepresentation(errPage, config, MediaType.TEXT_HTML);
 
         // Build the model
         HashMap<String, Object> data = new HashMap<String, Object>();
@@ -154,7 +196,6 @@ public class AuthorizationBaseServerResource extends OAuthServerResource {
         data.put(ERROR, ex.getError().name());
         data.put(ERROR_DESC, ex.getErrorDescription());
         data.put(ERROR_URI, ex.getErrorURI());
-        // data.put(STATE, state);
 
         response.setDataModel(data);
 

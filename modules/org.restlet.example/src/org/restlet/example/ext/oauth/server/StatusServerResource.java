@@ -32,8 +32,6 @@
  */
 package org.restlet.example.ext.oauth.server;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,18 +55,17 @@ public class StatusServerResource extends ServerResource {
         User user = getRequest().getClientInfo().getUser();
         getLogger().info("getUserStatus: " + user.getIdentifier());
         
-        DBObject userObj = OAuth2Sample
-                .getDefaultDB()
-                .getCollection("users")
-                .findOne(new BasicDBObject("_id", user.getIdentifier()));
+        SampleUser sampleUser = OAuth2Sample
+                .getSampleUserManager()
+                .findUserById(user.getIdentifier());
         
-        if (userObj == null) {
+        if (sampleUser == null) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return null;
         }
         
         JSONObject result = new JSONObject();
-        Object status = userObj.get("status");
+        Object status = sampleUser.getStatus();
         if (status != null) {
             result.put("status", status);
         } else {
@@ -91,12 +88,12 @@ public class StatusServerResource extends ServerResource {
         User user = getRequest().getClientInfo().getUser();
         getLogger().info("updateUserStatus: " + user.getIdentifier());
         
-        OAuth2Sample.getDefaultDB()
-                .getCollection("users")
-                .update(
-                    new BasicDBObject("_id", user.getIdentifier()),
-                    new BasicDBObject("$set",
-                        new BasicDBObject("status", status.toString())));
+        SampleUser sampleUser = OAuth2Sample
+                .getSampleUserManager()
+                .findUserById(user.getIdentifier());
+        if (sampleUser != null) {
+            sampleUser.setStatus(status.toString());
+        }
         
         JSONObject result = new JSONObject();
         result.put("status", status);

@@ -30,9 +30,11 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
-
 package org.restlet.ext.oauth;
 
+import org.restlet.Context;
+import org.restlet.ext.oauth.internal.Client;
+import org.restlet.ext.oauth.internal.ClientManager;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
@@ -43,16 +45,20 @@ import org.restlet.security.User;
 import org.restlet.security.Verifier;
 
 /**
- * Verifier for OAuth 2.0 Token Endpoints. Verify incoming requests with client
- * credentials. Typically, use with ChallengeAuthenticator.
+ * Verifier for OAuth 2.0 Token Endpoints.
+ * Verify incoming requests with client credentials. Typically,
+ * use with ChallengeAuthenticator.
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class ClientVerifier implements Verifier {
-
-    private ClientStore<?> clients = ClientStoreFactory.getInstance();
-
+    
+    private Context context;
     private boolean acceptBodyMethod = false;
+    
+    public ClientVerifier(Context context) {
+        this.context = context;
+    }
 
     public int verify(Request request, Response response) {
         final String clientId;
@@ -84,25 +90,26 @@ public class ClientVerifier implements Verifier {
             clientId = cr.getIdentifier();
             clientSecret = cr.getSecret();
         }
-
+        
         int result = verify(clientId, clientSecret);
         if (result == RESULT_VALID) {
             request.getClientInfo().setUser(new User(clientId));
         } else {
-            response.setEntity(OAuthServerResource
-                    .responseErrorRepresentation(new OAuthException(
-                            OAuthError.invalid_client, "Invalid client", null)));
+            response.setEntity(
+                    OAuthServerResource.responseErrorRepresentation(
+                        new OAuthException(OAuthError.invalid_client,
+                        "Invalid client", null)));
         }
         return result;
     }
-
+    
     private int verify(String clientId, char[] clientSecret) {
+        ClientManager clients = (ClientManager) context.getAttributes().get(ClientManager.class.getName());
         Client client = clients.findById(clientId);
         if (client == null) {
             return RESULT_UNKNOWN;
         }
-        // TODO: client secret MUST be char[]
-        char[] s = client.getClientSecret().toCharArray();
+        char[] s = client.getClientSecret();
         if (!SecretVerifier.compare(s, clientSecret)) {
             return RESULT_INVALID;
         }
@@ -117,8 +124,7 @@ public class ClientVerifier implements Verifier {
     }
 
     /**
-     * @param acceptBodyMethod
-     *            the acceptBodyMethod to set
+     * @param acceptBodyMethod the acceptBodyMethod to set
      */
     public void setAcceptBodyMethod(boolean acceptBodyMethod) {
         this.acceptBodyMethod = acceptBodyMethod;

@@ -34,6 +34,7 @@ package org.restlet.example.ext.oauth.server;
 
 import org.restlet.Application;
 import org.restlet.Restlet;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Reference;
 import org.restlet.ext.oauth.TokenVerifier;
 import org.restlet.routing.Router;
@@ -61,7 +62,7 @@ public class SampleApplication extends Application {
 //        roleAuthorizer.setNext(router);
         
         ChallengeAuthenticator bearerAuthenticator =
-                new ChallengeAuthenticator(getContext(), TokenVerifier.HTTP_BEARER, "OAuth2Sample");
+                new ChallengeAuthenticator(getContext(), ChallengeScheme.HTTP_OAUTH_BEARER, "OAuth2Sample");
         bearerAuthenticator.setVerifier(
                 new TokenVerifier(
                     new Reference("riap://component/oauth/token_auth")));
