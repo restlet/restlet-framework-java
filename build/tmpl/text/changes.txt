@@ -4,6 +4,10 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Enhancements
+       - Added GSon extension (#586).
+         Contributed by Neal Mi.
+    - Bug fixed
        - Fixed issue #739 - copy extension headers from JAX-RS api to restlet response.
          Reported by Mark Kharitonov.
 

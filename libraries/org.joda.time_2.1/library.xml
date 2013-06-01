@@ -1,0 +1,18 @@
+<library id="joda-time" symbolicName="org.joda.time">
+	<name>Joda-Time</name>
+	<description>Joda-Time.</description>
+	<version>2.1</version>
+	<homeUri>joda-time.sourceforge.net/</homeUri>
+	<downloadUri>http://sourceforge.net/projects/joda-time/files/joda-time/</downloadUri>
+	<provider>Google Inc.</provider>
+
+	<package id="joda-time" name="org.joda.time">
+		<maven>
+			<groupId>joda-time</groupId>
+                        <artefactId>joda-time</artefactId>
+		</maven>
+	</package>
+	<distributions>
+		<distribution id="classic" />
+	</distributions>
+</library>

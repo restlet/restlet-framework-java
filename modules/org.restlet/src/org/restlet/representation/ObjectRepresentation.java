@@ -65,17 +65,51 @@ public class ObjectRepresentation<T extends Serializable> extends
      * @throws ClassNotFoundException
      * @throws IllegalArgumentException
      */
-    @SuppressWarnings("unchecked")
     public ObjectRepresentation(Representation serializedRepresentation)
             throws IOException, ClassNotFoundException,
             IllegalArgumentException {
+        this(serializedRepresentation, null);
+    }
+
+    /**
+     * Constructor reading the object from a serialized representation. This
+     * representation must have the proper media type:
+     * "application/x-java-serialized-object".
+     * 
+     * @param serializedRepresentation
+     *            The serialized representation.
+     * @param classLoader
+     *            The class loader used to read the object.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @throws IllegalArgumentException
+     */
+    @SuppressWarnings("unchecked")
+    public ObjectRepresentation(Representation serializedRepresentation,
+            final ClassLoader classLoader) throws IOException,
+            ClassNotFoundException, IllegalArgumentException {
         super(MediaType.APPLICATION_JAVA_OBJECT);
 
         if (serializedRepresentation.getMediaType().equals(
                 MediaType.APPLICATION_JAVA_OBJECT)) {
             setMediaType(MediaType.APPLICATION_JAVA_OBJECT);
             InputStream is = serializedRepresentation.getStream();
-            ObjectInputStream ois = new ObjectInputStream(is);
+            ObjectInputStream ois = null;
+            if (classLoader != null) {
+                ois = new ObjectInputStream(is) {
+                    @Override
+                    protected Class<?> resolveClass(
+                            java.io.ObjectStreamClass desc)
+                            throws java.io.IOException,
+                            java.lang.ClassNotFoundException {
+                        return Class
+                                .forName(desc.getName(), false, classLoader);
+                    }
+                };
+            } else {
+                ois = new ObjectInputStream(is);
+            }
+
             this.object = (T) ois.readObject();
 
             if (is.read() != -1) {

@@ -111,6 +111,8 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      * 
      * @param representation
      *            The representation to parse.
+     * @param objectClass
+     *            The object class to instantiate.
      */
     public JacksonRepresentation(Representation representation,
             Class<T> objectClass) {
@@ -140,7 +142,7 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      * 
      * @param csvMapper
      *            The source CSV mapper.
-     * @return
+     * @return A Jackson CSV schema
      */
     protected CsvSchema createCsvSchema(CsvMapper csvMapper) {
         return csvMapper.schemaFor(getObjectClass());

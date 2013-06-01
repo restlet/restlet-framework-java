@@ -53,6 +53,7 @@ import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.engine.Engine;
+import org.restlet.engine.util.ContextualRunnable;
 import org.restlet.routing.VirtualHost;
 
 /**
@@ -130,11 +131,27 @@ public class TaskService extends Service implements ScheduledExecutorService {
                         VirtualHost.setCurrent(currentVirtualHost);
                         Application.setCurrent(currentApplication);
 
-                        try {
-                            // Run the user task
-                            runnable.run();
-                        } finally {
-                            Engine.clearThreadLocalVariables();
+                        if (runnable instanceof ContextualRunnable) {
+                            ClassLoader tccl = Thread.currentThread()
+                                    .getContextClassLoader();
+                            try {
+                                // Run the user task
+                                Thread.currentThread().setContextClassLoader(
+                                        ((ContextualRunnable) runnable)
+                                                .getContextClassLoader());
+                                runnable.run();
+                            } finally {
+                                Engine.clearThreadLocalVariables();
+                                Thread.currentThread().setContextClassLoader(
+                                        tccl);
+                            }
+                        } else {
+                            try {
+                                // Run the user task
+                                runnable.run();
+                            } finally {
+                                Engine.clearThreadLocalVariables();
+                            }
                         }
                     }
                 });

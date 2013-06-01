@@ -18,6 +18,7 @@
 		<dependency type="module" id="example" />
 		<dependency type="module" id="freemarker" />
 		<dependency type="module" id="html" />
+		<dependency type="module" id="gson" />
 		<dependency type="module" id="gwt" />
 		<dependency type="module" id="httpclient" />
 		<dependency type="module" id="jackson" />
