@@ -40,7 +40,7 @@ import org.restlet.resource.ServerResource;
 
 /**
  * This class allows Restlet to lazily load resources in an OSGi environment.
- * This class may be used as the finder in a @see IResourceProvider.
+ * This class may be used as the finder in a @see ResourceProvider.
  * 
  * @author Bryan Hunt
  * @author Wolfgang Werner

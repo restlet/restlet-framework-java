@@ -33,129 +33,15 @@
 
 package org.restlet.ext.osgi;
 
-import java.util.HashSet;
-
-import org.restlet.Context;
-import org.restlet.Restlet;
-import org.restlet.routing.Router;
-import org.restlet.routing.TemplateRoute;
-
 /**
+ * This is an OSGi service interface for registering Restlet filters with an
+ * application. Users are expected to register an instance as an OSGi
+ * service. It is recommended that you use the {@link BaseRouterProvider}
+ * implementation. You may extend it if necessary, or for complete control, provide
+ * your own implementation of {@link RouterProvider}.
+ * 
  * @author Bryan Hunt
  * 
  */
-public class RouterProvider extends RestletProvider implements IRouterProvider {
-    private IRestletProvider defaultRestletProvider;
-
-    private HashSet<IDirectoryProvider> directoryProviders = new HashSet<IDirectoryProvider>();
-
-    private HashSet<IResourceProvider> resourceProviders = new HashSet<IResourceProvider>();
-
-    private Router router;
-
-    private void attachDirectory(IDirectoryProvider directoryProvider) {
-        router.attach(directoryProvider.getPath(),
-                directoryProvider.getInboundRoot(router.getContext()));
-    }
-
-    private void attachResource(IResourceProvider resourceProvider) {
-        for (String path : resourceProvider.getPaths()) {
-        	TemplateRoute templateRoute = router.attach(path, resourceProvider.getInboundRoot(router.getContext()));
-        	templateRoute.setMatchingMode(resourceProvider.getMatchingMode());
-        }
-    }
-
-    public void bindDefaultResourceProvider(IResourceProvider resourceProvider) {
-        defaultRestletProvider = resourceProvider;
-
-        if (router != null)
-            router.attachDefault(resourceProvider.getInboundRoot(router
-                    .getContext()));
-    }
-
-    public void bindDefaultRouterProvider(IRouterProvider routerProvider) {
-        defaultRestletProvider = routerProvider;
-
-        if (router != null)
-            router.attachDefault(routerProvider.getInboundRoot(router
-                    .getContext()));
-    }
-
-    public void bindDirectoryProvider(IDirectoryProvider directoryProvider) {
-        directoryProviders.add(directoryProvider);
-
-        if (router != null)
-            attachDirectory(directoryProvider);
-    }
-
-    public void bindResourceProvider(IResourceProvider resourceProvider) {
-        resourceProviders.add(resourceProvider);
-
-        if (router != null)
-            attachResource(resourceProvider);
-    }
-
-    protected Router createRouter(Context context) {
-        return new Router(context);
-    }
-
-    @Override
-    protected Restlet getFilteredRestlet() {
-        return router;
-    }
-
-    @Override
-    public Restlet getInboundRoot(Context context) {
-        if (router == null) {
-            router = createRouter(context);
-
-            for (IResourceProvider resourceProvider : resourceProviders)
-                attachResource(resourceProvider);
-
-            for (IDirectoryProvider directoryProvider : directoryProviders)
-                attachDirectory(directoryProvider);
-
-            if (defaultRestletProvider != null)
-                router.attachDefault(defaultRestletProvider
-                        .getInboundRoot(context));
-        }
-
-        Restlet inboundRoot = super.getInboundRoot(context);
-        return inboundRoot != null ? inboundRoot : router;
-    }
-
-    public void unbindDefaultResourceProvider(IResourceProvider resourceProvider) {
-        if (defaultRestletProvider == resourceProvider) {
-            defaultRestletProvider = null;
-
-            if (router != null)
-                router.detach(resourceProvider.getInboundRoot(router
-                        .getContext()));
-        }
-    }
-
-    public void unbindDefaultRouterProvider(IRouterProvider routerProvider) {
-        if (defaultRestletProvider == routerProvider) {
-            defaultRestletProvider = routerProvider;
-
-            if (router != null)
-                router.detach(routerProvider.getInboundRoot(router.getContext()));
-        }
-    }
-
-    public void unbindDirectoryProvider(IDirectoryProvider directoryProvider) {
-        if (directoryProviders.remove(directoryProvider)) {
-            if (router != null)
-                router.detach(directoryProvider.getInboundRoot(router
-                        .getContext()));
-        }
-    }
-
-    public void unbindResourceProvider(IResourceProvider resourceProvider) {
-        if (resourceProviders.remove(resourceProvider)) {
-            if (router != null)
-                router.detach(resourceProvider.getInboundRoot(router
-                        .getContext()));
-        }
-    }
+public interface RouterProvider extends RestletProvider {
 }

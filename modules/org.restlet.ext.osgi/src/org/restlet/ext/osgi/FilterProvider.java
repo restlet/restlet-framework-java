@@ -33,36 +33,21 @@
 
 package org.restlet.ext.osgi;
 
-import org.restlet.Context;
-import org.restlet.Restlet;
 import org.restlet.routing.Filter;
 
 /**
- * @author Bryan Hunt
+ * This is an OSGi service interface for registering Restlet filters with a
+ * router or a resource. Users are expected to register an instance as an OSGi
+ * service. It is recommended that you extend the {@link BaseFilterProvider}
+ * implementation. You may provide your own implementation of
+ * {@link FilterProvider} if you need complete control.
  * 
+ * @author Bryan Hunt
  */
-public abstract class FilterProvider extends RestletProvider implements
-        IFilterProvider {
-    private Filter filter;
-
-    protected abstract Filter createFilter(Context context);
-
-    @Override
-    public Filter getFilter() {
-        return filter;
-    }
-
-    @Override
-    protected Restlet getFilteredRestlet() {
-        return filter;
-    }
-
-    @Override
-    public Restlet getInboundRoot(Context context) {
-        if (filter == null)
-            filter = createFilter(context);
-
-        Restlet inboundRoot = super.getInboundRoot(context);
-        return inboundRoot != null ? inboundRoot : filter;
-    }
+public interface FilterProvider extends RestletProvider {
+	/**
+	 * 
+	 * @return the filter instance
+	 */
+    Filter getFilter();
 }

@@ -38,14 +38,14 @@ import javax.servlet.ServletException;
 
 import org.restlet.Application;
 import org.restlet.Context;
-import org.restlet.ext.osgi.IApplicationProvider;
+import org.restlet.ext.osgi.ApplicationProvider;
 
 /**
  * @author Bryan Hunt
  * @author Wolfgang Werner
  */
 public class ApplicationServlet extends ServerServlet {
-    public ApplicationServlet(IApplicationProvider applicationProvider) {
+    public ApplicationServlet(ApplicationProvider applicationProvider) {
         this.applicationProvider = applicationProvider;
     }
 
@@ -53,9 +53,9 @@ public class ApplicationServlet extends ServerServlet {
     protected Application createApplication(Context context) {
         Context childContext = context.createChildContext();
         childContext.getAttributes().put(
-                IApplicationProvider.SERVLET_CONFIG_ATTRIBUTE, servletConfig);
+                ApplicationProvider.SERVLET_CONFIG_ATTRIBUTE, servletConfig);
         childContext.getAttributes().put(
-                IApplicationProvider.SERVLET_CONTEXT_ATTRIBUTE,
+                ApplicationProvider.SERVLET_CONTEXT_ATTRIBUTE,
                 getServletContext());
         return applicationProvider.createApplication(childContext);
     }
@@ -68,7 +68,7 @@ public class ApplicationServlet extends ServerServlet {
 
     private static final long serialVersionUID = 5252087180467260130L;
 
-    private transient IApplicationProvider applicationProvider;
+    private transient ApplicationProvider applicationProvider;
 
     private ServletConfig servletConfig;
 }

@@ -33,67 +33,34 @@
 
 package org.restlet.ext.osgi;
 
-import java.util.Dictionary;
-
-import org.osgi.service.component.ComponentContext;
-import org.restlet.Context;
-import org.restlet.Restlet;
-import org.restlet.resource.Finder;
-import org.restlet.routing.Template;
-
 /**
- * @author Bryan Hunt
+ * This is an OSGi service interface for registering Restlet resources with an
+ * application. Users are expected to register an instance as an OSGi
+ * service. It is recommended that you extend the {@link BaseResourceProvider} 
+ * implementation.  You may provide your own implementation of {@link ResourceProvider}
+ * if you need complete control. Resources are registered with an application
+ * according to the application alias. If an application is not found that
+ * corresponds to the specified alias, the resource will be cached until the
+ * application is registered. If your resources are not being registered, check
+ * there is not a typo in the alias in both the resource provider and
+ * application provider.
  * 
+ * It is recommended that you use or extend {@link ResourceBuilder}
+ * 
+ * @author Bryan Hunt
+ * @author Wolfgang Werner
  */
-public abstract class ResourceProvider extends RestletProvider implements
-        IResourceProvider {
-    private Finder finder;
-
-    private String[] paths;
+public interface ResourceProvider extends RestletProvider {
+    /**
+     * 
+     * @return the paths to the resource relative to the application alias. The
+     *         paths must start with '/'.
+     */
+    String[] getPaths();
     
-    private Integer matchingMode;
-    
-    protected void activate(ComponentContext context) {
-        @SuppressWarnings("unchecked")
-        Dictionary<String, Object> properties = context.getProperties();
-        Object pathsProperty = properties.get("paths");
-        
-        if(pathsProperty instanceof String) {
-        	paths = new String[1];
-        	paths[0] = (String) pathsProperty;
-        }
-        else
-        	paths = (String[]) properties.get("paths");
-        
-        matchingMode = (Integer) properties.get("matchingMode");
-        
-        if (matchingMode == null)
-        	matchingMode = Template.MODE_EQUALS;
-    }
-
-    protected abstract Finder createFinder(Context context);
-
-    @Override
-    protected Restlet getFilteredRestlet() {
-        return finder;
-    }
-
-    @Override
-    public Restlet getInboundRoot(Context context) {
-        if (finder == null)
-            finder = createFinder(context);
-
-        Restlet inboundRoot = super.getInboundRoot(context);
-        return inboundRoot != null ? inboundRoot : finder;
-    }
-
-    @Override
-    public String[] getPaths() {
-        return paths.clone();
-    }
-    
-    @Override
-    public int getMatchingMode() {
-    	return matchingMode;
-    }
+    /**
+      * 
+      * @return the matching mode to be used for template routes. Defaults to Template.MODE_EQUALS.
+      */
+     int getMatchingMode();
 }

@@ -34,14 +34,14 @@
 package org.restlet.example.ext.osgi;
 
 import org.restlet.Context;
-import org.restlet.ext.osgi.ResourceProvider;
+import org.restlet.ext.osgi.BaseResourceProvider;
 import org.restlet.resource.Finder;
 
 /**
  * 
  * @author Bryan Hunt
  */
-public class HelloResourceProvider extends ResourceProvider {
+public class HelloResourceProvider extends BaseResourceProvider {
     @Override
     protected Finder createFinder(Context context) {
         return new Finder(context, HelloResource.class);

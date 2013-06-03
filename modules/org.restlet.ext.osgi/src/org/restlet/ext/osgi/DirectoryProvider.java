@@ -33,87 +33,19 @@
 
 package org.restlet.ext.osgi;
 
-import java.util.Dictionary;
-
-import org.osgi.service.component.ComponentContext;
-import org.restlet.Context;
-import org.restlet.Restlet;
-import org.restlet.resource.Directory;
-
 /**
- * @author Bryan Hunt
+ * This is an OSGi service interface for registering Restlet directories with a
+ * router. Users are expected to register an instance as an OSGi service. It is
+ * recommended that you use the {@link BaseDirectoryProvider}
+ * implementation. You may extend it if necessary, or for complete control, provide
+ * your own implementation of {@link DirectoryProvider}.
  * 
+ * @author Bryan Hunt
  */
-public class DirectoryProvider extends RestletProvider implements
-        IDirectoryProvider {
-    private boolean deeplyAccessible = true;
-
-    private Directory directory;
-
-    private String indexName = "index";
-
-    private boolean modifiable = false;
-
-    private boolean negotiatingContent = true;
-
-    private String path;
-
-    private String rootUri;
-
-    protected void activate(ComponentContext context) {
-        @SuppressWarnings("unchecked")
-        Dictionary<String, Object> properties = context.getProperties();
-
-        path = (String) properties.get("path");
-        rootUri = (String) properties.get("rootUri");
-
-        String indexName = (String) properties.get("indexName");
-
-        if (indexName != null)
-            this.indexName = indexName;
-
-        Boolean deeplyAccessible = (Boolean) properties.get("deeplyAccessible");
-
-        if (deeplyAccessible != null)
-            this.deeplyAccessible = deeplyAccessible;
-
-        Boolean modifiable = (Boolean) properties.get("modifiable");
-
-        if (modifiable != null)
-            this.modifiable = modifiable;
-
-        Boolean negotiatingContent = (Boolean) properties
-                .get("negotiatingContent");
-
-        if (negotiatingContent != null)
-            this.negotiatingContent = negotiatingContent;
-    }
-
-    protected Directory createDirectory(Context context) {
-        Directory directory = new Directory(context, rootUri);
-        directory.setIndexName(indexName);
-        directory.setDeeplyAccessible(deeplyAccessible);
-        directory.setModifiable(modifiable);
-        directory.setNegotiatingContent(negotiatingContent);
-        return directory;
-    }
-
-    @Override
-    protected Restlet getFilteredRestlet() {
-        return directory;
-    }
-
-    @Override
-    public Restlet getInboundRoot(Context context) {
-        if (directory == null)
-            directory = createDirectory(context);
-
-        Restlet inboundRoot = super.getInboundRoot(context);
-        return inboundRoot != null ? inboundRoot : directory;
-    }
-
-    @Override
-    public String getPath() {
-        return path;
-    }
+public interface DirectoryProvider extends RestletProvider {
+	/**
+	 * 
+	 * @return the fully qualified path of the directory
+	 */
+    String getPath();
 }
