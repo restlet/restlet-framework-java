@@ -782,6 +782,8 @@ public class EntryContentHandler<T> extends EntryReader {
                 else
                     inlineEntryHandler.startEntry(entry);
                 break;
+            default:
+                break;
             }
         } else {
             this.states = new ArrayList<State>();

@@ -68,3 +68,5 @@
 /modules/org.restlet.example.book.restlet.ch09.gwt/war/WEB-INF/appengine-generated
 /modules/org.restlet.example.book.restlet.ch09.gwt/war/mail
 /modules/org.restlet.test/velocity.log.1
+
+Thumbs.db

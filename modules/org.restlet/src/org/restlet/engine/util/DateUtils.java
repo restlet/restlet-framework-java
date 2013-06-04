@@ -161,7 +161,7 @@ public final class DateUtils {
      * 
      * @param date
      *            The date to format.
-     * @param format
+     * @param formats
      *            The array of date formats to use.
      * @return The formatted date.
      */
@@ -289,7 +289,7 @@ public final class DateUtils {
      * @return An immutable version of a given date.
      */
     public static Date unmodifiable(Date date) {
-        return (date == null) ? null : ImmutableDate.valueOf(date);
+        return (date == null) ? null : new ImmutableDate(date);
     }
 
     /**

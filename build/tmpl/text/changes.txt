@@ -11,6 +11,8 @@ Changes log
          Reported by Mark Kharitonov.
       - Fixed issue #727 generation of JSON extension for GWT edition.
       - Fixed issue #757 - Infinite Loop in Feed.
+      - Fixed issue #753 - Date concurrency issue due to broken caching attempts. 
+        Reported by @effad. Solved by Robert Fischer and Tim Peierls.
     - Misc
        - Added log warning when an authentication scheme does not define a "realm" parameter.
          Reported by Loïc Oudot (#759).
