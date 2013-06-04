@@ -29,6 +29,7 @@
 /modules/org.restlet.ext.fileupload/bin
 /modules/org.restlet.ext.freemarker/bin
 /modules/org.restlet.ext.gae/bin
+/modules/org.restlet.ext.gson/bin
 /modules/org.restlet.ext.gwt/bin
 /modules/org.restlet.ext.html/bin
 /modules/org.restlet.ext.httpclient/bin
