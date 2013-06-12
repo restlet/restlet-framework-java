@@ -49,7 +49,6 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.Range;
 import org.restlet.engine.Edition;
 import org.restlet.engine.Engine;
-import org.restlet.engine.util.ContextualRunnable;
 import org.restlet.representation.Representation;
 
 /**
@@ -338,7 +337,7 @@ public final class BioUtils {
 
             // Gets a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
-            Runnable task = new ContextualRunnable() {
+            Runnable task = new org.restlet.engine.util.ContextualRunnable() {
                 public void run() {
                     try {
                         representation.write(pipedWriter);
@@ -442,7 +441,7 @@ public final class BioUtils {
 
             // Creates a thread that will handle the task of continuously
             // writing the representation into the input side of the pipe
-            Runnable task = new ContextualRunnable() {
+            Runnable task = new org.restlet.engine.util.ContextualRunnable() {
                 public void run() {
                     try {
                         representation.write(os);

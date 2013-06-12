@@ -628,7 +628,10 @@ public class HeaderUtils {
             Series<Header> extensionHeaders = (Series<Header>) response
                     .getAttributes().get(HeaderConstants.ATTRIBUTE_HEADERS);
             if (extensionHeaders == null) {
+                // [ifndef gwt] instruction
                 extensionHeaders = new Series<Header>(Header.class);
+                // [ifdef gwt] instruction uncomment
+                // extensionHeaders = new org.restlet.engine.util.HeaderSeries();
                 response.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
                         extensionHeaders);
             }

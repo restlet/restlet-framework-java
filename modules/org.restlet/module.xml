@@ -100,6 +100,7 @@
          <exclude name="src/org/restlet/engine/util/CallResolver.java" />
          <exclude name="src/org/restlet/engine/util/ChildClientDispatcher.java" />
          <exclude name="src/org/restlet/engine/util/ChildContext.java" />
+         <exclude name="src/org/restlet/engine/util/ContextualRunnable.java" />
          <exclude name="src/org/restlet/engine/util/Conneg.java" />
          <exclude name="src/org/restlet/engine/util/ConnegUtils.java" />
          <exclude name="src/org/restlet/engine/util/CookieSeries.java" />
