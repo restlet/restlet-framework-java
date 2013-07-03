@@ -153,8 +153,10 @@ public class Finder extends Restlet {
 
         if (targetClass != null) {
             try {
-                // Invoke the default constructor
-                result = targetClass.newInstance();
+            	ObjectFactory factory = getContext() != null
+            		? getContext().getObjectFactory()
+            		: DefaultObjectFactory.INSTANCE;
+                result = factory.getInstance(targetClass);
             } catch (Exception e) {
                 getLogger()
                         .log(Level.WARNING,

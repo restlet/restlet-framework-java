@@ -125,9 +125,11 @@
          <exclude name="src/org/restlet/representation/ReaderRepresentation.java" />
          <exclude name="src/org/restlet/representation/WritableRepresentation.java" />
          <exclude name="src/org/restlet/representation/WriterRepresentation.java" />
+         <exclude name="src/org/restlet/resource/DefaultObjectFactory.java" />
          <exclude name="src/org/restlet/resource/Directory.java" />
          <exclude name="src/org/restlet/resource/Finder.java" />
          <exclude name="src/org/restlet/resource/Handler.java" />
+         <exclude name="src/org/restlet/resource/ObjectFactory.java" />
          <exclude name="src/org/restlet/resource/ServerResource.java" />
          <exclude name="src/org/restlet/routing/**" />
          <exclude name="src/org/restlet/security/**" />

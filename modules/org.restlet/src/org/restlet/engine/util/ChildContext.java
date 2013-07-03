@@ -35,6 +35,7 @@ package org.restlet.engine.util;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.resource.ObjectFactory;
 import org.restlet.engine.log.LogUtils;
 
 /**
@@ -65,6 +66,7 @@ public class ChildContext extends Context {
                 .getServerDispatcher() : null);
         setExecutorService((parentContext != null) ? new WrapperScheduledExecutorService(
                 parentContext.getExecutorService()) : null);
+		setObjectFactory(null);
     }
 
     /**
@@ -96,5 +98,20 @@ public class ChildContext extends Context {
         setLogger(LogUtils.getLoggerName(this.parentContext.getLogger()
                 .getName(), child));
     }
+
+	/**
+	 * Gets the parent's object factory unless a specific object factory
+	 * has been set on this context
+	 *
+	 * @return The object factory
+	 */
+	@Override
+	public ObjectFactory getObjectFactory() {
+		if(super.getObjectFactory() != null) {
+			return super.getObjectFactory();
+		}
+		return getParentContext().getObjectFactory();
+	}
+
 
 }

@@ -144,6 +144,10 @@ public class Context {
     /** The executor service. */
     private volatile ScheduledExecutorService executorService;
 
+	// [ifndef gwt] member
+    /** The object factory to use */
+    private volatile org.restlet.resource.ObjectFactory objectFactory;
+
     /**
      * Constructor. Writes log messages to "org.restlet".
      */
@@ -172,7 +176,9 @@ public class Context {
         this.defaultEnroler = null;
         this.serverDispatcher = null;
         this.defaultVerifier = null;
+        this.objectFactory = new org.restlet.resource.DefaultObjectFactory();
         // [enddef]
+
     }
 
     /**
@@ -318,6 +324,16 @@ public class Context {
         return this.serverDispatcher;
     }
 
+	// [ifndef gwt] method
+    /**
+     * Returns the object factory that should be used to instantiate objects.
+     * 
+     * @return The object factory.
+     */
+    public org.restlet.resource.ObjectFactory getObjectFactory() {
+        return this.objectFactory;
+    }
+
     /**
      * Sets the modifiable map of attributes. This method clears the current map
      * and puts all entries in the parameter map.
@@ -430,6 +446,17 @@ public class Context {
      */
     public void setServerDispatcher(Restlet serverDispatcher) {
         this.serverDispatcher = serverDispatcher;
+    }
+
+	// [ifndef gwt] method
+    /**
+     * Sets the object factory.
+     * 
+     * @param objectFactory
+     *            The new object factory.
+     */
+    public void setObjectFactory(org.restlet.resource.ObjectFactory objectFactory) {
+    	this.objectFactory = objectFactory;
     }
 
 }
