@@ -413,41 +413,50 @@ public class ServerServlet extends HttpServlet {
      * @return The newly created Component or null if unable to create.
      */
     protected Component createComponent() {
+        Client warClient = createWarClient(new Context(), getServletConfig());
+        String componentClassName = getInitParameter(COMPONENT_KEY, null);
+        Class<?> targetClass = Component.class;
         Component component = null;
 
-        // Look for the Component XML configuration file.
-        Client warClient = createWarClient(new Context(), getServletConfig());
-        Response response = warClient.handle(new Request(Method.GET,
-                "war:///WEB-INF/restlet.xml"));
-        if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
-            component = new Component(response.getEntity());
+        if (componentClassName != null) {
+            try {
+                targetClass = loadClass(componentClassName);
+            } catch (ClassNotFoundException e) {
+                log("[Restlet] ServerServlet couldn't find the target component class. Please check that your classpath includes "
+                        + componentClassName, e);
+            }
         }
 
-        // Look for the component class name specified in the web.xml file.
-        if (component == null) {
-            // Try to instantiate a new target component
-            // First, find the component class name
-            String componentClassName = getInitParameter(COMPONENT_KEY, null);
+        // Look for the Component XML configuration file.
+        Response response = warClient.handle(new Request(Method.GET, "war:///WEB-INF/restlet.xml"));
 
-            // Load the component class using the given class name
-            if (componentClassName != null) {
-                try {
-                    Class<?> targetClass = loadClass(componentClassName);
+        try {
+            log("[Restlet] ServerServlet: component class is " + componentClassName);
+            if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
+                @SuppressWarnings("unchecked")
+                Constructor<? extends Component> ctor = ((Class<? extends Component>) targetClass).getConstructor(Representation.class);
 
-                    // Create a new instance of the component class by
-                    // invoking the constructor with the Context parameter.
-                    component = (Component) targetClass.newInstance();
-                } catch (ClassNotFoundException e) {
-                    log("[Restlet] ServerServlet couldn't find the target class. Please check that your classpath includes "
-                            + componentClassName, e);
-                } catch (InstantiationException e) {
-                    log("[Restlet] ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
-                            + componentClassName, e);
-                } catch (IllegalAccessException e) {
-                    log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
-                            + componentClassName, e);
-                }
+                log("[Restlet] ServerServlet: configuring component from war:///WEB-INF/restlet.xml");
+                component = (Component) ctor.newInstance(response.getEntity());
+            } else {
+                component = (Component) targetClass.newInstance();
             }
+        } catch (IllegalAccessException e) {
+            log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
+                    + componentClassName, e);
+        } catch (InvocationTargetException e) {
+            log("[Restlet] ServerServlet encountered an exception instantiating the target class "
+                    + componentClassName, e.getTargetException());
+        } catch (InstantiationException e) {
+            log(String.format("[Restlet] ServerServlet couldn't instantiate the target class. Please check that %s has %s.",
+                    componentClassName,
+                    ((response.getStatus().isSuccess()) ? "a constructor taking Representation" : "an empty constructor")),
+                    e);
+        } catch (NoSuchMethodException e) {
+            log(String.format("[Restlet] ServerServlet couldn't instantiate the target class. Please check that %s has %s.",
+                    componentClassName,
+                    ((response.getStatus().isSuccess()) ? "a constructor taking Representation" : "an empty constructor")),
+                    e);
         }
 
         // Create the default Component
