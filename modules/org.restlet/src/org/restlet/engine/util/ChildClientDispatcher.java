@@ -78,7 +78,7 @@ public class ChildClientDispatcher extends TemplateDispatcher {
     @Override
     public int doHandle(Request request, Response response) {
         int result = CONTINUE;
-        
+
         Protocol protocol = request.getProtocol();
 
         if (protocol.equals(Protocol.RIAP)) {
@@ -113,14 +113,15 @@ public class ChildClientDispatcher extends TemplateDispatcher {
                 if (!application.getConnectorService().getClientProtocols()
                         .contains(protocol)) {
                     getLogger()
-                            .fine("The protocol used by this request is not declared in the application's connector service. "
-                                    + "Please update the list of client connectors used by your application and restart it.");
+                            .fine("The protocol used by this request is not declared in the application's connector service ("
+                                    + protocol
+                                    + "). Please update the list of client connectors used by your application and restart it.");
                 }
             }
 
             parentHandle(request, response);
         }
-        
+
         return result;
     }
 

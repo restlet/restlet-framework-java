@@ -58,7 +58,9 @@ public class Activator implements BundleActivator {
         for (Bundle bundle : context.getBundles()) {
             if (!ObapClientHelper.register(bundle)) {
                 logger.warning("OBAP client helper can't register this bundle: "
-                        + bundle.getBundleId() + " at location " + bundle.getLocation());
+                        + bundle.getBundleId()
+                        + " at location "
+                        + bundle.getLocation());
             }
         }
 

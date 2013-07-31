@@ -86,7 +86,7 @@ public class Client extends Connector {
     public Client(Context context, List<Protocol> protocols, String helperClass) {
         super(context, protocols);
 
-        if ((protocols != null) && (protocols.size() > 0)) {
+        if ((protocols != null) && !protocols.isEmpty()) {
             if (Engine.getInstance() != null) {
                 this.helper = Engine.getInstance().createHelper(this,
                         helperClass);
