@@ -4,15 +4,16 @@
 -noextraheaders: true
 -debug: true
 Export-Package: !org.apache.commons.lang.enum,*;-split-package:=merge-first
-Import-Package: *<#if ant["bundle.libraries.optional.dependencies"]??>;resolution:=optional</#if>
 Bundle-Name: ${library.symbolicName}
 Bundle-SymbolicName: ${library.symbolicName}
 Bundle-Version: ${library.versionFull}
 Bundle-ManifestVersion: 2
 Created-By: Restlet forge
     <#if library.activator??>
-Import-Package: org.osgi.framework
+Import-Package: org.osgi.framework,*<#if ant["bundle.libraries.optional.dependencies"]??>;resolution:=optional</#if>
 Bundle-Activator: ${library.activator}
+    <#else>
+Import-Package: *<#if ant["bundle.libraries.optional.dependencies"]??>;resolution:=optional</#if>
     </#if>
 Bundle-RequiredExecutionEnvironment: ${ant["bundle.required-execution-environment"]}
     </@pp.nestOutputFile>
