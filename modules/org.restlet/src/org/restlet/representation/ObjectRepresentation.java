@@ -43,7 +43,26 @@ import java.io.Serializable;
 import org.restlet.data.MediaType;
 
 /**
- * Representation based on a serializable Java object.
+ * Representation based on a serializable Java object.<br>
+ * It supports binary representations of JavaBeans using the
+ * {@link ObjectInputStream} and {@link ObjectOutputStream} classes. In this
+ * case, it handles representations having the following media type:
+ * {@link MediaType#APPLICATION_JAVA_OBJECT}
+ * ("application/x-java-serialized-object"). It also supports textual
+ * representations of JavaBeans using the {@link XMLEncoder} and
+ * {@link XMLDecoder} classes. In this case, it handles representations having
+ * the following media type: {@link MediaType#APPLICATION_JAVA_OBJECT_XML}
+ * ("application/x-java-serialized-object+xml").
+ * 
+ * SECURITY WARNING: The usage of {@link XMLDecoder} when deserializing XML
+ * presentations from unstrusted sources can lead to malicious attacks. As
+ * pointed <a href=
+ * "http://blog.diniscruz.com/2013/08/using-xmldecoder-to-execute-server-side.html"
+ * >here</a> , the {@link XMLDecoder} is able to force the JVM to execute
+ * unwanted Java code described inside the XML file. Thus, the support of such
+ * format has been disactivated by default inside the default converter. You can
+ * activate this support by turning on the following system property:
+ * org.restlet.engine.converter.DefaultConverter.VARIANT_OBJECT_XML_SUPPORTED.
  * 
  * @author Jerome Louvel
  * @param <T>

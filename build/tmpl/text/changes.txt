@@ -18,7 +18,8 @@ Changes log
       (issues #599 and #656). Reported by weiweiwang.
     - Fixed reading of Via header (issue #599).
       Reported by Nicolas Rinaudo.
-      
+    - Fixed issue #774 - Removed default support of JavaBeans XML-serialization.
+      Reported by David Jorm, Dinis Cruz, Abraham Kang and Alvaro Munoz.      
 - 2.0.15 (2012-08-23)
     - Bug fixed
        - Fixed bug in Reference#getParentRef with relative URIs.
