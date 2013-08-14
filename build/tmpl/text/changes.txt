@@ -12,7 +12,8 @@ Changes log
     - Bug fixed
        - Fixed issue #739 - copy extension headers from JAX-RS api to restlet response.
          Reported by Mark Kharitonov.
-
+       - Fixed issue #774 - Removed default support of JavaBeans XML-serialization.
+         Reported by David Jorm, Dinis Cruz, Abraham Kang and Alvaro Munoz. 
 - 2.2 Milestone 3 (03/07/2013)
     - Bug fixed
        - Fixed issue #737 - ExecutorService not set when calling WriterRepresentation#write.
