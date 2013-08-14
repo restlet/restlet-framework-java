@@ -13,6 +13,8 @@ Changes log
       - Fixed issue #757 - Infinite Loop in Feed.
       - Fixed issue #753 - Date concurrency issue due to broken caching attempts. 
         Reported by @effad. Solved by Robert Fischer and Tim Peierls.
+      - Fixed issue #774 - Removed default support of JavaBeans XML-serialization.
+        Reported by David Jorm, Dinis Cruz, Abraham Kang and alavaro Munoz. 
     - Misc
        - Added log warning when an authentication scheme does not define a "realm" parameter.
          Reported by Loïc Oudot (#759).
