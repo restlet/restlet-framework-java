@@ -58,11 +58,22 @@ import org.restlet.data.MediaType;
  * presentations from unstrusted sources can lead to malicious attacks. As
  * pointed <a href=
  * "http://blog.diniscruz.com/2013/08/using-xmldecoder-to-execute-server-side.html"
- * >here</a> , the {@link XMLDecoder} is able to force the JVM to execute
+ * >here</a>, the {@link XMLDecoder} is able to force the JVM to execute
  * unwanted Java code described inside the XML file. Thus, the support of such
  * format has been disactivated by default inside the default converter. You can
  * activate this support by turning on the following system property:
  * org.restlet.engine.converter.DefaultConverter.VARIANT_OBJECT_XML_SUPPORTED.
+ * 
+ * SECURITY WARNING: The usage of {@link ObjectInputStream} when deserializing
+ * binary presentations from unstrusted sources can lead to malicious attacks.
+ * As pointed <a
+ * href="https://github.com/restlet/restlet-framework-java/issues/778"
+ * >here</a>, the {@link ObjectInputStream} is able to force the JVM to execute
+ * unwanted Java code. Thus, the support of such format has been disactivated by
+ * default inside the default converter. You can activate this support by
+ * turning on the following system property:
+ * org.restlet.engine.converter.DefaultConverter
+ * .VARIANT_OBJECT_BINARY_SUPPORTED.
  * 
  * @author Jerome Louvel
  * @param <T>
