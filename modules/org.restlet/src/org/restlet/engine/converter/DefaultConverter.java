@@ -82,6 +82,13 @@ public class DefaultConverter extends ConverterHelper {
     private static final boolean VARIANT_OBJECT_XML_SUPPORTED = Boolean
             .getBoolean("org.restlet.engine.converter.DefaultConverter.VARIANT_OBJECT_XML_SUPPORTED");
 
+    /**
+     * Indicates whether the JavaBeans binary deserialization is supported or
+     * not.
+     */
+    private static final boolean VARIANT_OBJECT_BINARY_SUPPORTED = Boolean
+            .getBoolean("org.restlet.engine.converter.DefaultConverter.VARIANT_OBJECT_BINARY_SUPPORTED");
+
     @Override
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
@@ -93,7 +100,8 @@ public class DefaultConverter extends ConverterHelper {
         if (source.getMediaType() != null) {
             MediaType mediaType = source.getMediaType();
 
-            if (MediaType.APPLICATION_JAVA_OBJECT.equals(mediaType)
+            if ((VARIANT_OBJECT_BINARY_SUPPORTED && MediaType.APPLICATION_JAVA_OBJECT
+                    .equals(mediaType))
                     || (VARIANT_OBJECT_XML_SUPPORTED && MediaType.APPLICATION_JAVA_OBJECT_XML
                             .equals(mediaType))) {
                 result = addObjectClass(result, Object.class);
@@ -127,7 +135,9 @@ public class DefaultConverter extends ConverterHelper {
             } else if (Form.class.isAssignableFrom(source)) {
                 result = addVariant(result, VARIANT_FORM);
             } else if (Serializable.class.isAssignableFrom(source)) {
-                result = addVariant(result, VARIANT_OBJECT);
+                if (VARIANT_OBJECT_BINARY_SUPPORTED) {
+                    result = addVariant(result, VARIANT_OBJECT);
+                }
                 if (VARIANT_OBJECT_XML_SUPPORTED) {
                     result = addVariant(result, VARIANT_OBJECT_XML);
                 }
@@ -161,11 +171,13 @@ public class DefaultConverter extends ConverterHelper {
             result = 1.0F;
         } else if (source instanceof Serializable) {
             if (target != null) {
-                if (MediaType.APPLICATION_JAVA_OBJECT.equals(target
-                        .getMediaType())) {
+                if (VARIANT_OBJECT_BINARY_SUPPORTED
+                        && MediaType.APPLICATION_JAVA_OBJECT.equals(target
+                                .getMediaType())) {
                     result = 1.0F;
-                } else if (MediaType.APPLICATION_JAVA_OBJECT
-                        .isCompatible(target.getMediaType())) {
+                } else if (VARIANT_OBJECT_BINARY_SUPPORTED
+                        && MediaType.APPLICATION_JAVA_OBJECT
+                                .isCompatible(target.getMediaType())) {
                     result = 0.6F;
                 } else if (VARIANT_OBJECT_XML_SUPPORTED
                         && MediaType.APPLICATION_JAVA_OBJECT_XML.equals(target
@@ -219,11 +231,13 @@ public class DefaultConverter extends ConverterHelper {
                 result = 1.0F;
             } else if (Serializable.class.isAssignableFrom(target)
                     || target.isPrimitive()) {
-                if (MediaType.APPLICATION_JAVA_OBJECT.equals(source
-                        .getMediaType())) {
+                if (VARIANT_OBJECT_BINARY_SUPPORTED
+                        && MediaType.APPLICATION_JAVA_OBJECT.equals(source
+                                .getMediaType())) {
                     result = 1.0F;
-                } else if (MediaType.APPLICATION_JAVA_OBJECT
-                        .isCompatible(source.getMediaType())) {
+                } else if (VARIANT_OBJECT_BINARY_SUPPORTED
+                        && MediaType.APPLICATION_JAVA_OBJECT
+                                .isCompatible(source.getMediaType())) {
                     result = 0.6F;
                 } else if (VARIANT_OBJECT_XML_SUPPORTED
                         && MediaType.APPLICATION_JAVA_OBJECT_XML.equals(source
@@ -340,8 +354,10 @@ public class DefaultConverter extends ConverterHelper {
         if (Form.class.isAssignableFrom(entity)) {
             updatePreferences(preferences, MediaType.APPLICATION_WWW_FORM, 1.0F);
         } else if (Serializable.class.isAssignableFrom(entity)) {
-            updatePreferences(preferences, MediaType.APPLICATION_JAVA_OBJECT,
-                    1.0F);
+            if (VARIANT_OBJECT_BINARY_SUPPORTED) {
+                updatePreferences(preferences,
+                        MediaType.APPLICATION_JAVA_OBJECT, 1.0F);
+            }
             if (VARIANT_OBJECT_XML_SUPPORTED) {
                 updatePreferences(preferences,
                         MediaType.APPLICATION_JAVA_OBJECT_XML, 1.0F);
