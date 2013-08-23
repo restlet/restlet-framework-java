@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.2 Milestone 4 (08/23/2013)
     - Enhancements
        - Added GSon extension (#586).
          Contributed by Neal Mi.
