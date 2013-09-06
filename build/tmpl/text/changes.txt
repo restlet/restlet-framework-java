@@ -4,6 +4,10 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bug fixed
+       - Fixed issues #774, #778 - Removed default support of JavaBeans XML-deserialization, 
+         binary-deserialization on ObjectRepresentation class.
+         Reported by David Jorm.
 
 - 2.2 Milestone 4 (08/23/2013)
     - Enhancements
