@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+
 - 2.1.4 (09/07/2013)
     - Bug fixed
        - Fixed issues #774, #778 - Removed default support of JavaBeans XML-deserialization, 
