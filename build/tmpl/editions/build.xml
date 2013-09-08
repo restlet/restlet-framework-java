@@ -28,15 +28,6 @@
 	<property name="author" value="Jerome Louvel" />
 	<property name="vendor" value="Restlet" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
-	<property name="mod-maven-groupId" value="org.restlet.${edition}" />
-
-	<!-- Miscellaneous Maven properties -->
-	<property name="parent-maven-groupId" value="org.restlet.${edition}" />
-	<property name="parent-maven-artifactId" value="org.restlet.parent" />
-	<property name="parent-maven-version" value="${version-maven}" />
-	<property name="dist-path" value="restlet-${edition}-${version-compact}" />
-	<property name="final-dist-path" value="restlet-${version-compact}" />
-	<property name="jdk1.4-home" value="jdk1.4-home" />
 
 	<!-- Location properties -->
 	<property name="tools" location="../../tools" />
@@ -54,6 +45,23 @@
 	<property name="mod" location="modules" />
 	<property name="lib" location="libraries" />
 	<property name="poms" location="poms" />
+
+	<!-- Version properties -->
+	<loadproperties srcFile="${tmpl}/config/version.${meta.release-type}.properties">
+		<filterchain>
+			<expandproperties/>
+		</filterchain>
+	</loadproperties>
+
+	<!-- Miscellaneous Maven properties -->
+	<property name="mod-maven-groupId" value="org.restlet.${edition}" />
+	<property name="parent-maven-groupId" value="org.restlet.${edition}" />
+	<property name="parent-maven-artifactId" value="org.restlet.parent" />
+	<property name="parent-maven-version" value="${version-maven}" />
+
+	<property name="dist-path" value="restlet-${edition}-${version-compact}" />
+	<property name="final-dist-path" value="restlet-${version-compact}" />
+	<property name="jdk1.4-home" value="jdk1.4-home" />
 
 	<property name="dist-classic" location="${dist-base}/classic/${dist-path}" />
 	<property name="dist-eclipse" location="${dist-base}/eclipse/${dist-path}" />
@@ -490,6 +498,23 @@
 					</manifest>
 				</then>
 			</if>
+			<condition property="include-@{name}-pattern" value="org/restlet/test/**">
+				<equals arg1="@{name}" arg2="core-test" />
+			</condition>
+			<condition property="include-@{name}-pattern" value="org/restlet/**">
+				<equals arg1="@{name}" arg2="core" />
+			</condition>
+			<property name="include-@{name}-pattern" value="org/restlet/ext/@{name}/**" />
+			<dirset id="mod-@{name}-exported-packages" dir="${mod}/${mod-@{name}-id}/src">
+				<include name="${include-@{name}-pattern}" />
+				<!-- <exclude name="**/internal/**" /> -->
+			</dirset>
+			<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
+				<map from="${mod}/${mod-@{name}-id}/src/" to='' />
+			</pathconvert>
+			<manifest file="@{dir}/META-INF/MANIFEST.MF" mode="update">
+				<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
+			</manifest>
 			<if>
 				<equals arg1="@{source}" arg2="true" />
 				<then>
@@ -497,25 +522,6 @@
 						<attribute id="Require-Bundle" name="Require-Bundle" value="${mod-@{name}-require-bundle}" />
 					</manifest>
 				</then>
-				<else>
-					<condition property="include-@{name}-pattern" value="org/restlet/test/**">
-						<equals arg1="@{name}" arg2="core-test" />
-					</condition>
-					<condition property="include-@{name}-pattern" value="org/restlet/**">
-						<equals arg1="@{name}" arg2="core" />
-					</condition>
-					<property name="include-@{name}-pattern" value="org/restlet/ext/@{name}/**" />
-					<dirset id="mod-@{name}-exported-packages" dir="${mod}/${mod-@{name}-id}/src">
-						<include name="${include-@{name}-pattern}" />
-						<!-- <exclude name="**/internal/**" /> -->
-					</dirset>
-					<pathconvert pathsep="," dirsep="." property="mod-@{name}-export-package" refid="mod-@{name}-exported-packages">
-						<map from="${mod}/${mod-@{name}-id}/src/" to='' />
-					</pathconvert>
-					<manifest file="@{dir}/META-INF/MANIFEST.MF" mode="update">
-						<attribute id="Export-Package" name="Export-Package" value="${mod-@{name}-export-package}" />
-					</manifest>
-				</else>
 			</if>
 			</sequential>
 		</macrodef>

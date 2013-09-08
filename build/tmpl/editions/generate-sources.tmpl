@@ -42,7 +42,7 @@
          <istrue value="<#noparse>${do-eclipse-pde}</#noparse>" />
          <then>
             <!-- Generate the manifest file -->
-            <generateModuleManifest name="${module}" dir="<#noparse>${mod}</#noparse>/${module.package}" source="true" />
+            <generateModuleManifest name="${module}" dir="<#noparse>${mod}</#noparse>/${module.package}" source="<#noparse>${eclipse-pde-require-bundle}</#noparse>" />
          </then>
       </if>
 </#list>
