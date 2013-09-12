@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.example.ext.oauth.server;
 
 import java.io.IOException;
@@ -54,16 +55,15 @@ public class StatusServerResource extends ServerResource {
     public Representation getUserStatus() throws JSONException {
         User user = getRequest().getClientInfo().getUser();
         getLogger().info("getUserStatus: " + user.getIdentifier());
-        
-        SampleUser sampleUser = OAuth2Sample
-                .getSampleUserManager()
+
+        SampleUser sampleUser = OAuth2Sample.getSampleUserManager()
                 .findUserById(user.getIdentifier());
-        
+
         if (sampleUser == null) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return null;
         }
-        
+
         JSONObject result = new JSONObject();
         Object status = sampleUser.getStatus();
         if (status != null) {
@@ -71,30 +71,31 @@ public class StatusServerResource extends ServerResource {
         } else {
             result.put("status", "");
         }
-        
+
         return new JsonRepresentation(result);
     }
-    
+
     @Put("json")
-    public Representation updateUserStatus(Representation representation) throws IOException, JSONException {
-        JSONObject request = new JsonRepresentation(representation).getJsonObject();
+    public Representation updateUserStatus(Representation representation)
+            throws IOException, JSONException {
+        JSONObject request = new JsonRepresentation(representation)
+                .getJsonObject();
         Object status = request.get("status");
-        
+
         if (status == null) {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
             return null;
         }
-        
+
         User user = getRequest().getClientInfo().getUser();
         getLogger().info("updateUserStatus: " + user.getIdentifier());
-        
-        SampleUser sampleUser = OAuth2Sample
-                .getSampleUserManager()
+
+        SampleUser sampleUser = OAuth2Sample.getSampleUserManager()
                 .findUserById(user.getIdentifier());
         if (sampleUser != null) {
             sampleUser.setStatus(status.toString());
         }
-        
+
         JSONObject result = new JSONObject();
         result.put("status", status);
         return new JsonRepresentation(result);

@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.test.ext.oauth;
 
 import static org.junit.Assert.assertEquals;

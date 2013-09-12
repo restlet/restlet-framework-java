@@ -49,7 +49,7 @@ public enum GrantType {
      * Defined in 4.3 Resource Owner Password Credentials Grant.
      */
     password,
-    
+
     /**
      * Defined in 4.4 Client Credentials Grant.
      */
@@ -59,5 +59,5 @@ public enum GrantType {
      * Defined in 6 Refreshing an Access Token.
      */
     refresh_token;
-    
+
 }

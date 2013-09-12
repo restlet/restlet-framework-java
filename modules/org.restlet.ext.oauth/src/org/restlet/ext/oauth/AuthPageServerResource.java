@@ -56,11 +56,13 @@ import org.restlet.ext.oauth.internal.Token;
  * Helper class to the AuhorizationResource Handles Authorization requests. By
  * default it will accept all scopes requested.
  * 
- * To intercept and allow a user to control authorization you should set
- * the OAuthHelper.setAuthPageTemplate parameter. It should contain a static HTML page 
- * or a FreeMarker page that will be loaded with the CLAP protocol straight from root.
+ * To intercept and allow a user to control authorization you should set the
+ * OAuthHelper.setAuthPageTemplate parameter. It should contain a static HTML
+ * page or a FreeMarker page that will be loaded with the CLAP protocol straight
+ * from root.
  * 
  * Example. Add an AuthPageResource to your inbound root.
+ * 
  * <pre>
  * {
  *      &#064;code
@@ -153,8 +155,9 @@ import org.restlet.ext.oauth.internal.Token;
 public class AuthPageServerResource extends AuthorizationBaseServerResource {
 
     private static final String ACTION_ACCEPT = "Accept";
+
     private static final String ACTION_REJECT = "Reject";
-    
+
     /**
      * Entry point to the AuthPageResource. The AuthorizationResource dispatches
      * the call to this method. Should also be invoked by an eventual HTML page
@@ -181,7 +184,8 @@ public class AuthPageServerResource extends AuthorizationBaseServerResource {
         if (authPage != null && authPage.length() > 0) {
             getLogger().fine("loading authPage: " + authPage);
             // Check if we should skip the page if already approved scopes
-            boolean sameScope = HttpOAuthHelper.getAuthSkipApproved(getContext());
+            boolean sameScope = HttpOAuthHelper
+                    .getAuthSkipApproved(getContext());
             if (sameScope) {
                 String[] scopesArray = getQuery().getValuesArray("scope");
 
@@ -208,7 +212,7 @@ public class AuthPageServerResource extends AuthorizationBaseServerResource {
         getLogger().fine("action handled");
         return new EmptyRepresentation(); // Will redirect
     }
- 
+
     /**
      * 
      * Helper method to handle a FORM response. Returns with setting a 307 with
@@ -220,35 +224,40 @@ public class AuthPageServerResource extends AuthorizationBaseServerResource {
      * @param grantedScope
      *            the scopes that was approved.
      */
-    protected void handleAction(String action, String[] grantedScope) throws OAuthException {
+    protected void handleAction(String action, String[] grantedScope)
+            throws OAuthException {
         // TODO: SessionId should maybe be removed
         AuthSession session = getAuthSession();
         session.setGrantedScope(grantedScope);
 
         if (action.equals(ACTION_REJECT)) {
             getLogger().fine("Rejected.");
-            throw new OAuthException(OAuthError.access_denied, "Rejected.", null);
+            throw new OAuthException(OAuthError.access_denied, "Rejected.",
+                    null);
         }
         getLogger().fine("Accepting scopes - in handleAction");
         Client client = clients.findById(session.getClientId());
         String scopeOwner = session.getScopeOwner();
 
         // Create redirection
-        final Reference location = new Reference(session.getRedirectionURI().getURI());
-        
+        final Reference location = new Reference(session.getRedirectionURI()
+                .getURI());
+
         String state = session.getState();
         if (state != null && !state.isEmpty()) {
             // Setting state information back.
             location.addQueryParameter(STATE, state);
         }
-        
+
         // Add query parameters for each flow.
         ResponseType flow = session.getAuthFlow();
         if (flow.equals(ResponseType.token)) {
-            Token token = tokens.generateToken(client, scopeOwner, grantedScope);
+            Token token = tokens
+                    .generateToken(client, scopeOwner, grantedScope);
             location.addQueryParameter(TOKEN_TYPE, token.getTokenType());
             location.addQueryParameter(ACCESS_TOKEN, token.getAccessToken());
-            location.addQueryParameter(EXPIRES_IN, Integer.toString(token.getExpirePeriod()));
+            location.addQueryParameter(EXPIRES_IN,
+                    Integer.toString(token.getExpirePeriod()));
             String[] scope = token.getScope();
             if (!Scopes.isIdentical(scope, session.getRequestedScope())) {
                 // OPTIONAL, if identical to the scope requested by the client,
@@ -262,19 +271,19 @@ public class AuthPageServerResource extends AuthorizationBaseServerResource {
 
         // Reset the state
         session.setState(null);
-        
-        /* We might don't need to do this.
-        // Sets the no-store Cache-Control header
-        addCacheDirective(getResponse(), CacheDirective.noStore());
-        // TODO: Set Pragma: no-cache
-        */
+
+        /*
+         * We might don't need to do this. // Sets the no-store Cache-Control
+         * header addCacheDirective(getResponse(), CacheDirective.noStore()); //
+         * TODO: Set Pragma: no-cache
+         */
 
         if (flow.equals(ResponseType.token)) {
             // Use fragment for Implicit Grant
             location.setFragment(location.getQuery());
             location.setQuery("");
         }
-        
+
         getLogger().fine("Redirecting to -> " + location);
         redirectTemporary(location);
     }
@@ -315,7 +324,8 @@ public class AuthPageServerResource extends AuthorizationBaseServerResource {
         // Build the model
         HashMap<String, Object> data = new HashMap<String, Object>();
 
-        data.put("target", getRootRef() + HttpOAuthHelper.getAuthPage(getContext()));
+        data.put("target",
+                getRootRef() + HttpOAuthHelper.getAuthPage(getContext()));
 
         // TODO check with Restlet lead
         data.put("clientId", clientId);

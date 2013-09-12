@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.test.ext.oauth;
 
 import java.util.Map;
@@ -45,7 +46,7 @@ import org.restlet.ext.oauth.internal.ClientManager;
 public class StubClientManager extends OAuthTestBase implements ClientManager {
 
     public Client createClient(ClientType clientType, String[] redirectURIs,
-            Map properties) {
+            Map<String, Object> properties) {
         return null;
     }
 

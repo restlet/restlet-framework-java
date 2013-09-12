@@ -30,22 +30,25 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.example.ext.oauth.server;
 
 /**
- *
+ * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class SampleUser {
-    
+
     private final String id;
+
     private char[] password;
+
     private String status;
 
     public SampleUser(String id) {
         this.id = id;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 7;
@@ -83,7 +86,8 @@ public class SampleUser {
     }
 
     /**
-     * @param status the status to set
+     * @param status
+     *            the status to set
      */
     public void setStatus(String status) {
         this.status = status;
@@ -97,7 +101,8 @@ public class SampleUser {
     }
 
     /**
-     * @param password the password to set
+     * @param password
+     *            the password to set
      */
     public void setPassword(char[] password) {
         this.password = password;

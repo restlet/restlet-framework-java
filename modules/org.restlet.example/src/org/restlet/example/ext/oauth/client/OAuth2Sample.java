@@ -30,17 +30,18 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.example.ext.oauth.client;
 
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 
 /**
- *
+ * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class OAuth2Sample {
-    
+
     public static void main(String[] args) throws Exception {
         // Setup Restlet
         Component component = new Component();
@@ -49,7 +50,7 @@ public class OAuth2Sample {
         component.getServers().add(Protocol.HTTP, 8888);
 
         component.getDefaultHost().attach("/sample", new SampleApplication());
-        
+
         component.start();
     }
 }

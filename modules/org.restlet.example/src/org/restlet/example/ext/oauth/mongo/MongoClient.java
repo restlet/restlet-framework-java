@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.example.ext.oauth.mongo;
 
 import java.util.List;
@@ -83,18 +84,22 @@ public class MongoClient implements Client {
     @Override
     public String[] getRedirectURIs() {
         if (client.containsField(REDIRECT_URIS)) {
-            List list = (List) client.get(REDIRECT_URIS);
+            @SuppressWarnings("unchecked")
+            List<String> list = (List<String>) client.get(REDIRECT_URIS);
             String[] uris = new String[list.size()];
+
             for (int i = 0; i < list.size(); i++) {
                 uris[i] = list.get(i).toString();
             }
+
             return uris;
         } else {
             return null;
         }
     }
 
-    public Map getProperties() {
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> getProperties() {
         DBObject properties = (DBObject) client.get(PROPERTIES);
         return properties.toMap();
     }
@@ -119,7 +124,9 @@ public class MongoClient implements Client {
     }
 
     private boolean isTypeAllowed(String field, String typeName) {
-        List list = (List) client.get(field);
+        @SuppressWarnings("unchecked")
+        List<Object> list = (List<Object>) client.get(field);
+
         for (Object allowedType : list) {
             if (allowedType.toString().equals(typeName)) {
                 return true;

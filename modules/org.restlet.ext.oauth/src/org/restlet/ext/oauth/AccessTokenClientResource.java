@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.ext.oauth;
 
 import org.restlet.ext.oauth.internal.Token;
@@ -48,17 +49,20 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
 /**
- * Client resource used to acquire an OAuth token.
- * Implements OAuth 2.0 (RFC6749)
+ * Client resource used to acquire an OAuth token. Implements OAuth 2.0
+ * (RFC6749)
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class AccessTokenClientResource extends ClientResource implements OAuthResourceDefs {
-    
+public class AccessTokenClientResource extends ClientResource implements
+        OAuthResourceDefs {
+
     private String clientId;
+
     private String clientSecret;
+
     private ChallengeScheme authenticationScheme;
-    
+
     public AccessTokenClientResource(Reference tokenURI) {
         super(tokenURI);
         // set default scheme
@@ -71,13 +75,14 @@ public class AccessTokenClientResource extends ClientResource implements OAuthRe
         if (representation.getMediaType().equals(MediaType.APPLICATION_JSON)) {
             // Do not throw an exception here.
             getLogger().fine("OAuth response is found.");
-            // XXX: after #doError, the representation will disposed in #handleInbound.
+            // XXX: after #doError, the representation will disposed in
+            // #handleInbound.
             return;
         }
         // ResourceException will be thrown.
         super.doError(errorStatus);
     }
-    
+
     // We override to not dispose the OAuth error json body.
     @Override
     public Representation handleInbound(Response response) {
@@ -87,24 +92,24 @@ public class AccessTokenClientResource extends ClientResource implements OAuthRe
         if (response.getRequest().isSynchronous()) {
             if (response.getStatus().isError()) {
                 doError(response.getStatus());
-            // DO NOT DISPOSE THE RESPONSE.
-            }/* else {*/
-                result = (response == null) ? null : response.getEntity();
-            /*}*/
+                // DO NOT DISPOSE THE RESPONSE.
+            }/* else { */
+            result = (response == null) ? null : response.getEntity();
+            /* } */
         }
 
         return result;
     }
-    
+
     public void setClientCredentials(String clientId, String clientSecret) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
     }
-    
+
     public void setAuthenticationMethod(ChallengeScheme scheme) {
         this.authenticationScheme = scheme;
     }
-    
+
     protected void setupBodyClientCredentials(OAuthParameters parameters) {
         parameters.add(CLIENT_ID, clientId);
         if (clientSecret != null) {
@@ -112,42 +117,50 @@ public class AccessTokenClientResource extends ClientResource implements OAuthRe
         }
     }
 
-    public Token requestToken(OAuthParameters parameters) throws OAuthException, IOException, JSONException {
+    public Token requestToken(OAuthParameters parameters)
+            throws OAuthException, IOException, JSONException {
         if (authenticationScheme == null) {
             // Use Body method
             setupBodyClientCredentials(parameters);
         } else {
             setChallengeResponse(authenticationScheme, clientId, clientSecret);
         }
-        
+
         Representation input = parameters.toRepresentation();
-        
-        getClientInfo().getAcceptedMediaTypes().add(new Preference<MediaType>(MediaType.APPLICATION_JSON));
-        
+
+        getClientInfo().getAcceptedMediaTypes().add(
+                new Preference<MediaType>(MediaType.APPLICATION_JSON));
+
         JSONObject result = new JsonRepresentation(post(input)).getJsonObject();
 
         if (result.has(ERROR)) {
             throw OAuthException.toOAuthException(result);
         }
-        
+
         TokenResponse token = TokenResponse.parseResponse(result);
         if (token.scope == null) {
             // Should be identical to the scope requested by the client.
-            token.scope = Scopes.parseScope(parameters.toForm().getFirstValue(SCOPE));
+            token.scope = Scopes.parseScope(parameters.toForm().getFirstValue(
+                    SCOPE));
         }
-        
+
         return token;
     }
-    
+
     private static class TokenResponse implements Token {
-        
+
         private String accessToken;
+
         private String tokenType;
+
         private Integer expirePeriod;
+
         private String refreshToken;
+
         private String[] scope;
-        
-        public static TokenResponse parseResponse(JSONObject result) throws JSONException {
+
+        public static TokenResponse parseResponse(JSONObject result)
+                throws JSONException {
             TokenResponse token = new TokenResponse();
             token.accessToken = result.getString(ACCESS_TOKEN);
             token.tokenType = result.getString(TOKEN_TYPE);
@@ -170,7 +183,8 @@ public class AccessTokenClientResource extends ClientResource implements OAuthRe
         public String getTokenType() {
             return tokenType;
         }
-        
+
+        @SuppressWarnings("unused")
         public boolean isExpirePeriodAvailable() {
             return expirePeriod != null;
         }

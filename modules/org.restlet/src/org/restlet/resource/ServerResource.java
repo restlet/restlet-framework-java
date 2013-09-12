@@ -998,7 +998,8 @@ public abstract class ServerResource extends Resource {
      * {@link #updateAllowedMethods()} is invoked to give the resource a chance
      * to inform the client about the allowed methods.
      * 
-     * @return The response entity.
+     * @return The response entity, but this method is still responsible for
+     *         setting the response entity.
      */
     @Override
     public Representation handle() {

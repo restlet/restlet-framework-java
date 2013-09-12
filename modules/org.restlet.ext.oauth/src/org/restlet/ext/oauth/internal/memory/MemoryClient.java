@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.ext.oauth.internal.memory;
 
 import java.util.Arrays;
@@ -44,14 +45,19 @@ import org.restlet.ext.oauth.internal.Client;
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class MemoryClient implements Client {
-    
+
     private String clientId;
+
     private char[] clientSecret;
+
     private ClientType clientType;
+
     private String[] redirectURIs;
-    private Map properties;
-    
-    protected MemoryClient(String clientId, ClientType clientType, String[] redirectURIs, Map properties) {
+
+    private Map<String, Object> properties;
+
+    protected MemoryClient(String clientId, ClientType clientType,
+            String[] redirectURIs, Map<String, Object> properties) {
         this.clientId = clientId;
         this.clientType = clientType;
         this.redirectURIs = redirectURIs;
@@ -65,7 +71,7 @@ public class MemoryClient implements Client {
     public char[] getClientSecret() {
         return clientSecret;
     }
-    
+
     protected void setClientSecret(char[] clientSecret) {
         this.clientSecret = clientSecret;
     }
@@ -74,7 +80,7 @@ public class MemoryClient implements Client {
         return redirectURIs;
     }
 
-    public Map getProperties() {
+    public Map<String, Object> getProperties() {
         return properties;
     }
 
@@ -85,9 +91,11 @@ public class MemoryClient implements Client {
     public boolean isGrantTypeAllowed(GrantType grantType) {
         return isFlowSupported(grantType);
     }
-    
+
     private boolean isFlowSupported(Object flow) {
-        return Arrays.asList((Object[]) properties.get(PROPERTY_SUPPORTED_FLOWS)).contains(flow);
+        return Arrays.asList(
+                (Object[]) properties.get(PROPERTY_SUPPORTED_FLOWS)).contains(
+                flow);
     }
 
     public ClientType getClientType() {

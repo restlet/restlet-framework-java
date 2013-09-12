@@ -30,28 +30,30 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.ext.oauth.internal;
 
 /**
- *
+ * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public interface ServerToken extends Token {
-    
+
     /**
      * The resource owner name associated with this token.
      * 
-     * @return null if the resource owner is the client. (i.e. client_credentials grant.)
+     * @return null if the resource owner is the client. (i.e.
+     *         client_credentials grant.)
      */
     public String getUsername();
-    
+
     /**
      * The client associated with this token.
      * 
-     * @return 
+     * @return
      */
     public String getClientId();
-    
+
     /**
      * Check if the token is expired.
      * 

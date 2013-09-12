@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.example.ext.oauth.server;
 
 import freemarker.template.Configuration;
@@ -51,7 +52,7 @@ import org.restlet.security.SecretVerifier;
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class LoginPageServerResource extends AuthorizationBaseServerResource {
-    
+
     @Get("html")
     @Post("html")
     public Representation getPage() throws OAuthException {
@@ -61,12 +62,14 @@ public class LoginPageServerResource extends AuthorizationBaseServerResource {
         if (userId != null && !userId.isEmpty()) {
             String password = getQueryValue("password");
             getLogger().info("User=" + userId + ", Pass=" + password);
-            SampleUser sampleUser = OAuth2Sample.getSampleUserManager().findUserById(userId);
+            SampleUser sampleUser = OAuth2Sample.getSampleUserManager()
+                    .findUserById(userId);
             if (sampleUser == null) {
                 data.put("error", "Authentication failed.");
                 data.put("error_description", "ID is invalid.");
             } else {
-                boolean result = SecretVerifier.compare(password.toCharArray(), sampleUser.getPassword());
+                boolean result = SecretVerifier.compare(password.toCharArray(),
+                        sampleUser.getPassword());
                 if (result) {
                     getAuthSession().setScopeOwner(userId);
                     String uri = getQueryValue("continue");
@@ -79,19 +82,21 @@ public class LoginPageServerResource extends AuthorizationBaseServerResource {
                 }
             }
         }
-        
+
         String continueURI = getQueryValue("continue");
         TemplateRepresentation response = getLoginPage("login.html");
         data.put("continue", continueURI);
         response.setDataModel(data);
-        
+
         return response;
     }
-    
+
     protected TemplateRepresentation getLoginPage(String loginPage) {
         Configuration config = new Configuration();
-        config.setTemplateLoader(new ContextTemplateLoader(getContext(), "clap:///"));
+        config.setTemplateLoader(new ContextTemplateLoader(getContext(),
+                "clap:///"));
         getLogger().fine("loading: " + loginPage);
-        return new TemplateRepresentation(loginPage, config, MediaType.TEXT_HTML);
+        return new TemplateRepresentation(loginPage, config,
+                MediaType.TEXT_HTML);
     }
 }

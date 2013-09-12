@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.example.ext.oauth.mongo;
 
 import java.util.List;
@@ -83,9 +84,11 @@ public class MongoToken implements ServerToken, OAuthResourceDefs {
         return token.get(REFRESH_TOKEN).toString();
     }
 
+    @SuppressWarnings("unchecked")
     public String[] getScope() {
-        List list = (List) token.get(SCOPE);
+        List<String> list = (List<String>) token.get(SCOPE);
         String[] scope = new String[list.size()];
+
         for (int i = 0; i < list.size(); i++) {
             scope[i] = list.get(i).toString();
         }

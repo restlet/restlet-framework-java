@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.example.ext.oauth.server;
 
 import org.restlet.Application;
@@ -53,36 +54,40 @@ import org.restlet.security.ChallengeAuthenticator;
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class OAuth2ServerApplication extends Application {
-    
+
     @Override
-    public synchronized Restlet createInboundRoot(){
+    public synchronized Restlet createInboundRoot() {
         Router router = new Router(getContext());
-        
-        getContext().getAttributes().put(ClientManager.class.getName(), OAuth2Sample.getClientManager());
-        getContext().getAttributes().put(TokenManager.class.getName(), OAuth2Sample.getTokenManager());
-        
+
+        getContext().getAttributes().put(ClientManager.class.getName(),
+                OAuth2Sample.getClientManager());
+        getContext().getAttributes().put(TokenManager.class.getName(),
+                OAuth2Sample.getTokenManager());
+
         // Setup Authorize Endpoint
         router.attach("/authorize", AuthorizationServerResource.class);
-        router.attach(HttpOAuthHelper.getAuthPage(getContext()), AuthPageServerResource.class);
+        router.attach(HttpOAuthHelper.getAuthPage(getContext()),
+                AuthPageServerResource.class);
         HttpOAuthHelper.setAuthPageTemplate("authorize.html", getContext());
         HttpOAuthHelper.setAuthSkipApproved(true, getContext());
         HttpOAuthHelper.setErrorPageTemplate("error.html", getContext());
-        router.attach(HttpOAuthHelper.getLoginPage(getContext()), LoginPageServerResource.class);
-        
+        router.attach(HttpOAuthHelper.getLoginPage(getContext()),
+                LoginPageServerResource.class);
+
         // Setup Token Endpoint
-        ChallengeAuthenticator clientAuthenticator =
-                new ChallengeAuthenticator(getContext(),
-                ChallengeScheme.HTTP_BASIC, "OAuth2Sample");
+        ChallengeAuthenticator clientAuthenticator = new ChallengeAuthenticator(
+                getContext(), ChallengeScheme.HTTP_BASIC, "OAuth2Sample");
         ClientVerifier clientVerifier = new ClientVerifier(getContext());
         clientVerifier.setAcceptBodyMethod(true);
         clientAuthenticator.setVerifier(clientVerifier);
         clientAuthenticator.setNext(AccessTokenServerResource.class);
         router.attach("/token", clientAuthenticator);
-        
+
         // Setup Token Auth for Resources Server
         router.attach("/token_auth", TokenAuthServerResource.class);
-        
-        final Directory resources = new Directory(getContext(), "clap://system/resources");
+
+        final Directory resources = new Directory(getContext(),
+                "clap://system/resources");
         router.attach("", resources);
 
         return router;

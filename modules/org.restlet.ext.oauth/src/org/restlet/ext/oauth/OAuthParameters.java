@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.ext.oauth;
 
 import java.io.IOException;
@@ -42,13 +43,13 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 
 /**
- *
+ * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class OAuthParameters implements OAuthResourceDefs {
-    
+
     private Form form;
-    
+
     public OAuthParameters() {
         form = new Form();
     }
@@ -57,84 +58,85 @@ public class OAuthParameters implements OAuthResourceDefs {
     public String toString() {
         return form.getQueryString();
     }
-    
-//    protected OAuthParameters clientId(String clientId) {
-//        form.add(CLIENT_ID, clientId);
-//        return this;
-//    }
-//    
-//    protected OAuthParameters clientSecret(String clientSecret) {
-//        form.add(CLIENT_SECRET, clientSecret);
-//        return this;
-//    }
-    
+
+    // protected OAuthParameters clientId(String clientId) {
+    // form.add(CLIENT_ID, clientId);
+    // return this;
+    // }
+    //
+    // protected OAuthParameters clientSecret(String clientSecret) {
+    // form.add(CLIENT_SECRET, clientSecret);
+    // return this;
+    // }
+
     public OAuthParameters responseType(ResponseType responseType) {
         add(RESPONSE_TYPE, responseType.name());
         return this;
     }
-    
+
     public OAuthParameters grantType(GrantType grantType) {
         add(GRANT_TYPE, grantType.name());
         return this;
     }
-    
+
     public OAuthParameters code(String code) {
         add(CODE, code);
         return this;
     }
-    
+
     public OAuthParameters redirectURI(String redirectURI) {
         add(REDIR_URI, redirectURI);
         return this;
     }
-    
+
     public OAuthParameters username(String username) {
         add(USERNAME, username);
         return this;
     }
-    
+
     public OAuthParameters password(String password) {
         add(PASSWORD, password);
         return this;
     }
-    
+
     public OAuthParameters refreshToken(String refreshToken) {
         add(REFRESH_TOKEN, refreshToken);
         return this;
     }
-    
+
     public OAuthParameters scope(String[] scope) {
         add(SCOPE, Scopes.toString(scope));
         return this;
     }
-    
+
     public OAuthParameters state(String state) {
         add(STATE, state);
         return this;
     }
-    
+
     public OAuthParameters add(String name, String value) {
         form.add(name, value);
         return this;
     }
-    
+
     public Representation toRepresentation() {
         return form.getWebRepresentation();
     }
-    
+
     public Reference toReference(String uri) {
         String query;
         try {
             query = form.encode();
         } catch (IOException ex) {
-            Logger.getLogger(OAuthParameters.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(OAuthParameters.class.getName()).log(Level.SEVERE,
+                    null, ex);
             throw new ResourceException(ex);
         }
         Reference reference = new Reference(uri);
         reference.setQuery(query);
         return reference;
     }
-    
+
     protected Form toForm() {
         return form;
     }

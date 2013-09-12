@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.test.ext.oauth;
 
 import static org.restlet.ext.oauth.OAuthResourceDefs.TOKEN_TYPE_BEARER;
@@ -114,7 +115,7 @@ public class OAuthTestBase {
             return null;
         }
 
-        public Map getProperties() {
+        public Map<String, Object> getProperties() {
             return null;
         }
 

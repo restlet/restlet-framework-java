@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.example.ext.oauth.client;
 
 import java.io.IOException;
@@ -44,24 +45,26 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
 /**
- *
+ * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class FacebookMeServerResource extends ServerResource {
-    
+
     @Get
     public Representation getMe() throws IOException, JSONException {
-        Token token = (Token) getRequest().getAttributes().get(Token.class.getName());
+        Token token = (Token) getRequest().getAttributes().get(
+                Token.class.getName());
         if (token == null) {
             return new StringRepresentation("Token not found!");
         }
-        
-        ProtectedClientResource me = new ProtectedClientResource("https://graph.facebook.com/me");
+
+        ProtectedClientResource me = new ProtectedClientResource(
+                "https://graph.facebook.com/me");
         me.setUseBodyMethod(true);
         me.setToken(token);
-        
+
         JSONObject result = new JsonRepresentation(me.get()).getJsonObject();
-        
+
         return new StringRepresentation("Hello " + result.getString("name"));
     }
 }

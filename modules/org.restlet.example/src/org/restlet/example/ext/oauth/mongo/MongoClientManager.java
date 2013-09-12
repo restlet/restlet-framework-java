@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.example.ext.oauth.mongo;
 
 import java.util.ArrayList;
@@ -63,12 +64,15 @@ public class MongoClientManager extends AbstractClientManager {
 
     @Override
     protected Client createClient(String clientId, char[] clientSecret,
-            ClientType clientType, String[] redirectURIs, Map properties) {
+            ClientType clientType, String[] redirectURIs,
+            Map<String, Object> properties) {
         BasicDBObject client = new BasicDBObject("_id", clientId);
+
         if (clientSecret != null) {
             client.put(MongoClient.CLIENT_SECRET,
                     String.copyValueOf(clientSecret));
         }
+
         switch (clientType) {
         case PUBLIC:
             client.put(MongoClient.CLIENT_TYPE, "public");
@@ -77,6 +81,7 @@ public class MongoClientManager extends AbstractClientManager {
             client.put(MongoClient.CLIENT_TYPE, "confidential");
             break;
         }
+
         if (redirectURIs != null && redirectURIs.length > 0) {
             client.put(MongoClient.REDIRECT_URIS, Arrays.asList(redirectURIs));
         }
@@ -84,8 +89,9 @@ public class MongoClientManager extends AbstractClientManager {
         Object[] supportedFlows = (Object[]) properties
                 .remove(Client.PROPERTY_SUPPORTED_FLOWS);
 
-        List responseTypes = new ArrayList();
-        List grantTypes = new ArrayList();
+        List<String> responseTypes = new ArrayList<String>();
+        List<String> grantTypes = new ArrayList<String>();
+
         for (Object flow : supportedFlows) {
             if (flow instanceof ResponseType) {
                 responseTypes.add(flow.toString());

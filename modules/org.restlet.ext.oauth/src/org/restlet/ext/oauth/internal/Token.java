@@ -42,7 +42,8 @@ package org.restlet.ext.oauth.internal;
 public interface Token {
 
     /**
-     * The access token issued by the authorization server. (5.1. 'access_token')
+     * The access token issued by the authorization server. (5.1.
+     * 'access_token')
      * 
      * @return the actual token to be used for OAuth invocations.
      */
@@ -51,17 +52,17 @@ public interface Token {
     /**
      * The type of the token.
      * 
-     * @return 
+     * @return
      */
     public String getTokenType();
-    
+
     /**
      * The lifetime in seconds of the access token.
      * 
      * @return
      */
     public int getExpirePeriod();
-    
+
     /**
      * The refresh token. (5.1. 'refresh_token')
      * 
@@ -72,7 +73,7 @@ public interface Token {
     /**
      * The actual granted scope. Must not be null.
      * 
-     * @return 
+     * @return
      */
     public String[] getScope();
 

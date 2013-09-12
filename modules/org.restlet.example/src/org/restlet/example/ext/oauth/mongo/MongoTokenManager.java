@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.example.ext.oauth.mongo;
 
 import java.util.ArrayList;
@@ -97,6 +98,7 @@ public class MongoTokenManager extends AbstractTokenManager implements
         return new MongoToken(token);
     }
 
+    @SuppressWarnings("unchecked")
     public Token refreshToken(Client client, String refreshToken, String[] scope)
             throws OAuthException {
         DBObject token = tokens.findOne(new BasicDBObject(REFRESH_TOKEN,
@@ -119,17 +121,20 @@ public class MongoTokenManager extends AbstractTokenManager implements
          * Access Token)
          */
         if (scope != null && scope.length != 0) {
-            List newScopeList = Arrays.asList(scope);
-            if (!((List) token.get(SCOPE)).containsAll(newScopeList)) {
+            List<String> newScopeList = Arrays.asList(scope);
+
+            if (!((List<String>) token.get(SCOPE)).containsAll(newScopeList)) {
                 throw new OAuthException(
                         OAuthError.invalid_scope,
                         "The requested scope is exceeds the scope granted by the resource owner.",
                         null);
             }
+
             token.put(SCOPE, newScopeList);
         }
 
         token.put(ACCESS_TOKEN, generateRawToken());
+
         if (isUpdateRefreshToken()) {
             token.put(REFRESH_TOKEN, generateRawToken());
         }
@@ -170,27 +175,35 @@ public class MongoTokenManager extends AbstractTokenManager implements
         return code;
     }
 
+    @SuppressWarnings("unchecked")
     public AuthSession restoreSession(String code) throws OAuthException {
         DBObject sessionObj = sessions.findOne(new BasicDBObject("_id", code));
+
         if (sessionObj == null) {
             throw new OAuthException(OAuthError.invalid_grant, "Invalid code.",
                     null);
         }
-        return AuthSession.toAuthSession(sessionObj.toMap());
+
+        return AuthSession.toAuthSession((Map<String, Object>) sessionObj
+                .toMap());
     }
 
     public Token validateToken(String accessToken) throws OAuthException {
         DBObject token = tokens.findOne(new BasicDBObject(ACCESS_TOKEN,
                 accessToken));
+
         if (token == null) {
             throw new OAuthException(OAuthError.invalid_token,
                     "The access token revoked.", null);
         }
+
         MongoToken tokenImpl = new MongoToken(token);
+
         if (tokenImpl.isExpired()) {
             throw new OAuthException(OAuthError.invalid_token,
                     "The access token expired.", null);
         }
+
         return tokenImpl;
     }
 

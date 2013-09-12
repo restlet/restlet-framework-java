@@ -38,14 +38,13 @@ package org.restlet.ext.oauth;
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  * @author Kristoffer Gronowski
- * @see <a href="http://tools.ietf.org/html/rfc6749">
- * The OAuth 2.0 Authorization Framework</a>
- * @see <a href="http://tools.ietf.org/html/rfc6750">
- * Bearer Token Usage</a>
+ * @see <a href="http://tools.ietf.org/html/rfc6749"> The OAuth 2.0
+ *      Authorization Framework</a>
+ * @see <a href="http://tools.ietf.org/html/rfc6750"> Bearer Token Usage</a>
  */
 public enum OAuthError {
 
-    access_denied, // 4.1.2.1 & 4.2.2.1 
+    access_denied, // 4.1.2.1 & 4.2.2.1
     invalid_client, // 5.2
     invalid_grant, // 5.2
     invalid_request, // 4.1.2.1 & 4.2.2.1 & 5.2
@@ -53,8 +52,8 @@ public enum OAuthError {
     unauthorized_client, // 4.1.2.1 & 4.2.2.1 & 5.2
     unsupported_grant_type, // 5.2
     unsupported_response_type, // 4.1.2.1 & 4.2.2.1
-    server_error,   // 4.1.2.1 & 4.2.2.1
-    
-    invalid_token,      // Bearer 3.1
-    insufficient_scope  // Bearer 3.1
+    server_error, // 4.1.2.1 & 4.2.2.1
+
+    invalid_token, // Bearer 3.1
+    insufficient_scope // Bearer 3.1
 }

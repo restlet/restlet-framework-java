@@ -40,32 +40,44 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
 import org.restlet.ext.oauth.ResponseType;
 
 /**
  * Helper class to establish an authentication session. The session is created
  * in the AuthorizationResource on initial OAuth request.
- *
+ * 
  * At the moment it is not being cleaned up on the server side.
- *
+ * 
  * The cookie that is set will get removed when the browser closes the window.
- *
+ * 
  * @author Kristoffer Gronowski
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class AuthSession {
 
     public static final int DEFAULT_TIMEOUT_SEC = 600;
+
     private static final String ID = "id";
+
     private static final String CLIENT_ID = "client_id";
+
     private static final String GRANTED_SCOPE = "granted_scope";
+
     private static final String REQ_SCOPE = "requested_scope";
+
     private static final String FLOW = "flow";
+
     private static final String CALLBACK = "callback";
+
     private static final String OWNER = "owner";
+
     private static final String STATE = "state";
+
     private static final String LAST_ACTIVITY = "last_activity";
+
     private static final String TIMEOUT_SEC = "timeout_sec";
+
     // Normalized attributes for data storage.
     private final ConcurrentMap<String, Object> attribs;
 
@@ -89,39 +101,41 @@ public class AuthSession {
      */
     public static AuthSession newAuthSession() {
         AuthSession session = new AuthSession();
-        // XXX: Is UUID a non-guessable value? (10.12. Cross-Site Request Forgery)
+        // XXX: Is UUID a non-guessable value? (10.12. Cross-Site Request
+        // Forgery)
         String sessionId = UUID.randomUUID().toString();
         session.setAttribute(ID, sessionId);
         session.setAttribute(LAST_ACTIVITY, System.currentTimeMillis());
         session.setSessionTimeout(DEFAULT_TIMEOUT_SEC);
         return session;
     }
-    
-    public static AuthSession toAuthSession(Map attribs) {
+
+    public static AuthSession toAuthSession(Map<String, Object> attribs) {
         AuthSession session = new AuthSession();
         for (Object key : attribs.keySet()) {
             session.attribs.put(key.toString(), attribs.get(key));
         }
         return session;
     }
-    
+
     /**
      * Get the Map interface that suitable for the database.
      * 
-     * @return 
+     * @return
      */
     public Map<String, Object> toMap() {
         return attribs;
     }
-    
+
     public String getId() {
         return (String) getAttribute(ID);
     }
 
     /**
      * Set the client/application that created the cookie
-     *
-     * @param clientId POJO representing a client_id/secret
+     * 
+     * @param clientId
+     *            POJO representing a client_id/secret
      */
     public void setClientId(String clientId) {
         setAttribute(CLIENT_ID, clientId);
@@ -139,42 +153,50 @@ public class AuthSession {
     }
 
     public String[] getGrantedScope() {
-        List list = (List) getAttribute(GRANTED_SCOPE);
+        @SuppressWarnings("unchecked")
+        List<String> list = (List<String>) getAttribute(GRANTED_SCOPE);
+
         if (list == null) {
             return null;
         }
+
         return (String[]) list.toArray(new String[list.size()]);
     }
 
     /**
-     * @param scope array of scopes requested but not yet approved
+     * @param scope
+     *            array of scopes requested but not yet approved
      */
     public void setRequestedScope(String[] scope) {
         setAttribute(REQ_SCOPE, Arrays.asList(scope));
     }
 
     /**
-     *
+     * 
      * @return array of requested scopes
      */
     public String[] getRequestedScope() {
-        List list = (List) getAttribute(REQ_SCOPE);
+        @SuppressWarnings("unchecked")
+        List<Object> list = (List<Object>) getAttribute(REQ_SCOPE);
+
         if (list == null) {
             return null;
         }
+
         return (String[]) list.toArray(new String[list.size()]);
     }
 
     /**
-     *
-     * @param owner the identity of the user of this session (openid)
+     * 
+     * @param owner
+     *            the identity of the user of this session (openid)
      */
     public void setScopeOwner(String owner) {
         setAttribute(OWNER, owner);
     }
 
     /**
-     *
+     * 
      * @return identity of the authenticated user.
      */
     public String getScopeOwner() {
@@ -182,7 +204,8 @@ public class AuthSession {
     }
 
     /**
-     * @param flow current executing flow
+     * @param flow
+     *            current executing flow
      */
     public void setAuthFlow(ResponseType flow) {
         // Normalize
@@ -201,7 +224,8 @@ public class AuthSession {
     }
 
     /**
-     * @param state to be save and returned with code
+     * @param state
+     *            to be save and returned with code
      */
     public void setState(String state) {
         setAttribute(STATE, state);
@@ -216,21 +240,24 @@ public class AuthSession {
 
     public void setRedirectionURI(RedirectionURI uri) {
         // Normalize
-        HashMap map = new HashMap();
+        HashMap<String, Object> map = new HashMap<String, Object>();
         map.put("uri", uri.getURI());
         map.put("dynamic", uri.isDynamicConfigured());
         setAttribute(CALLBACK, map);
     }
 
     /**
-     *
+     * 
      * @return the URL used in the initial authorization call
      */
     public RedirectionURI getRedirectionURI() {
-        Map map = (Map) getAttribute(CALLBACK);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> map = (Map<String, Object>) getAttribute(CALLBACK);
+
         if (map == null) {
             return null;
         }
+
         String uri = map.get("uri").toString();
         Boolean dynamic = (Boolean) map.get("dynamic");
         return new RedirectionURI(uri, dynamic);
@@ -238,8 +265,9 @@ public class AuthSession {
 
     /**
      * Default is 600 sec = 10min
-     *
-     * @param timeSeconds sets the session expiry time in seconds
+     * 
+     * @param timeSeconds
+     *            sets the session expiry time in seconds
      */
     public void setSessionTimeout(int timeSeconds) {
         setAttribute(TIMEOUT_SEC, timeSeconds);
@@ -247,7 +275,7 @@ public class AuthSession {
 
     /**
      * Setting only affects new or updated sessions.
-     *
+     * 
      * @return current session timeout
      */
     public int getSessionTimeout() {
@@ -263,7 +291,8 @@ public class AuthSession {
      * Store attribute for internal use. The value must be normalized.
      * 
      * @param name
-     * @param value normalized value.
+     * @param value
+     *            normalized value.
      */
     private void setAttribute(String name, Object value) {
         if (value == null) {

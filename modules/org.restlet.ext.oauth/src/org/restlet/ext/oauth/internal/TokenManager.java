@@ -30,110 +30,132 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.ext.oauth.internal;
 
 import org.restlet.ext.oauth.OAuthException;
 
 /**
- *
+ * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public interface TokenManager {
-    
+
     /**
-     * Generate a new token for the client and the username.
-     * If the token has already issued for the client and the username, the token will be replaced or updated.
-     * If username is null, token will issued for the client itself.
+     * Generate a new token for the client and the username. If the token has
+     * already issued for the client and the username, the token will be
+     * replaced or updated. If username is null, token will issued for the
+     * client itself.
      * 
      * @param client
      * @param username
-     * @param scope 
+     * @param scope
      * @return
-     * @throws OAuthException 
+     * @throws OAuthException
      */
-    public Token generateToken(Client client, String username, String[] scope) throws OAuthException;
-    
+    public Token generateToken(Client client, String username, String[] scope)
+            throws OAuthException;
+
     /**
-     * Call {@link #generateToken(org.restlet.ext.oauth.internal.Client, java.lang.String, java.lang.String[])}
+     * Call
+     * {@link #generateToken(org.restlet.ext.oauth.internal.Client, java.lang.String, java.lang.String[])}
      * with username=null.
      * 
      * @param client
      * @param scope
      * @return
-     * @throws OAuthException 
+     * @throws OAuthException
      */
-    public Token generateToken(Client client, String[] scope) throws OAuthException;
-    
-    public Token refreshToken(Client client, String refreshToken, String[] scope) throws OAuthException;
-    
+    public Token generateToken(Client client, String[] scope)
+            throws OAuthException;
+
+    public Token refreshToken(Client client, String refreshToken, String[] scope)
+            throws OAuthException;
+
     public String storeSession(AuthSession session) throws OAuthException;
-    
+
     public AuthSession restoreSession(String code) throws OAuthException;
-    
+
     public Token validateToken(String accessToken) throws OAuthException;
 
     /**
-     * Find a token issued for the client and the username.
-     * For those tokens issued for 'client_credentials' grant type, username must be null.
+     * Find a token issued for the client and the username. For those tokens
+     * issued for 'client_credentials' grant type, username must be null.
      * 
-     * @param client the client that bound to token.
-     * @param username the username that bound to token. null if the token was issued for the client itself.
-     * @return null if not found. 
+     * @param client
+     *            the client that bound to token.
+     * @param username
+     *            the username that bound to token. null if the token was issued
+     *            for the client itself.
+     * @return null if not found.
      */
     public Token findToken(Client client, String username);
-    
+
     /**
-     * Call {@link #findToken(org.restlet.ext.oauth.internal.Client, java.lang.String)} with username=null.
+     * Call
+     * {@link #findToken(org.restlet.ext.oauth.internal.Client, java.lang.String)}
+     * with username=null.
      * 
-     * @param client the client that bound to token.
-     * @return null if not found. 
+     * @param client
+     *            the client that bound to token.
+     * @return null if not found.
      */
     public Token findToken(Client client);
-    
+
     /**
      * Find all tokens bound to the username.
      * 
-     * @param username the username that bound to tokens.
+     * @param username
+     *            the username that bound to tokens.
      * @return 0 length if not found.
      */
     public Token[] findTokens(String username);
-    
+
     /**
      * Find all tokens bound to the client.
      * 
-     * @param client the client that bound to tokens.
+     * @param client
+     *            the client that bound to tokens.
      * @return 0 length if not found.
      */
     public Token[] findTokens(Client client);
-    
+
     /**
-     * Revoke a token issued for the client and the username.
-     * For those tokens issued for 'client_credentials' grant type, username must be null.
+     * Revoke a token issued for the client and the username. For those tokens
+     * issued for 'client_credentials' grant type, username must be null.
      * 
-     * @param client the client that bound to token.
-     * @param username the username that bound to token. null if the token was issued for the client itself.
+     * @param client
+     *            the client that bound to token.
+     * @param username
+     *            the username that bound to token. null if the token was issued
+     *            for the client itself.
      */
     public void revokeToken(Client client, String username);
-    
+
     /**
-     * Call {@link #revokeToken(org.restlet.ext.oauth.internal.Client, java.lang.String)} with username=null.
+     * Call
+     * {@link #revokeToken(org.restlet.ext.oauth.internal.Client, java.lang.String)}
+     * with username=null.
      * 
-     * @param client the client that bound to token.
+     * @param client
+     *            the client that bound to token.
      */
     public void revokeToken(Client client);
-    
+
     /**
      * Revoke all tokens bound to the username.
      * 
-     * @param username the username that bound to tokens.
+     * @param username
+     *            the username that bound to tokens.
      * @return 0 length if not found.
      */
     public void revokeAllTokens(String username);
-    
+
     /**
      * Revoke all tokens bound to the client.
      * 
-     * @param client the client that bound to tokens.
+     * @param client
+     *            the client that bound to tokens.
      * @return 0 length if not found.
      */
     public void revokeAllTokens(Client client);

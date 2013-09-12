@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.test.ext.oauth.internal;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -76,7 +77,7 @@ public class ClientManagerTest {
     }
 
     public void testCreateClient() {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(Client.PROPERTY_APPLICATION_NAME, "Test1");
         Client client1 = clients.createClient(ClientType.PUBLIC,
                 new String[] { "http://example.com/cb" }, properties);

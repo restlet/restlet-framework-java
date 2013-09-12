@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.ext.oauth;
 
 import org.json.JSONObject;
@@ -45,28 +46,29 @@ import org.restlet.resource.ResourceException;
 
 /**
  * Token "Authenticate" Resource for internal use.
- *
+ * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class TokenAuthServerResource extends OAuthServerResource {
 
     public static final String LOCAL_ACCESS_ONLY = "localOnly";
-    
+
     private boolean isLocalAcessOnly() {
         String lo = (String) getContext().getAttributes()
                 .get(LOCAL_ACCESS_ONLY);
         return (lo != null) && (lo.length() > 0) && Boolean.parseBoolean(lo);
     }
-    
+
     @Override
     protected void doCatch(Throwable t) {
         final OAuthException oex = OAuthException.toOAuthException(t);
-        // XXX: Generally, we only communicate with TokenVerifier. So we don't need HTTP 400 code.
-//        getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+        // XXX: Generally, we only communicate with TokenVerifier. So we don't
+        // need HTTP 400 code.
+        // getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
         getResponse().setStatus(Status.SUCCESS_OK);
         getResponse().setEntity(responseErrorRepresentation(oex));
     }
-    
+
     @Post("json")
     public Representation authenticate(Representation input) throws Exception {
         getLogger().fine("In Authenticate resource");
@@ -79,27 +81,30 @@ public class TokenAuthServerResource extends OAuthServerResource {
                         "Auth server only allows local resource validation");
             }
         }
-        
+
         JSONObject call = new JsonRepresentation(input).getJsonObject();
-        
+
         if (!call.has(TOKEN_TYPE)) {
-            throw new OAuthException(OAuthError.invalid_request, "No token_type", null);
+            throw new OAuthException(OAuthError.invalid_request,
+                    "No token_type", null);
         }
         String tokenType = call.getString(TOKEN_TYPE);
-        
+
         final Token token;
         if (tokenType.equals(OAuthServerResource.TOKEN_TYPE_BEARER)) {
             token = tokens.validateToken(call.get(ACCESS_TOKEN).toString());
-        }/* else if (tokenType.equals(OAuthServerResource.TOKEN_TYPE_MAC)) {
-            // TODO
-        }*/ else {
-            throw new OAuthException(OAuthError.invalid_request, "Unsupported token_type", null);
+        }/*
+          * else if (tokenType.equals(OAuthServerResource.TOKEN_TYPE_MAC)) { //
+          * TODO }
+          */else {
+            throw new OAuthException(OAuthError.invalid_request,
+                    "Unsupported token_type", null);
         }
-        
+
         JSONObject resp = new JSONObject();
         resp.put(USERNAME, ((ServerToken) token).getUsername());
         resp.put(SCOPE, Scopes.toString(token.getScope()));
-        
+
         return new JsonRepresentation(resp);
     }
 }

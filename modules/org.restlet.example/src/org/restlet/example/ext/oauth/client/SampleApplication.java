@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.example.ext.oauth.client;
 
 import org.restlet.Application;
@@ -42,31 +43,37 @@ import org.restlet.routing.Router;
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class SampleApplication extends Application  {
-    
+public class SampleApplication extends Application {
+
     @Override
     public synchronized Restlet createInboundRoot() {
         Router router = new Router(getContext());
-        
+
         OAuthProxy facebookProxy = new OAuthProxy(getContext());
         facebookProxy.setClientId("103465123140853");
         facebookProxy.setClientSecret("b97c74c5ea1b6e87256805a54b53184b");
-        facebookProxy.setRedirectURI("http://ale.valleycampus.net:8888/sample/facebook");
-        facebookProxy.setAuthorizationURI("https://www.facebook.com/dialog/oauth");
-        facebookProxy.setTokenURI("https://graph.facebook.com/oauth/access_token");
+        facebookProxy
+                .setRedirectURI("http://ale.valleycampus.net:8888/sample/facebook");
+        facebookProxy
+                .setAuthorizationURI("https://www.facebook.com/dialog/oauth");
+        facebookProxy
+                .setTokenURI("https://graph.facebook.com/oauth/access_token");
         facebookProxy.setNext(FacebookMeServerResource.class);
         router.attach("/facebook", facebookProxy);
-        
+
         OAuthProxy googleProxy = new OAuthProxy(getContext(), false);
         googleProxy.setClientId("69444012865.apps.googleusercontent.com");
         googleProxy.setClientSecret("SJ9XWwAY4ognMNMXmq6db_hE");
-        googleProxy.setRedirectURI("http://ale.valleycampus.net:8888/sample/google");
-        googleProxy.setAuthorizationURI("https://accounts.google.com/o/oauth2/auth");
+        googleProxy
+                .setRedirectURI("http://ale.valleycampus.net:8888/sample/google");
+        googleProxy
+                .setAuthorizationURI("https://accounts.google.com/o/oauth2/auth");
         googleProxy.setTokenURI("https://accounts.google.com/o/oauth2/token");
-        googleProxy.setScope(new String[] {"https://www.google.com/m8/feeds/"});
+        googleProxy
+                .setScope(new String[] { "https://www.google.com/m8/feeds/" });
         googleProxy.setNext(GoogleContactsServerResource.class);
         router.attach("/google", googleProxy);
-        
+
         return router;
     }
 }

@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.ext.oauth.internal.memory;
 
 import org.restlet.ext.oauth.internal.ServerToken;
@@ -42,14 +43,21 @@ import org.restlet.ext.oauth.internal.ServerToken;
 public class MemoryToken implements ServerToken {
 
     private final long timestamp;
+
     private String accessToken;
+
     private String tokenType;
+
     private int expirePeriod;
+
     private String refreshToken;
+
     private String[] scope;
+
     private String clientId;
+
     private String username;
-    
+
     protected MemoryToken() {
         timestamp = System.currentTimeMillis();
     }
@@ -62,7 +70,8 @@ public class MemoryToken implements ServerToken {
     }
 
     /**
-     * @param accessToken the accessToken to set
+     * @param accessToken
+     *            the accessToken to set
      */
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
@@ -76,7 +85,8 @@ public class MemoryToken implements ServerToken {
     }
 
     /**
-     * @param tokenType the tokenType to set
+     * @param tokenType
+     *            the tokenType to set
      */
     public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
@@ -90,7 +100,8 @@ public class MemoryToken implements ServerToken {
     }
 
     /**
-     * @param expirePeriod the expirePeriod to set
+     * @param expirePeriod
+     *            the expirePeriod to set
      */
     public void setExpirePeriod(int expirePeriod) {
         this.expirePeriod = expirePeriod;
@@ -104,7 +115,8 @@ public class MemoryToken implements ServerToken {
     }
 
     /**
-     * @param refreshToken the refreshToken to set
+     * @param refreshToken
+     *            the refreshToken to set
      */
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
@@ -118,7 +130,8 @@ public class MemoryToken implements ServerToken {
     }
 
     /**
-     * @param scope the scope to set
+     * @param scope
+     *            the scope to set
      */
     public void setScope(String[] scope) {
         this.scope = scope;
@@ -132,7 +145,8 @@ public class MemoryToken implements ServerToken {
     }
 
     /**
-     * @param clientId the clientId to set
+     * @param clientId
+     *            the clientId to set
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
@@ -146,12 +160,13 @@ public class MemoryToken implements ServerToken {
     }
 
     /**
-     * @param username the username to set
+     * @param username
+     *            the username to set
      */
     public void setUsername(String username) {
         this.username = username;
     }
-    
+
     public boolean isExpired() {
         long elapsedTime = System.currentTimeMillis() - timestamp;
         long timeout = expirePeriod;

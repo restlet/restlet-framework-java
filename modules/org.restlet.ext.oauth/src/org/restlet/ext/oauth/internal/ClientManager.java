@@ -64,9 +64,10 @@ public interface ClientManager {
      * @param clientType
      * @param redirectURIs
      * @param properties
-     * @return 
+     * @return
      */
-    public Client createClient(ClientType clientType, String[] redirectURIs, Map properties);
+    public Client createClient(ClientType clientType, String[] redirectURIs,
+            Map<String, Object> properties);
 
     /**
      * Delete a client_id from the implementing backed database.
@@ -86,5 +87,5 @@ public interface ClientManager {
      */
 
     public Client findById(String id);
-    
+
 }

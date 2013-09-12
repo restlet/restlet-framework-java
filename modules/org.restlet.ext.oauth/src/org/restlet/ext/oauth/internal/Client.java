@@ -47,16 +47,17 @@ import org.restlet.ext.oauth.ResponseType;
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public interface Client {
-    
+
     public static final String PROPERTY_APPLICATION_NAME = "application_name";
+
     public static final String PROPERTY_DESCRIPTION = "description";
+
     public static final String PROPERTY_SUPPORTED_FLOWS = "supported_flows";
 
     public static enum ClientType {
-        CONFIDENTIAL,
-        PUBLIC
+        CONFIDENTIAL, PUBLIC
     }
-    
+
     /**
      * Client id that the client has registered at the auth provider.
      * 
@@ -79,11 +80,11 @@ public interface Client {
      */
     public String[] getRedirectURIs();
 
-    public Map getProperties();
-    
+    public Map<String, Object> getProperties();
+
     public boolean isResponseTypeAllowed(ResponseType responseType);
-    
+
     public boolean isGrantTypeAllowed(GrantType grantType);
-    
+
     public ClientType getClientType();
 }

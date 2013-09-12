@@ -30,15 +30,17 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.ext.oauth.internal;
 
 import javax.naming.AuthenticationException;
 
 /**
- *
+ * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public interface ResourceOwnerManager {
-    
-    public String authenticate(String username, char[] password) throws AuthenticationException;
+
+    public String authenticate(String username, char[] password)
+            throws AuthenticationException;
 }

@@ -30,12 +30,15 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.ext.oauth.internal;
 
 /**
- *
+ * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class AuthSessionTimeoutException extends Exception {
-    
+
+    private static final long serialVersionUID = 1L;
+
 }

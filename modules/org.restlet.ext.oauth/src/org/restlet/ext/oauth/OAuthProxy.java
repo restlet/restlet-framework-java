@@ -65,8 +65,8 @@ import org.restlet.routing.Filter;
  * recommended to put a ServerResource after this filter to display to the end
  * user on successful service setup.
  * 
- * The following example shows how to gain an access token that will be available
- * for "DummyResource" to use to access some remote protected resource
+ * The following example shows how to gain an access token that will be
+ * available for "DummyResource" to use to access some remote protected resource
  * 
  * <pre>
  * {
@@ -76,7 +76,7 @@ import org.restlet.routing.Filter;
  *     proxy.setClientSecret(&quot;clientSecret&quot;);
  *     proxy.setRedirectURI(&quot;callbackURI&quot;);
  *     proxy.setAuthorizationURI(&quot;authURI&quot;);
- *     proxy.setTokenURI(&quot;tokenURI&quot;);    
+ *     proxy.setTokenURI(&quot;tokenURI&quot;);
  *     proxy.setNext(DummyResource.class);
  *     router.attach(&quot;/write&quot;, write);
  * }
@@ -90,7 +90,7 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
 
     private final static List<CacheDirective> no = new ArrayList<CacheDirective>();
 
-    private final static String VERSION = "RFC6749";    // Final spec.
+    private final static String VERSION = "RFC6749"; // Final spec.
 
     /**
      * Returns the current proxy's version.
@@ -102,13 +102,21 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
     }
 
     private final boolean basicSecret;
+
     private final org.restlet.Client cc;
+
     private final SecureRandom random;
+
     private String clientId;
+
     private String clientSecret;
+
     private String redirectURI;
+
     private String[] scope;
+
     private String authorizationURI;
+
     private String tokenURI;
 
     /**
@@ -119,7 +127,7 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
      *            The Restlet context.
      */
     public OAuthProxy(Context ctx) {
-        this(ctx, true);    // Use BASIC method as default.
+        this(ctx, true); // Use BASIC method as default.
     }
 
     /**
@@ -131,8 +139,7 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
      * @param ctx
      *            The Restlet context.
      */
-    public OAuthProxy(Context ctx,
-            boolean useBasicSecret) {
+    public OAuthProxy(Context ctx, boolean useBasicSecret) {
         this(ctx, useBasicSecret, null);
     }
 
@@ -149,8 +156,8 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
      *            request. Useful when you need to set e.g. SSL initialization
      *            parameters
      */
-    public OAuthProxy(Context ctx,
-            boolean useBasicSecret, org.restlet.Client requestClient) {
+    public OAuthProxy(Context ctx, boolean useBasicSecret,
+            org.restlet.Client requestClient) {
         this.basicSecret = useBasicSecret;
         setContext(ctx);
         no.add(CacheDirective.noStore());
@@ -161,19 +168,19 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
             throw new IllegalStateException(ex);
         }
     }
-    
+
     private String setupState(Response response) {
         String sessionId = UUID.randomUUID().toString();
-        
+
         byte[] secret = new byte[20];
         random.nextBytes(secret);
         String state = Base64.encode(secret, false);
-        
+
         CookieSetting cs = new CookieSetting("_state", sessionId);
         response.getCookieSettings().add(cs);
 
         getContext().getAttributes().put(sessionId, state);
-        
+
         return state;
     }
 
@@ -186,11 +193,10 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
         // CSRF detected
         throw new Exception("The state does not match.");
     }
-    
+
     protected OAuthParameters createAuthorizationRequest() {
-        OAuthParameters parameters = new OAuthParameters()
-                .responseType(ResponseType.code)
-                .add(CLIENT_ID, getClientId());
+        OAuthParameters parameters = new OAuthParameters().responseType(
+                ResponseType.code).add(CLIENT_ID, getClientId());
         if (redirectURI != null) {
             parameters.redirectURI(redirectURI);
         }
@@ -199,17 +205,16 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
         }
         return parameters;
     }
-    
+
     protected OAuthParameters createTokenRequest(String code) {
-        OAuthParameters parameters = new OAuthParameters()
-                .grantType(GrantType.authorization_code)
-                .code(code);
+        OAuthParameters parameters = new OAuthParameters().grantType(
+                GrantType.authorization_code).code(code);
         if (redirectURI != null) {
             parameters.redirectURI(redirectURI);
         }
         return parameters;
     }
-    
+
     protected Representation getErrorPage(Exception ex) {
         // Failed in initial auth resource request
         StringBuilder sb = new StringBuilder();
@@ -217,10 +222,11 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
         if (ex instanceof OAuthException) {
             OAuthException oex = (OAuthException) ex;
             sb.append("OAuth2 error detected.\n");
-            
+
             sb.append("Error : ").append(oex.getError());
             if (oex.getErrorDescription() != null) {
-                sb.append("Error description : ").append(oex.getErrorDescription());
+                sb.append("Error description : ").append(
+                        oex.getErrorDescription());
             }
 
             if (oex.getErrorURI() != null) {
@@ -237,18 +243,23 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
 
         return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
     }
-    
-    private Token requestToken(String code) throws OAuthException, IOException, JSONException {
+
+    private Token requestToken(String code) throws OAuthException, IOException,
+            JSONException {
         getLogger().fine("Came back after authorization code = " + code);
 
         final AccessTokenClientResource tokenResource;
         String endpoint = getTokenURI();
         if (endpoint.contains("graph.facebook.com")) {
             // We should use Facebook implementation. (Old draft spec.)
-            tokenResource = new FacebookAccessTokenClientResource(new Reference(endpoint));
+            tokenResource = new FacebookAccessTokenClientResource(
+                    new Reference(endpoint));
         } else {
-            tokenResource = new AccessTokenClientResource(new Reference(endpoint));
-            tokenResource.setAuthenticationMethod(basicSecret ? ChallengeScheme.HTTP_BASIC : null);
+            tokenResource = new AccessTokenClientResource(new Reference(
+                    endpoint));
+            tokenResource
+                    .setAuthenticationMethod(basicSecret ? ChallengeScheme.HTTP_BASIC
+                            : null);
         }
         tokenResource.setClientCredentials(getClientId(), getClientSecret());
 
@@ -257,7 +268,7 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
         }
 
         OAuthParameters tokenRequest = createTokenRequest(code);
-        
+
         try {
             getLogger().fine("Sending access form : " + tokenRequest);
             return tokenResource.requestToken(tokenRequest);
@@ -265,7 +276,7 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
             tokenResource.release();
         }
     }
-    
+
     private int sendErrorPage(Response response, Exception ex) {
         response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, ex.getMessage());
         response.setEntity(getErrorPage(ex));
@@ -284,14 +295,15 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
             // Check if error is available.
             String error = params.getFirstValue(ERROR);
             if (error != null && !error.isEmpty()) {
-                validateState(request, params);    // CSRF protection
-                return sendErrorPage(response, OAuthException.toOAuthException(params));
+                validateState(request, params); // CSRF protection
+                return sendErrorPage(response,
+                        OAuthException.toOAuthException(params));
             }
             // Check if code is available.
             String code = params.getFirstValue(CODE);
             if (code != null && !code.isEmpty()) {
                 // Execute authorization_code grant
-                validateState(request, params);    // CSRF protection
+                validateState(request, params); // CSRF protection
                 Token token = requestToken(code);
                 request.getAttributes().put(Token.class.getName(), token);
                 return CONTINUE;
@@ -305,7 +317,7 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
 
         // Redirect to authorization uri
         OAuthParameters authRequest = createAuthorizationRequest();
-        authRequest.state(setupState(response));    // CSRF protection
+        authRequest.state(setupState(response)); // CSRF protection
         Reference redirRef = authRequest.toReference(getAuthorizationURI());
         getLogger().fine("Redirecting to : " + redirRef.toUri());
         response.setCacheDirectives(no);
@@ -322,7 +334,8 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
     }
 
     /**
-     * @param clientId the clientId to set
+     * @param clientId
+     *            the clientId to set
      */
     public void setClientId(String clientId) {
         this.clientId = clientId;
@@ -336,7 +349,8 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
     }
 
     /**
-     * @param clientSecret the clientSecret to set
+     * @param clientSecret
+     *            the clientSecret to set
      */
     public void setClientSecret(String clientSecret) {
         this.clientSecret = clientSecret;
@@ -350,7 +364,8 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
     }
 
     /**
-     * @param redirectURI the redirectURI to set
+     * @param redirectURI
+     *            the redirectURI to set
      */
     public void setRedirectURI(String redirectURI) {
         this.redirectURI = redirectURI;
@@ -364,7 +379,8 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
     }
 
     /**
-     * @param scope the scope to set
+     * @param scope
+     *            the scope to set
      */
     public void setScope(String[] scope) {
         this.scope = scope;
@@ -378,7 +394,8 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
     }
 
     /**
-     * @param authorizationURI the authorizationURI to set
+     * @param authorizationURI
+     *            the authorizationURI to set
      */
     public void setAuthorizationURI(String authorizationURI) {
         this.authorizationURI = authorizationURI;
@@ -392,7 +409,8 @@ public class OAuthProxy extends Filter implements OAuthResourceDefs {
     }
 
     /**
-     * @param tokenURI the tokenURI to set
+     * @param tokenURI
+     *            the tokenURI to set
      */
     public void setTokenURI(String tokenURI) {
         this.tokenURI = tokenURI;

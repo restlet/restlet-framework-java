@@ -72,9 +72,9 @@ import org.restlet.util.Series;
  * specific target resource.<br>
  * <br>
  * It also defines a precise life cycle. First, the instance is created and the
- * final {@link #init(Context, Request, Response)} method is invoked, with a
- * chance for the developer to do some additional initialization by overriding
- * the {@link #doInit()} method.<br>
+ * {@link #init(Context, Request, Response)} method is invoked. If you need to
+ * do some additional initialization, you should just override the
+ * {@link #doInit()} method.<br>
  * <br>
  * Then, the abstract {@link #handle()} method can be invoked. For concrete
  * behavior, see the {@link ClientResource} and {@link ServerResource}

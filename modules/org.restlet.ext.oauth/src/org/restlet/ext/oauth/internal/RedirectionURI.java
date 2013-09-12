@@ -30,35 +30,37 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.ext.oauth.internal;
 
 /**
- *
+ * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class RedirectionURI {
- 
+
     private final String uri;
+
     private final boolean dynamicConfigured;
-    
+
     public RedirectionURI(String uri) {
         this(uri, false);
     }
-    
+
     public RedirectionURI(String uri, boolean dynamicConfigured) {
         this.uri = uri;
         this.dynamicConfigured = dynamicConfigured;
     }
-    
+
     @Override
     public String toString() {
         return getURI();
     }
-    
+
     public String getURI() {
         return uri;
     }
-    
+
     public boolean isDynamicConfigured() {
         return dynamicConfigured;
     }

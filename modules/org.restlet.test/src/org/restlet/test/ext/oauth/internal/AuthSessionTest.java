@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.test.ext.oauth.internal;
 
 import static org.hamcrest.Matchers.anyOf;
@@ -121,13 +122,16 @@ public class AuthSessionTest {
                         instanceOf(Boolean.class), instanceOf(Date.class),
                         instanceOf(Map.class), instanceOf(List.class),
                         instanceOf(byte[].class)));
+
         if (val instanceof Map) {
-            Map map = (Map) val;
+            Map<?, ?> map = (Map<?, ?>) val;
+
             for (Object key : map.keySet()) {
                 isNormalized(map.get(key));
             }
         } else if (val instanceof List) {
-            List list = (List) val;
+            List<?> list = (List<?>) val;
+
             for (Object elem : list) {
                 isNormalized(elem);
             }

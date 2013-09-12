@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.ext.oauth.internal;
 
 import java.security.NoSuchAlgorithmException;
@@ -45,67 +46,72 @@ import org.restlet.ext.oauth.ResponseType;
 import org.restlet.ext.oauth.internal.Client.ClientType;
 
 /**
- *
+ * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public abstract class AbstractClientManager implements ClientManager {
-    
+
     public static final int RESEED_CLIENTS = 100;
-    public static final Object[] DEFAULT_SUPPORTED_FLOWS_PUBLIC = new Object[] {
-        ResponseType.token,
-    };
+
+    public static final Object[] DEFAULT_SUPPORTED_FLOWS_PUBLIC = new Object[] { ResponseType.token, };
+
     public static final Object[] DEFAULT_SUPPORTED_FLOWS_CONFIDENTIAL = new Object[] {
-        ResponseType.code,
-        GrantType.authorization_code,
-        GrantType.client_credentials,
-        GrantType.refresh_token
-    };
+            ResponseType.code, GrantType.authorization_code,
+            GrantType.client_credentials, GrantType.refresh_token };
+
     private SecureRandom random;
+
     private boolean issueClientSecretToPublicClients = false;
+
     private Map<ClientType, Object[]> defaultSupportedFlow;
+
     private volatile int count = 0;
-    
+
     public AbstractClientManager() {
         try {
             random = SecureRandom.getInstance("SHA1PRNG");
         } catch (NoSuchAlgorithmException ex) {
             throw new IllegalStateException(ex);
         }
-        defaultSupportedFlow = new EnumMap<ClientType, Object[]>(ClientType.class);
-        defaultSupportedFlow.put(ClientType.PUBLIC, DEFAULT_SUPPORTED_FLOWS_PUBLIC);
-        defaultSupportedFlow.put(ClientType.CONFIDENTIAL, DEFAULT_SUPPORTED_FLOWS_CONFIDENTIAL);
+        defaultSupportedFlow = new EnumMap<ClientType, Object[]>(
+                ClientType.class);
+        defaultSupportedFlow.put(ClientType.PUBLIC,
+                DEFAULT_SUPPORTED_FLOWS_PUBLIC);
+        defaultSupportedFlow.put(ClientType.CONFIDENTIAL,
+                DEFAULT_SUPPORTED_FLOWS_CONFIDENTIAL);
     }
-    
-    public Client createClient(ClientType clientType, String[] redirectURIs, Map properties) {
+
+    public Client createClient(ClientType clientType, String[] redirectURIs,
+            Map<String, Object> properties) {
         if (properties == null) {
-            properties = new HashMap();
+            properties = new HashMap<String, Object>();
         }
-        
+
         Object flows = properties.get(Client.PROPERTY_SUPPORTED_FLOWS);
         if (flows == null) {
             flows = defaultSupportedFlow.get(clientType);
             properties.put(Client.PROPERTY_SUPPORTED_FLOWS, flows);
         }
-        
+
         /*
          * The authorization server MUST require the following clients to
-         * register their redirection endpoint:
-         * o  Public clients.
-         * o  Confidential clients utilizing the implicit grant type.
-         * (3.1.2.2. Registration Requirements)
+         * register their redirection endpoint: o Public clients. o Confidential
+         * clients utilizing the implicit grant type. (3.1.2.2. Registration
+         * Requirements)
          */
-        if (clientType == ClientType.PUBLIC ||
-                (clientType == ClientType.CONFIDENTIAL &&
-                Arrays.asList((Object[]) flows).contains(ResponseType.token))) {
+        if (clientType == ClientType.PUBLIC
+                || (clientType == ClientType.CONFIDENTIAL && Arrays.asList(
+                        (Object[]) flows).contains(ResponseType.token))) {
             if (redirectURIs == null || redirectURIs.length == 0) {
-                throw new IllegalArgumentException("RedirectionURI(s) required.");
+                throw new IllegalArgumentException(
+                        "RedirectionURI(s) required.");
             }
         }
-        
+
         String clientId = UUID.randomUUID().toString();
         char[] clientSecret = null;
-        if (clientType == ClientType.CONFIDENTIAL ||
-                (clientType == ClientType.PUBLIC && isIssueClientSecretToPublicClients())) {
+        if (clientType == ClientType.CONFIDENTIAL
+                || (clientType == ClientType.PUBLIC && isIssueClientSecretToPublicClients())) {
             // Issue a client secret to the confidential client.
             if (count++ > RESEED_CLIENTS) {
                 count = 0;
@@ -115,11 +121,14 @@ public abstract class AbstractClientManager implements ClientManager {
             random.nextBytes(secret);
             clientSecret = Base64.encode(secret, false).toCharArray();
         }
-        
-        return createClient(clientId, clientSecret, clientType, redirectURIs, properties);
+
+        return createClient(clientId, clientSecret, clientType, redirectURIs,
+                properties);
     }
-    
-    protected abstract Client createClient(String clientId, char[] clientSecret, ClientType clientType, String[] redirectURIs, Map properties);
+
+    protected abstract Client createClient(String clientId,
+            char[] clientSecret, ClientType clientType, String[] redirectURIs,
+            Map<String, Object> properties);
 
     /**
      * @return the issueClientSecretToPublicClients
@@ -129,12 +138,14 @@ public abstract class AbstractClientManager implements ClientManager {
     }
 
     /**
-     * @param issueClientSecretToPublicClients the issueClientSecretToPublicClients to set
+     * @param issueClientSecretToPublicClients
+     *            the issueClientSecretToPublicClients to set
      */
-    public void setIssueClientSecretToPublicClients(boolean issueClientSecretToPublicClients) {
+    public void setIssueClientSecretToPublicClients(
+            boolean issueClientSecretToPublicClients) {
         this.issueClientSecretToPublicClients = issueClientSecretToPublicClients;
     }
-    
+
     public void setDefaultSupportedFlow(ClientType clientType, Object[] flows) {
         if (flows == null) {
             throw new IllegalArgumentException("Flows cannot be null.");

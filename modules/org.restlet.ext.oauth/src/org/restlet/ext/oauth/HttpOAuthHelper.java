@@ -60,8 +60,8 @@ import org.restlet.util.Series;
  * }
  * </pre>
  * 
- * Here is the list of parameters that are supported. They should be set
- * before an OAuth2Server or Client is started:
+ * Here is the list of parameters that are supported. They should be set before
+ * an OAuth2Server or Client is started:
  * <table>
  * <tr>
  * <th>Parameter name</th>
@@ -124,7 +124,7 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
     public static String getAuthPage(Context c) {
         return c.getParameters().getFirstValue("authPage", "/auth_page");
     }
-    
+
     /**
      * Returns the value of the "loginPage" parameter.
      * 
@@ -161,7 +161,7 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
             return false;
         return Boolean.parseBoolean(skip);
     }
-    
+
     public static String getErrorPageTemplate(Context c) {
         return c.getParameters().getFirstValue("errorPageTemplate");
     }
@@ -177,7 +177,7 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
     public static void setAuthPage(String authPage, Context c) {
         c.getParameters().set("authPage", authPage);
     }
-    
+
     /**
      * Sets the value of the "loginPage" parameter.
      * 
@@ -213,7 +213,7 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
     public static void setAuthSkipApproved(boolean skip, Context c) {
         c.getParameters().set("authSkipApproved", Boolean.toString(skip));
     }
-    
+
     public static void setErrorPageTemplate(String errorPageTemplate, Context c) {
         c.getParameters().set("errorPageTemplate", errorPageTemplate);
     }
@@ -227,9 +227,8 @@ public class HttpOAuthHelper extends AuthenticatorHelper {
     }
 
     @Override
-    public void formatRequest(ChallengeWriter cw,
-            ChallengeRequest challenge, Response response,
-            Series<Header> httpHeaders) throws IOException {
+    public void formatRequest(ChallengeWriter cw, ChallengeRequest challenge,
+            Response response, Series<Header> httpHeaders) throws IOException {
         // Format the parameters WWW-Authenticate: OAuth realm='Example
         // Service', error='expired-token'
         cw.append("realm='");

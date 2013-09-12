@@ -30,10 +30,9 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.ext.oauth;
 
-import java.io.IOException;
-import org.json.JSONException;
 import org.restlet.data.Form;
 import org.restlet.data.Reference;
 import org.restlet.ext.oauth.internal.Token;
@@ -44,41 +43,44 @@ import org.restlet.representation.Representation;
  * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
-public class FacebookAccessTokenClientResource extends AccessTokenClientResource {
-    
+public class FacebookAccessTokenClientResource extends
+        AccessTokenClientResource {
+
     public FacebookAccessTokenClientResource(Reference tokenURI) {
         super(tokenURI);
     }
-    
+
     @Override
     public Token requestToken(OAuthParameters parameters) throws OAuthException {
         // Graph API MUST use body method.
         setupBodyClientCredentials(parameters);
-        
+
         Representation input = parameters.toRepresentation();
-        
+
         // Unlike RFC6749, Facebook token parameters are included in www-form.
         Form result = new Form(post(input));
-        
+
         if (result.getFirstValue(ERROR) != null) {
             throw OAuthException.toOAuthException(result);
         }
-        
+
         return FacebookTokenResponse.parseResponse(result);
     }
-    
+
     private static class FacebookTokenResponse implements Token {
-        
+
         private String accessToken;
+
         private Integer expirePeriod;
 
         public static FacebookTokenResponse parseResponse(Form result) {
             FacebookTokenResponse token = new FacebookTokenResponse();
             token.accessToken = result.getFirstValue(ACCESS_TOKEN);
-            token.expirePeriod = Integer.parseInt(result.getFirstValue("expires"));
+            token.expirePeriod = Integer.parseInt(result
+                    .getFirstValue("expires"));
             return token;
         }
-        
+
         public String getAccessToken() {
             return accessToken;
         }
@@ -98,6 +100,6 @@ public class FacebookAccessTokenClientResource extends AccessTokenClientResource
         public String[] getScope() {
             return null;
         }
-        
+
     }
 }

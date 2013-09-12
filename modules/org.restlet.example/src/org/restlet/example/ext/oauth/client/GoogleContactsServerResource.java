@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.example.ext.oauth.client;
 
 import org.restlet.ext.oauth.ProtectedClientResource;
@@ -40,23 +41,24 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
 /**
- *
+ * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class GoogleContactsServerResource extends ServerResource {
-    
+
     @Get
-    public Representation getContacts(){
-        Token token = (Token) getRequest().getAttributes().get(Token.class.getName());
+    public Representation getContacts() {
+        Token token = (Token) getRequest().getAttributes().get(
+                Token.class.getName());
         if (token == null) {
             return new StringRepresentation("Token not found!");
         }
-        
-        ProtectedClientResource contacts =
-                new ProtectedClientResource("https://www.google.com/m8/feeds/contacts/default/full");
+
+        ProtectedClientResource contacts = new ProtectedClientResource(
+                "https://www.google.com/m8/feeds/contacts/default/full");
         contacts.setUseBodyMethod(false);
         contacts.setToken(token);
-        
+
         return contacts.get();
     }
 }

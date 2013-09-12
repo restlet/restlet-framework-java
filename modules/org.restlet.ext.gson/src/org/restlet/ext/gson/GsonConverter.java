@@ -78,7 +78,7 @@ public class GsonConverter extends ConverterHelper {
      *            The source object to marshal.
      * @return The marshaling {@link GsonRepresentation}.
      */
-    protected <T> GsonRepresentation<T> create( T source) {
+    protected <T> GsonRepresentation<T> create(T source) {
         return new GsonRepresentation<T>(source);
     }
 

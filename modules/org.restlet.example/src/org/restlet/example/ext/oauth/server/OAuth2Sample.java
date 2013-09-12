@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.example.ext.oauth.server;
 
 import org.restlet.Component;
@@ -42,39 +43,43 @@ import org.restlet.ext.oauth.internal.memory.MemoryClientManager;
 import org.restlet.ext.oauth.internal.memory.MemoryTokenManager;
 
 /**
- *
+ * 
  * @author Shotaro Uchida <fantom@xmaker.mx>
  */
 public class OAuth2Sample {
-    
+
     private static SampleUserManager userManager;
+
     private static ClientManager clientManager;
+
     private static TokenManager tokenManager;
-    
+
     protected static SampleUserManager getSampleUserManager() {
         return userManager;
     }
-    
+
     protected static ClientManager getClientManager() {
         return clientManager;
     }
-    
+
     protected static TokenManager getTokenManager() {
         return tokenManager;
     }
-    
+
     public static void main(String[] args) throws Exception {
         userManager = new SampleUserManager();
         userManager.addUser("alice").setPassword("abcdef".toCharArray());
         userManager.addUser("bob").setPassword("123456".toCharArray());
-        
+
         clientManager = new MemoryClientManager();
-        Client client = clientManager.createClient(ClientType.CONFIDENTIAL, null, null);
+        Client client = clientManager.createClient(ClientType.CONFIDENTIAL,
+                null, null);
         System.out.println("SampleClient: client_id=" + client.getClientId()
-                + ", client_secret=" + String.copyValueOf(client.getClientSecret()));
-        
+                + ", client_secret="
+                + String.copyValueOf(client.getClientSecret()));
+
         tokenManager = new MemoryTokenManager();
-        
+
         // Setup Restlet
         Component component = new Component();
         component.getClients().add(Protocol.HTTP);
@@ -87,7 +92,7 @@ public class OAuth2Sample {
         OAuth2ServerApplication app = new OAuth2ServerApplication();
         component.getDefaultHost().attach("/oauth", app);
         component.getInternalRouter().attach("/oauth", app);
-        
+
         component.start();
     }
 }

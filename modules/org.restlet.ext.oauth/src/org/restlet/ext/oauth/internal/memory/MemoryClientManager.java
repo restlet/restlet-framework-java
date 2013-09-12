@@ -30,6 +30,7 @@
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
+
 package org.restlet.ext.oauth.internal.memory;
 
 import java.util.Map;
@@ -47,15 +48,18 @@ import org.restlet.ext.oauth.internal.Client.ClientType;
 public class MemoryClientManager extends AbstractClientManager {
 
     private final Map<String, Client> clients = new ConcurrentHashMap<String, Client>();
-    
-    protected Client createClient(String clientId, char[] clientSecret, ClientType clientType, String[] redirectURIs, Map properties) {
-        MemoryClient client = new MemoryClient(UUID.randomUUID().toString(), clientType, redirectURIs, properties);
+
+    protected Client createClient(String clientId, char[] clientSecret,
+            ClientType clientType, String[] redirectURIs,
+            Map<String, Object> properties) {
+        MemoryClient client = new MemoryClient(UUID.randomUUID().toString(),
+                clientType, redirectURIs, properties);
         if (clientSecret != null) {
             client.setClientSecret(clientSecret);
         }
-        
+
         clients.put(client.getClientId(), client);
-        
+
         return client;
     }
 

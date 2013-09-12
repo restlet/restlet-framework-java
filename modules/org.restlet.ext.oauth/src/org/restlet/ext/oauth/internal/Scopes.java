@@ -47,7 +47,8 @@ import org.restlet.security.Role;
  */
 public class Scopes {
 
-    public static String toScope(List<Role> roles) throws IllegalArgumentException {
+    public static String toScope(List<Role> roles)
+            throws IllegalArgumentException {
         if (roles == null || roles.isEmpty()) {
             return "";
         }
@@ -60,7 +61,7 @@ public class Scopes {
         }
         return sb.substring(1);
     }
-    
+
     public static String toString(String[] scopes) {
         StringBuilder sb = new StringBuilder();
         for (String scope : scopes) {
@@ -82,16 +83,20 @@ public class Scopes {
         return rname;
     }
 
+    @SuppressWarnings("deprecation")
     public static Role toRole(String scope) {
         return new Role(scope, null);
     }
 
+    @SuppressWarnings("deprecation")
     public static List<Role> toRoles(String scopes) {
         String[] tmp = parseScope(scopes);
         List<Role> toRet = new ArrayList<Role>(tmp.length);
+
         for (String scope : tmp) {
             toRet.add(new Role(scope, null));
         }
+
         return toRet;
     }
 
@@ -105,7 +110,7 @@ public class Scopes {
         }
         return new String[0];
     }
-    
+
     public static String[] parseScope(List<Role> roles) {
         String[] scopes = new String[roles.size()];
         for (int i = 0; i < roles.size(); i++) {
@@ -113,10 +118,10 @@ public class Scopes {
         }
         return scopes;
     }
-    
+
     public static boolean isIdentical(String[] a, String[] b) {
-        List al = Arrays.asList(a);
-        List bl = Arrays.asList(b);
+        List<String> al = Arrays.asList(a);
+        List<String> bl = Arrays.asList(b);
         return al.containsAll(bl) && bl.containsAll(al);
     }
 }
