@@ -1132,14 +1132,8 @@ public class ClientResource extends Resource {
         if (next != null) {
             // [ifndef gwt]
             // Check if request entity buffering must be done
-            Representation entity = request.getEntity();
-
-            if (isRequestEntityBuffering()
-                    && (entity != null)
-                    && (entity.isTransient() || (entity.getSize() == Representation.UNKNOWN_SIZE))
-                    && entity.isAvailable()) {
-                request.setEntity(new org.restlet.engine.io.BufferingRepresentation(
-                        entity));
+            if (isRequestEntityBuffering()) {
+                request.bufferEntity();
             }
             // [enddef]
 
@@ -1185,14 +1179,8 @@ public class ClientResource extends Resource {
             }
 
             // Check if response entity buffering must be done
-            entity = response.getEntity();
-
-            if (isResponseEntityBuffering()
-                    && (entity != null)
-                    && (entity.isTransient() || (entity.getSize() == Representation.UNKNOWN_SIZE))
-                    && entity.isAvailable()) {
-                response.setEntity(new org.restlet.engine.io.BufferingRepresentation(
-                        entity));
+            if (isResponseEntityBuffering()) {
+                response.bufferEntity();
             }
             // [enddef]
         } else {

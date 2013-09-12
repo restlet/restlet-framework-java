@@ -4,6 +4,13 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Enhancements
+      - Added a Message#bufferEntity() method to facilitate buffering of request and response
+        entities/representations when they are transient but need to be consumed multiple times.
+        Note that if not used properly, it can easily drain JVM memory.
+      - Moved BufferingRepresentation from Engine to org.restlet.representation package.
+    - Bug fixed
+      - 
 
 - 2.2 Milestone 5 (09/07/2013)
     - Bug fixed

@@ -45,8 +45,10 @@ import org.restlet.data.CacheDirective;
 import org.restlet.data.MediaType;
 import org.restlet.data.RecipientInfo;
 import org.restlet.data.Warning;
+import org.restlet.representation.BufferingRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ClientResource;
 
 /**
  * Generic message exchanged between components.
@@ -105,6 +107,27 @@ public abstract class Message {
         this.onSent = null;
         this.recipientsInfo = null;
         this.warnings = null;
+    }
+
+    // [ifndef gwt] method
+    /**
+     * If the entity is transient or its size unknown in advance but available,
+     * then the entity is wrapped with a {@link BufferingRepresentation}.<br>
+     * <br>
+     * Be careful as this method could create potentially very large byte
+     * buffers in memory that could impact your application performance.
+     * 
+     * @see BufferingRepresentation
+     * @see ClientResource#setRequestEntityBuffering(boolean)
+     * @see ClientResource#setResponseEntityBuffering(boolean)
+     */
+    public void bufferEntity() {
+        if ((getEntity() != null)
+                && (getEntity().isTransient() || (getEntity().getSize() == Representation.UNKNOWN_SIZE))
+                && getEntity().isAvailable()) {
+            setEntity(new org.restlet.representation.BufferingRepresentation(
+                    getEntity()));
+        }
     }
 
     /**

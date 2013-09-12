@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.engine.io;
+package org.restlet.representation;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,7 +45,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.representation.Representation;
+import org.restlet.engine.io.BioUtils;
 import org.restlet.util.WrapperRepresentation;
 
 /**
