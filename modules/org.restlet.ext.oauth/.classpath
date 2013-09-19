@@ -12,5 +12,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.commons.pool"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.freemarker"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.json"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.crypto"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
