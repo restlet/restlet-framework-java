@@ -9,7 +9,7 @@
 	<package id="joda-time" name="org.joda.time">
 		<maven>
 			<groupId>joda-time</groupId>
-                        <artefactId>joda-time</artefactId>
+			<artifactId>joda-time</artifactId>
 		</maven>
 	</package>
 	<distributions>

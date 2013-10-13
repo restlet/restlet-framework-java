@@ -10,7 +10,7 @@
 	<package id="gson" name="com.google.code.gson">
 		<maven>
 			<groupId>com.google.code.gson</groupId>
-                        <artefactId>gson</artefactId>
+			<artifactId>gson</artifactId>
 		</maven>
 	</package>
 	<distributions>
