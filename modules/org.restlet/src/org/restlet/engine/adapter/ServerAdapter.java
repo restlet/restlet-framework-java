@@ -100,7 +100,7 @@ public class ServerAdapter extends Adapter {
                         response.getStatus().getReasonPhrase());
             }
         } catch (Exception e) {
-            getLogger().log(Level.INFO,
+            getLogger().log(Level.WARNING,
                     "Exception intercepted while adding the response headers",
                     e);
             response.getHttpCall().setStatusCode(
