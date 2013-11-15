@@ -10,6 +10,8 @@ Changes log
     - Enhancements
       - Added support of nowrap "deflater" (support of GZIP compatible compression), issue #786.
         Reported and contributed by Tal Liron.
+      - Added ability to override Accept-encoding header values #654.
+        Proposed by Tal Liron.
 
 - 2.1.4 (09/07/2013)
     - Bug fixed
