@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
@@ -69,7 +70,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * @return The list of supported encodings.
      */
     public static List<Encoding> getSupportedEncodings() {
-        return Arrays.<Encoding> asList(Encoding.GZIP, Encoding.DEFLATE,
+        return Arrays.<Encoding> asList(Encoding.GZIP, Encoding.DEFLATE, Encoding.DEFLATE_NOWRAP,
                 Encoding.ZIP, Encoding.IDENTITY);
     }
 
@@ -274,6 +275,8 @@ public class EncodeRepresentation extends WrapperRepresentation {
                 encoderOutputStream = new GZIPOutputStream(outputStream);
             } else if (this.encoding.equals(Encoding.DEFLATE)) {
                 encoderOutputStream = new DeflaterOutputStream(outputStream);
+            } else if (this.encoding.equals(Encoding.DEFLATE_NOWRAP)) {
+                encoderOutputStream = new DeflaterOutputStream(outputStream, new Deflater(Deflater.DEFAULT_COMPRESSION, true));
             } else if (this.encoding.equals(Encoding.ZIP)) {
                 @SuppressWarnings("resource")
                 final ZipOutputStream stream = new ZipOutputStream(outputStream);
