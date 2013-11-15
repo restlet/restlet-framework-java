@@ -12,6 +12,7 @@ Changes log
       - Added client support for HTTP OAuth MAC authentication.
     - Bug fixed
       - Fixed issue #789, declaration of gson's maven artifact identifier.
+        Reported by mafuba.
 
 - 2.2 Milestone 5 (09/07/2013)
     - Bug fixed
