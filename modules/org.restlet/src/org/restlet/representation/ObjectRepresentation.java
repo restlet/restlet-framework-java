@@ -173,9 +173,8 @@ public class ObjectRepresentation<T extends Serializable> extends
 
             ois.close();
             // [ifndef android]
-        } else if (VARIANT_OBJECT_XML_SUPPORTED
-                && serializedRepresentation.getMediaType().equals(
-                        MediaType.APPLICATION_JAVA_OBJECT_XML)) {
+        } else if (serializedRepresentation.getMediaType().equals(
+                MediaType.APPLICATION_JAVA_OBJECT_XML)) {
             if (!VARIANT_OBJECT_XML_SUPPORTED) {
                 throw new IllegalArgumentException(
                         "SECURITY WARNING: The usage of XMLDecoder when "

@@ -7,6 +7,8 @@ Changes log
     - Bug fixed
        - Fixed issue #791, EncoderService exposed size-fixed lists of ignored and accepted media types.
          Reported by Tal Liron.
+       - Fixed issue #784, that leads to a maladjusted exception.
+         Reported by David Jorm.
     - Enhancements
       - Added support of nowrap "deflater" (support of GZIP compatible compression), issue #786.
         Reported and contributed by Tal Liron.
