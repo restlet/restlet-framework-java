@@ -33,7 +33,6 @@
 
 package org.restlet.service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +43,8 @@ import org.restlet.data.MediaType;
 import org.restlet.engine.application.Encoder;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
+
+import com.google.gwt.emul.java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Application service automatically encoding or compressing request entities.
@@ -66,8 +67,7 @@ public class EncoderService extends Service {
      * @return The list of default encoded media types.
      */
     public static List<MediaType> getDefaultAcceptedMediaTypes() {
-        final List<MediaType> result = new ArrayList<MediaType>();
-        result.add(MediaType.ALL);
+        final List<MediaType> result = Arrays.<MediaType> asList(MediaType.ALL);
         return result;
     }
 
@@ -91,12 +91,12 @@ public class EncoderService extends Service {
     /**
      * The media types that should be encoded.
      */
-    private volatile List<MediaType> acceptedMediaTypes;
+    private final List<MediaType> acceptedMediaTypes;
 
     /**
      * The media types that should be ignored.
      */
-    private volatile List<MediaType> ignoredMediaTypes;
+    private final List<MediaType> ignoredMediaTypes;
 
     /**
      * The minimal size necessary for encoding.
@@ -119,8 +119,10 @@ public class EncoderService extends Service {
     public EncoderService(boolean enabled) {
         super(enabled);
         this.mininumSize = DEFAULT_MINIMUM_SIZE;
-        this.acceptedMediaTypes = getDefaultAcceptedMediaTypes();
-        this.ignoredMediaTypes = getDefaultIgnoredMediaTypes();
+        this.acceptedMediaTypes = new CopyOnWriteArrayList<MediaType>(
+                getDefaultAcceptedMediaTypes());
+        this.ignoredMediaTypes = new CopyOnWriteArrayList<MediaType>(
+                getDefaultIgnoredMediaTypes());
     }
 
     /**
