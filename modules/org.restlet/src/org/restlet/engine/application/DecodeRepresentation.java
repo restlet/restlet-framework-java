@@ -43,7 +43,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 
@@ -69,14 +71,14 @@ public class DecodeRepresentation extends WrapperRepresentation {
      */
     public static List<Encoding> getSupportedEncodings() {
         return Arrays.<Encoding> asList(Encoding.GZIP, Encoding.DEFLATE,
-                Encoding.ZIP, Encoding.IDENTITY);
+                Encoding.DEFLATE_NOWRAP, Encoding.ZIP, Encoding.IDENTITY);
     }
 
     /** Indicates if the decoding can happen. */
     private volatile boolean decoding;
 
     /** List of encodings still applied to the decodeRepresentation */
-    private volatile List<Encoding> wrappedEncodings;
+    private final List<Encoding> wrappedEncodings;
 
     /**
      * Constructor.
@@ -88,8 +90,8 @@ public class DecodeRepresentation extends WrapperRepresentation {
         super(wrappedRepresentation);
         this.decoding = getSupportedEncodings().containsAll(
                 wrappedRepresentation.getEncodings());
-        this.wrappedEncodings = new ArrayList<Encoding>();
-        this.wrappedEncodings.addAll(wrappedRepresentation.getEncodings());
+        this.wrappedEncodings = new CopyOnWriteArrayList<Encoding>(
+                wrappedRepresentation.getEncodings());
     }
 
     /**
@@ -126,6 +128,9 @@ public class DecodeRepresentation extends WrapperRepresentation {
                 result = new GZIPInputStream(encodedStream);
             } else if (encoding.equals(Encoding.DEFLATE)) {
                 result = new InflaterInputStream(encodedStream);
+            } else if (encoding.equals(Encoding.DEFLATE_NOWRAP)) {
+                result = new InflaterInputStream(encodedStream, new Inflater(
+                        true));
             } else if (encoding.equals(Encoding.ZIP)) {
                 @SuppressWarnings("resource")
                 final ZipInputStream stream = new ZipInputStream(encodedStream);

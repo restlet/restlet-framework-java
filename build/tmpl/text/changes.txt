@@ -10,6 +10,8 @@ Changes log
         Note that if not used properly, it can easily drain JVM memory.
       - Moved BufferingRepresentation from Engine to org.restlet.representation package.
       - Added client support for HTTP OAuth MAC authentication.
+      - Added support of nowrap "deflater" (support of GZIP compatible compression), issue #786.
+        Reported and contributed by Tal Liron.
     - Bug fixed
       - Fixed issue #789, declaration of gson's maven artifact identifier.
         Reported by mafuba.
