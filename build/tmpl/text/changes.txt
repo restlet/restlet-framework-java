@@ -12,6 +12,8 @@ Changes log
         Reported and contributed by Tal Liron.
       - Added ability to override Accept-encoding header values #654.
         Proposed by Tal Liron.
+      - WritableSocketChannel whould write in loop to ensure all data been written, issue #783.
+        Contributed by Xiaoping Feng.
 
 - 2.1.4 (09/07/2013)
     - Bug fixed
