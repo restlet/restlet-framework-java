@@ -51,6 +51,11 @@ public final class Encoding extends Metadata {
     public static final Encoding DEFLATE = new Encoding("deflate",
             "Deflate compression using the zlib format");
 
+    /** The zlib format defined by RFC 1950 and 1951, without wrapping. */
+    public static final Encoding DEFLATE_NOWRAP = new Encoding(
+            "deflate-no-wrap",
+            "Deflate compression using the zlib format (without wrapping)");
+
     /** The FreeMarker encoding. */
     public static final Encoding FREEMARKER = new Encoding("freemarker",
             "FreeMarker templated representation");
@@ -91,6 +96,8 @@ public final class Encoding extends Metadata {
                 result = COMPRESS;
             } else if (name.equalsIgnoreCase(DEFLATE.getName())) {
                 result = DEFLATE;
+            } else if (name.equalsIgnoreCase(DEFLATE_NOWRAP.getName())) {
+                result = DEFLATE_NOWRAP;
             } else if (name.equalsIgnoreCase(IDENTITY.getName())) {
                 result = IDENTITY;
             } else if (name.equalsIgnoreCase(FREEMARKER.getName())) {
