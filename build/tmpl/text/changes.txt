@@ -8,7 +8,6 @@ Changes log
        - Fixed issue #791, EncoderService exposed size-fixed lists of ignored and accepted media types.
          Reported by Tal Liron.
 
-
 - 2.1.4 (09/07/2013)
     - Bug fixed
        - Fixed issues #774, #778 - Removed default support of JavaBeans XML-deserialization, 
