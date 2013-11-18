@@ -12,7 +12,7 @@ SetCompressor lzma
 !define COMPANY "Restlet"
 !define URL http://www.restlet.org
 
-Caption "Restlet Framework - Edition @edition-medium-label@ - Version @version-full@"
+Caption "Restlet Framework @version-compact@ - Edition @edition-medium-label@"
 BrandingText " "
 
 # MUI defines
@@ -148,7 +148,7 @@ Section -post SEC0001
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Restlet Extensions (javadocs).lnk" "$INSTDIR\docs\ext\index.html"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Restlet Engine (javadocs).lnk" "$INSTDIR\docs\engine\index.html"
     !insertmacro MUI_STARTMENU_WRITE_END
-    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" DisplayName "Restlet Framework - @edition-medium-label@ - @version-full@"
+    WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" DisplayName "Restlet Framework @version-compact@ - Edition @edition-medium-label@"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" DisplayVersion "${VERSION}"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" Publisher "${COMPANY}"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Restlet Framework - @edition-medium-label@ ${VERSION}" URLInfoAbout "${URL}"
