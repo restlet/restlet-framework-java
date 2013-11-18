@@ -36,6 +36,7 @@ package org.restlet.service;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Context;
 import org.restlet.data.Encoding;
@@ -43,8 +44,6 @@ import org.restlet.data.MediaType;
 import org.restlet.engine.application.Encoder;
 import org.restlet.representation.Representation;
 import org.restlet.routing.Filter;
-
-import com.google.gwt.emul.java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Application service automatically encoding or compressing request entities.
