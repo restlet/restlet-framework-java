@@ -625,7 +625,8 @@ public class HeaderUtils {
                 // [ifndef gwt] instruction
                 extensionHeaders = new Series<Header>(Header.class);
                 // [ifdef gwt] instruction uncomment
-                // extensionHeaders = new org.restlet.engine.util.HeaderSeries();
+                // extensionHeaders = new
+                // org.restlet.engine.util.HeaderSeries();
                 response.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
                         extensionHeaders);
             }
@@ -846,10 +847,19 @@ public class HeaderUtils {
                 } else if (header.getName().equalsIgnoreCase(
                         HeaderConstants.HEADER_CONTENT_MD5)) {
                     // [ifndef gwt]
+                    // Since an MD5 hash is 128 bits long, its base64 encoding
+                    // is 22 bytes if unpadded, or 24 bytes if padded. If the
+                    // header value is unpadded, append two base64 padding
+                    // characters ("==") before passing the value to
+                    // Base64.decode(), which requires its input argument's
+                    // length to be a multiple of four.
+                    String base64hash = header.getValue();
+                    if (base64hash.length() == 22) {
+                        base64hash += "==";
+                    }
                     result.setDigest(new org.restlet.data.Digest(
                             org.restlet.data.Digest.ALGORITHM_MD5,
-                            org.restlet.engine.util.Base64.decode(header
-                                    .getValue())));
+                            org.restlet.engine.util.Base64.decode(base64hash)));
                     entityHeaderFound = true;
                     // [enddef]
                 }

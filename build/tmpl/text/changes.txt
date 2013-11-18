@@ -9,6 +9,8 @@ Changes log
          Reported by Tal Liron.
        - Fixed issue #784, that leads to a maladjusted exception.
          Reported by David Jorm.
+       - Fixed issue #649, if needed, add base64 padding characters to encoded md5 hash before decoding.
+         Reported and contributed by Andy Dennie.
     - Enhancements
       - Added support of nowrap "deflater" (support of GZIP compatible compression), issue #786.
         Reported and contributed by Tal Liron.
