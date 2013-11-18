@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><templates><template autoinsert="false" context="filecomment_context" deleted="false" description="Comment for created Java files" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.filecomment" name="filecomment">/**&#13;
- * Copyright 2005-2013 Restlet S.A.S.&#13;
+ * Copyright 2005-2013 Restlet&#13;
  * &#13;
  * The contents of this file are subject to the terms of one of the following&#13;
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL&#13;
@@ -28,6 +28,6 @@
  * limitations, transferable or non-transferable, directly at&#13;
  * http://www.restlet.com/products/restlet-framework&#13;
  * &#13;
- * Restlet is a registered trademark of Restlet S.A.S.&#13;
+ * Restlet is a registered trademark of Restlet&#13;
  */&#13;
 </template></templates>

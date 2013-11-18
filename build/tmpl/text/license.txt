@@ -11,7 +11,7 @@ is provided to you under either the Apache license version 2.0 or the LGPL licen
 version 3.0 or the LGPL license version 2.1 or the CDDL license version 1.0 or the
 EPL license version 1.0.
 
-In addition, we want to expressly mention that Restlet S.A.S., the only
+In addition, we want to expressly mention that Restlet, the only
 copyright holder of the whole source code, has no intention to release future 
 versions of the Restlet open source project under more restrictive licences 
 (such as GPL). If we change the license again in the future, it could only be 
@@ -23,7 +23,7 @@ Those libraries are provided to you for convenience purpose but remain under
 their respective license which are reproduced in the "lib/*/license.txt" files.
 For special licensing requests, please contact:
   
-    Restlet S.A.S.
+    Restlet
 	ESSEC Ventures - CNIT - BP 230
     2 place de la Defense
     92053 Paris La Defense

@@ -9,7 +9,7 @@ SetCompressor lzma
 !define RESTLETREGKEY "SOFTWARE\Restlet Framework"
 !define BASEREGKEY "SOFTWARE\Restlet Framework\Edition @edition-medium-label@"
 !define REGKEY "SOFTWARE\Restlet Framework\Edition @edition-medium-label@\@version-full@"
-!define COMPANY "Restlet S.A.S."
+!define COMPANY "Restlet"
 !define URL http://www.restlet.org
 
 Caption "Restlet Framework - Edition @edition-medium-label@ - Version @version-full@"
