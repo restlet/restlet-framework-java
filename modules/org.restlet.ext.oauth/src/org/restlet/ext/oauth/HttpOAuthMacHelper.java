@@ -41,7 +41,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.header.Header;
 import org.restlet.engine.security.AuthenticatorHelper;
-import org.restlet.ext.crypto.internal.CryptoUtils;
+import org.restlet.ext.oauth.internal.CryptoUtils;
 import org.restlet.util.Series;
 
 /**
