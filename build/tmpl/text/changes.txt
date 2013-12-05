@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+
 - 2.1.5 (12/05/2013)
     - Bug fixed
        - Fixed issue #791, EncoderService exposed size-fixed lists of ignored and accepted media types.
