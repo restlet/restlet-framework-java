@@ -127,15 +127,43 @@ public class ObjectRepresentation<T extends Serializable> extends
      * @throws ClassNotFoundException
      * @throws IllegalArgumentException
      */
-    @SuppressWarnings("unchecked")
     public ObjectRepresentation(Representation serializedRepresentation,
             final ClassLoader classLoader) throws IOException,
             ClassNotFoundException, IllegalArgumentException {
+        this(serializedRepresentation, classLoader,
+                VARIANT_OBJECT_BINARY_SUPPORTED, VARIANT_OBJECT_XML_SUPPORTED);
+    }
+
+    /**
+     * Constructor reading the object from a serialized representation. This
+     * representation must have the proper media type:
+     * "application/x-java-serialized-object".
+     * 
+     * @param serializedRepresentation
+     *            The serialized representation.
+     * @param classLoader
+     *            The class loader used to read the object.
+     * @param variantObjectBinarySupported
+     *            Indicates whether the JavaBeans binary deserialization is
+     *            supported or not.
+     * @param variantObjectXmlSupported
+     *            Indicates whether the JavaBeans XML deserialization is
+     *            supported or not.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @throws IllegalArgumentException
+     */
+    @SuppressWarnings("unchecked")
+    public ObjectRepresentation(Representation serializedRepresentation,
+            final ClassLoader classLoader,
+            boolean variantObjectBinarySupported,
+            boolean variantObjectXmlSupported) throws IOException,
+            ClassNotFoundException, IllegalArgumentException {
         super(MediaType.APPLICATION_JAVA_OBJECT);
 
-        if (serializedRepresentation.getMediaType().equals(
-                MediaType.APPLICATION_JAVA_OBJECT)) {
-            if (!VARIANT_OBJECT_BINARY_SUPPORTED) {
+        if (MediaType.APPLICATION_JAVA_OBJECT.equals(serializedRepresentation
+                .getMediaType())) {
+            if (!variantObjectBinarySupported) {
                 throw new IllegalArgumentException(
                         "SECURITY WARNING: The usage of ObjectInputStream when "
                                 + "deserializing binary presentations from unstrusted "
@@ -173,9 +201,9 @@ public class ObjectRepresentation<T extends Serializable> extends
 
             ois.close();
             // [ifndef android]
-        } else if (serializedRepresentation.getMediaType().equals(
-                MediaType.APPLICATION_JAVA_OBJECT_XML)) {
-            if (!VARIANT_OBJECT_XML_SUPPORTED) {
+        } else if (MediaType.APPLICATION_JAVA_OBJECT_XML
+                .equals(serializedRepresentation.getMediaType())) {
+            if (!variantObjectXmlSupported) {
                 throw new IllegalArgumentException(
                         "SECURITY WARNING: The usage of XMLDecoder when "
                                 + "deserializing XML presentations from unstrusted "
@@ -200,12 +228,13 @@ public class ObjectRepresentation<T extends Serializable> extends
 
             decoder.close();
             // [enddef]
+        } else {
+            throw new IllegalArgumentException(
+                    "The serialized representation must have this media type: "
+                            + MediaType.APPLICATION_JAVA_OBJECT.toString()
+                            + " or this one: "
+                            + MediaType.APPLICATION_JAVA_OBJECT_XML.toString());
         }
-        throw new IllegalArgumentException(
-                "The serialized representation must have this media type: "
-                        + MediaType.APPLICATION_JAVA_OBJECT.toString()
-                        + " or this one: "
-                        + MediaType.APPLICATION_JAVA_OBJECT_XML.toString());
     }
 
     /**

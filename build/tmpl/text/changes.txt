@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bug fixed
+       - Fixed issue #809 regression introduced when handling issues #774 and #778.
 
 - 2.1.5 (12/05/2013)
     - Bug fixed
