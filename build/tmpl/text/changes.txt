@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bug fixed
+       - Fixed issue #810, generation of HTML representation of a WADL document.
 
 - 2.1.6 (12/05/2013)
     - Bug fixed
