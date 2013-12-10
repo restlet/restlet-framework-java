@@ -51,6 +51,7 @@ import org.restlet.engine.Engine;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.ext.xml.TransformRepresentation;
+import org.restlet.ext.xml.XmlRepresentation;
 import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
@@ -901,6 +902,13 @@ public class WadlRepresentation extends SaxRepresentation {
 
         if (wadl2htmlXsltUrl != null) {
             try {
+                // The SAX source is systematically generated:
+                // - when instantiated using an ApplicationInfo or a
+                // ResourceInfo the sax source is null.
+                // - when instantiated using an XML representation, the
+                // underlying sax source is exhausted, because we parse it in
+                // order to recover the WADL document.
+                setSaxSource(XmlRepresentation.getSaxSource(this));
                 InputRepresentation xslRep = new InputRepresentation(
                         wadl2htmlXsltUrl.openStream(),
                         MediaType.APPLICATION_W3C_XSLT);
