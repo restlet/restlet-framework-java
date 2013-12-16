@@ -45,7 +45,6 @@ import org.restlet.data.CacheDirective;
 import org.restlet.data.MediaType;
 import org.restlet.data.RecipientInfo;
 import org.restlet.data.Warning;
-import org.restlet.representation.BufferingRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
@@ -112,12 +111,13 @@ public abstract class Message {
     // [ifndef gwt] method
     /**
      * If the entity is transient or its size unknown in advance but available,
-     * then the entity is wrapped with a {@link BufferingRepresentation}.<br>
+     * then the entity is wrapped with a
+     * {@link org.restlet.representation.BufferingRepresentation}.<br>
      * <br>
      * Be careful as this method could create potentially very large byte
      * buffers in memory that could impact your application performance.
      * 
-     * @see BufferingRepresentation
+     * @see org.restlet.representation.BufferingRepresentation
      * @see ClientResource#setRequestEntityBuffering(boolean)
      * @see ClientResource#setResponseEntityBuffering(boolean)
      */

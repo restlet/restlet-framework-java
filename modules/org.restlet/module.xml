@@ -114,6 +114,7 @@
          <exclude name="src/org/restlet/engine/util/ReferenceUtils.java" />
          <exclude name="src/org/restlet/engine/util/WrapperScheduledExecutorService.java" />
          <exclude name="src/org/restlet/representation/AppendableRepresentation.java" />
+         <exclude name="src/org/restlet/representation/BufferingRepresentation.java" />
          <exclude name="src/org/restlet/representation/ByteArrayRepresentation.java" />
          <exclude name="src/org/restlet/representation/CachingRepresentation.java" />
          <exclude name="src/org/restlet/representation/ChannelRepresentation.java" />

@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+
+- 2.2 Milestone 6 (12/05/2013)
     - Enhancements
       - Added a Message#bufferEntity() method to facilitate buffering of request and response
         entities/representations when they are transient but need to be consumed multiple times.
