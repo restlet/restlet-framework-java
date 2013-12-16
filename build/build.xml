@@ -143,6 +143,7 @@
 			<loadfile property="paths" srcFile="${tmpl}/editions/paths.tmpl" />
 			<loadfile property="generate-sources" srcFile="${tmpl}/editions/generate-sources.tmpl" />
 			<loadfile property="generate-javadocs" srcFile="${tmpl}/editions/javadocs.tmpl" />
+			<loadfile property="generate-mavenjavadocs" srcFile="${tmpl}/editions/maven-javadocs.tmpl" />
 			<loadfile property="stage-modules" srcFile="${tmpl}/editions/stage-modules.tmpl" />
 			<loadfile property="stage-extras" srcFile="${tmpl}/editions/stage-extras.tmpl" />
 			<loadfile property="generate-classes-extras" srcFile="${tmpl}/editions/generate-classes-extras.tmpl" />
@@ -155,6 +156,7 @@
 					<replacestring from="@paths@" to="${paths}" />
 					<replacestring from="@generate-sources@" to="${generate-sources}" />
 					<replacestring from="@generate-javadocs@" to="${generate-javadocs}" />
+					<replacestring from="@generate-mavenjavadocs@" to="${generate-mavenjavadocs}" />
 					<replacestring from="@stage-modules@" to="${stage-modules}" />
 					<replacestring from="@stage-extras@" to="${stage-extras}" />
 					<replacestring from="@generate-classes-extras@" to="${generate-classes-extras}" />

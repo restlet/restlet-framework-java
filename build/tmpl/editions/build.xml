@@ -543,6 +543,7 @@
 			<jar destfile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-sources.jar" filesetmanifest="merge">
 				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*" />
 			</jar>
+			<!-- @generate-mavenjavadocs@ -->
 
 			<copy file="${poms}/${mod-@{name}-id}.pom" tofile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" overwrite="true" />
 			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.jar" algorithm="MD5" fileext=".md5" />
@@ -551,6 +552,7 @@
 			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-sources.jar" algorithm="SHA" fileext=".sha1" />
 			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" algorithm="MD5" fileext=".md5" />
 			<checksum file="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}.pom" algorithm="SHA" fileext=".sha1" />
+
 		</sequential>
 	</macrodef>
 

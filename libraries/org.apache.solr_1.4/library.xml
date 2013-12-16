@@ -23,6 +23,6 @@
 		<distribution id="classic" />
 	</distributions>
 	<javadocs>
-		<link href="http://lucene.apache.org/solr/api/" />
+		<link href="http://lucene.apache.org/solr/4_0_0/solr-core/" />
 	</javadocs>
 </library>
