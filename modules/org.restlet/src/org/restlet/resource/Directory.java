@@ -178,7 +178,7 @@ public class Directory extends Finder {
      * implementation used a friendly alphanum sorting.
      * 
      * @return The reference comparator.
-     * @see #setAlphaNumComparator()
+     * @see AlphaNumericComparator
      */
     public Comparator<Reference> getComparator() {
         return this.comparator;

@@ -217,12 +217,12 @@ public class MemoryRealm extends Realm {
     }
 
     /**
-     * Finds the roles mapped to given user groups.
+     * Finds the roles mapped to a given user group.
      * 
      * @param application
      *            The parent application. Can't be null.
-     * @param userGroups
-     *            The user groups.
+     * @param userGroup
+     *            The user group.
      * @return The roles found.
      * @throws IllegalArgumentException
      *             If application is null.
