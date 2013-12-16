@@ -4,6 +4,9 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Enhancements
+      - Added javadocs artefacts for Maven repository, issue #811.
+        Suggested by David Roussel.
 
 - 2.2 Milestone 6 (12/05/2013)
     - Enhancements
