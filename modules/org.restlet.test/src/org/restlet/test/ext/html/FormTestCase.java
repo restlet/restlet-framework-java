@@ -36,6 +36,7 @@ package org.restlet.test.ext.html;
 import java.io.IOException;
 
 import org.restlet.data.CharacterSet;
+import org.restlet.data.MediaType;
 import org.restlet.ext.html.FormData;
 import org.restlet.ext.html.FormDataSet;
 import org.restlet.ext.html.internal.FormReader;
@@ -66,5 +67,35 @@ public class FormTestCase extends RestletTestCase {
         String newQuery = newForm.encode();
 
         assertEquals(query, newQuery);
+    }
+
+    /**
+     * Tests the multipart content-type.
+     */
+    public void testContentType() throws IOException {
+        FormDataSet form = null;
+
+        form = new FormDataSet();
+        form.setMultipart(true);
+        assertTrue(form.getMediaType().equals(MediaType.MULTIPART_FORM_DATA,
+                true));
+
+        form = new FormDataSet("test");
+        assertTrue(form.isMultipart());
+        assertTrue(form.getMediaType().equals(MediaType.MULTIPART_FORM_DATA,
+                true));
+        assertEquals(
+                form.getMediaType().getParameters().getFirstValue("boundary"),
+                "test");
+        form = new FormDataSet();
+
+        form.setMultipartBoundary("test2");
+        assertTrue(form.isMultipart());
+        assertTrue(form.getMediaType().equals(MediaType.MULTIPART_FORM_DATA,
+                true));
+        assertEquals(
+                form.getMediaType().getParameters().getFirstValue("boundary"),
+                "test2");
+
     }
 }
