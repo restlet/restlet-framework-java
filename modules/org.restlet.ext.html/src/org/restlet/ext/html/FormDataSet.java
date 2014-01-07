@@ -263,6 +263,9 @@ public class FormDataSet extends OutputRepresentation {
      */
     public void setMultipart(boolean multipart) {
         this.multipart = multipart;
+        if (this.multipart && getMultipartBoundary() == null) {
+            this.multipartBoundary = DEFAULT_BOUNDARY;
+        }
         setMediaType(createMultipartMediaType(getMultipartBoundary()));
     }
 
@@ -273,7 +276,13 @@ public class FormDataSet extends OutputRepresentation {
      *            The boundary separating multipart entries.
      */
     public void setMultipartBoundary(String boundary) {
-        this.multipartBoundary = boundary;
+        if (boundary != null) {
+            this.multipartBoundary = boundary;
+            setMultipart(true);
+        } else {
+            this.multipartBoundary = DEFAULT_BOUNDARY;
+        }
+        setMediaType(createMultipartMediaType(getMultipartBoundary()));
     }
 
     @Override
