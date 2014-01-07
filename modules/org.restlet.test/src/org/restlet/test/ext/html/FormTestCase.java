@@ -96,6 +96,5 @@ public class FormTestCase extends RestletTestCase {
         assertEquals(
                 form.getMediaType().getParameters().getFirstValue("boundary"),
                 "test2");
-
     }
 }
