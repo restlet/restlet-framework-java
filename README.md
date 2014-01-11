@@ -7,6 +7,4 @@ Leverage the open source Restlet Framework and its unique Java API available in 
 
 http://www.restlet.org
 
-## Copyright
-
-Copyright 2005-2013 Restlet SAS
+Copyright 2014 Restlet
