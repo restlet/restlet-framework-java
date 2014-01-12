@@ -36,12 +36,12 @@ package org.restlet.ext.sip.internal;
 import java.util.logging.Level;
 
 import org.restlet.Response;
-import org.restlet.engine.connector.ClientOutboundWay;
-import org.restlet.engine.connector.Connection;
 import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.TagWriter;
 import org.restlet.engine.io.IoState;
+import org.restlet.ext.nio.internal.ClientOutboundWay;
+import org.restlet.ext.nio.internal.Connection;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
@@ -223,7 +223,7 @@ public class SipClientOutboundWay extends ClientOutboundWay {
     }
 
     @Override
-    protected void handle(Response response) {
+    public void handle(Response response) {
         if ((getMessage() == null) && (response != null)) {
             // Update the map of SIP transactions
             SipResponse sipResponse = (SipResponse) response;

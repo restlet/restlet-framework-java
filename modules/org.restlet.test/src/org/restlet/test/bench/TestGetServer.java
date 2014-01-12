@@ -50,7 +50,7 @@ public class TestGetServer {
 
     public static void main(String[] args) throws Exception {
         ConnectorHelper<Server> helper;
-        helper = new org.restlet.engine.connector.HttpServerHelper(null);
+        helper = new org.restlet.engine.net.HttpServerHelper(null);
         Engine.getInstance().getRegisteredServers().add(0, helper);
         // [ifdef jse] instruction
         Engine.setLogLevel(Level.FINE);
@@ -60,8 +60,7 @@ public class TestGetServer {
                     @Override
                     public void handle(Request request, Response response) {
                         FileRepresentation fr = new FileRepresentation(
-                                "file:///c:/TEST/restlet-jse-2.0.5-ff.zip",
-                                MediaType.APPLICATION_ZIP);
+                                "file:///c:/RHDSetup.log", MediaType.TEXT_PLAIN);
                         System.out.println("Size sent: " + fr.getSize());
                         response.setEntity(fr);
                     }

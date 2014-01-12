@@ -47,7 +47,7 @@ public class TestGetClient {
 
     public static void main(String[] args) throws IOException {
         ConnectorHelper<Client> helper;
-        helper = new org.restlet.engine.connector.HttpClientHelper(null);
+        helper = new org.restlet.engine.net.HttpClientHelper(null);
         Engine.getInstance().getRegisteredClients().add(0, helper);
         // [ifdef jse] instruction
         Engine.setLogLevel(Level.FINE);

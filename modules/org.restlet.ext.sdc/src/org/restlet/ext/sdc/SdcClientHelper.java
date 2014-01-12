@@ -54,12 +54,12 @@ import org.restlet.data.Protocol;
 import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.adapter.HttpClientHelper;
 import org.restlet.engine.io.IoUtils;
+import org.restlet.engine.ssl.DefaultSslContextFactory;
+import org.restlet.engine.ssl.SslContextFactory;
+import org.restlet.engine.ssl.SslUtils;
 import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.ext.sdc.internal.SdcClientCall;
 import org.restlet.ext.sdc.internal.SdcServerConnection;
-import org.restlet.ext.ssl.DefaultSslContextFactory;
-import org.restlet.ext.ssl.SslContextFactory;
-import org.restlet.ext.ssl.internal.SslUtils;
 
 /**
  * SDC tunnel connector. This is a client connector from the Restlet application
@@ -104,7 +104,7 @@ import org.restlet.ext.ssl.internal.SslUtils;
  * <tr>
  * <td>sslContextFactory</td>
  * <td>String</td>
- * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
+ * <td>org.restlet.engine.ssl.DefaultSslContextFactory</td>
  * <td>Let you specify a {@link SslContextFactory} qualified class name as a
  * parameter, or an instance as an attribute for a more complete and flexible
  * SSL context setting.</td>

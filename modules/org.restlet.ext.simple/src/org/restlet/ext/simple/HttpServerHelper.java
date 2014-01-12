@@ -66,7 +66,8 @@ public class HttpServerHelper extends SimpleServerHelper {
     /** Starts the Restlet. */
     @Override
     public void start() throws Exception {
-        final String addr = getHelped().getAddress();
+        String addr = getHelped().getAddress();
+
         if (addr != null) {
             // This call may throw UnknownHostException and otherwise always
             // returns an instance of INetAddress.
@@ -83,11 +84,12 @@ public class HttpServerHelper extends SimpleServerHelper {
                 setAddress(new InetSocketAddress(getHelped().getPort()));
             }
         }
-        final Container container = new SimpleContainer(this);
-        final ContainerServer server = new ContainerServer(container,
+
+        Container container = new SimpleContainer(this);
+        ContainerServer server = new ContainerServer(container,
                 getDefaultThreads());
-        final SimpleServer restletServer = new SimpleServer(server);
-        final Connection connection = new SocketConnection(restletServer);
+        SimpleServer restletServer = new SimpleServer(server);
+        Connection connection = new SocketConnection(restletServer);
 
         setConfidential(false);
         setContainerServer(server);

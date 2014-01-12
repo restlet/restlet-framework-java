@@ -50,7 +50,7 @@ import org.restlet.Server;
 import org.restlet.data.Method;
 import org.restlet.engine.adapter.ServerCall;
 import org.restlet.engine.header.Header;
-import org.restlet.ext.ssl.internal.SslUtils;
+import org.restlet.engine.ssl.SslUtils;
 import org.restlet.util.Series;
 import org.simpleframework.http.Request;
 import org.simpleframework.http.Response;
@@ -63,9 +63,7 @@ import org.simpleframework.http.Response;
  */
 public class SimpleCall extends ServerCall {
 
-    /**
-     * Simple Request.
-     */
+    /** Simple Request. */
     private final Request request;
 
     /** Indicates if the request headers were parsed and added. */
@@ -104,9 +102,6 @@ public class SimpleCall extends ServerCall {
         this.requestHeadersAdded = false;
     }
 
-    /**
-     * Closes the socket.
-     */
     @Override
     public boolean abort() {
         try {
@@ -186,11 +181,6 @@ public class SimpleCall extends ServerCall {
         return super.getHostDomain(); // FIXME
     }
 
-    /**
-     * Returns the request method.
-     * 
-     * @return The request method.
-     */
     @Override
     public String getMethod() {
         return this.request.getMethod();
@@ -205,11 +195,6 @@ public class SimpleCall extends ServerCall {
         }
     }
 
-    /**
-     * Returns the list of request headers.
-     * 
-     * @return The list of request headers.
-     */
     @Override
     public Series<Header> getRequestHeaders() {
         final Series<Header> result = super.getRequestHeaders();
@@ -236,11 +221,6 @@ public class SimpleCall extends ServerCall {
         return null;
     }
 
-    /**
-     * Returns the full request URI.
-     * 
-     * @return The full request URI.
-     */
     @Override
     public String getRequestUri() {
         return this.request.getTarget();

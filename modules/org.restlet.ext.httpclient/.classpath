@@ -6,7 +6,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.httpclient"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.httpcore"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.httpmime"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet.ext.ssl"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/net.jcip.annotations"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.commons.codec"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.commons.logging"/>

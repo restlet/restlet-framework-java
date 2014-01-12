@@ -63,8 +63,10 @@ public class ChildContext extends Context {
         setClientDispatcher(new ChildClientDispatcher(this));
         setServerDispatcher((parentContext != null) ? getParentContext()
                 .getServerDispatcher() : null);
-        setExecutorService((parentContext != null) ? new WrapperScheduledExecutorService(
-                parentContext.getExecutorService()) : null);
+        setExecutorService((parentContext != null) ? ((parentContext
+                .getExecutorService() != null) ? new WrapperScheduledExecutorService(
+                parentContext.getExecutorService()) : null)
+                : null);
     }
 
     /**

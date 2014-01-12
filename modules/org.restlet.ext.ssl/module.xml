@@ -1,6 +1,6 @@
-<module id="ssl" excludes="gae,gwt" type="standard" package="org.restlet.ext.ssl">
-	<name>Restlet Extension - SSL</name>
-	<description>Utilities to configure SSL support.</description>
+<module id="jsslutils" excludes="gae,gwt" type="standard" package="org.restlet.ext.jsslutils">
+	<name>Restlet Extension - jSSLutils</name>
+	<description>Utilities to provide additional SSL support.</description>
 	<distributions>
 		<distribution id="classic" />
 		<distribution id="maven" />

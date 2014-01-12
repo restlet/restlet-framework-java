@@ -69,9 +69,11 @@ public class WritableSocketChannel extends WrapperSocketChannel implements
      */
     public int write(ByteBuffer src) throws IOException {
         int count = 0;
+
         while (src.hasRemaining()) {
             count += getWrappedChannel().write(src);
         }
+
         return count;
     }
 

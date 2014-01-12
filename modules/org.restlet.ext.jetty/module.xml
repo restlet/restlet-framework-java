@@ -11,7 +11,6 @@
 		<dependency type="library" id="jetty" primary="true" />
 		<dependency type="library" id="servlet" />
 		<dependency type="module" id="core" />
-		<dependency type="module" id="ssl" />
 	</dependencies>
 	<wikiUri>78-restlet</wikiUri>
 </module>

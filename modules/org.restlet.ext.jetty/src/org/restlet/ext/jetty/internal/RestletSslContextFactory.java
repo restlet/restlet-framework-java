@@ -61,7 +61,7 @@ public class RestletSslContextFactory extends SslContextFactory {
      * @throws Exception
      */
     public RestletSslContextFactory(
-            org.restlet.ext.ssl.SslContextFactory restletSslContextFactory)
+            org.restlet.engine.ssl.SslContextFactory restletSslContextFactory)
             throws Exception {
         setSslContext(restletSslContextFactory.createSslContext());
     }

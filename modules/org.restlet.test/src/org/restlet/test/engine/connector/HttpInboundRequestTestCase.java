@@ -37,10 +37,10 @@ import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
-import org.restlet.engine.connector.Connection;
-import org.restlet.engine.connector.HttpInboundRequest;
-import org.restlet.engine.connector.HttpServerHelper;
 import org.restlet.engine.header.Header;
+import org.restlet.ext.nio.HttpServerHelper;
+import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.HttpInboundRequest;
 import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
 

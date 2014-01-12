@@ -48,12 +48,12 @@ public class NioProxy {
 
     public static void main(String[] args) throws Exception {
         ConnectorHelper<Server> serverHelper = null;
-        serverHelper = new org.restlet.engine.connector.HttpServerHelper(null);
+        serverHelper = new org.restlet.ext.nio.HttpServerHelper(null);
         // serverHelper = new org.restlet.ext.jetty.HttpServerHelper(null);
         // serverHelper = new org.restlet.ext.simple.HttpServerHelper(null);
 
         ConnectorHelper<Client> clientHelper;
-        clientHelper = new org.restlet.engine.connector.HttpClientHelper(null);
+        clientHelper = new org.restlet.ext.nio.HttpClientHelper(null);
         // clientHelper = new org.restlet.ext.httpclient.HttpClientHelper(null);
         // clientHelper= new org.restlet.ext.net.HttpClientHelper(null);
 

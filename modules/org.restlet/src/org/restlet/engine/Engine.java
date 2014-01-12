@@ -157,9 +157,11 @@ public class Engine {
     public static Thread createThreadWithLocalVariables(
             final Runnable runnable, String name) {
         // Save the thread local variables
-        final org.restlet.Application currentApplication = org.restlet.Application.getCurrent();
+        final org.restlet.Application currentApplication = org.restlet.Application
+                .getCurrent();
         final Context currentContext = Context.getCurrent();
-        final Integer currentVirtualHost = org.restlet.routing.VirtualHost.getCurrent();
+        final Integer currentVirtualHost = org.restlet.routing.VirtualHost
+                .getCurrent();
         final Response currentResponse = Response.getCurrent();
 
         return new Thread(new Runnable() {
@@ -880,7 +882,7 @@ public class Engine {
     public void registerDefaultConnectors() {
         // [ifndef gae, gwt]
         getRegisteredClients().add(
-                new org.restlet.engine.connector.HttpClientHelper(null));
+                new org.restlet.engine.net.HttpClientHelper(null));
         // [enddef]
         // [ifndef gwt]
         getRegisteredClients().add(
@@ -892,7 +894,7 @@ public class Engine {
         // [enddef]
         // [ifndef gae, gwt]
         getRegisteredServers().add(
-                new org.restlet.engine.connector.HttpServerHelper(null));
+                new org.restlet.engine.net.HttpServerHelper(null));
         getRegisteredClients().add(
                 new org.restlet.engine.local.FileClientHelper(null));
         getRegisteredClients().add(

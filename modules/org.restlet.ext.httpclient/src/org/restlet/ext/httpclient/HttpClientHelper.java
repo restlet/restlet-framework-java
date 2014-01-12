@@ -62,13 +62,13 @@ import org.restlet.Request;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.engine.adapter.ClientCall;
+import org.restlet.engine.ssl.DefaultSslContextFactory;
+import org.restlet.engine.ssl.SslContextFactory;
+import org.restlet.engine.ssl.SslUtils;
 import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.ext.httpclient.internal.HttpIdleConnectionReaper;
 import org.restlet.ext.httpclient.internal.HttpMethodCall;
 import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
-import org.restlet.ext.ssl.DefaultSslContextFactory;
-import org.restlet.ext.ssl.SslContextFactory;
-import org.restlet.ext.ssl.internal.SslUtils;
 
 /**
  * HTTP client connector using the HttpMethodCall and Apache HTTP Client
@@ -163,7 +163,7 @@ import org.restlet.ext.ssl.internal.SslUtils;
  * <tr>
  * <td>sslContextFactory</td>
  * <td>String</td>
- * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
+ * <td>org.restlet.engine.ssl.DefaultSslContextFactory</td>
  * <td>Let you specify a {@link SslContextFactory} qualified class name as a
  * parameter, or an instance as an attribute for a more complete and flexible
  * SSL context setting.</td>

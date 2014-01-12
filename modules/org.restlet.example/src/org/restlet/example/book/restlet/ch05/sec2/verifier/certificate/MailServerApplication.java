@@ -39,9 +39,9 @@ import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.ext.ssl.CertificateAuthenticator;
 import org.restlet.routing.Router;
 import org.restlet.security.Authenticator;
+import org.restlet.security.CertificateAuthenticator;
 import org.restlet.util.Series;
 
 /**

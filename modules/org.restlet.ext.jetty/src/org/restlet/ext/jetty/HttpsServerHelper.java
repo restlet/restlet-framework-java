@@ -40,8 +40,8 @@ import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.ext.jetty.internal.RestletSslContextFactory;
-import org.restlet.ext.ssl.DefaultSslContextFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
@@ -66,7 +66,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
  * <tr>
  * <td>sslContextFactory</td>
  * <td>String</td>
- * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
+ * <td>org.restlet.engine.ssl.DefaultSslContextFactory</td>
  * <td>Let you specify a {@link SslContextFactory} qualified class name as a
  * parameter, or an instance as an attribute for a more complete and flexible
  * SSL context setting.</td>
@@ -104,7 +104,7 @@ public class HttpsServerHelper extends JettyServerHelper {
 
         try {
             sslContextFactory = new RestletSslContextFactory(
-                    org.restlet.ext.ssl.internal.SslUtils
+                    org.restlet.engine.ssl.SslUtils
                             .getSslContextFactory(this));
         } catch (Exception e) {
             getLogger().log(Level.WARNING,

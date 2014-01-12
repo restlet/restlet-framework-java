@@ -3,7 +3,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet.ext.ssl"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.google.collections"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.google.gdata"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.google.guice"/>

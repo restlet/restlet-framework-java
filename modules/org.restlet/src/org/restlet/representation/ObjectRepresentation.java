@@ -57,24 +57,24 @@ import org.restlet.data.MediaType;
  * ("application/x-java-serialized-object+xml").<br>
  * <br>
  * SECURITY WARNING: The usage of {@link XMLDecoder} when deserializing XML
- * presentations from unstrusted sources can lead to malicious attacks. As
+ * presentations from untrusted sources can lead to malicious attacks. As
  * pointed <a href=
  * "http://blog.diniscruz.com/2013/08/using-xmldecoder-to-execute-server-side.html"
  * >here</a>, the {@link XMLDecoder} is able to force the JVM to execute
  * unwanted Java code described inside the XML file. Thus, the support of such
- * format has been disactivated by default. You can activate this support by
- * turning on the following system property:
+ * format has been disabled by default. You can activate this support by turning
+ * on the following system property:
  * org.restlet.representation.ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED.<br>
  * <br>
  * SECURITY WARNING: The usage of {@link ObjectInputStream} when deserializing
- * binary presentations from unstrusted sources can lead to malicious attacks.
- * As pointed <a
+ * binary presentations from untrusted sources can lead to malicious attacks. As
+ * pointed <a
  * href="https://github.com/restlet/restlet-framework-java/issues/778"
  * >here</a>, the {@link ObjectInputStream} is able to force the JVM to execute
- * unwanted Java code. Thus, the support of such format has been disactivated by
+ * unwanted Java code. Thus, the support of such format has been disabled by
  * default. You can activate this support by turning on the following system
- * property: org.restlet.representation.ObjectRepresentation
- * .VARIANT_OBJECT_BINARY_SUPPORTED.
+ * property: "org.restlet.representation.ObjectRepresentation
+ * .VARIANT_OBJECT_BINARY_SUPPORTED".
  * 
  * @author Jerome Louvel
  * @param <T>
@@ -84,14 +84,14 @@ public class ObjectRepresentation<T extends Serializable> extends
         OutputRepresentation {
 
     /** Indicates whether the JavaBeans XML deserialization is supported or not. */
-    public static final boolean VARIANT_OBJECT_XML_SUPPORTED = Boolean
+    public static boolean VARIANT_OBJECT_XML_SUPPORTED = Boolean
             .getBoolean("org.restlet.representation.ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED");
 
     /**
      * Indicates whether the JavaBeans binary deserialization is supported or
      * not.
      */
-    public static final boolean VARIANT_OBJECT_BINARY_SUPPORTED = Boolean
+    public static boolean VARIANT_OBJECT_BINARY_SUPPORTED = Boolean
             .getBoolean("org.restlet.representation.ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED");
 
     /** The serializable object. */
@@ -233,7 +233,7 @@ public class ObjectRepresentation<T extends Serializable> extends
                     "The serialized representation must have this media type: "
                             + MediaType.APPLICATION_JAVA_OBJECT.toString()
                             + " or this one: "
-                            + MediaType.APPLICATION_JAVA_OBJECT_XML.toString());            
+                            + MediaType.APPLICATION_JAVA_OBJECT_XML.toString());
         }
     }
 

@@ -47,7 +47,7 @@ public class NioClient {
         // TraceHandler.register();
 
         ConnectorHelper<Client> helper;
-         helper = new org.restlet.engine.connector.HttpClientHelper(null);
+         helper = new org.restlet.ext.nio.HttpClientHelper(null);
         // helper = new org.restlet.ext.httpclient.HttpClientHelper(null);
         //helper = new org.restlet.ext.net.HttpClientHelper(null);
         Engine.getInstance().getRegisteredClients().add(0, helper);

@@ -50,7 +50,7 @@ public class NioServer {
         ConnectorHelper<Server> helper = null;
         // helper = new org.restlet.ext.jetty.HttpServerHelper(null);
         // helper = new org.restlet.ext.simple.HttpServerHelper(null);
-        helper = new org.restlet.engine.connector.HttpServerHelper(null);
+        helper = new org.restlet.ext.nio.HttpServerHelper(null);
 
         // Register the selected connector
         Engine.getInstance().getRegisteredServers().add(0, helper);

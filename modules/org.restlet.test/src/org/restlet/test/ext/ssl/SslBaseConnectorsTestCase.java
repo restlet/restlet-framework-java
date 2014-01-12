@@ -69,9 +69,11 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private final boolean enabledClientInternal = true;
 
-    private final boolean enabledClientJdkNet = true;
+    private final boolean enabledClientNio = true;
 
     private final boolean enabledServerInternal = true;
+
+    private final boolean enabledServerNio = true;
 
     private final boolean enabledServerJetty = true;
 
@@ -181,22 +183,22 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     public void testSslInternalAndApache() throws Exception {
         if (this.enabledServerInternal && this.enabledClientApache) {
-            runTest(new org.restlet.ext.ssl.HttpsServerHelper(null),
+            runTest(new org.restlet.engine.net.HttpsServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testSslInternalAndInternal() throws Exception {
         if (this.enabledServerInternal && this.enabledClientInternal) {
-            runTest(new org.restlet.ext.ssl.HttpsServerHelper(null),
-                    new org.restlet.ext.ssl.HttpsClientHelper(null));
+            runTest(new org.restlet.engine.net.HttpsServerHelper(null),
+                    new org.restlet.engine.net.HttpClientHelper(null));
         }
     }
 
-    public void testSslInternalAndJdkNet() throws Exception {
-        if (this.enabledServerInternal && this.enabledClientJdkNet) {
-            runTest(new org.restlet.ext.ssl.HttpsServerHelper(null),
-                    new org.restlet.ext.net.HttpClientHelper(null));
+    public void testSslInternalAndClientNio() throws Exception {
+        if (this.enabledServerInternal && this.enabledClientNio) {
+            runTest(new org.restlet.engine.net.HttpsServerHelper(null),
+                    new org.restlet.ext.nio.HttpsClientHelper(null));
         }
     }
 
@@ -210,14 +212,14 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     public void testSslJettyAndInternal() throws Exception {
         if (this.enabledServerJetty && this.enabledClientInternal) {
             runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
-                    new org.restlet.ext.ssl.HttpsClientHelper(null));
+                    new org.restlet.engine.net.HttpClientHelper(null));
         }
     }
 
     public void testSslJettyAndJdkNet() throws Exception {
-        if (this.enabledServerJetty && this.enabledClientJdkNet) {
+        if (this.enabledServerJetty && this.enabledClientNio) {
             runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
-                    new org.restlet.ext.net.HttpClientHelper(null));
+                    new org.restlet.ext.nio.HttpsClientHelper(null));
         }
     }
 
@@ -231,14 +233,14 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     public void testSslSimpleAndInternal() throws Exception {
         if (this.enabledServerSimple && this.enabledClientInternal) {
             runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
-                    new org.restlet.ext.ssl.HttpsClientHelper(null));
+                    new org.restlet.engine.net.HttpClientHelper(null));
         }
     }
 
     public void testSslSimpleAndJdkNet() throws Exception {
-        if (this.enabledServerSimple && this.enabledClientJdkNet) {
+        if (this.enabledServerSimple && this.enabledClientNio) {
             runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
-                    new org.restlet.ext.net.HttpClientHelper(null));
+                    new org.restlet.ext.nio.HttpsClientHelper(null));
         }
     }
 }

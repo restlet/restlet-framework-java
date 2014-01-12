@@ -40,10 +40,10 @@ import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.RecipientInfo;
-import org.restlet.engine.connector.Connection;
-import org.restlet.engine.connector.OutboundWay;
-import org.restlet.engine.connector.ServerConnectionHelper;
-import org.restlet.engine.connector.ServerInboundWay;
+import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.OutboundWay;
+import org.restlet.ext.nio.ServerConnectionHelper;
+import org.restlet.ext.nio.internal.ServerInboundWay;
 
 /**
  * Standalone SIP server helper.
@@ -81,7 +81,7 @@ public class SipServerHelper extends ServerConnectionHelper {
     }
 
     @Override
-    protected Request createRequest(Connection<Server> connection,
+    public Request createRequest(Connection<Server> connection,
             String methodName, String resourceUri, String protocol) {
 
         SipInboundRequest request = new SipInboundRequest(getContext(),

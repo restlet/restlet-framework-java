@@ -18,13 +18,12 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jetty"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.json"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.lucene"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.net"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.oauth"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.odata"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.rdf"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.sip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.spring"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.ssl"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jsslutils"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.velocity"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.wadl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xdb"/>
@@ -33,5 +32,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.simple"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.gson"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.hamcrest"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.nio"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

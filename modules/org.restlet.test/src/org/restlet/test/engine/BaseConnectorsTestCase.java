@@ -40,8 +40,8 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
-import org.restlet.engine.connector.HttpClientHelper;
-import org.restlet.engine.connector.HttpServerHelper;
+import org.restlet.engine.net.HttpClientHelper;
+import org.restlet.engine.net.HttpServerHelper;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -131,7 +131,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     public void testInternalAndJdkNet() throws Exception {
         if (this.enabledServerInternal && this.enabledClientJdkNet) {
             runTest(new HttpServerHelper(null),
-                    new org.restlet.ext.net.HttpClientHelper(null));
+                    new org.restlet.engine.net.HttpClientHelper(null));
         }
     }
 
@@ -152,7 +152,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     public void testJettyAndJdkNet() throws Exception {
         if (this.enabledServerJetty && this.enabledClientJdkNet) {
             runTest(new org.restlet.ext.jetty.HttpServerHelper(null),
-                    new org.restlet.ext.net.HttpClientHelper(null));
+                    new org.restlet.engine.net.HttpClientHelper(null));
         }
     }
 
@@ -173,7 +173,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
     public void testSimpleAndJdkNet() throws Exception {
         if (this.enabledServerSimple && this.enabledClientJdkNet) {
             runTest(new org.restlet.ext.simple.HttpServerHelper(null),
-                    new org.restlet.ext.net.HttpClientHelper(null));
+                    new org.restlet.engine.net.HttpClientHelper(null));
         }
     }
 }

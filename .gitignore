@@ -43,7 +43,7 @@
 /modules/org.restlet.ext.jibx/bin
 /modules/org.restlet.ext.json/bin
 /modules/org.restlet.ext.lucene/bin
-/modules/org.restlet.ext.net/bin
+/modules/org.restlet.ext.nio/bin
 /modules/org.restlet.ext.oauth/bin
 /modules/org.restlet.ext.odata/bin
 /modules/org.restlet.ext.openid/bin
@@ -56,7 +56,7 @@
 /modules/org.restlet.ext.sip/bin
 /modules/org.restlet.ext.slf4j/bin
 /modules/org.restlet.ext.spring/bin
-/modules/org.restlet.ext.ssl/bin
+/modules/org.restlet.ext.jsslutils/bin
 /modules/org.restlet.ext.velocity/bin
 /modules/org.restlet.ext.wadl/bin
 /modules/org.restlet.ext.xdb/bin

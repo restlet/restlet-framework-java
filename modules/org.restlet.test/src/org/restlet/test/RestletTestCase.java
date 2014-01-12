@@ -36,6 +36,7 @@ package org.restlet.test;
 import junit.framework.TestCase;
 
 import org.restlet.engine.Engine;
+import org.restlet.representation.ObjectRepresentation;
 
 /**
  * Marker class. All Restlet tests should be derived from this class.
@@ -74,12 +75,14 @@ public abstract class RestletTestCase extends TestCase {
         org.restlet.engine.Engine.register();
 
         // Prefer the internal connectors
-        Engine.getInstance()
-                .getRegisteredServers()
-                .add(0, new org.restlet.engine.connector.HttpServerHelper(null));
-        Engine.getInstance()
-                .getRegisteredClients()
-                .add(0, new org.restlet.engine.connector.HttpClientHelper(null));
+        Engine.getInstance().getRegisteredServers()
+                .add(0, new org.restlet.engine.net.HttpServerHelper(null));
+        Engine.getInstance().getRegisteredClients()
+                .add(0, new org.restlet.engine.net.HttpClientHelper(null));
+
+        // Enable object serialization
+        ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED = true;
+        ObjectRepresentation.VARIANT_OBJECT_BINARY_SUPPORTED = true;
     }
 
     @Override

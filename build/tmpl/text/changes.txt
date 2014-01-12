@@ -5,8 +5,20 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Enhancements
-      - Added javadocs artefacts for Maven repository, issue #811.
+      - Added Javadocs artefacts for Maven repository, issue #811.
         Suggested by David Roussel.
+      - Updated Jetty to version 8.1.14.
+    - API changes
+      - Moved org.restlet.ext.net HTTP/HTTPS/FTP client connectors into the core
+        org.restlet module (org.restlet.engine.net package) as the new internal
+        client connectors.
+      - Moved NIO-based internal connector to new org.restlet.ext.nio extension.
+        Marked as "developer preview" state.
+      - Added new internal HTTP/HTTPS server connectors based on the 
+        com.sun.net.httpserver package available in JDK 6.
+      - Moved org.restlet.ext.ssl into core org.restlet.engine.nio package except
+        classes related to the jSSLutils library now part of new org.restlet.ext.jsslutils
+        extension and for CertificateAuthenticator class now in org.restlet.security.
 
 - 2.2 Milestone 6 (12/05/2013)
     - Enhancements
@@ -29,8 +41,7 @@ Changes log
 
 - 2.2 Milestone 4 (08/23/2013)
     - Enhancements
-       - Added GSon extension (#586).
-         Contributed by Neal Mi.
+       - Added GSon extension (#586). Contributed by Neal Mi.
        - OAuth extension has been upgraded to support final OAuth 2.0 specification.
          Contributed by Shotaro Uchida.
     - Bug fixed

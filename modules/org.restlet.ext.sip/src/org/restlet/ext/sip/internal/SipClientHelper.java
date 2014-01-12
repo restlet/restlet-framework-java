@@ -43,10 +43,10 @@ import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Protocol;
-import org.restlet.engine.connector.ClientConnectionHelper;
-import org.restlet.engine.connector.Connection;
-import org.restlet.engine.connector.InboundWay;
-import org.restlet.engine.connector.OutboundWay;
+import org.restlet.ext.nio.ClientConnectionHelper;
+import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.InboundWay;
+import org.restlet.ext.nio.internal.OutboundWay;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
 import org.restlet.ext.sip.SipStatus;
@@ -75,7 +75,7 @@ public class SipClientHelper extends ClientConnectionHelper {
     }
 
     @Override
-    protected boolean control() {
+    public boolean control() {
         boolean result = super.control();
         SipRequest request;
 
