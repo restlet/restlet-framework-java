@@ -15,10 +15,11 @@ Changes log
       - Moved NIO-based internal connector to new org.restlet.ext.nio extension.
         Marked as "developer preview" state.
       - Added new internal HTTP/HTTPS server connectors based on the 
-        com.sun.net.httpserver package available in JDK 6.
-      - Moved org.restlet.ext.ssl into core org.restlet.engine.nio package except
+        com.sun.net.httpserver package available in JDK 6. Issue #381.
+      - Moved org.restlet.ext.ssl into core org.restlet.engine.ssl package except
         classes related to the jSSLutils library now part of new org.restlet.ext.jsslutils
         extension and for CertificateAuthenticator class now in org.restlet.security.
+        Solves issue #803 reported by Tal Liron.
 
 - 2.2 Milestone 6 (12/05/2013)
     - Enhancements
