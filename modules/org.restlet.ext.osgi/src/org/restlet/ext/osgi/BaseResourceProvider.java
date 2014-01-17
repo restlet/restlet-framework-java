@@ -102,7 +102,7 @@ public abstract class BaseResourceProvider extends BaseRestletProvider implement
         	paths[0] = (String) pathsProperty;
         }
         else
-        	paths = (String[]) properties.get("paths");
+        	paths = (String[]) pathsProperty;
         
         matchingMode = (Integer) properties.get("matchingMode");
         
