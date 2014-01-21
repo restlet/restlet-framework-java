@@ -34,7 +34,7 @@ public abstract class SelfInjectingServerResource extends ServerResource {
     }
 
     void ensureInjected(MembersInjector membersInjector) {
-        if (injected.compareAndSet(false, true)) {
+        if (membersInjector != null && injected.compareAndSet(false, true)) {
             membersInjector.injectMembers(this);
         }
     }
