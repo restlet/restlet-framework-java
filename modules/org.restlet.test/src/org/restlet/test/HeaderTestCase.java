@@ -43,6 +43,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.header.Header;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.util.Series;
 
@@ -60,7 +61,7 @@ public class HeaderTestCase extends RestletTestCase {
             Series<Header> headers = getHttpHeaders(request);
 
             for (Header header : headers) {
-                if (header.getName().equals(TEST_HEADER)) {
+                if (TEST_HEADER.equalsIgnoreCase(header.getName())) {
                     stb.append(header.getValue());
                     stb.append('\n');
                 }
@@ -70,8 +71,6 @@ public class HeaderTestCase extends RestletTestCase {
                     MediaType.TEXT_PLAIN));
         }
     }
-
-    private static final String HTTP_HEADERS = "org.restlet.http.headers";
 
     /**
      * Name of a test header field
@@ -88,11 +87,12 @@ public class HeaderTestCase extends RestletTestCase {
     private static Series<Header> getHttpHeaders(Request request) {
         @SuppressWarnings("unchecked")
         Series<Header> headers = (Series<Header>) request.getAttributes().get(
-                HTTP_HEADERS);
+                HeaderConstants.ATTRIBUTE_HEADERS);
 
         if (headers == null) {
             headers = new Series<Header>(Header.class);
-            request.getAttributes().put(HTTP_HEADERS, headers);
+            request.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS,
+                    headers);
         }
 
         return headers;
