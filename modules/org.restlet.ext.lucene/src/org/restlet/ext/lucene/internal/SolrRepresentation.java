@@ -36,11 +36,11 @@ package org.restlet.ext.lucene.internal;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.apache.solr.request.JSONResponseWriter;
-import org.apache.solr.request.QueryResponseWriter;
 import org.apache.solr.request.SolrQueryRequest;
-import org.apache.solr.request.SolrQueryResponse;
-import org.apache.solr.request.XMLResponseWriter;
+import org.apache.solr.response.JSONResponseWriter;
+import org.apache.solr.response.QueryResponseWriter;
+import org.apache.solr.response.SolrQueryResponse;
+import org.apache.solr.response.XMLResponseWriter;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.representation.WriterRepresentation;

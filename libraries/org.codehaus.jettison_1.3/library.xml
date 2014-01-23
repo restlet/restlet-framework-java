@@ -2,6 +2,7 @@
 	<name>JSON StAX Implementation</name>
 	<description>JSON StAX Implementation</description>
 	<version>1.3</version>
+	<release>5</release>
 	<homeUri>http://jettison.codehaus.org/</homeUri>
 	<downloadUri>http://jettison.codehaus.org/Download</downloadUri>
 	<provider>Envoi Solutions LLC</provider>

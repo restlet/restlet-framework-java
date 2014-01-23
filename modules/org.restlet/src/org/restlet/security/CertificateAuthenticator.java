@@ -52,7 +52,7 @@ import org.restlet.data.Status;
  * Principal of its subject to the list of principals in the request's
  * ClientInfo. It also sets the user to be a new User based on this Principal.
  * 
- * {@link #getPrincipal(List)} and {@link #getUser(Principal)} can be overridden
+ * {@link #getPrincipals(List)} and {@link #getUser(Principal)} can be overridden
  * to change the default behavior.
  * 
  * @author Bruno Harbulot (bruno/distributedmatter.net)

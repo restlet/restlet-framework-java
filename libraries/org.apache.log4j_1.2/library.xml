@@ -2,7 +2,7 @@
 	<name>Apache log4j</name>
 	<description>Apache Log4j.</description>
 	<version>1.2</version>
-	<release>16</release>
+	<release>17</release>
 	<homeUri>http://logging.apache.org/log4j/1.2/</homeUri>
 	<downloadUri>http://logging.apache.org/log4j/1.2/download.html</downloadUri>
 	<provider>Apache Software Foundation</provider>

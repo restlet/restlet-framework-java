@@ -8,6 +8,34 @@ Changes log
       - Added Javadocs artefacts for Maven repository, issue #811.
         Suggested by David Roussel.
       - Updated Jetty to version 8.1.14.
+      - Updated XStream to version 1.4.6.
+      - Updated NekoHTML to version 1.9.19.
+      - Updated Apache commons logging to version 1.1.3.
+      - Updated Apache log4j to version 1.2.17.
+      - Updated jettison to version 1.3.5.
+      - Updated freemarker to version 2.3.20.
+      - Updated JiBX to version 1.2.5.
+      - Updated Jackson to version 2.2.3.
+      - Updated Guice to version 3.0.
+      - Updated Google Protobuf to version 2.5.
+      - Updated Apache commons fileupload to version 1.3.
+      - Updated Apache httpclient to version 4.3.2.
+      - Updated Apache httpcore to version 4.3.2.
+      - Updated Apache httpmime to version 4.3.2.
+      - Updated Mime4j to version 0.7.
+      - Updated Lucene to version 4.6.
+      - Updated Solr to version 4.6.
+      - Updated Tika to version 1.4.
+      - Updated Velocity to version 1.7.
+      - Updated Woodstox to version 4.2.4.
+      - Updated Joda time to version 2.3.
+      - Updated Junit to version 4.11.
+      - Updated Mongo db to version 2.11.3.
+      - Updated Simpleframework to version 5.1.6.
+      - Updated Springframework to version 3.2.6.
+      - Updated Testng to version 6.8.7.
+      - Updated Snakeyaml to version 1.13.
+
     - API changes
       - Moved org.restlet.ext.net HTTP/HTTPS/FTP client connectors into the core
         org.restlet module (org.restlet.engine.net package) as the new internal

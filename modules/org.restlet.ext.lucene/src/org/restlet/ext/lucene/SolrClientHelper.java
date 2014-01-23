@@ -40,9 +40,10 @@ import java.util.logging.Level;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.core.CoreContainer;
 import org.apache.solr.core.SolrCore;
+import org.apache.solr.core.SolrResourceLoader;
 import org.apache.solr.request.SolrQueryRequest;
-import org.apache.solr.request.SolrQueryResponse;
 import org.apache.solr.request.SolrRequestHandler;
+import org.apache.solr.response.SolrQueryResponse;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
@@ -160,8 +161,8 @@ public class SolrClientHelper extends ClientHelper {
             core.execute(handler, solrReq, solrResp);
 
             if (solrResp.getException() != null) {
-                response.setStatus(Status.SERVER_ERROR_INTERNAL, solrResp
-                        .getException());
+                response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                        solrResp.getException());
             } else {
                 response.setEntity(new SolrRepresentation(
                         MediaType.APPLICATION_XML, solrReq, solrResp));
@@ -193,7 +194,8 @@ public class SolrClientHelper extends ClientHelper {
                     if (!config.exists()) {
                         config = new File(new URI(configFile));
                     }
-                    coreContainer = new CoreContainer(directory, config);
+                    coreContainer = CoreContainer.createAndLoad(directory,
+                            config);
                 }
             }
 
