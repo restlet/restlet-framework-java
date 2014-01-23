@@ -234,13 +234,13 @@ public class HttpClientHelper extends
     @Override
     public synchronized void start() throws Exception {
         super.start();
-        getLogger().info("Starting the Internal HTTP client");
+        getLogger().info("Starting the internal HTTP client");
     }
 
     @Override
     public synchronized void stop() throws Exception {
         super.stop();
-        getLogger().info("Stopping the Internal HTTP client");
+        getLogger().info("Stopping the internal HTTP client");
     }
 
 }

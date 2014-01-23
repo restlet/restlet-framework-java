@@ -116,13 +116,13 @@ public abstract class NetServerHelper extends HttpServerHelper {
     public synchronized void start() throws Exception {
         super.start();
         getLogger().info(
-                "Starting the Internal " + getProtocols() + " server on port "
+                "Starting the internal " + getProtocols() + " server on port "
                         + getHelped().getPort());
     }
 
     @Override
     public synchronized void stop() throws Exception {
-        getLogger().info("Stopping the Internal server");
+        getLogger().info("Stopping the internal server");
     }
 
 }

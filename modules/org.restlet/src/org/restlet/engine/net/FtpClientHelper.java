@@ -197,13 +197,13 @@ public class FtpClientHelper extends ClientHelper {
     @Override
     public synchronized void start() throws Exception {
         super.start();
-        getLogger().info("Starting the Internal FTP client");
+        getLogger().info("Starting the internal FTP client");
     }
 
     @Override
     public synchronized void stop() throws Exception {
         super.stop();
-        getLogger().info("Stopping the Internal FTP client");
+        getLogger().info("Stopping the internal FTP client");
     }
 
 }
