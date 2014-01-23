@@ -114,8 +114,9 @@
 	<condition property="ant-old">
 		<not>
 			<or>
-				<contains string="${ant.version}" substring="Ant version 1.7" />
-				<contains string="${ant.version}" substring="Ant version 1.8" />
+				<contains string="${ant.version}" substring="version 1.7" />
+				<contains string="${ant.version}" substring="version 1.8" />
+				<contains string="${ant.version}" substring="version 1.9" />
 			</or>
 		</not>
 	</condition>
@@ -813,7 +814,7 @@
 		<mkdir dir="${temp}/test" />
 
 		<echo>See the JUnit log file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.</echo>
-		<junit printsummary="true" fork="true" timeout="60000" haltonfailure="false" haltonerror="false" filtertrace="true" showoutput="${verbose}" errorproperty="errorprop" failureproperty="failprop">
+		<junit printsummary="true" fork="true" timeout="600000" haltonfailure="false" haltonerror="false" filtertrace="true" showoutput="true" errorproperty="errorprop" failureproperty="failprop">
 			<classpath>
 				<path location="${mod}/${mod-core-test-id}/src" />
 				<path refid="mod-core-test-path" />
