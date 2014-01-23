@@ -129,7 +129,7 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
                 awsVerifier.verify(request, null));
 
         // Test invalid due to no date header
-        headers.removeAll(HeaderConstants.HEADER_DATE);
+        headers.removeAll(HeaderConstants.HEADER_DATE, true);
         Assert.assertEquals(Verifier.RESULT_INVALID,
                 awsVerifier.verify(request, null));
 

@@ -129,7 +129,8 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         @SuppressWarnings("unchecked")
         Series<Header> headers = (Series<Header>) message.getAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
-        Header p = headers.getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING);
+        Header p = headers.getFirst(HeaderConstants.HEADER_TRANSFER_ENCODING,
+                true);
         assertFalse(p == null);
         assertEquals("chunked", p.getValue());
     }

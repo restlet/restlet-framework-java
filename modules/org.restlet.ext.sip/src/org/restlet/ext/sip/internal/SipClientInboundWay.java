@@ -114,14 +114,14 @@ public class SipClientInboundWay extends ClientInboundWay {
 
         // Set the "callId" property
         String callIdHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(SipConstants.HEADER_CALL_ID);
+                .getFirstValue(SipConstants.HEADER_CALL_ID, true);
         if (callIdHeader != null) {
             sr.setCallId(callIdHeader);
         }
 
         // Set the "commandSeq" property
         String commandSeqHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(SipConstants.HEADER_CALL_SEQ);
+                .getFirstValue(SipConstants.HEADER_CALL_SEQ, true);
         if (commandSeqHeader != null) {
             sr.setCommandSequence(commandSeqHeader);
         }
@@ -165,7 +165,7 @@ public class SipClientInboundWay extends ClientInboundWay {
 
         // Set the "from" property
         String fromHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(HeaderConstants.HEADER_FROM);
+                .getFirstValue(HeaderConstants.HEADER_FROM, true);
         if (fromHeader != null) {
             try {
                 sr.setFrom(new AddressReader(fromHeader).readValue());
@@ -176,22 +176,22 @@ public class SipClientInboundWay extends ClientInboundWay {
 
         // Set the "minExpires" property
         header = (getHeaders() == null) ? null : getHeaders().getFirstValue(
-                SipConstants.HEADER_MIN_EXPIRES);
+                SipConstants.HEADER_MIN_EXPIRES, true);
         sr.setMinExpires(header);
 
         // Set the "mime-version" property
         header = (getHeaders() == null) ? null : getHeaders().getFirstValue(
-                SipConstants.HEADER_MIME_VERSION);
+                SipConstants.HEADER_MIME_VERSION, true);
         sr.setMimeVersion(header);
 
         // Set the "mime-version" property
         header = (getHeaders() == null) ? null : getHeaders().getFirstValue(
-                SipConstants.HEADER_MIME_VERSION);
+                SipConstants.HEADER_MIME_VERSION, true);
         sr.setMimeVersion(header);
 
         // Set the "organization" property
         header = (getHeaders() == null) ? null : getHeaders().getFirstValue(
-                SipConstants.HEADER_MIME_VERSION);
+                SipConstants.HEADER_MIME_VERSION, true);
         sr.setOrganization(header);
 
         // Set the "recordedRoute" property
@@ -234,7 +234,7 @@ public class SipClientInboundWay extends ClientInboundWay {
 
         // Set the "sipRetryAfter" property
         header = (getHeaders() == null) ? null : getHeaders().getFirstValue(
-                SipConstants.HEADER_RETRY_AFTER);
+                SipConstants.HEADER_RETRY_AFTER, true);
         if (header != null) {
             try {
                 sr.setSipRetryAfter(new AvailabilityReader(header).readValue());
@@ -245,7 +245,7 @@ public class SipClientInboundWay extends ClientInboundWay {
 
         // Set the "sipTag" property
         header = (getHeaders() == null) ? null : getHeaders().getFirstValue(
-                SipConstants.HEADER_SIP_ETAG);
+                SipConstants.HEADER_SIP_ETAG, true);
         if (header != null) {
             sr.setSipTag(Tag.parse(header));
         }
@@ -265,7 +265,7 @@ public class SipClientInboundWay extends ClientInboundWay {
 
         // Set the "to" property
         header = (getHeaders() == null) ? null : getHeaders().getFirstValue(
-                SipConstants.HEADER_TO);
+                SipConstants.HEADER_TO, true);
         if (header != null) {
             try {
                 sr.setTo(new AddressReader(header).readValue());
@@ -342,7 +342,7 @@ public class SipClientInboundWay extends ClientInboundWay {
     protected boolean hasIoInterest() {
         return (getIoState() == IoState.IDLE);
     }
-    
+
     @Override
     public void updateState() {
         if (getMessageState() == MessageState.IDLE) {

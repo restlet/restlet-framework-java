@@ -332,7 +332,7 @@ public class HttpInboundRequest extends Request implements InboundRequest {
                 result.setAgent(getHeaders().getValues(
                         HeaderConstants.HEADER_USER_AGENT));
                 result.setFrom(getHeaders().getFirstValue(
-                        HeaderConstants.HEADER_FROM));
+                        HeaderConstants.HEADER_FROM, true));
                 result.setAddress(getConnection().getAddress());
                 result.setPort(getConnection().getPort());
 
@@ -389,7 +389,7 @@ public class HttpInboundRequest extends Request implements InboundRequest {
                 Date ifModifiedSince = null;
                 Date ifUnmodifiedSince = null;
                 String ifRangeHeader = getHeaders().getFirstValue(
-                        HeaderConstants.HEADER_IF_RANGE);
+                        HeaderConstants.HEADER_IF_RANGE, true);
 
                 for (Header header : getHeaders()) {
                     if (header.getName().equalsIgnoreCase(
@@ -585,7 +585,7 @@ public class HttpInboundRequest extends Request implements InboundRequest {
 
         if (!recipientsInfoAdded && (getHeaders() != null)) {
             for (String header : getHeaders().getValuesArray(
-                    HeaderConstants.HEADER_VIA)) {
+                    HeaderConstants.HEADER_VIA, true)) {
                 new RecipientInfoReader(header).addValues(result);
             }
 
@@ -634,7 +634,7 @@ public class HttpInboundRequest extends Request implements InboundRequest {
         if (!this.warningsAdded) {
             if (getHeaders() != null) {
                 for (String warning : getHeaders().getValuesArray(
-                        HeaderConstants.HEADER_WARNING)) {
+                        HeaderConstants.HEADER_WARNING, true)) {
                     new WarningReader(warning).addValues(result);
                 }
             }
@@ -776,7 +776,7 @@ public class HttpInboundRequest extends Request implements InboundRequest {
 
         // Set the request date
         String dateHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(HeaderConstants.HEADER_DATE);
+                .getFirstValue(HeaderConstants.HEADER_DATE, true);
         Date date = null;
         if (dateHeader != null) {
             date = DateUtils.parse(dateHeader);
@@ -790,7 +790,7 @@ public class HttpInboundRequest extends Request implements InboundRequest {
 
         // Set the max forwards
         String maxForwardsHeader = (getHeaders() == null) ? null : getHeaders()
-                .getFirstValue(HeaderConstants.HEADER_MAX_FORWARDS);
+                .getFirstValue(HeaderConstants.HEADER_MAX_FORWARDS, true);
         if (maxForwardsHeader != null) {
             try {
                 setMaxForwards(Integer.parseInt(maxForwardsHeader));

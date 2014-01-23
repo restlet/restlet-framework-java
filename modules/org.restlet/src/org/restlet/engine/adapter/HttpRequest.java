@@ -185,7 +185,7 @@ public class HttpRequest extends Request {
 
         // Set the request date
         String dateHeader = httpCall.getRequestHeaders().getFirstValue(
-                HeaderConstants.HEADER_DATE);
+                HeaderConstants.HEADER_DATE, true);
         Date date = null;
         if (dateHeader != null) {
             date = DateUtils.parse(dateHeader);
@@ -312,7 +312,7 @@ public class HttpRequest extends Request {
             result.setAgent(getHttpCall().getRequestHeaders().getValues(
                     HeaderConstants.HEADER_USER_AGENT));
             result.setFrom(getHttpCall().getRequestHeaders().getFirstValue(
-                    HeaderConstants.HEADER_FROM));
+                    HeaderConstants.HEADER_FROM, true));
             result.setAddress(getHttpCall().getClientAddress());
             result.setPort(getHttpCall().getClientPort());
 
@@ -365,7 +365,7 @@ public class HttpRequest extends Request {
             Date ifModifiedSince = null;
             Date ifUnmodifiedSince = null;
             String ifRangeHeader = getHttpCall().getRequestHeaders()
-                    .getFirstValue(HeaderConstants.HEADER_IF_RANGE);
+                    .getFirstValue(HeaderConstants.HEADER_IF_RANGE, true);
 
             for (Header header : getHttpCall().getRequestHeaders()) {
                 if (header.getName().equalsIgnoreCase(
@@ -567,7 +567,7 @@ public class HttpRequest extends Request {
         List<RecipientInfo> result = super.getRecipientsInfo();
         if (!recipientsInfoAdded) {
             for (String header : getHttpCall().getRequestHeaders()
-                    .getValuesArray(HeaderConstants.HEADER_VIA)) {
+                    .getValuesArray(HeaderConstants.HEADER_VIA, true)) {
                 new RecipientInfoReader(header).addValues(result);
             }
             recipientsInfoAdded = true;
@@ -600,7 +600,7 @@ public class HttpRequest extends Request {
         List<Warning> result = super.getWarnings();
         if (!warningsAdded) {
             for (String header : getHttpCall().getRequestHeaders()
-                    .getValuesArray(HeaderConstants.HEADER_WARNING)) {
+                    .getValuesArray(HeaderConstants.HEADER_WARNING, true)) {
                 new WarningReader(header).addValues(result);
             }
             warningsAdded = true;

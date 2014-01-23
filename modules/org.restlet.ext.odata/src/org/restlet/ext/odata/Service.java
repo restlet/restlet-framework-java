@@ -521,8 +521,8 @@ public class Service {
 
                 if (o != null) {
                     Series<Header> headers = (Series<Header>) o;
-                    String strHeader = headers
-                            .getFirstValue("DataServiceVersion");
+                    String strHeader = headers.getFirstValue(
+                            "DataServiceVersion", true);
 
                     if (strHeader != null) {
                         HeaderReader<Object> reader = new HeaderReader<Object>(

@@ -188,7 +188,7 @@ public class WrappedRequestForHttpHeaders implements
         Series<Header> headers = getHeaders();
 
         if (headers != null) {
-            Header first = headers.getFirst(headerName);
+            Header first = headers.getFirst(headerName, true);
 
             if (first == null) {
                 return null;

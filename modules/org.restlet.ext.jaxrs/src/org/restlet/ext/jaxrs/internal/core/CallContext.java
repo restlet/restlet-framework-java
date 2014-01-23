@@ -1043,7 +1043,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public List<String> getRequestHeader(String headerName) {
         String[] values;
-        values = Util.getHttpHeaders(this.request).getValuesArray(headerName);
+        values = Util.getHttpHeaders(this.request).getValuesArray(headerName,
+                true);
         return Collections.unmodifiableList(Arrays.asList(values));
     }
 
