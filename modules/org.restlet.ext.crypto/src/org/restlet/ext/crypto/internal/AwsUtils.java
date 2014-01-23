@@ -307,7 +307,7 @@ public class AwsUtils {
     public static String getS3StringToSign(Request request) {
         @SuppressWarnings("unchecked")
         Series<Header> headers = (Series<Header>) request.getAttributes().get(
-                "org.restlet.http.headers");
+                HeaderConstants.ATTRIBUTE_HEADERS);
         return getS3StringToSign(request, headers);
     }
 

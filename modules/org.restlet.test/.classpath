@@ -23,7 +23,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.rdf"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.sip"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.spring"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jsslutils"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.velocity"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.wadl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xdb"/>
@@ -33,5 +32,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.gson"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.hamcrest"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.nio"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.ssl"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -61,8 +61,6 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
 
     private static final String ACCESS_KEY = "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o";
 
-    private static final String ATTRIBUTES_HEADERS = "org.restlet.http.headers";
-
     private AwsVerifier awsVerifier;
 
     private LocalVerifier localVerifier;
@@ -70,7 +68,7 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
     private Request createRequest() {
         Request request = new Request();
         Series<Header> headers = new Series<Header>(Header.class);
-        request.getAttributes().put(ATTRIBUTES_HEADERS, headers);
+        request.getAttributes().put(HeaderConstants.ATTRIBUTE_HEADERS, headers);
         request.setMethod(Method.GET);
         request.setResourceRef("http://johnsmith.s3.amazonaws.com/photos/puppy.jpg");
 
@@ -103,7 +101,7 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
         Request request = createRequest();
         @SuppressWarnings("unchecked")
         Series<Header> headers = (Series<Header>) request.getAttributes().get(
-                ATTRIBUTES_HEADERS);
+                HeaderConstants.ATTRIBUTE_HEADERS);
 
         // Test for missing due to no challenge response
         Assert.assertEquals(Verifier.RESULT_MISSING,
@@ -118,8 +116,8 @@ public class HttpAwsS3VerifierTestCase extends RestletTestCase {
                 awsVerifier.verify(request, null));
 
         // Test authentication with bad credentials
-        String sig = AwsUtils
-                .getS3Signature(request, "badpassword".toCharArray());
+        String sig = AwsUtils.getS3Signature(request,
+                "badpassword".toCharArray());
         cr.setRawValue(ACCESS_ID + ":" + sig);
         Assert.assertEquals(Verifier.RESULT_INVALID,
                 awsVerifier.verify(request, null));
