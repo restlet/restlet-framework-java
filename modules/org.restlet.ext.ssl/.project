@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.restlet.ext.jsslutils</name>
+	<name>org.restlet.ext.ssl</name>
 	<comment></comment>
 	<projects>
 	</projects>
