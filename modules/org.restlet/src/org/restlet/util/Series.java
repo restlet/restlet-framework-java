@@ -422,7 +422,7 @@ public class Series<T extends NamedValue<String>> extends WrapperList<T> {
      * name.
      * 
      * @param name
-     *            The parameter name to match.
+     *            The parameter name to match (case sensitive).
      * @return The array of values.
      */
     public String[] getValuesArray(String name) {
