@@ -10,6 +10,8 @@ Changes log
          parameter value when using multipart representations.
          Reported by xwen97.
        - Fixed issue #821: status reason phrase set by the Jetty connector.
+       - Fixed issue #823: Service-Component header missing in manifest.mf for servlet extension.
+         Reported by Ioan Lupu.
 
 - 2.1.6 (12/05/2013)
     - Bug fixed
