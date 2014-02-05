@@ -441,6 +441,14 @@
 					</manifest>
 				</then>
 			</if>
+			<if>
+				<isset property="mod-@{name}-ds" />
+				<then>
+					<manifest file="@{dir}/META-INF/MANIFEST.MF" mode="update">
+						<attribute id="Service-Component" name="Service-Component" value="${mod-@{name}-ds}" />
+					</manifest>
+				</then>
+			</if>
 			<condition property="include-@{name}-pattern" value="org/restlet/test/**">
 				<equals arg1="@{name}" arg2="core-test" />
 			</condition>
@@ -478,7 +486,11 @@
 			<if>
 				<istrue value="${do-p2}" />
 				<then>
-					<generateModuleManifest name="@{name}" dir="${temp}/jar-extras/@{name}" />
+					<pathconvert property="mod-@{name}-ds" dirsep="/" pathsep="," setonempty="false">
+						<map from="${mod}/${mod-@{name}-id}/" to=""/>
+						<fileset dir="${mod}/${mod-@{name}-id}/" includes="OSGI-INF/**" />
+					</pathconvert>
+					<generateModuleManifest name="@{name}" dir="${temp}/jar-extras/@{name}"/>
 				</then>
 			</if>
 			<copy todir="${temp}/jar-extras/@{name}" failonerror="false">

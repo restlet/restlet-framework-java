@@ -49,6 +49,10 @@ Changes log
         extension and for CertificateAuthenticator class now in org.restlet.security.
         Solves issue #803 reported by Tal Liron.
 
+    - Bug fixed
+       - Fixed issue #823: Service-Component header missing in manifest.mf for servlet extension.
+         Reported by Ioan Lupu.
+
 - 2.2 Milestone 6 (12/05/2013)
     - Enhancements
       - Added a Message#bufferEntity() method to facilitate buffering of request and response
