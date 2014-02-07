@@ -73,6 +73,22 @@ public abstract class XmlRepresentation extends WriterRepresentation
 // [enddef]
 {
 
+    /**
+     * True for expanding entity references when parsing XML representations;
+     * default value provided by system property
+     * "org.restlet.ext.xml.expandingEntityRefs", false by default.
+     */
+    public static boolean XML_EXPANDING_ENTITY_REFS = Boolean
+            .getBoolean("org.restlet.ext.xml.expandingEntityRefs");
+
+    /**
+     * True for validating DTD documents when parsing XML representations;
+     * default value provided by system property
+     * "org.restlet.ext.xml.validatingDtd", false by default.
+     */
+    public static boolean XML_VALIDATING_DTD = Boolean
+            .getBoolean("org.restlet.ext.xml.validatingDtd");
+
     // [ifdef android] method
     /**
      * Appends the text content of a given node and its descendants to the given
@@ -312,12 +328,12 @@ public abstract class XmlRepresentation extends WriterRepresentation
         this.coalescing = false;
         this.entityResolver = null;
         this.errorHandler = null;
-        this.expandingEntityRefs = false;
+        this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
         this.ignoringComments = false;
         this.ignoringExtraWhitespaces = false;
         this.namespaceAware = false;
         this.namespaces = null;
-        this.validatingDtd = false;
+        this.validatingDtd = XML_VALIDATING_DTD;
         this.xIncludeAware = false;
         // [ifndef android] line
         this.schema = null;
@@ -393,8 +409,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
             dbf.setCoalescing(isCoalescing());
             dbf.setExpandEntityReferences(isExpandingEntityRefs());
             dbf.setIgnoringComments(isIgnoringComments());
-            dbf
-                    .setIgnoringElementContentWhitespace(isIgnoringExtraWhitespaces());
+            dbf.setIgnoringElementContentWhitespace(isIgnoringExtraWhitespaces());
 
             try {
                 dbf.setXIncludeAware(isXIncludeAware());
@@ -543,8 +558,7 @@ public abstract class XmlRepresentation extends WriterRepresentation
         boolean found = false;
 
         for (Iterator<String> iterator = getNamespaces().keySet().iterator(); iterator
-                .hasNext()
-                && !found;) {
+                .hasNext() && !found;) {
             String key = iterator.next();
             if (getNamespaces().get(key).equals(namespaceURI)) {
                 found = true;

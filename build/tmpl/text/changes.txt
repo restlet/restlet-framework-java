@@ -4,6 +4,11 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - API changes
+      - XEE injection security fix (Issue #826). As a side effect, the XML parsers adopt a more 
+        defensive strategy and prevent by default loading of external entities, validation of DTD,
+        and turn on secure processing for SAX parsers.
+
     - Bug fixed
        - Fixed issue #810, generation of HTML representation of a WADL document.
        - Fixed issue #720, complete the content-type header with the right boundary 
@@ -12,6 +17,7 @@ Changes log
        - Fixed issue #821: status reason phrase set by the Jetty connector.
        - Fixed issue #823: Service-Component header missing in manifest.mf for servlet extension.
          Reported by Ioan Lupu.
+       - XEE injection security fix. Issue #826. Reported by Alvaro Munoz.
 
 - 2.1.6 (12/05/2013)
     - Bug fixed

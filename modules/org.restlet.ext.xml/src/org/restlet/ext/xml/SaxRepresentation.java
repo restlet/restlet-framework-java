@@ -67,6 +67,16 @@ import org.xml.sax.XMLReader;
  * @author Jerome Louvel
  */
 public class SaxRepresentation extends XmlRepresentation {
+
+    /**
+     * True for turning on secure parsing XML representations; default value
+     * provided by system property "org.restlet.ext.xml.secureProcessing", true
+     * by default.
+     */
+    public static final boolean XML_SECURE_PROCESSING = (System
+            .getProperty("org.restlet.ext.xml.secureProcessing") == null) ? true
+            : Boolean.getBoolean("org.restlet.ext.xml.secureProcessing");
+
     /** Limits potential XML overflow attacks. */
     private boolean secureProcessing;
 
@@ -91,7 +101,7 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     public SaxRepresentation(MediaType mediaType) {
         super(mediaType);
-        this.secureProcessing = false;
+        this.secureProcessing = XML_SECURE_PROCESSING;
     }
 
     /**
@@ -104,7 +114,7 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     public SaxRepresentation(MediaType mediaType, Document xmlDocument) {
         super(mediaType);
-        this.secureProcessing = false;
+        this.secureProcessing = XML_SECURE_PROCESSING;
         this.source = new SAXSource(
                 SAXSource.sourceToInputSource(new DOMSource(xmlDocument)));
     }
@@ -119,7 +129,7 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     public SaxRepresentation(MediaType mediaType, InputSource xmlSource) {
         super(mediaType);
-        this.secureProcessing = false;
+        this.secureProcessing = XML_SECURE_PROCESSING;
         this.source = new SAXSource(xmlSource);
     }
 
@@ -133,7 +143,7 @@ public class SaxRepresentation extends XmlRepresentation {
      */
     public SaxRepresentation(MediaType mediaType, SAXSource xmlSource) {
         super(mediaType);
-        this.secureProcessing = false;
+        this.secureProcessing = XML_SECURE_PROCESSING;
         this.source = xmlSource;
     }
 
@@ -146,7 +156,7 @@ public class SaxRepresentation extends XmlRepresentation {
     public SaxRepresentation(Representation xmlRepresentation) {
         super((xmlRepresentation == null) ? null : xmlRepresentation
                 .getMediaType());
-        this.secureProcessing = false;
+        this.secureProcessing = XML_SECURE_PROCESSING;
         this.xmlRepresentation = xmlRepresentation;
     }
 
