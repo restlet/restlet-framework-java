@@ -58,6 +58,8 @@ Changes log
        - XEE injection security fix. Issue #826. Reported by Alvaro Munoz.
        - OData not passing null when property not marked nullable, issue #663.
          Reported by Carl J. Mosca and contributed by Luke Adams.
+       - Android ICS: needs fixing for HttpUrlConnectionCall.getResponseHeaders, issue #548.
+         Reported by Bobby Sawhney.
 
 - 2.2 Milestone 6 (12/05/2013)
     - Enhancements

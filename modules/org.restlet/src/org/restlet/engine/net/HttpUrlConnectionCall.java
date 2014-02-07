@@ -247,26 +247,32 @@ public class HttpUrlConnectionCall extends ClientCall {
         Series<Header> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
-            // Read the response headers
-            int i = 1;
-            String headerName = getConnection().getHeaderFieldKey(i);
-            String headerValue = getConnection().getHeaderField(i);
+            boolean loop = true;
+            int i = 0;
+            String headerName = null;
+            String headerValue = null;
 
-            while (headerName != null) {
-                result.add(headerName, headerValue);
-                i++;
-
-                if (Edition.CURRENT != Edition.GAE) {
+            while (loop) {
+                try {
                     headerName = getConnection().getHeaderFieldKey(i);
                     headerValue = getConnection().getHeaderField(i);
-                } else {
-                    try {
-                        headerName = getConnection().getHeaderFieldKey(i);
-                        headerValue = getConnection().getHeaderField(i);
-                    } catch (java.util.NoSuchElementException e) {
-                        headerName = null;
-                    }
+                } catch (java.util.NoSuchElementException e) {
+                    // Some implementations especially the one for Google App
+                    // Engine throws a NoSuchElementException though this is not
+                    // stated by the contract of the abstract class
+                    // HttpUrlConnection.
+                    headerName = null;
                 }
+                if (headerName != null) {
+                    result.add(headerName, headerValue);
+                } else {
+                    // As stated by the HttpUrlConnection javadocs, some
+                    // implementations may treat the 0th header field as
+                    // special, i.e. as the status line returned by the HTTP
+                    // server.
+                    loop = (i == 0);
+                }
+                i++;
             }
 
             this.responseHeadersAdded = true;
