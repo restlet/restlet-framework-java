@@ -563,8 +563,14 @@ public class MetadataReader extends DefaultHandler {
             }
 
             property.setDefaultValue(attrs.getValue("Default"));
-            property.setNullable(Boolean.parseBoolean(attrs
-                    .getValue("Nullable")));
+            // If no value is specified, the nullable facet defaults to true
+            // http://www.odata.org/documentation/odata-v3-documentation/common-schema-definition-language-csdl/#531_The_edmNullable_Attribute
+            String nullable = attrs.getValue("Nullable");
+            if (nullable == null) {
+                property.setNullable(true);
+            } else {
+                property.setNullable(Boolean.parseBoolean(nullable));
+            }
             // ConcurrencyMode
             if ("fixed".equalsIgnoreCase(attrs.getValue("ConcurrencyMode"))) {
                 property.setConcurrent(true);

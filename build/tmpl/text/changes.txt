@@ -56,6 +56,8 @@ Changes log
        - Fixed issue #823: Service-Component header missing in manifest.mf for servlet extension.
          Reported by Ioan Lupu.
        - XEE injection security fix. Issue #826. Reported by Alvaro Munoz.
+       - OData not passing null when property not marked nullable, issue #663.
+         Reported by Carl J. Mosca and contributed by Luke Adams.
 
 - 2.2 Milestone 6 (12/05/2013)
     - Enhancements
