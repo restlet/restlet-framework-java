@@ -31,44 +31,39 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.ext.emf;
+package org.restlet.test.ext.rome;
 
 import java.io.IOException;
 
-import org.eclipse.emf.ecore.EObject;
-import org.restlet.ext.emf.EmfRepresentation;
+import org.restlet.ext.rome.SyndFeedRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.test.RestletTestCase;
 
+import com.sun.syndication.feed.synd.SyndFeed;
+
 /**
- * Unit test for the {@link EmfRepresentation} class.
+ * Unit test for the {@link SyndFeedRepresentation} class.
  * 
  * @author Jerome Louvel
  */
-public class EmfRepresentationTestCase extends RestletTestCase {
+public class SyndFeedRepresentationTestCase extends RestletTestCase {
 
     public void testParsing() throws IOException {
         ClientResource cr = new ClientResource(
-                "clap://class/org/restlet/test/ext/emf/Test.ecore");
-        Representation emfFile = cr.get();
-
-        EmfRepresentation<EObject> emfRep = new EmfRepresentation<EObject>(
-                emfFile);
-        EObject emfObj = emfRep.getObject();
-        assertNotNull(emfObj);
+                "clap://class/org/restlet/test/ext/rome/testRome.xml");
+        Representation xmlRep = cr.get();
+        SyndFeed feed = new SyndFeedRepresentation(xmlRep).getFeed();
+        assertNotNull(feed);
     }
-    
+
     public void testBomb() throws IOException {
         ClientResource cr = new ClientResource(
-                "clap://class/org/restlet/test/ext/emf/TestBomb.ecore");
-        Representation emfFile = cr.get();
-
+                "clap://class/org/restlet/test/ext/rome/testRomeBomb.xml");
+        Representation xmlRep = cr.get();
         boolean error = false;
         try {
-            EmfRepresentation<EObject> emfRep = new EmfRepresentation<EObject>(
-                    emfFile);
-            emfRep.getObject();            
+            new SyndFeedRepresentation(xmlRep).getFeed();
         } catch (Exception e) {
             error = true;
         }

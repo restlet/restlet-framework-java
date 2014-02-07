@@ -31,6 +31,7 @@
 		<dependency type="module" id="oauth" includes="jse" />
 		<dependency type="module" id="odata" />
 		<dependency type="module" id="rdf" />
+		<dependency type="module" id="rome" />
 		<dependency type="module" id="simple" includes="jse" />
 		<dependency type="module" id="sip" includes="jse" />
 		<dependency type="module" id="spring" />

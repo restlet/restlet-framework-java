@@ -36,6 +36,10 @@ package org.restlet.ext.jackson;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
@@ -63,6 +67,28 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
  *            The type to wrap.
  */
 public class JacksonRepresentation<T> extends OutputRepresentation {
+    /**
+     * True for expanding entity references when parsing XML representations,
+     * false by default.
+     */
+    public static boolean XML_EXPANDING_ENTITY_REFS = Boolean
+            .getBoolean("org.restlet.ext.xml.expandingEntityRefs");
+
+    /**
+     * True for validating DTD documents when parsing XML representations, false
+     * by default.
+     */
+    public static boolean XML_VALIDATING_DTD = Boolean
+            .getBoolean("org.restlet.ext.xml.validatingDtd");
+
+    /** The modifiable Jackson CSV schema. */
+    private CsvSchema csvSchema;
+    
+    /**
+     * Specifies that the parser will expand entity reference nodes. By default
+     * the value of this is set to false.
+     */
+    private volatile boolean expandingEntityRefs;
 
     /** The (parsed) object to format. */
     private T object;
@@ -70,20 +96,26 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
     /** The object class to instantiate. */
     private Class<T> objectClass;
 
-    /** The representation to parse. */
-    private Representation representation;
-
     /** The modifiable Jackson object mapper. */
     private ObjectMapper objectMapper;
-
-    /** The modifiable Jackson object writer. */
-    private ObjectWriter objectWriter;
 
     /** The modifiable Jackson object reader. */
     private ObjectReader objectReader;
 
-    /** The modifiable Jackson CSV schema. */
-    private CsvSchema csvSchema;
+    /** The modifiable Jackson object writer. */
+    private ObjectWriter objectWriter;
+
+    /** The representation to parse. */
+    private Representation representation;
+
+    /**
+     * Indicates the desire for validating this type of XML representations
+     * against a DTD. Note that for XML schema or Relax NG validation, use the
+     * "schema" property instead.
+     * 
+     * @see DocumentBuilderFactory#setValidating(boolean)
+     */
+    private volatile boolean validatingDtd;
 
     /**
      * Constructor.
@@ -104,6 +136,8 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
         this.objectReader = null;
         this.objectWriter = null;
         this.csvSchema = null;
+        this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
+        this.validatingDtd = XML_VALIDATING_DTD;
     }
 
     /**
@@ -124,6 +158,8 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
         this.objectReader = null;
         this.objectWriter = null;
         this.csvSchema = null;
+        this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
+        this.validatingDtd = XML_VALIDATING_DTD;
     }
 
     /**
@@ -168,7 +204,14 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
             result = new ObjectMapper(smileFactory);
         } else if (MediaType.APPLICATION_XML.isCompatible(getMediaType())
                 || MediaType.TEXT_XML.isCompatible(getMediaType())) {
-            XmlFactory xmlFactory = new XmlFactory();
+            XMLInputFactory xif = XMLInputFactory.newFactory();
+            xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES,
+                    isExpandingEntityRefs());
+            xif.setProperty(XMLInputFactory.SUPPORT_DTD,
+                    isExpandingEntityRefs());
+            xif.setProperty(XMLInputFactory.IS_VALIDATING, isValidatingDtd());
+            XMLOutputFactory xof = XMLOutputFactory.newFactory();
+            XmlFactory xmlFactory = new XmlFactory(xif, xof);
             xmlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
             result = new XmlMapper(xmlFactory);
         } else if (MediaType.APPLICATION_YAML.isCompatible(getMediaType())) {
@@ -313,6 +356,26 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
     }
 
     /**
+     * Indicates if the parser will expand entity reference nodes. By default
+     * the value of this is set to true.
+     * 
+     * @return True if the parser will expand entity reference nodes.
+     */
+    public boolean isExpandingEntityRefs() {
+        return expandingEntityRefs;
+    }
+
+    /**
+     * Indicates the desire for validating this type of XML representations
+     * against an XML schema if one is referenced within the contents.
+     * 
+     * @return True if the schema-based validation is enabled.
+     */
+    public boolean isValidatingDtd() {
+        return validatingDtd;
+    }
+
+    /**
      * Sets the Jackson CSV schema.
      * 
      * @param csvSchema
@@ -320,6 +383,17 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      */
     public void setCsvSchema(CsvSchema csvSchema) {
         this.csvSchema = csvSchema;
+    }
+
+    /**
+     * Indicates if the parser will expand entity reference nodes. By default
+     * the value of this is set to true.
+     * 
+     * @param expandEntityRefs
+     *            True if the parser will expand entity reference nodes.
+     */
+    public void setExpandingEntityRefs(boolean expandEntityRefs) {
+        this.expandingEntityRefs = expandEntityRefs;
     }
 
     /**
@@ -370,6 +444,17 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      */
     public void setObjectWriter(ObjectWriter objectWriter) {
         this.objectWriter = objectWriter;
+    }
+
+    /**
+     * Indicates the desire for validating this type of XML representations
+     * against an XML schema if one is referenced within the contents.
+     * 
+     * @param validating
+     *            The new validation flag to set.
+     */
+    public void setValidatingDtd(boolean validating) {
+        this.validatingDtd = validating;
     }
 
     @Override

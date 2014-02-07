@@ -72,6 +72,19 @@ public abstract class XmlRepresentation extends WriterRepresentation
         implements javax.xml.namespace.NamespaceContext
 // [enddef]
 {
+    /**
+     * True for expanding entity references when parsing XML representations,
+     * false by default.
+     */
+    public static boolean XML_EXPANDING_ENTITY_REFS = Boolean
+            .getBoolean("org.restlet.ext.xml.expandingEntityRefs");
+
+    /**
+     * True for validating DTD documents when parsing XML representations, false
+     * by default.
+     */
+    public static boolean XML_VALIDATING_DTD = Boolean
+            .getBoolean("org.restlet.ext.xml.validatingDtd");
 
     // [ifdef android] method
     /**
@@ -312,12 +325,12 @@ public abstract class XmlRepresentation extends WriterRepresentation
         this.coalescing = false;
         this.entityResolver = null;
         this.errorHandler = null;
-        this.expandingEntityRefs = false;
+        this.expandingEntityRefs = XML_EXPANDING_ENTITY_REFS;
         this.ignoringComments = false;
         this.ignoringExtraWhitespaces = false;
         this.namespaceAware = false;
         this.namespaces = null;
-        this.validatingDtd = false;
+        this.validatingDtd = XML_VALIDATING_DTD;
         this.xIncludeAware = false;
         // [ifndef android] line
         this.schema = null;

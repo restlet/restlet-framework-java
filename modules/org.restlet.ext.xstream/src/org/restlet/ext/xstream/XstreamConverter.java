@@ -85,8 +85,10 @@ public class XstreamConverter extends ConverterHelper {
      *            The source representation to unmarshal.
      * @return The unmarshaling {@link XstreamRepresentation}.
      */
-    protected <T> XstreamRepresentation<T> create(Representation source, Class<T> target) {
-        XstreamRepresentation<T> representation = new XstreamRepresentation<T>(source, target);
+    protected <T> XstreamRepresentation<T> create(Representation source,
+            Class<T> target) {
+        XstreamRepresentation<T> representation = new XstreamRepresentation<T>(
+                source, target);
         return representation;
     }
 
@@ -170,18 +172,18 @@ public class XstreamConverter extends ConverterHelper {
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
-        Object result = null;
+        T result = null;
 
         // The source for the XStream conversion
         XstreamRepresentation<?> xstreamSource = null;
 
         if (source instanceof XstreamRepresentation) {
             xstreamSource = (XstreamRepresentation<?>) source;
-            if (target != null) xstreamSource.getXstream().processAnnotations(target);
-            
+            if (target != null) {
+                xstreamSource.getXstream().processAnnotations(target);
+            }
         } else if (VARIANT_JSON.isCompatible(source)) {
             xstreamSource = create(source, target);
-            
         } else if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
                 || VARIANT_APPLICATION_XML.isCompatible(source)
                 || VARIANT_TEXT_XML.isCompatible(source)) {
@@ -192,13 +194,13 @@ public class XstreamConverter extends ConverterHelper {
             // Handle the conversion
             if ((target != null)
                     && XstreamRepresentation.class.isAssignableFrom(target)) {
-                result = xstreamSource;
+                result = target.cast(xstreamSource);
             } else {
-                result = xstreamSource.getObject();
+                result = (T) xstreamSource.getObject();
             }
         }
 
-        return (T) result;
+        return result;
     }
 
     @Override

@@ -113,13 +113,7 @@ public class JacksonConverter extends ConverterHelper {
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (VARIANT_JSON.isCompatible(source)
-                || VARIANT_JSON_SMILE.isCompatible(source)
-                || VARIANT_APPLICATION_XML.isCompatible(source)
-                || VARIANT_TEXT_XML.isCompatible(source)
-                || VARIANT_APPLICATION_YAML.isCompatible(source)
-                || VARIANT_TEXT_YAML.isCompatible(source)
-                || VARIANT_TEXT_CSV.isCompatible(source)) {
+        if (isCompatible(source)) {
             result = addObjectClass(result, Object.class);
             result = addObjectClass(result, JacksonRepresentation.class);
         }
@@ -144,6 +138,26 @@ public class JacksonConverter extends ConverterHelper {
         return result;
     }
 
+    /**
+     * Indicates if the given variant is compatible with the media types
+     * supported by this converter.
+     * 
+     * @param variant
+     *            The variant.
+     * @return True if the given variant is compatible with the media types
+     *         supported by this converter.
+     */
+    protected boolean isCompatible(Variant variant) {
+        return (variant != null)
+                && (VARIANT_JSON.isCompatible(variant)
+                        || VARIANT_JSON_SMILE.isCompatible(variant)
+                        || VARIANT_APPLICATION_XML.isCompatible(variant)
+                        || VARIANT_TEXT_XML.isCompatible(variant)
+                        || VARIANT_APPLICATION_YAML.isCompatible(variant)
+                        || VARIANT_TEXT_YAML.isCompatible(variant) || VARIANT_TEXT_CSV
+                        .isCompatible(variant));
+    }
+
     @Override
     public float score(Object source, Variant target, Resource resource) {
         float result = -1.0F;
@@ -153,19 +167,7 @@ public class JacksonConverter extends ConverterHelper {
         } else {
             if (target == null) {
                 result = 0.5F;
-            } else if (VARIANT_JSON.isCompatible(target)) {
-                result = 0.8F;
-            } else if (VARIANT_JSON_SMILE.isCompatible(target)) {
-                result = 0.8F;
-            } else if (VARIANT_APPLICATION_XML.isCompatible(target)) {
-                result = 0.8F;
-            } else if (VARIANT_TEXT_XML.isCompatible(target)) {
-                result = 0.8F;
-            } else if (VARIANT_APPLICATION_YAML.isCompatible(target)) {
-                result = 0.8F;
-            } else if (VARIANT_TEXT_YAML.isCompatible(target)) {
-                result = 0.8F;
-            } else if (VARIANT_TEXT_CSV.isCompatible(target)) {
+            } else if (isCompatible(target)) {
                 result = 0.8F;
             } else {
                 result = 0.5F;
@@ -185,19 +187,7 @@ public class JacksonConverter extends ConverterHelper {
         } else if ((target != null)
                 && JacksonRepresentation.class.isAssignableFrom(target)) {
             result = 1.0F;
-        } else if (VARIANT_JSON.isCompatible(source)) {
-            result = 0.8F;
-        } else if (VARIANT_JSON_SMILE.isCompatible(source)) {
-            result = 0.8F;
-        } else if (VARIANT_APPLICATION_XML.isCompatible(source)) {
-            result = 0.8F;
-        } else if (VARIANT_TEXT_XML.isCompatible(source)) {
-            result = 0.8F;
-        } else if (VARIANT_APPLICATION_YAML.isCompatible(source)) {
-            result = 0.8F;
-        } else if (VARIANT_TEXT_YAML.isCompatible(source)) {
-            result = 0.8F;
-        } else if (VARIANT_TEXT_CSV.isCompatible(source)) {
+        } else if (isCompatible(source)) {
             result = 0.8F;
         }
 
@@ -212,16 +202,9 @@ public class JacksonConverter extends ConverterHelper {
 
         // The source for the Jackson conversion
         JacksonRepresentation<?> jacksonSource = null;
-
         if (source instanceof JacksonRepresentation) {
             jacksonSource = (JacksonRepresentation<?>) source;
-        } else if (VARIANT_JSON.isCompatible(source)
-                || VARIANT_JSON_SMILE.isCompatible(source)
-                || VARIANT_APPLICATION_XML.isCompatible(source)
-                || VARIANT_TEXT_XML.isCompatible(source)
-                || VARIANT_APPLICATION_YAML.isCompatible(source)
-                || VARIANT_TEXT_YAML.isCompatible(source)
-                || VARIANT_TEXT_CSV.isCompatible(source)) {
+        } else if (isCompatible(source)) {
             jacksonSource = create(source, target);
         }
 
@@ -249,13 +232,7 @@ public class JacksonConverter extends ConverterHelper {
             if (target.getMediaType() == null) {
                 target.setMediaType(MediaType.APPLICATION_JSON);
             }
-            if (VARIANT_JSON_SMILE.isCompatible(target)
-                    || VARIANT_JSON.isCompatible(target)
-                    || VARIANT_APPLICATION_XML.isCompatible(target)
-                    || VARIANT_TEXT_XML.isCompatible(target)
-                    || VARIANT_APPLICATION_YAML.isCompatible(target)
-                    || VARIANT_TEXT_YAML.isCompatible(target)
-                    || VARIANT_TEXT_CSV.isCompatible(target)) {
+            if (isCompatible(target)) {
                 result = create(target.getMediaType(), source);
             }
         }

@@ -33,11 +33,16 @@
 
 package org.restlet.test.ext.jackson;
 
+import java.io.IOException;
 import java.util.Date;
 
+import org.eclipse.emf.ecore.EObject;
 import org.restlet.data.MediaType;
+import org.restlet.ext.emf.EmfRepresentation;
 import org.restlet.ext.jackson.JacksonRepresentation;
+import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ClientResource;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -122,6 +127,20 @@ public class JacksonTestCase extends RestletTestCase {
         rep = new JacksonRepresentation<Customer>(new StringRepresentation(
                 text, rep.getMediaType()), Customer.class);
         verify(customer, rep.getObject());
+    }
+    
+    public void testXmlBomb() throws IOException {
+        ClientResource cr = new ClientResource(
+                "clap://class/org/restlet/test/ext/jackson/jacksonBomb.xml");
+        Representation xmlRep = cr.get();
+        xmlRep.setMediaType(MediaType.APPLICATION_XML);
+        boolean error = false;
+        try {
+            new JacksonRepresentation<Customer>(xmlRep, Customer.class).getObject();            
+        } catch (Exception e) {
+            error = true;
+        }
+        assertTrue(error);
     }
 
     public void testYaml() throws Exception {

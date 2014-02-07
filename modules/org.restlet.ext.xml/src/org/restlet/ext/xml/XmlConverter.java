@@ -143,14 +143,28 @@ public class XmlConverter extends ConverterHelper {
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
-        Object result = null;
 
-        if (Document.class.isAssignableFrom(target)) {
-            result = new DomRepresentation(source).getDocument();
-        } else if (DomRepresentation.class.isAssignableFrom(target)) {
-            result = new DomRepresentation(source);
-        } else if (SaxRepresentation.class.isAssignableFrom(target)) {
-            result = new SaxRepresentation(source);
+        Object result = null;
+        if (target != null) {
+            if (Document.class.isAssignableFrom(target)) {
+                if (source instanceof DomRepresentation) {
+                    result = ((DomRepresentation) source).getDocument();
+                } else {
+                    result = new DomRepresentation(source).getDocument();
+                }
+            } else if (DomRepresentation.class.isAssignableFrom(target)) {
+                if (source instanceof DomRepresentation) {
+                    result = (DomRepresentation) source;
+                } else {
+                    result = new DomRepresentation(source);
+                }
+            } else if (SaxRepresentation.class.isAssignableFrom(target)) {
+                if (source instanceof SaxRepresentation) {
+                    result = (SaxRepresentation)source;                    
+                } else {
+                    result = new SaxRepresentation(source);
+                }
+            }
         }
 
         return (T) result;

@@ -67,10 +67,7 @@ public class RdfConverter extends ConverterHelper {
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (VARIANT_RDF_N3.isCompatible(source)
-                || VARIANT_RDF_NTRIPLES.isCompatible(source)
-                || VARIANT_RDF_TURTLE.isCompatible(source)
-                || VARIANT_RDF_XML.isCompatible(source)) {
+        if (isCompatible(source)) {
             result = addObjectClass(result, Graph.class);
         }
 
@@ -91,6 +88,40 @@ public class RdfConverter extends ConverterHelper {
         return result;
     }
 
+    /**
+     * Indicates if the given variant is compatible with the media types
+     * supported by this converter.
+     * 
+     * @param variant
+     *            The variant.
+     * @return True if the given variant is compatible with the media types
+     *         supported by this converter.
+     */
+    protected boolean isCompatible(Variant variant) {
+        return (variant != null)
+                && (VARIANT_RDF_N3.isCompatible(variant)
+                        || VARIANT_RDF_NTRIPLES.isCompatible(variant)
+                        || VARIANT_RDF_TURTLE.isCompatible(variant) || VARIANT_RDF_XML
+                        .isCompatible(variant));
+    }
+
+    @Override
+    public float score(Object source, Variant target, Resource resource) {
+        float result = -1.0F;
+
+        if (source instanceof Graph) {
+            if (target == null) {
+                result = 0.5F;
+            } else if (isCompatible(target)) {
+                result = 1.0F;
+            } else {
+                result = 0.5F;
+            }
+        }
+
+        return result;
+    }
+
     @Override
     public <T> float score(Representation source, Class<T> target,
             Resource resource) {
@@ -105,38 +136,25 @@ public class RdfConverter extends ConverterHelper {
         return result;
     }
 
-    @Override
-    public float score(Object source, Variant target, Resource resource) {
-        float result = -1.0F;
-
-        if (source instanceof Graph) {
-            if (target == null) {
-                result = 0.5F;
-            } else if (VARIANT_RDF_N3.isCompatible(target)
-                    || VARIANT_RDF_NTRIPLES.isCompatible(target)
-                    || VARIANT_RDF_TURTLE.isCompatible(target)
-                    || VARIANT_RDF_XML.isCompatible(target)) {
-                result = 1.0F;
-            } else {
-                result = 0.5F;
-            }
-        }
-
-        return result;
-    }
-
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
-        Object result = null;
-
+        RdfRepresentation rdfSource = null;
         if (source instanceof RdfRepresentation) {
-            result = ((RdfRepresentation) source).getGraph();
+            rdfSource = (RdfRepresentation) source;
         } else {
-            result = (new RdfRepresentation(source)).getGraph();
+            rdfSource = new RdfRepresentation(source);
         }
 
-        return target.cast(result);
+        T result = null;
+        if (target == null) {
+            result = (T) rdfSource.getGraph();
+        } else if (source instanceof RdfRepresentation) {
+            result = target.cast(rdfSource.getGraph());
+        }
+
+        return result;
     }
 
     @Override

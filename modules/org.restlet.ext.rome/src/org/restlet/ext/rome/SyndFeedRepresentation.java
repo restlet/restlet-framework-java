@@ -100,6 +100,7 @@ public class SyndFeedRepresentation extends WriterRepresentation {
         super(null);
 
         InputSource source = new InputSource(feedRepresentation.getStream());
+
         try {
             this.feed = new SyndFeedInput().build(source);
         } catch (IllegalArgumentException e) {

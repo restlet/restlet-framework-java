@@ -66,9 +66,7 @@ public class JaxbConverter extends ConverterHelper {
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (VARIANT_APPLICATION_ALL_XML.isCompatible(source)
-                || VARIANT_APPLICATION_XML.isCompatible(source)
-                || VARIANT_TEXT_XML.isCompatible(source)) {
+        if (isCompatible(source)) {
             result = addObjectClass(result, JaxbRepresentation.class);
         }
 
@@ -87,6 +85,38 @@ public class JaxbConverter extends ConverterHelper {
         }
 
         return result;
+    }
+
+    /**
+     * Indicates if the given mediaType is compatible with the media types
+     * supported by this converter.
+     * 
+     * @param mediaType
+     *            The mediaType.
+     * @return True if the given mediaType is compatible with the media types
+     *         supported by this converter.
+     */
+    protected boolean isCompatible(MediaType mediaType) {
+        return (mediaType != null)
+                && (MediaType.APPLICATION_ALL_XML.isCompatible(mediaType)
+                        || MediaType.APPLICATION_XML.isCompatible(mediaType) || MediaType.TEXT_XML
+                        .isCompatible(mediaType));
+    }
+
+    /**
+     * Indicates if the given variant is compatible with the media types
+     * supported by this converter.
+     * 
+     * @param variant
+     *            The variant.
+     * @return True if the given variant is compatible with the media types
+     *         supported by this converter.
+     */
+    protected boolean isCompatible(Variant variant) {
+        return (variant != null)
+                && (VARIANT_APPLICATION_ALL_XML.isCompatible(variant)
+                        || VARIANT_APPLICATION_XML.isCompatible(variant) || VARIANT_TEXT_XML
+                        .isCompatible(variant));
     }
 
     /**
@@ -110,13 +140,7 @@ public class JaxbConverter extends ConverterHelper {
                         .getClass()))) {
             if (target == null) {
                 result = 0.8F;
-            } else if (MediaType.APPLICATION_ALL_XML.isCompatible(target
-                    .getMediaType())) {
-                result = 1.0F;
-            } else if (MediaType.APPLICATION_XML.isCompatible(target
-                    .getMediaType())) {
-                result = 1.0F;
-            } else if (MediaType.TEXT_XML.isCompatible(target.getMediaType())) {
+            } else if (isCompatible(target.getMediaType())) {
                 result = 1.0F;
             } else {
                 // Allow for JAXB object to be used for JSON and other
@@ -141,14 +165,7 @@ public class JaxbConverter extends ConverterHelper {
                 result = 1.0F;
             } else if (isJaxbRootElementClass(target)
                     || JaxbRepresentation.class.isAssignableFrom(target)) {
-                if (MediaType.APPLICATION_ALL_XML.isCompatible(source
-                        .getMediaType())) {
-                    result = 1.0F;
-                } else if (MediaType.APPLICATION_XML.isCompatible(source
-                        .getMediaType())) {
-                    result = 1.0F;
-                } else if (MediaType.TEXT_XML.isCompatible(source
-                        .getMediaType())) {
+                if (isCompatible(source.getMediaType())) {
                     result = 1.0F;
                 } else {
                     // Allow for JAXB object to be used for JSON and other
@@ -161,22 +178,27 @@ public class JaxbConverter extends ConverterHelper {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
-        Object result = null;
-
-        if (JaxbRepresentation.class.isAssignableFrom(target)) {
-            result = new JaxbRepresentation<T>(source, target);
-        } else if (isJaxbRootElementClass(target)) {
-            result = new JaxbRepresentation<T>(source, target).getObject();
-        } else if (target == null) {
-            if (source instanceof JaxbRepresentation<?>) {
-                result = ((JaxbRepresentation<?>) source).getObject();
-            }
+        JaxbRepresentation<?> jaxbSource = null;
+        if (source instanceof JaxbRepresentation) {
+            jaxbSource = (JaxbRepresentation<?>) source;
+        } else {
+            jaxbSource = new JaxbRepresentation<T>(source, target);
         }
 
-        return target.cast(result);
+        T result = null;
+        if (target == null) {
+            result = (T) jaxbSource.getObject();
+        } else if (JaxbRepresentation.class.isAssignableFrom(target)) {
+            result = target.cast(jaxbSource);
+        } else if (isJaxbRootElementClass(target)) {
+            result = target.cast(jaxbSource.getObject());
+        }
+
+        return result;
     }
 
     @Override
