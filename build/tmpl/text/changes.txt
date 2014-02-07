@@ -48,12 +48,14 @@ Changes log
         classes related to the jSSLutils library now part of new org.restlet.ext.jsslutils
         extension and for CertificateAuthenticator class now in org.restlet.security.
         Solves issue #803 reported by Tal Liron.
-      - XEE injection security fix. Issue #826.
-        Reported by Alvaro Munoz.
+      - XEE injection security fix (Issue #826). As a side effect, the XML parsers adopt a more 
+        defensive strategy and prevent by default loading of external entities, validation of DTD,
+        and turn on secure processing for SAX parsers.
 
     - Bug fixed
        - Fixed issue #823: Service-Component header missing in manifest.mf for servlet extension.
          Reported by Ioan Lupu.
+       - XEE injection security fix. Issue #826. Reported by Alvaro Munoz.
 
 - 2.2 Milestone 6 (12/05/2013)
     - Enhancements
