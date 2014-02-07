@@ -51,6 +51,7 @@ import org.restlet.engine.Engine;
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.ext.xml.SaxRepresentation;
 import org.restlet.ext.xml.TransformRepresentation;
+import org.restlet.ext.xml.XmlRepresentation;
 import org.restlet.ext.xml.XmlWriter;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
