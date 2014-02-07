@@ -41,6 +41,7 @@
 		<dependency type="module" id="xdb" includes="jee" />
 		<dependency type="module" id="xml" />
 		<dependency type="module" id="xstream" />
+		<dependency type="module" id="thymeleaf" />
 	</dependencies>
 	<source edition="android">
 		<files-sets>

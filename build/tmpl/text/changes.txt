@@ -35,6 +35,7 @@ Changes log
       - Updated Springframework to version 3.2.6.
       - Updated Testng to version 6.8.7.
       - Updated Snakeyaml to version 1.13.
+      - Added Thymeleaf extension, issue #824.
 
     - API changes
       - Moved org.restlet.ext.net HTTP/HTTPS/FTP client connectors into the core
