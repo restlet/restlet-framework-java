@@ -142,33 +142,47 @@ public class JsonConverter extends ConverterHelper {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
-        Object result = null;
+        JsonRepresentation jsonSource = null;
+        if (source instanceof JsonRepresentation) {
+            jsonSource = (JsonRepresentation) source;
+        } else {
+            jsonSource = new JsonRepresentation(source);
+        }
 
-        if (JSONArray.class.isAssignableFrom(target)) {
-            try {
-                result = new JSONArray(source.getText());
-            } catch (JSONException e) {
-                IOException ioe = new IOException(
-                        "Unable to convert to JSON array");
-                ioe.initCause(e);
+        T result = null;
+        if (target != null) {
+            if (JSONArray.class.isAssignableFrom(target)) {
+                try {
+                    result = target.cast(jsonSource.getJsonArray());
+                } catch (JSONException e) {
+                    IOException ioe = new IOException(
+                            "Unable to convert to JSON array");
+                    ioe.initCause(e);
+                }
+            } else if (JSONObject.class.isAssignableFrom(target)) {
+                try {
+                    result = target.cast(jsonSource.getJsonObject());
+                } catch (JSONException e) {
+                    IOException ioe = new IOException(
+                            "Unable to convert to JSON object");
+                    ioe.initCause(e);
+                    throw ioe;
+                }
+            } else if (JSONTokener.class.isAssignableFrom(target)) {
+                try {
+                    result = target.cast(jsonSource.getJsonTokener());
+                } catch (JSONException e) {
+                    IOException ioe = new IOException(
+                            "Unable to convert to JSON tokener");
+                    ioe.initCause(e);
+                    throw ioe;
+                }
+            } else if (JsonRepresentation.class.isAssignableFrom(target)) {
+                result = target.cast(jsonSource);
             }
-        } else if (JSONObject.class.isAssignableFrom(target)) {
-            try {
-                result = new JSONObject(source.getText());
-            } catch (JSONException e) {
-                IOException ioe = new IOException(
-                        "Unable to convert to JSON object");
-                ioe.initCause(e);
-                throw ioe;
-            }
-        } else if (JSONTokener.class.isAssignableFrom(target)) {
-            result = new JSONTokener(source.getText());
-        } else if (JsonRepresentation.class.isAssignableFrom(target)) {
-            result = new JsonRepresentation(source);
         }
 
         return (T) result;

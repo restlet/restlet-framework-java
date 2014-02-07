@@ -102,17 +102,21 @@ public class WadlConverter extends ConverterHelper {
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
-        Object result = null;
+        WadlRepresentation wadlSource = null;
+        if (source instanceof WadlRepresentation) {
+            wadlSource = (WadlRepresentation) source;
+        } else {
+            wadlSource = new WadlRepresentation(source);
+        }
 
-        if (ApplicationInfo.class.isAssignableFrom(target)) {
-            if (source instanceof WadlRepresentation) {
-                result = ((WadlRepresentation) source).getApplication();
-            } else {
-                result = new WadlRepresentation(source).getApplication();
+        T result = null;
+        if (target != null) {
+            if (ApplicationInfo.class.isAssignableFrom(target)) {
+                result = target.cast(wadlSource.getApplication());
             }
         }
 
-        return target.cast(result);
+        return result;
     }
 
     @Override

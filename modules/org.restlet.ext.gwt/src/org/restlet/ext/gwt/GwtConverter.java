@@ -134,23 +134,23 @@ public class GwtConverter extends ConverterHelper {
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
-        T result = null;
+        ObjectRepresentation<?> gwtSource = null;
+        if (source instanceof ObjectRepresentation<?>) {
+            gwtSource = (ObjectRepresentation<?>) source;
+        } else {
+            gwtSource = new ObjectRepresentation<T>(source.getText(), target);
+        }
 
-        if (target != null) {
-            if (ObjectRepresentation.class.isAssignableFrom(target)) {
-                if (source instanceof ObjectRepresentation<?>) {
-                    result = (T) source;
-                } else {
-                    result = (T) new ObjectRepresentation<T>(source.getText(),
-                            target);
-                }
+        T result = null;
+        if (gwtSource != null) {
+            if (target == null) {
+                result = (T) gwtSource.getObject();
+            } else if (ObjectRepresentation.class.isAssignableFrom(target)) {
+                result = (T) gwtSource;
             } else if (Serializable.class.isAssignableFrom(target)
                     || IsSerializable.class.isAssignableFrom(target)) {
-                result = new ObjectRepresentation<T>(source.getText(), target)
-                        .getObject();
+                result = (T) gwtSource.getObject();
             }
-        } else if (source instanceof ObjectRepresentation<?>) {
-            result = ((ObjectRepresentation<T>) source).getObject();
         }
 
         return result;

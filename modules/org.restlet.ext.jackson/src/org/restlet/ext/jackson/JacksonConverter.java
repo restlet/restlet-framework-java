@@ -111,7 +111,7 @@ public class JacksonConverter extends ConverterHelper {
     public List<Class<?>> getObjectClasses(Variant source) {
         List<Class<?>> result = null;
 
-        if (VARIANT_JSON.isCompatible(source)) {
+        if (isCompatible(source)) {
             result = addObjectClass(result, Object.class);
             result = addObjectClass(result, JacksonRepresentation.class);
         }
@@ -148,6 +148,19 @@ public class JacksonConverter extends ConverterHelper {
         return result;
     }
 
+    /**
+     * Indicates if the given variant is compatible with the media types
+     * supported by this converter.
+     * 
+     * @param variant
+     *            The variant.
+     * @return True if the given variant is compatible with the media types
+     *         supported by this converter.
+     */
+    protected boolean isCompatible(Variant variant) {
+        return (variant != null) && (VARIANT_JSON.isCompatible(variant));
+    }
+
     @Override
     public float score(Object source, Variant target, Resource resource) {
         float result = -1.0F;
@@ -157,7 +170,7 @@ public class JacksonConverter extends ConverterHelper {
         } else {
             if (target == null) {
                 result = 0.5F;
-            } else if (VARIANT_JSON.isCompatible(target)) {
+            } else if (isCompatible(target)) {
                 result = 0.8F;
             } else {
                 result = 0.5F;
@@ -177,7 +190,7 @@ public class JacksonConverter extends ConverterHelper {
         } else if ((target != null)
                 && JacksonRepresentation.class.isAssignableFrom(target)) {
             result = 1.0F;
-        } else if (VARIANT_JSON.isCompatible(source)) {
+        } else if (isCompatible(source)) {
             result = 0.8F;
         }
 
@@ -205,7 +218,7 @@ public class JacksonConverter extends ConverterHelper {
 
         if (source instanceof JacksonRepresentation) {
             jacksonSource = (JacksonRepresentation<?>) source;
-        } else if (VARIANT_JSON.isCompatible(source)) {
+        } else if (isCompatible(source)) {
             jacksonSource = create(source, target);
         }
 
@@ -234,7 +247,7 @@ public class JacksonConverter extends ConverterHelper {
                 target.setMediaType(MediaType.APPLICATION_JSON);
             }
 
-            if (VARIANT_JSON.isCompatible(target)) {
+            if (isCompatible(target)) {
                 JacksonRepresentation<Object> jacksonRepresentation = create(
                         target.getMediaType(), source);
                 result = jacksonRepresentation;

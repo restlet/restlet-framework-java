@@ -108,17 +108,19 @@ public class RomeConverter extends ConverterHelper {
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
-        Object result = null;
-
-        if (SyndFeed.class.isAssignableFrom(target)) {
-            if (source instanceof SyndFeedRepresentation) {
-                result = ((SyndFeedRepresentation) source).getFeed();
-            } else {
-                result = new SyndFeedRepresentation(source).getFeed();
-            }
+        SyndFeedRepresentation syndFeedSource = null;
+        if (source instanceof SyndFeedRepresentation) {
+            syndFeedSource = (SyndFeedRepresentation) source;
+        } else {
+            syndFeedSource = new SyndFeedRepresentation(source);
         }
 
-        return target.cast(result);
+        T result = null;
+        if ((target != null) && SyndFeed.class.isAssignableFrom(target)) {
+            result = target.cast(syndFeedSource.getFeed());
+        }
+
+        return result;
     }
 
     @Override

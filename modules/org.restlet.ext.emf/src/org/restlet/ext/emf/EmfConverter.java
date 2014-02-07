@@ -126,6 +126,15 @@ public class EmfConverter extends ConverterHelper {
         return result;
     }
 
+    /**
+     * Indicates if the given variant is compatible with the media types
+     * supported by this converter.
+     * 
+     * @param variant
+     *            The variant.
+     * @return True if the given variant is compatible with the media types
+     *         supported by this converter.
+     */
     protected boolean isCompatible(Variant variant) {
         return (variant != null)
                 && (VARIANT_APPLICATION_ALL_XML.isCompatible(variant)
@@ -175,12 +184,21 @@ public class EmfConverter extends ConverterHelper {
     @Override
     public <T> T toObject(Representation source, Class<T> target,
             Resource resource) throws IOException {
-        Object result = null;
-
+        EmfRepresentation<?> emfSource = null;
         if (source instanceof EmfRepresentation) {
-            result = ((EmfRepresentation<?>) source).getObject();
+            emfSource = (EmfRepresentation<?>) source;
         } else if (isCompatible(source)) {
-            result = create(source).getObject();
+            emfSource = create(source);
+        }
+
+        Object result = null;
+        if (emfSource != null) {
+            if (target != null
+                    && EmfRepresentation.class.isAssignableFrom(target)) {
+                result = emfSource;
+            } else {
+                result = emfSource.getObject();
+            }
         }
 
         return (T) result;
