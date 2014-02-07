@@ -68,22 +68,24 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
  */
 public class JacksonRepresentation<T> extends OutputRepresentation {
     /**
-     * True for expanding entity references when parsing XML representations,
-     * false by default.
+     * True for expanding entity references when parsing XML representations;
+     * default value provided by system property
+     * "org.restlet.ext.xml.expandingEntityRefs", false by default.
      */
     public static boolean XML_EXPANDING_ENTITY_REFS = Boolean
             .getBoolean("org.restlet.ext.xml.expandingEntityRefs");
 
     /**
-     * True for validating DTD documents when parsing XML representations, false
-     * by default.
+     * True for validating DTD documents when parsing XML representations;
+     * default value provided by system property
+     * "org.restlet.ext.xml.validatingDtd", false by default.
      */
     public static boolean XML_VALIDATING_DTD = Boolean
             .getBoolean("org.restlet.ext.xml.validatingDtd");
 
     /** The modifiable Jackson CSV schema. */
     private CsvSchema csvSchema;
-    
+
     /**
      * Specifies that the parser will expand entity reference nodes. By default
      * the value of this is set to false.

@@ -68,7 +68,11 @@ import org.xml.sax.XMLReader;
  */
 public class SaxRepresentation extends XmlRepresentation {
 
-    /** True for turning on secure parsing XML representations, true by default. */
+    /**
+     * True for turning on secure parsing XML representations; default value
+     * provided by system property "org.restlet.ext.xml.secureProcessing", true
+     * by default.
+     */
     public static final boolean XML_SECURE_PROCESSING = (System
             .getProperty("org.restlet.ext.xml.secureProcessing") == null) ? true
             : Boolean.getBoolean("org.restlet.ext.xml.secureProcessing");
