@@ -563,8 +563,8 @@ public class MetadataReader extends DefaultHandler {
             }
 
             property.setDefaultValue(attrs.getValue("Default"));
-            // If no value is specified, the nullable facet defaults to true
-            // http://www.odata.org/documentation/odata-v3-documentation/common-schema-definition-language-csdl/#531_The_edmNullable_Attribute
+            // If no value is specified, the nullable facet defaults to true.
+            // cf http://www.odata.org/documentation/odata-v3-documentation/common-schema-definition-language-csdl/#531_The_edmNullable_Attribute
             String nullable = attrs.getValue("Nullable");
             if (nullable == null) {
                 property.setNullable(true);
