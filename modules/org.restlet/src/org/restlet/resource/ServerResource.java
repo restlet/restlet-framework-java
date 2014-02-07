@@ -1245,8 +1245,16 @@ public abstract class ServerResource extends Resource {
      */
     protected Representation patch(Representation entity)
             throws ResourceException {
+        AnnotationInfo annotationInfo;
         try {
-            return put(getConverterService().applyPatch(get(), entity));
+            annotationInfo = getAnnotation(Method.PATCH);
+            if (annotationInfo != null) {
+                return doHandle(Method.PATCH, getQuery(), entity);
+            } else {
+                // Default implementation
+                return put(getConverterService().applyPatch(get(), entity));
+                // doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            }
         } catch (IOException e) {
             throw new ResourceException(e);
         }
@@ -1269,11 +1277,22 @@ public abstract class ServerResource extends Resource {
      */
     protected Representation patch(Representation entity, Variant variant)
             throws ResourceException {
+        Representation result = null;
+
         try {
-            return put(getConverterService().applyPatch(get(), entity), variant);
+            if (variant instanceof VariantInfo) {
+                result = doHandle(((VariantInfo) variant).getAnnotationInfo(),
+                        variant);
+            } else {
+                // Default implementation
+                result = put(getConverterService().applyPatch(get(), entity),
+                        variant);
+                // doError(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            }
         } catch (IOException e) {
             throw new ResourceException(e);
         }
+        return result;
     }
 
     /**

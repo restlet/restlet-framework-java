@@ -60,6 +60,8 @@ Changes log
          Reported by Carl J. Mosca and contributed by Luke Adams.
        - Android ICS: needs fixing for HttpUrlConnectionCall.getResponseHeaders, issue #548.
          Reported by Bobby Sawhney.
+       - @Patch annotation is ignored, issue #747.
+         Reported by Ralph van Etten.
 
 - 2.2 Milestone 6 (12/05/2013)
     - Enhancements

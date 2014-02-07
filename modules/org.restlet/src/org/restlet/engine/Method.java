@@ -41,6 +41,7 @@ import java.lang.annotation.Target;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Options;
+import org.restlet.resource.Patch;
 import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 
@@ -52,6 +53,7 @@ import org.restlet.resource.Put;
  * @see Put
  * @see Delete
  * @see Options
+ * @see Patch
  * @author Jerome Louvel
  */
 @Target(ElementType.ANNOTATION_TYPE)
