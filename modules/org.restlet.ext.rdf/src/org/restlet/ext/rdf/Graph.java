@@ -342,7 +342,7 @@ public class Graph extends CopyOnWriteArraySet<Link> {
      * @return A representation in the RDF/Turtle format.
      */
     public Representation getRdfTurtleRepresentation() {
-        return new RdfRepresentation(this, MediaType.APPLICATION_RDF_TURTLE);
+        return new RdfRepresentation(this, MediaType.TEXT_TURTLE);
     }
 
     /**

@@ -38,8 +38,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.restlet.data.Reference;
 import org.restlet.engine.util.AlphaNumericComparator;
 import org.restlet.resource.Directory;

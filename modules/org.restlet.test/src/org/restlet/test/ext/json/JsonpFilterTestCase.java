@@ -34,8 +34,8 @@
 package org.restlet.test.ext.json;
 
 import static org.restlet.data.Status.SUCCESS_OK;
-import junit.framework.Assert;
 
+import org.junit.Assert;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.MediaType;

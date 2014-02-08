@@ -41,6 +41,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.xstream"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.testng"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mongodb"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.ssl"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jsslutils"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -37,8 +37,7 @@ import static org.restlet.data.Status.SUCCESS_OK;
 
 import java.io.ByteArrayOutputStream;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.ext.json.JsonpRepresentation;

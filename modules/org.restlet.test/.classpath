@@ -32,8 +32,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.gson"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.hamcrest"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.nio"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.ssl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.rome"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.thymeleaf"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jsslutils"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

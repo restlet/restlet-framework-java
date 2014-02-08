@@ -55,7 +55,6 @@ public final class MediaType extends Metadata {
      * Keep the underscore for the ordering
      * 
      * @see http://www.ietf.org/rfc/rfc1521.txt
-     * 
      */
     private static final String _TSPECIALS = "()<>@,;:/[]?=\\\"";
 
@@ -387,6 +386,10 @@ public final class MediaType extends Metadata {
             "Simple XML serialized Resource Description Framework document");
 
     // [ifndef gwt] member
+    /**
+     * @deprecated Replaced by the official {@link #TEXT_TURTLE} media type.
+     */
+    @Deprecated
     public static final MediaType APPLICATION_RDF_TURTLE = register(
             "application/x-turtle",
             "Plain text serialized Resource Description Framework document");
@@ -624,6 +627,10 @@ public final class MediaType extends Metadata {
     // [ifndef gwt] member
     public static final MediaType TEXT_TSV = register(
             "text/tab-separated-values", "Tab-separated Values");
+
+    // [ifndef gwt] member
+    public static final MediaType TEXT_TURTLE = register("text/turtle",
+            "Plain text serialized Resource Description Framework document");
 
     public static final MediaType TEXT_URI_LIST = register("text/uri-list",
             "List of URIs");

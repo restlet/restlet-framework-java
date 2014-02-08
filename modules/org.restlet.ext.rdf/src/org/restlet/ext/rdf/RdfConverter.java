@@ -58,7 +58,7 @@ public class RdfConverter extends ConverterHelper {
             MediaType.TEXT_RDF_NTRIPLES);
 
     private static final VariantInfo VARIANT_RDF_TURTLE = new VariantInfo(
-            MediaType.APPLICATION_RDF_TURTLE);
+            MediaType.TEXT_TURTLE);
 
     private static final VariantInfo VARIANT_RDF_XML = new VariantInfo(
             MediaType.APPLICATION_ALL_XML);
@@ -173,7 +173,7 @@ public class RdfConverter extends ConverterHelper {
         if (Graph.class.isAssignableFrom(entity)) {
             updatePreferences(preferences, MediaType.TEXT_RDF_N3, 1.0F);
             updatePreferences(preferences, MediaType.TEXT_RDF_NTRIPLES, 1.0F);
-            updatePreferences(preferences, MediaType.APPLICATION_RDF_TURTLE,
+            updatePreferences(preferences, MediaType.TEXT_TURTLE,
                     1.0F);
             updatePreferences(preferences, MediaType.APPLICATION_RDF_XML, 1.0F);
         }

@@ -133,7 +133,6 @@ public class FileUploadProvider implements MessageBodyReader<List<FileItem>> {
      * @see MessageBodyReader#readFrom(Class, Type, Annotation[], MediaType,
      *      MultivaluedMap, InputStream)
      */
-    @SuppressWarnings("unchecked")
     public List<FileItem> readFrom(Class<List<FileItem>> type,
             Type genericType, Annotation[] annotations, MediaType mediaType,
             final MultivaluedMap<String, String> respHeaders,

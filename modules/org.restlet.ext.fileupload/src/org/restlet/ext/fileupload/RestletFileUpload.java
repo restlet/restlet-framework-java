@@ -117,7 +117,6 @@ public class RestletFileUpload extends FileUpload {
      *             if there are problems reading/parsing the request or storing
      *             files.
      */
-    @SuppressWarnings("unchecked")
     public List<FileItem> parseRepresentation(Representation multipartForm)
             throws FileUploadException {
         return parseRequest(new RepresentationContext(multipartForm));
@@ -136,7 +135,6 @@ public class RestletFileUpload extends FileUpload {
      *             if there are problems reading/parsing the request or storing
      *             files.
      */
-    @SuppressWarnings("unchecked")
     public List<FileItem> parseRequest(Request request)
             throws FileUploadException {
         return parseRequest(new RepresentationContext(request.getEntity()));

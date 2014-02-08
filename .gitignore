@@ -58,6 +58,7 @@
 /modules/org.restlet.ext.spring/bin
 /modules/org.restlet.ext.swagger/bin
 /modules/org.restlet.ext.jsslutils/bin
+/modules/org.restlet.ext.thymeleaf/bin
 /modules/org.restlet.ext.velocity/bin
 /modules/org.restlet.ext.wadl/bin
 /modules/org.restlet.ext.xdb/bin

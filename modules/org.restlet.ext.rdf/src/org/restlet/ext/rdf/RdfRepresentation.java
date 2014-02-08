@@ -147,7 +147,7 @@ public class RdfRepresentation extends WriterRepresentation {
             return new RdfNTriplesWriter(writer);
         } else if (MediaType.TEXT_RDF_NTRIPLES.equals(getMediaType())) {
             return new RdfNTriplesWriter(writer);
-        } else if (MediaType.APPLICATION_RDF_TURTLE.equals(getMediaType())) {
+        } else if (MediaType.TEXT_TURTLE.equals(getMediaType())) {
             return new RdfTurtleWriter(writer);
         }
 
@@ -248,7 +248,7 @@ public class RdfRepresentation extends WriterRepresentation {
             } else if (MediaType.TEXT_RDF_NTRIPLES.equals(rdfRepresentation
                     .getMediaType())) {
                 new RdfNTriplesReader(rdfRepresentation, graphHandler).parse();
-            } else if (MediaType.APPLICATION_RDF_TURTLE
+            } else if (MediaType.TEXT_TURTLE
                     .equals(rdfRepresentation.getMediaType())) {
                 new RdfTurtleReader(rdfRepresentation, graphHandler).parse();
             } else if (MediaType.valueOf("text/rdf+n3").equals(

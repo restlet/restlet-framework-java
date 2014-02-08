@@ -36,9 +36,7 @@ package org.restlet.test.ext.jackson;
 import java.io.IOException;
 import java.util.Date;
 
-import org.eclipse.emf.ecore.EObject;
 import org.restlet.data.MediaType;
-import org.restlet.ext.emf.EmfRepresentation;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
