@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.restlet"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.wordnik.swagger"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jackson"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.jaxrs"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.fasterxml.jackson"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.scala"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.ws.rs"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
