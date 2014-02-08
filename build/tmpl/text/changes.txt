@@ -36,6 +36,9 @@ Changes log
       - Updated TestNG to version 6.8.7.
       - Updated SnakeYAML to version 1.13.
       - Added Thymeleaf extension, issue #824.
+      - Improved ServerServlet.createComponent() to address issues #766 and #767: 
+        allowed to specify a custom Component class and configure it using xml file.
+        Reported and contributed by arcticgeek.
 
     - API changes
       - Moved org.restlet.ext.net HTTP/HTTPS/FTP client connectors into the core
