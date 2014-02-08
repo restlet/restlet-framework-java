@@ -35,7 +35,7 @@
 		<dependency type="module" id="simple" includes="jse" />
 		<dependency type="module" id="sip" includes="jse" />
 		<dependency type="module" id="spring" />
-		<dependency type="module" id="ssl" includes="jse" />
+		<dependency type="module" id="jsslutils" includes="jse" />
 		<dependency type="module" id="velocity" />
 		<dependency type="module" id="wadl" />
 		<dependency type="module" id="xdb" includes="jee" />
