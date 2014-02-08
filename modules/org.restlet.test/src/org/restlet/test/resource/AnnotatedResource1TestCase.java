@@ -40,6 +40,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.ext.jackson.JacksonConverter;
 import org.restlet.ext.xstream.XstreamConverter;
+import org.restlet.representation.ObjectRepresentation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Finder;
@@ -109,11 +110,13 @@ public class AnnotatedResource1TestCase extends RestletTestCase {
         assertEquals("{\"description\":\"myDescription\",\"name\":\"myName\"}",
                 result);
 
+        ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED = true;
         result = clientResource.get(MediaType.APPLICATION_JAVA_OBJECT_XML)
                 .getText();
         assertTrue(result
                 .startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
                 && result.contains("<java version=\""));
+        ObjectRepresentation.VARIANT_OBJECT_XML_SUPPORTED = false;
     }
 
     public void testOptions() {

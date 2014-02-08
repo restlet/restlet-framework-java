@@ -74,12 +74,10 @@ public abstract class RestletTestCase extends TestCase {
         org.restlet.engine.Engine.register();
 
         // Prefer the internal connectors
-        Engine.getInstance()
-                .getRegisteredServers()
-                .add(0, new org.restlet.engine.connector.HttpServerHelper(null));
-        Engine.getInstance()
-                .getRegisteredClients()
-                .add(0, new org.restlet.engine.connector.HttpClientHelper(null));
+        Engine.getInstance().getRegisteredServers()
+                .add(0, new org.restlet.ext.jetty.HttpServerHelper(null));
+        Engine.getInstance().getRegisteredClients()
+                .add(0, new org.restlet.ext.net.HttpClientHelper(null));
     }
 
     @Override

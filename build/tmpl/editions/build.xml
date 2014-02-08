@@ -888,7 +888,7 @@
 			<mkdir dir="${temp}/test" />
 
 			<echo>See the JUnit log file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.</echo>
-			<junit printsummary="true" fork="true" timeout="60000" haltonfailure="false" haltonerror="false" filtertrace="true" showoutput="${verbose}" errorproperty="errorprop" failureproperty="failprop">
+			<junit printsummary="true" fork="true" timeout="60000" haltonfailure="false" haltonerror="false" filtertrace="false" showoutput="${verbose}" errorproperty="errorprop" failureproperty="failprop" logfailedtests="${verbose}" >
 				<classpath>
 					<path location="${mod}/${mod-core-test-id}/src" />
 					<path refid="mod-core-test-path" />

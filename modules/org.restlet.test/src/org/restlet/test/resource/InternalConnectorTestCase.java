@@ -122,6 +122,11 @@ public abstract class InternalConnectorTestCase extends RestletTestCase {
         Engine.setLogLevel(Level.INFO);
         Engine.getInstance().getRegisteredConverters().clear();
         Engine.getInstance().registerDefaultConverters();
+        // Remove usage of internal connector issue #825
+        Engine.getInstance().getRegisteredClients()
+                .add(0, new org.restlet.ext.httpclient.HttpClientHelper(null));
+        Engine.getInstance().getRegisteredServers()
+                .add(0, new org.restlet.ext.jetty.HttpServerHelper(null));
     }
 
     protected int setUpServer(int suggestedPort, String path) throws Exception {
