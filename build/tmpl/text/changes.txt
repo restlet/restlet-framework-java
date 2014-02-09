@@ -3,6 +3,8 @@
 Changes log  
 ===========
 
+- @version-full@ (@release-date@)
+
 - 2.2 Release Candidate 1 (02/09/2013)
     - Enhancements
       - Added Javadocs artefacts for Maven repository, issue #811.
