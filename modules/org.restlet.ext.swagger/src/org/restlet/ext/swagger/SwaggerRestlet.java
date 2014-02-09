@@ -48,6 +48,7 @@ import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.ext.jaxrs.JaxRsRestlet;
 import org.restlet.ext.swagger.internal.SwaggerRestletIterable;
 
+import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.core.Documentation;
 import com.wordnik.swagger.core.DocumentationEndPoint;
 
@@ -181,9 +182,9 @@ public class SwaggerRestlet extends Restlet {
         List<DocumentationEndPoint> retVal = new ArrayList<DocumentationEndPoint>();
         Set<Class<?>> classes = rootRestlet.getRootResourceClasses();
 
-        for (Class<?> klazz : classes) {
-            Api apiAnnotation = klazz.getAnnotation(Api.class);
-            Path pathAnnotation = klazz.getAnnotation(Path.class);
+        for (Class<?> clazz : classes) {
+            Api apiAnnotation = clazz.getAnnotation(Api.class);
+            Path pathAnnotation = clazz.getAnnotation(Path.class);
             if (apiAnnotation != null && pathAnnotation != null) {
                 DocumentationEndPoint ep = new DocumentationEndPoint(
                         apiAnnotation.value(), apiAnnotation.description());

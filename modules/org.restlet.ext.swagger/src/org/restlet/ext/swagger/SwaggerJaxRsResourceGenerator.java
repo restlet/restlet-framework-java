@@ -56,6 +56,12 @@ import javax.ws.rs.QueryParam;
 
 import org.restlet.ext.swagger.internal.SwaggerUtils;
 
+import com.wordnik.swagger.annotations.ApiError;
+import com.wordnik.swagger.annotations.ApiErrors;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiParamImplicit;
+import com.wordnik.swagger.annotations.ApiParamsImplicit;
 import com.wordnik.swagger.core.Documentation;
 import com.wordnik.swagger.core.DocumentationEndPoint;
 import com.wordnik.swagger.core.DocumentationError;
