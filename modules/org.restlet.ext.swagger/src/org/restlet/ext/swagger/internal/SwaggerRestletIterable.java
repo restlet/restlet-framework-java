@@ -38,25 +38,36 @@ import java.util.Iterator;
 import org.restlet.Restlet;
 
 /**
- * Restlet recursive iterable
+ * An {@link Iterable} of Restlet.
  * 
  * @author Grzegorz Godlewski
  */
 public class SwaggerRestletIterable implements Iterable<Restlet> {
-
+    /** The associated Restlet iterator. */
     private SwaggerRestletIterator iterator;
 
+    /**
+     * Constructor.
+     * 
+     * @param restlet
+     *            The root Restlet.
+     */
     public SwaggerRestletIterable(Restlet restlet) {
         this.iterator = new SwaggerRestletIterator(restlet);
+    }
+
+    /**
+     * Returns the path associated to the current iterated Restlet.
+     * 
+     * @return The path associated to the current iterated Restlet.
+     */
+    public String getCurrentPath() {
+        return iterator.getCurrentPath();
     }
 
     @Override
     public Iterator<Restlet> iterator() {
         return iterator;
-    }
-
-    public String getCurrentPath() {
-        return iterator.getCurrentPath();
     }
 
 }
