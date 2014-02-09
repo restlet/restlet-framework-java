@@ -63,7 +63,13 @@ import org.xml.sax.SAXException;
 /**
  * Representation based on an XML document. It knows how to evaluate XPath
  * expressions and how to manage a namespace context. This class also offers
- * convenient methods to validate the document against a specified XML scheme.
+ * convenient methods to validate the document against a specified XML scheme. <br>
+ * <br>
+ * SECURITY WARNING: Using XML parsers configured to not prevent nor limit
+ * document type definition (DTD) entity resolution can expose the parser to an
+ * XML Entity Expansion injection attack, see
+ * https://github.com/restlet/restlet-
+ * framework-java/wiki/XEE-injection-security-fix.
  * 
  * @author Jerome Louvel
  */
