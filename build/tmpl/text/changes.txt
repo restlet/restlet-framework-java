@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+
+- 2.1.7 (02/09/2014)
     - API changes
       - XEE injection security fix (Issue #826). As a side effect, the XML parsers adopt a more 
         defensive strategy and prevent by default loading of external entities, validation of DTD,
