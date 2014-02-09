@@ -1,4 +1,4 @@
-<module includes="jse,jee" id="core-test" package="org.restlet.test">
+<module includes="jse" id="core-test" package="org.restlet.test">
 	<name>Restlet Unit Tests</name>
 	<description>
 		All Restlet unit tests.
