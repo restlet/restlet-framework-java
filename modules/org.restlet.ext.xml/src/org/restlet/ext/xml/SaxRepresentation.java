@@ -62,7 +62,13 @@ import org.xml.sax.XMLReader;
  * <br>
  * Subclasses only need to override the ContentHandler methods required for the
  * reading and also the write(XmlWriter writer) method when serialization is
- * requested.
+ * requested. <br>
+ * <br>
+ * SECURITY WARNING: Using XML parsers configured to not prevent nor limit
+ * document type definition (DTD) entity resolution can expose the parser to an
+ * XML Entity Expansion injection attack, see
+ * https://github.com/restlet/restlet-
+ * framework-java/wiki/XEE-injection-security-fix.
  * 
  * @author Jerome Louvel
  */

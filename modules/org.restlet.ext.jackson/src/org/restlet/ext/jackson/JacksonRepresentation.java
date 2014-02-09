@@ -59,7 +59,13 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 /**
  * Representation based on the Jackson library. It can serialize and deserialize
- * automatically in JSON, JSON binary (Smile), XML, YAML and CSV.
+ * automatically in JSON, JSON binary (Smile), XML, YAML and CSV. <br>
+ * <br>
+ * SECURITY WARNING: Using XML parsers configured to not prevent nor limit
+ * document type definition (DTD) entity resolution can expose the parser to an
+ * XML Entity Expansion injection attack, see
+ * https://github.com/restlet/restlet-
+ * framework-java/wiki/XEE-injection-security-fix.
  * 
  * @see <a href="http://jackson.codehaus.org/">Jackson project</a>
  * @author Jerome Louvel
