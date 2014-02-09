@@ -38,28 +38,53 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Some swagger utils
+ * Tooling library for the Swagger extension.
  * 
  * @author Grzegorz Godlewski
  */
 public class SwaggerUtils {
 
+    /**
+     * Removes doubled "/" sequences from a given String.
+     * 
+     * @param path
+     *            The path to clean.
+     * @return A String cleaned from doubled "/" sequences.
+     */
+    public static String cleanSlashes(String path) {
+        path = path.replaceAll("/+", "/");
+        return path;
+    }
+
+    /**
+     * 
+     * @param path
+     * @return
+     */
     public static String leaveOnlyPathParamNames(String path) {
         path = path.replaceAll(":[^}]*\\}", "}");
 
         return path;
     }
 
-    public static String cleanSlashes(String path) {
-        path = path.replaceAll("/+", "/");
-
-        return path;
-    }
-
+    /**
+     * Splits a coma separated list of strings, into an array. If the list is
+     * null or empty, it returns an empty array.
+     * 
+     * @param csvString
+     *            The coma separated list of String.
+     * @return The array of String.
+     */
     public static List<String> toObjectList(String csvString) {
-        if (csvString == null || csvString.length() == 0)
+        if (csvString == null || csvString.isEmpty())
             return new ArrayList<String>();
         return Arrays.asList(csvString.split(","));
+    }
+
+    /**
+     * // * private constructor for tooling class.
+     */
+    private SwaggerUtils() {
     }
 
 }
