@@ -2,7 +2,7 @@ maven JAVADOC target -->
 	<#noparse>
 			<!-- generate javadocs for this module -->
 			<javadoc sourcepath="${mod}/${mod-@{name}-id}/src"
-		         packagenames="${mod-@{name}-id}.*"
+		         packagenames="${mod-@{name}-maven-javadoc-package}.*"
 		         excludepackagenames="${exclude-packages}"
 		         destdir="${docs}/maven/${mod-@{name}-id}"
 		         classpathref="path-all"
