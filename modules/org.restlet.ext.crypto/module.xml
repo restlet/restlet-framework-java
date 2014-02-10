@@ -9,5 +9,4 @@
    <dependencies>
       <dependency type="module" id="core" />
    </dependencies>
-   <wikiUri>314-restlet</wikiUri>
 </module>

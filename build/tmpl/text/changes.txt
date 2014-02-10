@@ -9,6 +9,44 @@ Changes log
     - Enhancements
       - Added Javadocs artefacts for Maven repository, issue #811.
         Suggested by David Roussel.
+      - Added Thymeleaf extension, issue #824.
+        Reported and contributed by Grzegorz Godlewski.
+      - Improved ServerServlet.createComponent() to address issues #766 and #767: 
+        allowed to specify a custom Component class and configure it using xml file.
+        Reported and contributed by Jason Guild.
+      - Added Swagger extension, currently with JAX-RS API support only. Issue #595.
+        Reported and contributed by Grzegorz Godlewski.
+
+    - API changes
+      - Moved org.restlet.ext.net HTTP/HTTPS/FTP client connectors into the core
+        org.restlet module (org.restlet.engine.net package) as the new internal
+        client connectors.
+      - Moved NIO-based internal connector to new org.restlet.ext.nio extension.
+        Marked as "developer preview" state.
+      - Added new internal HTTP/HTTPS server connectors based on the 
+        com.sun.net.httpserver package available in JDK 6. Issue #381.
+      - Moved org.restlet.ext.ssl into core org.restlet.engine.ssl package except
+        classes related to the jSSLutils library now part of new org.restlet.ext.jsslutils
+        extension and for CertificateAuthenticator class now in org.restlet.security.
+        Solves issue #803 reported by Tal Liron.
+      - XEE injection security fix (Issue #826). As a side effect, the XML parsers adopt a more 
+        defensive strategy and prevent by default loading of external entities, validation of DTD,
+        and turn on secure processing for SAX parsers.
+      - Deprecated MediaType#APPLICATION_RDF_TURTLE and added TEXT_TURTLE constant.
+        Suggested by Peter Ansell. Issue #730.
+
+    - Bug fixed
+      - Fixed issue #823: Service-Component header missing in manifest.mf for servlet extension.
+        Reported by Ioan Lupu.
+      - XEE injection security fix. Issue #826. Reported by Alvaro Munoz.
+      - OData not passing null when property not marked nullable, issue #663.
+        Reported by Carl J. Mosca and contributed by Luke Adams.
+      - Android ICS: needs fixing for HttpUrlConnectionCall.getResponseHeaders, issue #548.
+        Reported by Bobby Sawhney.
+      - @Patch annotation is ignored, issue #747.
+        Reported by Ralph van Etten.
+
+    - Misc
       - Updated Jetty to version 8.1.14.
       - Updated XStream to version 1.4.6.
       - Updated NekoHTML to version 1.9.19.
@@ -37,42 +75,6 @@ Changes log
       - Updated Spring Framework to version 3.2.6.
       - Updated TestNG to version 6.8.7.
       - Updated SnakeYAML to version 1.13.
-      - Added Thymeleaf extension, issue #824.
-        Reported and contributed by Grzegorz Godlewski.
-      - Improved ServerServlet.createComponent() to address issues #766 and #767: 
-        allowed to specify a custom Component class and configure it using xml file.
-        Reported and contributed by arcticgeek.
-      - Added Swagger extension, issue #595.
-        Reported and contributed by Grzegorz Godlewski.
-
-    - API changes
-      - Moved org.restlet.ext.net HTTP/HTTPS/FTP client connectors into the core
-        org.restlet module (org.restlet.engine.net package) as the new internal
-        client connectors.
-      - Moved NIO-based internal connector to new org.restlet.ext.nio extension.
-        Marked as "developer preview" state.
-      - Added new internal HTTP/HTTPS server connectors based on the 
-        com.sun.net.httpserver package available in JDK 6. Issue #381.
-      - Moved org.restlet.ext.ssl into core org.restlet.engine.ssl package except
-        classes related to the jSSLutils library now part of new org.restlet.ext.jsslutils
-        extension and for CertificateAuthenticator class now in org.restlet.security.
-        Solves issue #803 reported by Tal Liron.
-      - XEE injection security fix (Issue #826). As a side effect, the XML parsers adopt a more 
-        defensive strategy and prevent by default loading of external entities, validation of DTD,
-        and turn on secure processing for SAX parsers.
-      - Deprecated MediaType#APPLICATION_RDF_TURTLE and added TEXT_TURTLE constant.
-        Suggested by Peter Ansell. Issue #730.
-
-    - Bug fixed
-       - Fixed issue #823: Service-Component header missing in manifest.mf for servlet extension.
-         Reported by Ioan Lupu.
-       - XEE injection security fix. Issue #826. Reported by Alvaro Munoz.
-       - OData not passing null when property not marked nullable, issue #663.
-         Reported by Carl J. Mosca and contributed by Luke Adams.
-       - Android ICS: needs fixing for HttpUrlConnectionCall.getResponseHeaders, issue #548.
-         Reported by Bobby Sawhney.
-       - @Patch annotation is ignored, issue #747.
-         Reported by Ralph van Etten.
 
 - 2.2 Milestone 6 (12/05/2013)
     - Enhancements

@@ -71,7 +71,7 @@ import com.wordnik.swagger.core.DocumentationParameter;
 import com.wordnik.swagger.core.DocumentationSchema;
 
 /**
- * Parses a JaxRs class and generates DocumentationEndPoint for it.
+ * Parses a JAX-RS class and generates DocumentationEndPoint for it.
  * 
  * @author Grzegorz Godlewski
  */
@@ -187,6 +187,11 @@ public class SwaggerJaxRsResourceGenerator {
         return error;
     }
 
+    /**
+     * Parses the resource class methods, checking for JAX-RS annotations.
+     * 
+     * @return The Swagger documentation.
+     */
     public Documentation parse() {
         for (Method method : resourceClass.getMethods()) {
             processMethod(method, GET.class);
@@ -194,7 +199,6 @@ public class SwaggerJaxRsResourceGenerator {
             processMethod(method, POST.class);
             processMethod(method, DELETE.class);
             processMethod(method, HEAD.class);
-
             // TODO add custom HTTP Method
         }
 
@@ -286,7 +290,13 @@ public class SwaggerJaxRsResourceGenerator {
         }
     }
 
-    private void processMethod(Method method, Class httpMethodClass) {
+    /**
+     * 
+     * @param method
+     * @param httpMethodClass
+     */
+    private void processMethod(Method method,
+            Class<? extends Annotation> httpMethodClass) {
         String methodPath = resourcePath;
         Path pathAnnotation = method.getAnnotation(Path.class);
         if (pathAnnotation != null) {

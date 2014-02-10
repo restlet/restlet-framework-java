@@ -53,11 +53,12 @@ import com.wordnik.swagger.core.Documentation;
 import com.wordnik.swagger.core.DocumentationEndPoint;
 
 /**
- * Restlet that supports Swagger documentation. Relies on JaxRs extension.
+ * Restlet that supports Swagger documentation. Relies on JAX-RS extension.
  * 
  * @author Grzegorz Godlewski
  */
 public class SwaggerRestlet extends Restlet {
+
     /** The Restlet base path. */
     private String basePath;
 
@@ -137,6 +138,7 @@ public class SwaggerRestlet extends Restlet {
             if (resourcePath.startsWith("/")) {
                 resourcePath = resourcePath.substring(1);
             }
+
             SwaggerRestletIterable crawler = new SwaggerRestletIterable(
                     inboundRoot);
             for (Restlet restlet : crawler) {
