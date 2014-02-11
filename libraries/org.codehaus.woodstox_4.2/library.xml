@@ -2,7 +2,7 @@
 	<name>Woodstox</name>
 	<description>Woodstox.</description>
 	<version>4.2</version>
-	<release>4</release>
+	<release>0</release>
 	<homeUri>woodstox.codehaus.org/</homeUri>
 	<downloadUri>http://woodstox.codehaus.org/Download</downloadUri>
 	<provider>The Codehaus foundation</provider>
