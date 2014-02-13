@@ -51,6 +51,7 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.cookie.CookieSpecRegistry;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -168,6 +169,15 @@ import org.restlet.ext.httpclient.internal.IgnoreCookieSpecFactory;
  * parameter, or an instance as an attribute for a more complete and flexible
  * SSL context setting.</td>
  * </tr>
+ * <tr>
+ * <td>hostnameVerifier</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Class name of the hostname verifier to use instead of HTTP Client default
+ * behavior. The given class name must implement
+ * org.apache.http.conn.ssl.X509HostnameVerifier and have default no-arg
+ * constructor.</td>
+ * </tr>
  * </table>
  * For the default SSL parameters see the Javadocs of the
  * {@link DefaultSslContextFactory} class.
@@ -280,7 +290,20 @@ public class HttpClientHelper extends
         } else {
             sslSocketFactory = SSLSocketFactory.getSocketFactory();
         }
-        
+
+        if (getHostnameVerifier() != null) {
+            try {
+                X509HostnameVerifier hostnameVerifier = (X509HostnameVerifier) Engine
+                        .loadClass(getHostnameVerifier()).newInstance();
+                sslSocketFactory.setHostnameVerifier(hostnameVerifier);
+            } catch (Exception e) {
+                getLogger()
+                        .log(Level.WARNING,
+                                "An error occurred during the instantiation of the hostname verifier.",
+                                e);
+            }
+        }
+
         schemeRegistry.register(new Scheme("https", 443, sslSocketFactory));
         // [enddef]
     }
@@ -321,6 +344,18 @@ public class HttpClientHelper extends
     protected ClientConnectionManager createClientConnectionManager(
             HttpParams params, SchemeRegistry schemeRegistry) {
         return new ThreadSafeClientConnManager(params, schemeRegistry);
+    }
+
+    /**
+     * Returns the class name of the hostname verifier to use instead of HTTP
+     * Client default behavior. The given class name must implement
+     * org.apache.http.conn.ssl.X509HostnameVerifier and have default no-arg
+     * constructor.
+     * 
+     * @return The class name of the hostname verifier.
+     */
+    public String getHostnameVerifier() {
+        return getHelpedParameters().getFirstValue("hostnameVerifier", null);
     }
 
     /**
