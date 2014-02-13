@@ -70,6 +70,9 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_ALL = register("application/*",
             "All application documents");
 
+    public static final MediaType APPLICATION_ALL_JSON = register(
+            "application/*+json", "All application/*+json documents");
+
     public static final MediaType APPLICATION_ALL_XML = register(
             "application/*+xml", "All application/*+xml documents");
 
@@ -146,6 +149,10 @@ public final class MediaType extends Metadata {
 
     public static final MediaType APPLICATION_JSON = register(
             "application/json", "JavaScript Object Notation document");
+
+    // [ifndef gwt] member
+    public static final MediaType APPLICATION_JSON_ACTIVITY = register(
+            "application/activity+json", "Activity Streams JSON document");
 
     // [ifndef gwt] member
     public static final MediaType APPLICATION_JSON_PATCH = register(
