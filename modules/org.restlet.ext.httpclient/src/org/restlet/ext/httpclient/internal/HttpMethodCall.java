@@ -118,6 +118,11 @@ public class HttpMethodCall extends ClientCall {
                 this.httpRequest = new HttpHead(requestUri);
             } else if (method.equalsIgnoreCase(Method.DELETE.getName())) {
                 this.httpRequest = new HttpDelete(requestUri);
+                if (hasEntity) {
+                    getLogger()
+                            .warning(
+                                    "The current DELETE request provides an entity that may be not supported by the Apache HTTP Client library. If you face such issues, you can still move to another HTTP client connector.");
+                }
             } else if (method.equalsIgnoreCase(Method.OPTIONS.getName())) {
                 this.httpRequest = new HttpOptions(requestUri);
             } else if (method.equalsIgnoreCase(Method.TRACE.getName())) {

@@ -4,6 +4,9 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Enhancements
+      - Allow Delete methods with entities, issue #841.
+        Reported by Thierry Templier.
 
 - 2.2 Release Candidate 1 (02/09/2013)
     - Enhancements

@@ -615,8 +615,7 @@ public class Request extends Message {
         // The declaration of the "result" variable is a workaround for the GWT
         // platform.
         boolean result = (Method.GET.equals(getMethod())
-                || Method.HEAD.equals(getMethod()) || Method.DELETE
-                .equals(getMethod()));
+                || Method.HEAD.equals(getMethod()));
         if (result) {
             return false;
         }
