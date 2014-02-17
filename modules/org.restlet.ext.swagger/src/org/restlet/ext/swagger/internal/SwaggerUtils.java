@@ -82,7 +82,7 @@ public class SwaggerUtils {
     }
 
     /**
-     * // * private constructor for tooling class.
+     * Private constructor for tooling class.
      */
     private SwaggerUtils() {
     }

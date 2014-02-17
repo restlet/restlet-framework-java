@@ -31,28 +31,44 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.wadl;
+package org.restlet.ext.swagger;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jws.soap.SOAPBinding.ParameterStyle;
+
+import org.omg.PortableInterceptor.RequestInfo;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
+import org.restlet.engine.resource.AnnotationInfo;
+import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.representation.Representation;
+import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.Variant;
+import org.restlet.resource.Directory;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+import org.restlet.service.MetadataService;
 import org.restlet.util.NamedValue;
 import org.restlet.util.Series;
 
+import com.wordnik.swagger.core.Documentation;
+import com.wordnik.swagger.core.DocumentationEndPoint;
+import com.wordnik.swagger.core.DocumentationOperation;
+import com.wordnik.swagger.core.DocumentationParameter;
+import com.wordnik.swagger.core.DocumentationResponse;
+import com.wordnik.swagger.core.DocumentationSchema;
+
 /**
- * Resource that is able to automatically describe itself with WADL. This
+ * Resource that is able to automatically describe itself with Swagger. This
  * description can be customized by overriding the {@link #describe()} and
- * {@link #describeMethod(Method, MethodInfo)} methods.<br>
+ * {@link #describeMethod(Method, DocumentationOperation)} methods.<br>
  * <br>
  * When used to describe a class of resources in the context of a parent
  * application, a special instance will be created using the default constructor
@@ -62,36 +78,225 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class WadlServerResource extends ServerResource {
+public class SwaggerServerResource extends ServerResource {
 
     /**
-     * Indicates if the resource should be automatically described via WADL when
-     * an OPTIONS request is handled.
+     * Automatically describe a method by discovering the resource's
+     * annotations.
+     * 
+     * @param info
+     *            The method description to update.
+     * @param resource
+     *            The server resource to describe.
+     */
+    public static void describeAnnotations(DocumentationOperation info,
+            ServerResource resource) {
+        // Loop over the annotated Java methods
+        MetadataService metadataService = resource.getMetadataService();
+        List<AnnotationInfo> annotations = resource.isAnnotated() ? AnnotationUtils
+                .getInstance().getAnnotations(resource.getClass()) : null;
+
+        if (annotations != null && metadataService != null) {
+            for (AnnotationInfo annotationInfo : annotations) {
+                try {
+                    // I wonder if we should rely on htt method instead.
+                    if (info.getNickname()
+                            .equals(annotationInfo.getRestletMethod())) {
+                        // Describe the request
+                        Class<?>[] classes = annotationInfo.getJavaInputTypes();
+
+                        List<Variant> requestVariants = annotationInfo
+                                .getRequestVariants(
+                                        resource.getMetadataService(),
+                                        resource.getConverterService());
+
+                        if (requestVariants != null) {
+                            for (Variant variant : requestVariants) {
+                                // TODO Use response'class and documentation schema.
+//                                if ((variant.getMediaType() != null)
+//                                        && ((info.getRequest() == null) || !info
+//                                                .getRequest()
+//                                                .getRepresentations()
+//                                                .contains(variant))) {
+//                                    RepresentationInfo representationInfo = null;
+//
+//                                    if (info.getRequest() == null) {
+//                                        info.setRequest(new RequestInfo());
+//                                    }
+//
+//                                    if (resource instanceof SwaggerServerResource) {
+//                                        representationInfo = ((SwaggerServerResource) resource)
+//                                                .describe(info,
+//                                                        info.getRequest(),
+//                                                        classes[0], variant);
+//                                    } else {
+//                                        representationInfo = new RepresentationInfo(
+//                                                variant);
+//                                    }
+//
+//                                    info.getRequest().getRepresentations()
+//                                            .add(representationInfo);
+//                                }
+                            }
+                        }
+
+                        // Describe the response
+                        Class<?> outputClass = annotationInfo
+                                .getJavaOutputType();
+
+                        if (outputClass != null) {
+                            List<Variant> responseVariants = annotationInfo
+                                    .getResponseVariants(
+                                            resource.getMetadataService(),
+                                            resource.getConverterService());
+
+                            if (responseVariants != null) {
+                                for (Variant variant : responseVariants) {
+                                 // TODO Use response'class and documentation schema.
+//                                    if ((variant.getMediaType() != null)
+//                                            && !info.getResponse()
+//                                                    .getRepresentations()
+//                                                    .contains(variant)) {
+//                                        RepresentationInfo representationInfo = null;
+//
+//                                        if (resource instanceof WadlServerResource) {
+//                                            representationInfo = ((WadlServerResource) resource)
+//                                                    .describe(info,
+//                                                            info.getResponse(),
+//                                                            outputClass,
+//                                                            variant);
+//                                        } else {
+//                                            representationInfo = new RepresentationInfo(
+//                                                    variant);
+//                                        }
+//
+//                                        info.getResponse().getRepresentations()
+//                                                .add(representationInfo);
+//                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    throw new ResourceException(e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns a Swagger description of the current resource.
+     * 
+     * @param documentation
+     *            The parent application.
+     * @param info
+     *            Swagger description of the current resource to update.
+     * @param resource
+     *            The resource to describe.
+     * @param path
+     *            Path of the current resource.
+     */
+    public static void describe(Documentation documentation,
+            DocumentationEndPoint info, Object resource, String path) {
+        if ((path != null) && path.startsWith("/")) {
+            path = path.substring(1);
+        }
+
+        info.setPath(path);
+
+        // Introspect the current resource to detect the allowed methods
+        List<Method> methodsList = new ArrayList<Method>();
+
+        if (resource instanceof ServerResource) {
+            ((ServerResource) resource).updateAllowedMethods();
+            methodsList.addAll(((ServerResource) resource).getAllowedMethods());
+
+            if (resource instanceof SwaggerServerResource) {
+                // TODO done by operation...
+//                info.setParameters(((SwaggerServerResource) resource)
+//                        .describeParameters());
+
+                if (documentation != null) {
+                    ((SwaggerServerResource) resource).describe(documentation);
+                }
+            }
+        } else if (resource instanceof Directory) {
+            Directory directory = (Directory) resource;
+            methodsList.add(Method.GET);
+
+            if (directory.isModifiable()) {
+                methodsList.add(Method.DELETE);
+                methodsList.add(Method.PUT);
+            }
+        }
+
+        Method.sort(methodsList);
+
+        // Update the resource info with the description of the allowed methods
+        List<DocumentationOperation> methods = info.getOperations();
+        DocumentationOperation methodInfo;
+
+        for (Method method : methodsList) {
+            methodInfo = new DocumentationOperation();
+            methods.add(methodInfo);
+            methodInfo.setNickname(method.getName());
+
+            if (resource instanceof ServerResource) {
+                if (resource instanceof SwaggerServerResource) {
+                    SwaggerServerResource wsResource = (SwaggerServerResource) resource;
+
+                    if (wsResource.canDescribe(method)) {
+                        wsResource.describeMethod(method, methodInfo);
+                    }
+                } else {
+                    describeAnnotations(methodInfo,
+                            (ServerResource) resource);
+                }
+            }
+        }
+
+        // Document the resource
+        String title = null;
+        String textContent = null;
+
+        if (resource instanceof SwaggerServerResource) {
+            title = ((SwaggerServerResource) resource).getName();
+            textContent = ((SwaggerServerResource) resource).getDescription();
+        }
+
+        if ((title != null) && !"".equals(title)) {
+            info.setDescription(title);
+        } else {
+            info.setDescription(textContent);
+        }
+    }
+
+    /**
+     * Indicates if the resource should be automatically described via Swagger
+     * when an OPTIONS request is handled.
      */
     private volatile boolean autoDescribing;
 
     /**
-     * The description of this documented resource. Is seen as the text content
-     * of the "doc" tag of the "resource" element in a WADL document.
+     * The description of this documented resource.
      */
     private volatile String description;
 
     /**
-     * The name of this documented resource. Is seen as the title of the "doc"
-     * tag of the "resource" element in a WADL document.
+     * The name of this documented resource.
      */
     private volatile String name;
 
     /**
      * Constructor.
      */
-    public WadlServerResource() {
+    public SwaggerServerResource() {
         this.autoDescribing = true;
     }
 
     /**
-     * Indicates if the given method exposes its WADL description. By default,
-     * HEAD and OPTIONS are not exposed. This method is called by
+     * Indicates if the given method exposes its Swagger description. By
+     * default, HEAD and OPTIONS are not exposed. This method is called by
      * {@link #describe(String, ResourceInfo)}.
      * 
      * @param method
@@ -103,38 +308,38 @@ public class WadlServerResource extends ServerResource {
     }
 
     /**
-     * Creates a new HTML representation for a given {@link ApplicationInfo}
+     * Creates a new HTML representation for a given {@link Documentation}
      * instance describing an application.
      * 
-     * @param applicationInfo
+     * @param documentation
      *            The application description.
-     * @return The created {@link WadlRepresentation}.
+     * @return The created {@link SwaggerRepresentation}.
      */
     protected Representation createHtmlRepresentation(
-            ApplicationInfo applicationInfo) {
-        return new WadlRepresentation(applicationInfo).getHtmlRepresentation();
+            Documentation documentation) {
+        return new SwaggerRepresentation(documentation).getHtmlRepresentation();
     }
 
     /**
-     * Creates a new WADL representation for a given {@link ApplicationInfo}
+     * Creates a new Swagger representation for a given {@link Documentation}
      * instance describing an application.
      * 
-     * @param applicationInfo
+     * @param documentation
      *            The application description.
-     * @return The created {@link WadlRepresentation}.
+     * @return The created {@link SwaggerRepresentation}.
      */
-    protected Representation createWadlRepresentation(
-            ApplicationInfo applicationInfo) {
-        return new WadlRepresentation(applicationInfo);
+    protected Representation createSwaggerRepresentation(
+            Documentation documentation) {
+        return new SwaggerRepresentation(documentation);
     }
 
     /**
-     * Describes the resource as a standalone WADL document.
+     * Describes the resource as a standalone Swagger document.
      * 
-     * @return The WADL description.
+     * @return The Swagger description.
      */
     protected Representation describe() {
-        return describe(getPreferredWadlVariant());
+        return describe(getPreferredSwaggerVariant());
     }
 
     /**
@@ -142,10 +347,10 @@ public class WadlServerResource extends ServerResource {
      * to add documentation on global representations used by several methods or
      * resources. Does nothing by default.
      * 
-     * @param applicationInfo
+     * @param documentation
      *            The parent application.
      */
-    protected void describe(ApplicationInfo applicationInfo) {
+    protected void describe(Documentation documentation) {
     }
 
     /**
@@ -161,9 +366,11 @@ public class WadlServerResource extends ServerResource {
      *            The target variant.
      * @return The WADL representation information.
      */
-    protected RepresentationInfo describe(MethodInfo methodInfo,
+    protected DocumentationSchema describe(DocumentationOperation methodInfo,
             Class<?> representationClass, Variant variant) {
-        return new RepresentationInfo(variant);
+        DocumentationSchema result = new DocumentationSchema();
+        // TODO describe the repreentation
+        return result;
     }
 
     /**
@@ -171,7 +378,8 @@ public class WadlServerResource extends ServerResource {
      * for the given method and request. The variant contains the target media
      * type that can be converted to by one of the available Restlet converters.<br>
      * <br>
-     * By default, it calls {@link #describe(MethodInfo, Class, Variant)}.
+     * By default, it calls
+     * {@link #describe(DocumentationOperation, Class, Variant)}.
      * 
      * @param methodInfo
      *            The parent method description.
@@ -183,7 +391,7 @@ public class WadlServerResource extends ServerResource {
      *            The target variant.
      * @return The WADL representation information.
      */
-    protected RepresentationInfo describe(MethodInfo methodInfo,
+    protected DocumentationSchema describe(DocumentationOperation methodInfo,
             RequestInfo requestInfo, Class<?> representationClass,
             Variant variant) {
         return describe(methodInfo, representationClass, variant);
@@ -194,7 +402,8 @@ public class WadlServerResource extends ServerResource {
      * for the given method and response. The variant contains the target media
      * type that can be converted to by one of the available Restlet converters.<br>
      * <br>
-     * By default, it calls {@link #describe(MethodInfo, Class, Variant)}.
+     * By default, it calls
+     * {@link #describe(DocumentationOperation, Class, Variant)}.
      * 
      * @param methodInfo
      *            The parent method description.
@@ -206,8 +415,8 @@ public class WadlServerResource extends ServerResource {
      *            The target variant.
      * @return The WADL representation information.
      */
-    protected RepresentationInfo describe(MethodInfo methodInfo,
-            ResponseInfo responseInfo, Class<?> representationClass,
+    protected DocumentationSchema describe(DocumentationOperation methodInfo,
+            DocumentationResponse responseInfo, Class<?> representationClass,
             Variant variant) {
         return describe(methodInfo, representationClass, variant);
     }
@@ -219,7 +428,7 @@ public class WadlServerResource extends ServerResource {
      * @param info
      *            WADL description of the current resource to update.
      */
-    public void describe(ResourceInfo info) {
+    public void describe(DocumentationEndPoint info) {
         describe(getResourcePath(), info);
     }
 
@@ -231,8 +440,8 @@ public class WadlServerResource extends ServerResource {
      * @param info
      *            WADL description of the current resource to update.
      */
-    public void describe(String path, ResourceInfo info) {
-        ResourceInfo.describe(null, info, this, path);
+    public void describe(String path, DocumentationEndPoint info) {
+        describe(null, info, this, path);
     }
 
     /**
@@ -246,15 +455,19 @@ public class WadlServerResource extends ServerResource {
         Representation result = null;
 
         if (variant != null) {
-            ResourceInfo resource = new ResourceInfo();
+            DocumentationEndPoint resource = new DocumentationEndPoint();
             describe(resource);
-            ApplicationInfo application = resource.createApplication();
+            // TODO initiate application. 
+            //Documentation application = resource.createApplication();
+            Documentation application = new Documentation();
             describe(application);
 
-            if (MediaType.APPLICATION_WADL.equals(variant.getMediaType())) {
-                result = createWadlRepresentation(application);
+            if (MediaType.APPLICATION_JSON.equals(variant.getMediaType())) {
+                result = SwaggerApplication.createJsonRepresentation(application);
             } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-                result = createHtmlRepresentation(application);
+                result = SwaggerApplication.createHtmlRepresentation(application);
+            } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
+                result = SwaggerApplication.createHtmlRepresentation(application);
             }
         }
 
@@ -267,8 +480,8 @@ public class WadlServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    protected void describeDelete(MethodInfo info) {
-        MethodInfo.describeAnnotations(info, this);
+    protected void describeDelete(DocumentationOperation info) {
+        describeAnnotations(info, this);
     }
 
     /**
@@ -280,8 +493,8 @@ public class WadlServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    protected void describeGet(MethodInfo info) {
-        MethodInfo.describeAnnotations(info, this);
+    protected void describeGet(DocumentationOperation info) {
+        describeAnnotations(info, this);
     }
 
     /**
@@ -289,8 +502,8 @@ public class WadlServerResource extends ServerResource {
      * 
      * @return A WADL description of the current method.
      */
-    protected MethodInfo describeMethod() {
-        MethodInfo result = new MethodInfo();
+    protected DocumentationOperation describeMethod() {
+        DocumentationOperation result = new DocumentationOperation();
         describeMethod(getMethod(), result);
         return result;
     }
@@ -303,8 +516,8 @@ public class WadlServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    protected void describeMethod(Method method, MethodInfo info) {
-        info.setName(method);
+    protected void describeMethod(Method method, DocumentationOperation info) {
+        info.setNickname(method.getName());
 
         if (Method.GET.equals(method)) {
             describeGet(info);
@@ -329,11 +542,12 @@ public class WadlServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    protected void describeOptions(MethodInfo info) {
+    protected void describeOptions(DocumentationOperation info) {
         // Describe each variant
-        for (Variant variant : getWadlVariants()) {
-            RepresentationInfo result = new RepresentationInfo(variant);
-            info.getResponse().getRepresentations().add(result);
+        for (Variant variant : getSwaggerVariants()) {
+            // TODO handle via the DocumentationSchema.
+//            RepresentationInfo result = new RepresentationInfo(variant);
+//            info.getResponse().getRepresentations().add(result);
         }
     }
 
@@ -343,18 +557,18 @@ public class WadlServerResource extends ServerResource {
      * 
      * @return The description of the parameters.
      */
-    protected List<ParameterInfo> describeParameters() {
+    protected List<DocumentationParameter> describeParameters() {
         return null;
     }
 
     /**
-     * Describes the Patch method.
+     * Describes the PATCH method.
      * 
      * @param info
      *            The method description to update.
      */
-    protected void describePatch(MethodInfo info) {
-        MethodInfo.describeAnnotations(info, this);
+    protected void describePatch(DocumentationOperation info) {
+        describeAnnotations(info, this);
     }
 
     /**
@@ -363,8 +577,8 @@ public class WadlServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    protected void describePost(MethodInfo info) {
-        MethodInfo.describeAnnotations(info, this);
+    protected void describePost(DocumentationOperation info) {
+        describeAnnotations(info, this);
     }
 
     /**
@@ -373,8 +587,8 @@ public class WadlServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    protected void describePut(MethodInfo info) {
-        MethodInfo.describeAnnotations(info, this);
+    protected void describePut(DocumentationOperation info) {
+        describeAnnotations(info, this);
     }
 
     @Override
@@ -435,22 +649,19 @@ public class WadlServerResource extends ServerResource {
 
     /**
      * Returns a collection of parameters objects contained in the current
-     * context (entity, query, headers, etc) given a ParameterInfo instance.
+     * context (entity, query, headers, etc) given a DocumentationParameter instance.
      * 
      * @param parameterInfo
-     *            The ParameterInfo instance.
+     *            The DocumentationParameter instance.
      * @return A collection of parameters objects
      */
     private Series<? extends NamedValue<String>> getParameters(
-            ParameterInfo parameterInfo) {
+            DocumentationParameter parameterInfo) {
         Series<? extends NamedValue<String>> result = null;
-
-        if (parameterInfo.getFixed() != null) {
-            result = new Series<Parameter>(Parameter.class);
-            result.add(parameterInfo.getName(), parameterInfo.getFixed());
-        } else if (ParameterStyle.HEADER.equals(parameterInfo.getStyle())) {
+        
+        if ("header".equals(parameterInfo.dataType())) {
             result = getHeaders().subList(parameterInfo.getName());
-        } else if (ParameterStyle.TEMPLATE.equals(parameterInfo.getStyle())) {
+        } else if ("path".equals(parameterInfo.dataType())) {
             Object parameter = getRequest().getAttributes().get(
                     parameterInfo.getName());
 
@@ -459,11 +670,11 @@ public class WadlServerResource extends ServerResource {
                 result.add(parameterInfo.getName(),
                         Reference.decode((String) parameter));
             }
-        } else if (ParameterStyle.MATRIX.equals(parameterInfo.getStyle())) {
-            result = getMatrix().subList(parameterInfo.getName());
-        } else if (ParameterStyle.QUERY.equals(parameterInfo.getStyle())) {
+        } else if ("query".equals(parameterInfo.getDataType())) {
             result = getQuery().subList(parameterInfo.getName());
-        } else if (ParameterStyle.PLAIN.equals(parameterInfo.getStyle())) {
+        } else if ("body".equals(parameterInfo.getDataType())) {
+            // TODO not yet implemented.
+        } else if ("form".equals(parameterInfo.getDataType())) {
             // TODO not yet implemented.
         }
 
@@ -488,7 +699,7 @@ public class WadlServerResource extends ServerResource {
         Series<? extends NamedValue<String>> result = null;
 
         if (describeParameters() != null) {
-            for (ParameterInfo parameter : describeParameters()) {
+            for (DocumentationParameter parameter : describeParameters()) {
                 if (name.equals(parameter.getName())) {
                     result = getParameters(parameter);
                 }
@@ -504,8 +715,8 @@ public class WadlServerResource extends ServerResource {
      * 
      * @return The preferred WADL variant.
      */
-    protected Variant getPreferredWadlVariant() {
-        return getConnegService().getPreferredVariant(getWadlVariants(),
+    protected Variant getPreferredSwaggerVariant() {
+        return getConnegService().getPreferredVariant(getSwaggerVariants(),
                 getRequest(), getMetadataService());
     }
 
@@ -530,14 +741,15 @@ public class WadlServerResource extends ServerResource {
     }
 
     /**
-     * Returns the available WADL variants.
+     * Returns the available Swagger variants.
      * 
-     * @return The available WADL variants.
+     * @return The available Swagger variants.
      */
-    protected List<Variant> getWadlVariants() {
+    protected List<Variant> getSwaggerVariants() {
         List<Variant> result = new ArrayList<Variant>();
-        result.add(new Variant(MediaType.APPLICATION_WADL));
-        result.add(new Variant(MediaType.TEXT_HTML));
+        result.add(new Variant(MediaType.APPLICATION_JSON));
+        result.add(new Variant(MediaType.APPLICATION_XML));
+        result.add(new Variant(MediaType.TEXT_XML));
         return result;
     }
 
