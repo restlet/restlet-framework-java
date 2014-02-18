@@ -9,6 +9,8 @@ Changes log
         Reported by Thierry Templier.
       - Allow configuring HttpClient's HostnameVerifier, issue #246.
         Reported and contributed by Philippe Laflamme.
+      - Short term fix for XStream - remote code execution due to insecure XML deserialization, issue #835.
+        Reported by David Jorm.
 
 - 2.2 Release Candidate 1 (02/09/2013)
     - Enhancements
