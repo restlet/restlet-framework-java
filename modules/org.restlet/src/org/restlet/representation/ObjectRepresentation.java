@@ -166,7 +166,7 @@ public class ObjectRepresentation<T extends Serializable> extends
             if (!variantObjectBinarySupported) {
                 throw new IllegalArgumentException(
                         "SECURITY WARNING: The usage of ObjectInputStream when "
-                                + "deserializing binary presentations from unstrusted "
+                                + "deserializing binary representations from unstrusted "
                                 + "sources can lead to malicious attacks. As pointed "
                                 + "here (https://github.com/restlet/restlet-framework-java/issues/778), "
                                 + "the ObjectInputStream class is able to force the JVM to execute unwanted "
@@ -206,7 +206,7 @@ public class ObjectRepresentation<T extends Serializable> extends
             if (!variantObjectXmlSupported) {
                 throw new IllegalArgumentException(
                         "SECURITY WARNING: The usage of XMLDecoder when "
-                                + "deserializing XML presentations from unstrusted "
+                                + "deserializing XML representations from unstrusted "
                                 + "sources can lead to malicious attacks. As pointed "
                                 + "here (http://blog.diniscruz.com/2013/08/using-xmldecoder-to-execute-server-side.html), "
                                 + "the XMLDecoder class is able to force the JVM to "
