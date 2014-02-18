@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.2 Release Candidate 2 (02/18/2014)
     - Enhancements
       - Allow Delete methods with entities, issue #841.
         Reported by Thierry Templier.
@@ -12,7 +12,7 @@ Changes log
       - Short term fix for XStream - remote code execution due to insecure XML deserialization, issue #835.
         Reported by David Jorm.
 
-- 2.2 Release Candidate 1 (02/09/2013)
+- 2.2 Release Candidate 1 (02/09/2014)
     - Enhancements
       - Added Javadocs artefacts for Maven repository, issue #811.
         Suggested by David Roussel.
