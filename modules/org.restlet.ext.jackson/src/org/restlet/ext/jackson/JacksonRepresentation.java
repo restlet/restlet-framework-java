@@ -63,11 +63,12 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
  * <br>
  * SECURITY WARNING: Using XML parsers configured to not prevent nor limit
  * document type definition (DTD) entity resolution can expose the parser to an
- * XML Entity Expansion injection attack, see
- * https://github.com/restlet/restlet-
- * framework-java/wiki/XEE-injection-security-fix.
+ * XML Entity Expansion injection attack.
  * 
  * @see <a href="http://jackson.codehaus.org/">Jackson project</a>
+ * @see <a
+ *      href="https://github.com/restlet/restlet-framework-java/wiki/XEE-security-enhancements">XML
+ *      Entity Expansion injection attack</a>
  * @author Jerome Louvel
  * @param <T>
  *            The type to wrap.
