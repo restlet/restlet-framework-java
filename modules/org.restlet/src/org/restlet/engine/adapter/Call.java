@@ -69,9 +69,11 @@ public abstract class Call {
                             .getMessage()
                             .equals("An open connection has been abandonned by your network stack.")));
         }
+
         if (!result && exception.getCause() != null) {
             result = isBroken(exception.getCause());
         }
+
         return result;
     }
 
