@@ -938,8 +938,7 @@ public abstract class ServerResource extends Resource {
 
                             if (annoVariants != null) {
                                 // Compute an affinity score between this
-                                // annotation
-                                // and the input entity.
+                                // annotation and the input entity.
                                 float score = 0.5f;
                                 if ((getRequest().getEntity() != null)
                                         && getRequest().getEntity()
