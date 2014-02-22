@@ -7,6 +7,8 @@ Changes log
     - Bug fixed
       - Fixed issue #818: Call.isBroken does not detect Tomcat ClientAbortException.
         Reported and contributed by Jeremy Gustie.
+    - Enhancements
+      - Add JSON media types. Reported and contributed by mafuba.
 
 - 2.2 Release Candidate 2 (02/18/2014)
     - Enhancements
