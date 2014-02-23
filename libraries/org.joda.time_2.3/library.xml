@@ -3,13 +3,14 @@
 	<description>Joda-Time.</description>
 	<version>2.3</version>
 	<homeUri>joda-time.sourceforge.net/</homeUri>
-	<downloadUri>http://sourceforge.net/projects/joda-time/files/joda-time/</downloadUri>
+	<downloadUri>http://sourceforge.net/projects/joda-time/files/joda-time/
+	</downloadUri>
 	<provider>Google Inc.</provider>
 
 	<package id="joda-time" name="org.joda.time">
 		<maven>
 			<groupId>joda-time</groupId>
-                        <artefactId>joda-time</artefactId>
+			<artifactId>joda-time</artifactId>
 		</maven>
 	</package>
 	<distributions>

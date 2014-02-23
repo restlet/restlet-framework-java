@@ -7,4 +7,8 @@
 	<provider>SpringSource community</provider>
 	
 	<package name="org.springmodules.db4o" />
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
 </library>

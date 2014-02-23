@@ -314,11 +314,12 @@
 		</classpath>
 	</taskdef>
 	<!-- Gae Code checker -->
-	<taskdef name="gaeCodeChecker" classname="codeChecker.GaeCodeChecker">
+	<taskdef name="gaeCodeChecker" classname="checker.GaeCodeChecker">
 		<classpath>
 			<fileset dir="${tools}/forge" includes="**/*.jar" />
 		</classpath>
 	</taskdef>
+
 	<!-- BND (handling of OSGI bundles) -->
 	<taskdef resource="aQute/bnd/ant/taskdef.properties" classpathref="bnd-path" />
 

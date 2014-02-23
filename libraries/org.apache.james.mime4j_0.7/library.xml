@@ -2,6 +2,7 @@
 	<name>Apache James Mime4j</name>
 	<description>Apache James Mime4j</description>
 	<version>0.7</version>
+	<release>2</release>
 	<homeUri>http://james.apache.org/mime4j/</homeUri>
 	<downloadUri>http://james.apache.org/download.cgi#Apache_Mime4J</downloadUri>
 	<provider>Apache Software Foundation</provider>
@@ -9,7 +10,7 @@
 	<package name="org.apache.james.mime4j">
 		<maven>
 			<groupId>org.apache.james</groupId>
-			<artifactId>apache-mime4j</artifactId>
+			<artifactId>apache-mime4j-core</artifactId>
 		</maven>
 	</package>
 	<distributions>

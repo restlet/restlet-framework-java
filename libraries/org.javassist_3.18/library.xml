@@ -1,8 +1,8 @@
 <library id="javassist" symbolicName="org.javassist">
 	<name>javassist</name>
 	<description>Javassist (Java Programming Assistant)</description>
-	<version>3.16</version>
-	<release>18</release>
+	<version>3.18</version>
+	<release>1-GA</release>
 	<homeUri>www.javassist.org/‎</homeUri>
 	<downloadUri>www.javassist.org/‎</downloadUri>
 	<provider></provider>
@@ -11,7 +11,7 @@
 		<maven>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
-			<version>3.0.8</version>
+			<version>3.18.1-GA</version>
 		</maven>
 	</package>
 	<distributions>

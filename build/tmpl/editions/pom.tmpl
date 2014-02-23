@@ -30,22 +30,12 @@
 		<dependency>
 					<#if dependency.library.distributions?contains("maven")>
 			<groupId>org.restlet.${edition.id}</groupId>
+			<artifactId>org.restlet.lib.<#if package.mavenArtifactId??>${package.mavenArtifactId}<#else>${package.name}</#if></artifactId>
+			<version>${dependency.library.minorVersion}<#if dependency.library.versionSuffix??>.${dependency.library.versionSuffix}</#if></version>
 					<#else>
-						<#if package.mavenGroupId??>
 			<groupId>${package.mavenGroupId}</groupId>
-						<#else>
-			<groupId>${package.name}</groupId>
-						</#if>
-					</#if>
-			<artifactId><#if dependency.library.distributions?contains("maven")>org.restlet.lib.</#if><#if package.mavenArtifactId??>${package.mavenArtifactId}<#else>${package.name}</#if></artifactId>
-					<#if dependency.library.distributions?contains("maven")>
-			<version>${dependency.library.minorVersion}<#if dependency.library.versionSuffix??>.${dependency.library.versionSuffix}</#if></version>
-					<#else>
-						<#if package.mavenVersion??>
+			<artifactId>${package.mavenArtifactId}</artifactId>
 			<version>${package.mavenVersion}</version>
-						<#else>
-			<version>${dependency.library.minorVersion}<#if dependency.library.versionSuffix??>.${dependency.library.versionSuffix}</#if></version>
-						</#if>
 					</#if>
 					<#if dependency.mavenScope??><scope>${dependency.mavenScope}</scope></#if>
 		</dependency>

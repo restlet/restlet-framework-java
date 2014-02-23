@@ -95,6 +95,17 @@
 	<!-- BND (handling of OSGI bundles) -->
 	<taskdef resource="aQute/bnd/ant/taskdef.properties" classpathref="bnd-path" />
 
+	<!-- Project checker -->
+	<taskdef name="projectChecker" classname="checker.ProjectChecker">
+		<classpath>
+			<fileset dir="${tools}/fmpp" includes="**/*.jar" />
+			<fileset dir="${tools}/forge" includes="**/*.jar" />
+		</classpath>
+	</taskdef>
+
+	<!-- Check the project configuration -->
+	<projectChecker rootDir="../" />
+
 	<!-- = = = = = = = = = = = = = = = = =
           macrodef: generate-edition          
          = = = = = = = = = = = = = = = = = -->

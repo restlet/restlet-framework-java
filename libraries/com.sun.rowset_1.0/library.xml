@@ -7,4 +7,7 @@
 	<provider>Sun Microsystems Inc.</provider>
 
 	<package name="com.sun.rowset" />
+	<distributions>
+		<distribution id="maven" />
+	</distributions>
 </library>
