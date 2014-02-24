@@ -7,7 +7,8 @@ Changes log
     - Bug fixed
       - Fixed issue #818: Call.isBroken does not detect Tomcat ClientAbortException.
         Reported and contributed by Jeremy Gustie.
-      - DELETE responses send 200 status without any entity, whereas it should be 204.
+      - DELETE responses send 200 status without any entity, whereas it should be 204, 
+        issue #847.
 
     - Enhancements
       - Add JSON media types. Reported and contributed by mafuba.
