@@ -1025,8 +1025,7 @@ public abstract class ServerResource extends Resource {
 
                 if (Status.CLIENT_ERROR_METHOD_NOT_ALLOWED.equals(getStatus())) {
                     updateAllowedMethods();
-                } else if (Method.GET.equals(getMethod())
-                        && Status.SUCCESS_OK.equals(getStatus())
+                } else if (Status.SUCCESS_OK.equals(getStatus())
                         && (getResponseEntity() == null || !getResponseEntity()
                                 .isAvailable())) {
                     getLogger()
