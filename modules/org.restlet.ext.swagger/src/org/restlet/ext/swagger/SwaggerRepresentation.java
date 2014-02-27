@@ -34,14 +34,9 @@
 package org.restlet.ext.swagger;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
+import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 
 import com.wordnik.swagger.core.Documentation;
@@ -51,17 +46,7 @@ import com.wordnik.swagger.core.Documentation;
  * 
  * @author Thierry Boileau
  */
-public class SwaggerRepresentation extends Representation {
-
-    /** The Swagger documentation. */
-    private Documentation documentation;
-
-    /**
-     * Constructor.
-     */
-    public SwaggerRepresentation() {
-        super(MediaType.APPLICATION_JSON);
-    }
+public class SwaggerRepresentation extends JacksonRepresentation {
 
     /**
      * Constructor.
@@ -70,8 +55,7 @@ public class SwaggerRepresentation extends Representation {
      *            The Swagger documentation.
      */
     public SwaggerRepresentation(Documentation documentation) {
-        super(MediaType.APPLICATION_JSON);
-        this.documentation = documentation;
+        super(documentation);
     }
 
     /**
@@ -91,9 +75,10 @@ public class SwaggerRepresentation extends Representation {
      * Returns the Swagger documentation.
      * 
      * @return The Swagger documentation.
+     * @throws IOException
      */
-    public Documentation getDocumentation() {
-        return this.documentation;
+    public Documentation getDocumentation() throws IOException {
+        return (Documentation) getObject();
     }
 
     /**
@@ -113,43 +98,7 @@ public class SwaggerRepresentation extends Representation {
      *            The Swagger documentation.
      */
     public void setDocumentation(Documentation documentation) {
-        this.documentation = documentation;
-    }
-
-    @Override
-    public ReadableByteChannel getChannel() throws IOException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Reader getReader() throws IOException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public InputStream getStream() throws IOException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void write(Writer writer) throws IOException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void write(WritableByteChannel writableChannel) throws IOException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        // TODO Auto-generated method stub
-        
+        setObject(documentation);
     }
 
 }

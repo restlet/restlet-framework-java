@@ -443,7 +443,8 @@ public class SwaggerApplication extends Application {
      *            The application description.
      * @return The created {@link SwaggerRepresentation}.
      */
-    protected static Representation createXmlRepresentation(Documentation documentation) {
+    protected static Representation createXmlRepresentation(
+            Documentation documentation) {
         return new SwaggerRepresentation(documentation);
     }
 

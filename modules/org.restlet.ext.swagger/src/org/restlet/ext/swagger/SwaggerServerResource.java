@@ -37,8 +37,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jws.soap.SOAPBinding.ParameterStyle;
-
 import org.omg.PortableInterceptor.RequestInfo;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -49,7 +47,6 @@ import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.representation.Representation;
-import org.restlet.representation.RepresentationInfo;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ResourceException;
@@ -64,6 +61,7 @@ import com.wordnik.swagger.core.DocumentationOperation;
 import com.wordnik.swagger.core.DocumentationParameter;
 import com.wordnik.swagger.core.DocumentationResponse;
 import com.wordnik.swagger.core.DocumentationSchema;
+import com.wordnik.swagger.jsonschema.ApiModelParser;
 
 /**
  * Resource that is able to automatically describe itself with Swagger. This
@@ -89,8 +87,8 @@ public class SwaggerServerResource extends ServerResource {
      * @param resource
      *            The server resource to describe.
      */
-    public static void describeAnnotations(DocumentationOperation info,
-            ServerResource resource) {
+    public static void describeAnnotations(Documentation documentation,
+            DocumentationOperation info, ServerResource resource) {
         // Loop over the annotated Java methods
         MetadataService metadataService = resource.getMetadataService();
         List<AnnotationInfo> annotations = resource.isAnnotated() ? AnnotationUtils
@@ -99,9 +97,9 @@ public class SwaggerServerResource extends ServerResource {
         if (annotations != null && metadataService != null) {
             for (AnnotationInfo annotationInfo : annotations) {
                 try {
-                    // I wonder if we should rely on htt method instead.
-                    if (info.getNickname()
-                            .equals(annotationInfo.getRestletMethod())) {
+                    // TODO I wonder if we should rely on http method instead.
+                    if (info.getNickname().equals(
+                            annotationInfo.getRestletMethod().getName())) {
                         // Describe the request
                         Class<?>[] classes = annotationInfo.getJavaInputTypes();
 
@@ -112,31 +110,35 @@ public class SwaggerServerResource extends ServerResource {
 
                         if (requestVariants != null) {
                             for (Variant variant : requestVariants) {
-                                // TODO Use response'class and documentation schema.
-//                                if ((variant.getMediaType() != null)
-//                                        && ((info.getRequest() == null) || !info
-//                                                .getRequest()
-//                                                .getRepresentations()
-//                                                .contains(variant))) {
-//                                    RepresentationInfo representationInfo = null;
-//
-//                                    if (info.getRequest() == null) {
-//                                        info.setRequest(new RequestInfo());
-//                                    }
-//
-//                                    if (resource instanceof SwaggerServerResource) {
-//                                        representationInfo = ((SwaggerServerResource) resource)
-//                                                .describe(info,
-//                                                        info.getRequest(),
-//                                                        classes[0], variant);
-//                                    } else {
-//                                        representationInfo = new RepresentationInfo(
-//                                                variant);
-//                                    }
-//
-//                                    info.getRequest().getRepresentations()
-//                                            .add(representationInfo);
-//                                }
+                                // TODO Use response'class and documentation
+                                // schema.
+                                // TODO work only if classs[0] is not null
+                                if (variant.getMediaType() != null
+                                        && (documentation.getModels() == null || !documentation
+                                                .getModels()
+                                                .containsKey(
+                                                        classes[0]
+                                                                .getCanonicalName()))) {
+                                    DocumentationSchema schema = null;
+
+                                    // if (DocumentationOperation == null) {
+                                    // info.setRequest(new RequestInfo());
+                                    // }
+
+                                    if (resource instanceof SwaggerServerResource) {
+                                        schema = ((SwaggerServerResource) resource)
+                                                .describe(documentation, info,
+                                                        classes[0], variant);
+                                    } else {
+                                        // TODO describe the schema from the
+                                        // variant.
+                                        schema = new DocumentationSchema();
+                                        schema.setId(classes[0]
+                                                .getCanonicalName());
+                                    }
+                                    documentation.addModel(schema.getId(),
+                                            schema);
+                                }
                             }
                         }
 
@@ -152,27 +154,32 @@ public class SwaggerServerResource extends ServerResource {
 
                             if (responseVariants != null) {
                                 for (Variant variant : responseVariants) {
-                                 // TODO Use response'class and documentation schema.
-//                                    if ((variant.getMediaType() != null)
-//                                            && !info.getResponse()
-//                                                    .getRepresentations()
-//                                                    .contains(variant)) {
-//                                        RepresentationInfo representationInfo = null;
-//
-//                                        if (resource instanceof WadlServerResource) {
-//                                            representationInfo = ((WadlServerResource) resource)
-//                                                    .describe(info,
-//                                                            info.getResponse(),
-//                                                            outputClass,
-//                                                            variant);
-//                                        } else {
-//                                            representationInfo = new RepresentationInfo(
-//                                                    variant);
-//                                        }
-//
-//                                        info.getResponse().getRepresentations()
-//                                                .add(representationInfo);
-//                                    }
+                                    // TODO Use response'class and documentation
+                                    // schema.
+                                    // if ((variant.getMediaType() != null)
+                                    // && !info.getResponse()
+                                    // .getRepresentations()
+                                    // .contains(variant)) {
+                                    // RepresentationInfo representationInfo =
+                                    // null;
+                                    //
+                                    // if (resource instanceof
+                                    // WadlServerResource) {
+                                    // representationInfo =
+                                    // ((WadlServerResource) resource)
+                                    // .describe(info,
+                                    // info.getResponse(),
+                                    // outputClass,
+                                    // variant);
+                                    // } else {
+                                    // representationInfo = new
+                                    // RepresentationInfo(
+                                    // variant);
+                                    // }
+                                    //
+                                    // info.getResponse().getRepresentations()
+                                    // .add(representationInfo);
+                                    // }
                                 }
                             }
                         }
@@ -213,8 +220,8 @@ public class SwaggerServerResource extends ServerResource {
 
             if (resource instanceof SwaggerServerResource) {
                 // TODO done by operation...
-//                info.setParameters(((SwaggerServerResource) resource)
-//                        .describeParameters());
+                // info.setParameters(((SwaggerServerResource)
+                // resource).describeParameters());
 
                 if (documentation != null) {
                     ((SwaggerServerResource) resource).describe(documentation);
@@ -233,12 +240,11 @@ public class SwaggerServerResource extends ServerResource {
         Method.sort(methodsList);
 
         // Update the resource info with the description of the allowed methods
-        List<DocumentationOperation> methods = info.getOperations();
         DocumentationOperation methodInfo;
 
         for (Method method : methodsList) {
             methodInfo = new DocumentationOperation();
-            methods.add(methodInfo);
+            info.addOperation(methodInfo);
             methodInfo.setNickname(method.getName());
 
             if (resource instanceof ServerResource) {
@@ -246,10 +252,11 @@ public class SwaggerServerResource extends ServerResource {
                     SwaggerServerResource wsResource = (SwaggerServerResource) resource;
 
                     if (wsResource.canDescribe(method)) {
-                        wsResource.describeMethod(method, methodInfo);
+                        wsResource.describeMethod(documentation, method,
+                                methodInfo);
                     }
                 } else {
-                    describeAnnotations(methodInfo,
+                    describeAnnotations(documentation, methodInfo,
                             (ServerResource) resource);
                 }
             }
@@ -264,7 +271,7 @@ public class SwaggerServerResource extends ServerResource {
             textContent = ((SwaggerServerResource) resource).getDescription();
         }
 
-        if ((title != null) && !"".equals(title)) {
+        if ((title != null) && !title.isEmpty()) {
             info.setDescription(title);
         } else {
             info.setDescription(textContent);
@@ -339,7 +346,9 @@ public class SwaggerServerResource extends ServerResource {
      * @return The Swagger description.
      */
     protected Representation describe() {
-        return describe(getPreferredSwaggerVariant());
+        Documentation documentation = new Documentation();
+        // TODO set path, etc.
+        return describe(documentation, getPreferredSwaggerVariant());
     }
 
     /**
@@ -354,10 +363,12 @@ public class SwaggerServerResource extends ServerResource {
     }
 
     /**
-     * Describes a representation class and variant couple as WADL information.
-     * The variant contains the target media type that can be converted to by
-     * one of the available Restlet converters.
+     * Describes a representation class and variant couple as Swagger
+     * information. The variant contains the target media type that can be
+     * converted to by one of the available Restlet converters.
      * 
+     * @param documentation
+     *            The root documentation.
      * @param methodInfo
      *            The parent method description.
      * @param representationClass
@@ -366,10 +377,13 @@ public class SwaggerServerResource extends ServerResource {
      *            The target variant.
      * @return The WADL representation information.
      */
-    protected DocumentationSchema describe(DocumentationOperation methodInfo,
-            Class<?> representationClass, Variant variant) {
-        DocumentationSchema result = new DocumentationSchema();
-        // TODO describe the repreentation
+    protected DocumentationSchema describe(Documentation documentation,
+            DocumentationOperation methodInfo, Class<?> representationClass,
+            Variant variant) {
+        DocumentationSchema result = new ApiModelParser(representationClass).parse().toDocumentationSchema();
+        
+        
+        // TODO describe the representation
         return result;
     }
 
@@ -381,6 +395,8 @@ public class SwaggerServerResource extends ServerResource {
      * By default, it calls
      * {@link #describe(DocumentationOperation, Class, Variant)}.
      * 
+     * @param documentation
+     *            The root documentation.
      * @param methodInfo
      *            The parent method description.
      * @param requestInfo
@@ -391,10 +407,10 @@ public class SwaggerServerResource extends ServerResource {
      *            The target variant.
      * @return The WADL representation information.
      */
-    protected DocumentationSchema describe(DocumentationOperation methodInfo,
-            RequestInfo requestInfo, Class<?> representationClass,
-            Variant variant) {
-        return describe(methodInfo, representationClass, variant);
+    protected DocumentationSchema describe(Documentation documentation,
+            DocumentationOperation methodInfo, RequestInfo requestInfo,
+            Class<?> representationClass, Variant variant) {
+        return describe(documentation, methodInfo, representationClass, variant);
     }
 
     /**
@@ -405,6 +421,8 @@ public class SwaggerServerResource extends ServerResource {
      * By default, it calls
      * {@link #describe(DocumentationOperation, Class, Variant)}.
      * 
+     * @param documentation
+     *            The root documentation.
      * @param methodInfo
      *            The parent method description.
      * @param responseInfo
@@ -415,21 +433,24 @@ public class SwaggerServerResource extends ServerResource {
      *            The target variant.
      * @return The WADL representation information.
      */
-    protected DocumentationSchema describe(DocumentationOperation methodInfo,
+    protected DocumentationSchema describe(Documentation documentation,
+            DocumentationOperation methodInfo,
             DocumentationResponse responseInfo, Class<?> representationClass,
             Variant variant) {
-        return describe(methodInfo, representationClass, variant);
+        return describe(documentation, methodInfo, representationClass, variant);
     }
 
     /**
      * Returns a WADL description of the current resource, leveraging the
      * {@link #getResourcePath()} method.
      * 
+     * @param documentation
+     *            The root documentation.
      * @param info
      *            WADL description of the current resource to update.
      */
-    public void describe(DocumentationEndPoint info) {
-        describe(getResourcePath(), info);
+    public void describe(Documentation documentation, DocumentationEndPoint info) {
+        describe(documentation, getResourcePath(), info);
     }
 
     /**
@@ -440,8 +461,9 @@ public class SwaggerServerResource extends ServerResource {
      * @param info
      *            WADL description of the current resource to update.
      */
-    public void describe(String path, DocumentationEndPoint info) {
-        describe(null, info, this, path);
+    public void describe(Documentation documentation, String path,
+            DocumentationEndPoint info) {
+        describe(documentation, info, this, path);
     }
 
     /**
@@ -451,23 +473,27 @@ public class SwaggerServerResource extends ServerResource {
      *            The WADL variant.
      * @return The WADL description.
      */
-    protected Representation describe(Variant variant) {
+    protected Representation describe(Documentation documentation,
+            Variant variant) {
         Representation result = null;
 
         if (variant != null) {
             DocumentationEndPoint resource = new DocumentationEndPoint();
-            describe(resource);
-            // TODO initiate application. 
-            //Documentation application = resource.createApplication();
+            describe(documentation, resource);
+            // TODO initiate application.
+            // Documentation application = resource.createApplication();
             Documentation application = new Documentation();
             describe(application);
 
             if (MediaType.APPLICATION_JSON.equals(variant.getMediaType())) {
-                result = SwaggerApplication.createJsonRepresentation(application);
+                result = SwaggerApplication
+                        .createJsonRepresentation(application);
             } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-                result = SwaggerApplication.createHtmlRepresentation(application);
+                result = SwaggerApplication
+                        .createHtmlRepresentation(application);
             } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-                result = SwaggerApplication.createHtmlRepresentation(application);
+                result = SwaggerApplication
+                        .createHtmlRepresentation(application);
             }
         }
 
@@ -480,8 +506,9 @@ public class SwaggerServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    protected void describeDelete(DocumentationOperation info) {
-        describeAnnotations(info, this);
+    protected void describeDelete(Documentation documentation,
+            DocumentationOperation info) {
+        describeAnnotations(documentation, info, this);
     }
 
     /**
@@ -493,8 +520,9 @@ public class SwaggerServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    protected void describeGet(DocumentationOperation info) {
-        describeAnnotations(info, this);
+    protected void describeGet(Documentation documentation,
+            DocumentationOperation info) {
+        describeAnnotations(documentation, info, this);
     }
 
     /**
@@ -502,9 +530,9 @@ public class SwaggerServerResource extends ServerResource {
      * 
      * @return A WADL description of the current method.
      */
-    protected DocumentationOperation describeMethod() {
+    protected DocumentationOperation describeMethod(Documentation documentation) {
         DocumentationOperation result = new DocumentationOperation();
-        describeMethod(getMethod(), result);
+        describeMethod(documentation, getMethod(), result);
         return result;
     }
 
@@ -516,21 +544,22 @@ public class SwaggerServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    protected void describeMethod(Method method, DocumentationOperation info) {
+    protected void describeMethod(Documentation documentation, Method method,
+            DocumentationOperation info) {
         info.setNickname(method.getName());
 
         if (Method.GET.equals(method)) {
-            describeGet(info);
+            describeGet(documentation, info);
         } else if (Method.POST.equals(method)) {
-            describePost(info);
+            describePost(documentation, info);
         } else if (Method.PUT.equals(method)) {
-            describePut(info);
+            describePut(documentation, info);
         } else if (Method.DELETE.equals(method)) {
-            describeDelete(info);
+            describeDelete(documentation, info);
         } else if (Method.OPTIONS.equals(method)) {
-            describeOptions(info);
+            describeOptions(documentation, info);
         } else if (Method.PATCH.equals(method)) {
-            describePatch(info);
+            describePatch(documentation, info);
         }
     }
 
@@ -542,12 +571,13 @@ public class SwaggerServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    protected void describeOptions(DocumentationOperation info) {
+    protected void describeOptions(Documentation documentation,
+            DocumentationOperation info) {
         // Describe each variant
         for (Variant variant : getSwaggerVariants()) {
             // TODO handle via the DocumentationSchema.
-//            RepresentationInfo result = new RepresentationInfo(variant);
-//            info.getResponse().getRepresentations().add(result);
+            // RepresentationInfo result = new RepresentationInfo(variant);
+            // info.getResponse().getRepresentations().add(result);
         }
     }
 
@@ -567,8 +597,9 @@ public class SwaggerServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    protected void describePatch(DocumentationOperation info) {
-        describeAnnotations(info, this);
+    protected void describePatch(Documentation documentation,
+            DocumentationOperation info) {
+        describeAnnotations(documentation, info, this);
     }
 
     /**
@@ -577,8 +608,9 @@ public class SwaggerServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    protected void describePost(DocumentationOperation info) {
-        describeAnnotations(info, this);
+    protected void describePost(Documentation documentation,
+            DocumentationOperation info) {
+        describeAnnotations(documentation, info, this);
     }
 
     /**
@@ -587,8 +619,9 @@ public class SwaggerServerResource extends ServerResource {
      * @param info
      *            The method description to update.
      */
-    protected void describePut(DocumentationOperation info) {
-        describeAnnotations(info, this);
+    protected void describePut(Documentation documentation,
+            DocumentationOperation info) {
+        describeAnnotations(documentation, info, this);
     }
 
     @Override
@@ -649,7 +682,8 @@ public class SwaggerServerResource extends ServerResource {
 
     /**
      * Returns a collection of parameters objects contained in the current
-     * context (entity, query, headers, etc) given a DocumentationParameter instance.
+     * context (entity, query, headers, etc) given a DocumentationParameter
+     * instance.
      * 
      * @param parameterInfo
      *            The DocumentationParameter instance.
@@ -658,7 +692,7 @@ public class SwaggerServerResource extends ServerResource {
     private Series<? extends NamedValue<String>> getParameters(
             DocumentationParameter parameterInfo) {
         Series<? extends NamedValue<String>> result = null;
-        
+
         if ("header".equals(parameterInfo.dataType())) {
             result = getHeaders().subList(parameterInfo.getName());
         } else if ("path".equals(parameterInfo.dataType())) {
