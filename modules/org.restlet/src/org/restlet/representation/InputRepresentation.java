@@ -41,7 +41,7 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.engine.Edition;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 
 /**
  * Transient representation based on a BIO input stream.
@@ -110,7 +110,7 @@ public class InputRepresentation extends StreamRepresentation {
      */
     @Override
     public String getText() throws IOException {
-        return BioUtils.toString(getStream(), getCharacterSet());
+        return IoUtils.toString(getStream(), getCharacterSet());
     }
 
     /**
@@ -146,7 +146,7 @@ public class InputRepresentation extends StreamRepresentation {
     // [ifndef gwt] method
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        BioUtils.copy(getStream(), outputStream);
+        IoUtils.copy(getStream(), outputStream);
     }
 
 }

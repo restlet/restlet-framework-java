@@ -37,7 +37,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.ext.xdb.internal.InputEntityStream;
 import org.restlet.ext.xdb.internal.SizedInputStream;
 import org.restlet.test.RestletTestCase;
@@ -54,7 +54,7 @@ public class InputEntityStreamTestCase extends RestletTestCase {
         String data = "test data";
         InputStream input = new ByteArrayInputStream(data.getBytes());
         assertEquals("test",
-                BioUtils.toString(new SizedInputStream(null, input, 4)));
+                IoUtils.toString(new SizedInputStream(null, input, 4)));
     }
 
     public void testReset() throws IOException {

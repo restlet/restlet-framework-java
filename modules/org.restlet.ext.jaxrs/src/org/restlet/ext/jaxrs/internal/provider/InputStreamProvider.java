@@ -45,7 +45,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 
 /**
  * This Provider is used to read directly from an {@link InputStream}.
@@ -95,6 +95,6 @@ public class InputStreamProvider extends AbstractProvider<InputStream> {
             Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        BioUtils.copy(inputStream, entityStream);
+        IoUtils.copy(inputStream, entityStream);
     }
 }

@@ -50,8 +50,7 @@ import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 
 import org.restlet.data.Encoding;
-import org.restlet.engine.io.BioUtils;
-import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperRepresentation;
 
@@ -103,7 +102,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
     @Override
     public ReadableByteChannel getChannel() throws IOException {
         if (isDecoding()) {
-            return NioUtils.getChannel(getStream());
+            return IoUtils.getChannel(getStream());
         } else {
             return getWrappedRepresentation().getChannel();
         }
@@ -163,7 +162,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
     @Override
     public Reader getReader() throws IOException {
         if (isDecoding()) {
-            return BioUtils.getReader(getStream(), getCharacterSet());
+            return IoUtils.getReader(getStream(), getCharacterSet());
         } else {
             return getWrappedRepresentation().getReader();
         }
@@ -226,7 +225,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
     @Override
     public String getText() throws IOException {
         if (isDecoding()) {
-            return BioUtils.toString(getStream(), getCharacterSet());
+            return IoUtils.toString(getStream(), getCharacterSet());
         } else {
             return getWrappedRepresentation().getText();
         }
@@ -250,7 +249,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         if (isDecoding()) {
-            BioUtils.copy(getStream(), outputStream);
+            IoUtils.copy(getStream(), outputStream);
         } else {
             getWrappedRepresentation().write(outputStream);
         }
@@ -265,7 +264,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         if (isDecoding()) {
-            OutputStream os = NioUtils.getStream(writableChannel);
+            OutputStream os = IoUtils.getStream(writableChannel);
             write(os);
             os.flush();
         } else {

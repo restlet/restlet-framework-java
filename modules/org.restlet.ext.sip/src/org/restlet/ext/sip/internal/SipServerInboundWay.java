@@ -37,7 +37,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.ext.nio.internal.Connection;
-import org.restlet.ext.nio.internal.ServerInboundWay;
+import org.restlet.ext.nio.internal.way.ServerInboundWay;
 import org.restlet.ext.sip.SipResponse;
 
 /**

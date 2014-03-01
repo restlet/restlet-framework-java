@@ -4,19 +4,23 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-    - Bug fixed
-      - Fixed issue #818: Call.isBroken does not detect Tomcat ClientAbortException.
-        Reported and contributed by Jeremy Gustie.
-      - DELETE responses send 200 status without any entity, whereas it should be 204, 
-        issue #847.
-
     - Enhancements
-      - Add JSON media types. Reported and contributed by mafuba.
+      - Add JSON media types. Reported and contributed by Jack Jones.
+      - Moved all the remaining NIO logic from previous internal HTTP connector to the
+        org.restlet.ext.nio. This will help reduce the org.restlet.jar file size.
+    - Bug fixed
+      - Issue #818: Call.isBroken does not detect Tomcat ClientAbortException.
+        Reported and contributed by Jeremy Gustie.
+      - Issue #847: DELETE responses send 200 status without any entity, whereas it 
+        should be 204.
+      - Issue #805: The NioUtils.copy(..) logic that sometimes created Cyclic barrier 
+        exceptions has been moved as well and replaced with the older and more stable 
+        logic that was in place in version 2.1.0 and older releases.
+        Reported by Wim Jongman.
 
 - 2.2 Release Candidate 2 (02/18/2014)
     - Enhancements
       - Allow Delete methods with entities, issue #841.
-        Reported by Thierry Templier.
       - Allow configuring HttpClient's HostnameVerifier, issue #246.
         Reported and contributed by Philippe Laflamme.
       - Short term fix for XStream - remote code execution due to insecure XML deserialization, issue #835.

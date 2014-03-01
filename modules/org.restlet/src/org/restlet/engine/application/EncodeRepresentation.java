@@ -51,8 +51,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.restlet.data.Disposition;
 import org.restlet.data.Encoding;
-import org.restlet.engine.io.BioUtils;
-import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperList;
 import org.restlet.util.WrapperRepresentation;
@@ -139,7 +138,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public ReadableByteChannel getChannel() throws IOException {
         if (canEncode()) {
-            return NioUtils.getChannel(this);
+            return IoUtils.getChannel(this);
         } else {
             return getWrappedRepresentation().getChannel();
         }
@@ -221,7 +220,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public Reader getReader() throws IOException {
         if (canEncode()) {
-            return BioUtils.getReader(getStream(), getCharacterSet());
+            return IoUtils.getReader(getStream(), getCharacterSet());
         } else {
             return getWrappedRepresentation().getReader();
         }
@@ -251,7 +250,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public InputStream getStream() throws IOException {
         if (canEncode()) {
-            return BioUtils.getStream(this);
+            return IoUtils.getStream(this);
         } else {
             return getWrappedRepresentation().getStream();
         }
@@ -260,7 +259,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public String getText() throws IOException {
         if (canEncode()) {
-            return BioUtils.toString(getStream(), getCharacterSet());
+            return IoUtils.toString(getStream(), getCharacterSet());
         } else {
             return getWrappedRepresentation().getText();
         }
@@ -312,7 +311,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
         if (canEncode()) {
-            OutputStream os = NioUtils.getStream(writableChannel);
+            OutputStream os = IoUtils.getStream(writableChannel);
             write(os);
             os.flush();
         } else {
@@ -323,7 +322,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public void write(java.io.Writer writer) throws IOException {
         if (canEncode()) {
-            OutputStream os = BioUtils.getStream(writer, getCharacterSet());
+            OutputStream os = IoUtils.getStream(writer, getCharacterSet());
             write(os);
             os.flush();
         } else {

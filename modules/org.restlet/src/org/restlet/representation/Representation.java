@@ -47,7 +47,7 @@ import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
 import org.restlet.data.Tag;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.util.DateUtils;
 
 /**
@@ -248,7 +248,7 @@ public abstract class Representation extends RepresentationInfo {
         // [ifndef gwt]
         if (isAvailable()) {
             InputStream is = getStream();
-            result = BioUtils.exhaust(is);
+            result = IoUtils.exhaust(is);
             is.close();
         }
         // [enddef]
@@ -264,7 +264,7 @@ public abstract class Representation extends RepresentationInfo {
      * @return The available size.
      */
     public long getAvailableSize() {
-        return BioUtils.getAvailableSize(this);
+        return IoUtils.getAvailableSize(this);
     }
 
     // [ifndef gwt] member

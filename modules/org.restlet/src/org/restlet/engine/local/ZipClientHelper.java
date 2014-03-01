@@ -53,7 +53,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Status;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.service.MetadataService;
 
@@ -290,7 +290,7 @@ public class ZipClientHelper extends LocalClientHelper {
                                 replaced = true;
                             } else {
                                 zipOut.putNextEntry(e);
-                                BioUtils.copy(new BufferedInputStream(zipFile
+                                IoUtils.copy(new BufferedInputStream(zipFile
                                         .getInputStream(e)), zipOut);
                                 zipOut.closeEntry();
                             }
@@ -310,7 +310,7 @@ public class ZipClientHelper extends LocalClientHelper {
                         }
                     }
 
-                    if (!(BioUtils.delete(file) && writeTo.renameTo(file))) {
+                    if (!(IoUtils.delete(file) && writeTo.renameTo(file))) {
                         if (!file.exists())
                             file.createNewFile();
                         FileInputStream fis = null;
@@ -320,7 +320,7 @@ public class ZipClientHelper extends LocalClientHelper {
                             fos = new FileOutputStream(file);
                             // ByteUtils.write(fis.getChannel(),
                             // fos.getChannel());
-                            BioUtils.copy(fis, fos);
+                            IoUtils.copy(fis, fos);
                             response.setStatus(Status.SUCCESS_OK);
                         } finally {
                             try {
@@ -365,7 +365,7 @@ public class ZipClientHelper extends LocalClientHelper {
                 entry.setTime(System.currentTimeMillis());
             }
             out.putNextEntry(entry);
-            BioUtils.copy(new BufferedInputStream(entity.getStream()), out);
+            IoUtils.copy(new BufferedInputStream(entity.getStream()), out);
             out.closeEntry();
             return true;
         }

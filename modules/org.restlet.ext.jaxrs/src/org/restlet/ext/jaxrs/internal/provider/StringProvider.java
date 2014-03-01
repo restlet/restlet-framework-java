@@ -51,7 +51,7 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CharacterSet;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
 
@@ -174,7 +174,7 @@ public class StringProvider extends AbstractProvider<CharSequence> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        return BioUtils.toString(entityStream,
+        return IoUtils.toString(entityStream,
                 getCurrentRequestEntityCharacterSet());
     }
 
@@ -189,6 +189,6 @@ public class StringProvider extends AbstractProvider<CharSequence> {
             OutputStream entityStream) throws IOException {
         String charset = getCurrentResponseEntityCharset();
         InputStream inputStream = getInputStream(charSequence, charset);
-        BioUtils.copy(inputStream, entityStream);
+        IoUtils.copy(inputStream, entityStream);
     }
 }

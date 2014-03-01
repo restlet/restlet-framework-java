@@ -45,7 +45,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.util.WrapperRepresentation;
 
 /**
@@ -112,12 +112,12 @@ public class BufferingRepresentation extends WrapperRepresentation {
     @Override
     public java.nio.channels.ReadableByteChannel getChannel()
             throws IOException {
-        return org.restlet.engine.io.NioUtils.getChannel(getStream());
+        return IoUtils.getChannel(getStream());
     }
 
     @Override
     public Reader getReader() throws IOException {
-        return BioUtils.getReader(getStream(), getCharacterSet());
+        return IoUtils.getReader(getStream(), getCharacterSet());
     }
 
     @Override

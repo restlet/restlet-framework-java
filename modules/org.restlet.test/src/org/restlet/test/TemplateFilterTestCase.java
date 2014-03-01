@@ -45,7 +45,7 @@ import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.resource.Directory;
 
 /**
@@ -137,7 +137,7 @@ public class TemplateFilterTestCase extends RestletTestCase {
             // Create a temporary directory for the tests
             this.testDir = new File(System.getProperty("java.io.tmpdir"),
                     "TemplateFilterTestCase");
-            BioUtils.delete(this.testDir, true);
+            IoUtils.delete(this.testDir, true);
             this.testDir.mkdir();
 
             // Create temporary template files

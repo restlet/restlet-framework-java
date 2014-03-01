@@ -40,7 +40,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 
 /**
  * Transient representation based on a BIO characters reader.
@@ -105,7 +105,7 @@ public class ReaderRepresentation extends CharacterRepresentation {
      */
     @Override
     public String getText() throws IOException {
-        return BioUtils.toString(getStream(), getCharacterSet());
+        return IoUtils.toString(getStream(), getCharacterSet());
     }
 
     /**
@@ -140,6 +140,6 @@ public class ReaderRepresentation extends CharacterRepresentation {
 
     @Override
     public void write(Writer writer) throws IOException {
-        BioUtils.copy(getReader(), writer);
+        IoUtils.copy(getReader(), writer);
     }
 }

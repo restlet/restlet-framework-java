@@ -61,7 +61,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Status;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 
@@ -236,7 +236,7 @@ public class FileClientHelper extends EntityClientHelper {
     protected void handleFileDelete(Response response, File file) {
         if (file.isDirectory()) {
             if (file.listFiles().length == 0) {
-                if (BioUtils.delete(file)) {
+                if (IoUtils.delete(file)) {
                     response.setStatus(Status.SUCCESS_NO_CONTENT);
                 } else {
                     response.setStatus(Status.SERVER_ERROR_INTERNAL,
@@ -247,7 +247,7 @@ public class FileClientHelper extends EntityClientHelper {
                         "Couldn't delete the non-empty directory");
             }
         } else {
-            if (BioUtils.delete(file)) {
+            if (IoUtils.delete(file)) {
                 response.setStatus(Status.SUCCESS_NO_CONTENT);
             } else {
                 response.setStatus(Status.SERVER_ERROR_INTERNAL,
@@ -423,14 +423,14 @@ public class FileClientHelper extends EntityClientHelper {
                         Range range = request.getRanges().get(0);
 
                         if (tmp.exists() && !isResumeUpload()) {
-                            BioUtils.delete(tmp);
+                            IoUtils.delete(tmp);
                         }
 
                         if (!tmp.exists()) {
                             // Copy the target file.
                             InputStream in = new FileInputStream(file);
                             OutputStream out = new FileOutputStream(tmp);
-                            BioUtils.copy(in, out);
+                            IoUtils.copy(in, out);
                             out.flush();
                             out.close();
                         }
@@ -450,7 +450,7 @@ public class FileClientHelper extends EntityClientHelper {
 
                         // Write the entity to the temporary file.
                         if (request.isEntityAvailable()) {
-                            BioUtils.copy(request.getEntity().getStream(), raf);
+                            IoUtils.copy(request.getEntity().getStream(), raf);
                         }
                     } catch (IOException ioe) {
                         getLogger().log(Level.WARNING,
@@ -478,7 +478,7 @@ public class FileClientHelper extends EntityClientHelper {
                         tmp = File.createTempFile("restlet-upload", "bin");
                         if (request.isEntityAvailable()) {
                             fos = new FileOutputStream(tmp);
-                            BioUtils.copy(request.getEntity().getStream(), fos);
+                            IoUtils.copy(request.getEntity().getStream(), fos);
                         }
                     } catch (IOException ioe) {
                         getLogger().log(Level.WARNING,
@@ -504,14 +504,14 @@ public class FileClientHelper extends EntityClientHelper {
 
                 if (error) {
                     if (tmp.exists() && !isResumeUpload()) {
-                        BioUtils.delete(tmp);
+                        IoUtils.delete(tmp);
                     }
 
                     return;
                 }
 
                 // Then delete the existing file
-                if (tmp.exists() && BioUtils.delete(file)) {
+                if (tmp.exists() && IoUtils.delete(file)) {
                     // Finally move the temporary file to the existing file
                     // location
                     boolean renameSuccessful = false;
@@ -532,10 +532,10 @@ public class FileClientHelper extends EntityClientHelper {
                             try {
                                 InputStream in = new FileInputStream(tmp);
                                 OutputStream out = new FileOutputStream(file);
-                                BioUtils.copy(in, out);
+                                IoUtils.copy(in, out);
                                 out.close();
                                 renameSuccessful = true;
-                                BioUtils.delete(tmp);
+                                IoUtils.delete(tmp);
                             } catch (Exception e) {
                                 renameSuccessful = false;
                             }
@@ -556,7 +556,7 @@ public class FileClientHelper extends EntityClientHelper {
                             "Unable to delete the existing file"));
 
                     if (tmp.exists() && !isResumeUpload()) {
-                        BioUtils.delete(tmp);
+                        IoUtils.delete(tmp);
                     }
                 }
             } else {
@@ -594,7 +594,7 @@ public class FileClientHelper extends EntityClientHelper {
                         }
                         // Write the entity to the file.
                         if (request.isEntityAvailable()) {
-                            BioUtils.copy(request.getEntity().getStream(), raf);
+                            IoUtils.copy(request.getEntity().getStream(), raf);
                         }
                     } catch (FileNotFoundException fnfe) {
                         getLogger().log(Level.WARNING,
@@ -627,7 +627,7 @@ public class FileClientHelper extends EntityClientHelper {
                                 response.setStatus(Status.SUCCESS_NO_CONTENT);
                             } else {
                                 fos = new FileOutputStream(file);
-                                BioUtils.copy(request.getEntity().getStream(),
+                                IoUtils.copy(request.getEntity().getStream(),
                                         fos);
                                 response.setStatus(Status.SUCCESS_CREATED);
                             }

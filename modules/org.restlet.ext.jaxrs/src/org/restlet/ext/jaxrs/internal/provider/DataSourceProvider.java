@@ -47,7 +47,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 
 /**
  * Provider for {@link DataSource}s.
@@ -93,6 +93,6 @@ public class DataSourceProvider extends AbstractProvider<DataSource> {
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         final InputStream inputStream = dataSource.getInputStream();
-        BioUtils.copy(inputStream, entityStream);
+        IoUtils.copy(inputStream, entityStream);
     }
 }

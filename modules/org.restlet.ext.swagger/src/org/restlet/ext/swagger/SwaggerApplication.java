@@ -388,7 +388,6 @@ public class SwaggerApplication extends Application {
      * @return The created finder.
      * @throws ClassNotFoundException
      */
-    @SuppressWarnings("unchecked")
     protected Finder createFinder(Router router, String uriPattern,
             DocumentationEndPoint resourceInfo) throws ClassNotFoundException {
         Finder result = null;

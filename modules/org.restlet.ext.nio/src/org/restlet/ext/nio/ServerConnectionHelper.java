@@ -46,9 +46,9 @@ import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Status;
 import org.restlet.ext.nio.internal.Connection;
-import org.restlet.ext.nio.internal.ConnectionController;
-import org.restlet.ext.nio.internal.InboundRequest;
-import org.restlet.ext.nio.internal.ServerConnectionController;
+import org.restlet.ext.nio.internal.controller.ConnectionController;
+import org.restlet.ext.nio.internal.controller.ServerConnectionController;
+import org.restlet.ext.nio.internal.request.InboundRequest;
 
 /**
  * Base server helper based on NIO non blocking sockets. Here is the list of

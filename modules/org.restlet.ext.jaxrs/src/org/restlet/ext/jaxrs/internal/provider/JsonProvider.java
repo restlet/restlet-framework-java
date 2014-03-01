@@ -56,7 +56,7 @@ import org.json.JSONString;
 import org.json.JSONTokener;
 import org.restlet.Request;
 import org.restlet.data.CharacterSet;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 
 /**
@@ -128,7 +128,7 @@ public class JsonProvider extends AbstractProvider<Object> {
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         final String jsonString;
-        jsonString = BioUtils.toString(entityStream,
+        jsonString = IoUtils.toString(entityStream,
                 getCurrentRequestEntityCharacterSet());
         try {
             if (JSONObject.class.isAssignableFrom(type)) {

@@ -35,7 +35,7 @@ package org.restlet.engine.util;
 
 import java.util.Arrays;
 
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 
 /**
  * Minimal but fast Base64 codec.
@@ -258,7 +258,7 @@ public class Base64 {
      * @return The encoded string.
      */
     public static String encode(char[] chars, boolean newlines) {
-        return encode(BioUtils.toByteArray(chars), newlines);
+        return encode(IoUtils.toByteArray(chars), newlines);
     }
 
     // [ifndef gwt] method
@@ -275,7 +275,7 @@ public class Base64 {
      * @return The encoded string.
      */
     public static String encode(char[] chars, String charset, boolean newlines) {
-        return encode(BioUtils.toByteArray(chars, charset), newlines);
+        return encode(IoUtils.toByteArray(chars, charset), newlines);
     }
 
     /**

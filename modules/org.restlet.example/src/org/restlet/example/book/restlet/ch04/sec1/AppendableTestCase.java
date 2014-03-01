@@ -39,7 +39,7 @@ import java.io.Writer;
 
 import junit.framework.TestCase;
 
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.AppendableRepresentation;
 
 /**
@@ -63,14 +63,14 @@ public class AppendableTestCase extends TestCase {
         ar.write(System.out);
 
         // Copy its content as an input stream to the console
-        BioUtils.copy(ar.getStream(), System.out);
+        IoUtils.copy(ar.getStream(), System.out);
 
         // Write its content to the console's writer
         Writer writer = new OutputStreamWriter(System.out);
         ar.write(writer);
 
         // Copy its content as a reader to the console
-        BioUtils.copy(ar.getReader(), writer);
+        IoUtils.copy(ar.getReader(), writer);
     }
 
 }

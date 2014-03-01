@@ -48,7 +48,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.SystemUtils;
@@ -180,7 +180,7 @@ public class AwsUtils {
     public static String getHmacSha1Signature(String stringToSign, char[] secret) {
         return Base64.encode(
                 DigestUtils.toHMacSha1(stringToSign,
-                        BioUtils.toByteArray(secret)), false);
+                        IoUtils.toByteArray(secret)), false);
     }
 
     /**
@@ -197,7 +197,7 @@ public class AwsUtils {
             char[] secret) {
         return Base64.encode(
                 DigestUtils.toHMacSha256(stringToSign,
-                        BioUtils.toByteArray(secret)), false);
+                        IoUtils.toByteArray(secret)), false);
     }
 
     /**

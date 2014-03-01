@@ -45,7 +45,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 
 /**
  * {@link Provider} to read and write byte[].
@@ -72,7 +72,7 @@ public class ByteArrayProvider extends AbstractProvider<byte[]> {
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        BioUtils.copy(entityStream, baos);
+        IoUtils.copy(entityStream, baos);
         return baos.toByteArray();
     }
 

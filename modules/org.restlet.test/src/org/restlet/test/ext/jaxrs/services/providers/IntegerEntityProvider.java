@@ -45,7 +45,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 
 /**
  * @author Stephan Koops
@@ -87,7 +87,7 @@ public class IntegerEntityProvider implements MessageBodyReader<Integer>,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        String str = BioUtils.toString(entityStream);
+        String str = IoUtils.toString(entityStream);
 
         if (str.length() == 0) {
             return null;

@@ -51,11 +51,14 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 import org.restlet.Connector;
-import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.ReadableSelectionChannel;
-import org.restlet.engine.io.WritableSelectionChannel;
 import org.restlet.engine.ssl.SslUtils;
 import org.restlet.ext.nio.ConnectionHelper;
+import org.restlet.ext.nio.internal.channel.ReadableSslChannel;
+import org.restlet.ext.nio.internal.channel.WritableSelectionChannel;
+import org.restlet.ext.nio.internal.channel.WritableSslChannel;
+import org.restlet.ext.nio.internal.controller.ConnectionController;
+import org.restlet.ext.nio.internal.state.IoState;
 
 /**
  * Connection secured with SSL/TLS protocols.

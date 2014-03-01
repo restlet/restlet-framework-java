@@ -48,8 +48,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.Digest;
-import org.restlet.engine.io.BioUtils;
-import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.util.WrapperRepresentation;
 
 /**
@@ -190,7 +189,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
                         .getInstance(algorithm);
                 java.security.DigestInputStream dis = new java.security.DigestInputStream(
                         getStream(), md);
-                org.restlet.engine.io.BioUtils.exhaust(dis);
+                org.restlet.engine.io.IoUtils.exhaust(dis);
                 result = new org.restlet.data.Digest(algorithm, md.digest());
             } catch (java.security.NoSuchAlgorithmException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
@@ -214,7 +213,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
         long result = -1L;
 
         if (isAvailable()) {
-            result = BioUtils.exhaust(getStream());
+            result = IoUtils.exhaust(getStream());
         }
 
         return result;
@@ -222,7 +221,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     @Override
     public ReadableByteChannel getChannel() throws IOException {
-        return NioUtils.getChannel(getStream());
+        return IoUtils.getChannel(getStream());
     }
 
     /**
@@ -238,7 +237,7 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     @Override
     public Reader getReader() throws IOException {
-        return BioUtils.getReader(getStream(), getCharacterSet());
+        return IoUtils.getReader(getStream(), getCharacterSet());
     }
 
     /**
@@ -288,14 +287,14 @@ public class DigesterRepresentation extends WrapperRepresentation {
 
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        OutputStream os = NioUtils.getStream(writableChannel);
+        OutputStream os = IoUtils.getStream(writableChannel);
         write(os);
         os.flush();
     }
 
     @Override
     public void write(Writer writer) throws IOException {
-        OutputStream os = BioUtils.getStream(writer, getCharacterSet());
+        OutputStream os = IoUtils.getStream(writer, getCharacterSet());
         write(os);
         os.flush();
     }

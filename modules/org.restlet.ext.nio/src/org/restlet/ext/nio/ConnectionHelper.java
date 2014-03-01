@@ -46,10 +46,10 @@ import org.restlet.Connector;
 import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.ext.nio.internal.Connection;
-import org.restlet.ext.nio.internal.ConnectionController;
 import org.restlet.ext.nio.internal.ConnectionPool;
-import org.restlet.ext.nio.internal.InboundWay;
-import org.restlet.ext.nio.internal.OutboundWay;
+import org.restlet.ext.nio.internal.controller.ConnectionController;
+import org.restlet.ext.nio.internal.way.InboundWay;
+import org.restlet.ext.nio.internal.way.OutboundWay;
 import org.restlet.routing.VirtualHost;
 
 /**

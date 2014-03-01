@@ -41,11 +41,11 @@ import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.ext.nio.internal.Connection;
-import org.restlet.ext.nio.internal.HttpInboundRequest;
-import org.restlet.ext.nio.internal.HttpServerInboundWay;
-import org.restlet.ext.nio.internal.HttpServerOutboundWay;
-import org.restlet.ext.nio.internal.InboundWay;
-import org.restlet.ext.nio.internal.OutboundWay;
+import org.restlet.ext.nio.internal.request.HttpInboundRequest;
+import org.restlet.ext.nio.internal.way.HttpServerInboundWay;
+import org.restlet.ext.nio.internal.way.HttpServerOutboundWay;
+import org.restlet.ext.nio.internal.way.InboundWay;
+import org.restlet.ext.nio.internal.way.OutboundWay;
 
 /**
  * HTTP server helper based on NIO blocking sockets.

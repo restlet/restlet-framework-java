@@ -42,7 +42,7 @@ import java.util.zip.ZipFile;
 
 import org.restlet.data.Disposition;
 import org.restlet.data.MediaType;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.StreamRepresentation;
 
 /**
@@ -98,7 +98,7 @@ public class ZipEntryRepresentation extends StreamRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        BioUtils.copy(getStream(), outputStream);
+        IoUtils.copy(getStream(), outputStream);
     }
 
 }

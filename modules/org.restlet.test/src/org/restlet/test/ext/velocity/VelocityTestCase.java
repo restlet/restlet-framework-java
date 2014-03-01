@@ -41,7 +41,7 @@ import java.util.TreeMap;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.ext.velocity.TemplateRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -79,8 +79,8 @@ public class VelocityTestCase extends RestletTestCase {
         assertEquals("Value=myValue", result);
 
         // Clean-up
-        BioUtils.delete(testFile);
-        BioUtils.delete(testDir, true);
+        IoUtils.delete(testFile);
+        IoUtils.delete(testDir, true);
     }
 
     public void testStandardTemplate() throws Exception {
@@ -107,7 +107,7 @@ public class VelocityTestCase extends RestletTestCase {
         assertEquals("Value=myValue", result);
 
         // Clean-up
-        BioUtils.delete(testFile);
-        BioUtils.delete(testDir, true);
+        IoUtils.delete(testFile);
+        IoUtils.delete(testDir, true);
     }
 }

@@ -41,8 +41,7 @@ import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import org.restlet.engine.io.BioUtils;
-import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.util.WrapperRepresentation;
 
@@ -87,7 +86,7 @@ public class JsonpRepresentation extends WrapperRepresentation {
 
     @Override
     public ReadableByteChannel getChannel() throws IOException {
-        return NioUtils.getChannel(getStream());
+        return IoUtils.getChannel(getStream());
     }
 
     @Override
@@ -120,17 +119,17 @@ public class JsonpRepresentation extends WrapperRepresentation {
 
     @Override
     public InputStream getStream() throws IOException {
-        return BioUtils.getStream(this);
+        return IoUtils.getStream(this);
     }
 
     @Override
     public String getText() throws IOException {
-        return BioUtils.toString(getStream());
+        return IoUtils.toString(getStream());
     }
 
     @Override
     public void write(java.io.Writer writer) throws IOException {
-        OutputStream os = BioUtils.getStream(writer, getCharacterSet());
+        OutputStream os = IoUtils.getStream(writer, getCharacterSet());
         write(os);
         os.flush();
     }
@@ -147,7 +146,7 @@ public class JsonpRepresentation extends WrapperRepresentation {
         outputStream.write(",body:".getBytes());
 
         if (MediaType.APPLICATION_JSON.equals(super.getMediaType())) {
-            BioUtils.copy(super.getStream(), outputStream);
+            IoUtils.copy(super.getStream(), outputStream);
         } else {
             outputStream.write("'".getBytes());
             String text = super.getText();
@@ -165,7 +164,7 @@ public class JsonpRepresentation extends WrapperRepresentation {
 
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        OutputStream os = NioUtils.getStream(writableChannel);
+        OutputStream os = IoUtils.getStream(writableChannel);
         write(os);
         os.flush();
     }

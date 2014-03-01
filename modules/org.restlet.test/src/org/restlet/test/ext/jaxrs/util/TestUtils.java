@@ -42,7 +42,7 @@ import java.util.Set;
 import javax.ws.rs.core.MediaType;
 
 import org.junit.Ignore;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
@@ -84,7 +84,7 @@ public class TestUtils {
     public static byte[] getByteArray(InputStream inputStream)
             throws IOException {
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream(4096);
-        BioUtils.copy(inputStream, byteStream);
+        IoUtils.copy(inputStream, byteStream);
         return byteStream.toByteArray();
     }
 

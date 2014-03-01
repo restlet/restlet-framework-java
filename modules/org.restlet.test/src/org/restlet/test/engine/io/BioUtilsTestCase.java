@@ -41,7 +41,7 @@ import java.io.StringWriter;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.test.RestletTestCase;
 
@@ -54,7 +54,7 @@ public class BioUtilsTestCase extends RestletTestCase {
 
     public void testGetStream() throws IOException {
         StringWriter writer = new StringWriter();
-        OutputStream out = BioUtils.getStream(writer, CharacterSet.UTF_8);
+        OutputStream out = IoUtils.getStream(writer, CharacterSet.UTF_8);
         out.write("testé".getBytes("UTF-8"));
         out.flush();
         out.close();

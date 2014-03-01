@@ -48,7 +48,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Directory;
@@ -182,7 +182,7 @@ public class DirectoryTestCase extends RestletTestCase {
 
         // Allow extensions tunneling
         application.getTunnelService().setExtensionsTunnel(true);
-        BioUtils.delete(this.testDir, true);
+        IoUtils.delete(this.testDir, true);
         this.testDir = new File(System.getProperty("java.io.tmpdir"),
                 "DirectoryTestCase/tests2" + new Date().getTime());
         this.testDir.mkdirs();
@@ -190,7 +190,7 @@ public class DirectoryTestCase extends RestletTestCase {
 
         // Test the directory Restlet with an index name
         testDirectory(application, application.getDirectory(), "index");
-        BioUtils.delete(this.testDir, true);
+        IoUtils.delete(this.testDir, true);
         this.testDir = new File(System.getProperty("java.io.tmpdir"),
                 "DirectoryTestCase/tests3" + new Date().getTime());
         this.testDir.mkdirs();
@@ -201,7 +201,7 @@ public class DirectoryTestCase extends RestletTestCase {
 
         // Avoid extensions tunneling
         application.getTunnelService().setExtensionsTunnel(false);
-        BioUtils.delete(this.testDir, true);
+        IoUtils.delete(this.testDir, true);
         this.testDir = new File(System.getProperty("java.io.tmpdir"),
                 "DirectoryTestCase/tests4" + new Date().getTime());
         this.testDir.mkdirs();
@@ -209,7 +209,7 @@ public class DirectoryTestCase extends RestletTestCase {
 
         // Test the directory Restlet with an index name
         testDirectory(application, application.getDirectory(), "index");
-        BioUtils.delete(this.testDir, true);
+        IoUtils.delete(this.testDir, true);
         this.testDir = new File(System.getProperty("java.io.tmpdir"),
                 "DirectoryTestCase/tests5" + new Date().getTime());
         this.testDir.mkdirs();
@@ -217,7 +217,7 @@ public class DirectoryTestCase extends RestletTestCase {
 
         // Test the directory Restlet with no index name
         testDirectory(application, application.getDirectory(), "");
-        BioUtils.delete(this.testDir, true);
+        IoUtils.delete(this.testDir, true);
         this.testDir = new File(System.getProperty("java.io.tmpdir"),
                 "DirectoryTestCase/tests6" + new Date().getTime());
         this.testDir.mkdirs();
@@ -551,7 +551,7 @@ public class DirectoryTestCase extends RestletTestCase {
                 Method.PUT, new StringRepresentation("file entity"), "10d");
         assertTrue(response.getStatus().equals(Status.SUCCESS_CREATED));
 
-        BioUtils.delete(testDirectory, true);
+        IoUtils.delete(testDirectory, true);
         System.out.println("End of tests*********************");
     }
 }

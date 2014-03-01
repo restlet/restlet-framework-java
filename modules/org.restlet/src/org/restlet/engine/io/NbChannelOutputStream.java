@@ -137,7 +137,7 @@ public class NbChannelOutputStream extends OutputStream {
                                 + ioe.getLocalizedMessage());
             } finally {
                 this.bb.clear();
-                NioUtils.release(this.selector, this.selectionKey);
+                IoUtils.release(this.selector, this.selectionKey);
             }
         } else {
             throw new IOException(

@@ -41,9 +41,9 @@ import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.RecipientInfo;
 import org.restlet.ext.nio.internal.Connection;
-import org.restlet.ext.nio.internal.OutboundWay;
 import org.restlet.ext.nio.ServerConnectionHelper;
-import org.restlet.ext.nio.internal.ServerInboundWay;
+import org.restlet.ext.nio.internal.way.OutboundWay;
+import org.restlet.ext.nio.internal.way.ServerInboundWay;
 
 /**
  * Standalone SIP server helper.

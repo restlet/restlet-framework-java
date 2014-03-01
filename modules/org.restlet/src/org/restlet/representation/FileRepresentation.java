@@ -48,8 +48,7 @@ import java.util.Date;
 import org.restlet.data.Disposition;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
-import org.restlet.engine.io.BioUtils;
-import org.restlet.engine.io.NioUtils;
+import org.restlet.engine.io.IoUtils;
 
 /**
  * Representation based on a static file. Note that in order for Web clients to
@@ -214,7 +213,7 @@ public class FileRepresentation extends Representation {
      */
     @Override
     public String getText() throws IOException {
-        return BioUtils.toString(getStream(), getCharacterSet());
+        return IoUtils.toString(getStream(), getCharacterSet());
     }
 
     /**
@@ -235,7 +234,7 @@ public class FileRepresentation extends Representation {
     public void release() {
         if (isAutoDeleting() && getFile() != null) {
             try {
-                BioUtils.delete(getFile(), true);
+                IoUtils.delete(getFile(), true);
             } catch (Exception e) {
             }
         }
@@ -268,7 +267,7 @@ public class FileRepresentation extends Representation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        BioUtils.copy(getStream(), outputStream);
+        IoUtils.copy(getStream(), outputStream);
     }
 
     /**
@@ -280,12 +279,12 @@ public class FileRepresentation extends Representation {
      */
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        NioUtils.copy(getChannel(), writableChannel);
+        IoUtils.copy(getChannel(), writableChannel);
     }
 
     @Override
     public void write(Writer writer) throws IOException {
-        BioUtils.copy(getReader(), writer);
+        IoUtils.copy(getReader(), writer);
     }
 
 }

@@ -46,12 +46,12 @@ import org.restlet.engine.ssl.DefaultSslContextFactory;
 import org.restlet.engine.ssl.SslContextFactory;
 import org.restlet.engine.ssl.SslUtils;
 import org.restlet.ext.nio.internal.Connection;
-import org.restlet.ext.nio.internal.ConnectionController;
-import org.restlet.ext.nio.internal.HttpsClientInboundWay;
-import org.restlet.ext.nio.internal.HttpsClientOutboundWay;
-import org.restlet.ext.nio.internal.InboundWay;
-import org.restlet.ext.nio.internal.OutboundWay;
 import org.restlet.ext.nio.internal.SslConnection;
+import org.restlet.ext.nio.internal.controller.ConnectionController;
+import org.restlet.ext.nio.internal.way.HttpsClientInboundWay;
+import org.restlet.ext.nio.internal.way.HttpsClientOutboundWay;
+import org.restlet.ext.nio.internal.way.InboundWay;
+import org.restlet.ext.nio.internal.way.OutboundWay;
 
 /**
  * HTTPS client helper based on NIO blocking sockets. Here is the list of SSL

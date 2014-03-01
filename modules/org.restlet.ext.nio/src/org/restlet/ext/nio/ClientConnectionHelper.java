@@ -47,8 +47,8 @@ import org.restlet.Response;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.nio.internal.Connection;
-import org.restlet.ext.nio.internal.ConnectionController;
-import org.restlet.ext.nio.internal.ConnectionState;
+import org.restlet.ext.nio.internal.controller.ConnectionController;
+import org.restlet.ext.nio.internal.state.ConnectionState;
 
 /**
  * Base client helper based on NIO non blocking sockets. Here is the list of

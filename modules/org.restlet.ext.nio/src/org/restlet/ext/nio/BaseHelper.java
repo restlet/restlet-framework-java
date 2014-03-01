@@ -54,7 +54,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
 import org.restlet.engine.log.LoggingThreadFactory;
-import org.restlet.ext.nio.internal.ConnectionController;
+import org.restlet.ext.nio.internal.controller.ConnectionController;
 
 /**
  * Base connector helper. Here is the list of parameters that are supported.

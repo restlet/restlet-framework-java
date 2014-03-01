@@ -36,10 +36,10 @@ package org.restlet.ext.nio;
 import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.ext.nio.internal.Connection;
-import org.restlet.ext.nio.internal.HttpClientInboundWay;
-import org.restlet.ext.nio.internal.HttpClientOutboundWay;
-import org.restlet.ext.nio.internal.InboundWay;
-import org.restlet.ext.nio.internal.OutboundWay;
+import org.restlet.ext.nio.internal.way.HttpClientInboundWay;
+import org.restlet.ext.nio.internal.way.HttpClientOutboundWay;
+import org.restlet.ext.nio.internal.way.InboundWay;
+import org.restlet.ext.nio.internal.way.OutboundWay;
 
 /**
  * HTTP client helper based on NIO blocking sockets.

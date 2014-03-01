@@ -39,7 +39,7 @@ import java.io.IOException;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
@@ -62,7 +62,7 @@ public class ZipClientTestCase extends RestletTestCase {
         super.setUp();
         testDir = new File(System.getProperty("java.io.tmpdir"),
                 "zipClientTestCase");
-        BioUtils.delete(testDir, true);
+        IoUtils.delete(testDir, true);
         testDir.mkdirs();
         zipFile = new File(testDir, "test.zip");
     }

@@ -47,7 +47,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.restlet.Request;
 import org.restlet.data.Form;
-import org.restlet.engine.io.BioUtils;
+import org.restlet.engine.io.IoUtils;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper;
 import org.restlet.representation.InputRepresentation;
@@ -94,7 +94,7 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         Representation formRepr = form.getWebRepresentation();
-        BioUtils.copy(formRepr.getStream(), entityStream);
+        IoUtils.copy(formRepr.getStream(), entityStream);
     }
 
     /**

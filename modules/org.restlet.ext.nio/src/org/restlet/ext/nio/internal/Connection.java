@@ -45,14 +45,18 @@ import java.util.logging.Logger;
 import org.restlet.Connector;
 import org.restlet.Response;
 import org.restlet.data.Status;
-import org.restlet.engine.io.IoState;
 import org.restlet.engine.io.ReadableSelectionChannel;
-import org.restlet.engine.io.ReadableSocketChannel;
-import org.restlet.engine.io.ReadableTraceChannel;
-import org.restlet.engine.io.WritableSelectionChannel;
-import org.restlet.engine.io.WritableSocketChannel;
-import org.restlet.engine.io.WritableTraceChannel;
 import org.restlet.ext.nio.ConnectionHelper;
+import org.restlet.ext.nio.internal.channel.ReadableSocketChannel;
+import org.restlet.ext.nio.internal.channel.ReadableTraceChannel;
+import org.restlet.ext.nio.internal.channel.WritableSelectionChannel;
+import org.restlet.ext.nio.internal.channel.WritableSocketChannel;
+import org.restlet.ext.nio.internal.channel.WritableTraceChannel;
+import org.restlet.ext.nio.internal.controller.ConnectionController;
+import org.restlet.ext.nio.internal.state.ConnectionState;
+import org.restlet.ext.nio.internal.state.IoState;
+import org.restlet.ext.nio.internal.way.InboundWay;
+import org.restlet.ext.nio.internal.way.OutboundWay;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
 
@@ -527,7 +531,7 @@ public class Connection<T extends Connector> implements SelectionListener {
      * 
      * @return True if at least one way is in the {@link IoState#READY} state.
      */
-    protected boolean isReady() {
+    public boolean isReady() {
         return (getInboundWay().getIoState() == IoState.READY)
                 || (getOutboundWay().getIoState() == IoState.READY);
     }
