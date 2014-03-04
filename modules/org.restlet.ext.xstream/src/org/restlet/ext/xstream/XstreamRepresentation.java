@@ -65,12 +65,13 @@ import com.thoughtworks.xstream.security.PrimitiveTypePermission;
  * manipulated to inject objects into the unmarshalled object graph, which were
  * not present at marshalling time. An attacker could exploit this to execute
  * arbitrary code or shell commands in the context of the server running the
- * XStream process. This issue has been addressed and is clearly documented
- * here: <a href="http://xstream.codehaus.org/security.html#framework">XStream
- * Security Framework</a>.<br>
+ * XStream process.<br>
  * You can configure the Xstream object used by this representation (cf
  * {@link #createXstream()} or {@link #getXstream()}) and apply security
- * permissions.
+ * permissions. You can find more documentation about the security fix and how
+ * to configure the XStream object from here: <a href=
+ * "https://github.com/restlet/restlet-framework-java/wiki/XStream-security-enhancements"
+ * >XStream security enhancements</a>.<br>
  * 
  * @see <a href="http://xstream.codehaus.org/">XStream project</a>
  * @author Jerome Louvel
