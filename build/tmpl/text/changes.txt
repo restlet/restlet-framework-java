@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+
+- 2.2 Release Candidate 3 (03/04/2014)
     - Enhancements
       - Add JSON media types. Reported and contributed by Jack Jones.
       - Moved all the remaining NIO logic from previous internal HTTP connector to the
