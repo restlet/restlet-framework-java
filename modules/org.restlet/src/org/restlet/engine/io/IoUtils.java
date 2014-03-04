@@ -146,6 +146,7 @@ public class IoUtils {
         inputStream.close();
     }
 
+    // [ifndef gwt] method
     /**
      * Writes a readable channel to a writable channel.
      * 
@@ -334,6 +335,7 @@ public class IoUtils {
         // return representation.getSize();
     }
 
+    // [ifndef gwt] method
     /**
      * Returns a readable byte channel based on a given input stream. If it is
      * supported by a file a read-only instance of FileChannel is returned.
@@ -355,6 +357,7 @@ public class IoUtils {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns a writable byte channel based on a given output stream.
      * 
@@ -367,6 +370,7 @@ public class IoUtils {
                 : null;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns a readable byte channel based on the given representation's
      * content and its write(WritableByteChannel) method. Internally, it uses a
@@ -545,6 +549,7 @@ public class IoUtils {
         return new WriterOutputStream(writer, characterSet);
     }
 
+    // [ifndef gwt] method
     /**
      * Returns an input stream based on a given readable byte channel.
      * 
@@ -654,6 +659,7 @@ public class IoUtils {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Returns an output stream based on a given writable byte channel.
      * 
@@ -729,6 +735,7 @@ public class IoUtils {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Indicates if the channel is in blocking mode. It returns false when the
      * channel is selectable and configured to be non blocking.
@@ -748,6 +755,7 @@ public class IoUtils {
         return result;
     }
 
+    // [ifndef gwt] method
     /**
      * Release the selection key, working around for bug #6403933.
      * 
