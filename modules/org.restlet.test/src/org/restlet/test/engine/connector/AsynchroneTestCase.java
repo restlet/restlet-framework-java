@@ -184,19 +184,19 @@ public class AsynchroneTestCase extends RestletTestCase {
     }
 
     public void testGet() throws Exception {
-        testCall(context, 1000, Method.GET);
+        testCall(context, 10, Method.GET);
     }
 
     public void testPost() throws Exception {
-        testCall(context, 1000, Method.POST);
+        testCall(context, 10, Method.POST);
     }
 
     public void testPut() throws Exception {
-        testCall(context, 1000, Method.PUT);
+        testCall(context, 10, Method.PUT);
     }
 
     public void testDelete() throws Exception {
-        testCall(context, 1000, Method.DELETE);
+        testCall(context, 10, Method.DELETE);
     }
 
     @Override
