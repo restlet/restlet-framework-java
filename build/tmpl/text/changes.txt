@@ -4,6 +4,9 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bug fixed
+      - ServerResource doesn't throw away empty response entities anymore, issue #848.
+        Reported by Arjohn Kampman and Marcel Hellkamp.
 
 - 2.2 Release Candidate 3 (03/04/2014)
     - Enhancements

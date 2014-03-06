@@ -1018,7 +1018,7 @@ public abstract class ServerResource extends Resource {
                     result = doHandle();
                 }
 
-                if (!getResponse().isEntityAvailable()) {
+                if (result != null) {
                     // If the user manually set the entity, keep it
                     getResponse().setEntity(result);
                 }
