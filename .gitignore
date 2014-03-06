@@ -1,3 +1,4 @@
+/build/editions
 /incubator/org.restlet.ext.guice/bin
 /incubator/org.restlet.ext.swagger/bin
 /incubator/org.restlet.ext.webdav/bin
@@ -22,6 +23,7 @@
 /modules/org.restlet.example.book.restlet.ch09.gwt/war/WEB-INF/classes
 /modules/org.restlet.example.book.restlet.ch09.gwt/war/WEB-INF/deploy
 /modules/org.restlet.example.book.restlet.ch09.gwt/war/WEB-INF/lib
+/modules/org.restlet.ext.apispark/bin
 /modules/org.restlet.ext.atom/bin
 /modules/org.restlet.ext.crypto/bin
 /modules/org.restlet.ext.e4/bin
