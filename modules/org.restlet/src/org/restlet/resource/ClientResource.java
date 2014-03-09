@@ -537,7 +537,7 @@ public class ClientResource extends Resource {
 
             if (protocol != null) {
                 // [ifndef gwt]
-                org.restlet.engine.TemplateDispatcher dispatcher = new org.restlet.engine.TemplateDispatcher();
+                org.restlet.engine.util.TemplateDispatcher dispatcher = new org.restlet.engine.util.TemplateDispatcher();
                 dispatcher.setContext(getContext());
                 dispatcher.setNext(new Client(protocol));
                 result = dispatcher;

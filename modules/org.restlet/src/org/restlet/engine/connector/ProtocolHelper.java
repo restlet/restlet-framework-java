@@ -31,27 +31,30 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.engine;
+package org.restlet.engine.connector;
 
-import org.restlet.data.Method;
+import org.restlet.engine.Helper;
 
 /**
- * Protocol helper for the WEBDAV protocol.
+ * Protocol helper.
  * 
  * @author Thierry Boileau
  * 
  */
-public class WebDavProtocolHelper extends ProtocolHelper {
+public abstract class ProtocolHelper extends Helper {
 
-    @Override
-    public void registerMethods() {
-        Method.register(Method.COPY);
-        Method.register(Method.LOCK);
-        Method.register(Method.MKCOL);
-        Method.register(Method.MOVE);
-        Method.register(Method.PROPFIND);
-        Method.register(Method.PROPPATCH);
-        Method.register(Method.UNLOCK);
+    /**
+     * Constructor.
+     */
+    public ProtocolHelper() {
+        super();
+        registerMethods();
     }
+
+    /**
+     * Register all supported methods. The implementation relies on the
+     * {@link org.restlet.data.Method#register(org.restlet.data.Method)} method.
+     */
+    public abstract void registerMethods();
 
 }

@@ -38,7 +38,6 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
-import org.restlet.engine.TemplateDispatcher;
 
 /**
  * Client dispatcher for a component child.

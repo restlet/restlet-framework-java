@@ -40,8 +40,8 @@ import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
-import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
+import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.routing.Redirector;
 
 public class NioProxy {

@@ -31,57 +31,27 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.engine;
+package org.restlet.engine.connector;
 
-import org.restlet.Client;
+import org.restlet.data.Method;
 
 /**
- * Client connector helper. Base client helper based on NIO non blocking
- * sockets. Here is the list of parameters that are supported. They should be
- * set in the Client's context before it is started:
- * <table>
- * <tr>
- * <th>Parameter name</th>
- * <th>Value type</th>
- * <th>Default value</th>
- * <th>Description</th>
- * </tr>
- * <tr>
- * <td>socketConnectTimeoutMs</td>
- * <td>int</td>
- * <td>0</td>
- * <td>The socket connection timeout or 0 for unlimited wait.</td>
- * </tr>
- * </table>
+ * Protocol helper for the WEBDAV protocol.
  * 
- * @author Jerome Louvel
+ * @author Thierry Boileau
+ * 
  */
-public class ClientHelper extends ConnectorHelper<Client> {
+public class WebDavProtocolHelper extends ProtocolHelper {
 
-    /**
-     * Constructor.
-     * 
-     * @param client
-     *            The client to help.
-     */
-    public ClientHelper(Client client) {
-        super(client);
-    }
-
-    /**
-     * Returns the connection timeout.
-     * 
-     * @return The connection timeout.
-     */
-    public int getSocketConnectTimeoutMs() {
-        int result = 0;
-
-        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
-            result = Integer.parseInt(getHelpedParameters().getFirstValue(
-                    "socketConnectTimeoutMs", "0"));
-        }
-
-        return result;
+    @Override
+    public void registerMethods() {
+        Method.register(Method.COPY);
+        Method.register(Method.LOCK);
+        Method.register(Method.MKCOL);
+        Method.register(Method.MOVE);
+        Method.register(Method.PROPFIND);
+        Method.register(Method.PROPPATCH);
+        Method.register(Method.UNLOCK);
     }
 
 }

@@ -54,6 +54,12 @@ import org.restlet.Response;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.engine.connector.ClientHelper;
+import org.restlet.engine.connector.ConnectorHelper;
+import org.restlet.engine.connector.HttpProtocolHelper;
+import org.restlet.engine.connector.ProtocolHelper;
+import org.restlet.engine.connector.ServerHelper;
+import org.restlet.engine.connector.WebDavProtocolHelper;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.log.LoggerFacade;
 
@@ -457,7 +463,7 @@ public class Engine {
     private final List<org.restlet.engine.converter.ConverterHelper> registeredConverters;
 
     /** List of available protocol helpers. */
-    private final List<org.restlet.engine.ProtocolHelper> registeredProtocols;
+    private final List<org.restlet.engine.connector.ProtocolHelper> registeredProtocols;
 
     // [ifndef gwt] member
     /** List of available server connectors. */
@@ -882,7 +888,7 @@ public class Engine {
     public void registerDefaultConnectors() {
         // [ifndef gae, gwt]
         getRegisteredClients().add(
-                new org.restlet.engine.net.HttpClientHelper(null));
+                new org.restlet.engine.connector.HttpClientHelper(null));
         // [enddef]
         // [ifndef gwt]
         getRegisteredClients().add(
@@ -894,7 +900,7 @@ public class Engine {
         // [enddef]
         // [ifndef gae, gwt]
         getRegisteredServers().add(
-                new org.restlet.engine.net.HttpServerHelper(null));
+                new org.restlet.engine.connector.HttpServerHelper(null));
         getRegisteredClients().add(
                 new org.restlet.engine.local.FileClientHelper(null));
         getRegisteredClients().add(

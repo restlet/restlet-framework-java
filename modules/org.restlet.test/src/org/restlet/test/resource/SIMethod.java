@@ -39,7 +39,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.restlet.engine.Method;
+import org.restlet.engine.connector.Method;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

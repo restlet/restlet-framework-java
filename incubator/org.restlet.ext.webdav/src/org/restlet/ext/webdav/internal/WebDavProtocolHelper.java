@@ -31,7 +31,7 @@
 package org.restlet.ext.webdav.internal;
 
 import org.restlet.data.Method;
-import org.restlet.engine.ProtocolHelper;
+import org.restlet.engine.connector.ProtocolHelper;
 import org.restlet.ext.webdav.WebDavMethod;
 
 /**

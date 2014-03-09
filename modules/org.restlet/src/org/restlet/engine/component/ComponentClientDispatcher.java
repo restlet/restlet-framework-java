@@ -40,7 +40,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
-import org.restlet.engine.TemplateDispatcher;
+import org.restlet.engine.util.TemplateDispatcher;
 import org.restlet.routing.VirtualHost;
 
 /**

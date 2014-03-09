@@ -36,8 +36,8 @@ package org.restlet.test.bench;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
-import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
+import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 

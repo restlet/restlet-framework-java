@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import org.restlet.Client;
-import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
+import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
@@ -19,7 +19,7 @@ public class RestletClient {
     public static void main(String[] args) throws ResourceException,
             IOException {
         ConnectorHelper<Client> helper;
-        helper = new org.restlet.engine.net.HttpClientHelper(null);
+        helper = new org.restlet.engine.connector.HttpClientHelper(null);
         Engine.getInstance().getRegisteredClients().add(0, helper);
 
         helper = new org.restlet.ext.nio.HttpsClientHelper(null);

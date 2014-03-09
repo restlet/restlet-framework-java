@@ -56,7 +56,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.ClientHelper;
+import org.restlet.engine.connector.ClientHelper;
 import org.restlet.representation.Representation;
 import org.w3c.dom.DOMException;
 

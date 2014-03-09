@@ -40,7 +40,7 @@ import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Protocol;
-import org.restlet.engine.ClientHelper;
+import org.restlet.engine.connector.ClientHelper;
 
 /**
  * Connector acting as a WAR client for a Servlet Application. It internally

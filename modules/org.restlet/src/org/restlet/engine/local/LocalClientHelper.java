@@ -37,7 +37,7 @@ import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Reference;
-import org.restlet.engine.ClientHelper;
+import org.restlet.engine.connector.ClientHelper;
 
 /**
  * Connector to the local resources accessible via file system, class loaders

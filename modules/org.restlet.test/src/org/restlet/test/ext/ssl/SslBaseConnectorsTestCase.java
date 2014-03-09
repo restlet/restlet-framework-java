@@ -47,8 +47,8 @@ import org.restlet.Server;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
-import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
+import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.local.ClapClientHelper;
 import org.restlet.test.RestletTestCase;
@@ -183,21 +183,21 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     public void testSslInternalAndApache() throws Exception {
         if (this.enabledServerInternal && this.enabledClientApache) {
-            runTest(new org.restlet.engine.net.HttpsServerHelper(null),
+            runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
                     new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testSslInternalAndInternal() throws Exception {
         if (this.enabledServerInternal && this.enabledClientInternal) {
-            runTest(new org.restlet.engine.net.HttpsServerHelper(null),
-                    new org.restlet.engine.net.HttpClientHelper(null));
+            runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
+                    new org.restlet.engine.connector.HttpClientHelper(null));
         }
     }
 
     public void testSslInternalAndClientNio() throws Exception {
         if (this.enabledServerInternal && this.enabledClientNio) {
-            runTest(new org.restlet.engine.net.HttpsServerHelper(null),
+            runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
                     new org.restlet.ext.nio.HttpsClientHelper(null));
         }
     }
@@ -212,7 +212,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     public void testSslJettyAndInternal() throws Exception {
         if (this.enabledServerJetty && this.enabledClientInternal) {
             runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
-                    new org.restlet.engine.net.HttpClientHelper(null));
+                    new org.restlet.engine.connector.HttpClientHelper(null));
         }
     }
 
@@ -233,7 +233,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     public void testSslSimpleAndInternal() throws Exception {
         if (this.enabledServerSimple && this.enabledClientInternal) {
             runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
-                    new org.restlet.engine.net.HttpClientHelper(null));
+                    new org.restlet.engine.connector.HttpClientHelper(null));
         }
     }
 

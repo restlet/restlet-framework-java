@@ -50,7 +50,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.ClientHelper;
+import org.restlet.engine.connector.ClientHelper;
 import org.restlet.ext.lucene.internal.SolrRepresentation;
 import org.restlet.ext.lucene.internal.SolrRestletQueryRequest;
 

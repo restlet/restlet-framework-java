@@ -31,42 +31,57 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.engine.net;
+package org.restlet.engine.connector;
 
-import java.net.HttpURLConnection;
-
-import org.restlet.representation.Representation;
-import org.restlet.util.WrapperRepresentation;
+import org.restlet.Client;
 
 /**
- * Representation that wraps another representation and closes the parent
- * {@link HttpURLConnection} when the representation is released.
+ * Client connector helper. Base client helper based on NIO non blocking
+ * sockets. Here is the list of parameters that are supported. They should be
+ * set in the Client's context before it is started:
+ * <table>
+ * <tr>
+ * <th>Parameter name</th>
+ * <th>Value type</th>
+ * <th>Default value</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>socketConnectTimeoutMs</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>The socket connection timeout or 0 for unlimited wait.</td>
+ * </tr>
+ * </table>
  * 
- * @author Kevin Conaway
+ * @author Jerome Louvel
  */
-class ConnectionClosingRepresentation extends WrapperRepresentation {
-
-    /** The parent connection. */
-    private final HttpURLConnection connection;
+public class ClientHelper extends ConnectorHelper<Client> {
 
     /**
-     * Default constructor.
+     * Constructor.
      * 
-     * @param wrappedRepresentation
-     *            The wrapped representation.
-     * @param connection
-     *            The parent connection.
+     * @param client
+     *            The client to help.
      */
-    public ConnectionClosingRepresentation(
-            Representation wrappedRepresentation, HttpURLConnection connection) {
-        super(wrappedRepresentation);
-        this.connection = connection;
+    public ClientHelper(Client client) {
+        super(client);
     }
 
-    @Override
-    public void release() {
-        this.connection.disconnect();
-        super.release();
+    /**
+     * Returns the connection timeout.
+     * 
+     * @return The connection timeout.
+     */
+    public int getSocketConnectTimeoutMs() {
+        int result = 0;
+
+        if (getHelpedParameters().getNames().contains("socketConnectTimeoutMs")) {
+            result = Integer.parseInt(getHelpedParameters().getFirstValue(
+                    "socketConnectTimeoutMs", "0"));
+        }
+
+        return result;
     }
 
 }

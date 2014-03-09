@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.engine.net;
+package org.restlet.engine.connector;
 
 import java.io.IOException;
 import java.io.InputStream;

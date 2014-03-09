@@ -76,7 +76,7 @@ public abstract class RestletTestCase extends TestCase {
 
         // Prefer the internal connectors
         Engine.getInstance().getRegisteredServers()
-                .add(0, new org.restlet.engine.net.HttpServerHelper(null));
+                .add(0, new org.restlet.engine.connector.HttpServerHelper(null));
         // FIXME turn on the internal connector.
         Engine.getInstance().getRegisteredClients()
                 .add(0, new org.restlet.ext.httpclient.HttpClientHelper(null));

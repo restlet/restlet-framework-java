@@ -31,38 +31,30 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.engine;
+package org.restlet.engine.connector;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.restlet.resource.Delete;
-import org.restlet.resource.Get;
-import org.restlet.resource.Options;
-import org.restlet.resource.Patch;
-import org.restlet.resource.Post;
-import org.restlet.resource.Put;
+import org.restlet.data.Method;
 
 /**
- * Meta annotation to declare method annotations.
+ * Protocol helper for the HTTP protocol.
  * 
- * @see Get
- * @see Post
- * @see Put
- * @see Delete
- * @see Options
- * @see Patch
- * @author Jerome Louvel
+ * @author Thierry Boileau
+ * 
  */
-@Target(ElementType.ANNOTATION_TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Method {
+public class HttpProtocolHelper extends ProtocolHelper {
 
-    /**
-     * Method name identified by the underlying annotation.
-     */
-    String value();
+    @Override
+    public void registerMethods() {
+        Method.register(Method.ALL);
+        Method.register(Method.CONNECT);
+        Method.register(Method.DELETE);
+        Method.register(Method.GET);
+        Method.register(Method.HEAD);
+        Method.register(Method.OPTIONS);
+        Method.register(Method.PATCH);
+        Method.register(Method.POST);
+        Method.register(Method.PUT);
+        Method.register(Method.TRACE);
+    }
 
 }

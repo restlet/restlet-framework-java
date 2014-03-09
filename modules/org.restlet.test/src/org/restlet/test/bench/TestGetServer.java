@@ -42,15 +42,15 @@ import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
-import org.restlet.engine.ConnectorHelper;
 import org.restlet.engine.Engine;
+import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.representation.FileRepresentation;
 
 public class TestGetServer {
 
     public static void main(String[] args) throws Exception {
         ConnectorHelper<Server> helper;
-        helper = new org.restlet.engine.net.HttpServerHelper(null);
+        helper = new org.restlet.engine.connector.HttpServerHelper(null);
         Engine.getInstance().getRegisteredServers().add(0, helper);
         // [ifdef jse] instruction
         Engine.setLogLevel(Level.FINE);

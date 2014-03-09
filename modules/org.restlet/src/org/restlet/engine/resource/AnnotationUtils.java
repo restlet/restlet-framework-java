@@ -97,7 +97,7 @@ public class AnnotationUtils {
 
         for (Annotation annotation : javaMethod.getAnnotations()) {
             Annotation methodAnnotation = annotation.annotationType()
-                    .getAnnotation(org.restlet.engine.Method.class);
+                    .getAnnotation(org.restlet.engine.connector.Method.class);
 
             Method restletMethod = getRestletMethod(annotation,
                     methodAnnotation);
@@ -295,7 +295,7 @@ public class AnnotationUtils {
     protected Method getRestletMethod(Annotation annotation,
             Annotation methodAnnotation) {
         return methodAnnotation == null ? null
-                : Method.valueOf(((org.restlet.engine.Method) methodAnnotation)
+                : Method.valueOf(((org.restlet.engine.connector.Method) methodAnnotation)
                         .value());
     }
 

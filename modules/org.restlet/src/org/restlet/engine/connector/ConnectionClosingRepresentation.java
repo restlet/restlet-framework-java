@@ -31,30 +31,42 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.engine;
+package org.restlet.engine.connector;
 
-import org.restlet.data.Method;
+import java.net.HttpURLConnection;
+
+import org.restlet.representation.Representation;
+import org.restlet.util.WrapperRepresentation;
 
 /**
- * Protocol helper for the HTTP protocol.
+ * Representation that wraps another representation and closes the parent
+ * {@link HttpURLConnection} when the representation is released.
  * 
- * @author Thierry Boileau
- * 
+ * @author Kevin Conaway
  */
-public class HttpProtocolHelper extends ProtocolHelper {
+class ConnectionClosingRepresentation extends WrapperRepresentation {
+
+    /** The parent connection. */
+    private final HttpURLConnection connection;
+
+    /**
+     * Default constructor.
+     * 
+     * @param wrappedRepresentation
+     *            The wrapped representation.
+     * @param connection
+     *            The parent connection.
+     */
+    public ConnectionClosingRepresentation(
+            Representation wrappedRepresentation, HttpURLConnection connection) {
+        super(wrappedRepresentation);
+        this.connection = connection;
+    }
 
     @Override
-    public void registerMethods() {
-        Method.register(Method.ALL);
-        Method.register(Method.CONNECT);
-        Method.register(Method.DELETE);
-        Method.register(Method.GET);
-        Method.register(Method.HEAD);
-        Method.register(Method.OPTIONS);
-        Method.register(Method.PATCH);
-        Method.register(Method.POST);
-        Method.register(Method.PUT);
-        Method.register(Method.TRACE);
+    public void release() {
+        this.connection.disconnect();
+        super.release();
     }
 
 }

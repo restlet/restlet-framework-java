@@ -35,7 +35,7 @@ package org.restlet.engine.component;
 
 import org.restlet.Request;
 import org.restlet.Response;
-import org.restlet.engine.TemplateDispatcher;
+import org.restlet.engine.util.TemplateDispatcher;
 
 /**
  * Component server dispatcher.

@@ -45,7 +45,7 @@ import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Digest;
-import org.restlet.engine.ConnectorHelper;
+import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.engine.header.ContentType;
 import org.restlet.engine.header.DispositionReader;
 import org.restlet.engine.header.EncodingReader;

@@ -39,7 +39,7 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.engine.Engine;
-import org.restlet.engine.ServerHelper;
+import org.restlet.engine.connector.ServerHelper;
 
 /**
  * Base HTTP server connector. Here is the list of parameters that are
