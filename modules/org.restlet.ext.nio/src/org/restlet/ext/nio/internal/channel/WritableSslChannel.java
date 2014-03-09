@@ -113,8 +113,22 @@ public class WritableSslChannel extends WritableBufferedChannel implements
     public int onFill(Buffer buffer, Object... args) throws IOException {
         int srcSize = buffer.remaining();
         ByteBuffer applicationBuffer = (ByteBuffer) args[0];
-        SSLEngineResult sslResult = getConnection().getSslEngine().wrap(
-                applicationBuffer, buffer.getBytes());
+
+        HandshakeStatus handshakeStatus = getConnection().getSslHandshakeStatus();
+        SSLEngineResult sslResult;
+
+        // Empty buffers should generally only be passed to SSLEngine during the handshaking process,
+        // when SSLEngine will be generating handshake packets itself. The behavior of SSLEngine when
+        // an empty buffer is passed during normal operation varies across platforms. To avoid problems
+        // due to this inconsistency, we avoid calling SSLEngine with empty buffers when not handshaking,
+        // and return what J2SE's SSLEngine would have in that case. See the following issue for more details:
+        // https://github.com/restlet/restlet-framework-java/issues/852
+        if (applicationBuffer.hasRemaining() || handshakeStatus != HandshakeStatus.NOT_HANDSHAKING) {
+            sslResult = getConnection().getSslEngine().wrap(applicationBuffer, buffer.getBytes());
+        } else {
+            sslResult = new SSLEngineResult(Status.BUFFER_OVERFLOW, handshakeStatus, 0, 0);
+        }
+
         getConnection().setSslResult(sslResult);
         return srcSize - buffer.remaining();
     }
