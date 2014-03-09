@@ -31,18 +31,22 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.nio.internal;
+package org.restlet.ext.nio.internal.way;
 
 /**
- * Callback interface used for delegated task completion.
+ * Enumeration of entity IO types.
  * 
  * @author Jerome Louvel
  */
-public interface TasksListener {
+public enum EntityType {
 
-    /**
-     * Callback method invoked upon delegated tasks completion.
-     */
-    public void onCompleted();
+    /** NIO blocking byte channel. */
+    BLOCKING,
+
+    /** NIO non-blocking byte channel. */
+    NON_BLOCKING,
+
+    /** NIO transferable file channel. */
+    TRANSFERABLE;
 
 }

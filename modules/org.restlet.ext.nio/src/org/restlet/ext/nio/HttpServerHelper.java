@@ -40,7 +40,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.request.HttpInboundRequest;
 import org.restlet.ext.nio.internal.way.HttpServerInboundWay;
 import org.restlet.ext.nio.internal.way.HttpServerOutboundWay;

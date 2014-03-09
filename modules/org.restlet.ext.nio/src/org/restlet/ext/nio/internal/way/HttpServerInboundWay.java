@@ -41,7 +41,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Status;
-import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.connection.Connection;
 
 /**
  * HTTP server inbound way.

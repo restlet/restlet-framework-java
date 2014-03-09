@@ -41,7 +41,7 @@ import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.ext.nio.ServerConnectionHelper;
-import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.request.InboundRequest;
 import org.restlet.ext.nio.internal.state.ConnectionState;
 import org.restlet.ext.nio.internal.state.IoState;

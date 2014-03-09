@@ -42,10 +42,10 @@ import javax.net.ssl.SSLEngineResult.Status;
 
 import org.restlet.engine.io.SelectionChannel;
 import org.restlet.engine.io.WakeupListener;
-import org.restlet.ext.nio.internal.Buffer;
-import org.restlet.ext.nio.internal.SslConnection;
-import org.restlet.ext.nio.internal.TasksListener;
+import org.restlet.ext.nio.internal.buffer.Buffer;
+import org.restlet.ext.nio.internal.connection.SslConnection;
 import org.restlet.ext.nio.internal.state.IoState;
+import org.restlet.ext.nio.internal.util.TasksListener;
 
 /**
  * SSL byte channel that wraps all application data using the SSL/TLS protocols.

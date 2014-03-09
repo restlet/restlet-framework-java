@@ -35,7 +35,7 @@ package org.restlet.ext.nio.internal.request;
 
 import org.restlet.Server;
 import org.restlet.engine.header.Header;
-import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.util.Series;
 
 /**

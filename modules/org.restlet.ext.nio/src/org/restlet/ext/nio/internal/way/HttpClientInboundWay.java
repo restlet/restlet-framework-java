@@ -40,7 +40,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.restlet.Client;
 import org.restlet.Response;
 import org.restlet.data.Status;
-import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.state.IoState;
 import org.restlet.ext.nio.internal.state.MessageState;
 

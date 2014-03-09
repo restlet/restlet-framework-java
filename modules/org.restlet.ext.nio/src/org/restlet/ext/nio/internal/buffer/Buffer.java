@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.nio.internal;
+package org.restlet.ext.nio.internal.buffer;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -41,6 +41,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.engine.header.HeaderUtils;
+import org.restlet.ext.nio.internal.util.NioUtils;
 
 /**
  * Wrapper around a byte buffer and its state.

@@ -35,7 +35,7 @@ package org.restlet.ext.nio;
 
 import org.restlet.Client;
 import org.restlet.data.Protocol;
-import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.way.HttpClientInboundWay;
 import org.restlet.ext.nio.internal.way.HttpClientOutboundWay;
 import org.restlet.ext.nio.internal.way.InboundWay;

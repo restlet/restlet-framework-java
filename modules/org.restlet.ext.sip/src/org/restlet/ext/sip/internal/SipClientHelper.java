@@ -44,7 +44,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Protocol;
 import org.restlet.ext.nio.ClientConnectionHelper;
-import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.way.InboundWay;
 import org.restlet.ext.nio.internal.way.OutboundWay;
 import org.restlet.ext.sip.SipRequest;

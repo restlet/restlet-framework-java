@@ -41,7 +41,7 @@ import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
-import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.state.IoState;
 import org.restlet.ext.nio.internal.state.MessageState;
 import org.restlet.ext.nio.internal.way.ClientInboundWay;

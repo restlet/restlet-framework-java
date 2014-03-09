@@ -38,8 +38,8 @@ import java.io.IOException;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 
 import org.restlet.Client;
-import org.restlet.ext.nio.internal.Connection;
-import org.restlet.ext.nio.internal.SslConnection;
+import org.restlet.ext.nio.internal.connection.Connection;
+import org.restlet.ext.nio.internal.connection.SslConnection;
 
 /**
  * HTTPS client outbound way.

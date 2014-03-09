@@ -36,8 +36,8 @@ package org.restlet.ext.nio.internal.way;
 import java.io.IOException;
 
 import org.restlet.Client;
-import org.restlet.ext.nio.internal.Connection;
-import org.restlet.ext.nio.internal.SslConnection;
+import org.restlet.ext.nio.internal.connection.Connection;
+import org.restlet.ext.nio.internal.connection.SslConnection;
 
 /**
  * HTTPS client inbound way.

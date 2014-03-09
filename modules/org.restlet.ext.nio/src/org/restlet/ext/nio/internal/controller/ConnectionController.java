@@ -47,7 +47,7 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.engine.io.WakeupListener;
 import org.restlet.ext.nio.ConnectionHelper;
-import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.state.ConnectionState;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;

@@ -41,7 +41,7 @@ import org.restlet.Response;
 import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.util.ReferenceUtils;
-import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.util.Series;
 
 /**

@@ -37,8 +37,8 @@ import java.io.IOException;
 
 import org.restlet.engine.io.SelectionChannel;
 import org.restlet.engine.io.WakeupListener;
-import org.restlet.ext.nio.internal.Buffer;
-import org.restlet.ext.nio.internal.BufferProcessor;
+import org.restlet.ext.nio.internal.buffer.Buffer;
+import org.restlet.ext.nio.internal.buffer.BufferProcessor;
 import org.restlet.util.SelectionRegistration;
 
 // [excludes gwt]

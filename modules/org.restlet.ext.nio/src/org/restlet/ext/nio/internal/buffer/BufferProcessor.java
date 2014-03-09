@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.nio.internal;
+package org.restlet.ext.nio.internal.buffer;
 
 import java.io.IOException;
 

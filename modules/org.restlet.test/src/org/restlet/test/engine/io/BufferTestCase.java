@@ -35,8 +35,8 @@ package org.restlet.test.engine.io;
 
 import java.io.IOException;
 
-import org.restlet.ext.nio.internal.Buffer;
-import org.restlet.ext.nio.internal.BufferState;
+import org.restlet.ext.nio.internal.buffer.Buffer;
+import org.restlet.ext.nio.internal.buffer.BufferState;
 import org.restlet.test.RestletTestCase;
 
 /**

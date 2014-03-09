@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.nio.internal;
+package org.restlet.ext.nio.internal.channel;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,6 +46,8 @@ import org.restlet.engine.io.IoUtils;
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.engine.io.SelectionChannel;
 import org.restlet.engine.io.SelectorFactory;
+import org.restlet.ext.nio.internal.buffer.Buffer;
+import org.restlet.ext.nio.internal.buffer.BufferProcessor;
 import org.restlet.util.SelectionListener;
 import org.restlet.util.SelectionRegistration;
 

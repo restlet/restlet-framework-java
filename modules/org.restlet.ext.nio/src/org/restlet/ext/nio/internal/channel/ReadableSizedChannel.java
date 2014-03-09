@@ -39,7 +39,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.ext.nio.internal.CompletionListener;
+import org.restlet.ext.nio.internal.util.CompletionListener;
 
 // [excludes gwt]
 /**

@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.restlet.engine.io.WakeupListener;
-import org.restlet.ext.nio.internal.Buffer;
+import org.restlet.ext.nio.internal.buffer.Buffer;
 
 
 // [excludes gwt]

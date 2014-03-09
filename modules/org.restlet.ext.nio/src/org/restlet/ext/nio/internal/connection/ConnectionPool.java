@@ -31,25 +31,56 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.nio.internal;
+package org.restlet.ext.nio.internal.connection;
+
+import java.io.IOException;
+import java.util.logging.Level;
+
+import org.restlet.Connector;
+import org.restlet.engine.util.Pool;
+import org.restlet.ext.nio.ConnectionHelper;
 
 /**
- * Enumeration of buffer and builder states. It is useful for asynchronous
- * non-blocking filling.
+ * A connection pool to prevent to recreation of heavy byte buffers.
  * 
  * @author Jerome Louvel
  */
-public enum BufferState {
+public class ConnectionPool<T extends Connector> extends Pool<Connection<T>> {
 
-    /** Buffer or builder idle. */
-    IDLE,
+    /** The parent helper. */
+    private ConnectionHelper<T> helper;
 
-    /** Filling the buffer or builder. */
-    FILLING,
+    /**
+     * Constructor.
+     * 
+     * @param helper
+     *            The parent helper.
+     * @param initialSize
+     *            The initial pool size.
+     */
+    public ConnectionPool(ConnectionHelper<T> helper, int initialSize) {
+        super();
+        this.helper = helper;
+        preCreate(initialSize);
+    }
 
-    /** End of filling detected but not yet ready for draining. */
-    FILLED,
+    @Override
+    protected void clear(Connection<T> connection) {
+        connection.clear();
+    }
 
-    /** Buffer or builder ready for reading or draining. */
-    DRAINING;
+    @Override
+    protected Connection<T> createObject() {
+        Connection<T> result = null;
+
+        try {
+            result = this.helper.createConnection(null, null, null);
+        } catch (IOException e) {
+            helper.getLogger().log(Level.WARNING,
+                    "Unable to create a pool object", e);
+        }
+
+        return result;
+    }
+
 }

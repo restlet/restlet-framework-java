@@ -39,8 +39,8 @@ import java.util.List;
 import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.engine.header.HeaderConstants;
-import org.restlet.ext.nio.internal.Connection;
-import org.restlet.ext.nio.internal.SslConnection;
+import org.restlet.ext.nio.internal.connection.Connection;
+import org.restlet.ext.nio.internal.connection.SslConnection;
 
 /**
  * Request wrapper for server HTTPS calls.

@@ -39,8 +39,8 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.engine.io.WakeupListener;
-import org.restlet.ext.nio.internal.Buffer;
-import org.restlet.ext.nio.internal.CompletionListener;
+import org.restlet.ext.nio.internal.buffer.Buffer;
+import org.restlet.ext.nio.internal.util.CompletionListener;
 
 /**
  * Readable byte channel enforcing a maximum size and wrapping a selectable

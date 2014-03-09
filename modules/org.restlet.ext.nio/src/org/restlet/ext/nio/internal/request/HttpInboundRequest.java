@@ -67,7 +67,7 @@ import org.restlet.engine.header.RecipientInfoReader;
 import org.restlet.engine.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
-import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.util.Series;
 
 /**

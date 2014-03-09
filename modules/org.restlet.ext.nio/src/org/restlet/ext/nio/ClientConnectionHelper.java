@@ -46,7 +46,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.controller.ConnectionController;
 import org.restlet.ext.nio.internal.state.ConnectionState;
 

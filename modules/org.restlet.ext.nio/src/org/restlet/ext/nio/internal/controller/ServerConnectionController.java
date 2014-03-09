@@ -47,7 +47,7 @@ import java.util.logging.Level;
 import org.restlet.Server;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.ext.nio.ServerConnectionHelper;
-import org.restlet.ext.nio.internal.Connection;
+import org.restlet.ext.nio.internal.connection.Connection;
 
 /**
  * Controls the IO work of parent server helper and manages its connections.
