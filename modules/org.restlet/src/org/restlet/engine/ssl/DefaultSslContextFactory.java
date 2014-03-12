@@ -686,7 +686,7 @@ public class DefaultSslContextFactory extends SslContextFactory {
             enabledProtocols.toArray(enabledProtocolsArray);
             setEnabledProtocols(enabledProtocolsArray);
         } else {
-            setEnabledCipherSuites(null);
+            setEnabledProtocols(null);
         }
 
         setKeyManagerAlgorithm(helperParameters.getFirstValue(
