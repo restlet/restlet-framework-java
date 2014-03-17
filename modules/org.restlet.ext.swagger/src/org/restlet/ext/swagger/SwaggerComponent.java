@@ -41,10 +41,10 @@ import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 
 /**
- * Component that can configure itself given a WADL document. First, it creates
+ * Component that can configure itself given a Swagger document. First, it creates
  * the server connectors and the virtual hosts if needed, trying to reuse
  * existing ones if available. Then it creates a {@link SwaggerApplication} using
- * this {@link SwaggerApplication#WadlApplication(Representation)} constructor.<br>
+ * this {@link SwaggerApplication#SwaggerApplication(Representation)} constructor.<br>
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
@@ -56,20 +56,20 @@ public class SwaggerComponent extends Component {
 
     /**
      * Main method capable of configuring and starting a whole Restlet Component
-     * based on a list of local WADL documents URIs, for example
-     * "file:///C:/YahooSearch.wadl".<br>
+     * based on a list of local Swagger documents URIs, for example
+     * "file:///C:/YahooSearch.swagger".<br>
      * <br>
      * The necessary client connectors are automatically created.
      * 
      * @param args
-     *            List of local WADL document URIs.
+     *            List of local Swagger document URIs.
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
         // Create a new Swagger-aware component
         final SwaggerComponent component = new SwaggerComponent();
 
-        // For each WADL document URI attach a matching Application
+        // For each Swagger document URI attach a matching Application
         for (final String arg : args) {
             component.attach(arg);
         }
@@ -85,58 +85,58 @@ public class SwaggerComponent extends Component {
     }
 
     /**
-     * Constructor loading a WADL description document at a given URI.<br>
+     * Constructor loading a Swagger description document at a given URI.<br>
      * <br>
      * The necessary client connectors are automatically created.
      * 
-     * @param wadlRef
-     *            The URI reference to the WADL description document.
+     * @param swaggerRef
+     *            The URI reference to the Swagger description document.
      */
-    public SwaggerComponent(Reference wadlRef) {
-        attach(wadlRef);
+    public SwaggerComponent(Reference swaggerRef) {
+        attach(swaggerRef);
     }
 
     /**
-     * Constructor based on a given WADL description document.
+     * Constructor based on a given Swagger description document.
      * 
-     * @param wadl
-     *            The WADL description document.
+     * @param swagger
+     *            The Swagger description document.
      */
-    public SwaggerComponent(Representation wadl) {
-        attach(wadl);
+    public SwaggerComponent(Representation swagger) {
+        attach(swagger);
     }
 
     /**
-     * Constructor loading a WADL description document at a given URI.<br>
+     * Constructor loading a Swagger description document at a given URI.<br>
      * <br>
      * The necessary client connectors are automatically created.
      * 
-     * @param wadlUri
-     *            The URI to the WADL description document.
+     * @param swaggerUri
+     *            The URI to the Swagger description document.
      */
-    public SwaggerComponent(String wadlUri) {
-        attach(wadlUri);
+    public SwaggerComponent(String swaggerUri) {
+        attach(swaggerUri);
     }
 
     /**
-     * Attaches an application created from a WADL description document
+     * Attaches an application created from a Swagger description document
      * available at a given URI reference.
      * 
-     * @param wadlRef
-     *            The URI reference to the WADL description document.
-     * @return The created WADL application.
+     * @param swaggerRef
+     *            The URI reference to the Swagger description document.
+     * @return The created Swagger application.
      */
-    public SwaggerApplication attach(Reference wadlRef) {
+    public SwaggerApplication attach(Reference swaggerRef) {
         SwaggerApplication result = null;
 
-        // Adds some common client connectors to load the WADL documents
-        if (!getClients().contains(wadlRef.getSchemeProtocol())) {
-            getClients().add(wadlRef.getSchemeProtocol());
+        // Adds some common client connectors to load the Swagger documents
+        if (!getClients().contains(swaggerRef.getSchemeProtocol())) {
+            getClients().add(swaggerRef.getSchemeProtocol());
         }
 
-        // Get the WADL document
+        // Get the Swagger document
         final Response response = getContext().getClientDispatcher().handle(
-                new Request(Method.GET, wadlRef));
+                new Request(Method.GET, swaggerRef));
 
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             result = attach(response.getEntity());
@@ -146,30 +146,30 @@ public class SwaggerComponent extends Component {
     }
 
     /**
-     * Attaches an application created from a WADL description document to the
+     * Attaches an application created from a Swagger description document to the
      * component.
      * 
-     * @param wadl
-     *            The WADL description document.
-     * @return The created WADL application.
+     * @param swagger
+     *            The Swagger description document.
+     * @return The created Swagger application.
      */
-    public SwaggerApplication attach(Representation wadl) {
+    public SwaggerApplication attach(Representation swagger) {
         final SwaggerApplication result = new SwaggerApplication(getContext()
-                .createChildContext(), wadl);
+                .createChildContext(), swagger);
         result.attachToComponent(this);
         return result;
     }
 
     /**
-     * Attaches an application created from a WADL description document
+     * Attaches an application created from a Swagger description document
      * available at a given URI.
      * 
-     * @param wadlUri
-     *            The URI to the WADL description document.
-     * @return The created WADL application.
+     * @param swaggerUri
+     *            The URI to the Swagger description document.
+     * @return The created Swagger application.
      */
-    public SwaggerApplication attach(String wadlUri) {
-        return attach(new Reference(wadlUri));
+    public SwaggerApplication attach(String swaggerUri) {
+        return attach(new Reference(swaggerUri));
     }
 
 }

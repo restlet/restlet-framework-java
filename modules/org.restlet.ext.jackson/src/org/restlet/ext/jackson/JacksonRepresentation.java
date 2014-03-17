@@ -201,7 +201,7 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      */
     protected ObjectMapper createObjectMapper() {
         ObjectMapper result = null;
-
+        System.out.println("createObjectMapper");
         if (MediaType.APPLICATION_JSON.isCompatible(getMediaType())) {
             JsonFactory jsonFactory = new JsonFactory();
             jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
@@ -223,7 +223,8 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
             XmlFactory xmlFactory = new XmlFactory(xif, xof);
             xmlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
             result = new XmlMapper(xmlFactory);
-        } else if (MediaType.APPLICATION_YAML.isCompatible(getMediaType())) {
+        } else if (MediaType.APPLICATION_YAML.isCompatible(getMediaType())
+                || MediaType.TEXT_YAML.isCompatible(getMediaType())) {
             YAMLFactory yamlFactory = new YAMLFactory();
             yamlFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
             result = new ObjectMapper(yamlFactory);

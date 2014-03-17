@@ -37,11 +37,9 @@ import org.restlet.Restlet;
 import org.restlet.resource.Directory;
 import org.restlet.util.WrapperRestlet;
 
-import com.wordnik.swagger.core.DocumentationEndPoint;
-
 /**
- * Swagger wrapper for {@link Restlet} instances. Useful if you need to provide
- * the Swagger documentation for instances of classes such as {@link Directory}.
+ * Swagger wrapper for {@link Restlet} instances. Useful if you need to provide the
+ * Swagger documentation for instances of classes such as {@link Directory}.
  * 
  * @author Thierry Boileau
  */
@@ -49,7 +47,7 @@ public abstract class SwaggerWrapper extends WrapperRestlet implements
         SwaggerDescribable {
 
     /** The description of the wrapped Restlet. */
-    private DocumentationEndPoint documentationEndPoint;
+    private ResourceInfo resourceInfo;
 
     /**
      * Constructor.
@@ -64,22 +62,20 @@ public abstract class SwaggerWrapper extends WrapperRestlet implements
     /**
      * Returns the description of the wrapped Restlet.
      * 
-     * @return The {@link DocumentationEndPoint} object of the wrapped Restlet.
+     * @return The ResourceInfo object of the wrapped Restlet.
      */
-    public DocumentationEndPoint getDocumentationEndPoint() {
-        return this.documentationEndPoint;
+    public ResourceInfo getResourceInfo() {
+        return this.resourceInfo;
     }
 
     /**
      * Sets the description of the wrapped Restlet.
      * 
      * @param resourceInfo
-     *            The {@link DocumentationEndPoint} object of the wrapped
-     *            Restlet.
+     *            The ResourceInfo object of the wrapped Restlet.
      */
-    public void setDocumentationEndPoint(
-            DocumentationEndPoint documentationEndPoint) {
-        this.documentationEndPoint = documentationEndPoint;
+    public void setResourceInfo(ResourceInfo resourceInfo) {
+        this.resourceInfo = resourceInfo;
     }
 
 }

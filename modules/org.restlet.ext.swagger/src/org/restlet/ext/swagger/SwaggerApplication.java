@@ -49,6 +49,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.Directory;
@@ -60,38 +61,43 @@ import org.restlet.routing.Router;
 import org.restlet.routing.TemplateRoute;
 import org.restlet.routing.VirtualHost;
 
-import com.wordnik.swagger.core.Documentation;
-import com.wordnik.swagger.core.DocumentationEndPoint;
-
 /**
  * Swagger enabled application. This {@link Application} subclass can describe
- * itself in Swagger by introspecting its content, supporting the Swagger JSON
- * format. You can obtain this representation with an OPTIONS request addressed
- * exactly to the application URI (e.g. "http://host:port/path/to/application").
- * By default, the returned representation gleans the list of all attached
+ * itself in Swagger by introspecting its content, supporting the standard Swagger/XML
+ * format or a Swagger/HTML one based on a built-in XSLT transformation. You can
+ * obtain this representation with an OPTIONS request addressed exactly to the
+ * application URI (e.g. "http://host:port/path/to/application"). By default,
+ * the returned representation gleans the list of all attached
  * {@link ServerResource} classes and calls {@link #getName()} to get the title
  * and {@link #getDescription()} the textual content of the Swagger document
  * generated. This default behavior can be customized by overriding the
- * {@link #getDocumentation(Request, Response)} method.<br>
+ * {@link #getApplicationInfo(Request, Response)} method.<br>
  * <br>
  * In case you want to customize the XSLT stylesheet, you can override the
- * {@link #createJsonRepresentation(Documentation)} method and return an
+ * {@link #createSwaggerRepresentation(ApplicationInfo)} method and return an
  * instance of an {@link SwaggerRepresentation} subclass overriding the
  * {@link SwaggerRepresentation#getHtmlRepresentation()} method.<br>
  * <br>
  * In addition, this class can create an instance and configure it with an
  * user-provided Swagger/XML document. In this case, it creates a root
- * {@link Router} and for each resource found in the Swagger document, it tries
- * to attach a {@link ServerResource} class to the router using its Swagger
- * path. For this, it looks up the qualified name of the {@link ServerResource}
- * subclass using the Swagger's "id" attribute of the "resource" elements. This
- * is the only Restlet specific convention on the original Swagger document.<br>
+ * {@link Router} and for each resource found in the Swagger document, it tries to
+ * attach a {@link ServerResource} class to the router using its Swagger path. For
+ * this, it looks up the qualified name of the {@link ServerResource} subclass
+ * using the Swagger's "id" attribute of the "resource" elements. This is the only
+ * Restlet specific convention on the original Swagger document.<br>
  * <br>
  * To attach an application configured in this way to an existing component, you
  * can call the {@link #attachToComponent(Component)} or the
  * {@link #attachToHost(VirtualHost)} methods. In this case, it uses the "base"
- * attribute of the Swagger "resources" element as the URI attachment path to
- * the virtual host.<br>
+ * attribute of the Swagger "resources" element as the URI attachment path to the
+ * virtual host.<br>
+ * <br>
+ * For the HTML description to work properly, you will certainly have to update
+ * your classpath with a recent version of <a
+ * href="http://xml.apache.org/xalan-j/"> Apache Xalan XSLT engine</a> (version
+ * 2.7.1 has been successfully tested). This is due to the <a
+ * href="http://github.com/mnot/swagger_stylesheets/">XSLT stylesheet</a> bundled
+ * which relies on EXSLT features.<br>
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
@@ -102,8 +108,8 @@ import com.wordnik.swagger.core.DocumentationEndPoint;
 public class SwaggerApplication extends Application {
 
     /**
-     * Indicates if the application should be automatically described via
-     * Swagger when an OPTIONS request handles a "*" target URI.
+     * Indicates if the application should be automatically described via Swagger
+     * when an OPTIONS request handles a "*" target URI.
      */
     private volatile boolean autoDescribing;
 
@@ -115,8 +121,8 @@ public class SwaggerApplication extends Application {
 
     /**
      * Creates an application that can automatically introspect and expose
-     * itself as with a Swagger description upon reception of an OPTIONS request
-     * on the "*" target URI.
+     * itself as with a Swagger description upon reception of an OPTIONS request on
+     * the "*" target URI.
      */
     public SwaggerApplication() {
         this((Context) null);
@@ -124,8 +130,8 @@ public class SwaggerApplication extends Application {
 
     /**
      * Creates an application that can automatically introspect and expose
-     * itself as with a Swagger description upon reception of an OPTIONS request
-     * on the "*" target URI.
+     * itself as with a Swagger description upon reception of an OPTIONS request on
+     * the "*" target URI.
      * 
      * @param context
      *            The context to use based on parent component context. This
@@ -139,9 +145,8 @@ public class SwaggerApplication extends Application {
     }
 
     /**
-     * Creates an application described using a Swagger document. Creates a
-     * router where Resource classes are attached and set it as the root
-     * Restlet.
+     * Creates an application described using a Swagger document. Creates a router
+     * where Resource classes are attached and set it as the root Restlet.
      * 
      * By default the application is not automatically described. If you want
      * to, you can call {@link #setAutoDescribing(boolean)}.
@@ -151,10 +156,10 @@ public class SwaggerApplication extends Application {
      *            context should be created using the
      *            {@link Context#createChildContext()} method to ensure a proper
      *            isolation with the other applications.
-     * @param rep
+     * @param swagger
      *            The Swagger description document.
      */
-    public SwaggerApplication(Context context, Representation rep) {
+    public SwaggerApplication(Context context, Representation swagger) {
         super(context);
         this.autoDescribing = false;
 
@@ -162,48 +167,45 @@ public class SwaggerApplication extends Application {
             // Instantiates a SwaggerRepresentation of the Swagger document
             SwaggerRepresentation swaggerRep = null;
 
-            if (rep instanceof SwaggerRepresentation) {
-                swaggerRep = (SwaggerRepresentation) rep;
+            if (swagger instanceof SwaggerRepresentation) {
+                swaggerRep = (SwaggerRepresentation) swagger;
             } else {
-                swaggerRep = new SwaggerRepresentation(rep);
+                // TODO to be done
+                //swaggerRep = new SwaggerRepresentation(swagger);
             }
 
             final Router root = new Router(getContext());
             this.router = root;
             setInboundRoot(root);
 
-            if (swaggerRep.getDocumentation() != null) {
-                if (swaggerRep.getDocumentation().getApis() != null) {
-
-                    for (DocumentationEndPoint endPoint : swaggerRep
-                            .getDocumentation().getApis()) {
-                        attachResource(endPoint, null, this.router);
+            if (swaggerRep.getApplication() != null) {
+                if (swaggerRep.getApplication().getResources() != null) {
+                    for (final ResourceInfo resource : swaggerRep.getApplication()
+                            .getResources().getResources()) {
+                        attachResource(resource, null, this.router);
                     }
 
                     // Analyzes the Swagger resources base
-                    setBaseRef(new Reference(swaggerRep.getDocumentation()
-                            .getBasePath()));
+                    setBaseRef(swaggerRep.getApplication().getResources()
+                            .getBaseRef());
                 }
 
                 // Set the name of the application as the title of the first
                 // documentation tag.
-                if (!swaggerRep.getDocumentation().getModels().isEmpty()) {
-                    setName(swaggerRep.getDocumentation().getModels().get(0)
-                            .getName());
+                if (!swaggerRep.getApplication().getDocumentations().isEmpty()) {
+                    setName(swaggerRep.getApplication().getDocumentations().get(0)
+                            .getTitle());
                 }
             }
         } catch (Exception e) {
-            getLogger()
-                    .log(Level.WARNING,
-                            "Error during the attachment of the Swagger application",
-                            e);
+            getLogger().log(Level.WARNING,
+                    "Error during the attachment of the Swagger application", e);
         }
     }
 
     /**
-     * Creates an application described using a Swagger document. Creates a
-     * router where Resource classes are attached and set it as the root
-     * Restlet.
+     * Creates an application described using a Swagger document. Creates a router
+     * where Resource classes are attached and set it as the root Restlet.
      * 
      * By default the application is not automatically described. If you want
      * to, you can call {@link #setAutoDescribing(boolean)}.
@@ -211,8 +213,8 @@ public class SwaggerApplication extends Application {
      * @param swagger
      *            The Swagger description document.
      */
-    public SwaggerApplication(Representation swaggerRepresentation) {
-        this(null, swaggerRepresentation);
+    public SwaggerApplication(Representation swagger) {
+        this(null, swagger);
     }
 
     /**
@@ -267,15 +269,15 @@ public class SwaggerApplication extends Application {
      *             If the class name specified in the "id" attribute of the
      *             resource does not exist, this exception will be thrown.
      */
-    private void attachResource(DocumentationEndPoint currentEndPoint,
-            DocumentationEndPoint parentEndPoint, Router router)
+    private void attachResource(ResourceInfo currentResource,
+            ResourceInfo parentResource, Router router)
             throws ClassNotFoundException {
 
-        String uriPattern = currentEndPoint.getPath();
+        String uriPattern = currentResource.getPath();
 
         // If there is a parentResource, add its uriPattern to this one
-        if (parentEndPoint != null) {
-            String parentUriPattern = parentEndPoint.getPath();
+        if (parentResource != null) {
+            String parentUriPattern = parentResource.getPath();
 
             if ((parentUriPattern.endsWith("/") == false)
                     && (uriPattern.startsWith("/") == false)) {
@@ -283,25 +285,23 @@ public class SwaggerApplication extends Application {
             }
 
             uriPattern = parentUriPattern + uriPattern;
-            currentEndPoint.setPath(uriPattern);
+            currentResource.setPath(uriPattern);
         } else if (!uriPattern.startsWith("/")) {
             uriPattern = "/" + uriPattern;
-            currentEndPoint.setPath(uriPattern);
+            currentResource.setPath(uriPattern);
         }
 
-        Finder finder = createFinder(router, uriPattern, currentEndPoint);
+        Finder finder = createFinder(router, uriPattern, currentResource);
 
         if (finder != null) {
             // Attach the resource itself
             router.attach(uriPattern, finder);
         }
 
-        // TODO are children resources supported?
         // Attach children of the resource
-        // for (ResourceInfo childResource :
-        // currentEndPoint.getChildResources()) {
-        // attachResource(childResource, currentResource, router);
-        // }
+        for (ResourceInfo childResource : currentResource.getChildResources()) {
+            attachResource(childResource, currentResource, router);
+        }
     }
 
     /**
@@ -335,8 +335,7 @@ public class SwaggerApplication extends Application {
     }
 
     /**
-     * Attaches the application to the given host using the Swagger base
-     * reference.
+     * Attaches the application to the given host using the Swagger base reference.
      * 
      * @param host
      *            The virtual host to attach to.
@@ -388,69 +387,55 @@ public class SwaggerApplication extends Application {
      * @return The created finder.
      * @throws ClassNotFoundException
      */
+    @SuppressWarnings("unchecked")
     protected Finder createFinder(Router router, String uriPattern,
-            DocumentationEndPoint resourceInfo) throws ClassNotFoundException {
+            ResourceInfo resourceInfo) throws ClassNotFoundException {
         Finder result = null;
 
-        // TODO swagger parsing.
-        // if (resourceInfo.getIdentifier() != null) {
-        // // The "id" attribute conveys the target class name
-        // Class<? extends ServerResource> targetClass = (Class<? extends
-        // ServerResource>) Engine
-        // .loadClass(resourceInfo.getIdentifier());
-        // result = router.createFinder(targetClass);
-        // } else {
-        // getLogger()
-        // .fine("Unable to find the 'id' attribute of the resource element with this path attribute \""
-        // + uriPattern + "\"");
-        // }
+        if (resourceInfo.getIdentifier() != null) {
+            // The "id" attribute conveys the target class name
+            Class<? extends ServerResource> targetClass = (Class<? extends ServerResource>) Engine
+                    .loadClass(resourceInfo.getIdentifier());
+            result = router.createFinder(targetClass);
+        } else {
+            getLogger()
+                    .fine("Unable to find the 'id' attribute of the resource element with this path attribute \""
+                            + uriPattern + "\"");
+        }
 
         return result;
     }
 
     /**
-     * Creates a new HTML representation for a given {@link Documentation}
+     * Creates a new HTML representation for a given {@link ApplicationInfo}
      * instance describing an application.
      * 
-     * @param documentation
+     * @param applicationInfo
      *            The application description.
      * @return The created {@link SwaggerRepresentation}.
      */
-    protected static Representation createHtmlRepresentation(
-            Documentation documentation) {
-        return new SwaggerRepresentation(documentation).getHtmlRepresentation();
+    protected Representation createHtmlRepresentation(
+            ApplicationInfo applicationInfo) {
+        return new SwaggerRepresentation(applicationInfo).getHtmlRepresentation();
     }
 
     /**
-     * Creates a new Swagger representation for a given {@link Documentation}
+     * Creates a new Swagger representation for a given {@link ApplicationInfo}
      * instance describing an application.
      * 
-     * @param Documentation
+     * @param applicationInfo
      *            The application description.
      * @return The created {@link SwaggerRepresentation}.
      */
-    protected static Representation createJsonRepresentation(
-            Documentation documentation) {
-        return new SwaggerRepresentation(documentation);
+    protected Representation createSwaggerRepresentation(
+            ApplicationInfo applicationInfo) {
+        return new SwaggerRepresentation(applicationInfo);
     }
 
     /**
-     * Creates a new Swagger representation for a given {@link Documentation}
-     * instance describing an application.
-     * 
-     * @param documentation
-     *            The application description.
-     * @return The created {@link SwaggerRepresentation}.
-     */
-    protected static Representation createXmlRepresentation(
-            Documentation documentation) {
-        return new SwaggerRepresentation(documentation);
-    }
-
-    /**
-     * Returns a Swagger description of the current application. By default,
-     * this method discovers all the resources attached to this application. It
-     * can be overridden to add documentation, list of representations, etc.
+     * Returns a Swagger description of the current application. By default, this
+     * method discovers all the resources attached to this application. It can
+     * be overridden to add documentation, list of representations, etc.
      * 
      * @param request
      *            The current request.
@@ -458,13 +443,15 @@ public class SwaggerApplication extends Application {
      *            The current response.
      * @return An application description.
      */
-    protected Documentation getDocumentation(Request request, Response response) {
-        Documentation documentation = new Documentation();
-        documentation.setBasePath(request.getResourceRef().getBaseRef()
-                .toString());
-        documentation.setApis(getEndPoints(documentation,
-                getNextRouter(getInboundRoot()), request, response));
-        return documentation;
+    protected ApplicationInfo getApplicationInfo(Request request,
+            Response response) {
+        ApplicationInfo applicationInfo = new ApplicationInfo();
+        applicationInfo.getResources().setBaseRef(
+                request.getResourceRef().getBaseRef());
+        applicationInfo.getResources().setResources(
+                getResourceInfos(applicationInfo,
+                        getNextRouter(getInboundRoot()), request, response));
+        return applicationInfo;
     }
 
     /**
@@ -513,7 +500,7 @@ public class SwaggerApplication extends Application {
     /**
      * Completes the data available about a given Filter instance.
      * 
-     * @param Documentation
+     * @param applicationInfo
      *            The parent application.
      * @param filter
      *            The Filter instance to document.
@@ -525,16 +512,16 @@ public class SwaggerApplication extends Application {
      *            The current response.
      * @return The resource description.
      */
-    private DocumentationEndPoint getEndPoint(Documentation documentation,
+    private ResourceInfo getResourceInfo(ApplicationInfo applicationInfo,
             Filter filter, String path, Request request, Response response) {
-        return getEndPoint(documentation, filter.getNext(), path, request,
-                response);
+        return getResourceInfo(applicationInfo, filter.getNext(), path,
+                request, response);
     }
 
     /**
      * Completes the data available about a given Finder instance.
      * 
-     * @param Documentation
+     * @param applicationInfo
      *            The parent application.
      * @param resourceInfo
      *            The ResourceInfo object to complete.
@@ -545,9 +532,9 @@ public class SwaggerApplication extends Application {
      * @param response
      *            The current response.
      */
-    private DocumentationEndPoint getEndPoint(Documentation documentation,
+    private ResourceInfo getResourceInfo(ApplicationInfo applicationInfo,
             Finder finder, String path, Request request, Response response) {
-        DocumentationEndPoint result = null;
+        ResourceInfo result = null;
         Object resource = null;
 
         // Save the current application
@@ -567,9 +554,8 @@ public class SwaggerApplication extends Application {
         }
 
         if (resource != null) {
-            result = new DocumentationEndPoint();
-            SwaggerServerResource.describe(documentation, result, resource,
-                    path);
+            result = new ResourceInfo();
+            ResourceInfo.describe(applicationInfo, result, resource, path);
         }
 
         return result;
@@ -578,7 +564,7 @@ public class SwaggerApplication extends Application {
     /**
      * Completes the data available about a given Restlet instance.
      * 
-     * @param Documentation
+     * @param applicationInfo
      *            The parent application.
      * @param resourceInfo
      *            The ResourceInfo object to complete.
@@ -589,25 +575,24 @@ public class SwaggerApplication extends Application {
      * @param response
      *            The current response.
      */
-    private DocumentationEndPoint getEndPoint(Documentation Documentation,
+    private ResourceInfo getResourceInfo(ApplicationInfo applicationInfo,
             Restlet restlet, String path, Request request, Response response) {
-        DocumentationEndPoint result = null;
+        ResourceInfo result = null;
 
         if (restlet instanceof SwaggerDescribable) {
             result = ((SwaggerDescribable) restlet)
-                    .getDocumentationEndPoint(Documentation);
+                    .getResourceInfo(applicationInfo);
             result.setPath(path);
         } else if (restlet instanceof Finder) {
-            result = getEndPoint(Documentation, (Finder) restlet, path,
+            result = getResourceInfo(applicationInfo, (Finder) restlet, path,
                     request, response);
         } else if (restlet instanceof Router) {
-            result = new DocumentationEndPoint();
+            result = new ResourceInfo();
             result.setPath(path);
-            // TODO Can't handle resources as a tree.
-            // result.setChildResources(getResourceInfos(Documentation,
-            // (Router) restlet, request, response));
+            result.setChildResources(getResourceInfos(applicationInfo,
+                    (Router) restlet, request, response));
         } else if (restlet instanceof Filter) {
-            result = getEndPoint(Documentation, (Filter) restlet, path,
+            result = getResourceInfo(applicationInfo, (Filter) restlet, path,
                     request, response);
         }
 
@@ -617,7 +602,7 @@ public class SwaggerApplication extends Application {
     /**
      * Returns the Swagger data about the given Route instance.
      * 
-     * @param Documentation
+     * @param applicationInfo
      *            The parent application.
      * @param route
      *            The Route instance to document.
@@ -629,9 +614,9 @@ public class SwaggerApplication extends Application {
      *            The current response.
      * @return The Swagger data about the given Route instance.
      */
-    private DocumentationEndPoint getEndPoint(Documentation Documentation,
+    private ResourceInfo getResourceInfo(ApplicationInfo applicationInfo,
             Route route, String basePath, Request request, Response response) {
-        DocumentationEndPoint result = null;
+        ResourceInfo result = null;
 
         if (route instanceof TemplateRoute) {
             TemplateRoute templateRoute = (TemplateRoute) route;
@@ -642,8 +627,8 @@ public class SwaggerApplication extends Application {
                 path = path.substring(1);
             }
 
-            result = getEndPoint(Documentation, route.getNext(), path, request,
-                    response);
+            result = getResourceInfo(applicationInfo, route.getNext(), path,
+                    request, response);
         }
 
         return result;
@@ -653,7 +638,7 @@ public class SwaggerApplication extends Application {
      * Completes the list of ResourceInfo instances for the given Router
      * instance.
      * 
-     * @param Documentation
+     * @param applicationInfo
      *            The parent application.
      * @param router
      *            The router to document.
@@ -663,25 +648,25 @@ public class SwaggerApplication extends Application {
      *            The current response.
      * @return The list of ResourceInfo instances to complete.
      */
-    private List<DocumentationEndPoint> getEndPoints(
-            Documentation documentation, Router router, Request request,
+    private List<ResourceInfo> getResourceInfos(
+            ApplicationInfo applicationInfo, Router router, Request request,
             Response response) {
-        List<DocumentationEndPoint> result = new ArrayList<DocumentationEndPoint>();
+        List<ResourceInfo> result = new ArrayList<ResourceInfo>();
 
         for (Route route : router.getRoutes()) {
-            DocumentationEndPoint endPoint = getEndPoint(documentation, route,
+            ResourceInfo resourceInfo = getResourceInfo(applicationInfo, route,
                     "/", request, response);
 
-            if (endPoint != null) {
-                result.add(endPoint);
+            if (resourceInfo != null) {
+                result.add(resourceInfo);
             }
         }
 
         if (router.getDefaultRoute() != null) {
-            DocumentationEndPoint endPoint = getEndPoint(documentation,
+            ResourceInfo resourceInfo = getResourceInfo(applicationInfo,
                     router.getDefaultRoute(), "/", request, response);
-            if (endPoint != null) {
-                result.add(endPoint);
+            if (resourceInfo != null) {
+                result.add(resourceInfo);
             }
         }
 
@@ -699,9 +684,8 @@ public class SwaggerApplication extends Application {
     }
 
     /**
-     * Returns the virtual host matching the Swagger application's base
-     * reference. Creates a new one and attaches it to the component if
-     * necessary.
+     * Returns the virtual host matching the Swagger application's base reference.
+     * Creates a new one and attaches it to the component if necessary.
      * 
      * @param component
      *            The parent component.
@@ -742,8 +726,7 @@ public class SwaggerApplication extends Application {
     protected List<Variant> getSwaggerVariants() {
         final List<Variant> result = new ArrayList<Variant>();
         result.add(new Variant(MediaType.APPLICATION_JSON));
-        result.add(new Variant(MediaType.APPLICATION_XML));
-        result.add(new Variant(MediaType.TEXT_XML));
+        result.add(new Variant(MediaType.TEXT_HTML));
         return result;
     }
 
@@ -752,7 +735,7 @@ public class SwaggerApplication extends Application {
      * of the OPTIONS requests that exactly target the application. In this
      * case, the application is automatically introspected and described as a
      * Swagger representation based on the result of the
-     * {@link #getDocumentation(Request, Response)} method.<br>
+     * {@link #getApplicationInfo(Request, Response)} method.<br>
      * The automatic introspection happens only if the request hasn't already
      * been successfully handled. That is to say, it lets users provide their
      * own handling of OPTIONS requests.
@@ -793,8 +776,8 @@ public class SwaggerApplication extends Application {
     }
 
     /**
-     * Indicates if the application should be automatically described via
-     * Swagger when an OPTIONS request handles a "*" target URI.
+     * Indicates if the application should be automatically described via Swagger
+     * when an OPTIONS request handles a "*" target URI.
      * 
      * @return True if the application should be automatically described via
      *         Swagger.
@@ -804,8 +787,8 @@ public class SwaggerApplication extends Application {
     }
 
     /**
-     * Indicates if the application should be automatically described via
-     * Swagger when an OPTIONS request handles a "*" target URI.
+     * Indicates if the application should be automatically described via Swagger
+     * when an OPTIONS request handles a "*" target URI.
      * 
      * @param autoDescribed
      *            True if the application should be automatically described via
@@ -855,33 +838,30 @@ public class SwaggerApplication extends Application {
         Representation result = null;
 
         if (variant != null) {
-            Documentation documentation = getDocumentation(request, response);
+            ApplicationInfo applicationInfo = getApplicationInfo(request,
+                    response);
+            DocumentationInfo doc = null;
 
-            // TODO there is no equivalent.
-            // DocumentationInfo doc = null;
-            //
-            // if ((getName() != null) && !"".equals(getName())) {
-            // if (documentation.getDocumentations().isEmpty()) {
-            // doc = new DocumentationInfo();
-            // documentation.getDocumentations().add(doc);
-            // } else {
-            // doc = documentation.getDocumentations().get(0);
-            // }
-            //
-            // doc.setTitle(getName());
-            // }
-            //
-            // if ((doc != null) && (getDescription() != null)
-            // && !"".equals(getDescription())) {
-            // doc.setTextContent(getDescription());
-            // }
+            if ((getName() != null) && !"".equals(getName())) {
+                if (applicationInfo.getDocumentations().isEmpty()) {
+                    doc = new DocumentationInfo();
+                    applicationInfo.getDocumentations().add(doc);
+                } else {
+                    doc = applicationInfo.getDocumentations().get(0);
+                }
+
+                doc.setTitle(getName());
+            }
+
+            if ((doc != null) && (getDescription() != null)
+                    && !"".equals(getDescription())) {
+                doc.setTextContent(getDescription());
+            }
 
             if (MediaType.APPLICATION_JSON.equals(variant.getMediaType())) {
-                result = createJsonRepresentation(documentation);
+                result = createSwaggerRepresentation(applicationInfo);
             } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-                result = createXmlRepresentation(documentation);
-            } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-                result = createHtmlRepresentation(documentation);
+                result = createHtmlRepresentation(applicationInfo);
             }
         }
 

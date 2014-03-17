@@ -36,29 +36,24 @@ package org.restlet.ext.swagger;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
 
-import com.wordnik.swagger.core.Documentation;
-import com.wordnik.swagger.core.DocumentationEndPoint;
-
 /**
- * Interface that any Restlet can implement in order to provide their own
- * Swagger documentation. This is especially useful for subclasses of
- * {@link Directory} or other resource finders when the Swagger introspection
- * can't reach {@link ServerResource} or better {@link SwaggerServerResource}
- * instances.
+ * Interface that any Restlet can implement in order to provide their own Swagger
+ * documentation. This is especially useful for subclasses of {@link Directory}
+ * or other resource finders when the Swagger introspection can't reach
+ * {@link ServerResource} or better {@link SwaggerServerResource} instances.
  * 
  * @author Thierry Boileau
  */
 public interface SwaggerDescribable {
 
     /**
-     * Returns a full documented {@link DocumentationEndPoint} instance.
+     * Returns a full documented {@link ResourceInfo} instance.
      * 
-     * @param documentation
+     * @param applicationInfo
      *            The parent Swagger application descriptor.
      * 
-     * @return A full documented {@link DocumentationEndPoint} instance.
+     * @return A full documented {@link ResourceInfo} instance.
      */
-    public DocumentationEndPoint getDocumentationEndPoint(
-            Documentation documentation);
+    public ResourceInfo getResourceInfo(ApplicationInfo applicationInfo);
 
 }

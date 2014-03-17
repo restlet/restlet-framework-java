@@ -1137,6 +1137,12 @@ public final class MediaType extends Metadata {
 
         if (!result && (included instanceof MediaType)) {
             MediaType includedMediaType = (MediaType) included;
+            System.out.print(this.getMainType() + " " + getName() + " "
+                    + getSubType());
+            System.out.print(" vs ");
+            System.out.println(includedMediaType.getMainType() + " "
+                    + includedMediaType.getName() + " "
+                    + includedMediaType.getSubType());
 
             if (getMainType().equals(includedMediaType.getMainType())) {
                 // Both media types are different
