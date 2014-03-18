@@ -100,11 +100,11 @@ public class AnnotationUtils {
         if (javaMethod != null) {
             for (Annotation annotation : javaMethod.getAnnotations()) {
                 Annotation methodAnnotation = annotation.annotationType()
-                        .getAnnotation(org.restlet.engine.Method.class);
+                        .getAnnotation(org.restlet.engine.connector.Method.class);
 
                 if (methodAnnotation != null) {
                     Method restletMethod = Method
-                            .valueOf(((org.restlet.engine.Method) methodAnnotation)
+                            .valueOf(((org.restlet.engine.connector.Method) methodAnnotation)
                                     .value());
 
                     String toString = annotation.toString();
