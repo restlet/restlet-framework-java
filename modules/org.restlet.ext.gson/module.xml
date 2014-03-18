@@ -1,4 +1,4 @@
-<module id="gson" excludes="gwt" type="standard" package="org.restlet.ext.gson">
+<module id="gson" excludes="gwt" type="integration" package="org.restlet.ext.gson">
 	<name>Restlet Extension - GSON</name>
 	<description>Support for GSON representations.</description>
 	<distributions>
