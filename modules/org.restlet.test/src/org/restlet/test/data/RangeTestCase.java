@@ -116,7 +116,7 @@ public class RangeTestCase extends RestletTestCase {
             Form form = request.getResourceRef().getQueryAsForm();
             List<Range> ranges = request.getRanges();
             boolean match = false;
-            
+
             for (Parameter parameter : form) {
                 long index = 0;
                 long length = 0;
@@ -331,7 +331,7 @@ public class RangeTestCase extends RestletTestCase {
             request.setEntity(new StringRepresentation("1234567890"));
             request.setRanges(Arrays.asList(new Range(0, 10)));
             response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertTrue(response.getStatus().isSuccess());
             response = client.handle(new Request(Method.GET, request
                     .getResourceRef()));
             assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -344,9 +344,7 @@ public class RangeTestCase extends RestletTestCase {
             request.setEntity(new StringRepresentation("0000000000"));
             request.setRanges(Arrays.asList(new Range(1, 10)));
             response = client.handle(request);
-            System.out.println(response.getStatus() + " / "
-                    + response.getStatus().getThrowable());
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertTrue(response.getStatus().isSuccess());
             response = client.handle(new Request(Method.GET, request
                     .getResourceRef()));
             assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -359,7 +357,7 @@ public class RangeTestCase extends RestletTestCase {
             request.setEntity(new StringRepresentation("0000000000"));
             request.setRanges(Arrays.asList(new Range(1, 10)));
             response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertTrue(response.getStatus().isSuccess());
             request.setMethod(Method.GET);
             response = client.handle(request);
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
@@ -371,7 +369,7 @@ public class RangeTestCase extends RestletTestCase {
             request.setEntity(new StringRepresentation("22"));
             request.setRanges(Arrays.asList(new Range(2, 2)));
             response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertTrue(response.getStatus().isSuccess());
             response = client.handle(new Request(Method.GET, request
                     .getResourceRef()));
             assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -384,7 +382,7 @@ public class RangeTestCase extends RestletTestCase {
             request.setEntity(new StringRepresentation("888"));
             request.setRanges(Arrays.asList(new Range(8, Range.SIZE_MAX)));
             response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertTrue(response.getStatus().isSuccess());
             response = client.handle(new Request(Method.GET, request
                     .getResourceRef()));
             assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -397,7 +395,7 @@ public class RangeTestCase extends RestletTestCase {
             request.setEntity(new StringRepresentation("888"));
             request.setRanges(Arrays.asList(new Range(8, Range.SIZE_MAX)));
             response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertTrue(response.getStatus().isSuccess());
             request.setMethod(Method.GET);
             response = client.handle(request);
             assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
@@ -410,7 +408,7 @@ public class RangeTestCase extends RestletTestCase {
             request.setEntity(new StringRepresentation("99"));
             request.setRanges(Arrays.asList(new Range(8, Range.SIZE_MAX)));
             response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertTrue(response.getStatus().isSuccess());
             response = client.handle(new Request(Method.GET, request
                     .getResourceRef()));
             assertEquals(Status.SUCCESS_OK, response.getStatus());

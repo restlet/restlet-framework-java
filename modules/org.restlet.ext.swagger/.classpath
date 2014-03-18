@@ -12,6 +12,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.scala"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.e4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.restlet.ext.e4"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.json4s"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.json4s"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

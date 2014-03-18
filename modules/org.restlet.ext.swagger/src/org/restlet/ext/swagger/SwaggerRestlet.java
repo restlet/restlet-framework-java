@@ -49,11 +49,11 @@ import org.restlet.ext.jaxrs.JaxRsRestlet;
 import org.restlet.ext.swagger.internal.SwaggerRestletIterable;
 
 import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.core.Documentation;
-import com.wordnik.swagger.core.DocumentationEndPoint;
 
+// [excludes android,gae,gwt,jee,jse,osgi]
 /**
- * Restlet that supports Swagger documentation. Relies on JAX-RS extension.
+ * Restlet that supports Swagger documentation. Relies on JAX-RS extension.<br>
+ * TODO To be refactored using Swagger 2.10.
  * 
  * @author Grzegorz Godlewski
  */

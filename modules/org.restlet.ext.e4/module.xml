@@ -1,4 +1,4 @@
-<module includes="osgi" id="e4" type="standard" package="org.restlet.ext.e4">
+<module includes="jse,jee,gae,osgi" id="e4" type="standard" package="org.restlet.ext.e4">
 	<name>Restlet Extension - e4</name>
 	<description>Support for the WADL specification.</description>
 	<distributions>

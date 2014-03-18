@@ -26,7 +26,10 @@
 		<files-sets>
 <![CDATA[
          <exclude name="src/com/**" />
-         <exclude name="src/org/restlet/engine/connector/**" />
+         <exclude name="src/org/restlet/engine/connector/HttpExchangeCall*" />
+         <exclude name="src/org/restlet/engine/connector/HttpServerHelper*" />
+         <exclude name="src/org/restlet/engine/connector/HttpsServerHelper*" />
+         <exclude name="src/org/restlet/engine/connector/NetServerHelper*" />
          <exclude name="src/org/restlet/engine/internal/Activator.java" />
          <exclude name="src/org/restlet/engine/io/*SocketChannel*.java" />
          <exclude name="src/org/restlet/engine/local/FileClientHelper.java" />

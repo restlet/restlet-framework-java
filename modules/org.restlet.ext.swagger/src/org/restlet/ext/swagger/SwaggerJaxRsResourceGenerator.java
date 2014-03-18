@@ -56,22 +56,12 @@ import javax.ws.rs.QueryParam;
 
 import org.restlet.ext.swagger.internal.SwaggerUtils;
 
-import com.wordnik.swagger.annotations.ApiError;
-import com.wordnik.swagger.annotations.ApiErrors;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-import com.wordnik.swagger.annotations.ApiParamImplicit;
-import com.wordnik.swagger.annotations.ApiParamsImplicit;
-import com.wordnik.swagger.core.Documentation;
-import com.wordnik.swagger.core.DocumentationEndPoint;
-import com.wordnik.swagger.core.DocumentationError;
-import com.wordnik.swagger.core.DocumentationObject;
-import com.wordnik.swagger.core.DocumentationOperation;
-import com.wordnik.swagger.core.DocumentationParameter;
-import com.wordnik.swagger.core.DocumentationSchema;
 
 /**
- * Parses a JAX-RS class and generates DocumentationEndPoint for it.
+ * Parses a JAX-RS class and generates DocumentationEndPoint for it.<br>
+ * TODO To be refactored using Swagger 2.10.
  * 
  * @author Grzegorz Godlewski
  */
