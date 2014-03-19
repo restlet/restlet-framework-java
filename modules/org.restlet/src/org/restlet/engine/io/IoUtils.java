@@ -421,7 +421,7 @@ public class IoUtils {
             if (context != null && context.getExecutorService() != null) {
                 context.getExecutorService().execute(task);
             } else {
-                Engine.createThreadWithLocalVariables(task, "Restlet-NioUtils")
+                Engine.createThreadWithLocalVariables(task, "Restlet-IoUtils")
                         .start();
             }
 
@@ -519,7 +519,7 @@ public class IoUtils {
             if (context != null && context.getExecutorService() != null) {
                 context.getExecutorService().execute(task);
             } else {
-                Engine.createThreadWithLocalVariables(task, "Restlet-BioUtils")
+                Engine.createThreadWithLocalVariables(task, "Restlet-IoUtils")
                         .start();
             }
 
@@ -644,7 +644,7 @@ public class IoUtils {
             if (context != null && context.getExecutorService() != null) {
                 context.getExecutorService().execute(task);
             } else {
-                Engine.createThreadWithLocalVariables(task, "Restlet-BioUtils")
+                Engine.createThreadWithLocalVariables(task, "Restlet-IoUtils")
                         .start();
             }
 

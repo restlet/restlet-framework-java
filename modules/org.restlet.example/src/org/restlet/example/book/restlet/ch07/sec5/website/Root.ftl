@@ -7,7 +7,7 @@
    <p>An error was detected in the <b>${applicationName}</b> application.</p>
    <p><b>${statusName}</b> : ${statusDescription}</p>
    <p>
-      <a href="http://www.restlet.org"><img src="http://www.restlet.org/images/logo150"/></a>
+      <a href="http://restlet.org"><img src="http://restlet.org/images/logo-restlet"/></a>
    </p>
 </body>
 </html>

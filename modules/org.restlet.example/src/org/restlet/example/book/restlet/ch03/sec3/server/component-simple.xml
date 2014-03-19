@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component xmlns="http://www.restlet.org/schemas/2.0/Component"
+<component xmlns="http://restlet.org/schemas/2.0/Component"
 	name="RESTful Mail Server component" description="Example for 'Restlet in Action' book"
 	owner="Restlet S.A.S." author="The Restlet Team">
 

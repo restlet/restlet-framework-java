@@ -60,7 +60,7 @@ public class ReferenceTestCase extends RestletTestCase {
      */
     protected Reference getDefaultReference() {
         final Reference ref = getReference();
-        ref.setHostDomain("www.restlet.org");
+        ref.setHostDomain("restlet.org");
         return ref;
     }
 
@@ -169,7 +169,7 @@ public class ReferenceTestCase extends RestletTestCase {
      */
     public void testHostName() throws Exception {
         final Reference ref = getReference();
-        String host = "www.restlet.org";
+        String host = "restlet.org";
         ref.setHostDomain(host);
         assertEquals(host, ref.getHostDomain());
         host = "restlet.org";
@@ -626,9 +626,9 @@ public class ReferenceTestCase extends RestletTestCase {
      */
     public void testSchemeSpecificPart() throws Exception {
         final Reference ref = getDefaultReference();
-        String part = "//www.restlet.org";
+        String part = "//restlet.org";
         assertEquals(part, ref.getSchemeSpecificPart());
-        part = "//www.restlet.net";
+        part = "//restlet.net";
         ref.setSchemeSpecificPart(part);
         assertEquals(part, ref.getSchemeSpecificPart());
     }
@@ -672,7 +672,7 @@ public class ReferenceTestCase extends RestletTestCase {
      */
     public void testUnEquals() throws Exception {
         final String uri1 = "http://restlet.org/";
-        final String uri2 = "http://www.restlet.net/";
+        final String uri2 = "http://restlet.net/";
         final Reference ref1 = new Reference(uri1);
         final Reference ref2 = new Reference(uri2);
         assertFalse(ref1.equals(ref2));
