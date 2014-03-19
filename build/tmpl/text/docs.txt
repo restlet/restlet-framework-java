@@ -28,7 +28,7 @@ report issues (bugs and enhancement requests) using our bugzilla database at
 http://www.restlet.org/community/issues.
 
 Finally, if you need professional and timely assistance, you can contact
-Restlet at http://www.restlet.com/services/.
+Restlet at http://restlet.com/services/.
 
 Best regards,
 The Restlet Team

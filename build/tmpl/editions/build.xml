@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0"?>
 
-<!-- ===================================================================
-     Restlet Framework build script - Copyright 2005-2014 Restlet S.A.S.
-     =================================================================== -->
+<!-- ============================================================
+     Restlet Framework build script - Copyright 2005-2014 Restlet
+     ============================================================ -->
 
 <project name="Restlet Framework - @edition@" default="rebuild">
 	<!-- ============================ -->
@@ -786,7 +786,7 @@
 				<pathelement path="${mod}/${mod-core-id}/src/" />
 			</sourcepath>
 
-			<bottom>Copyright &#169; 2005-2013 Restlet</bottom>
+			<bottom>Copyright 2005-2014 Restlet</bottom>
 
 			<group title="Restlet API">
 				<package name="org.restlet*" />

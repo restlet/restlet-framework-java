@@ -1,7 +1,7 @@
 package org.restlet.test.ext.odata.deepexpand;
 
 /**
- * Copyright 2005-2014 Restlet S.A.S.
+ * Copyright 2005-2014 Restlet
  * 
  * The contents of this file are subject to the terms of one of the following
  * open source licenses: Apache 2.0 or LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL
