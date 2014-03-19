@@ -10,7 +10,7 @@ SetCompressor lzma
 !define BASEREGKEY "SOFTWARE\Restlet Framework\Edition @edition-medium-label@"
 !define REGKEY "SOFTWARE\Restlet Framework\Edition @edition-medium-label@\@version-full@"
 !define COMPANY "Restlet"
-!define URL http://www.restlet.org
+!define URL http://restlet.org
 
 Caption "Restlet Framework @version-compact@ - Edition @edition-medium-label@"
 BrandingText " "
@@ -143,7 +143,7 @@ Section -post SEC0001
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     CreateDirectory "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Uninstall.lnk" $INSTDIR\uninstall.exe
-    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Home page.lnk" "http://www.restlet.org"
+    CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Home page.lnk" "http://restlet.org"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Restlet API (javadocs).lnk" "$INSTDIR\docs\api\index.html"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Restlet Extensions (javadocs).lnk" "$INSTDIR\docs\ext\index.html"
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Restlet @edition-medium-label@\${VERSION}\Restlet Engine (javadocs).lnk" "$INSTDIR\docs\engine\index.html"

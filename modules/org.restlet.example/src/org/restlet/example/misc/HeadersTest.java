@@ -80,7 +80,7 @@ public class HeadersTest {
                 // like the "Location"
                 // header below, it will be ignored and a warning message will
                 // be displayed in the logs.
-                headers.add("Location", "http://www.restlet.org");
+                headers.add("Location", "http://restlet.org");
 
                 // Setting the additional headers into the shared call's
                 // attribute

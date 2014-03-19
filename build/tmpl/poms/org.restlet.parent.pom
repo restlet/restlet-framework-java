@@ -30,7 +30,7 @@
 
 	<name>Restlet project</name>
 	<description>Lightweight REST framework</description>
-	<url>http://www.restlet.org</url>
+	<url>http://restlet.org</url>
 	<inceptionYear>2005</inceptionYear>
 
 	<scm>

@@ -75,12 +75,12 @@ public class RestletXmlTestCase extends RestletTestCase {
             + "</host>\n" + "</component>\n";
 
     private static final String BAD_XML = "<?xml version=\"1.0\"?>\n"
-            + "<component xmlns=\"http://www.restlet.org/schemas/2.0/Component\">\n"
+            + "<component xmlns=\"http://restlet.org/schemas/2.0/Component\">\n"
             + "<bad-element bad-attribute=\"some-value\">abcd</bad-element>"
             + _XML_BODY;
 
     private static final String XML_WITH_XMLNS = "<?xml version=\"1.0\"?>\n"
-            + "<component xmlns=\"http://www.restlet.org/schemas/2.0/Component\">\n"
+            + "<component xmlns=\"http://restlet.org/schemas/2.0/Component\">\n"
             + _XML_BODY;
 
     private static final String XML_WITHOUT_XMLNS = "<?xml version=\"1.0\"?>\n"

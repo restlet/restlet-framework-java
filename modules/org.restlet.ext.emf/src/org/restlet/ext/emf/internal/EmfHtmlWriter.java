@@ -54,7 +54,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
  */
 public class EmfHtmlWriter {
 
-    public static final String ANNOTATION_URI = "http://www.restlet.org/schemas/2011/emf/html";
+    public static final String ANNOTATION_URI = "http://restlet.org/schemas/2011/emf/html";
 
     private final EObject object;
 

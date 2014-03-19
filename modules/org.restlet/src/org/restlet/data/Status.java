@@ -45,7 +45,7 @@ import org.restlet.service.StatusService;
 public final class Status {
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";
 
-    private static final String BASE_RESTLET = "http://www.restlet.org/documentation/"
+    private static final String BASE_RESTLET = "http://restlet.org/learn/javadocs/"
             + Engine.MAJOR_NUMBER
             + '.'
             + Engine.MINOR_NUMBER

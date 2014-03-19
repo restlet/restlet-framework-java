@@ -78,13 +78,13 @@ import org.restlet.util.ServiceList;
  * the WADL Restlet extension for details).<br>
  * <br>
  * The XML Schema of the configuration files is available both <a
- * href="http://www.restlet.org/schemas/2.0/Component">online</a> and inside the
+ * href="http://restlet.org/schemas/2.0/Component">online</a> and inside the
  * API JAR under the "org.restlet.Component.xsd" name. Here is a sample of XML
  * configuration:
  * 
  * <pre>
  * &lt;?xml version=&quot;1.0&quot;?&gt;
- * &lt;component xmlns=&quot;http://www.restlet.org/schemas/2.0/Component&quot;&gt;
+ * &lt;component xmlns=&quot;http://restlet.org/schemas/2.0/Component&quot;&gt;
  *    &lt;client protocol=&quot;CLAP&quot; /&gt;
  *    &lt;client protocol=&quot;FILE&quot; /&gt;
  *    &lt;client protocols=&quot;HTTP HTTPS&quot; /&gt;

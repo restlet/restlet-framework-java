@@ -54,16 +54,16 @@ import org.restlet.routing.Router;
 public class AnnotatedResource9TestCase extends InternalConnectorTestCase {
 
     public static final Method SI = new Method("SI", "What a method!",
-            "http://www.restlet.org", true, true);
+            "http://restlet.org", true, true);
 
     public static final Method SNI = new Method("SNI", "What a method!",
-            "http://www.restlet.org", true, false);
+            "http://restlet.org", true, false);
 
     public static final Method USI = new Method("USI", "What a method!",
-            "http://www.restlet.org", false, true);
+            "http://restlet.org", false, true);
 
     public static final Method USNI = new Method("USNI", "What a method!",
-            "http://www.restlet.org", false, false);
+            "http://restlet.org", false, false);
 
     protected Application createApplication(final String path) {
         return new Application() {

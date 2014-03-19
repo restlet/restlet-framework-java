@@ -13,7 +13,7 @@
 <ecore:EPackage xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="Test"
-    nsURI="http://www.restlet.org/emf/test" nsPrefix="test">
+    nsURI="http://restlet.org/emf/test" nsPrefix="test">
   <eClassifiers xsi:type="ecore:EClass" name="Foo">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="bar&lol9;" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>

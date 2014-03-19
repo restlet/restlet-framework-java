@@ -65,14 +65,14 @@ import org.restlet.util.ServerList;
  * CONFIG: [ERROR] - Unexpected exception while parsing an instance of PUBLIC \
  *     [null], SYSTEM [null] - line #7, column #75: cvc-complex-type.2.4.a: \
  *     Invalid content was found starting with element 'illegal-element'. \
- *     One of '{&quot;http://www.restlet.org/schemas/2.0/Component&quot;:client, \
- *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:server, \
- *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:parameter, \
- *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:defaultHost, \
- *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:host, \
- *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:internalRouter, \
- *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:logService, \
- *     &quot;http://www.restlet.org/schemas/2.0/Component&quot;:statusService}' is expected.
+ *     One of '{&quot;http://restlet.org/schemas/2.0/Component&quot;:client, \
+ *     &quot;http://restlet.org/schemas/2.0/Component&quot;:server, \
+ *     &quot;http://restlet.org/schemas/2.0/Component&quot;:parameter, \
+ *     &quot;http://restlet.org/schemas/2.0/Component&quot;:defaultHost, \
+ *     &quot;http://restlet.org/schemas/2.0/Component&quot;:host, \
+ *     &quot;http://restlet.org/schemas/2.0/Component&quot;:internalRouter, \
+ *     &quot;http://restlet.org/schemas/2.0/Component&quot;:logService, \
+ *     &quot;http://restlet.org/schemas/2.0/Component&quot;:statusService}' is expected.
  * </pre>
  */
 public class ComponentXmlConfigTestCase extends RestletTestCase {
@@ -119,7 +119,7 @@ public class ComponentXmlConfigTestCase extends RestletTestCase {
 
     /** Correct restlet.xml test instances. */
     private static final String RESTLET_XML = "<?xml version=\"1.0\"?>\n"
-            + "<component xmlns=\"http://www.restlet.org/schemas/2.0/Component\">\n"
+            + "<component xmlns=\"http://restlet.org/schemas/2.0/Component\">\n"
             + "<client protocol=\"HTTP\"" + " name=\""
             + RESTLET_NAME
             + "\""

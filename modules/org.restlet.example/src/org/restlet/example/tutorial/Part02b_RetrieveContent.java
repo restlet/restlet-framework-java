@@ -43,7 +43,7 @@ import org.restlet.resource.ClientResource;
 public class Part02b_RetrieveContent {
     public static void main(String[] args) throws Exception {
         // Create the client resource
-        ClientResource resource = new ClientResource("http://www.restlet.org");
+        ClientResource resource = new ClientResource("http://restlet.org");
 
         // Customize the referrer property
         resource.setReferrerRef("http://www.mysite.org");

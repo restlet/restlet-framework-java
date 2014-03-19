@@ -45,6 +45,6 @@ public class BaseUriContext {
      */
     public String getBaseUri() {
         // read from config file
-        return "http://www.restlet.org/";
+        return "http://restlet.org/";
     }
 }

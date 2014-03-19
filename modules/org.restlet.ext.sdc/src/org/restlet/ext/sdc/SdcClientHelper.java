@@ -71,7 +71,7 @@ import org.restlet.ext.sdc.internal.SdcServerConnection;
  * Here is a usage example:<br>
  * 
  * <pre>
- * Request request = new Request(Method.GET, &quot;http://www.restlet.org&quot;);
+ * Request request = new Request(Method.GET, &quot;http://restlet.org&quot;);
  * request.setProtocol(Protocol.valueOf(&quot;SDC&quot;));
  * request.setProxyChallengeResponse(new ChallengeResponse(ChallengeScheme
  *         .valueOf(&quot;SDC&quot;), &quot;myUser@example.com&quot;, &quot;myPassword&quot;));

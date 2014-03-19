@@ -29,8 +29,8 @@ maven JAVADOC target -->
 	   </#list>
 	</#list>
 	<#noparse>
-			    <link href="http://www.restlet.org/documentation/${version-minor}/${edition}/api/" packagelistLoc="${docs-api}" offline="true" />
-			    <link href="http://www.restlet.org/documentation/${version-minor}/${edition}/engine/" packagelistLoc="${docs-engine}" offline="true" />
+			    <link href="http://restlet.org/learn/javadocs/${version-minor}/${edition}/api/" packagelistLoc="${docs-api}" offline="true" />
+			    <link href="http://restlet.org/learn/javadocs/${version-minor}/${edition}/engine/" packagelistLoc="${docs-engine}" offline="true" />
 			</javadoc>
 			<jar destfile="${mod-dir-@{name}-maven}/${mod-@{name}-id}-${version-maven}-javadoc.jar" filesetmanifest="merge">
 				<fileset dir="${docs}/maven/${mod-@{name}-id}" includes="**/*" />

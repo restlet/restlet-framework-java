@@ -63,7 +63,7 @@ public class Main {
                 .println("Press a key when the SDC agent is started and has established a tunnel...");
         System.in.read();
 
-        Request request = new Request(Method.GET, "http://www.restlet.org");
+        Request request = new Request(Method.GET, "http://restlet.org");
         request.setProtocol(Protocol.valueOf("SDC"));
         request.setProxyChallengeResponse(new ChallengeResponse(ChallengeScheme
                 .valueOf("SDC"), "myUser@example.com", "myPassword"));

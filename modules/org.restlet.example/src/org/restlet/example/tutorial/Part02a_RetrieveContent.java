@@ -43,7 +43,7 @@ import org.restlet.resource.ClientResource;
 public class Part02a_RetrieveContent {
     public static void main(String[] args) throws Exception {
         // Outputting the content of a Web page
-        new ClientResource("http://www.restlet.org").get().write(System.out);
+        new ClientResource("http://restlet.org").get().write(System.out);
     }
 
 }

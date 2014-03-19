@@ -54,7 +54,7 @@ public class ReferenceTestCase extends RestletTestCase {
     protected final static String DEFAULT_SCHEMEPART = "//";
 
     /**
-     * Returns a reference that is initialized with http://www.restlet.org.
+     * Returns a reference that is initialized with http://restlet.org.
      * 
      * @return Reference instance.
      */
@@ -80,15 +80,15 @@ public class ReferenceTestCase extends RestletTestCase {
      * Test addition methods.
      */
     public void testAdditions() throws Exception {
-        final Reference ref = new Reference("http://www.restlet.org");
+        final Reference ref = new Reference("http://restlet.org");
         ref.addQueryParameter("abc", "123");
-        assertEquals("http://www.restlet.org?abc=123", ref.toString());
+        assertEquals("http://restlet.org?abc=123", ref.toString());
         ref.addQueryParameter("def", null);
-        assertEquals("http://www.restlet.org?abc=123&def", ref.toString());
+        assertEquals("http://restlet.org?abc=123&def", ref.toString());
         ref.addSegment("root");
-        assertEquals("http://www.restlet.org/root?abc=123&def", ref.toString());
+        assertEquals("http://restlet.org/root?abc=123&def", ref.toString());
         ref.addSegment("dir");
-        assertEquals("http://www.restlet.org/root/dir?abc=123&def",
+        assertEquals("http://restlet.org/root/dir?abc=123&def",
                 ref.toString());
     }
 
@@ -671,7 +671,7 @@ public class ReferenceTestCase extends RestletTestCase {
      * Test references that are unequal.
      */
     public void testUnEquals() throws Exception {
-        final String uri1 = "http://www.restlet.org/";
+        final String uri1 = "http://restlet.org/";
         final String uri2 = "http://www.restlet.net/";
         final Reference ref1 = new Reference(uri1);
         final Reference ref2 = new Reference(uri2);

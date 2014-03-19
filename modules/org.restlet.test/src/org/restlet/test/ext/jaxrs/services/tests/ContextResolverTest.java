@@ -82,7 +82,7 @@ public class ContextResolverTest extends JaxRsTestCase {
         assertEqualMediaType(MediaType.TEXT_HTML, response.getEntity()
                 .getMediaType());
         assertEquals(
-                "<html><head></head><body>\nThe virtual presence of <b>Helmut Kohl</b> is: <a href=\"http://www.restlet.org/persons/Kohl/Helmut\">http://www.restlet.org/persons/Kohl/Helmut</a></html>",
+                "<html><head></head><body>\nThe virtual presence of <b>Helmut Kohl</b> is: <a href=\"http://restlet.org/persons/Kohl/Helmut\">http://restlet.org/persons/Kohl/Helmut</a></html>",
                 entity);
     }
 }

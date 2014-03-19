@@ -51,7 +51,7 @@ import org.xml.sax.InputSource;
 public class Bug717TestCase extends TestCase {
 
     private static final String RESTLET_XML = "<?xml version=\"1.0\"?>\n"
-            + "<component xmlns=\"http://www.restlet.org/schemas/2.0/Component\">\n"
+            + "<component xmlns=\"http://restlet.org/schemas/2.0/Component\">\n"
             + "<server protocol=\"HTTP\" port=\"9090\"/>\n"
             + "<server protocol=\"HTTP\" port=\"9091\"/>\n"
             + "<defaultHost hostPort=\"9091\">\n"
