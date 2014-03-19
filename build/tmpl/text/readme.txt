@@ -2,7 +2,7 @@
 =========================================
 Restlet, a RESTful Web framework for Java
 =========================================
-         http://www.restlet.org
+           http://restlet.org
 -----------------------------------------
 
 
@@ -66,4 +66,5 @@ Scalability
     * Supports asynchronous request processing, decoupled from IO operations. Unlike the Servlet API, the Restlet applications don't have a direct control on the outputstream, they only provide output representation to be written by the server connector.
 
 
-Copyright 2005-2013 Restlet Restlet is a registered trademark of Restlet
+Copyright 2005-2014 Restlet S.A.S.
+Restlet is a registered trademark of Restlet S.A.S.
