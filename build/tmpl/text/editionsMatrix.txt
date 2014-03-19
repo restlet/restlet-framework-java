@@ -6,7 +6,7 @@
 </th>
 <#list editions?keys as eKey>
 <th>
-<p><a href="daisy:${editions[eKey].wikiUri}">${editions[eKey].shortLabel}</a></p>
+<p><a href="${editions[eKey].wikiUri}">${editions[eKey].shortLabel}</a></p>
 </th>
 </#list>
 <th>
@@ -17,7 +17,7 @@
 	<#if ((project.modules[mKey].type!"") == 'integration') || ((project.modules[mKey].type!"") == 'standard') || ((project.modules[mKey].type!"") == 'connector')>
 <tr>
 <td>
-<p><a href="daisy:${project.modules[mKey].wikiUri!""}">${project.modules[mKey].package}</a></p>
+<p><a href="./${project.modules[mKey].id!""}">${project.modules[mKey].package}</a></p>
 </td>
 	<#list editions?keys as eKey>
 		<#assign found="nok">
@@ -26,7 +26,7 @@
 <td/>
 		<#else>
 <td>
-<p align="center"><img src="daisy:415-restlet"/></p>
+<p align="center"><img src="/images/icons/8/puce.png"/></p>
 </td>
 		</#if>
 	</#list>
