@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 
 <!-- =========================================================
-     Restlet build script - Copyright 2005-2013 Restlet
+     Restlet build script - Copyright 2005-2014 Restlet
      ========================================================= -->
 
 <project name="Restlet Framework - Master" default="rebuild">
