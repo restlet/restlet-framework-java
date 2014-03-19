@@ -6,9 +6,21 @@ Changes log
 - @version-full@ (@release-date@)
 
 - 2.2 Release Candidate 4 (03/18/2014)
+    - Enhancements
+      - Updated swagger extension based on swagger 2.10 version, issue #827.
     - Bug fixed
       - ServerResource doesn't throw away empty response entities anymore, issue #848.
         Reported by Arjohn Kampman and Marcel Hellkamp.
+      - DefaultSslContextFactory doesn't handle
+        enabledCipherSuites/enabledProtocols parameters properly, issue #853.
+        Reported and contributed by Jonathan Keljo.
+      - Android NIO server SSL handshake hangs, issue #851.
+        Reported and contributed by Jonathan Keljo.
+      - NIO SSL server infinite loops on close-notify, issue #862.
+        Reported and contributed by Jonathan Keljo.
+    - Misc
+      - Automatic build using Travis
+        (https://travis-ci.org/restlet/restlet-framework-java)
 
 - 2.2 Release Candidate 3 (03/04/2014)
     - Enhancements
