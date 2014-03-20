@@ -11,15 +11,18 @@
  *   <a href="https://code.google.com/p/atinject/">JSR-330</a>.
  * </p><p>
  *   This extension provides three independent approaches for dependency-injecting Restlet
- *   server resources, the <em>self-injection</em> approach, the <em>Finder factory</em>
- *   approach, and the <em>resource-injecting application</em> approach.
- *   </p><p>
+ *   server resources,
+ *   the <em>self-injection</em> approach,
+ *   the <em>Finder factory</em> approach, and
+ *   the <em>resource-injecting application</em> approach.
+ * </p><p>
  *   Note that the extension is limited to injection of server resources, and not other
  *   Restlet types, because server resources are constructed by the Restlet framework,
  *   not by the user.
  *   The last section below describes how to use a JSR-330 DI framework to inject
  *   other Restlet types, without needing the tools in this extension.
  * </p>
+ *
  * <h2>Self-injection</h2>
  * <p>
  *   When using this approach:
@@ -37,6 +40,7 @@
  *   {@link org.restlet.ext.guice.SelfInjectingServerResourceModule SelfInjectingServerResourceModule}
  *   when creating the {@code Injector}.
  * </p>
+ *
  * <h2>Finder factory</h2>
  * <p>
  *   When using this approach:
@@ -68,22 +72,25 @@
  *
  *   // In createInboundRoot():
  *   FinderFactory finderFactory = ...;
+ *
  *   // Attachment with no coupling to concrete resource type:
  *   router.attach("/hello", finderFactory.finder(ServerResource.class, Hello.class);
+ *
  *   // Attachment with direct knowledge of concrete resource type:
  *   router.attach("/bye", finderFactory.finder(ByeServerResource.class);
  * </pre>
  * <p>
  *   To use a Guice-enabled {@code FinderFactory}, install a
- *   {@code org.restlet.ext.guice.RestletGuice#Module RestletGuice.Module}
+ *   {@link org.restlet.ext.guice.RestletGuice.Module RestletGuice.Module}
  *   when creating the {@code Injector}.
  *   ({@link org.restlet.ext.guice.RestletGuice RestletGuice} has convenience
- *   methods to install such a module that parallel the {@code Guice} class.)
+ *   methods to install such a module that parallel those in the {@code Guice} class.)
  * </p><p>
  *   Alternatively, for standalone Applications, create a single {@code RestletGuice.Module}
  *   instance, possibly passing other Guice modules to the constructor, and use it
  *   as the {@code FinderFactory} in {@code createInboundRoot()}.
  * </p>
+ *
  * <h2>Resource-injecting application</h2>
  * <p>
  *   When using this approach:
@@ -91,8 +98,7 @@
  * <ul>
  *   <li> DI framework does <em>not</em> need to support static field injection. </li>
  *   <li> No constructor injection for resources; only field and method injection will work. </li>
- *   <li> No dependency on Guice; should work with any JSR-330-compliant framework. </li>
- *   <li> Application instance must itself be injected (see last section below). </li>
+ *   <li> Application instance must itself be injected. </li>
  * </ul>
  * <p>
  *   In the resource-injecting application approach, extend
@@ -101,7 +107,15 @@
  *   {@code org.restlet.ext.guice.ResourceInjectingApplication#newRouter newRouter()}
  *   instead of {@code new Router(...)}.
  *   The overridden {@code createFinder} will arrange to inject.
+ * </p><p>
+ *   To work with Guice, install a
+ *   {@link org.restlet.ext.guice.SelfInjectingServerResourceModule SelfInjectingServerResourceModule}
+ *   when creating the {@code Injector} that injects the application.
+ *   To work with another JSR-330-compliant framework, bind
+ *   {@link org.restlet.ext.guice.SelfInjectingServerResource.MembersInjector SelfInjectingServerResource.MembersInjector}
+ *   to a framework-specific implementation.
  * </p>
+ *
  * <h2>Injecting other Restlet types</h2>
  * <p>
  *   Instead of calling {@code new FooApplication(...)} when attaching an application
@@ -109,11 +123,12 @@
  * </p>
  * <pre>
  *   public class MyComponent extends Component {
- *       // Run as standalone component.
+ *
  *       public static void main(String... args) {
- *           Injector injector = ... create injector ...;
+ *           // Run as standalone component:
+ *           Injector injector = <em>... create injector ...</em>;
  *           MyComponent comp = injector.getInstance(MyComponent.class);
- *           // ... shutdown hooks, etc. ...
+ *           // <em>... shutdown hooks, etc. ...</em>
  *           comp.start();
  *       }
  *
@@ -130,26 +145,26 @@
  *   in this setting, use qualifiers:
  * </p>
  * <pre>
- *       &#64;Inject
- *       MyComponent(&#64;Foo Application fooApp, &#64;Bar Application barApp) {
- *           // ...
- *           getDefaultHost().attach("/foo", fooApp);
- *           getDefaultHost().attach("/bar", barApp);
- *       }
+ *   &#64;Inject
+ *   MyComponent(&#64;Foo Application fooApp, &#64;Bar Application barApp) {
+ *       // ...
+ *       getDefaultHost().attach("/foo", fooApp);
+ *       getDefaultHost().attach("/bar", barApp);
+ *   }
  *
  *   // With the qualifiers defined elsewhere:
  *
- *       &#64;java.lang.annotation.Retention(RUNTIME)
- *       &#64;javax.inject.Qualifier
- *       public &#64;interface Foo {}
+ *   &#64;java.lang.annotation.Retention(RUNTIME)
+ *   &#64;javax.inject.Qualifier
+ *   public &#64;interface Foo {}
  * </pre>
  * <p>
  *   Using the {@code @Named} qualifier trades some type-safety for
  *   convenience:
  * </p>
  * <pre>
- *       &#64;Inject
- *       MyComponent(&#64;Named(FOO) Application fooApp, &#64;Named(BAR) Application barApp) ...
+ *   &#64;Inject
+ *   MyComponent(&#64;Named(FOO) Application fooApp, &#64;Named(BAR) Application barApp) ...
  * </pre>
  */
 package org.restlet.ext.guice;
