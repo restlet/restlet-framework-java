@@ -35,14 +35,14 @@ package org.restlet.ext.jetty;
 
 import java.util.logging.Level;
 
-import org.eclipse.jetty.server.AbstractConnector;
-import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
-import org.eclipse.jetty.server.ssl.SslSocketConnector;
+import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
+import org.restlet.engine.ssl.SslContextFactory;
 import org.restlet.ext.jetty.internal.RestletSslContextFactory;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
  * Jetty HTTPS server connector. Here is the list of additional parameters that
@@ -56,31 +56,25 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
  * <th>Description</th>
  * </tr>
  * <tr>
- * <td>type</td>
- * <td>int</td>
- * <td>2</td>
- * <td>The type of Jetty connector to use.<br>
- * 1 : Selecting NIO connector (Jetty's SslSelectChannelConnector class).<br>
- * 2 : Blocking BIO connector (Jetty's SslSocketConnector class)</td>
- * </tr>
- * <tr>
  * <td>sslContextFactory</td>
  * <td>String</td>
- * <td>org.restlet.engine.ssl.DefaultSslContextFactory</td>
+ * <td>org.restlet.ext.ssl.DefaultSslContextFactory</td>
  * <td>Let you specify a {@link SslContextFactory} qualified class name as a
  * parameter, or an instance as an attribute for a more complete and flexible
- * SSL context setting.</td>
+ * SSL context setting</td>
  * </tr>
  * </table>
  * For the default SSL parameters see the Javadocs of the
  * {@link DefaultSslContextFactory} class.
  * 
- * @see <a
- *      href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How
- *      to configure SSL for Jetty</a>
+ * @see <a href="http://www.eclipse.org/jetty/">Jetty home page</a>
+ * @see <a href="http://wiki.eclipse.org/Jetty/Howto/Configure_SSL">How to
+ *      configure SSL for Jetty</a>
  * @author Jerome Louvel
+ * @author Tal Liron
  */
 public class HttpsServerHelper extends JettyServerHelper {
+
     /**
      * Constructor.
      * 
@@ -93,49 +87,22 @@ public class HttpsServerHelper extends JettyServerHelper {
     }
 
     /**
-     * Creates a new internal Jetty connector.
+     * Creates a new Jetty connection factory.
      * 
-     * @return A new internal Jetty connector.
+     * @param configuration
+     *            The HTTP configuration.
+     * @return A new Jetty connection factory.
      */
-    @Override
-    protected AbstractConnector createConnector() {
-        AbstractConnector result = null;
-        SslContextFactory sslContextFactory = null;
-
+    protected ConnectionFactory createConnectionFactory(
+            HttpConfiguration configuration) {
         try {
-            sslContextFactory = new RestletSslContextFactory(
-                    org.restlet.engine.ssl.SslUtils
-                            .getSslContextFactory(this));
+            final org.eclipse.jetty.util.ssl.SslContextFactory sslContextFactory = new RestletSslContextFactory(
+                    org.restlet.engine.ssl.SslUtils.getSslContextFactory(this));
+            return new SslConnectionFactory(sslContextFactory, "http");
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Unable to create the Jetty SSL context factory", e);
+            return null;
         }
-
-        if (sslContextFactory != null) {
-            // Create and configure the Jetty HTTP connector
-            switch (getType()) {
-            case 1:
-                // Selecting NIO connector
-                result = new SslSelectChannelConnector(sslContextFactory);
-                break;
-            case 2:
-                // Blocking BIO connector
-                result = new SslSocketConnector(sslContextFactory);
-                break;
-            }
-        }
-
-        return result;
     }
-
-    /**
-     * Returns the type of Jetty connector to use.
-     * 
-     * @return The type of Jetty connector to use.
-     */
-    public int getType() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("type", "2"));
-    }
-
 }

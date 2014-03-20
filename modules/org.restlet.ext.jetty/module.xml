@@ -12,5 +12,4 @@
 		<dependency type="library" id="servlet" />
 		<dependency type="module" id="core" />
 	</dependencies>
-	<wikiUri>78-restlet</wikiUri>
 </module>

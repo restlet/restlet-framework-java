@@ -48,9 +48,9 @@ public class NioServer {
 
     public static void main(String[] args) throws Exception {
         ConnectorHelper<Server> helper = null;
-        // helper = new org.restlet.ext.jetty.HttpServerHelper(null);
+        helper = new org.restlet.ext.jetty.HttpServerHelper(null);
         // helper = new org.restlet.ext.simple.HttpServerHelper(null);
-        helper = new org.restlet.ext.nio.HttpServerHelper(null);
+        // helper = new org.restlet.ext.nio.HttpServerHelper(null);
 
         // Register the selected connector
         Engine.getInstance().getRegisteredServers().add(0, helper);
@@ -84,15 +84,15 @@ public class NioServer {
                 try {
                     // fr.put(request.getEntity());
                     response.setEntity(fr.get());
-//                    response.setEntity(new WrapperRepresentation(fr.get()) {
-//                        public long getSize() {
-//                            return -1L;
-//                        }
-//
-//                        public long getAvailableSize() {
-//                            return BioUtils.getAvailableSize(this);
-//                        }
-//                    });
+                    // response.setEntity(new WrapperRepresentation(fr.get()) {
+                    // public long getSize() {
+                    // return -1L;
+                    // }
+                    //
+                    // public long getAvailableSize() {
+                    // return BioUtils.getAvailableSize(this);
+                    // }
+                    // });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -102,8 +102,8 @@ public class NioServer {
         });
 
         // Configure the log service
-//        comp.getLogService().setLogPropertiesRef(
-//                "clap://system/org/restlet/test/bench/log.properties");
+        // comp.getLogService().setLogPropertiesRef(
+        // "clap://system/org/restlet/test/bench/log.properties");
         comp.start();
     }
 }

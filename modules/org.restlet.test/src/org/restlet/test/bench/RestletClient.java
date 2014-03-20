@@ -22,9 +22,9 @@ public class RestletClient {
         helper = new org.restlet.engine.connector.HttpClientHelper(null);
         Engine.getInstance().getRegisteredClients().add(0, helper);
 
-        helper = new org.restlet.ext.nio.HttpsClientHelper(null);
         // helper = new org.restlet.ext.httpclient.HttpClientHelper(null);
-        // helper = new org.restlet.ext.net.HttpClientHelper(null);
+        helper = new org.restlet.ext.jetty.HttpClientHelper(null);
+        // helper = new org.restlet.ext.nio.HttpsClientHelper(null);
         Engine.getInstance().getRegisteredClients().add(0, helper);
         // [ifdef jse] instruction
         Engine.setLogLevel(Level.FINE);

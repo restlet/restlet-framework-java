@@ -48,8 +48,8 @@ import org.restlet.Context;
 /**
  * Jetty SSL context factory based on a Restlet SSL context one.
  * 
- * 
  * @author Jerome Louvel
+ * @author Tal Liron
  */
 public class RestletSslContextFactory extends SslContextFactory {
 
@@ -69,9 +69,8 @@ public class RestletSslContextFactory extends SslContextFactory {
     @Override
     public void checkKeyStore() {
         try {
-            if (getSslContext() == null) {
+            if (getSslContext() == null)
                 super.checkKeyStore();
-            }
         } catch (IllegalStateException e) {
             Context.getCurrentLogger().log(Level.FINE,
                     "Unable to check Jetty SSL keystore", e);
@@ -79,19 +78,19 @@ public class RestletSslContextFactory extends SslContextFactory {
     }
 
     @Override
-    public SSLEngine newSslEngine() {
+    public SSLEngine newSSLEngine() {
         return getSslContext().createSSLEngine();
     }
 
     @Override
-    public SSLEngine newSslEngine(String host, int port) {
+    public SSLEngine newSSLEngine(String host, int port) {
         return getSslContext().createSSLEngine(host, port);
     }
 
     @Override
     public SSLServerSocket newSslServerSocket(String host, int port, int backlog)
             throws IOException {
-        SSLServerSocketFactory factory = getSslContext()
+        final SSLServerSocketFactory factory = getSslContext()
                 .getServerSocketFactory();
         return (SSLServerSocket) ((host == null) ? factory.createServerSocket(
                 port, backlog) : factory.createServerSocket(port, backlog,
@@ -102,5 +101,4 @@ public class RestletSslContextFactory extends SslContextFactory {
     public SSLSocket newSslSocket() throws IOException {
         return (SSLSocket) getSslContext().getSocketFactory().createSocket();
     }
-
 }

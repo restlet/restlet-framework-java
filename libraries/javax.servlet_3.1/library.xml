@@ -1,7 +1,7 @@
 <library id="servlet" symbolicName="javax.servlet">
 	<name>Servlet API</name>
 	<description>Servlet API</description>
-	<version>3.0</version>
+	<version>3.1</version>
 	<homeUri>http://java.sun.com/products/servlet/index.jsp</homeUri>
 	<downloadUri>http://java.sun.com/products/servlet/download.html</downloadUri>
 	<provider>Oracle Inc.</provider>
@@ -9,7 +9,7 @@
 	<package name="javax.servlet">
 		<maven>
 		    <artifactId>javax.servlet-api</artifactId>
-		    <version>3.0.1</version>
+		    <version>3.1.0</version>
 		</maven>
 	</package>
 	<distributions>

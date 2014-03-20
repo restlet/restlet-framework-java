@@ -9,5 +9,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.commons.fileupload"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.apache.commons.lang"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/org.json"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.jboss.resteasy"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

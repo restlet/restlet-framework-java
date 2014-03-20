@@ -556,6 +556,19 @@ public class Reference {
 
     // [ifndef gwt] method
     /**
+     * Constructor from an {@link java.net.URI} instance.
+     * 
+     * @param baseUri
+     *            The base {@link java.net.URI} instance.
+     * @param uri
+     *            The {@link java.net.URI} instance.
+     */
+    public Reference(java.net.URI baseUri, java.net.URI uri) {
+        this(baseUri.toString(), uri.toString());
+    }
+
+    // [ifndef gwt] method
+    /**
      * Constructor from an {@link java.net.URL} instance.
      * 
      * @param url

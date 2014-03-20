@@ -62,7 +62,7 @@ public class SslGetTestCase extends SslBaseConnectorsTestCase {
     public static void main(String[] args) throws Exception {
         SslGetTestCase sgt = new SslGetTestCase();
         sgt.setUp();
-        sgt.testSslInternalAndClientNio();
+        sgt.testSslInternalAndNio();
     }
 
     public static class GetTestResource extends ServerResource {
