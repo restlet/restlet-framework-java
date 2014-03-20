@@ -888,7 +888,6 @@ public class ParameterList {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	static Collection<Class<? extends Annotation>> createValidAnnotations() {
 		return Arrays.asList(Context.class, HeaderParam.class,
 				MatrixParam.class, QueryParam.class, PathParam.class,

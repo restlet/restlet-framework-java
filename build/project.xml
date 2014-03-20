@@ -8,7 +8,7 @@
 		<description>Restlet Edition for Java Standard Edition.
 		</description>
 		<javadocs>
-			<link href="http://docs.oracle.com/javase/6/docs/api/" />
+			<link href="http://docs.oracle.com/javase/7/docs/api/" />
 		</javadocs>
 		<distributions>
 			<distribution id="classic" />
@@ -25,8 +25,8 @@
 		<description>Restlet Edition for Java Enterprise Edition.
 		</description>
 		<javadocs>
-			<link href="http://docs.oracle.com/javase/6/docs/api/" />
-			<link href="http://docs.oracle.com/javaee/6/api/" />
+			<link href="http://docs.oracle.com/javase/7/docs/api/" />
+			<link href="http://docs.oracle.com/javaee/7/api/" />
 		</javadocs>
 		<distributions>
 			<distribution id="classic" />
@@ -42,7 +42,7 @@
 		</label>
 		<description>Restlet Edition for OSGi Environments.</description>
 		<javadocs>
-			<link href="http://docs.oracle.com/javase/6/docs/api/" />
+			<link href="http://docs.oracle.com/javase/7/docs/api/" />
 		</javadocs>
 		<distributions>
 			<distribution id="classic" />
@@ -59,8 +59,8 @@
 		</label>
 		<description>Restlet Edition for Google App Engine.</description>
 		<javadocs>
-			<link href="http://docs.oracle.com/javase/6/docs/api/" />
-			<link href="code.google.com/appengine/docs/java/javadoc/" />
+			<link href="http://docs.oracle.com/javase/7/docs/api/" />
+			<link href="https://developers.google.com/appengine/docs/java/javadoc/" />
 		</javadocs>
 		<distributions>
 			<distribution id="classic" />
@@ -76,8 +76,8 @@
 		</label>
 		<description>Restlet Edition for Google Web Toolkit.</description>
 		<javadocs>
-			<link href="http://docs.oracle.com/javase/6/docs/api/" />
-			<link href="http://google-web-toolkit.googlecode.com/svn/javadoc/1.6/" />
+			<link href="http://docs.oracle.com/javase/7/docs/api/" />
+			<link href="http://www.gwtproject.org/javadoc/latest/" />
 			<packages>
 				<core>org.restlet</core>
 				<engine>org.restlet.client.engine</engine>
@@ -109,6 +109,7 @@
 		<description>Restlet Edition for the Android platform.
 		</description>
 		<javadocs>
+			<link href="http://docs.oracle.com/javase/7/docs/api/" />
 			<link href="http://developer.android.com/reference/" />
 		</javadocs>
 		<distributions>

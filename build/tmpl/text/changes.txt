@@ -7,7 +7,7 @@ Changes log
     - New features
       - 
     - Enhancements
-      - Upgraded project from JavaSE 6 to JavaSE 7.
+      - Upgraded framework to Java 7. Issue #874.
     - Bug fixed
       - 
     - Misc
