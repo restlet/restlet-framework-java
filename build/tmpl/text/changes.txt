@@ -5,7 +5,7 @@ Changes log
 
 - @version-full@ (@release-date@)
     - New features
-      - 
+      - Added initial APISpark extension. Issue #875.
     - Enhancements
       - Upgraded framework to Java 7. Issue #874.
     - Bug fixed

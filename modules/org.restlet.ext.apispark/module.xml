@@ -1,0 +1,13 @@
+<module id="apispark" excludes="gwt" type="standard" package="org.restlet.ext.apispark">
+   <name>Restlet Extension - APISpark</name>
+   <description>Integration with APISpark cloud platform, by Restlet.</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+		<distribution id="p2" />
+	</distributions>
+	
+   <dependencies>
+      <dependency type="module" id="core" />
+   </dependencies>
+</module>
