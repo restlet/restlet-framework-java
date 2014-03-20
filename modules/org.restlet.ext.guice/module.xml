@@ -1,0 +1,14 @@
+<module id="guice" excludes="android,gae,gwt,osgi" type="integration" package="org.restlet.ext.guice">
+	<label>Restlet Extension - Guice</label>
+	<description>Integration with Google Guice.</description>
+	<distributions>
+		<distribution id="classic" />
+		<distribution id="maven" />
+	</distributions>
+
+	<dependencies>
+		<dependency type="library" id="guice" primary="true" />
+		<dependency type="module" id="core" />
+	</dependencies>
+	<wikiUri>66-restlet</wikiUri>
+</module>
