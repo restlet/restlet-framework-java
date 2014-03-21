@@ -74,8 +74,7 @@ public class ProductReader {
             for (index = 0; index < tab.length; index++) {
                 final char c = tab[index];
                 if (insideToken) {
-                    if (((c >= 'a') && (c <= 'z'))
-                            || ((c >= 'A') && (c <= 'Z')) || (c == ' ')) {
+                    if (HeaderUtils.isTokenChar(c) || (c == ' ')) {
                         tokenBuilder.append(c);
                     } else {
                         token = tokenBuilder.toString().trim();
