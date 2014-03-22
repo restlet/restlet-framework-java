@@ -67,19 +67,19 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private final boolean enabledClientApache = true;
 
-    private final boolean enabledClientInternal = false;
+    private final boolean enabledClientInternal = true;
 
-    private final boolean enabledClientJetty = false;
+    private final boolean enabledClientJetty = true;
 
     private final boolean enabledClientNio = false;
 
     private final boolean enabledServerInternal = true;
 
-    private final boolean enabledServerJetty = true;
+    private final boolean enabledServerJetty = false;
 
     private final boolean enabledServerNio = false;
 
-    private final boolean enabledServerSimple = false;
+    private final boolean enabledServerSimple = true;
 
     private final File testDir = new File(System.getProperty("java.io.tmpdir"),
             "SslBaseConnectorsTestCase");

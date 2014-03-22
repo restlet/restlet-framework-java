@@ -57,14 +57,15 @@ public class ConnectorsTestSuite extends TestSuite {
         super("Engine package - Connectors");
 
         // [ifdef jse]
+        // addTestSuite(AsynchroneTestCase.class);
         addTestSuite(ChunkedEncodingPutTestCase.class);
         addTestSuite(ChunkedEncodingTestCase.class);
         addTestSuite(GetTestCase.class);
         addTestSuite(GetChunkedTestCase.class);
         addTestSuite(PostPutTestCase.class);
         addTestSuite(RemoteClientAddressTestCase.class);
-        addTestSuite(org.restlet.test.engine.connector.SslGetTestCase.class);
-        addTestSuite(org.restlet.test.engine.connector.SslClientContextGetTestCase.class);
+        addTestSuite(SslClientContextGetTestCase.class);
+        addTestSuite(SslGetTestCase.class);
         // [enddef]
     }
 }

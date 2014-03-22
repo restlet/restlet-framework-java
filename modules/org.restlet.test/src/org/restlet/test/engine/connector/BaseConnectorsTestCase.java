@@ -57,7 +57,7 @@ public abstract class BaseConnectorsTestCase extends RestletTestCase {
 
     private final boolean enabledClientInternal = true;
 
-    private final boolean enabledClientJetty = true;
+    private final boolean enabledClientJetty = false;
 
     private final boolean enabledClientNio = false;
 
