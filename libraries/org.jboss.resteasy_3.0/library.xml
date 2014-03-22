@@ -1,4 +1,4 @@
-<library id="jetty"  symbolicName="org.eclipse.jetty">
+<library id="resteasy"  symbolicName="org.jboss.resteasy">
 	<name>JBoss RESTEasy</name>
 	<description>JAX-RS engine</description>
 	<version>3.0</version>
