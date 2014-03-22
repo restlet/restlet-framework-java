@@ -33,14 +33,12 @@
 
 package org.restlet.engine.adapter;
 
+import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.engine.header.Header;
-import org.restlet.engine.header.HeaderConstants;
-import org.restlet.util.Series;
 
 /**
  * Response wrapper for server HTTP calls.
@@ -61,7 +59,7 @@ public class HttpResponse extends Response {
     public static void addHeader(Response response, String headerName,
             String headerValue) {
         if (response instanceof HttpResponse) {
-            ((HttpResponse) response).getHeaders().add(headerName, headerValue);
+            ((Message) response).getHeaders().add(headerName, headerValue);
         }
     }
 
@@ -86,17 +84,6 @@ public class HttpResponse extends Response {
 
         // Set the properties
         setStatus(Status.SUCCESS_OK);
-    }
-
-    /**
-     * Returns the HTTP headers.
-     * 
-     * @return The HTTP headers.
-     */
-    @SuppressWarnings("unchecked")
-    public Series<Header> getHeaders() {
-        return (Series<Header>) getAttributes().get(
-                HeaderConstants.ATTRIBUTE_HEADERS);
     }
 
     /**

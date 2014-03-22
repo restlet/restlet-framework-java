@@ -36,6 +36,7 @@ package org.restlet.ext.jaxrs.internal.resteasy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.logging.Level;
@@ -43,7 +44,12 @@ import java.util.logging.Level;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.jboss.resteasy.spi.HttpRequest;
+import org.jboss.resteasy.core.Headers;
+import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.SynchronousExecutionContext;
+import org.jboss.resteasy.plugins.server.BaseHttpRequest;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
+import org.jboss.resteasy.spi.NotImplementedYetException;
 import org.jboss.resteasy.spi.ResteasyAsynchronousContext;
 import org.jboss.resteasy.spi.ResteasyUriInfo;
 import org.restlet.Context;
@@ -51,36 +57,78 @@ import org.restlet.Request;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.representation.InputRepresentation;
+import org.restlet.util.NamedValue;
 
 /**
  * RESTEasy HTTP request wrapper for Restlet requests.
  * 
  * @author Jerome Louvel
  */
-public class RestletHttpRequest implements HttpRequest {
+public class RestletHttpRequest extends BaseHttpRequest {
+
+    private final ResteasyHttpHeaders httpHeaders;
 
     /** The wrapped Restlet request. */
     private final Request request;
+
+    private final ResteasyUriInfo uriInfo;
 
     /**
      * Constructor.
      * 
      * @param request
      *            The wrapped Restlet request.
+     * @throws URISyntaxException
      */
-    public RestletHttpRequest(Request request) {
+    public RestletHttpRequest(SynchronousDispatcher dispatcher, Request request)
+            throws URISyntaxException {
+        super(dispatcher);
         this.request = request;
+        this.httpHeaders = createHttpHeaders();
+        this.uriInfo = createUriInfo();
+    }
+
+    /**
+     * Creates a RESTEasy HTTP headers object.
+     * 
+     * @return A RESTEasy HTTP headers object.
+     */
+    protected ResteasyHttpHeaders createHttpHeaders() {
+        MultivaluedMap<String, String> requestHeaders = new Headers<String>();
+
+        for (NamedValue<String> header : getRequest().getHeaders()) {
+            requestHeaders.add(header.getName(), header.getValue());
+        }
+
+        return new ResteasyHttpHeaders(requestHeaders);
+    }
+
+    /**
+     * Creates a RESTEasy URI info object.
+     * 
+     * @return A RESTEasy URI info object.
+     */
+    protected ResteasyUriInfo createUriInfo() {
+        try {
+            return new ResteasyUriInfo(getRequest().getResourceRef()
+                    .getBaseRef().toUri(), new URI(getRequest()
+                    .getResourceRef().getRelativeRef().toString()));
+        } catch (URISyntaxException e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to parse the URI.", e);
+            return null;
+        }
     }
 
     @Override
     public void forward(String path) {
-
+        throw new NotImplementedYetException();
     }
 
     @Override
     public ResteasyAsynchronousContext getAsyncContext() {
-
-        return null;
+        return new SynchronousExecutionContext(this.dispatcher, this,
+                httpResponse);
     }
 
     @Override
@@ -94,21 +142,8 @@ public class RestletHttpRequest implements HttpRequest {
     }
 
     @Override
-    public MultivaluedMap<String, String> getDecodedFormParameters() {
-
-        return null;
-    }
-
-    @Override
-    public MultivaluedMap<String, String> getFormParameters() {
-
-        return null;
-    }
-
-    @Override
     public HttpHeaders getHttpHeaders() {
-        // TODO
-        return null;
+        return this.httpHeaders;
     }
 
     @Override
@@ -129,8 +164,7 @@ public class RestletHttpRequest implements HttpRequest {
 
     @Override
     public MultivaluedMap<String, String> getMutableHeaders() {
-        // TODO
-        return null;
+        return httpHeaders.getMutableHeaders();
     }
 
     /**
@@ -139,19 +173,12 @@ public class RestletHttpRequest implements HttpRequest {
      * @return The wrapped Restlet request.
      */
     public Request getRequest() {
-        return request;
+        return this.request;
     }
 
     @Override
     public ResteasyUriInfo getUri() {
-        // TODO
-        return null;
-    }
-
-    @Override
-    public boolean isInitial() {
-        // TODO
-        return false;
+        return this.uriInfo;
     }
 
     @Override
@@ -187,7 +214,6 @@ public class RestletHttpRequest implements HttpRequest {
 
     @Override
     public boolean wasForwarded() {
-        // TODO
         return false;
     }
 

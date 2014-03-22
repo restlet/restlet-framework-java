@@ -40,6 +40,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 
 import org.jboss.resteasy.spi.HttpResponse;
+import org.restlet.Response;
+import org.restlet.data.CookieSetting;
 
 /**
  * RESTEasy HTTP response wrapper for Restlet requests.
@@ -48,10 +50,51 @@ import org.jboss.resteasy.spi.HttpResponse;
  */
 public class RestletHttpResponse implements HttpResponse {
 
-    @Override
-    public void addNewCookie(NewCookie arg0) {
-        // TODO Auto-generated method stub
+    private final Response response;
 
+    public RestletHttpResponse(Response response) {
+        this.response = response;
+    }
+
+    /**
+     * Converts the Restlet {@link CookieSetting} to a JAX-RS {@link NewCookie}.
+     * 
+     * @param cookieSetting The Restlet cookie setting.
+     * @return The JAX-RS NewCookie
+     * @throws IllegalArgumentException
+     */
+    public static NewCookie toNewCookie(CookieSetting cookieSetting)
+            throws IllegalArgumentException {
+        if (cookieSetting == null) {
+            return null;
+        }
+        return new NewCookie(cookieSetting.getName(), cookieSetting.getValue(),
+                cookieSetting.getPath(), cookieSetting.getDomain(),
+                cookieSetting.getVersion(), cookieSetting.getComment(),
+                cookieSetting.getMaxAge(), cookieSetting.isSecure());
+    }
+
+    /**
+     * Converts the Restlet JAX-RS NewCookie to a CookieSettings.
+     * 
+     * @param newCookie
+     * @return the converted CookieSetting
+     * @throws IllegalArgumentException
+     */
+    public static CookieSetting toRestletCookieSetting(NewCookie newCookie)
+            throws IllegalArgumentException {
+        if (newCookie == null) {
+            return null;
+        }
+        return new CookieSetting(newCookie.getVersion(), newCookie.getName(),
+                newCookie.getValue(), newCookie.getPath(),
+                newCookie.getDomain(), newCookie.getComment(),
+                newCookie.getMaxAge(), newCookie.isSecure());
+    }
+
+    @Override
+    public void addNewCookie(NewCookie cookie) {
+        getResponse().getCookieSettings().add(to)
     }
 
     @Override
@@ -64,6 +107,15 @@ public class RestletHttpResponse implements HttpResponse {
     public OutputStream getOutputStream() throws IOException {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    /**
+     * Returns the wrapped Restlet response.
+     * 
+     * @return The wrapped Restlet response.
+     */
+    public Response getResponse() {
+        return this.response;
     }
 
     @Override

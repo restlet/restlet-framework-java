@@ -45,9 +45,12 @@ import org.restlet.data.CacheDirective;
 import org.restlet.data.MediaType;
 import org.restlet.data.RecipientInfo;
 import org.restlet.data.Warning;
+import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
+import org.restlet.util.NamedValue;
+import org.restlet.util.Series;
 
 /**
  * Generic message exchanged between components.
@@ -257,6 +260,20 @@ public abstract class Message {
         }
 
         return this.entityText;
+    }
+
+    /**
+     * Returns the series of lower-level HTTP headers. Please not that this
+     * method should rarely be used as most HTTP headers are already surfaced by
+     * the Restlet API. The result series can be used to deal with HTTP
+     * extension headers.
+     * 
+     * @return The HTTP headers.
+     */
+    @SuppressWarnings("unchecked")
+    public Series<NamedValue<String>> getHeaders() {
+        return (Series<NamedValue<String>>) getAttributes().get(
+                HeaderConstants.ATTRIBUTE_HEADERS);
     }
 
     /**

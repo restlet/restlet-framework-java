@@ -508,17 +508,6 @@ public class HttpRequest extends Request {
     }
 
     /**
-     * Returns the HTTP headers.
-     * 
-     * @return The HTTP headers.
-     */
-    @SuppressWarnings("unchecked")
-    public Series<Header> getHeaders() {
-        return (Series<Header>) getAttributes().get(
-                HeaderConstants.ATTRIBUTE_HEADERS);
-    }
-
-    /**
      * Returns the low-level HTTP call.
      * 
      * @return The low-level HTTP call.

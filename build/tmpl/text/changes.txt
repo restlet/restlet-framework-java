@@ -7,7 +7,10 @@ Changes log
     - New features
       - Added initial APISpark extension. Issue #875.
       - Added Jetty client for HTTP and HTTPS. Issue #512.
-        Contributed by Tal Liron.      
+        Contributed by Tal Liron.
+      - Added Message#getHeaders() method to facilitate raw HTTP
+        headers manipulation. 
+        Suggested by Robert Fischer, Jack Jones and others.
     - Enhancements
       - Upgraded project to Java 7. Issue #874.
       - Upgraded Jetty connector to version 9.1.3. Issue #793.
@@ -23,3 +26,5 @@ Changes log
         including server (Internal, Jetty, NIO, Simple) and
         client (Apache, Internal, Jetty, NIO)
       - Started integration of Restlet JAX-RS extension with RESTEasy.
+      - Removed AJP (Tomcat protocol) support from the Jetty extension.
+        Not supported anymore by Eclipse Jetty 9.1.
