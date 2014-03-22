@@ -42,11 +42,11 @@ import org.restlet.Response;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Header;
 import org.restlet.data.Reference;
 import org.restlet.engine.Helper;
 import org.restlet.engine.header.ChallengeWriter;
 import org.restlet.engine.header.HeaderConstants;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

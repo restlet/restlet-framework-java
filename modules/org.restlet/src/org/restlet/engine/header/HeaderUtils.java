@@ -54,6 +54,7 @@ import org.restlet.data.Conditions;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Digest;
 import org.restlet.data.Disposition;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -65,7 +66,6 @@ import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

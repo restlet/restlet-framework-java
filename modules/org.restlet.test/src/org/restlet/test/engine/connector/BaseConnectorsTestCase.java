@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.engine;
+package org.restlet.test.engine.connector;
 
 import org.restlet.Application;
 import org.restlet.Client;

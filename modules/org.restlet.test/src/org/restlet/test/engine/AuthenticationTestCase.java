@@ -41,6 +41,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Digest;
+import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.engine.header.ChallengeWriter;
@@ -48,7 +49,6 @@ import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.ext.crypto.internal.HttpAwsS3Helper;
 import org.restlet.test.RestletTestCase;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

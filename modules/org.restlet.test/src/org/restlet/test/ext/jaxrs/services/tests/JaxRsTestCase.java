@@ -55,6 +55,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -68,7 +69,6 @@ import org.restlet.representation.Representation;
 import org.restlet.test.ext.jaxrs.server.RestletServerTestCase;
 import org.restlet.test.ext.jaxrs.util.OrderedReadonlySet;
 import org.restlet.test.ext.jaxrs.util.TestUtils;
-import org.restlet.util.Header;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server

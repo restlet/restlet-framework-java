@@ -71,6 +71,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.ConstructorUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.restlet.data.Form;
+import org.restlet.data.Header;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.engine.converter.ConverterHelper;
@@ -98,7 +99,6 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping
 import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

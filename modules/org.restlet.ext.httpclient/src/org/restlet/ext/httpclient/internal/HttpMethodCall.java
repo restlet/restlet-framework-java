@@ -237,8 +237,8 @@ public class HttpMethodCall extends ClientCall {
      * @return The modifiable list of response headers.
      */
     @Override
-    public Series<org.restlet.util.Header> getResponseHeaders() {
-        Series<org.restlet.util.Header> result = super
+    public Series<org.restlet.data.Header> getResponseHeaders() {
+        Series<org.restlet.data.Header> result = super
                 .getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
@@ -293,7 +293,7 @@ public class HttpMethodCall extends ClientCall {
             final Representation entity = request.getEntity();
 
             // Set the request headers
-            for (org.restlet.util.Header header : getRequestHeaders()) {
+            for (org.restlet.data.Header header : getRequestHeaders()) {
                 if (!header.getName().equals(
                         HeaderConstants.HEADER_CONTENT_LENGTH)) {
                     getHttpRequest().addHeader(header.getName(),

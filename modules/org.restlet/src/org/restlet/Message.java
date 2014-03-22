@@ -42,6 +42,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.CacheDirective;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.RecipientInfo;
 import org.restlet.data.Warning;
@@ -49,7 +50,6 @@ import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

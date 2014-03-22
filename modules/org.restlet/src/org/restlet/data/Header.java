@@ -31,9 +31,10 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.util;
+package org.restlet.data;
 
 import org.restlet.engine.util.SystemUtils;
+import org.restlet.util.NamedValue;
 
 /**
  * Represents an HTTP header.

@@ -35,13 +35,13 @@ package org.restlet.test.engine.connector;
 
 import org.restlet.Context;
 import org.restlet.Server;
+import org.restlet.data.Header;
 import org.restlet.data.Protocol;
 import org.restlet.engine.Engine;
 import org.restlet.ext.nio.HttpServerHelper;
 import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.request.HttpInboundRequest;
 import org.restlet.test.RestletTestCase;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

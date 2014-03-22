@@ -49,7 +49,6 @@ import org.restlet.Context;
  * Jetty SSL context factory based on a Restlet SSL context one.
  * 
  * @author Jerome Louvel
- * @author Tal Liron
  */
 public class RestletSslContextFactory extends SslContextFactory {
 
@@ -90,7 +89,7 @@ public class RestletSslContextFactory extends SslContextFactory {
     @Override
     public SSLServerSocket newSslServerSocket(String host, int port, int backlog)
             throws IOException {
-        final SSLServerSocketFactory factory = getSslContext()
+        SSLServerSocketFactory factory = getSslContext()
                 .getServerSocketFactory();
         return (SSLServerSocket) ((host == null) ? factory.createServerSocket(
                 port, backlog) : factory.createServerSocket(port, backlog,

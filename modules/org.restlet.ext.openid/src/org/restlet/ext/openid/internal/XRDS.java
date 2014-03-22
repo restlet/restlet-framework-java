@@ -34,10 +34,10 @@
 package org.restlet.ext.openid.internal;
 
 import org.restlet.Response;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.xml.DomRepresentation;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

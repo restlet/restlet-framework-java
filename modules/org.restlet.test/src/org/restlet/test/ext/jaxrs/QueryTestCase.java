@@ -50,7 +50,7 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
-import org.restlet.test.engine.BaseConnectorsTestCase;
+import org.restlet.test.engine.connector.BaseConnectorsTestCase;
 
 /**
  * @author Stephan Koops

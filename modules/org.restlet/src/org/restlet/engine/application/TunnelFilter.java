@@ -52,6 +52,7 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.Form;
+import org.restlet.data.Header;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
@@ -65,7 +66,6 @@ import org.restlet.engine.io.IoUtils;
 import org.restlet.routing.Filter;
 import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 // [excludes gwt]

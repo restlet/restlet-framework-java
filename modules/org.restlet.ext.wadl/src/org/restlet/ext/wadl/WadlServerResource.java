@@ -36,6 +36,7 @@ package org.restlet.ext.wadl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
@@ -45,7 +46,6 @@ import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-import org.restlet.util.Header;
 import org.restlet.util.NamedValue;
 import org.restlet.util.Series;
 

@@ -42,6 +42,7 @@ import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
+import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
@@ -52,7 +53,6 @@ import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.ext.crypto.DigestUtils;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

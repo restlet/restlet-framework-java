@@ -48,6 +48,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
+import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
@@ -77,7 +78,6 @@ import org.restlet.ext.sip.Priority;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.Subscription;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

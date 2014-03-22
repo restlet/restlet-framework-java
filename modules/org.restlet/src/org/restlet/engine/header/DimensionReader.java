@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.restlet.data.Dimension;
-import org.restlet.util.Header;
+import org.restlet.data.Header;
 
 /**
  * Dimension header reader.

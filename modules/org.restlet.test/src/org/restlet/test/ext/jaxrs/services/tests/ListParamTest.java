@@ -45,9 +45,9 @@ import junit.framework.AssertionFailedError;
 
 import org.restlet.Response;
 import org.restlet.data.Cookie;
+import org.restlet.data.Header;
 import org.restlet.data.Status;
 import org.restlet.test.ext.jaxrs.services.resources.ListParamService;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

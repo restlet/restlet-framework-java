@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.engine;
+package org.restlet.test.engine.connector;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -63,8 +63,8 @@ public class ConnectorsTestSuite extends TestSuite {
         addTestSuite(GetChunkedTestCase.class);
         addTestSuite(PostPutTestCase.class);
         addTestSuite(RemoteClientAddressTestCase.class);
-        addTestSuite(org.restlet.test.ext.ssl.SslGetTestCase.class);
-        addTestSuite(org.restlet.test.ext.ssl.SslClientContextGetTestCase.class);
+        addTestSuite(org.restlet.test.engine.connector.SslGetTestCase.class);
+        addTestSuite(org.restlet.test.engine.connector.SslClientContextGetTestCase.class);
         // [enddef]
     }
 }

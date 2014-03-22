@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.ext.ssl;
+package org.restlet.test.engine.connector;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -67,9 +67,9 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private final boolean enabledClientApache = true;
 
-    private final boolean enabledClientInternal = true;
+    private final boolean enabledClientInternal = false;
 
-    private final boolean enabledClientJetty = true;
+    private final boolean enabledClientJetty = false;
 
     private final boolean enabledClientNio = false;
 
@@ -79,7 +79,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private final boolean enabledServerNio = false;
 
-    private final boolean enabledServerSimple = true;
+    private final boolean enabledServerSimple = false;
 
     private final File testDir = new File(System.getProperty("java.io.tmpdir"),
             "SslBaseConnectorsTestCase");
@@ -134,7 +134,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
                 // Copy the keystore into the test directory
                 Response response = new Client(Protocol.CLAP)
                         .handle(new Request(Method.GET,
-                                "clap://class/org/restlet/test/engine/dummy.jks"));
+                                "clap://class/org/restlet/test/engine/connector/dummy.jks"));
 
                 if (response.getEntity() != null) {
                     OutputStream outputStream = new FileOutputStream(

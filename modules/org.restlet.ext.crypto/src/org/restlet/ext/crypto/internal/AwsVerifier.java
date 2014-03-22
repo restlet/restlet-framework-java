@@ -35,12 +35,12 @@ package org.restlet.ext.crypto.internal;
 
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.security.LocalVerifier;
 import org.restlet.security.SecretVerifier;
 import org.restlet.security.User;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

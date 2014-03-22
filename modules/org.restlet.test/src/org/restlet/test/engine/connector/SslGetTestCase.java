@@ -31,44 +31,67 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.engine;
+package org.restlet.test.engine.connector;
 
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.resource.Get;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
 /**
- * Test that a simple get works for all the connectors.
+ * Test that a simple get using SSL works for all the connectors.
  * 
  * @author Kevin Conaway
+ * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
  */
-public class GetTestCase extends BaseConnectorsTestCase {
+public class SslGetTestCase extends SslBaseConnectorsTestCase {
+
+    // [ifdef jse] method
+    public static void main(String[] args) throws Exception {
+        SslGetTestCase sgt = new SslGetTestCase();
+        sgt.setUp();
+        sgt.testSslInternalAndNio();
+    }
 
     public static class GetTestResource extends ServerResource {
-        @Get
-        public String toString() {
-            return "Hello world";
+
+        public GetTestResource() {
+
+            getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+        }
+
+        @Override
+        public Representation get(Variant variant) {
+            return new StringRepresentation("Hello world", MediaType.TEXT_PLAIN);
         }
     }
 
     @Override
     protected void call(String uri) throws Exception {
-        Request request = new Request(Method.GET, uri);
-        Client c = new Client(Protocol.HTTP);
-        Response r = c.handle(request);
+        final Request request = new Request(Method.GET, uri);
+        final Client client = new Client(Protocol.HTTPS);
+        client.setContext(new Context());
+        configureSslClientParameters(client.getContext());
+        final Response r = client.handle(request);
+
         assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK,
                 r.getStatus());
         assertEquals("Hello world", r.getEntity().getText());
-        c.stop();
+
+        Thread.sleep(200);
+        client.stop();
     }
 
     @Override

@@ -44,6 +44,7 @@ import org.openid4java.message.Message;
 import org.openid4java.message.ParameterList;
 import org.openid4java.server.ServerManager;
 import org.restlet.data.Form;
+import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.EmptyRepresentation;
@@ -52,7 +53,6 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

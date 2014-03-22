@@ -47,10 +47,10 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 
 import org.restlet.Server;
+import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.engine.adapter.ServerCall;
 import org.restlet.engine.ssl.SslUtils;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 import org.simpleframework.http.Request;
 import org.simpleframework.http.Response;

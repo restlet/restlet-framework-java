@@ -38,10 +38,10 @@ import java.io.IOException;
 import org.restlet.Client;
 import org.restlet.Request;
 import org.restlet.Response;
+import org.restlet.data.Header;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.util.ReferenceUtils;
 import org.restlet.ext.nio.internal.connection.Connection;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

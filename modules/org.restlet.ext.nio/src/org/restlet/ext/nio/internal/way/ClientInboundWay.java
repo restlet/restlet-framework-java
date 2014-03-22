@@ -40,6 +40,7 @@ import java.util.logging.Level;
 import org.restlet.Client;
 import org.restlet.Message;
 import org.restlet.Response;
+import org.restlet.data.Header;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.header.HeaderConstants;
@@ -49,7 +50,6 @@ import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.state.ConnectionState;
 import org.restlet.ext.nio.internal.state.IoState;
 import org.restlet.ext.nio.internal.state.MessageState;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

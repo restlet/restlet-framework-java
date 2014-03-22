@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.engine;
+package org.restlet.test.engine.connector;
 
 import java.io.IOException;
 
@@ -45,6 +45,7 @@ import org.restlet.Message;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
@@ -56,7 +57,6 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

@@ -31,69 +31,74 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.engine;
+package org.restlet.test.engine.connector;
 
-import org.junit.Assert;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
-import org.restlet.data.MediaType;
+import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Status;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.representation.Variant;
-import org.restlet.resource.ServerResource;
-import org.restlet.routing.Router;
 
 /**
- * Test that the client address is available for all the connectors
+ * Unit tests for POST and PUT requests.
  * 
- * @author Kevin Conaway
+ * @author Jerome Louvel
  */
-public class RemoteClientAddressTestCase extends BaseConnectorsTestCase {
-
-    public static class RemoteClientAddressResource extends ServerResource {
-
-        public RemoteClientAddressResource() {
-
-            getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-        }
-
-        @Override
-        public Representation get(Variant variant) {
-            Assert.assertEquals("127.0.0.1", getRequest().getClientInfo()
-                    .getAddress());
-            Assert.assertTrue(getRequest().getClientInfo().getPort() > 0);
-
-            return new StringRepresentation("OK");
-        }
-    }
+public class PostPutTestCase extends BaseConnectorsTestCase {
 
     @Override
     protected void call(String uri) throws Exception {
-        final Request request = new Request(Method.GET, uri);
-        Client c = new Client(Protocol.HTTP);
-        final Response r = c.handle(request);
-        assertEquals(Status.SUCCESS_OK, r.getStatus());
-        c.stop();
+        Client client = new Client(Protocol.HTTP);
+        testCall(client, Method.POST, uri);
+        testCall(client, Method.PUT, uri);
+        client.stop();
     }
 
     @Override
-    protected Application createApplication(Component component) {
-        final Application application = new Application() {
+    protected Application createApplication(final Component component) {
+        Application application = new Application() {
             @Override
             public Restlet createInboundRoot() {
-                final Router router = new Router(getContext());
-                router.attach("/test", RemoteClientAddressResource.class);
-                return router;
+                final Restlet trace = new Restlet(getContext()) {
+                    @Override
+                    public void handle(Request request, Response response) {
+                        Representation entity = request.getEntity();
+                        if (entity != null) {
+                            Form form = new Form(entity);
+                            response.setEntity(form.getWebRepresentation());
+                        }
+                    }
+                };
+
+                return trace;
             }
         };
 
         return application;
     }
+
+    private void testCall(Client client, Method method, String uri)
+            throws Exception {
+        Form inputForm = new Form();
+        inputForm.add("a", "a");
+        inputForm.add("b", "b");
+
+        Request request = new Request(method, uri);
+        request.setEntity(inputForm.getWebRepresentation());
+
+        Response response = client.handle(request);
+        Representation entity = response.getEntity();
+        assertNotNull(entity);
+
+        Form outputForm = new Form(entity);
+        assertEquals(2, outputForm.size());
+        assertEquals("a", outputForm.getFirstValue("a"));
+        assertEquals("b", outputForm.getFirstValue("b"));
+    }
+
 }

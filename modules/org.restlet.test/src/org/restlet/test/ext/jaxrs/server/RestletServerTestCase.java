@@ -57,6 +57,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Form;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
@@ -71,7 +72,6 @@ import org.restlet.representation.Representation;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MemoryRealm;
 import org.restlet.security.User;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 import org.restlet.util.WrapperRepresentation;
 

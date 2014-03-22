@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.engine;
+package org.restlet.test.engine.connector;
 
 import org.restlet.Application;
 import org.restlet.Client;
@@ -42,6 +42,8 @@ import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Status;
+import org.restlet.ext.xml.TransformRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -49,62 +51,56 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
 /**
- * This tests the ability of the connectors to handle chunked encoding.
+ * Test that a simple get works for all the connectors.
  * 
- * The test uses each connector to PUT an entity that will be sent chunked and
- * also to receive a chunked response.
+ * @author Kevin Conaway
  */
-public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
+public class GetChunkedTestCase extends BaseConnectorsTestCase {
 
-    private static int LOOP_NUMBER = 20;
+    public static class GetChunkedTestResource extends ServerResource {
 
-    /**
-     * Test resource that answers to PUT requests by sending back the received
-     * entity.
-     */
-    public static class PutTestResource extends ServerResource {
-        public PutTestResource() {
+        public GetChunkedTestResource() {
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-            setNegotiated(false);
         }
 
         @Override
-        public Representation put(Representation entity) {
-            return entity;
+        public Representation get(Variant variant) {
+            // Get the source XML
+            final Representation source = new StringRepresentation(
+                    "<?xml version='1.0'?><mail>Hello world</mail>",
+                    MediaType.APPLICATION_XML);
+
+            final StringBuilder builder = new StringBuilder();
+            builder
+                    .append("<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">");
+            builder.append("<xsl:output method=\"text\"/>");
+            builder.append("<xsl:template match=\"/\">");
+            builder.append("<xsl:apply-templates />");
+            builder.append("</xsl:template>");
+            builder.append("</xsl:stylesheet>");
+            final Representation transformSheet = new StringRepresentation(
+                    builder.toString(), MediaType.TEXT_XML);
+
+            // Instantiates the representation with both source and stylesheet.
+            final Representation representation = new TransformRepresentation(
+                    getContext(), source, transformSheet);
+            // Set the right media-type
+            representation.setMediaType(variant.getMediaType());
+
+            return representation;
+
         }
-    }
-
-    /**
-     * Returns a StringRepresentation which size depends on the given argument.
-     * 
-     * @param size
-     *            the size of the representation
-     * @return A DomRepresentation.
-     */
-    private static Representation createChunkedRepresentation(int size) {
-        StringBuilder builder = new StringBuilder();
-
-        for (int i = 0; i < size; i++) {
-            builder.append("a");
-        }
-
-        Representation rep = new StringRepresentation(builder.toString(),
-                MediaType.TEXT_PLAIN);
-        rep.setSize(Representation.UNKNOWN_SIZE);
-        return rep;
     }
 
     @Override
     protected void call(String uri) throws Exception {
-        for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendPut(uri, 10);
-        }
-
-        for (int i = 0; i < LOOP_NUMBER; i++) {
-            sendPut(uri, 50000);
-        }
-
-        sendPut(uri, 100000);
+        final Request request = new Request(Method.GET, uri);
+        Client c = new Client(Protocol.HTTP);
+        final Response r = c.handle(request);
+        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
+                .getStatus());
+        assertEquals("Hello world", r.getEntity().getText());
+        c.stop();
     }
 
     @Override
@@ -113,32 +109,11 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
             @Override
             public Restlet createInboundRoot() {
                 final Router router = new Router(getContext());
-                router.attach("/test", PutTestResource.class);
+                router.attach("/test", GetChunkedTestResource.class);
                 return router;
             }
         };
 
         return application;
     }
-
-    private void sendPut(String uri, int size) throws Exception {
-        Request request = new Request(Method.PUT, uri,
-                createChunkedRepresentation(size));
-        Client c = new Client(Protocol.HTTP);
-        Response r = c.handle(request);
-
-        try {
-            if (!r.getStatus().isSuccess()) {
-                System.out.println(r.getStatus());
-            }
-
-            assertNotNull(r.getEntity());
-            assertEquals(createChunkedRepresentation(size).getText(), r
-                    .getEntity().getText());
-        } finally {
-            r.release();
-            c.stop();
-        }
-    }
-
 }

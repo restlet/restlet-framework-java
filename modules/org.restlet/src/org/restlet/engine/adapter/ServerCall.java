@@ -45,6 +45,7 @@ import org.restlet.Context;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Digest;
+import org.restlet.data.Header;
 import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.engine.header.ContentType;
 import org.restlet.engine.header.DispositionReader;
@@ -61,7 +62,6 @@ import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.InputRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.service.ConnectorService;
-import org.restlet.util.Header;
 
 /**
  * Abstract HTTP server connector call.

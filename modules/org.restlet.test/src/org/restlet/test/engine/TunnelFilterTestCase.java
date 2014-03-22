@@ -44,6 +44,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
+import org.restlet.data.Header;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
@@ -53,7 +54,6 @@ import org.restlet.data.Reference;
 import org.restlet.engine.application.TunnelFilter;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.test.RestletTestCase;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

@@ -37,6 +37,7 @@ import java.io.IOException;
 
 import org.restlet.Client;
 import org.restlet.Response;
+import org.restlet.data.Header;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.engine.header.HeaderConstants;
@@ -47,7 +48,6 @@ import org.restlet.ext.nio.internal.way.ClientInboundWay;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
 import org.restlet.ext.sip.SipStatus;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

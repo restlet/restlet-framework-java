@@ -48,6 +48,7 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
+import org.restlet.data.Header;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
@@ -67,7 +68,6 @@ import org.restlet.engine.header.WarningReader;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.nio.internal.connection.Connection;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

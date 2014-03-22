@@ -74,6 +74,7 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Dimension;
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.engine.header.ContentType;
@@ -92,7 +93,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

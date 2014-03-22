@@ -706,11 +706,8 @@ public abstract class JettyServerHelper extends
     @Override
     public void start() throws Exception {
         super.start();
-
-        final org.eclipse.jetty.server.Server server = getWrappedServer();
-        final ServerConnector connector = (ServerConnector) server
-                .getConnectors()[0];
-
+        org.eclipse.jetty.server.Server server = getWrappedServer();
+        ServerConnector connector = (ServerConnector) server.getConnectors()[0];
         getLogger().info(
                 "Starting the Jetty " + getProtocols() + " server on port "
                         + getHelped().getPort());

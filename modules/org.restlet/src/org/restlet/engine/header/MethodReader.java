@@ -36,8 +36,8 @@ package org.restlet.engine.header;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.restlet.data.Header;
 import org.restlet.data.Method;
-import org.restlet.util.Header;
 
 /**
  * Method header reader.

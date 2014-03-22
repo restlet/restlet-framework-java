@@ -31,19 +31,17 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.test.ext.ssl;
+package org.restlet.test.engine.connector;
 
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.representation.Variant;
@@ -51,40 +49,62 @@ import org.restlet.resource.ServerResource;
 import org.restlet.routing.Router;
 
 /**
- * Test that a simple get using SSL works for all the connectors.
+ * This tests the ability of the connectors to handle chunked encoding.
  * 
- * @author Kevin Conaway
- * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
+ * The test uses each connector to PUT an entity that will be sent chunked and
+ * also to receive a chunked response.
  */
-public class SslClientContextGetTestCase extends SslBaseConnectorsTestCase {
-    public static class GetTestResource extends ServerResource {
+public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
-        public GetTestResource() {
+    private static int LOOP_NUMBER = 20;
+
+    /**
+     * Test resource that answers to PUT requests by sending back the received
+     * entity.
+     */
+    public static class PutTestResource extends ServerResource {
+        public PutTestResource() {
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+            setNegotiated(false);
         }
 
         @Override
-        public Representation get(Variant variant) {
-            return new StringRepresentation("Hello world", MediaType.TEXT_PLAIN);
+        public Representation put(Representation entity) {
+            return entity;
         }
+    }
+
+    /**
+     * Returns a StringRepresentation which size depends on the given argument.
+     * 
+     * @param size
+     *            the size of the representation
+     * @return A DomRepresentation.
+     */
+    private static Representation createChunkedRepresentation(int size) {
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < size; i++) {
+            builder.append("a");
+        }
+
+        Representation rep = new StringRepresentation(builder.toString(),
+                MediaType.TEXT_PLAIN);
+        rep.setSize(Representation.UNKNOWN_SIZE);
+        return rep;
     }
 
     @Override
     protected void call(String uri) throws Exception {
-        final Request request = new Request(Method.GET, uri);
-        final Client client = new Client(Protocol.HTTPS);
-        if (client.getContext() == null) {
-            client.setContext(new Context());
+        for (int i = 0; i < LOOP_NUMBER; i++) {
+            sendPut(uri, 10);
         }
-        configureSslServerParameters(client.getContext());
-        final Response r = client.handle(request);
 
-        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK,
-                r.getStatus());
-        assertEquals("Hello world", r.getEntity().getText());
+        for (int i = 0; i < LOOP_NUMBER; i++) {
+            sendPut(uri, 50000);
+        }
 
-        Thread.sleep(200);
-        client.stop();
+        sendPut(uri, 100000);
     }
 
     @Override
@@ -93,11 +113,32 @@ public class SslClientContextGetTestCase extends SslBaseConnectorsTestCase {
             @Override
             public Restlet createInboundRoot() {
                 final Router router = new Router(getContext());
-                router.attach("/test", GetTestResource.class);
+                router.attach("/test", PutTestResource.class);
                 return router;
             }
         };
 
         return application;
     }
+
+    private void sendPut(String uri, int size) throws Exception {
+        Request request = new Request(Method.PUT, uri,
+                createChunkedRepresentation(size));
+        Client c = new Client(Protocol.HTTP);
+        Response r = c.handle(request);
+
+        try {
+            if (!r.getStatus().isSuccess()) {
+                System.out.println(r.getStatus());
+            }
+
+            assertNotNull(r.getEntity());
+            assertEquals(createChunkedRepresentation(size).getText(), r
+                    .getEntity().getText());
+        } finally {
+            r.release();
+            c.stop();
+        }
+    }
+
 }
