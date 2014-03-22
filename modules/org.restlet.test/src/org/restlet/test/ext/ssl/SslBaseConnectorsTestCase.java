@@ -71,13 +71,13 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private final boolean enabledClientJetty = true;
 
-    private final boolean enabledClientNio = true;
+    private final boolean enabledClientNio = false;
 
     private final boolean enabledServerInternal = true;
 
     private final boolean enabledServerJetty = true;
 
-    private final boolean enabledServerNio = true;
+    private final boolean enabledServerNio = false;
 
     private final boolean enabledServerSimple = true;
 
