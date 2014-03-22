@@ -61,7 +61,6 @@ import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.engine.header.Header;
 import org.restlet.ext.jaxrs.JaxRsApplication;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
@@ -69,6 +68,7 @@ import org.restlet.representation.Representation;
 import org.restlet.test.ext.jaxrs.server.RestletServerTestCase;
 import org.restlet.test.ext.jaxrs.util.OrderedReadonlySet;
 import org.restlet.test.ext.jaxrs.util.TestUtils;
+import org.restlet.util.Header;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server

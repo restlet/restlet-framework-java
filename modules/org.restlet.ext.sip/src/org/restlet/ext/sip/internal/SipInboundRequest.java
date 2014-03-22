@@ -58,7 +58,6 @@ import org.restlet.data.Warning;
 import org.restlet.engine.header.CacheDirectiveReader;
 import org.restlet.engine.header.CookieReader;
 import org.restlet.engine.header.ExpectationReader;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.PreferenceReader;
@@ -78,6 +77,7 @@ import org.restlet.ext.sip.Priority;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.Subscription;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**
@@ -671,17 +671,6 @@ public class SipInboundRequest extends SipRequest implements InboundRequest {
         }
 
         return super.getEvent();
-    }
-
-    /**
-     * Returns the HTTP headers.
-     * 
-     * @return The HTTP headers.
-     */
-    @SuppressWarnings("unchecked")
-    public Series<Header> getHeaders() {
-        return (Series<Header>) getAttributes().get(
-                HeaderConstants.ATTRIBUTE_HEADERS);
     }
 
     @Override

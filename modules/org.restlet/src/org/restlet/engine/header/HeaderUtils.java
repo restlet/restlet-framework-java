@@ -65,6 +65,7 @@ import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.StringUtils;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

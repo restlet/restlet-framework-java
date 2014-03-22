@@ -52,10 +52,10 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.Edition;
 import org.restlet.engine.adapter.ClientCall;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.representation.Representation;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

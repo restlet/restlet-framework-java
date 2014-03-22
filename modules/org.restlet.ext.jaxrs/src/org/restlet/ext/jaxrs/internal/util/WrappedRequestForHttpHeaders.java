@@ -42,8 +42,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
 import org.restlet.Response;
-import org.restlet.engine.header.Header;
 import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

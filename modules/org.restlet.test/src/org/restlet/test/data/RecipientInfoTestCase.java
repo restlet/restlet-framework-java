@@ -37,11 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.RecipientInfo;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.RecipientInfoReader;
 import org.restlet.engine.header.RecipientInfoWriter;
 import org.restlet.test.RestletTestCase;
+import org.restlet.util.Header;
 
 /**
  * Test {@link org.restlet.data.RecipientInfo}.

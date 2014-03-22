@@ -42,7 +42,6 @@ import org.restlet.Message;
 import org.restlet.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.ext.nio.ClientConnectionHelper;
@@ -50,6 +49,7 @@ import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.state.ConnectionState;
 import org.restlet.ext.nio.internal.state.IoState;
 import org.restlet.ext.nio.internal.state.MessageState;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

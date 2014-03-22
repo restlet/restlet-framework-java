@@ -65,13 +65,13 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.representation.Representation;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.MemoryRealm;
 import org.restlet.security.User;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 import org.restlet.util.WrapperRepresentation;
 

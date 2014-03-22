@@ -57,6 +57,7 @@ import org.restlet.Context;
 import org.restlet.data.Encoding;
 import org.restlet.data.Parameter;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.util.Header;
 import org.restlet.util.NamedValue;
 
 /**

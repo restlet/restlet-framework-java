@@ -39,10 +39,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.restlet.Request;
 import org.restlet.data.Method;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.crypto.internal.AwsUtils;
 import org.restlet.test.RestletTestCase;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

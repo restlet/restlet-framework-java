@@ -43,8 +43,8 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.engine.header.ChallengeWriter;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.security.AuthenticatorHelper;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

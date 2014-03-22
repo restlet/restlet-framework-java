@@ -53,11 +53,11 @@ import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.adapter.ClientCall;
 import org.restlet.engine.connector.ConnectorHelper;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.ext.sdc.SdcClientHelper;
 import org.restlet.representation.Representation;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 import com.google.dataconnector.protocol.proto.SdcFrame;

@@ -78,7 +78,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.engine.header.ContentType;
 import org.restlet.engine.header.DimensionWriter;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.util.DateUtils;
@@ -93,6 +92,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

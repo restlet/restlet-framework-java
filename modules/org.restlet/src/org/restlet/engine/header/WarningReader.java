@@ -39,6 +39,7 @@ import java.util.Collection;
 import org.restlet.data.Status;
 import org.restlet.data.Warning;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.util.Header;
 
 /**
  * Warning header reader.

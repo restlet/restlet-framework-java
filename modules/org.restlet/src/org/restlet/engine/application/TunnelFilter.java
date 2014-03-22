@@ -59,13 +59,13 @@ import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.PreferenceReader;
 import org.restlet.engine.io.IoUtils;
 import org.restlet.routing.Filter;
 import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 // [excludes gwt]

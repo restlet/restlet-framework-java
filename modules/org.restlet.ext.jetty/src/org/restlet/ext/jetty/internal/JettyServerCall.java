@@ -49,7 +49,7 @@ import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.data.Status;
 import org.restlet.engine.adapter.ServerCall;
-import org.restlet.engine.header.Header;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

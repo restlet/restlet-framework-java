@@ -59,7 +59,8 @@ public class RestletHttpResponse implements HttpResponse {
     /**
      * Converts the Restlet {@link CookieSetting} to a JAX-RS {@link NewCookie}.
      * 
-     * @param cookieSetting The Restlet cookie setting.
+     * @param cookieSetting
+     *            The Restlet cookie setting.
      * @return The JAX-RS NewCookie
      * @throws IllegalArgumentException
      */
@@ -94,7 +95,7 @@ public class RestletHttpResponse implements HttpResponse {
 
     @Override
     public void addNewCookie(NewCookie cookie) {
-        getResponse().getCookieSettings().add(to)
+        getResponse().getCookieSettings().add(toRestletCookieSetting(cookie));
     }
 
     @Override

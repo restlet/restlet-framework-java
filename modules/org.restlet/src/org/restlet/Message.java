@@ -49,7 +49,7 @@ import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ClientResource;
-import org.restlet.util.NamedValue;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**
@@ -271,8 +271,8 @@ public abstract class Message {
      * @return The HTTP headers.
      */
     @SuppressWarnings("unchecked")
-    public Series<NamedValue<String>> getHeaders() {
-        return (Series<NamedValue<String>>) getAttributes().get(
+    public Series<Header> getHeaders() {
+        return (Series<Header>) getAttributes().get(
                 HeaderConstants.ATTRIBUTE_HEADERS);
     }
 

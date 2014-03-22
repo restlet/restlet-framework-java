@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.restlet.data.CacheDirective;
+import org.restlet.util.Header;
 
 /**
  * Cache directive header reader.

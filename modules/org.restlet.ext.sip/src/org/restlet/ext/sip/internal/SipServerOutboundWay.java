@@ -36,7 +36,6 @@ package org.restlet.ext.sip.internal;
 import org.restlet.Response;
 import org.restlet.Server;
 import org.restlet.engine.header.DateWriter;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.state.IoState;
@@ -44,6 +43,7 @@ import org.restlet.ext.nio.internal.way.ServerOutboundWay;
 import org.restlet.ext.sip.SipRecipientInfo;
 import org.restlet.ext.sip.SipRequest;
 import org.restlet.ext.sip.SipResponse;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

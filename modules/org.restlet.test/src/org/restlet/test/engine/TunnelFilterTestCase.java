@@ -51,9 +51,9 @@ import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.engine.application.TunnelFilter;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.test.RestletTestCase;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

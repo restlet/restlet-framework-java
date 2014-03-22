@@ -46,9 +46,9 @@ import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.engine.header.ChallengeWriter;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.util.Base64;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

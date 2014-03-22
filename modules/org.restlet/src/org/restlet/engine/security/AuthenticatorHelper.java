@@ -45,8 +45,8 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Reference;
 import org.restlet.engine.Helper;
 import org.restlet.engine.header.ChallengeWriter;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

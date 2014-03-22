@@ -41,13 +41,13 @@ import org.restlet.Request;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Method;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.ext.crypto.internal.AwsUtils;
 import org.restlet.ext.crypto.internal.AwsVerifier;
 import org.restlet.security.LocalVerifier;
 import org.restlet.security.Verifier;
 import org.restlet.test.RestletTestCase;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

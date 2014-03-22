@@ -38,6 +38,7 @@ import java.util.Collection;
 
 import org.restlet.data.Protocol;
 import org.restlet.data.RecipientInfo;
+import org.restlet.util.Header;
 
 /**
  * Recipient info header reader.

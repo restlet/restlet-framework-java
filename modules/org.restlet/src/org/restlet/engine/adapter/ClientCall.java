@@ -44,10 +44,10 @@ import org.restlet.Response;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.engine.connector.ConnectorHelper;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.representation.Representation;
+import org.restlet.util.Header;
 import org.restlet.util.Series;
 
 /**

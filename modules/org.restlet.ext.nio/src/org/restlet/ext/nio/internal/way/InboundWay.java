@@ -39,7 +39,6 @@ import java.util.logging.Level;
 
 import org.restlet.Response;
 import org.restlet.data.Status;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderReader;
 import org.restlet.engine.header.HeaderUtils;
 import org.restlet.engine.io.ReadableSelectionChannel;
@@ -53,6 +52,7 @@ import org.restlet.ext.nio.internal.state.MessageState;
 import org.restlet.representation.EmptyRepresentation;
 import org.restlet.representation.ReadableRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.util.Header;
 import org.restlet.util.SelectionRegistration;
 import org.restlet.util.Series;
 
