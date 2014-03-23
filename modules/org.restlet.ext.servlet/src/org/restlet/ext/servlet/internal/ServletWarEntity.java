@@ -191,6 +191,14 @@ public class ServletWarEntity extends Entity {
                     result.setModificationDate(new Date(file.lastModified()));
                 }
             }
+
+            // Sets the expiration date
+            if (timeToLive == 0) {
+                result.setExpirationDate(null);
+            } else if (timeToLive > 0) {
+                result.setExpirationDate(new Date(System.currentTimeMillis()
+                        + (1000L * timeToLive)));
+            }
         }
         return result;
     }

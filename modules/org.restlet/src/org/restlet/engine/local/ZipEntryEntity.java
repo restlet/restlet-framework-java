@@ -148,7 +148,8 @@ public class ZipEntryEntity extends Entity {
     @Override
     public Representation getRepresentation(MediaType defaultMediaType,
             int timeToLive) {
-        return new ZipEntryRepresentation(defaultMediaType, zipFile, entry);
+        return new ZipEntryRepresentation(defaultMediaType, zipFile, entry, 
+                timeToLive);
     }
 
     @Override

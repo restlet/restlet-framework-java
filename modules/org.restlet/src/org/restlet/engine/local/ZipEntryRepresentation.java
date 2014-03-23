@@ -70,9 +70,27 @@ public class ZipEntryRepresentation extends StreamRepresentation {
      *            The parent Zip archive file.
      * @param entry
      *            The Zip entry.
+     * @deprecated Use {@link #ZipEntryRepresentation(MediaType, ZipFile, ZipEntry, int)} instead.
      */
     public ZipEntryRepresentation(MediaType mediaType, ZipFile zipFile,
             ZipEntry entry) {
+        this(mediaType, zipFile, entry, -1);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The entry media type.
+     * @param zipFile
+     *            The parent Zip archive file.
+     * @param entry
+     *            The Zip entry.
+     * @param timeToLive
+     *            The time to live before it expires (in seconds).
+     */
+    public ZipEntryRepresentation(MediaType mediaType, ZipFile zipFile,
+            ZipEntry entry, int timeToLive) {
         super(mediaType);
         this.zipFile = zipFile;
         this.entry = entry;
@@ -81,6 +99,13 @@ public class ZipEntryRepresentation extends StreamRepresentation {
         this.setDisposition(disposition);
         setSize(entry.getSize());
         setModificationDate(new Date(entry.getTime()));
+
+        if (timeToLive == 0) {
+            setExpirationDate(null);
+        } else if (timeToLive > 0) {
+            setExpirationDate(new Date(System.currentTimeMillis()
+                    + (1000L * timeToLive)));
+        }
     }
 
     @Override
