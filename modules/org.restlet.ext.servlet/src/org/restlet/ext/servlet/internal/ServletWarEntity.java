@@ -33,9 +33,10 @@
 
 package org.restlet.ext.servlet.internal;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -179,26 +180,27 @@ public class ServletWarEntity extends Entity {
     public Representation getRepresentation(MediaType defaultMediaType,
             int timeToLive) {
         Representation result = null;
+        
+        try {
+            URL resource = getServletContext().getResource(path);
+            if (resource != null) {
+                URLConnection connection = resource.openConnection();
+                result = new InputRepresentation(connection.getInputStream(), defaultMediaType);
 
-        InputStream ris = getServletContext().getResourceAsStream(path);
-        if (ris != null) {
-            result = new InputRepresentation(ris, defaultMediaType);
-            // Sets the modification date
-            String realPath = getServletContext().getRealPath(path);
-            if (realPath != null) {
-                File file = new File(realPath);
-                if (file != null) {
-                    result.setModificationDate(new Date(file.lastModified()));
+                // Sets the modification date
+                result.setModificationDate(new Date(connection.getLastModified()));
+                
+                // Sets the expiration date
+                if (timeToLive == 0) {
+                    result.setExpirationDate(null);
+                } else if (timeToLive > 0) {
+                    result.setExpirationDate(new Date(System.currentTimeMillis()
+                            + (1000L * timeToLive)));
                 }
             }
-
-            // Sets the expiration date
-            if (timeToLive == 0) {
-                result.setExpirationDate(null);
-            } else if (timeToLive > 0) {
-                result.setExpirationDate(new Date(System.currentTimeMillis()
-                        + (1000L * timeToLive)));
-            }
+        } catch (IOException e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Error getting the WAR resource.", e);
         }
         return result;
     }
