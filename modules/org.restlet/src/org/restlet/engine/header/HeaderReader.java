@@ -119,8 +119,8 @@ public class HeaderReader<V> {
         // {
         // return (NV) new org.restlet.data.CacheDirective(name, value);
         // } else if
-        // (org.restlet.engine.header.Header.class.equals(resultClass)) {
-        // return (NV) new org.restlet.engine.header.Header(name, value);
+        // (org.restlet.data.Header.class.equals(resultClass)) {
+        // return (NV) new org.restlet.data.Header(name, value);
         // }
         // return null;
         // [enddef]

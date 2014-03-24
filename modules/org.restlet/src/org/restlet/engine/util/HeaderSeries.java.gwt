@@ -35,7 +35,7 @@ package org.restlet.engine.util;
 
 import java.util.List;
 
-import org.restlet.engine.header.Header;
+import org.restlet.data.Header;
 import org.restlet.util.Series;
 
 /**
