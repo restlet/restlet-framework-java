@@ -4,6 +4,9 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Enhancements
+      - Integration of new Guice extension, issue #489.
+        Reported and contributed by Tim Peierls.
 
 - 2.2 Release Candidate 4 (03/18/2014)
     - Enhancements

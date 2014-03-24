@@ -1,4 +1,4 @@
-<module id="guice" excludes="android,gae,gwt,osgi" type="integration" package="org.restlet.ext.guice">
+<module id="guice" excludes="android,gae,gwt" type="integration" package="org.restlet.ext.guice">
 	<name>Restlet Extension - Guice</name>
 	<description>Integration with Google Guice.</description>
 	<distributions>
@@ -8,6 +8,8 @@
 
 	<dependencies>
 		<dependency type="library" id="guice" primary="true" />
+		<dependency type="library" id="javax.inject" />
+		<dependency type="library" id="aopalliance" />
 		<dependency type="module" id="core" />
 	</dependencies>
 	<!--
