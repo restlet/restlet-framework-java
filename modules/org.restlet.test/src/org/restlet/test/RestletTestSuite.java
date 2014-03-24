@@ -60,7 +60,7 @@ import org.restlet.test.ext.crypto.DigestVerifierTestCase;
 import org.restlet.test.ext.crypto.HttpDigestTestCase;
 import org.restlet.test.ext.emf.EmfTestSuite;
 import org.restlet.test.ext.freemarker.FreeMarkerTestCase;
-import org.restlet.test.ext.guice.GuiceSelfInjectingServerResourceModuleTestCase;
+import org.restlet.test.ext.guice.GuiceTestSuite;
 import org.restlet.test.ext.gwt.GwtConverterTestCase;
 import org.restlet.test.ext.html.HtmlTestSuite;
 import org.restlet.test.ext.jackson.JacksonTestCase;
@@ -119,7 +119,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(FilterTestCase.class);
         addTestSuite(FormTestCase.class);
         addTestSuite(FreeMarkerTestCase.class);
-        addTestSuite(GuiceSelfInjectingServerResourceModuleTestCase.class);
+        addTest(GuiceTestSuite.suite());
         addTestSuite(GwtConverterTestCase.class);
         addTestSuite(JacksonTestCase.class);
         addTestSuite(JaxbBasicConverterTestCase.class);
