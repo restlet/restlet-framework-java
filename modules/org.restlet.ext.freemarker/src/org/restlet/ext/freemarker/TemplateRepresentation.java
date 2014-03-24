@@ -68,6 +68,7 @@ public class TemplateRepresentation extends WriterRepresentation {
      *            The template representation.
      * @return The template or null if not found.
      */
+    @SuppressWarnings("deprecation")
     public static Template getTemplate(Configuration config,
             Representation templateRepresentation) {
         try {

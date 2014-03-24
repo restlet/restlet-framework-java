@@ -60,6 +60,7 @@ public class HttpIdleConnectionReaper {
         /** CountDownLatch used when starting the thread. */
         private final CountDownLatch startupLatch = new CountDownLatch(1);
 
+        @SuppressWarnings("deprecation")
         @Override
         public void run() {
             try {

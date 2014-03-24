@@ -5,6 +5,8 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Enhancements
+      - Integration of new Guice extension, issue #489.
+        Reported and contributed by Tim Peierls.
       - 
     - Bug fixed
       - Fixed user agent product parsing. Issues #878 and 879.
