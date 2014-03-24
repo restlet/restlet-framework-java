@@ -26,9 +26,9 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
- * Restlet is a registered trademark of Restlet
+ * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.test.resource;
@@ -38,19 +38,14 @@ import org.restlet.resource.ServerResource;
 
 public class MyResource8 extends ServerResource {
 
-    @Post("xml|json:xml")
-    public String storeForm(String entity) {
+    @Post("xml|json:xml|json")
+    public String store1(String entity) {
         return entity + "1";
     }
 
-    @Post("xml|json:json|html")
-    public String store1(String entity) {
-        return entity + "2";
-    }
-
-    @Post("form|json:json|html")
+    @Post("form|html:form|html")
     public String store2(String entity) {
-        return entity + "3";
+        return entity + "2";
     }
 
 }
