@@ -114,7 +114,6 @@
 	<condition property="ant-old">
 		<not>
 			<or>
-				<contains string="${ant.version}" substring="version 1.7" />
 				<contains string="${ant.version}" substring="version 1.8" />
 				<contains string="${ant.version}" substring="version 1.9" />
 			</or>
@@ -818,7 +817,7 @@
 	<target name="verify" if="do-verify" depends="verify-ant, verify-tests, verify-findbugs, verify-checkstyle" description="Verify build." />
 
 	<target name="verify-ant" if="ant-old" description="Check the Ant version for potential issues with JUnit.">
-		<echo message="For easier integration with JUnit, we recommand usage of Ant 1.7 or higher." />
+		<echo message="For easier integration with JUnit, we recommand usage of Ant 1.8 or higher." />
 		<echo message="Otherwise, make sure that you have JUnit's JAR into you Ant's lib directory." />
 		<echo message="Current version: ${ant.version}" />
 	</target>

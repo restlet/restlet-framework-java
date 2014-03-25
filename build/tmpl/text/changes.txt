@@ -20,6 +20,8 @@ Changes log
         headers manipulation. Issue #879.
         Suggested by Robert Fischer, Jack Jones and others.
       - Moved Header class to org.restlet.util package.
+      - Integration of new Guice extension, issue #489.
+        Reported and contributed by Tim Peierls.
     - Bug fixed
       - 
     - Misc

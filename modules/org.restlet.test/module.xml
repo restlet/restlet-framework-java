@@ -13,19 +13,21 @@
 		<dependency type="library" id="junit" />
 		<dependency type="library" id="hamcrest" />
 		<dependency type="module" id="atom" />
-		<dependency type="module" id="crypto" />
 		<dependency type="module" id="core" />
+		<dependency type="module" id="crypto" />
 		<dependency type="module" id="emf" />
 		<dependency type="module" id="example" />
 		<dependency type="module" id="freemarker" />
-		<dependency type="module" id="html" />
 		<dependency type="module" id="gson" />
+		<dependency type="module" id="guice" />
 		<dependency type="module" id="gwt" />
+		<dependency type="module" id="html" />
 		<dependency type="module" id="httpclient" />
 		<dependency type="module" id="jackson" />
 		<dependency type="module" id="jaxb" />
 		<dependency type="module" id="jaxrs" />
 		<dependency type="module" id="jetty" includes="jse" />
+		<dependency type="module" id="jsslutils" includes="jse" />
 		<dependency type="module" id="json" />
 		<dependency type="module" id="lucene" />
 		<dependency type="module" id="oauth" includes="jse" />
@@ -35,13 +37,12 @@
 		<dependency type="module" id="simple" includes="jse" />
 		<dependency type="module" id="sip" includes="jse" />
 		<dependency type="module" id="spring" />
-		<dependency type="module" id="jsslutils" includes="jse" />
+		<dependency type="module" id="thymeleaf" />
 		<dependency type="module" id="velocity" />
 		<dependency type="module" id="wadl" />
 		<dependency type="module" id="xdb" includes="jee" />
 		<dependency type="module" id="xml" />
 		<dependency type="module" id="xstream" />
-		<dependency type="module" id="thymeleaf" />
 	</dependencies>
 	<source edition="android">
 		<files-sets>
@@ -83,17 +84,18 @@
 <![CDATA[
          <exclude name="tomcat/**" />
          <exclude name="target/**" />
+         <exclude name="src/org/restlet/test/bench/**" />
          <exclude name="src/org/restlet/test/gwt/**" />
-         <exclude name="src/org/restlet/test/engine/BaseConnectorsTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/ChunkedEncodingPutTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/ChunkedEncodingTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/GetChunkedTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/GetTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/PostPutTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/RemoteClientAddressTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/SslBaseConnectorsTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/SslClientContextGetTestCase.java" />
-         <exclude name="src/org/restlet/test/engine/SslGetTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/connector/BaseConnectorsTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/connector/ChunkedEncodingPutTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/connector/ChunkedEncodingTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/connector/GetChunkedTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/connector/GetTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/connector/PostPutTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/connector/RemoteClientAddressTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/connector/SslBaseConnectorsTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/connector/SslClientContextGetTestCase.java" />
+         <exclude name="src/org/restlet/test/engine/connector/SslGetTestCase.java" />
          <exclude name="src/org/restlet/test/ext/jaxrs/QueryTestCase*" />
          <exclude name="src/org/restlet/test/resource/*" />
          <exclude name="src/org/restlet/test/ext/ssl/**" />

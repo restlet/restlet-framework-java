@@ -180,8 +180,8 @@ public class GwtClientCall extends ClientCall {
 	 * @return The modifiable list of response headers.
 	 */
 	@Override
-	public Series<org.restlet.engine.header.Header> getResponseHeaders() {
-		final Series<org.restlet.engine.header.Header> result = super
+	public Series<org.restlet.data.Header> getResponseHeaders() {
+		final Series<org.restlet.data.Header> result = super
 				.getResponseHeaders();
 
 		if (!this.responseHeadersAdded && (getResponse() != null)) {
@@ -232,7 +232,7 @@ public class GwtClientCall extends ClientCall {
 		}
 
 		// Set the request headers
-		for (final org.restlet.engine.header.Header header : getRequestHeaders()) {
+		for (final org.restlet.data.Header header : getRequestHeaders()) {
 			getRequestBuilder().setHeader(header.getName(),
 					getRequestHeaders().getValues(header.getName()));
 		}

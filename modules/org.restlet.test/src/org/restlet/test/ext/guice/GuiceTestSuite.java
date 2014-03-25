@@ -26,50 +26,29 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://restlet.com/products/restlet-framework
+ * http://www.restlet.com/products/restlet-framework
  * 
- * Restlet is a registered trademark of Restlet S.A.S.
+ * Restlet is a registered trademark of Restlet
  */
 
-package org.restlet.engine.util;
+package org.restlet.test.ext.guice;
 
-import java.util.List;
-
-import org.restlet.data.Header;
-import org.restlet.util.Series;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 /**
- * Header series.
+ * Suite with all Guice unit tests.
  * 
- * @author Thierry Boileau
+ * @author Tim Peierls
  */
-public class HeaderSeries extends Series<Header> {
+public class GuiceTestSuite extends TestCase {
 
-    /**
-     * Constructor.
-     */
-    public HeaderSeries() {
-        super(Header.class);
+    public static Test suite() {
+        TestSuite result = new TestSuite();
+        result.setName("Guice extension");
+        result.addTestSuite(GuiceSelfInjectingServerResourceModuleTestCase.class);
+        result.addTestSuite(GuiceWrappedFinderTestCase.class);
+        return result;
     }
-
-    /**
-     * Constructor.
-     * 
-     * @param delegate
-     *            The delegate list.
-     */
-    public HeaderSeries(List<Header> delegate) {
-        super(Header.class, delegate);
-    }
-
-    @Override
-    public Header createEntry(String name, String value) {
-        return new Header(name, value);
-    }
-
-	@Override
-	public Series<Header> createSeries(List<Header> delegate) {
-		return new HeaderSeries(delegate);
-	}
-
 }
