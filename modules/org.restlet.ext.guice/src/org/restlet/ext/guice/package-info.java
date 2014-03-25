@@ -5,7 +5,7 @@
  *   types that have {@code javax.inject}-annotated members.
  *   Although the extension has "guice" in the package name and
  *   contains direct support for
- *   <a href="https://code.google.com/p/google-guice/">Google Guice version 2.0 or later</a>,
+ *   <a href="https://code.google.com/p/google-guice/">Google Guice version 3.0 or later</a>,
  *   the tools here can be adapted for use with any DI framework that
  *   complies with
  *   <a href="https://code.google.com/p/atinject/">JSR-330</a>.
@@ -34,7 +34,7 @@
  * <p>
  *   In the self-injection approach, extend
  *   {@link org.restlet.ext.guice.SelfInjectingServerResource SelfInjectingServerResource}
- *   and annotate fields to be injected with {@code @Inject}.
+ *   and annotate fields and methods to be injected with {@code @Inject}.
  * </p><p>
  *   To inject resources with Guice, install a
  *   {@link org.restlet.ext.guice.SelfInjectingServerResourceModule SelfInjectingServerResourceModule}
@@ -71,7 +71,7 @@
  *       .to(HelloServerResource.class);
  *
  *   // In createInboundRoot():
- *   FinderFactory finderFactory = ...;
+ *   FinderFactory finderFactory = <em>... injected somehow ...</em>;
  *
  *   // Attachment with no coupling to concrete resource type:
  *   router.attach("/hello", finderFactory.finder(ServerResource.class, Hello.class);
@@ -104,9 +104,10 @@
  *   In the resource-injecting application approach, extend
  *   {@link org.restlet.ext.guice.ResourceInjectingApplication ResourceInjectingApplication}
  *   and use
- *   {@code org.restlet.ext.guice.ResourceInjectingApplication#newRouter newRouter()}
+ *   {@link org.restlet.ext.guice.ResourceInjectingApplication#newRouter newRouter()}
  *   instead of {@code new Router(...)}.
- *   The overridden {@code createFinder} will arrange to inject.
+ *   The overridden {@code createFinder} will produce Finders that inject the server resources
+ *   they create.
  * </p><p>
  *   To work with Guice, install a
  *   {@link org.restlet.ext.guice.SelfInjectingServerResourceModule SelfInjectingServerResourceModule}
