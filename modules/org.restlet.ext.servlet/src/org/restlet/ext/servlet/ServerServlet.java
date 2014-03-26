@@ -428,7 +428,7 @@ public class ServerServlet extends HttpServlet {
         // file.
         Client warClient = createWarClient(new Context(), getServletConfig());
         String componentClassName = getInitParameter(COMPONENT_KEY, null);
-        Class<?> targetClass = Component.class;
+        Class<?> targetClass = null;
         Component component = null;
 
         if (componentClassName != null) {
@@ -449,14 +449,17 @@ public class ServerServlet extends HttpServlet {
                     + componentClassName);
             if (response.getStatus().isSuccess()
                     && response.isEntityAvailable()) {
-                @SuppressWarnings("unchecked")
-                Constructor<? extends Component> ctor = ((Class<? extends Component>) targetClass)
-                        .getConstructor(Representation.class);
+                if (targetClass != null) {
+                    @SuppressWarnings("unchecked")
+                    Constructor<? extends Component> ctor = ((Class<? extends Component>) targetClass)
+                            .getConstructor(Representation.class);
 
-                log("[Restlet] ServerServlet: configuring component from war:///WEB-INF/restlet.xml");
-                component = (Component) ctor.newInstance(response.getEntity());
-            } else {
-                component = (Component) targetClass.newInstance();
+                    log("[Restlet] ServerServlet: configuring component from war:///WEB-INF/restlet.xml");
+                    component = (Component) ctor.newInstance(response
+                            .getEntity());
+                } else {
+                    component = new Component(response.getEntity());
+                }
             }
         } catch (IllegalAccessException e) {
             log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have proper access rights to "

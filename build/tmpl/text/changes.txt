@@ -11,6 +11,8 @@ Changes log
     - Bug fixed
       - Fixed user agent product parsing. Issues #878 and 879.
         Contributed by Jeremy Gustie.
+      - Fixed usage of client connector in GAE edition.
+        Contributed by Alex Harvey.
     - Misc
       - 
 
