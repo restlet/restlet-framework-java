@@ -103,8 +103,8 @@
 		</classpath>
 	</taskdef>
 
-	<!-- Check the project configuration 
-	<projectChecker rootDir="../" maven="${maven}" verbose = "${verbose}" />-->
+	<!-- Check the project configuration -->
+	<projectChecker rootDir="../" maven="${maven}" verbose = "${verbose}" />
 
 	<!-- = = = = = = = = = = = = = = = = =
           macrodef: generate-edition          

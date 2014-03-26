@@ -28,7 +28,7 @@
  * limitations, transferable or non-transferable, directly at
  * http://www.restlet.com/products/restlet-framework
  * 
- * Restlet is a registered trademark of Restlet
+ * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.ext.swagger.internal;
@@ -45,39 +45,20 @@ import org.restlet.routing.TemplateRoute;
 import org.restlet.util.RouteList;
 
 /**
- * Iterator over a collection of {@link Restlet} instances seen as a hierarchy,
- * based on the hierarchy of URIs.
+ * Restlet recursive iterator.
  * 
  * @author Grzegorz Godlewski
  */
 public class SwaggerRestletIterator implements Iterator<Restlet> {
-    /** The path associated to the current iterated Restlet. */
+
     private String currentPath = "/";
 
-    /** The internal map of Restlet instances. */
     private Map<Restlet, String> toCrawl = new LinkedHashMap<Restlet, String>();
 
-    /**
-     * Constructor.
-     * 
-     * @param restlet
-     *            The root restlet.
-     */
     public SwaggerRestletIterator(Restlet restlet) {
         toCrawl.put(restlet, "/");
     }
 
-    /**
-     * Returns the sub-tree of Restlet instances discovered from the given
-     * Restlet. Filters are transparently expanded, as they have no meaning in
-     * terms of hierarchy of URIs.
-     * 
-     * @param restlet
-     *            the Restlet instance to discover.
-     * @param currentPath
-     *            Its associated path.
-     * @return
-     */
     private Map<Restlet, String> expand(Restlet restlet, String currentPath) {
         Map<Restlet, String> retVal = new LinkedHashMap<Restlet, String>();
 
@@ -89,7 +70,7 @@ public class SwaggerRestletIterator implements Iterator<Restlet> {
             RouteList routeList = router.getRoutes();
             for (Route route : routeList) {
                 if (route instanceof TemplateRoute) {
-                    TemplateRoute templateRoute = (TemplateRoute) route;
+                    TemplateRoute templateRoute = (org.restlet.routing.TemplateRoute) route;
                     String templatePattern = templateRoute.getTemplate()
                             .getPattern();
 
@@ -103,11 +84,6 @@ public class SwaggerRestletIterator implements Iterator<Restlet> {
         return retVal;
     }
 
-    /**
-     * Return the path associated to the current Restlet.
-     * 
-     * @return The path associated to the current Restlet.
-     */
     public String getCurrentPath() {
         return currentPath;
     }
@@ -119,9 +95,8 @@ public class SwaggerRestletIterator implements Iterator<Restlet> {
 
     @Override
     public Restlet next() {
-        if (!hasNext()) {
+        if (toCrawl.isEmpty())
             return null;
-        }
 
         Restlet currentRestlet = toCrawl.keySet().iterator().next();
         currentPath = toCrawl.remove(currentRestlet);

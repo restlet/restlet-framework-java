@@ -14,7 +14,6 @@
 		<dependency type="library" id="swagger" />
 		<dependency type="library" id="jaxrs" />
 		<dependency type="library" id="jackson" />
-		<dependency type="library" id="json4s" />
 		<dependency type="module" id="core" />
 		<dependency type="module" id="jackson" />
 		<dependency type="module" id="jaxrs" />
