@@ -881,7 +881,7 @@ public class Engine {
      * Registers the default client and server connectors.
      */
     public void registerDefaultConnectors() {
-        // [ifndef gae, gwt]
+        // [ifndef gwt]
         getRegisteredClients().add(
                 new org.restlet.engine.connector.HttpClientHelper(null));
         // [enddef]
