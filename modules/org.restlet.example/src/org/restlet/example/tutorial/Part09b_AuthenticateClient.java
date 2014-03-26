@@ -54,21 +54,21 @@ public class Part09b_AuthenticateClient {
                 "scott", "tiger");
         resource.setChallengeResponse(authentication);
 
-        // Send the HTTP GET request
-        resource.get();
-
-        if (resource.getStatus().isSuccess()) {
+        try {
+            // Send the HTTP GET request
+            resource.get();
             // Output the response entity on the JVM console
             resource.getResponseEntity().write(System.out);
-        } else if (resource.getStatus()
-                .equals(Status.CLIENT_ERROR_UNAUTHORIZED)) {
-            // Unauthorized access
-            System.out
-                    .println("Access authorized by the server, check your credentials");
-        } else {
-            // Unexpected status
-            System.out.println("An unexpected status was returned: "
-                    + resource.getStatus());
+        } catch (Exception e) {
+            if (resource.getStatus().equals(Status.CLIENT_ERROR_UNAUTHORIZED)) {
+                // Unauthorized access
+                System.out
+                        .println("Access authorized by the server, check your credentials");
+            } else {
+                // Unexpected status
+                System.out.println("An unexpected status was returned: "
+                        + resource.getStatus());
+            }
         }
     }
 
