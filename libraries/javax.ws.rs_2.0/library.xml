@@ -9,7 +9,7 @@
 	
 	<package name="javax.ws.rs">
 		<maven>
-			<artifactId>jsr311-api</artifactId>
+			<artifactId>javax.ws.rs-api</artifactId>
 		</maven>
 	</package>
 	<distributions>
