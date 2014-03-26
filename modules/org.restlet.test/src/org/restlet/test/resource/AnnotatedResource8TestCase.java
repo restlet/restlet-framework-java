@@ -26,16 +26,15 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.restlet.com/products/restlet-framework
+ * http://restlet.com/products/restlet-framework
  * 
- * Restlet is a registered trademark of Restlet
+ * Restlet is a registered trademark of Restlet S.A.S.
  */
 
 package org.restlet.test.resource;
 
 import java.io.IOException;
 
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
@@ -69,40 +68,43 @@ public class AnnotatedResource8TestCase extends RestletTestCase {
     }
 
     public void testPost() throws IOException, ResourceException {
-        Representation input = new StringRepresentation("<root/>",
+        Representation input = new StringRepresentation("root",
                 MediaType.APPLICATION_XML);
         Representation result = clientResource.post(input,
                 MediaType.APPLICATION_XML);
         assertNotNull(result);
-        assertEquals("<root/>1", result.getText());
+        assertEquals("root1", result.getText());
         assertEquals(MediaType.APPLICATION_XML, result.getMediaType());
 
-        input = new StringRepresentation("<root/>", MediaType.APPLICATION_XML);
+        input = new StringRepresentation("root", MediaType.APPLICATION_XML);
         result = clientResource.post(input, MediaType.APPLICATION_JSON);
         assertNotNull(result);
-        assertEquals("<root/>2", result.getText());
+        assertEquals("root1", result.getText());
         assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
 
-        input = new StringRepresentation("root=true",
-                MediaType.APPLICATION_WWW_FORM);
+        input = new StringRepresentation("root", MediaType.APPLICATION_JSON);
         result = clientResource.post(input, MediaType.APPLICATION_JSON);
         assertNotNull(result);
-        assertEquals("root=true3", result.getText());
+        assertEquals("root1", result.getText());
         assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
 
-        Form inputForm = new Form();
-        inputForm.add("root", "true");
-        result = clientResource.post(inputForm, MediaType.APPLICATION_JSON);
+        input = new StringRepresentation("root", MediaType.APPLICATION_JSON);
+        result = clientResource.post(input, MediaType.APPLICATION_XML);
         assertNotNull(result);
-        assertEquals("root=true3", result.getText());
-        assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
+        assertEquals("root1", result.getText());
+        assertEquals(MediaType.APPLICATION_XML, result.getMediaType());
 
-        input = new StringRepresentation("[root]", MediaType.APPLICATION_JSON);
-        result = clientResource.post(input, MediaType.APPLICATION_JSON);
+        input = new StringRepresentation("root", MediaType.APPLICATION_WWW_FORM);
+        result = clientResource.post(input, MediaType.APPLICATION_WWW_FORM);
         assertNotNull(result);
-        assertEquals("[root]2", result.getText());
-        assertEquals(MediaType.APPLICATION_JSON, result.getMediaType());
+        assertEquals("root2", result.getText());
+        assertEquals(MediaType.APPLICATION_WWW_FORM, result.getMediaType());
 
+        input = new StringRepresentation("root", MediaType.APPLICATION_WWW_FORM);
+        result = clientResource.post(input, MediaType.TEXT_HTML);
+        assertNotNull(result);
+        assertEquals("root2", result.getText());
+        assertEquals(MediaType.TEXT_HTML, result.getMediaType());
     }
 
 }

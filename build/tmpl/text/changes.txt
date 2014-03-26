@@ -7,10 +7,16 @@ Changes log
     - Enhancements
       - Integration of new Guice extension, issue #489.
         Reported and contributed by Tim Peierls.
+      - 
+    - Bug fixed
+      - Fixed user agent product parsing. Issues #878 and 879.
+        Contributed by Jeremy Gustie.
+    - Misc
+      - 
 
 - 2.2 Release Candidate 4 (03/18/2014)
     - Enhancements
-      - Updated swagger extension based on swagger 2.10 version, issue #827.
+      - Updated Swagger extension based on Swagger 2.10 version, issue #827.
     - Bug fixed
       - ServerResource doesn't throw away empty response entities anymore, issue #848.
         Reported by Arjohn Kampman and Marcel Hellkamp.
@@ -23,7 +29,7 @@ Changes log
         Reported and contributed by Jonathan Keljo.
     - Misc
       - Automatic build using Travis
-        (https://travis-ci.org/restlet/restlet-framework-java)
+        https://travis-ci.org/restlet/restlet-framework-java
 
 - 2.2 Release Candidate 3 (03/04/2014)
     - Enhancements
