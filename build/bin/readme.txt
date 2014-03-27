@@ -15,11 +15,7 @@ uninstall your service. See the Java Service Wrapper web site for details.
 
 A sample configuration file can be found under "./conf/wrapper.conf". This 
 file must be customized to provided your application's main class, its 
-parameters and all the classpath entries. By default, it runs the third tutorial
-example described here: http://restlet.org/learn/tutorial/2.3/#part03
-
-This tutorial example simply launches an HTTP server, listening on port 8111, and
-returning "Hello World!" to browser requests.
+parameters and all the classpath entries.
 
 Java Service Wrapper binaries are provided for the Windows x86-32 (see ./win)
 and Linux x86-32 (see ./linux) platforms but several other platforms are 
