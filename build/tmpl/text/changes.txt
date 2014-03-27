@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+
+- 2.3m1 (2014-03-27)
     - New features
       - Added initial APISpark extension. Issue #875.
       - Added Jetty client for HTTP and HTTPS. Issue #512.
