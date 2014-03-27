@@ -7,14 +7,16 @@ Changes log
     - Enhancements
       - Integration of new Guice extension, issue #489.
         Reported and contributed by Tim Peierls.
-      - 
+      - Reverted Swagger extension to version 2.9,
+        supporting only JAX-RS API. Issue #827.
     - Bug fixed
       - Fixed user agent product parsing. Issues #878 and 879.
         Contributed by Jeremy Gustie.
       - Fixed usage of client connector in GAE edition, issue #876.
         Reported by Alex Harvey.
     - Misc
-      - 
+      - Fixed many links and updated content of the User Guide
+        http://restlet.org/learn/guide/2.2/
 
 - 2.2 Release Candidate 4 (03/18/2014)
     - Enhancements
