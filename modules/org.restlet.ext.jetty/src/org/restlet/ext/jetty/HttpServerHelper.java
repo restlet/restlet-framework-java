@@ -60,15 +60,16 @@ public class HttpServerHelper extends JettyServerHelper {
     }
 
     /**
-     * Creates a new Jetty connection factory.
+     * Creates new internal Jetty connection factories.
      * 
      * @param configuration
      *            The HTTP configuration.
-     * @return A new Jetty connection factory.
+     * @return New internal Jetty connection factories.
      */
-    protected ConnectionFactory createConnectionFactory(
+    protected ConnectionFactory[] createConnectionFactories(
             HttpConfiguration configuration) {
         // Create and configure the Jetty HTTP connector
-        return new HttpConnectionFactory(configuration);
+        return new ConnectionFactory[] { new HttpConnectionFactory(
+                configuration) };
     }
 }

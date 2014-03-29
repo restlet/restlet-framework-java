@@ -1,4 +1,6 @@
 /**
+ * Integration with Google Guice @minor-version@. 
+ * 
  * <p>
  *   Tools for dependency injection (DI) of Restlet
  *   {@link org.restlet.resource.ServerResource ServerResource}
@@ -167,5 +169,9 @@
  *   &#64;Inject
  *   MyComponent(&#64;Named(FOO) Application fooApp, &#64;Named(BAR) Application barApp) ...
  * </pre>
+ * 
+ * @since Restlet 2.2
+ * @see <a href="@home-uri@">Google Guice project</a>
+ * @see <a href="http://restlet.org/learn/guide/2.3/extensions/guice">User Guide - Guice extension</a>
  */
 package org.restlet.ext.guice;

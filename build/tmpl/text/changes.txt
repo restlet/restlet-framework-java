@@ -4,12 +4,25 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - New features
+      - 
+        
+    - Enhancements
+      - Added HTTPS support to Jetty connector. Issue #793.
+        Contributed by Tal Liron.
+      
+    - Bug fixed
+      - 
 
-- 2.3m1 (2014-03-27)
+    - Misc
+      - 
+
+- 2.3 Milestone 1 (03/27/2014)
     - New features
       - Added initial APISpark extension. Issue #875.
       - Added Jetty client for HTTP and HTTPS. Issue #512.
         Contributed by Tal Liron.
+        
     - Enhancements
       - Upgraded project to Java 7. Issue #874.
       - Upgraded Jetty connector to version 9.1.3. Issue #793.
@@ -24,8 +37,7 @@ Changes log
       - Moved Header class to org.restlet.util package.
       - Integration of new Guice extension, issue #489.
         Reported and contributed by Tim Peierls.
-    - Bug fixed
-      - 
+
     - Misc
       - Refactored test cases to test all combinations of connectors
         including server (Internal, Jetty, NIO, Simple) and

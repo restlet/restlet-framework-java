@@ -35,9 +35,10 @@ package org.restlet.ext.jetty;
 
 import java.util.logging.Level;
 
+import org.eclipse.jetty.server.AbstractConnectionFactory;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ssl.DefaultSslContextFactory;
@@ -87,22 +88,27 @@ public class HttpsServerHelper extends JettyServerHelper {
     }
 
     /**
-     * Creates a new Jetty connection factory.
+     * Creates new internal Jetty connection factories.
      * 
      * @param configuration
      *            The HTTP configuration.
-     * @return A new Jetty connection factory.
+     * @return New internal Jetty connection factories.
      */
-    protected ConnectionFactory createConnectionFactory(
+    protected ConnectionFactory[] createConnectionFactories(
             HttpConfiguration configuration) {
+        ConnectionFactory[] result = null;
+
         try {
             org.eclipse.jetty.util.ssl.SslContextFactory sslContextFactory = new RestletSslContextFactory(
                     org.restlet.engine.ssl.SslUtils.getSslContextFactory(this));
-            return new SslConnectionFactory(sslContextFactory, "http");
+            result = AbstractConnectionFactory.getFactories(sslContextFactory,
+                    new HttpConnectionFactory(configuration));
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Unable to create the Jetty SSL context factory", e);
-            return null;
+            result = null;
         }
+
+        return result;
     }
 }

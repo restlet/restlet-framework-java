@@ -285,13 +285,13 @@ public abstract class JettyServerHelper extends
     }
 
     /**
-     * Creates a new internal Jetty connection factory.
+     * Creates new internal Jetty connection factories.
      * 
      * @param configuration
      *            The HTTP configuration.
-     * @return A new internal Jetty connection factory.
+     * @return New internal Jetty connection factories.
      */
-    protected abstract ConnectionFactory createConnectionFactory(
+    protected abstract ConnectionFactory[] createConnectionFactories(
             HttpConfiguration configuration);
 
     /**
@@ -303,7 +303,7 @@ public abstract class JettyServerHelper extends
      */
     private Connector createConnector(org.eclipse.jetty.server.Server server) {
         final HttpConfiguration configuration = createConfiguration();
-        final ConnectionFactory connectionFactory = createConnectionFactory(configuration);
+        final ConnectionFactory[] connectionFactories = createConnectionFactories(configuration);
 
         final int acceptors = getConnectorAcceptors();
         final int selectors = getConnectorSelectors();
@@ -313,7 +313,7 @@ public abstract class JettyServerHelper extends
 
         final ServerConnector connector = new ServerConnector(server, executor,
                 scheduler, byteBufferPool, acceptors, selectors,
-                connectionFactory);
+                connectionFactories);
 
         final String address = getHelped().getAddress();
         if (address != null)
