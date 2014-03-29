@@ -5,20 +5,15 @@ Restlet documentation
 
 
 In this directory you will find three Javadocs subdirectories:
- - api : Javadocs for the Restlet API
- - ext : Javadocs for the Restlet Extensions (no dependency on NRE)
- - eng : Javadocs for the Restlet Engine (implementation of the Restlet API)
+ - api:    Javadocs for the Restlet API
+ - ext:    Javadocs for the Restlet Extensions
+ - engine: Javadocs for the Restlet Engine (implements Restlet API)
  
-In addition, you can find many additional documentation on the Restlet Web site 
-(http://restlet.org). 
-
-Also, if you need help you can ask questions into our discussion list. See 
-subscription details at http://restlet.org/participate/. You can also 
-report issues (bugs and enhancement requests) using our bugzilla database at 
-https://github.com/restlet/restlet-framework-java/issues.
-
-Finally, if you need professional and timely assistance, you can contact
-Restlet at http://restlet.com/services/.
+In addition, you can find many additional documentation on the Restlet web site:
+ - Discover:    http://restlet.org/discover/
+ - Download:    http://restlet.org/download/
+ - Learn:       http://restlet.org/learn/
+ - Participate: http://restlet.org/participate/
 
 Best regards,
 The Restlet Team
