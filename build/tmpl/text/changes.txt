@@ -5,6 +5,12 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Enhancements
+    - Bug fixed
+      - Fixed missing internal FTP client connector registration.
+    - Misc
+
+- 2.2.0 (03/27/2014)
+    - Enhancements
       - Integration of new Guice extension, issue #489.
         Reported and contributed by Tim Peierls.
       - Reverted Swagger extension to version 2.9,
