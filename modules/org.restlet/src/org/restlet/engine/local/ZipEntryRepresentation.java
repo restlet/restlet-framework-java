@@ -55,11 +55,11 @@ import org.restlet.representation.StreamRepresentation;
  */
 public class ZipEntryRepresentation extends StreamRepresentation {
 
-    /** The Zip file. */
-    protected final ZipFile zipFile;
-
     /** The Zip entry. */
     protected final ZipEntry entry;
+
+    /** The Zip file. */
+    protected final ZipFile zipFile;
 
     /**
      * Constructor.
@@ -70,7 +70,9 @@ public class ZipEntryRepresentation extends StreamRepresentation {
      *            The parent Zip archive file.
      * @param entry
      *            The Zip entry.
-     * @deprecated Use {@link #ZipEntryRepresentation(MediaType, ZipFile, ZipEntry, int)} instead.
+     * @deprecated Use
+     *             {@link #ZipEntryRepresentation(MediaType, ZipFile, ZipEntry, int)}
+     *             instead.
      */
     public ZipEntryRepresentation(MediaType mediaType, ZipFile zipFile,
             ZipEntry entry) {
@@ -109,16 +111,16 @@ public class ZipEntryRepresentation extends StreamRepresentation {
     }
 
     @Override
+    public InputStream getStream() throws IOException {
+        return zipFile.getInputStream(entry);
+    }
+
+    @Override
     public void release() {
         try {
             zipFile.close();
         } catch (IOException e) {
         }
-    }
-
-    @Override
-    public InputStream getStream() throws IOException {
-        return zipFile.getInputStream(entry);
     }
 
     @Override

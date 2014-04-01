@@ -10,6 +10,10 @@ Changes log
     - Enhancements
       - Added HTTPS support to Jetty connector. Issue #793.
         Contributed by Tal Liron.
+      - ServletWarEntity and ZipEntryEntity ignore the timeToLive parameter. Issue #866.
+        Reported and contributed by Jeremy Gustie.
+      - ServletWarEntity is limited to file system modification dates. Issue #868.
+        Reported and contributed by Jeremy Gustie.
       
     - Bug fixed
       - Added copy of Servlet request parameters to the Restlet request attributes. Issue #741.

@@ -180,22 +180,24 @@ public class ServletWarEntity extends Entity {
     public Representation getRepresentation(MediaType defaultMediaType,
             int timeToLive) {
         Representation result = null;
-        
+
         try {
             URL resource = getServletContext().getResource(path);
             if (resource != null) {
                 URLConnection connection = resource.openConnection();
-                result = new InputRepresentation(connection.getInputStream(), defaultMediaType);
+                result = new InputRepresentation(connection.getInputStream(),
+                        defaultMediaType);
 
                 // Sets the modification date
-                result.setModificationDate(new Date(connection.getLastModified()));
-                
+                result.setModificationDate(new Date(connection
+                        .getLastModified()));
+
                 // Sets the expiration date
                 if (timeToLive == 0) {
                     result.setExpirationDate(null);
                 } else if (timeToLive > 0) {
-                    result.setExpirationDate(new Date(System.currentTimeMillis()
-                            + (1000L * timeToLive)));
+                    result.setExpirationDate(new Date(System
+                            .currentTimeMillis() + (1000L * timeToLive)));
                 }
             }
         } catch (IOException e) {

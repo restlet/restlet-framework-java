@@ -50,11 +50,11 @@ import org.restlet.service.MetadataService;
  */
 public class ZipEntryEntity extends Entity {
 
-    /** The Zip file. */
-    protected final ZipFile zipFile;
-
     /** The Zip entry. */
     protected final ZipEntry entry;
+
+    /** The Zip file. */
+    protected final ZipFile zipFile;
 
     /**
      * Constructor.
@@ -148,7 +148,7 @@ public class ZipEntryEntity extends Entity {
     @Override
     public Representation getRepresentation(MediaType defaultMediaType,
             int timeToLive) {
-        return new ZipEntryRepresentation(defaultMediaType, zipFile, entry, 
+        return new ZipEntryRepresentation(defaultMediaType, zipFile, entry,
                 timeToLive);
     }
 
