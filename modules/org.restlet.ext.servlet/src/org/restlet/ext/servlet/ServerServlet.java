@@ -531,6 +531,12 @@ public class ServerServlet extends HttpServlet {
 					component);
 			result = new HttpServerHelper(server);
 
+            // Change the default adapter
+            Context serverContext = server.getContext();
+            serverContext.getParameters().add(
+                    "adapter",
+                    "org.restlet.ext.servlet.internal.ServletServerAdapter");
+			
 			// Attach the hosted application(s) to the right path
 			String uriPattern = this.getContextPath(request)
 					+ request.getServletPath();
