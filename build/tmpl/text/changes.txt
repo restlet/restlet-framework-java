@@ -12,8 +12,10 @@ Changes log
         Contributed by Tal Liron.
       
     - Bug fixed
-      - 
-
+      - Added copy of Servlet request parameters to the Restlet request attributes. Issue #741.
+        Reported by Steve Rowe and contributed by Jeremy Gustie.
+      - Stripped Servlet container generated "jsessionid" matrix parameter. Issue #770
+        Reported and contributed by Jeremy Gustie.
     - Misc
       - 
 

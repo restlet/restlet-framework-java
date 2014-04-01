@@ -250,881 +250,880 @@ import org.restlet.routing.VirtualHost;
  * @author Jerome Louvel
  */
 public class ServerServlet extends HttpServlet {
-	/**
-	 * Name of the attribute key containing a reference to the current
-	 * application.
-	 */
-	private static final String APPLICATION_KEY = "org.restlet.application";
+    /**
+     * Name of the attribute key containing a reference to the current
+     * application.
+     */
+    private static final String APPLICATION_KEY = "org.restlet.application";
 
-	/**
-	 * The Servlet context initialization parameter's name containing a boolean
-	 * value. "true" indicates that all applications will be attached to the
-	 * Component's virtual hosts with the Servlet Context path value.
-	 */
-	private static final String AUTO_WIRE_KEY = "org.restlet.autoWire";
+    /**
+     * The Servlet context initialization parameter's name containing a boolean
+     * value. "true" indicates that all applications will be attached to the
+     * Component's virtual hosts with the Servlet Context path value.
+     */
+    private static final String AUTO_WIRE_KEY = "org.restlet.autoWire";
 
-	/** The default value for the AUTO_WIRE_KEY parameter. */
-	private static final String AUTO_WIRE_KEY_DEFAULT = "true";
+    /** The default value for the AUTO_WIRE_KEY parameter. */
+    private static final String AUTO_WIRE_KEY_DEFAULT = "true";
 
-	/**
-	 * Name of the attribute key containing a list of supported client
-	 * protocols.
-	 */
-	private static final String CLIENTS_KEY = "org.restlet.clients";
+    /**
+     * Name of the attribute key containing a list of supported client
+     * protocols.
+     */
+    private static final String CLIENTS_KEY = "org.restlet.clients";
 
-	/**
-	 * Name of the attribute key containing a reference to the current
-	 * component.
-	 */
-	private static final String COMPONENT_KEY = "org.restlet.component";
+    /**
+     * Name of the attribute key containing a reference to the current
+     * component.
+     */
+    private static final String COMPONENT_KEY = "org.restlet.component";
 
-	/**
-	 * The Servlet context initialization parameter's name containing the name
-	 * of the Servlet context attribute that should be used to store the Restlet
-	 * Application instance.
-	 */
-	private static final String NAME_APPLICATION_ATTRIBUTE = "org.restlet.attribute.application";
+    /**
+     * The Servlet context initialization parameter's name containing the name
+     * of the Servlet context attribute that should be used to store the Restlet
+     * Application instance.
+     */
+    private static final String NAME_APPLICATION_ATTRIBUTE = "org.restlet.attribute.application";
 
-	/** The default value for the NAME_APPLICATION_ATTRIBUTE parameter. */
-	private static final String NAME_APPLICATION_ATTRIBUTE_DEFAULT = "org.restlet.ext.servlet.ServerServlet.application";
+    /** The default value for the NAME_APPLICATION_ATTRIBUTE parameter. */
+    private static final String NAME_APPLICATION_ATTRIBUTE_DEFAULT = "org.restlet.ext.servlet.ServerServlet.application";
 
-	/**
-	 * The Servlet context initialization parameter's name containing the name
-	 * of the Servlet context attribute that should be used to store the Restlet
-	 * Component instance.
-	 */
-	private static final String NAME_COMPONENT_ATTRIBUTE = "org.restlet.attribute.component";
+    /**
+     * The Servlet context initialization parameter's name containing the name
+     * of the Servlet context attribute that should be used to store the Restlet
+     * Component instance.
+     */
+    private static final String NAME_COMPONENT_ATTRIBUTE = "org.restlet.attribute.component";
 
-	/** The default value for the NAME_COMPONENT_ATTRIBUTE parameter. */
-	private static final String NAME_COMPONENT_ATTRIBUTE_DEFAULT = "org.restlet.ext.servlet.ServerServlet.component";
+    /** The default value for the NAME_COMPONENT_ATTRIBUTE parameter. */
+    private static final String NAME_COMPONENT_ATTRIBUTE_DEFAULT = "org.restlet.ext.servlet.ServerServlet.component";
 
-	/**
-	 * Name of the attribute containing the computed offset path used to attach
-	 * applications when (and only when) the auto-wiring feature is set, is
-	 * added to the component's context.
-	 */
-	private static final String NAME_OFFSET_PATH_ATTRIBUTE = "org.restlet.ext.servlet.offsetPath";
+    /**
+     * Name of the attribute containing the computed offset path used to attach
+     * applications when (and only when) the auto-wiring feature is set, is
+     * added to the component's context.
+     */
+    private static final String NAME_OFFSET_PATH_ATTRIBUTE = "org.restlet.ext.servlet.offsetPath";
 
-	/**
-	 * The Servlet context initialization parameter's name containing the name
-	 * of the Servlet context attribute that should be used to store the HTTP
-	 * server connector instance.
-	 */
-	private static final String NAME_SERVER_ATTRIBUTE = "org.restlet.attribute.server";
+    /**
+     * The Servlet context initialization parameter's name containing the name
+     * of the Servlet context attribute that should be used to store the HTTP
+     * server connector instance.
+     */
+    private static final String NAME_SERVER_ATTRIBUTE = "org.restlet.attribute.server";
 
-	/** The default value for the NAME_SERVER_ATTRIBUTE parameter. */
-	private static final String NAME_SERVER_ATTRIBUTE_DEFAULT = "org.restlet.ext.servlet.ServerServlet.server";
+    /** The default value for the NAME_SERVER_ATTRIBUTE parameter. */
+    private static final String NAME_SERVER_ATTRIBUTE_DEFAULT = "org.restlet.ext.servlet.ServerServlet.server";
 
-	/** Serial version identifier. */
-	private static final long serialVersionUID = 1L;
+    /** Serial version identifier. */
+    private static final long serialVersionUID = 1L;
 
-	/** The associated Restlet application. */
-	private volatile transient Application application;
+    /** The associated Restlet application. */
+    private volatile transient Application application;
 
-	/** The associated Restlet component. */
-	private volatile transient Component component;
+    /** The associated Restlet component. */
+    private volatile transient Component component;
 
-	/** The associated HTTP server helper. */
-	private volatile transient HttpServerHelper helper;
+    /** The associated HTTP server helper. */
+    private volatile transient HttpServerHelper helper;
 
-	/**
-	 * Constructor.
-	 */
-	public ServerServlet() {
-		this.application = null;
-		this.component = null;
-		this.helper = null;
-	}
+    /**
+     * Constructor.
+     */
+    public ServerServlet() {
+        this.application = null;
+        this.component = null;
+        this.helper = null;
+    }
 
-	/**
-	 * Creates the single Application used by this Servlet.
-	 * 
-	 * @param parentContext
-	 *            The parent component context.
-	 * 
-	 * @return The newly created Application or null if unable to create
-	 */
-	protected Application createApplication(Context parentContext) {
-		Application application = null;
+    /**
+     * Creates the single Application used by this Servlet.
+     * 
+     * @param parentContext
+     *            The parent component context.
+     * 
+     * @return The newly created Application or null if unable to create
+     */
+    protected Application createApplication(Context parentContext) {
+        Application application = null;
 
-		// Try to instantiate a new target application
-		// First, find the application class name
-		String applicationClassName = getInitParameter(APPLICATION_KEY, null);
+        // Try to instantiate a new target application
+        // First, find the application class name
+        String applicationClassName = getInitParameter(APPLICATION_KEY, null);
 
-		// Load the application class using the given class name
-		if (applicationClassName != null) {
-			try {
-				Class<?> targetClass = loadClass(applicationClassName);
+        // Load the application class using the given class name
+        if (applicationClassName != null) {
+            try {
+                Class<?> targetClass = loadClass(applicationClassName);
 
-				try {
-					// Instantiate an application with the default constructor
-					// then invoke the setContext method.
-					application = (Application) targetClass.getConstructor()
-							.newInstance();
+                try {
+                    // Instantiate an application with the default constructor
+                    // then invoke the setContext method.
+                    application = (Application) targetClass.getConstructor()
+                            .newInstance();
 
-					// Set the context based on the Servlet's context
-					application.setContext(parentContext.createChildContext());
-				} catch (NoSuchMethodException e) {
-					log("[Restlet] ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor without parameter. The constructor with a parameter of type Context will be used instead.");
-					// The constructor with the Context parameter does not
-					// exist. Create a new instance of the application class by
-					// invoking the constructor with the Context parameter.
-					application = (Application) targetClass.getConstructor(
-							Context.class).newInstance(
-							parentContext.createChildContext());
-				}
-			} catch (ClassNotFoundException e) {
-				log("[Restlet] ServerServlet couldn't find the target class. Please check that your classpath includes "
-						+ applicationClassName, e);
+                    // Set the context based on the Servlet's context
+                    application.setContext(parentContext.createChildContext());
+                } catch (NoSuchMethodException e) {
+                    log("[Restlet] ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor without parameter. The constructor with a parameter of type Context will be used instead.");
+                    // The constructor with the Context parameter does not
+                    // exist. Create a new instance of the application class by
+                    // invoking the constructor with the Context parameter.
+                    application = (Application) targetClass.getConstructor(
+                            Context.class).newInstance(
+                            parentContext.createChildContext());
+                }
+            } catch (ClassNotFoundException e) {
+                log("[Restlet] ServerServlet couldn't find the target class. Please check that your classpath includes "
+                        + applicationClassName, e);
 
-			} catch (InstantiationException e) {
-				log("[Restlet] ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
-						+ applicationClassName, e);
-			} catch (IllegalAccessException e) {
-				log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
-						+ applicationClassName, e);
-			} catch (NoSuchMethodException e) {
-				log("[Restlet] ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
-						+ applicationClassName, e);
-			} catch (InvocationTargetException e) {
-				log("[Restlet] ServerServlet couldn't instantiate the target class. An exception was thrown while creating "
-						+ applicationClassName, e);
-			}
-		}
+            } catch (InstantiationException e) {
+                log("[Restlet] ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
+                        + applicationClassName, e);
+            } catch (IllegalAccessException e) {
+                log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
+                        + applicationClassName, e);
+            } catch (NoSuchMethodException e) {
+                log("[Restlet] ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
+                        + applicationClassName, e);
+            } catch (InvocationTargetException e) {
+                log("[Restlet] ServerServlet couldn't instantiate the target class. An exception was thrown while creating "
+                        + applicationClassName, e);
+            }
+        }
 
-		return application;
-	}
+        return application;
+    }
 
-	/**
-	 * Creates a new Servlet call wrapping a Servlet request/response couple and
-	 * a Server connector.
-	 * 
-	 * @param server
-	 *            The Server connector.
-	 * @param request
-	 *            The Servlet request.
-	 * @param response
-	 *            The Servlet response.
-	 * @return The new ServletCall instance.
-	 */
-	protected ServerCall createCall(Server server, HttpServletRequest request,
-			HttpServletResponse response) {
-		return new ServletCall(server, request, response);
-	}
+    /**
+     * Creates a new Servlet call wrapping a Servlet request/response couple and
+     * a Server connector.
+     * 
+     * @param server
+     *            The Server connector.
+     * @param request
+     *            The Servlet request.
+     * @param response
+     *            The Servlet response.
+     * @return The new ServletCall instance.
+     */
+    protected ServerCall createCall(Server server, HttpServletRequest request,
+            HttpServletResponse response) {
+        return new ServletCall(server, request, response);
+    }
 
-	/**
-	 * Creates the single Component used by this Servlet.
-	 * 
-	 * @return The newly created Component or null if unable to create.
-	 */
+    /**
+     * Creates the single Component used by this Servlet.
+     * 
+     * @return The newly created Component or null if unable to create.
+     */
 
-	/**
-	 * Creates the single Component used by this Servlet.
-	 * 
-	 * @return The newly created Component or null if unable to create.
-	 */
-	protected Component createComponent() {
-		// Detect both customized Component and configuration with restlet.xml
-		// file.
-		Client warClient = createWarClient(new Context(), getServletConfig());
-		String componentClassName = getInitParameter(COMPONENT_KEY, null);
-		Class<?> targetClass = null;
-		Component component = null;
+    /**
+     * Creates the single Component used by this Servlet.
+     * 
+     * @return The newly created Component or null if unable to create.
+     */
+    protected Component createComponent() {
+        // Detect both customized Component and configuration with restlet.xml
+        // file.
+        Client warClient = createWarClient(new Context(), getServletConfig());
+        String componentClassName = getInitParameter(COMPONENT_KEY, null);
+        Class<?> targetClass = null;
+        Component component = null;
 
-		if (componentClassName != null) {
-			try {
-				targetClass = loadClass(componentClassName);
-			} catch (ClassNotFoundException e) {
-				log("[Restlet] ServerServlet couldn't find the target component class. Please check that your classpath includes "
-						+ componentClassName, e);
-			}
-		}
+        if (componentClassName != null) {
+            try {
+                targetClass = loadClass(componentClassName);
+            } catch (ClassNotFoundException e) {
+                log("[Restlet] ServerServlet couldn't find the target component class. Please check that your classpath includes "
+                        + componentClassName, e);
+            }
+        }
 
-		// Look for the Component XML configuration file.
-		Response response = warClient.handle(new Request(Method.GET,
-				"war:///WEB-INF/restlet.xml"));
+        // Look for the Component XML configuration file.
+        Response response = warClient.handle(new Request(Method.GET,
+                "war:///WEB-INF/restlet.xml"));
 
-		try {
-			log("[Restlet] ServerServlet: component class is "
-					+ componentClassName);
-			if (response.getStatus().isSuccess()
-					&& response.isEntityAvailable()) {
-				if (targetClass != null) {
-					@SuppressWarnings("unchecked")
-					Constructor<? extends Component> ctor = ((Class<? extends Component>) targetClass)
-							.getConstructor(Representation.class);
+        try {
+            log("[Restlet] ServerServlet: component class is "
+                    + componentClassName);
+            if (response.getStatus().isSuccess()
+                    && response.isEntityAvailable()) {
+                if (targetClass != null) {
+                    @SuppressWarnings("unchecked")
+                    Constructor<? extends Component> ctor = ((Class<? extends Component>) targetClass)
+                            .getConstructor(Representation.class);
 
-					log("[Restlet] ServerServlet: configuring component from war:///WEB-INF/restlet.xml");
-					component = (Component) ctor.newInstance(response
-							.getEntity());
-				} else {
-					component = new Component(response.getEntity());
-				}
-			}
-		} catch (IllegalAccessException e) {
-			log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have proper access rights to "
-					+ componentClassName, e);
-		} catch (InvocationTargetException e) {
-			log("[Restlet] ServerServlet encountered an exception instantiating the target class "
-					+ componentClassName, e.getTargetException());
-		} catch (InstantiationException e) {
-			log(String.format(
-					"[Restlet] ServerServlet couldn't instantiate the target class. Please check that %s has %s.",
-					componentClassName,
-					((response.getStatus().isSuccess()) ? "a constructor taking a Representation as single parameter"
-							: "an empty constructor")), e);
-		} catch (NoSuchMethodException e) {
-			log(String.format(
-					"[Restlet] ServerServlet couldn't instantiate the target class. Please check that %s has %s.",
-					componentClassName,
-					((response.getStatus().isSuccess()) ? "a constructor taking Representation as single parameter"
-							: "an empty constructor")), e);
-		}
+                    log("[Restlet] ServerServlet: configuring component from war:///WEB-INF/restlet.xml");
+                    component = (Component) ctor.newInstance(response
+                            .getEntity());
+                } else {
+                    component = new Component(response.getEntity());
+                }
+            }
+        } catch (IllegalAccessException e) {
+            log("[Restlet] ServerServlet couldn't instantiate the target class. Please check that you have proper access rights to "
+                    + componentClassName, e);
+        } catch (InvocationTargetException e) {
+            log("[Restlet] ServerServlet encountered an exception instantiating the target class "
+                    + componentClassName, e.getTargetException());
+        } catch (InstantiationException e) {
+            log(String.format(
+                    "[Restlet] ServerServlet couldn't instantiate the target class. Please check that %s has %s.",
+                    componentClassName,
+                    ((response.getStatus().isSuccess()) ? "a constructor taking a Representation as single parameter"
+                            : "an empty constructor")), e);
+        } catch (NoSuchMethodException e) {
+            log(String.format(
+                    "[Restlet] ServerServlet couldn't instantiate the target class. Please check that %s has %s.",
+                    componentClassName,
+                    ((response.getStatus().isSuccess()) ? "a constructor taking Representation as single parameter"
+                            : "an empty constructor")), e);
+        }
 
-		// Create the default Component
-		if (component == null) {
-			component = new Component();
+        // Create the default Component
+        if (component == null) {
+            component = new Component();
 
-			// The status service is disabled by default.
-			component.getStatusService().setEnabled(false);
+            // The status service is disabled by default.
+            component.getStatusService().setEnabled(false);
 
-			// Define the list of supported client protocols.
-			final String clientProtocolsString = getInitParameter(CLIENTS_KEY,
-					null);
-			if (clientProtocolsString != null) {
-				final String[] clientProtocols = clientProtocolsString
-						.split(" ");
-				Client client;
+            // Define the list of supported client protocols.
+            final String clientProtocolsString = getInitParameter(CLIENTS_KEY,
+                    null);
+            if (clientProtocolsString != null) {
+                final String[] clientProtocols = clientProtocolsString
+                        .split(" ");
+                Client client;
 
-				for (final String clientProtocol : clientProtocols) {
-					client = new Client(clientProtocol);
+                for (final String clientProtocol : clientProtocols) {
+                    client = new Client(clientProtocol);
 
-					if (client.isAvailable()) {
-						component.getClients().add(client);
-					} else {
-						log("[Restlet] Couldn't find a client connector for protocol "
-								+ clientProtocol);
-					}
-				}
-			}
-		}
+                    if (client.isAvailable()) {
+                        component.getClients().add(client);
+                    } else {
+                        log("[Restlet] Couldn't find a client connector for protocol "
+                                + clientProtocol);
+                    }
+                }
+            }
+        }
 
-		return component;
-	}
+        return component;
+    }
 
-	/**
-	 * Creates the associated HTTP server handling calls.
-	 * 
-	 * @param request
-	 *            The HTTP Servlet request.
-	 * @return The new HTTP server handling calls.
-	 */
-	protected HttpServerHelper createServer(HttpServletRequest request) {
-		HttpServerHelper result = null;
-		Component component = getComponent();
+    /**
+     * Creates the associated HTTP server handling calls.
+     * 
+     * @param request
+     *            The HTTP Servlet request.
+     * @return The new HTTP server handling calls.
+     */
+    protected HttpServerHelper createServer(HttpServletRequest request) {
+        HttpServerHelper result = null;
+        Component component = getComponent();
 
-		if (component != null) {
-			// First, let's create a pseudo server
-			Server server = new Server(component.getContext()
-					.createChildContext(), (List<Protocol>) null,
-					this.getLocalAddr(request), this.getLocalPort(request),
-					component);
-			result = new HttpServerHelper(server);
+        if (component != null) {
+            // First, let's create a pseudo server
+            Server server = new Server(component.getContext()
+                    .createChildContext(), (List<Protocol>) null,
+                    this.getLocalAddr(request), this.getLocalPort(request),
+                    component);
+            result = new HttpServerHelper(server);
 
             // Change the default adapter
             Context serverContext = server.getContext();
-            serverContext.getParameters().add(
-                    "adapter",
+            serverContext.getParameters().add("adapter",
                     "org.restlet.ext.servlet.internal.ServletServerAdapter");
-			
-			// Attach the hosted application(s) to the right path
-			String uriPattern = this.getContextPath(request)
-					+ request.getServletPath();
-
-			if (isDefaultComponent()) {
-				if (getApplication() != null) {
-					log("[Restlet] Attaching application: " + getApplication()
-							+ " to URI: " + uriPattern);
-					component.getDefaultHost().attach(uriPattern,
-							getApplication());
-				}
-			} else {
-				// According to the mode, configure correctly the component.
-				String autoWire = getInitParameter(AUTO_WIRE_KEY,
-						AUTO_WIRE_KEY_DEFAULT);
-				if (AUTO_WIRE_KEY_DEFAULT.equalsIgnoreCase(autoWire)) {
-					// Translate all defined routes as much as possible
-					// with the context path only or the full servlet path.
-
-					// 1- get the offset
-					boolean addContextPath = false;
-					boolean addFullServletPath = false;
-
-					if (component.getDefaultHost().getRoutes().isEmpty()) {
-						// Case where the default host has a default route (with
-						// an empty pattern).
-						addFullServletPath = component.getDefaultHost()
-								.getDefaultRoute() != null;
-					} else {
-						for (Route route : component.getDefaultHost()
-								.getRoutes()) {
-							if (route instanceof TemplateRoute) {
-								TemplateRoute templateRoute = (TemplateRoute) route;
-
-								if (templateRoute.getTemplate().getPattern() == null) {
-									addFullServletPath = true;
-									continue;
-								}
-
-								if (!templateRoute.getTemplate().getPattern()
-										.startsWith(uriPattern)) {
-									if (!templateRoute
-											.getTemplate()
-											.getPattern()
-											.startsWith(
-													request.getServletPath())) {
-										addFullServletPath = true;
-									} else {
-										addContextPath = true;
-										break;
-									}
-								}
-							}
-						}
-					}
-					if (!addContextPath) {
-						for (VirtualHost virtualHost : component.getHosts()) {
-							if (virtualHost.getRoutes().isEmpty()) {
-								// Case where the default host has a default
-								// route (with an empty pattern).
-								addFullServletPath = virtualHost
-										.getDefaultRoute() != null;
-							} else {
-								for (Route route : virtualHost.getRoutes()) {
-									if (route instanceof TemplateRoute) {
-										TemplateRoute templateRoute = (TemplateRoute) route;
-
-										if (templateRoute.getTemplate()
-												.getPattern() == null) {
-											addFullServletPath = true;
-											continue;
-										}
-
-										if (!templateRoute.getTemplate()
-												.getPattern()
-												.startsWith(uriPattern)) {
-											if (!templateRoute
-													.getTemplate()
-													.getPattern()
-													.startsWith(
-															request.getServletPath())) {
-												addFullServletPath = true;
-											} else {
-												addContextPath = true;
-												break;
-											}
-										}
-									}
-								}
-							}
-							if (addContextPath) {
-								break;
-							}
-						}
-					}
-
-					// 2- Translate all routes.
-					if (addContextPath || addFullServletPath) {
-						String offsetPath = null;
-
-						if (addContextPath) {
-							offsetPath = this.getContextPath(request);
-						} else {
-							offsetPath = uriPattern;
-						}
-
-						if (offsetPath != null) {
-							getComponent()
-									.getContext()
-									.getAttributes()
-									.put(NAME_OFFSET_PATH_ATTRIBUTE, offsetPath);
-						}
-
-						// Shift the default route (if any) of the default host
-						Route defaultRoute = component.getDefaultHost()
-								.getDefaultRoute();
-
-						if (defaultRoute != null) {
-							if (defaultRoute instanceof TemplateRoute) {
-								TemplateRoute defaultTemplateRoute = (TemplateRoute) defaultRoute;
-								defaultTemplateRoute.getTemplate().setPattern(
-										offsetPath
-												+ defaultTemplateRoute
-														.getTemplate()
-														.getPattern());
-								log("[Restlet] Attaching restlet: "
-										+ defaultRoute.getNext()
-										+ " to URI: "
-										+ offsetPath
-										+ defaultTemplateRoute.getTemplate()
-												.getPattern());
-							} else {
-								log("[Restlet] Attaching restlet: "
-										+ defaultRoute.getNext());
-							}
-						}
-
-						// Shift the routes of the default host
-						for (Route route : component.getDefaultHost()
-								.getRoutes()) {
-							if (route instanceof TemplateRoute) {
-								TemplateRoute templateRoute = (TemplateRoute) route;
-
-								log("[Restlet] Attaching restlet: "
-										+ route.getNext()
-										+ " to URI: "
-										+ offsetPath
-										+ templateRoute.getTemplate()
-												.getPattern());
-								templateRoute.getTemplate().setPattern(
-										offsetPath
-												+ templateRoute.getTemplate()
-														.getPattern());
-							} else {
-								log("[Restlet] Attaching restlet: "
-										+ defaultRoute.getNext());
-							}
-						}
-
-						for (VirtualHost virtualHost : component.getHosts()) {
-							// Shift the default route (if any) of the virtual
-							// host
-							defaultRoute = virtualHost.getDefaultRoute();
-							if (defaultRoute != null) {
-								if (defaultRoute instanceof TemplateRoute) {
-									TemplateRoute defaultTemplateRoute = (TemplateRoute) defaultRoute;
-									defaultTemplateRoute
-											.getTemplate()
-											.setPattern(
-													offsetPath
-															+ defaultTemplateRoute
-																	.getTemplate()
-																	.getPattern());
-									log("[Restlet] Attaching restlet: "
-											+ defaultRoute.getNext()
-											+ " to URI: "
-											+ offsetPath
-											+ defaultTemplateRoute
-													.getTemplate().getPattern());
-								} else {
-									log("[Restlet] Attaching restlet: "
-											+ defaultRoute.getNext());
-								}
-							}
-
-							// Shift the routes of the virtual host
-							for (Route route : virtualHost.getRoutes()) {
-								if (route instanceof TemplateRoute) {
-									TemplateRoute templateRoute = (TemplateRoute) route;
-
-									log("[Restlet] Attaching restlet: "
-											+ route.getNext()
-											+ " to URI: "
-											+ offsetPath
-											+ templateRoute.getTemplate()
-													.getPattern());
-									templateRoute.getTemplate().setPattern(
-											offsetPath
-													+ templateRoute
-															.getTemplate()
-															.getPattern());
-								} else {
-									log("[Restlet] Attaching restlet: "
-											+ route.getNext());
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Creates a new client for the WAR protocol.
-	 * 
-	 * @param context
-	 *            The parent context.
-	 * @param config
-	 *            The Servlet config.
-	 * @return The new WAR client instance.
-	 */
-	protected Client createWarClient(Context context, ServletConfig config) {
-		return new ServletWarClient(context, config.getServletContext());
-	}
-
-	@Override
-	public void destroy() {
-		if ((getComponent() != null) && (getComponent().isStarted())) {
-			try {
-				getComponent().stop();
-			} catch (Exception e) {
-				log("Error during the stopping of the Restlet component", e);
-			}
-		}
-
-		super.destroy();
-	}
-
-	/**
-	 * Returns the application. It creates a new one if none exists.
-	 * 
-	 * @return The application.
-	 */
-	public Application getApplication() {
-		// Lazy initialization with double-check.
-		Application result = this.application;
-
-		if (result == null) {
-			synchronized (this) {
-				result = this.application;
-				if (result == null) {
-					// In case a component is explicitly defined, it cannot be
-					// completed.
-					if (isDefaultComponent()) {
-						// Find the attribute name to use to store the
-						// application
-						String applicationAttributeName = getInitParameter(
-								NAME_APPLICATION_ATTRIBUTE,
-								NAME_APPLICATION_ATTRIBUTE_DEFAULT + "."
-										+ getServletName());
-
-						// Look up the attribute for a target
-						result = (Application) getServletContext()
-								.getAttribute(applicationAttributeName);
-
-						if (result == null) {
-							result = createApplication(getComponent()
-									.getContext());
-							init(result);
-							getServletContext().setAttribute(
-									applicationAttributeName, result);
-						}
-
-						this.application = result;
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Returns the component. It creates a new one if none exists.
-	 * 
-	 * @return The component.
-	 */
-	public Component getComponent() {
-		// Lazy initialization with double-check.
-		Component result = this.component;
-
-		if (result == null) {
-			synchronized (this) {
-				result = this.component;
-				if (result == null) {
-					// Find the attribute name to use to store the component
-					final String componentAttributeName = getInitParameter(
-							NAME_COMPONENT_ATTRIBUTE,
-							NAME_COMPONENT_ATTRIBUTE_DEFAULT + "."
-									+ getServletName());
-
-					// Look up the attribute for a target
-					result = (Component) getServletContext().getAttribute(
-							componentAttributeName);
-
-					if (result == null) {
-						result = createComponent();
-						init(result);
-						getServletContext().setAttribute(
-								componentAttributeName, result);
-					}
-				}
-
-				this.component = result;
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Intercepter method need for subclasses such as XdbServerServlet.
-	 * 
-	 * @param request
-	 *            The Servlet request.
-	 * @return The portion of the request URI that indicates the context of the
-	 *         request.
-	 */
-	protected String getContextPath(HttpServletRequest request) {
-		return request.getContextPath();
-	}
-
-	/**
-	 * Returns the value of a given initialization parameter, first from the
-	 * Servlet configuration, then from the Web Application context.
-	 * 
-	 * @param name
-	 *            The parameter name.
-	 * @param defaultValue
-	 *            The default to use in case the parameter is not found.
-	 * @return The value of the parameter or null.
-	 */
-	public String getInitParameter(String name, String defaultValue) {
-		String result = getServletConfig().getInitParameter(name);
-
-		if (result == null) {
-			result = getServletConfig().getServletContext().getInitParameter(
-					name);
-		}
-
-		if (result == null) {
-			result = defaultValue;
-		}
-
-		return result;
-	}
-
-	/**
-	 * Intercepter method need for subclasses such as XdbServerServlet.
-	 * 
-	 * @param request
-	 *            The Servlet request.
-	 * @return The Internet Protocol (IP) address of the interface on which the
-	 *         request was received.
-	 */
-	protected String getLocalAddr(HttpServletRequest request) {
-		return request.getLocalAddr();
-	}
-
-	/**
-	 * Intercepter method need for subclasses such as XdbServerServlet.
-	 * 
-	 * @param request
-	 *            The Servlet request.
-	 * @return The Internet Protocol (IP) port number of the interface on which
-	 *         the request was received
-	 */
-	protected int getLocalPort(HttpServletRequest request) {
-		return request.getLocalPort();
-	}
-
-	/**
-	 * Returns the associated HTTP server handling calls. It creates a new one
-	 * if none exists.
-	 * 
-	 * @param request
-	 *            The HTTP Servlet request.
-	 * @return The HTTP server handling calls.
-	 */
-	public HttpServerHelper getServer(HttpServletRequest request) {
-		// Lazy initialization with double-check.
-		HttpServerHelper result = this.helper;
-
-		if (result == null) {
-			synchronized (this) {
-				result = this.helper;
-				if (result == null) {
-					// Find the attribute name to use to store the server
-					// reference
-					final String serverAttributeName = getInitParameter(
-							NAME_SERVER_ATTRIBUTE,
-							NAME_SERVER_ATTRIBUTE_DEFAULT + "."
-									+ getServletName());
-
-					// Look up the attribute for a target
-					result = (HttpServerHelper) getServletContext()
-							.getAttribute(serverAttributeName);
-
-					if (result == null) {
-						result = createServer(request);
-						getServletContext().setAttribute(serverAttributeName,
-								result);
-					}
-
-					this.helper = result;
-				}
-			}
-		}
-
-		return result;
-	}
-
-	@Override
-	public void init() throws ServletException {
-		if ((getComponent() != null) && (getComponent().isStopped())) {
-			try {
-				getComponent().start();
-			} catch (Exception e) {
-				log("Error during the starting of the Restlet Application", e);
-			}
-		}
-	}
-
-	/**
-	 * Initialize a application. Copies Servlet parameters into the component's
-	 * context. Copies the ServletContext into an
-	 * "org.restlet.ext.servlet.ServletContext" attribute.
-	 * 
-	 * @param application
-	 *            The application to configure.
-	 */
-	protected void init(Application application) {
-		if (application != null) {
-			Context applicationContext = application.getContext();
-
-			if (applicationContext != null) {
-				// Copies the ServletContext into an attribute
-				applicationContext.getAttributes().put(
-						"org.restlet.ext.servlet.ServletContext",
-						getServletContext());
-
-				// Copy all the servlet parameters into the context
-				String initParam;
-
-				// Copy all the Servlet component initialization parameters
-				javax.servlet.ServletConfig servletConfig = getServletConfig();
-				for (Enumeration<String> enum1 = servletConfig
-						.getInitParameterNames(); enum1.hasMoreElements();) {
-					initParam = enum1.nextElement();
-					applicationContext.getParameters().add(initParam,
-							servletConfig.getInitParameter(initParam));
-				}
-
-				// Copy all the Servlet application initialization parameters
-				for (Enumeration<String> enum1 = getServletContext()
-						.getInitParameterNames(); enum1.hasMoreElements();) {
-					initParam = enum1.nextElement();
-					applicationContext.getParameters().add(initParam,
-							getServletContext().getInitParameter(initParam));
-				}
-			}
-		}
-	}
-
-	/**
-	 * Initialize a component. Adds a default WAR client and copies Servlet
-	 * parameters into the component's context. Copies the ServletContext into
-	 * an "org.restlet.ext.servlet.ServletContext" attribute.
-	 * 
-	 * @param component
-	 *            The component to configure.
-	 */
-	protected void init(Component component) {
-		if (component != null) {
-			// Complete the configuration of the Component
-			// Add the WAR client
-			component.getClients()
-					.add(createWarClient(component.getContext(),
-							getServletConfig()));
-
-			// Copy all the servlet parameters into the context
-			ComponentContext componentContext = (ComponentContext) component
-					.getContext();
-
-			// Copies the ServletContext into an attribute
-			componentContext.getAttributes().put(
-					"org.restlet.ext.servlet.ServletContext",
-					getServletContext());
-
-			// Copy all the Servlet container initialization parameters
-			String initParam;
-			javax.servlet.ServletConfig servletConfig = getServletConfig();
-
-			for (Enumeration<String> enum1 = servletConfig
-					.getInitParameterNames(); enum1.hasMoreElements();) {
-				initParam = enum1.nextElement();
-				componentContext.getParameters().add(initParam,
-						servletConfig.getInitParameter(initParam));
-			}
-
-			// Copy all the Servlet application initialization parameters
-			for (Enumeration<String> enum1 = getServletContext()
-					.getInitParameterNames(); enum1.hasMoreElements();) {
-				initParam = enum1.nextElement();
-				componentContext.getParameters().add(initParam,
-						getServletContext().getInitParameter(initParam));
-			}
-
-			// Copy all Servlet's context attributes
-			String attributeName;
-			for (Enumeration<String> namesEnum = getServletContext()
-					.getAttributeNames(); namesEnum.hasMoreElements();) {
-				attributeName = namesEnum.nextElement();
-				componentContext.getAttributes().put(attributeName,
-						getServletContext().getAttribute(attributeName));
-			}
-		}
-	}
-
-	/**
-	 * Indicates if the Component hosted by this Servlet is the default one or
-	 * one provided by the user.
-	 * 
-	 * @return True if the Component is the default one, false otherwise.
-	 */
-	private boolean isDefaultComponent() {
-		// The Component is provided via an XML configuration file.
-		Client client = createWarClient(new Context(), getServletConfig());
-		Response response = client.handle(new Request(Method.GET,
-				"war:///WEB-INF/restlet.xml"));
-		if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
-			return false;
-		}
-
-		// The Component is provided via a context parameter in the "web.xml"
-		// file.
-		String componentAttributeName = getInitParameter(COMPONENT_KEY, null);
-		if (componentAttributeName != null) {
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * Returns a class for a given qualified class name.
-	 * 
-	 * @param className
-	 *            The class name to lookup.
-	 * @return The class object.
-	 * @throws ClassNotFoundException
-	 */
-	protected Class<?> loadClass(String className)
-			throws ClassNotFoundException {
-		return Engine.loadClass(className);
-	}
-
-	/**
-	 * Services a HTTP Servlet request as an uniform call.
-	 * 
-	 * @param request
-	 *            The HTTP Servlet request.
-	 * @param response
-	 *            The HTTP Servlet response.
-	 */
-	@Override
-	public void service(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		HttpServerHelper helper = getServer(request);
-
-		if (helper != null) {
-			helper.handle(createCall(helper.getHelped(), request, response));
-		} else {
-			log("[Restlet] Unable to get the Restlet HTTP server connector. Status code 500 returned.");
-			response.sendError(500);
-		}
-	}
+
+            // Attach the hosted application(s) to the right path
+            String uriPattern = this.getContextPath(request)
+                    + request.getServletPath();
+
+            if (isDefaultComponent()) {
+                if (getApplication() != null) {
+                    log("[Restlet] Attaching application: " + getApplication()
+                            + " to URI: " + uriPattern);
+                    component.getDefaultHost().attach(uriPattern,
+                            getApplication());
+                }
+            } else {
+                // According to the mode, configure correctly the component.
+                String autoWire = getInitParameter(AUTO_WIRE_KEY,
+                        AUTO_WIRE_KEY_DEFAULT);
+                if (AUTO_WIRE_KEY_DEFAULT.equalsIgnoreCase(autoWire)) {
+                    // Translate all defined routes as much as possible
+                    // with the context path only or the full servlet path.
+
+                    // 1- get the offset
+                    boolean addContextPath = false;
+                    boolean addFullServletPath = false;
+
+                    if (component.getDefaultHost().getRoutes().isEmpty()) {
+                        // Case where the default host has a default route (with
+                        // an empty pattern).
+                        addFullServletPath = component.getDefaultHost()
+                                .getDefaultRoute() != null;
+                    } else {
+                        for (Route route : component.getDefaultHost()
+                                .getRoutes()) {
+                            if (route instanceof TemplateRoute) {
+                                TemplateRoute templateRoute = (TemplateRoute) route;
+
+                                if (templateRoute.getTemplate().getPattern() == null) {
+                                    addFullServletPath = true;
+                                    continue;
+                                }
+
+                                if (!templateRoute.getTemplate().getPattern()
+                                        .startsWith(uriPattern)) {
+                                    if (!templateRoute
+                                            .getTemplate()
+                                            .getPattern()
+                                            .startsWith(
+                                                    request.getServletPath())) {
+                                        addFullServletPath = true;
+                                    } else {
+                                        addContextPath = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (!addContextPath) {
+                        for (VirtualHost virtualHost : component.getHosts()) {
+                            if (virtualHost.getRoutes().isEmpty()) {
+                                // Case where the default host has a default
+                                // route (with an empty pattern).
+                                addFullServletPath = virtualHost
+                                        .getDefaultRoute() != null;
+                            } else {
+                                for (Route route : virtualHost.getRoutes()) {
+                                    if (route instanceof TemplateRoute) {
+                                        TemplateRoute templateRoute = (TemplateRoute) route;
+
+                                        if (templateRoute.getTemplate()
+                                                .getPattern() == null) {
+                                            addFullServletPath = true;
+                                            continue;
+                                        }
+
+                                        if (!templateRoute.getTemplate()
+                                                .getPattern()
+                                                .startsWith(uriPattern)) {
+                                            if (!templateRoute
+                                                    .getTemplate()
+                                                    .getPattern()
+                                                    .startsWith(
+                                                            request.getServletPath())) {
+                                                addFullServletPath = true;
+                                            } else {
+                                                addContextPath = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (addContextPath) {
+                                break;
+                            }
+                        }
+                    }
+
+                    // 2- Translate all routes.
+                    if (addContextPath || addFullServletPath) {
+                        String offsetPath = null;
+
+                        if (addContextPath) {
+                            offsetPath = this.getContextPath(request);
+                        } else {
+                            offsetPath = uriPattern;
+                        }
+
+                        if (offsetPath != null) {
+                            getComponent()
+                                    .getContext()
+                                    .getAttributes()
+                                    .put(NAME_OFFSET_PATH_ATTRIBUTE, offsetPath);
+                        }
+
+                        // Shift the default route (if any) of the default host
+                        Route defaultRoute = component.getDefaultHost()
+                                .getDefaultRoute();
+
+                        if (defaultRoute != null) {
+                            if (defaultRoute instanceof TemplateRoute) {
+                                TemplateRoute defaultTemplateRoute = (TemplateRoute) defaultRoute;
+                                defaultTemplateRoute.getTemplate().setPattern(
+                                        offsetPath
+                                                + defaultTemplateRoute
+                                                        .getTemplate()
+                                                        .getPattern());
+                                log("[Restlet] Attaching restlet: "
+                                        + defaultRoute.getNext()
+                                        + " to URI: "
+                                        + offsetPath
+                                        + defaultTemplateRoute.getTemplate()
+                                                .getPattern());
+                            } else {
+                                log("[Restlet] Attaching restlet: "
+                                        + defaultRoute.getNext());
+                            }
+                        }
+
+                        // Shift the routes of the default host
+                        for (Route route : component.getDefaultHost()
+                                .getRoutes()) {
+                            if (route instanceof TemplateRoute) {
+                                TemplateRoute templateRoute = (TemplateRoute) route;
+
+                                log("[Restlet] Attaching restlet: "
+                                        + route.getNext()
+                                        + " to URI: "
+                                        + offsetPath
+                                        + templateRoute.getTemplate()
+                                                .getPattern());
+                                templateRoute.getTemplate().setPattern(
+                                        offsetPath
+                                                + templateRoute.getTemplate()
+                                                        .getPattern());
+                            } else {
+                                log("[Restlet] Attaching restlet: "
+                                        + defaultRoute.getNext());
+                            }
+                        }
+
+                        for (VirtualHost virtualHost : component.getHosts()) {
+                            // Shift the default route (if any) of the virtual
+                            // host
+                            defaultRoute = virtualHost.getDefaultRoute();
+                            if (defaultRoute != null) {
+                                if (defaultRoute instanceof TemplateRoute) {
+                                    TemplateRoute defaultTemplateRoute = (TemplateRoute) defaultRoute;
+                                    defaultTemplateRoute
+                                            .getTemplate()
+                                            .setPattern(
+                                                    offsetPath
+                                                            + defaultTemplateRoute
+                                                                    .getTemplate()
+                                                                    .getPattern());
+                                    log("[Restlet] Attaching restlet: "
+                                            + defaultRoute.getNext()
+                                            + " to URI: "
+                                            + offsetPath
+                                            + defaultTemplateRoute
+                                                    .getTemplate().getPattern());
+                                } else {
+                                    log("[Restlet] Attaching restlet: "
+                                            + defaultRoute.getNext());
+                                }
+                            }
+
+                            // Shift the routes of the virtual host
+                            for (Route route : virtualHost.getRoutes()) {
+                                if (route instanceof TemplateRoute) {
+                                    TemplateRoute templateRoute = (TemplateRoute) route;
+
+                                    log("[Restlet] Attaching restlet: "
+                                            + route.getNext()
+                                            + " to URI: "
+                                            + offsetPath
+                                            + templateRoute.getTemplate()
+                                                    .getPattern());
+                                    templateRoute.getTemplate().setPattern(
+                                            offsetPath
+                                                    + templateRoute
+                                                            .getTemplate()
+                                                            .getPattern());
+                                } else {
+                                    log("[Restlet] Attaching restlet: "
+                                            + route.getNext());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Creates a new client for the WAR protocol.
+     * 
+     * @param context
+     *            The parent context.
+     * @param config
+     *            The Servlet config.
+     * @return The new WAR client instance.
+     */
+    protected Client createWarClient(Context context, ServletConfig config) {
+        return new ServletWarClient(context, config.getServletContext());
+    }
+
+    @Override
+    public void destroy() {
+        if ((getComponent() != null) && (getComponent().isStarted())) {
+            try {
+                getComponent().stop();
+            } catch (Exception e) {
+                log("Error during the stopping of the Restlet component", e);
+            }
+        }
+
+        super.destroy();
+    }
+
+    /**
+     * Returns the application. It creates a new one if none exists.
+     * 
+     * @return The application.
+     */
+    public Application getApplication() {
+        // Lazy initialization with double-check.
+        Application result = this.application;
+
+        if (result == null) {
+            synchronized (this) {
+                result = this.application;
+                if (result == null) {
+                    // In case a component is explicitly defined, it cannot be
+                    // completed.
+                    if (isDefaultComponent()) {
+                        // Find the attribute name to use to store the
+                        // application
+                        String applicationAttributeName = getInitParameter(
+                                NAME_APPLICATION_ATTRIBUTE,
+                                NAME_APPLICATION_ATTRIBUTE_DEFAULT + "."
+                                        + getServletName());
+
+                        // Look up the attribute for a target
+                        result = (Application) getServletContext()
+                                .getAttribute(applicationAttributeName);
+
+                        if (result == null) {
+                            result = createApplication(getComponent()
+                                    .getContext());
+                            init(result);
+                            getServletContext().setAttribute(
+                                    applicationAttributeName, result);
+                        }
+
+                        this.application = result;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the component. It creates a new one if none exists.
+     * 
+     * @return The component.
+     */
+    public Component getComponent() {
+        // Lazy initialization with double-check.
+        Component result = this.component;
+
+        if (result == null) {
+            synchronized (this) {
+                result = this.component;
+                if (result == null) {
+                    // Find the attribute name to use to store the component
+                    final String componentAttributeName = getInitParameter(
+                            NAME_COMPONENT_ATTRIBUTE,
+                            NAME_COMPONENT_ATTRIBUTE_DEFAULT + "."
+                                    + getServletName());
+
+                    // Look up the attribute for a target
+                    result = (Component) getServletContext().getAttribute(
+                            componentAttributeName);
+
+                    if (result == null) {
+                        result = createComponent();
+                        init(result);
+                        getServletContext().setAttribute(
+                                componentAttributeName, result);
+                    }
+                }
+
+                this.component = result;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Intercepter method need for subclasses such as XdbServerServlet.
+     * 
+     * @param request
+     *            The Servlet request.
+     * @return The portion of the request URI that indicates the context of the
+     *         request.
+     */
+    protected String getContextPath(HttpServletRequest request) {
+        return request.getContextPath();
+    }
+
+    /**
+     * Returns the value of a given initialization parameter, first from the
+     * Servlet configuration, then from the Web Application context.
+     * 
+     * @param name
+     *            The parameter name.
+     * @param defaultValue
+     *            The default to use in case the parameter is not found.
+     * @return The value of the parameter or null.
+     */
+    public String getInitParameter(String name, String defaultValue) {
+        String result = getServletConfig().getInitParameter(name);
+
+        if (result == null) {
+            result = getServletConfig().getServletContext().getInitParameter(
+                    name);
+        }
+
+        if (result == null) {
+            result = defaultValue;
+        }
+
+        return result;
+    }
+
+    /**
+     * Intercepter method need for subclasses such as XdbServerServlet.
+     * 
+     * @param request
+     *            The Servlet request.
+     * @return The Internet Protocol (IP) address of the interface on which the
+     *         request was received.
+     */
+    protected String getLocalAddr(HttpServletRequest request) {
+        return request.getLocalAddr();
+    }
+
+    /**
+     * Intercepter method need for subclasses such as XdbServerServlet.
+     * 
+     * @param request
+     *            The Servlet request.
+     * @return The Internet Protocol (IP) port number of the interface on which
+     *         the request was received
+     */
+    protected int getLocalPort(HttpServletRequest request) {
+        return request.getLocalPort();
+    }
+
+    /**
+     * Returns the associated HTTP server handling calls. It creates a new one
+     * if none exists.
+     * 
+     * @param request
+     *            The HTTP Servlet request.
+     * @return The HTTP server handling calls.
+     */
+    public HttpServerHelper getServer(HttpServletRequest request) {
+        // Lazy initialization with double-check.
+        HttpServerHelper result = this.helper;
+
+        if (result == null) {
+            synchronized (this) {
+                result = this.helper;
+                if (result == null) {
+                    // Find the attribute name to use to store the server
+                    // reference
+                    final String serverAttributeName = getInitParameter(
+                            NAME_SERVER_ATTRIBUTE,
+                            NAME_SERVER_ATTRIBUTE_DEFAULT + "."
+                                    + getServletName());
+
+                    // Look up the attribute for a target
+                    result = (HttpServerHelper) getServletContext()
+                            .getAttribute(serverAttributeName);
+
+                    if (result == null) {
+                        result = createServer(request);
+                        getServletContext().setAttribute(serverAttributeName,
+                                result);
+                    }
+
+                    this.helper = result;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public void init() throws ServletException {
+        if ((getComponent() != null) && (getComponent().isStopped())) {
+            try {
+                getComponent().start();
+            } catch (Exception e) {
+                log("Error during the starting of the Restlet Application", e);
+            }
+        }
+    }
+
+    /**
+     * Initialize a application. Copies Servlet parameters into the component's
+     * context. Copies the ServletContext into an
+     * "org.restlet.ext.servlet.ServletContext" attribute.
+     * 
+     * @param application
+     *            The application to configure.
+     */
+    protected void init(Application application) {
+        if (application != null) {
+            Context applicationContext = application.getContext();
+
+            if (applicationContext != null) {
+                // Copies the ServletContext into an attribute
+                applicationContext.getAttributes().put(
+                        "org.restlet.ext.servlet.ServletContext",
+                        getServletContext());
+
+                // Copy all the servlet parameters into the context
+                String initParam;
+
+                // Copy all the Servlet component initialization parameters
+                javax.servlet.ServletConfig servletConfig = getServletConfig();
+                for (Enumeration<String> enum1 = servletConfig
+                        .getInitParameterNames(); enum1.hasMoreElements();) {
+                    initParam = enum1.nextElement();
+                    applicationContext.getParameters().add(initParam,
+                            servletConfig.getInitParameter(initParam));
+                }
+
+                // Copy all the Servlet application initialization parameters
+                for (Enumeration<String> enum1 = getServletContext()
+                        .getInitParameterNames(); enum1.hasMoreElements();) {
+                    initParam = enum1.nextElement();
+                    applicationContext.getParameters().add(initParam,
+                            getServletContext().getInitParameter(initParam));
+                }
+            }
+        }
+    }
+
+    /**
+     * Initialize a component. Adds a default WAR client and copies Servlet
+     * parameters into the component's context. Copies the ServletContext into
+     * an "org.restlet.ext.servlet.ServletContext" attribute.
+     * 
+     * @param component
+     *            The component to configure.
+     */
+    protected void init(Component component) {
+        if (component != null) {
+            // Complete the configuration of the Component
+            // Add the WAR client
+            component.getClients()
+                    .add(createWarClient(component.getContext(),
+                            getServletConfig()));
+
+            // Copy all the servlet parameters into the context
+            ComponentContext componentContext = (ComponentContext) component
+                    .getContext();
+
+            // Copies the ServletContext into an attribute
+            componentContext.getAttributes().put(
+                    "org.restlet.ext.servlet.ServletContext",
+                    getServletContext());
+
+            // Copy all the Servlet container initialization parameters
+            String initParam;
+            javax.servlet.ServletConfig servletConfig = getServletConfig();
+
+            for (Enumeration<String> enum1 = servletConfig
+                    .getInitParameterNames(); enum1.hasMoreElements();) {
+                initParam = enum1.nextElement();
+                componentContext.getParameters().add(initParam,
+                        servletConfig.getInitParameter(initParam));
+            }
+
+            // Copy all the Servlet application initialization parameters
+            for (Enumeration<String> enum1 = getServletContext()
+                    .getInitParameterNames(); enum1.hasMoreElements();) {
+                initParam = enum1.nextElement();
+                componentContext.getParameters().add(initParam,
+                        getServletContext().getInitParameter(initParam));
+            }
+
+            // Copy all Servlet's context attributes
+            String attributeName;
+            for (Enumeration<String> namesEnum = getServletContext()
+                    .getAttributeNames(); namesEnum.hasMoreElements();) {
+                attributeName = namesEnum.nextElement();
+                componentContext.getAttributes().put(attributeName,
+                        getServletContext().getAttribute(attributeName));
+            }
+        }
+    }
+
+    /**
+     * Indicates if the Component hosted by this Servlet is the default one or
+     * one provided by the user.
+     * 
+     * @return True if the Component is the default one, false otherwise.
+     */
+    private boolean isDefaultComponent() {
+        // The Component is provided via an XML configuration file.
+        Client client = createWarClient(new Context(), getServletConfig());
+        Response response = client.handle(new Request(Method.GET,
+                "war:///WEB-INF/restlet.xml"));
+        if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
+            return false;
+        }
+
+        // The Component is provided via a context parameter in the "web.xml"
+        // file.
+        String componentAttributeName = getInitParameter(COMPONENT_KEY, null);
+        if (componentAttributeName != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns a class for a given qualified class name.
+     * 
+     * @param className
+     *            The class name to lookup.
+     * @return The class object.
+     * @throws ClassNotFoundException
+     */
+    protected Class<?> loadClass(String className)
+            throws ClassNotFoundException {
+        return Engine.loadClass(className);
+    }
+
+    /**
+     * Services a HTTP Servlet request as an uniform call.
+     * 
+     * @param request
+     *            The HTTP Servlet request.
+     * @param response
+     *            The HTTP Servlet response.
+     */
+    @Override
+    public void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        HttpServerHelper helper = getServer(request);
+
+        if (helper != null) {
+            helper.handle(createCall(helper.getHelped(), request, response));
+        } else {
+            log("[Restlet] Unable to get the Restlet HTTP server connector. Status code 500 returned.");
+            response.sendError(500);
+        }
+    }
 }

@@ -42,14 +42,26 @@ import org.restlet.engine.adapter.ServerAdapter;
 import org.restlet.engine.adapter.ServerCall;
 
 /**
- * Server adapter from Servlet calls to Restlet calls. This class is used by
- * the {@code ServerServlet} to ensure that Servlet specific concepts are
- * properly transfered to Restlet. 
+ * Default server adapter from Servlet calls to Restlet calls. This class is
+ * used by the {@code ServerServlet} to ensure that Servlet specific concepts
+ * are properly transfered to Restlet.<br>
+ * Especially, it makes sure that the "jsessionid" matrix parameter is removed
+ * from the resource's reference, as this may interfer with the routing process,
+ * and because this parameter is useless for Restlet-based applications.<br>
+ * <br>
+ * it also copies the Servlet's request attributes into the Restlet's request
+ * attributes map.
  * 
  * @author Jeremy Gustie
  */
 public class ServletServerAdapter extends ServerAdapter {
 
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context to use.
+     */
     public ServletServerAdapter(Context context) {
         super(context);
     }
@@ -57,7 +69,7 @@ public class ServletServerAdapter extends ServerAdapter {
     @Override
     public HttpRequest toRequest(ServerCall httpCall) {
         final HttpRequest result = super.toRequest(httpCall);
-        
+
         // Remove the Servlet API "jsessionid" matrix parameter
         Form matrixForm = result.getResourceRef().getMatrixAsForm();
         if (matrixForm.removeAll("jsessionid", true)) {
@@ -68,15 +80,15 @@ public class ServletServerAdapter extends ServerAdapter {
                 lastSegment = lastSegment.substring(0, matrixIndex);
             } else {
                 // Add the remaining matrix parameters back in
-                lastSegment = lastSegment.substring(0, matrixIndex + 1) 
+                lastSegment = lastSegment.substring(0, matrixIndex + 1)
                         + matrixForm.getMatrixString();
             }
             result.getResourceRef().setLastSegment(lastSegment);
         }
-        
+
         if (httpCall instanceof ServletCall) {
             ServletCall servletCall = (ServletCall) httpCall;
-            
+
             // Copy all Servlet's request attributes
             String attributeName;
             for (final Enumeration<String> namesEnum = servletCall.getRequest()

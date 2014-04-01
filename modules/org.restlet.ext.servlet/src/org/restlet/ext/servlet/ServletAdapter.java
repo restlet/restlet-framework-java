@@ -33,8 +33,6 @@
 
 package org.restlet.ext.servlet;
 
-import java.util.Enumeration;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,9 +43,9 @@ import org.restlet.data.Reference;
 import org.restlet.engine.Engine;
 import org.restlet.engine.adapter.HttpRequest;
 import org.restlet.engine.adapter.HttpResponse;
-import org.restlet.engine.adapter.ServerAdapter;
 import org.restlet.ext.servlet.internal.ServletCall;
 import org.restlet.ext.servlet.internal.ServletLogger;
+import org.restlet.ext.servlet.internal.ServletServerAdapter;
 import org.restlet.routing.Router;
 
 /**
@@ -88,7 +86,7 @@ import org.restlet.routing.Router;
  * 
  * @author Jerome Louvel
  */
-public class ServletAdapter extends ServerAdapter {
+public class ServletAdapter extends ServletServerAdapter {
 
     /** The next Restlet. */
     private volatile Restlet next;
@@ -192,9 +190,9 @@ public class ServletAdapter extends ServerAdapter {
                 Context.setCurrent(getContext());
 
                 // Convert the Servlet call to a Restlet call
-                ServletCall servletCall = new ServletCall(request
-                        .getLocalAddr(), request.getLocalPort(), request,
-                        response);
+                ServletCall servletCall = new ServletCall(
+                        request.getLocalAddr(), request.getLocalPort(),
+                        request, response);
                 HttpRequest httpRequest = toRequest(servletCall);
                 HttpResponse httpResponse = new HttpResponse(servletCall,
                         httpRequest);
@@ -224,30 +222,6 @@ public class ServletAdapter extends ServerAdapter {
      */
     public void setNext(Restlet next) {
         this.next = next;
-    }
-
-    /**
-     * Converts a low-level Servlet call into a high-level Restlet request. In
-     * addition to the parent {@link ServerAdapter}, it also copies the
-     * Servlet's request attributes into the Restlet's request attributes map.
-     * 
-     * @param servletCall
-     *            The low-level Servlet call.
-     * @return A new high-level uniform request.
-     */
-    public HttpRequest toRequest(ServletCall servletCall) {
-        final HttpRequest result = super.toRequest(servletCall);
-
-        // Copy all Servlet's request attributes
-        String attributeName;
-        for (final Enumeration<String> namesEnum = servletCall.getRequest()
-                .getAttributeNames(); namesEnum.hasMoreElements();) {
-            attributeName = namesEnum.nextElement();
-            result.getAttributes().put(attributeName,
-                    servletCall.getRequest().getAttribute(attributeName));
-        }
-
-        return result;
     }
 
 }

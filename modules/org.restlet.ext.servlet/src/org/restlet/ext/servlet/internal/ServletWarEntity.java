@@ -168,8 +168,8 @@ public class ServletWarEntity extends Entity {
         int index = this.fullName.lastIndexOf("/");
 
         if (index != -1) {
-            result = new ServletWarEntity(getServletContext(), this.fullName
-                    .substring(0, index + 1), getMetadataService());
+            result = new ServletWarEntity(getServletContext(),
+                    this.fullName.substring(0, index + 1), getMetadataService());
         }
 
         return result;
