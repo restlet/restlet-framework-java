@@ -22,6 +22,9 @@ JAVADOC target -->
 			<bottom>
 				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://restlet.com">Restlet</a>.</i>]]>
 			</bottom>
+			<header>
+				<![CDATA[<span>Restlet Framework ${version-full}</span><br/><span>${edition-full-label}</span>]]>
+			</header>
 
 			<group title="Restlet API">
 				<package name="</#noparse>${edition.packageCore}*<#noparse>" />
@@ -49,6 +52,9 @@ JAVADOC target -->
 			<bottom>
 				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://restlet.com">Restlet</a>.</i>]]>
 			</bottom>
+			<header>
+				<![CDATA[<span>Restlet Framework ${version-full}</span><br/><span>${edition-full-label}</span>]]>
+			</header>
 
 			<group title="Restlet Engine">
 				<package name="</#noparse>${edition.packageEngine}*<#noparse>" />
@@ -86,6 +92,9 @@ JAVADOC target -->
 			<bottom>
 				<![CDATA[<i>Copyright &#169; 2005-${current-year} <a target="_top" href="http://restlet.com">Restlet</a>.</i>]]>
 			</bottom>
+			<header>
+				<![CDATA[<span>Restlet Framework ${version-full}</span><br/><span>${edition-full-label}</span>]]>
+			</header>
 </#noparse>
 			<group title="Standards support" packages="<#list edition.modules?sort_by("id") as module><#if ((module.type!"") = "standard")>${module.package?replace("org.restlet.ext",edition.packageExtension)}*:</#if></#list>" />
 			<group title="Pluggable connectors" packages="<#list edition.modules?sort_by("id") as module><#if ((module.type!"") = "connector")>${module.package?replace("org.restlet.ext",edition.packageExtension)}*:</#if></#list>" />
