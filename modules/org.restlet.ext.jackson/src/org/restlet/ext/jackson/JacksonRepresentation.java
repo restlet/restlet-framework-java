@@ -201,7 +201,6 @@ public class JacksonRepresentation<T> extends OutputRepresentation {
      */
     protected ObjectMapper createObjectMapper() {
         ObjectMapper result = null;
-        System.out.println("createObjectMapper");
         if (MediaType.APPLICATION_JSON.isCompatible(getMediaType())) {
             JsonFactory jsonFactory = new JsonFactory();
             jsonFactory.configure(Feature.AUTO_CLOSE_TARGET, false);
