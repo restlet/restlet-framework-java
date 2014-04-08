@@ -202,7 +202,7 @@ public class ObapClientHelper extends LocalClientHelper {
         if (scheme.equalsIgnoreCase(Protocol.OBAP.getSchemeName())) {
             Bundle bundle = BUNDLE_CACHE.get(request.getResourceRef()
                     .getAuthority());
-            getLogger().info(
+            getLogger().fine(
                     "Look for bundle "
                             + request.getResourceRef().getAuthority());
             handleBundle(request, response, bundle);
