@@ -186,7 +186,7 @@ import org.restlet.util.Series;
  * >JSSE Reference Guide</a>.
  * </p>
  * 
- * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
+ * @author Bruno Harbulot
  * @see javax.net.ssl.SSLContext
  * @see java.security.KeyStore
  * @see <a

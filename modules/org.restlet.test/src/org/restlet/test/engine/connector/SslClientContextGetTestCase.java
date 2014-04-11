@@ -54,7 +54,7 @@ import org.restlet.routing.Router;
  * Test that a simple get using SSL works for all the connectors.
  * 
  * @author Kevin Conaway
- * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
+ * @author Bruno Harbulot
  */
 public class SslClientContextGetTestCase extends SslBaseConnectorsTestCase {
     public static class GetTestResource extends ServerResource {

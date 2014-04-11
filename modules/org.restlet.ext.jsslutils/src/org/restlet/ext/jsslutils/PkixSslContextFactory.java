@@ -57,7 +57,7 @@ import org.restlet.util.Series;
  * href="http://code.google.com/p/jsslutils/">jSSLutils</a> and can be
  * configured via parameters.
  * 
- * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
+ * @author Bruno Harbulot
  */
 public class PkixSslContextFactory extends SslContextFactory {
     private String sslProtocol = "TLS";
