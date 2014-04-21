@@ -17,7 +17,7 @@ public class Resource {
 	/**
 	 * List of the APIs this resource provides
 	 */
-	private List<SubResource> subResources;
+	private List<Operation> operations;
 	
 	/**
 	 * Textual description of this resource
@@ -40,12 +40,12 @@ public class Resource {
 		this.resourcePath = resourcePath;
 	}
 
-	public List<SubResource> getSubResources() {
-		return subResources;
+	public List<Operation> getOperations() {
+		return operations;
 	}
 
-	public void setSubResources(List<SubResource> subResources) {
-		this.subResources = subResources;
+	public void setOperations(List<Operation> operations) {
+		this.operations = operations;
 	}
 
 	public String getDescription() {

@@ -3,6 +3,16 @@ package org.restlet.ext.apispark;
 public class Response {
 
 	/**
+	 * Name of this response
+	 */
+	private String name;
+	
+	/**
+	 * Textual description of this response
+	 */
+	private String description;
+	
+	/**
 	 * HTTP code for the response
 	 * See: http://fr.wikipedia.org/wiki/Liste_des_codes_HTTP
 	 */
@@ -18,6 +28,22 @@ public class Response {
 	 * Custom content of the body if any
 	 */
 	private Body body;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
 	public Integer getCode() {
 		return code;
