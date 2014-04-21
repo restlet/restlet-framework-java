@@ -18,7 +18,7 @@ public class Property {
 	 * Type of this property, either a primitive type or
 	 * a reference to a representation
 	 */
-	private String type;
+	private String dataType;
 	
 	/**
 	 * Default value if this property is of a primitive type
@@ -76,10 +76,10 @@ public class Property {
 		this.description = description;
 	}
 	public String getType() {
-		return type;
+		return dataType;
 	}
 	public void setType(String type) {
-		this.type = type;
+		this.dataType = type;
 	}
 	public String getDefaultValue() {
 		return defaultValue;

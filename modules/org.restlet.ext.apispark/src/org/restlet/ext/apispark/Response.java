@@ -17,24 +17,29 @@ public class Response {
 	/**
 	 * Custom content of the body if any
 	 */
-	private String content;
-	
+	private Body body;
+
 	public Integer getCode() {
 		return code;
 	}
+
 	public void setCode(Integer code) {
 		this.code = code;
 	}
+
 	public String getMessage() {
 		return message;
 	}
+
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public String getContent() {
-		return content;
+
+	public Body getBody() {
+		return body;
 	}
-	public void setContent(String content) {
-		this.content = content;
+
+	public void setBody(Body body) {
+		this.body = body;
 	}
 }

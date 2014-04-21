@@ -6,7 +6,7 @@ public class Body {
 	 * Reference of the representation in the body 
 	 * of the message
 	 */
-	private String representation;
+	private String type;
 	
 	/**
 	 * Indicates whether you should provide an array
@@ -15,10 +15,10 @@ public class Body {
 	private boolean array;
 	
 	public String getRepresentation() {
-		return representation;
+		return type;
 	}
 	public void setRepresentation(String representation) {
-		this.representation = representation;
+		this.type = representation;
 	}
 	public boolean isArray() {
 		return array;
