@@ -132,19 +132,36 @@ public class ApisparkRepresentation extends
 	private static void addResources(ApplicationInfo application,
 			Contract contract, List<ResourceInfo> resources, String basePath) {
 		for (ResourceInfo ri : resources) {
-
 			Resource resource = new Resource();
 			resource.setDescription(toString(ri.getDocumentations()));
 			resource.setName(ri.getIdentifier());
 			if (basePath != null) {
-				resource.setResourcePath(basePath + ri.getPath());
+				if (basePath.endsWith("/")) {
+					if (ri.getPath().startsWith("/")) {
+						resource.setResourcePath(basePath
+								+ ri.getPath().substring(1));
+					} else {
+						resource.setResourcePath(basePath + ri.getPath());
+					}
+				} else {
+					if (ri.getPath().startsWith("/")) {
+						resource.setResourcePath(basePath + ri.getPath());
+					} else {
+						resource.setResourcePath(basePath + "/" + ri.getPath());
+					}
+				}
+
 			} else {
 				resource.setResourcePath(ri.getPath());
 			}
 
 			if (!ri.getChildResources().isEmpty()) {
 				addResources(application, contract, ri.getChildResources(),
-						ri.getPath());
+						resource.getResourcePath());
+			}
+
+			if (ri.getMethods().isEmpty()) {
+				continue;
 			}
 
 			resource.setOperations(new ArrayList<Operation>());
