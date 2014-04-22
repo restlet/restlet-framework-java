@@ -68,6 +68,10 @@ public class ApisparkRepresentation extends
 		if (application != null) {
 			result = new Documentation();
 			result.setVersion(application.getVersion());
+			if (application.getResources().getBaseRef() != null) {
+				result.setEndpoint(application.getResources().getBaseRef()
+						.toString());
+			}
 
 			Contract contract = new Contract();
 			result.setContract(contract);
@@ -108,121 +112,8 @@ public class ApisparkRepresentation extends
 			// List of resources.
 			// TODO Resource path/basePath?
 			contract.setResources(new ArrayList<Resource>());
-			for (ResourceInfo ri : application.getResources().getResources()) {
-
-				Resource resource = new Resource();
-				resource.setDescription(toString(ri.getDocumentations()));
-				resource.setName(ri.getIdentifier());
-				resource.setResourcePath(ri.getPath());
-
-				resource.setOperations(new ArrayList<Operation>());
-				int i = 0;
-				for (MethodInfo mi : ri.getMethods()) {
-
-					Operation operation = new Operation();
-					operation.setDescription(toString(mi.getDocumentations()));
-					operation.setName(mi.getName().getName());
-					// TODO complete Method class with mi.getName()
-					operation.setMethod(new Method());
-					operation.getMethod().setDescription(mi.getName().getDescription());
-					operation.getMethod().setName(mi.getName().getName());
-
-					// Complete parameters
-					operation.setHeaders(new ArrayList<Parameter>());
-					operation.setPathVariables(new ArrayList<PathVariable>());
-					operation.setQueryParameters(new ArrayList<Parameter>());
-					if (mi.getRequest() != null
-							&& mi.getRequest().getParameters() != null) {
-						for (ParameterInfo pi : mi.getRequest().getParameters()) {
-							if (ParameterStyle.HEADER.equals(pi.getStyle())) {
-								Parameter parameter = new Parameter();
-								parameter.setAllowMultiple(pi.isRepeating());
-								parameter.setDefaultValue(pi.getDefaultValue());
-								parameter.setDescription(toString(pi
-										.getDocumentations()));
-								parameter.setName(pi.getName());
-								parameter
-										.setPossibleValues(new ArrayList<String>());
-								parameter.setRequired(pi.isRequired());
-
-								operation.getHeaders().add(parameter);
-							} else if (ParameterStyle.TEMPLATE.equals(pi
-									.getStyle())) {
-								PathVariable pathVariable = new PathVariable();
-
-								pathVariable.setDescription(toString(pi
-										.getDocumentations()));
-								pathVariable.setName(pi.getName());
-
-								operation.getPathVariables().add(pathVariable);
-							} else if (ParameterStyle.QUERY.equals(pi
-									.getStyle())) {
-								Parameter parameter = new Parameter();
-								parameter.setAllowMultiple(pi.isRepeating());
-								parameter.setDefaultValue(pi.getDefaultValue());
-								parameter.setDescription(toString(pi
-										.getDocumentations()));
-								parameter.setName(pi.getName());
-								parameter
-										.setPossibleValues(new ArrayList<String>());
-								parameter.setRequired(pi.isRequired());
-
-								operation.getHeaders().add(parameter);
-							}
-						}
-					}
-
-					if (mi.getRequest() != null
-							&& mi.getRequest().getRepresentations() != null
-							&& !mi.getRequest().getRepresentations().isEmpty()) {
-						Body body = new Body();
-						// TODO analyze
-						// The models differ : one representation / one variant
-						// for Restlet one representation / several variants for
-						// APIspark
-						body.setRepresentation(mi.getRequest()
-								.getRepresentations().get(0).getIdentifier());
-
-						operation.setInRepresentation(body);
-					}
-
-					if (mi.getResponses() != null
-							&& !mi.getResponses().isEmpty()) {
-						operation.setResponses(new ArrayList<Response>());
-
-						Body body = new Body();
-						// TODO analyze
-						// The models differ : one representation / one variant
-						// for Restlet one representation / several variants for
-						// APIspark
-
-						operation.setOutRepresentation(body);
-
-						for (ResponseInfo rio : mi.getResponses()) {
-							if (!rio.getStatuses().isEmpty()) {
-								Status status = rio.getStatuses().get(0);
-								// TODO analyze
-								// The models differ : one representation / one variant
-								// for Restlet one representation / several variants for
-								// APIspark
-
-								Response response = new Response();
-								response.setBody(body);
-								response.setCode(status.getCode());
-								response.setDescription(toString(rio.getDocumentations()));
-								response.setMessage(status.getDescription());
-								//response.setName();
-
-								operation.getResponses().add(response);
-							}
-						}
-					}
-
-					resource.getOperations().add(operation);
-				}
-
-				contract.getResources().add(resource);
-			}
+			addResources(application, contract, application.getResources()
+					.getResources(), result.getEndpoint());
 
 			java.util.List<String> protocols = new ArrayList<String>();
 			for (ConnectorHelper<Server> helper : Engine.getInstance()
@@ -236,6 +127,135 @@ public class ApisparkRepresentation extends
 
 		}
 		return result;
+	}
+
+	private static void addResources(ApplicationInfo application,
+			Contract contract, List<ResourceInfo> resources, String basePath) {
+		for (ResourceInfo ri : resources) {
+
+			Resource resource = new Resource();
+			resource.setDescription(toString(ri.getDocumentations()));
+			resource.setName(ri.getIdentifier());
+			if (basePath != null) {
+				resource.setResourcePath(basePath + ri.getPath());
+			} else {
+				resource.setResourcePath(ri.getPath());
+			}
+
+			if (!ri.getChildResources().isEmpty()) {
+				addResources(application, contract, ri.getChildResources(),
+						ri.getPath());
+			}
+
+			resource.setOperations(new ArrayList<Operation>());
+			for (MethodInfo mi : ri.getMethods()) {
+
+				Operation operation = new Operation();
+				operation.setDescription(toString(mi.getDocumentations()));
+				operation.setName(mi.getName().getName());
+				// TODO complete Method class with mi.getName()
+				operation.setMethod(new Method());
+				operation.getMethod().setDescription(
+						mi.getName().getDescription());
+				operation.getMethod().setName(mi.getName().getName());
+
+				// Complete parameters
+				operation.setHeaders(new ArrayList<Parameter>());
+				operation.setPathVariables(new ArrayList<PathVariable>());
+				operation.setQueryParameters(new ArrayList<Parameter>());
+				if (mi.getRequest() != null
+						&& mi.getRequest().getParameters() != null) {
+					for (ParameterInfo pi : mi.getRequest().getParameters()) {
+						if (ParameterStyle.HEADER.equals(pi.getStyle())) {
+							Parameter parameter = new Parameter();
+							parameter.setAllowMultiple(pi.isRepeating());
+							parameter.setDefaultValue(pi.getDefaultValue());
+							parameter.setDescription(toString(pi
+									.getDocumentations()));
+							parameter.setName(pi.getName());
+							parameter
+									.setPossibleValues(new ArrayList<String>());
+							parameter.setRequired(pi.isRequired());
+
+							operation.getHeaders().add(parameter);
+						} else if (ParameterStyle.TEMPLATE
+								.equals(pi.getStyle())) {
+							PathVariable pathVariable = new PathVariable();
+
+							pathVariable.setDescription(toString(pi
+									.getDocumentations()));
+							pathVariable.setName(pi.getName());
+
+							operation.getPathVariables().add(pathVariable);
+						} else if (ParameterStyle.QUERY.equals(pi.getStyle())) {
+							Parameter parameter = new Parameter();
+							parameter.setAllowMultiple(pi.isRepeating());
+							parameter.setDefaultValue(pi.getDefaultValue());
+							parameter.setDescription(toString(pi
+									.getDocumentations()));
+							parameter.setName(pi.getName());
+							parameter
+									.setPossibleValues(new ArrayList<String>());
+							parameter.setRequired(pi.isRequired());
+
+							operation.getHeaders().add(parameter);
+						}
+					}
+				}
+
+				if (mi.getRequest() != null
+						&& mi.getRequest().getRepresentations() != null
+						&& !mi.getRequest().getRepresentations().isEmpty()) {
+					Body body = new Body();
+					// TODO analyze
+					// The models differ : one representation / one variant
+					// for Restlet one representation / several variants for
+					// APIspark
+					body.setRepresentation(mi.getRequest().getRepresentations()
+							.get(0).getIdentifier());
+
+					operation.setInRepresentation(body);
+				}
+
+				if (mi.getResponses() != null && !mi.getResponses().isEmpty()) {
+					operation.setResponses(new ArrayList<Response>());
+
+					Body body = new Body();
+					// TODO analyze
+					// The models differ : one representation / one variant
+					// for Restlet one representation / several variants for
+					// APIspark
+
+					operation.setOutRepresentation(body);
+
+					for (ResponseInfo rio : mi.getResponses()) {
+						if (!rio.getStatuses().isEmpty()) {
+							Status status = rio.getStatuses().get(0);
+							// TODO analyze
+							// The models differ : one representation / one
+							// variant
+							// for Restlet one representation / several
+							// variants for
+							// APIspark
+
+							Response response = new Response();
+							response.setBody(body);
+							response.setCode(status.getCode());
+							response.setDescription(toString(rio
+									.getDocumentations()));
+							response.setMessage(status.getDescription());
+							// response.setName();
+
+							operation.getResponses().add(response);
+						}
+					}
+				}
+
+				resource.getOperations().add(operation);
+			}
+
+			contract.getResources().add(resource);
+		}
 	}
 
 	private static String toString(List<DocumentationInfo> di) {
