@@ -2,71 +2,62 @@ package org.restlet.ext.apispark;
 
 public class Documentation {
 
-	/**
-	 * Current version of the API
-	 */
-	private String version;
-	
-	/**
-	 * URL of the description of the license used by the API
-	 */
-	private String license;
-	
-	/**
-	 * Base URL on which you can access the API
-	 * Note: will enable multiple endpoints and protocols in 
-	 * the future (use class Endpoint in a list)
-	 */
-	private String endpoint;
-	
-	/**
-	 * E-mail of the person to contact for further information
-	 * or user acces on the API
-	 */
+	/** Any useful information for a user that plans to access to the API. */
 	private String contact;
-	
-	/**
-	 * Contract of this API
-	 */
+
+	/** Contract of this API. */
 	private Contract contract;
 
-	public String getVersion() {
-		return version;
-	}
+	/**
+	 * Base URL on which you can access the API<br>
+	 * Note: will enable multiple endpoints and protocols in the future (use
+	 * class Endpoint in a list).
+	 */
+	private String endpoint;
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+	/** URL of the description of the license used by the API. */
+	private String license;
 
-	public String getLicense() {
-		return license;
-	}
-
-	public void setLicense(String license) {
-		this.license = license;
-	}
-
-	public String getEndpoint() {
-		return endpoint;
-	}
-
-	public void setEndpoint(String endpoint) {
-		this.endpoint = endpoint;
-	}
+	/** Current version of the API. */
+	private String version;
 
 	public String getContact() {
 		return contact;
-	}
-
-	public void setContact(String contact) {
-		this.contact = contact;
 	}
 
 	public Contract getContract() {
 		return contract;
 	}
 
+	public String getEndpoint() {
+		return endpoint;
+	}
+
+	public String getLicense() {
+		return license;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setContact(String contact) {
+		this.contact = contact;
+	}
+
 	public void setContract(Contract contract) {
 		this.contract = contract;
+	}
+
+	public void setEndpoint(String endpoint) {
+		this.endpoint = endpoint;
+	}
+
+	public void setLicense(String license) {
+		this.license = license;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 }
