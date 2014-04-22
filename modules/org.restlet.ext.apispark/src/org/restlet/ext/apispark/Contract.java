@@ -2,7 +2,7 @@ package org.restlet.ext.apispark;
 
 import java.util.List;
 
-public class Api {
+public class Contract {
 	
 	/**
 	 * Name of the API

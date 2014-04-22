@@ -24,6 +24,11 @@ public class Documentation {
 	 * or user acces on the API
 	 */
 	private String contact;
+	
+	/**
+	 * Contract of this API
+	 */
+	private Contract contract;
 
 	public String getVersion() {
 		return version;
@@ -55,5 +60,13 @@ public class Documentation {
 
 	public void setContact(String contact) {
 		this.contact = contact;
+	}
+
+	public Contract getContract() {
+		return contract;
+	}
+
+	public void setContract(Contract contract) {
+		this.contract = contract;
 	}
 }
