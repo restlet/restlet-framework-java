@@ -881,11 +881,13 @@ public class Engine {
      * Registers the default client and server connectors.
      */
     public void registerDefaultConnectors() {
+        // [ifndef gae, gwt]
+        getRegisteredClients().add(
+                new org.restlet.engine.connector.FtpClientHelper(null));
+        // [enddef]
         // [ifndef gwt]
         getRegisteredClients().add(
                 new org.restlet.engine.connector.HttpClientHelper(null));
-        // [enddef]
-        // [ifndef gwt]
         getRegisteredClients().add(
                 new org.restlet.engine.local.ClapClientHelper(null));
         getRegisteredClients().add(
@@ -896,6 +898,8 @@ public class Engine {
         // [ifndef gae, gwt]
         getRegisteredServers().add(
                 new org.restlet.engine.connector.HttpServerHelper(null));
+        getRegisteredServers().add(
+                new org.restlet.engine.connector.HttpsServerHelper(null));
         getRegisteredClients().add(
                 new org.restlet.engine.local.FileClientHelper(null));
         getRegisteredClients().add(
