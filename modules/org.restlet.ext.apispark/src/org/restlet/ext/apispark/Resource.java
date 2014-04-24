@@ -4,47 +4,58 @@ import java.util.List;
 
 public class Resource {
 
-	/** Textual description of this resource */
-	private String description;
+    /** Textual description of this resource */
+    private String description;
 
-	/** Name of this resource */
-	private String name;
+    /** Name of this resource */
+    private String name;
 
-	/** List of the APIs this resource provides */
-	private List<Operation> operations;
+    /** List of the APIs this resource provides */
+    private List<Operation> operations;
 
-	/** Relative path from the endpoint to this resource */
-	private String resourcePath;
+    /** The variables you must provide for this operation. */
+    private List<PathVariable> pathVariables;
 
-	public String getDescription() {
-		return description;
-	}
+    /** Relative path from the endpoint to this resource */
+    private String resourcePath;
 
-	public String getName() {
-		return name;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public List<Operation> getOperations() {
-		return operations;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getResourcePath() {
-		return resourcePath;
-	}
+    public List<Operation> getOperations() {
+        return operations;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public List<PathVariable> getPathVariables() {
+        return pathVariables;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getResourcePath() {
+        return resourcePath;
+    }
 
-	public void setOperations(List<Operation> operations) {
-		this.operations = operations;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setResourcePath(String resourcePath) {
-		this.resourcePath = resourcePath;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setOperations(List<Operation> operations) {
+        this.operations = operations;
+    }
+
+    public void setPathVariables(List<PathVariable> pathVariables) {
+        this.pathVariables = pathVariables;
+    }
+
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
 }

@@ -33,11 +33,15 @@
 
 package org.restlet.ext.apispark.info;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
+import org.restlet.ext.apispark.Property;
+import org.restlet.ext.apispark.Representation;
+import org.restlet.ext.apispark.reflect.ReflectUtils;
 import org.restlet.representation.Variant;
 
 /**
@@ -47,191 +51,284 @@ import org.restlet.representation.Variant;
  */
 public class RepresentationInfo extends DocumentedInfo {
 
-	/** Identifier for that element. */
-	private String identifier;
+    /**
+     * Describes a representation class and variant couple as APISpark
+     * information for the given method and request. The variant contains the
+     * target media type that can be converted to by one of the available
+     * Restlet converters.<br>
+     * <br>
+     * By default, it introspects the given class.
+     * 
+     * @param methodInfo
+     *            The parent method description.
+     * @param requestInfo
+     *            The parent request description.
+     * @param representationClass
+     *            The representation bean class.
+     * @param variant
+     *            The target variant.
+     * @return The APISpark representation information.
+     */
+    protected static RepresentationInfo describe(MethodInfo methodInfo,
+            Class<?> representationClass, Variant variant) {
+        RepresentationInfo result = null;
 
-	/** Media type of that element. */
-	private MediaType mediaType;
+        if (representationClass != null) {
+            // Introspect the java class
+            result = new RepresentationInfo(variant);
 
-	/** List of parameters. */
-	private List<ParameterInfo> parameters;
+            result.setIdentifier(representationClass.getSimpleName());
 
-	/** List of locations of one or more meta data profiles. */
-	private List<Reference> profiles;
+            if (Representation.class.isAssignableFrom(representationClass)) {
+                result.setRaw(true);
+            } else {
+                // TODO support parent types
+                // result.setParentType(parentType);
+                for (Field field : ReflectUtils
+                        .getAllDeclaredFields(representationClass)) {
+                    if (!"serialVersionUID".equals(field.getName())) {
+                        Property property = new Property();
+                        property.setName(field.getName());
+                        property.setType(field.getType().getSimpleName());
+                        result.getProperties().add(property);
+                    }
 
-	/** Reference to an representation identifier. */
-	private String reference;
+                }
+            }
+        }
 
-	/**
-	 * Constructor.
-	 */
-	public RepresentationInfo() {
-		super();
-	}
+        return result;
+    }
 
-	/**
-	 * Constructor with a single documentation element.
-	 * 
-	 * @param documentation
-	 *            A single documentation element.
-	 */
-	public RepresentationInfo(DocumentationInfo documentation) {
-		super(documentation);
-	}
+    /** Identifier for that element. */
+    private String identifier;
 
-	/**
-	 * Constructor with a list of documentation elements.
-	 * 
-	 * @param documentations
-	 *            The list of documentation elements.
-	 */
-	public RepresentationInfo(List<DocumentationInfo> documentations) {
-		super(documentations);
-	}
+    /** Media type of that element. */
+    private MediaType mediaType;
 
-	/**
-	 * Constructor with a media type.
-	 * 
-	 * @param mediaType
-	 *            The media type of the representation.
-	 */
-	public RepresentationInfo(MediaType mediaType) {
-		setMediaType(mediaType);
-	}
+    /** List of parameters. */
+    private List<ParameterInfo> parameters;
 
-	/**
-	 * Constructor with a single documentation element.
-	 * 
-	 * @param documentation
-	 *            A single documentation element.
-	 */
-	public RepresentationInfo(String documentation) {
-		super(documentation);
-	}
+    /** Reference to its parent type if any. */
+    private String parentType;
 
-	/**
-	 * Constructor with a variant.
-	 * 
-	 * @param variant
-	 *            The variant to describe.
-	 */
-	public RepresentationInfo(Variant variant) {
-		setMediaType(variant.getMediaType());
-	}
+    /** List of locations of one or more meta data profiles. */
+    private List<Reference> profiles;
 
-	/**
-	 * Returns the identifier for that element.
-	 * 
-	 * @return The identifier for that element.
-	 */
-	public String getIdentifier() {
-		return this.identifier;
-	}
+    // TODO review
+    /** List of this representation's properties. */
+    private List<Property> properties;
 
-	/**
-	 * Returns the media type of that element.
-	 * 
-	 * @return The media type of that element.
-	 */
-	public MediaType getMediaType() {
-		return this.mediaType;
-	}
+    /** Indicates if the representation is structured or not. */
+    private boolean raw;
 
-	/**
-	 * Returns the list of parameters.
-	 * 
-	 * @return The list of parameters.
-	 */
-	public List<ParameterInfo> getParameters() {
-		// Lazy initialization with double-check.
-		List<ParameterInfo> p = this.parameters;
-		if (p == null) {
-			synchronized (this) {
-				p = this.parameters;
-				if (p == null) {
-					this.parameters = p = new ArrayList<ParameterInfo>();
-				}
-			}
-		}
-		return p;
-	}
+    /** Reference to a representation identifier. */
+    private String reference;
 
-	/**
-	 * Returns the list of locations of one or more meta data profiles.
-	 * 
-	 * @return The list of locations of one or more meta data profiles.
-	 */
-	public List<Reference> getProfiles() {
-		// Lazy initialization with double-check.
-		List<Reference> p = this.profiles;
-		if (p == null) {
-			synchronized (this) {
-				p = this.profiles;
-				if (p == null) {
-					this.profiles = p = new ArrayList<Reference>();
-				}
-			}
-		}
-		return p;
-	}
+    /**
+     * Constructor.
+     */
+    public RepresentationInfo() {
+        super();
+    }
 
-	/**
-	 * Returns the reference to an representation identifier.
-	 * 
-	 * @return The reference to an representation identifier.
-	 */
-	public String getReference() {
-		return reference;
-	}
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public RepresentationInfo(DocumentationInfo documentation) {
+        super(documentation);
+    }
 
-	/**
-	 * Sets the identifier for that element.
-	 * 
-	 * @param identifier
-	 *            The identifier for that element.
-	 */
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
+    public RepresentationInfo(List<DocumentationInfo> documentations) {
+        super(documentations);
+    }
 
-	/**
-	 * Sets the media type of that element.
-	 * 
-	 * @param mediaType
-	 *            The media type of that element.
-	 */
-	public void setMediaType(MediaType mediaType) {
-		this.mediaType = mediaType;
-	}
+    /**
+     * Constructor with a media type.
+     * 
+     * @param mediaType
+     *            The media type of the representation.
+     */
+    public RepresentationInfo(MediaType mediaType) {
+        setMediaType(mediaType);
+    }
 
-	/**
-	 * Sets the list of parameters.
-	 * 
-	 * @param parameters
-	 *            The list of parameters.
-	 */
-	public void setParameters(List<ParameterInfo> parameters) {
-		this.parameters = parameters;
-	}
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public RepresentationInfo(String documentation) {
+        super(documentation);
+    }
 
-	/**
-	 * Sets the list of locations of one or more meta data profiles.
-	 * 
-	 * @param profiles
-	 *            The list of locations of one or more meta data profiles.
-	 */
-	public void setProfiles(List<Reference> profiles) {
-		this.profiles = profiles;
-	}
+    /**
+     * Constructor with a variant.
+     * 
+     * @param variant
+     *            The variant to describe.
+     */
+    public RepresentationInfo(Variant variant) {
+        setMediaType(variant.getMediaType());
+    }
 
-	/**
-	 * Sets the reference to an representation identifier.
-	 * 
-	 * @param reference
-	 *            The reference to an representation identifier.
-	 */
-	public void setReference(String reference) {
-		this.reference = reference;
-	}
+    /**
+     * Returns the identifier for that element.
+     * 
+     * @return The identifier for that element.
+     */
+    public String getIdentifier() {
+        return this.identifier;
+    }
+
+    /**
+     * Returns the media type of that element.
+     * 
+     * @return The media type of that element.
+     */
+    public MediaType getMediaType() {
+        return this.mediaType;
+    }
+
+    /**
+     * Returns the list of parameters.
+     * 
+     * @return The list of parameters.
+     */
+    public List<ParameterInfo> getParameters() {
+        // Lazy initialization with double-check.
+        List<ParameterInfo> p = this.parameters;
+        if (p == null) {
+            synchronized (this) {
+                p = this.parameters;
+                if (p == null) {
+                    this.parameters = p = new ArrayList<ParameterInfo>();
+                }
+            }
+        }
+        return p;
+    }
+
+    public String getParentType() {
+        return parentType;
+    }
+
+    /**
+     * Returns the list of locations of one or more meta data profiles.
+     * 
+     * @return The list of locations of one or more meta data profiles.
+     */
+    public List<Reference> getProfiles() {
+        // Lazy initialization with double-check.
+        List<Reference> p = this.profiles;
+        if (p == null) {
+            synchronized (this) {
+                p = this.profiles;
+                if (p == null) {
+                    this.profiles = p = new ArrayList<Reference>();
+                }
+            }
+        }
+        return p;
+    }
+
+    public List<Property> getProperties() {
+        // Lazy initialization with double-check.
+        List<Property> p = this.properties;
+        if (p == null) {
+            synchronized (this) {
+                p = this.properties;
+                if (p == null) {
+                    this.properties = p = new ArrayList<Property>();
+                }
+            }
+        }
+        return p;
+    }
+
+    /**
+     * Returns the reference to an representation identifier.
+     * 
+     * @return The reference to an representation identifier.
+     */
+    public String getReference() {
+        return reference;
+    }
+
+    public boolean isRaw() {
+        return raw;
+    }
+
+    /**
+     * Sets the identifier for that element.
+     * 
+     * @param identifier
+     *            The identifier for that element.
+     */
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    /**
+     * Sets the media type of that element.
+     * 
+     * @param mediaType
+     *            The media type of that element.
+     */
+    public void setMediaType(MediaType mediaType) {
+        this.mediaType = mediaType;
+    }
+
+    /**
+     * Sets the list of parameters.
+     * 
+     * @param parameters
+     *            The list of parameters.
+     */
+    public void setParameters(List<ParameterInfo> parameters) {
+        this.parameters = parameters;
+    }
+
+    public void setParentType(String parentType) {
+        this.parentType = parentType;
+    }
+
+    /**
+     * Sets the list of locations of one or more meta data profiles.
+     * 
+     * @param profiles
+     *            The list of locations of one or more meta data profiles.
+     */
+    public void setProfiles(List<Reference> profiles) {
+        this.profiles = profiles;
+    }
+
+    public void setProperties(List<Property> properties) {
+        this.properties = properties;
+    }
+
+    public void setRaw(boolean raw) {
+        this.raw = raw;
+    }
+
+    /**
+     * Sets the reference to an representation identifier.
+     * 
+     * @param reference
+     *            The reference to an representation identifier.
+     */
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
 
 }

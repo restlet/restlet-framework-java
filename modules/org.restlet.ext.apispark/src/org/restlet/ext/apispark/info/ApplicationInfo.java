@@ -43,205 +43,205 @@ import java.util.List;
  */
 public class ApplicationInfo extends DocumentedInfo {
 
-	/** List of methods. */
-	private List<MethodInfo> methods;
+    /** List of methods. */
+    private List<MethodInfo> methods;
 
-	/** Name. */
-	private String name;
-	
-	/** List of representations. */
-	private List<RepresentationInfo> representations;
+    /** Name. */
+    private String name;
 
-	/** Resources provided by the application. */
-	private ResourcesInfo resources;
+    /** List of representations. */
+    private List<RepresentationInfo> representations;
 
-	/**
-	 * Describes a set of methods that define the behavior of a type of
-	 * resource.
-	 */
-	private List<ResourceTypeInfo> resourceTypes;
+    /** Resources provided by the application. */
+    private ResourcesInfo resources;
 
-	/** The version of the Application. */
-	private String version;
+    /**
+     * Describes a set of methods that define the behavior of a type of
+     * resource.
+     */
+    private List<ResourceTypeInfo> resourceTypes;
 
-	/**
-	 * Constructor.
-	 */
-	public ApplicationInfo() {
-		super();
-	}
+    /** The version of the Application. */
+    private String version;
 
-	/**
-	 * Constructor with a single documentation element.
-	 * 
-	 * @param documentation
-	 *            A single documentation element.
-	 */
-	public ApplicationInfo(DocumentationInfo documentation) {
-		super(documentation);
-	}
+    /**
+     * Constructor.
+     */
+    public ApplicationInfo() {
+        super();
+    }
 
-	/**
-	 * Constructor with a list of documentation elements.
-	 * 
-	 * @param documentations
-	 *            The list of documentation elements.
-	 */
-	public ApplicationInfo(List<DocumentationInfo> documentations) {
-		super(documentations);
-	}
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public ApplicationInfo(DocumentationInfo documentation) {
+        super(documentation);
+    }
 
-	/**
-	 * Constructor with a single documentation element.
-	 * 
-	 * @param documentation
-	 *            A single documentation element.
-	 */
-	public ApplicationInfo(String documentation) {
-		super(documentation);
-	}
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
+    public ApplicationInfo(List<DocumentationInfo> documentations) {
+        super(documentations);
+    }
 
-	/**
-	 * Returns the list of method elements.
-	 * 
-	 * @return The list of method elements.
-	 */
-	public List<MethodInfo> getMethods() {
-		// Lazy initialization with double-check.
-		List<MethodInfo> m = this.methods;
-		if (m == null) {
-			synchronized (this) {
-				m = this.methods;
-				if (m == null) {
-					this.methods = m = new ArrayList<MethodInfo>();
-				}
-			}
-		}
-		return m;
-	}
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public ApplicationInfo(String documentation) {
+        super(documentation);
+    }
 
-	public String getName() {
-		return name;
-	}
+    /**
+     * Returns the list of method elements.
+     * 
+     * @return The list of method elements.
+     */
+    public List<MethodInfo> getMethods() {
+        // Lazy initialization with double-check.
+        List<MethodInfo> m = this.methods;
+        if (m == null) {
+            synchronized (this) {
+                m = this.methods;
+                if (m == null) {
+                    this.methods = m = new ArrayList<MethodInfo>();
+                }
+            }
+        }
+        return m;
+    }
 
-	/**
-	 * Returns the list of representation elements.
-	 * 
-	 * @return The list of representation elements.
-	 */
-	public List<RepresentationInfo> getRepresentations() {
-		// Lazy initialization with double-check.
-		List<RepresentationInfo> r = this.representations;
-		if (r == null) {
-			synchronized (this) {
-				r = this.representations;
-				if (r == null) {
-					this.representations = r = new ArrayList<RepresentationInfo>();
-				}
-			}
-		}
-		return r;
-	}
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Returns the resources root element.
-	 * 
-	 * @return The resources root element.
-	 */
-	public ResourcesInfo getResources() {
-		// Lazy initialization with double-check.
-		ResourcesInfo r = this.resources;
-		if (r == null) {
-			synchronized (this) {
-				r = this.resources;
-				if (r == null) {
-					this.resources = r = new ResourcesInfo();
-				}
-			}
-		}
-		return r;
-	}
+    /**
+     * Returns the list of representation elements.
+     * 
+     * @return The list of representation elements.
+     */
+    public List<RepresentationInfo> getRepresentations() {
+        // Lazy initialization with double-check.
+        List<RepresentationInfo> r = this.representations;
+        if (r == null) {
+            synchronized (this) {
+                r = this.representations;
+                if (r == null) {
+                    this.representations = r = new ArrayList<RepresentationInfo>();
+                }
+            }
+        }
+        return r;
+    }
 
-	/**
-	 * Returns the list of resource type elements.
-	 * 
-	 * @return The list of resource type elements.
-	 */
-	public List<ResourceTypeInfo> getResourceTypes() {
-		// Lazy initialization with double-check.
-		List<ResourceTypeInfo> rt = this.resourceTypes;
-		if (rt == null) {
-			synchronized (this) {
-				rt = this.resourceTypes;
-				if (rt == null) {
-					this.resourceTypes = rt = new ArrayList<ResourceTypeInfo>();
-				}
-			}
-		}
-		return rt;
-	}
+    /**
+     * Returns the resources root element.
+     * 
+     * @return The resources root element.
+     */
+    public ResourcesInfo getResources() {
+        // Lazy initialization with double-check.
+        ResourcesInfo r = this.resources;
+        if (r == null) {
+            synchronized (this) {
+                r = this.resources;
+                if (r == null) {
+                    this.resources = r = new ResourcesInfo();
+                }
+            }
+        }
+        return r;
+    }
 
-	/**
-	 * Returns the version of the Application.
-	 * 
-	 * @return The version of the Application.
-	 */
-	public String getVersion() {
-		return version;
-	}
+    /**
+     * Returns the list of resource type elements.
+     * 
+     * @return The list of resource type elements.
+     */
+    public List<ResourceTypeInfo> getResourceTypes() {
+        // Lazy initialization with double-check.
+        List<ResourceTypeInfo> rt = this.resourceTypes;
+        if (rt == null) {
+            synchronized (this) {
+                rt = this.resourceTypes;
+                if (rt == null) {
+                    this.resourceTypes = rt = new ArrayList<ResourceTypeInfo>();
+                }
+            }
+        }
+        return rt;
+    }
 
-	/**
-	 * Sets the list of documentation elements.
-	 * 
-	 * @param methods
-	 *            The list of method elements.
-	 */
-	public void setMethods(List<MethodInfo> methods) {
-		this.methods = methods;
-	}
+    /**
+     * Returns the version of the Application.
+     * 
+     * @return The version of the Application.
+     */
+    public String getVersion() {
+        return version;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * Sets the list of documentation elements.
+     * 
+     * @param methods
+     *            The list of method elements.
+     */
+    public void setMethods(List<MethodInfo> methods) {
+        this.methods = methods;
+    }
 
-	/**
-	 * Sets the list of representation elements.
-	 * 
-	 * @param representations
-	 *            The list of representation elements.
-	 */
-	public void setRepresentations(List<RepresentationInfo> representations) {
-		this.representations = representations;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * Sets the list of resource elements.
-	 * 
-	 * @param resources
-	 *            The list of resource elements.
-	 */
-	public void setResources(ResourcesInfo resources) {
-		this.resources = resources;
-	}
+    /**
+     * Sets the list of representation elements.
+     * 
+     * @param representations
+     *            The list of representation elements.
+     */
+    public void setRepresentations(List<RepresentationInfo> representations) {
+        this.representations = representations;
+    }
 
-	/**
-	 * Sets the list of resource type elements.
-	 * 
-	 * @param resourceTypes
-	 *            The list of resource type elements.
-	 */
-	public void setResourceTypes(List<ResourceTypeInfo> resourceTypes) {
-		this.resourceTypes = resourceTypes;
-	}
+    /**
+     * Sets the list of resource elements.
+     * 
+     * @param resources
+     *            The list of resource elements.
+     */
+    public void setResources(ResourcesInfo resources) {
+        this.resources = resources;
+    }
 
-	/**
-	 * Sets the version of the Application.
-	 * 
-	 * @param version
-	 *            The version of the Application.
-	 */
-	public void setVersion(String version) {
-		this.version = version;
-	}
+    /**
+     * Sets the list of resource type elements.
+     * 
+     * @param resourceTypes
+     *            The list of resource type elements.
+     */
+    public void setResourceTypes(List<ResourceTypeInfo> resourceTypes) {
+        this.resourceTypes = resourceTypes;
+    }
+
+    /**
+     * Sets the version of the Application.
+     * 
+     * @param version
+     *            The version of the Application.
+     */
+    public void setVersion(String version) {
+        this.version = version;
+    }
 
 }

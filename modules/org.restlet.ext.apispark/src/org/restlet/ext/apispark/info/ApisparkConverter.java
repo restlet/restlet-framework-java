@@ -52,90 +52,90 @@ import org.restlet.resource.Resource;
  */
 public class ApisparkConverter extends ConverterHelper {
 
-	private static final VariantInfo VARIANT_APPLICATION_SWAGGER = new VariantInfo(
-			MediaType.APPLICATION_JSON);
+    private static final VariantInfo VARIANT_APPLICATION_SWAGGER = new VariantInfo(
+            MediaType.APPLICATION_JSON);
 
-	@Override
-	public List<Class<?>> getObjectClasses(Variant source) {
-		List<Class<?>> result = null;
+    @Override
+    public List<Class<?>> getObjectClasses(Variant source) {
+        List<Class<?>> result = null;
 
-		if (VARIANT_APPLICATION_SWAGGER.includes(source)) {
-			result = addObjectClass(result, ApplicationInfo.class);
-		}
+        if (VARIANT_APPLICATION_SWAGGER.includes(source)) {
+            result = addObjectClass(result, ApplicationInfo.class);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public List<VariantInfo> getVariants(Class<?> source) {
-		List<VariantInfo> result = null;
+    @Override
+    public List<VariantInfo> getVariants(Class<?> source) {
+        List<VariantInfo> result = null;
 
-		if (ApplicationInfo.class.isAssignableFrom(source)) {
-			result = addVariant(result, VARIANT_APPLICATION_SWAGGER);
-		}
+        if (ApplicationInfo.class.isAssignableFrom(source)) {
+            result = addVariant(result, VARIANT_APPLICATION_SWAGGER);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public float score(Object source, Variant target, Resource resource) {
-		if (source instanceof ApplicationInfo) {
-			return 1.0f;
-		}
+    @Override
+    public float score(Object source, Variant target, Resource resource) {
+        if (source instanceof ApplicationInfo) {
+            return 1.0f;
+        }
 
-		return -1.0f;
-	}
+        return -1.0f;
+    }
 
-	@Override
-	public <T> float score(Representation source, Class<T> target,
-			Resource resource) {
-		float result = -1.0F;
+    @Override
+    public <T> float score(Representation source, Class<T> target,
+            Resource resource) {
+        float result = -1.0F;
 
-		if ((source != null)
-				&& (ApplicationInfo.class.isAssignableFrom(target))) {
-			result = 1.0F;
-		}
+        if ((source != null)
+                && (ApplicationInfo.class.isAssignableFrom(target))) {
+            result = 1.0F;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public <T> T toObject(Representation source, Class<T> target,
-			Resource resource) throws IOException {
-		ApisparkRepresentation apisparkSource = null;
-		if (source instanceof ApisparkRepresentation) {
-			apisparkSource = (ApisparkRepresentation) source;
-		} else {
-			// TODO
-			// apisparkSource = new APISparkRepresentation(source);
-		}
+    @Override
+    public <T> T toObject(Representation source, Class<T> target,
+            Resource resource) throws IOException {
+        ApisparkRepresentation apisparkSource = null;
+        if (source instanceof ApisparkRepresentation) {
+            apisparkSource = (ApisparkRepresentation) source;
+        } else {
+            // TODO
+            // apisparkSource = new APISparkRepresentation(source);
+        }
 
-		T result = null;
-		if (target != null) {
-			if (ApplicationInfo.class.isAssignableFrom(target)) {
-				result = target.cast(apisparkSource.getApplication());
-			}
-		}
+        T result = null;
+        if (target != null) {
+            if (ApplicationInfo.class.isAssignableFrom(target)) {
+                result = target.cast(apisparkSource.getApplication());
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public Representation toRepresentation(Object source, Variant target,
-			Resource resource) throws IOException {
-		if (source instanceof ApplicationInfo) {
-			return new ApisparkRepresentation((ApplicationInfo) source);
-		}
+    @Override
+    public Representation toRepresentation(Object source, Variant target,
+            Resource resource) throws IOException {
+        if (source instanceof ApplicationInfo) {
+            return new ApisparkRepresentation((ApplicationInfo) source);
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public <T> void updatePreferences(List<Preference<MediaType>> preferences,
-			Class<T> entity) {
-		if (ApplicationInfo.class.isAssignableFrom(entity)) {
-			updatePreferences(preferences, MediaType.APPLICATION_JSON, 1.0F);
-			updatePreferences(preferences, MediaType.APPLICATION_XML, 0.9F);
-		}
-	}
+    @Override
+    public <T> void updatePreferences(List<Preference<MediaType>> preferences,
+            Class<T> entity) {
+        if (ApplicationInfo.class.isAssignableFrom(entity)) {
+            updatePreferences(preferences, MediaType.APPLICATION_JSON, 1.0F);
+            updatePreferences(preferences, MediaType.APPLICATION_XML, 0.9F);
+        }
+    }
 }

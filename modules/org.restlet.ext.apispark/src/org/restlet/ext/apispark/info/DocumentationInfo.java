@@ -42,88 +42,88 @@ import org.restlet.data.Language;
  */
 public class DocumentationInfo {
 
-	/** The language of that documentation element. */
-	private Language language;
+    /** The language of that documentation element. */
+    private Language language;
 
-	/** The content as a String. */
-	private String textContent;
+    /** The content as a String. */
+    private String textContent;
 
-	/** The title of that documentation element. */
-	private String title;
+    /** The title of that documentation element. */
+    private String title;
 
-	/**
-	 * Constructor.
-	 */
-	public DocumentationInfo() {
-		super();
-	}
+    /**
+     * Constructor.
+     */
+    public DocumentationInfo() {
+        super();
+    }
 
-	/**
-	 * Constructor with text content.
-	 * 
-	 * @param textContent
-	 *            The text content.
-	 */
-	public DocumentationInfo(String textContent) {
-		super();
-		setTextContent(textContent);
-	}
+    /**
+     * Constructor with text content.
+     * 
+     * @param textContent
+     *            The text content.
+     */
+    public DocumentationInfo(String textContent) {
+        super();
+        setTextContent(textContent);
+    }
 
-	/**
-	 * Returns the language of that documentation element.
-	 * 
-	 * @return The language of this documentation element.
-	 */
-	public Language getLanguage() {
-		return this.language;
-	}
+    /**
+     * Returns the language of that documentation element.
+     * 
+     * @return The language of this documentation element.
+     */
+    public Language getLanguage() {
+        return this.language;
+    }
 
-	/**
-	 * Returns the language of that documentation element.
-	 * 
-	 * @return The content of that element as text.
-	 */
-	public String getTextContent() {
-		return this.textContent;
-	}
+    /**
+     * Returns the language of that documentation element.
+     * 
+     * @return The content of that element as text.
+     */
+    public String getTextContent() {
+        return this.textContent;
+    }
 
-	/**
-	 * Returns the title of that documentation element.
-	 * 
-	 * @return The title of that documentation element.
-	 */
-	public String getTitle() {
-		return this.title;
-	}
+    /**
+     * Returns the title of that documentation element.
+     * 
+     * @return The title of that documentation element.
+     */
+    public String getTitle() {
+        return this.title;
+    }
 
-	/**
-	 * The language of that documentation element.
-	 * 
-	 * @param language
-	 *            The language of that documentation element.
-	 */
-	public void setLanguage(Language language) {
-		this.language = language;
-	}
+    /**
+     * The language of that documentation element.
+     * 
+     * @param language
+     *            The language of that documentation element.
+     */
+    public void setLanguage(Language language) {
+        this.language = language;
+    }
 
-	/**
-	 * Sets the content of that element as text.
-	 * 
-	 * @param textContent
-	 *            The content of that element as text.
-	 */
-	public void setTextContent(String textContent) {
-		this.textContent = textContent;
-	}
+    /**
+     * Sets the content of that element as text.
+     * 
+     * @param textContent
+     *            The content of that element as text.
+     */
+    public void setTextContent(String textContent) {
+        this.textContent = textContent;
+    }
 
-	/**
-	 * Sets the title of that documentation element.
-	 * 
-	 * @param title
-	 *            The title of that documentation element.
-	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    /**
+     * Sets the title of that documentation element.
+     * 
+     * @param title
+     *            The title of that documentation element.
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
 }

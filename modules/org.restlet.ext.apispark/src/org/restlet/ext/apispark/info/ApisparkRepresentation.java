@@ -34,7 +34,9 @@
 package org.restlet.ext.apispark.info;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -48,7 +50,6 @@ import org.restlet.ext.apispark.Method;
 import org.restlet.ext.apispark.Operation;
 import org.restlet.ext.apispark.Parameter;
 import org.restlet.ext.apispark.PathVariable;
-import org.restlet.ext.apispark.Property;
 import org.restlet.ext.apispark.Representation;
 import org.restlet.ext.apispark.Resource;
 import org.restlet.ext.apispark.Response;
@@ -61,288 +62,309 @@ import org.restlet.ext.jackson.JacksonRepresentation;
  * @author Jerome Louvel
  */
 public class ApisparkRepresentation extends
-		JacksonRepresentation<Documentation> {
+        JacksonRepresentation<Documentation> {
 
-	private static Documentation toDocumentation(ApplicationInfo application) {
-		Documentation result = null;
-		if (application != null) {
-			result = new Documentation();
-			result.setVersion(application.getVersion());
-			if (application.getResources().getBaseRef() != null) {
-				result.setEndpoint(application.getResources().getBaseRef()
-						.toString());
-			}
+    private static Documentation toDocumentation(ApplicationInfo application) {
+        Documentation result = null;
+        if (application != null) {
+            result = new Documentation();
+            result.setVersion(application.getVersion());
+            if (application.getResources().getBaseRef() != null) {
+                result.setEndpoint(application.getResources().getBaseRef()
+                        .toString());
+            }
 
-			Contract contract = new Contract();
-			result.setContract(contract);
-			contract.setDescription(toString(application.getDocumentations()));
-			contract.setName(application.getName());
+            Contract contract = new Contract();
+            result.setContract(contract);
+            contract.setDescription(toString(application.getDocumentations()));
+            contract.setName(application.getName());
 
-			// List of representations.
-			contract.setRepresentations(new ArrayList<Representation>());
-			for (RepresentationInfo ri : application.getRepresentations()) {
-				Representation rep = new Representation();
+            // List of resources.
+            // TODO Resource path/basePath?
+            contract.setResources(new ArrayList<Resource>());
+            Map<String, RepresentationInfo> mapReps = new HashMap<String, RepresentationInfo>();
+            addResources(application, contract, application.getResources()
+                    .getResources(), result.getEndpoint(), mapReps);
 
-				// TODO analyze
-				// The models differ : one representation / one variant for
-				// Restlet
-				// one representation / several variants for APIspark
-				rep.setDescription(toString(ri.getDocumentations()));
-				rep.setName(ri.getIdentifier());
-				Variant variant = new Variant();
-				variant.setDataType(ri.getMediaType().getName());
-				rep.setVariants(new ArrayList<Variant>());
-				rep.getVariants().add(variant);
+            java.util.List<String> protocols = new ArrayList<String>();
+            for (ConnectorHelper<Server> helper : Engine.getInstance()
+                    .getRegisteredServers()) {
+                for (Protocol protocol : helper.getProtocols()) {
+                    if (!protocols.contains(protocol.getName())) {
+                        protocols.add(protocol.getName());
+                    }
+                }
+            }
 
-				rep.setProperties(new ArrayList<Property>());
-				for (int i = 0; i < ri.getParameters().size(); i++) {
-					ParameterInfo pi = ri.getParameters().get(i);
+            // List of representations.
+            contract.setRepresentations(new ArrayList<Representation>());
+            for (RepresentationInfo ri : application.getRepresentations()) {
+                if (!mapReps.containsKey(ri.getIdentifier())) {
+                    mapReps.put(ri.getIdentifier(), ri);
+                }
+            }
 
-					Property property = new Property();
-					property.setName(pi.getName());
-					property.setDescription(toString(pi.getDocumentations()));
-					property.setType(pi.getType());
+            for (RepresentationInfo ri : mapReps.values()) {
+                Representation rep = new Representation();
 
-					rep.getProperties().add(property);
-				}
+                // TODO analyze
+                // The models differ : one representation / one variant for
+                // Restlet
+                // one representation / several variants for APIspark
+                rep.setDescription(toString(ri.getDocumentations()));
+                rep.setName(ri.getIdentifier());
+                Variant variant = new Variant();
+                variant.setDataType(ri.getMediaType().getName());
+                rep.setVariants(new ArrayList<Variant>());
+                rep.getVariants().add(variant);
 
-				contract.getRepresentations().add(rep);
-			}
+                rep.setProperties(ri.getProperties());
+                rep.setRaw(ri.isRaw());
+                contract.getRepresentations().add(rep);
+            }
 
-			// List of resources.
-			// TODO Resource path/basePath?
-			contract.setResources(new ArrayList<Resource>());
-			addResources(application, contract, application.getResources()
-					.getResources(), result.getEndpoint());
+        }
+        return result;
+    }
 
-			java.util.List<String> protocols = new ArrayList<String>();
-			for (ConnectorHelper<Server> helper : Engine.getInstance()
-					.getRegisteredServers()) {
-				for (Protocol protocol : helper.getProtocols()) {
-					if (!protocols.contains(protocol.getName())) {
-						protocols.add(protocol.getName());
-					}
-				}
-			}
+    private static void addResources(ApplicationInfo application,
+            Contract contract, List<ResourceInfo> resources, String basePath,
+            Map<String, RepresentationInfo> mapReps) {
+        for (ResourceInfo ri : resources) {
+            Resource resource = new Resource();
+            resource.setDescription(toString(ri.getDocumentations()));
+            resource.setName(ri.getIdentifier());
+            if (basePath != null) {
+                if (basePath.endsWith("/")) {
+                    if (ri.getPath().startsWith("/")) {
+                        resource.setResourcePath(basePath
+                                + ri.getPath().substring(1));
+                    } else {
+                        resource.setResourcePath(basePath + ri.getPath());
+                    }
+                } else {
+                    if (ri.getPath().startsWith("/")) {
+                        resource.setResourcePath(basePath + ri.getPath());
+                    } else {
+                        resource.setResourcePath(basePath + "/" + ri.getPath());
+                    }
+                }
 
-		}
-		return result;
-	}
+            } else {
+                resource.setResourcePath(ri.getPath());
+            }
 
-	private static void addResources(ApplicationInfo application,
-			Contract contract, List<ResourceInfo> resources, String basePath) {
-		for (ResourceInfo ri : resources) {
-			Resource resource = new Resource();
-			resource.setDescription(toString(ri.getDocumentations()));
-			resource.setName(ri.getIdentifier());
-			if (basePath != null) {
-				if (basePath.endsWith("/")) {
-					if (ri.getPath().startsWith("/")) {
-						resource.setResourcePath(basePath
-								+ ri.getPath().substring(1));
-					} else {
-						resource.setResourcePath(basePath + ri.getPath());
-					}
-				} else {
-					if (ri.getPath().startsWith("/")) {
-						resource.setResourcePath(basePath + ri.getPath());
-					} else {
-						resource.setResourcePath(basePath + "/" + ri.getPath());
-					}
-				}
+            if (!ri.getChildResources().isEmpty()) {
+                addResources(application, contract, ri.getChildResources(),
+                        resource.getResourcePath(), mapReps);
+            }
 
-			} else {
-				resource.setResourcePath(ri.getPath());
-			}
+            if (ri.getMethods().isEmpty()) {
+                continue;
+            }
+            
+            resource.setPathVariables(new ArrayList<PathVariable>());
+            for (ParameterInfo pi : ri.getParameters()) {
+                if (ParameterStyle.TEMPLATE
+                        .equals(pi.getStyle())) {
+                    PathVariable pathVariable = new PathVariable();
 
-			if (!ri.getChildResources().isEmpty()) {
-				addResources(application, contract, ri.getChildResources(),
-						resource.getResourcePath());
-			}
+                    pathVariable.setDescription(toString(pi
+                            .getDocumentations()));
+                    pathVariable.setName(pi.getName());
 
-			if (ri.getMethods().isEmpty()) {
-				continue;
-			}
+                    resource.getPathVariables().add(pathVariable);
+                }
+            }
 
-			resource.setOperations(new ArrayList<Operation>());
-			for (MethodInfo mi : ri.getMethods()) {
+            resource.setOperations(new ArrayList<Operation>());
+            for (MethodInfo mi : ri.getMethods()) {
 
-				Operation operation = new Operation();
-				operation.setDescription(toString(mi.getDocumentations()));
-				operation.setName(mi.getName().getName());
-				// TODO complete Method class with mi.getName()
-				operation.setMethod(new Method());
-				operation.getMethod().setDescription(
-						mi.getName().getDescription());
-				operation.getMethod().setName(mi.getName().getName());
+                Operation operation = new Operation();
+                operation.setDescription(toString(mi.getDocumentations()));
+                operation.setName(mi.getName().getName());
+                // TODO complete Method class with mi.getName()
+                operation.setMethod(new Method());
+                operation.getMethod().setDescription(
+                        mi.getName().getDescription());
+                operation.getMethod().setName(mi.getName().getName());
 
-				// Complete parameters
-				operation.setHeaders(new ArrayList<Parameter>());
-				operation.setPathVariables(new ArrayList<PathVariable>());
-				operation.setQueryParameters(new ArrayList<Parameter>());
-				if (mi.getRequest() != null
-						&& mi.getRequest().getParameters() != null) {
-					for (ParameterInfo pi : mi.getRequest().getParameters()) {
-						if (ParameterStyle.HEADER.equals(pi.getStyle())) {
-							Parameter parameter = new Parameter();
-							parameter.setAllowMultiple(pi.isRepeating());
-							parameter.setDefaultValue(pi.getDefaultValue());
-							parameter.setDescription(toString(pi
-									.getDocumentations()));
-							parameter.setName(pi.getName());
-							parameter
-									.setPossibleValues(new ArrayList<String>());
-							parameter.setRequired(pi.isRequired());
+                // Complete parameters
+                operation.setHeaders(new ArrayList<Parameter>());
+                operation.setQueryParameters(new ArrayList<Parameter>());
+                if (mi.getRequest() != null
+                        && mi.getRequest().getParameters() != null) {
+                    for (ParameterInfo pi : mi.getRequest().getParameters()) {
+                        if (ParameterStyle.HEADER.equals(pi.getStyle())) {
+                            Parameter parameter = new Parameter();
+                            parameter.setAllowMultiple(pi.isRepeating());
+                            parameter.setDefaultValue(pi.getDefaultValue());
+                            parameter.setDescription(toString(pi
+                                    .getDocumentations()));
+                            parameter.setName(pi.getName());
+                            parameter
+                                    .setPossibleValues(new ArrayList<String>());
+                            parameter.setRequired(pi.isRequired());
 
-							operation.getHeaders().add(parameter);
-						} else if (ParameterStyle.TEMPLATE
-								.equals(pi.getStyle())) {
-							PathVariable pathVariable = new PathVariable();
+                            operation.getHeaders().add(parameter);
+                        } else if (ParameterStyle.QUERY.equals(pi.getStyle())) {
+                            Parameter parameter = new Parameter();
+                            parameter.setAllowMultiple(pi.isRepeating());
+                            parameter.setDefaultValue(pi.getDefaultValue());
+                            parameter.setDescription(toString(pi
+                                    .getDocumentations()));
+                            parameter.setName(pi.getName());
+                            parameter
+                                    .setPossibleValues(new ArrayList<String>());
+                            parameter.setRequired(pi.isRequired());
 
-							pathVariable.setDescription(toString(pi
-									.getDocumentations()));
-							pathVariable.setName(pi.getName());
+                            operation.getHeaders().add(parameter);
+                        }
+                    }
+                }
 
-							operation.getPathVariables().add(pathVariable);
-						} else if (ParameterStyle.QUERY.equals(pi.getStyle())) {
-							Parameter parameter = new Parameter();
-							parameter.setAllowMultiple(pi.isRepeating());
-							parameter.setDefaultValue(pi.getDefaultValue());
-							parameter.setDescription(toString(pi
-									.getDocumentations()));
-							parameter.setName(pi.getName());
-							parameter
-									.setPossibleValues(new ArrayList<String>());
-							parameter.setRequired(pi.isRequired());
+                if (mi.getRequest() != null
+                        && mi.getRequest().getRepresentations() != null
+                        && !mi.getRequest().getRepresentations().isEmpty()) {
+                    addRepresentations(mapReps, mi.getRequest()
+                            .getRepresentations());
 
-							operation.getHeaders().add(parameter);
-						}
-					}
-				}
+                    Body body = new Body();
+                    // TODO analyze
+                    // The models differ : one representation / one variant
+                    // for Restlet one representation / several variants for
+                    // APIspark
+                    body.setRepresentation(mi.getRequest().getRepresentations()
+                            .get(0).getIdentifier());
 
-				if (mi.getRequest() != null
-						&& mi.getRequest().getRepresentations() != null
-						&& !mi.getRequest().getRepresentations().isEmpty()) {
-					Body body = new Body();
-					// TODO analyze
-					// The models differ : one representation / one variant
-					// for Restlet one representation / several variants for
-					// APIspark
-					body.setRepresentation(mi.getRequest().getRepresentations()
-							.get(0).getIdentifier());
+                    operation.setInRepresentation(body);
+                }
 
-					operation.setInRepresentation(body);
-				}
+                if (mi.getResponses() != null && !mi.getResponses().isEmpty()) {
+                    operation.setResponses(new ArrayList<Response>());
 
-				if (mi.getResponses() != null && !mi.getResponses().isEmpty()) {
-					operation.setResponses(new ArrayList<Response>());
+                    Body body = new Body();
+                    // TODO analyze
+                    // The models differ : one representation / one variant
+                    // for Restlet one representation / several variants for
+                    // APIspark
+                    if (!mi.getResponse().getRepresentations().isEmpty()) {
+                        body.setRepresentation(mi.getResponse().getRepresentations().get(0).getIdentifier());
+                    }
+                    operation.setOutRepresentation(body);
 
-					Body body = new Body();
-					// TODO analyze
-					// The models differ : one representation / one variant
-					// for Restlet one representation / several variants for
-					// APIspark
+                    for (ResponseInfo rio : mi.getResponses()) {
+                        addRepresentations(mapReps, rio.getRepresentations());
 
-					operation.setOutRepresentation(body);
+                        if (!rio.getStatuses().isEmpty()) {
+                            Status status = rio.getStatuses().get(0);
+                            // TODO analyze
+                            // The models differ : one representation / one
+                            // variant
+                            // for Restlet one representation / several
+                            // variants for
+                            // APIspark
 
-					for (ResponseInfo rio : mi.getResponses()) {
-						if (!rio.getStatuses().isEmpty()) {
-							Status status = rio.getStatuses().get(0);
-							// TODO analyze
-							// The models differ : one representation / one
-							// variant
-							// for Restlet one representation / several
-							// variants for
-							// APIspark
+                            Response response = new Response();
+                            response.setBody(body);
+                            response.setCode(status.getCode());
+                            response.setDescription(toString(rio
+                                    .getDocumentations()));
+                            response.setMessage(status.getDescription());
+                            // response.setName();
 
-							Response response = new Response();
-							response.setBody(body);
-							response.setCode(status.getCode());
-							response.setDescription(toString(rio
-									.getDocumentations()));
-							response.setMessage(status.getDescription());
-							// response.setName();
+                            operation.getResponses().add(response);
+                        }
+                    }
+                }
 
-							operation.getResponses().add(response);
-						}
-					}
-				}
+                resource.getOperations().add(operation);
+            }
 
-				resource.getOperations().add(operation);
-			}
+            contract.getResources().add(resource);
+        }
+    }
 
-			contract.getResources().add(resource);
-		}
-	}
+    private static void addRepresentations(
+            Map<String, RepresentationInfo> mapReps,
+            List<RepresentationInfo> representations) {
+        if (representations != null) {
+            for (RepresentationInfo r : representations) {
+                if (!mapReps.containsKey(r.getIdentifier())) {
+                    mapReps.put(r.getIdentifier(), r);
+                }
+            }
+        }
+    }
 
-	private static String toString(List<DocumentationInfo> di) {
-		StringBuilder d = new StringBuilder();
-		for (DocumentationInfo doc : di) {
-			d.append(doc.getTextContent());
-		}
-		return d.toString();
-	}
+    private static String toString(List<DocumentationInfo> di) {
+        StringBuilder d = new StringBuilder();
+        for (DocumentationInfo doc : di) {
+            d.append(doc.getTextContent());
+        }
+        return d.toString();
+    }
 
-	/** The root element of the APISpark document. */
-	private ApplicationInfo application;
+    /** The root element of the APISpark document. */
+    private ApplicationInfo application;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param application
-	 *            The root element of the APISpark document.
-	 */
-	public ApisparkRepresentation(ApplicationInfo application) {
-		super(toDocumentation(application));
+    /**
+     * Constructor.
+     * 
+     * @param application
+     *            The root element of the APISpark document.
+     */
+    public ApisparkRepresentation(ApplicationInfo application) {
+        super(toDocumentation(application));
 
-		this.application = application;
-	}
+        this.application = application;
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param documentation
-	 *            The description of the APISpark document.
-	 */
-	public ApisparkRepresentation(Documentation documentation) {
-		super(documentation);
-		// Transform contract to ApplicationInfo
-	}
+    /**
+     * Constructor.
+     * 
+     * @param documentation
+     *            The description of the APISpark document.
+     */
+    public ApisparkRepresentation(Documentation documentation) {
+        super(documentation);
+        // Transform contract to ApplicationInfo
+    }
 
-	// /**
-	// * Constructor.
-	// *
-	// * @param representation
-	// * The XML APISpark document.
-	// * @throws IOException
-	// */
-	// public APISparkRepresentation(Representation representation)
-	// throws IOException {
-	// super(representation);
-	// setMediaType(MediaType.APPLICATION_JSON);
-	//
-	// // Parse the given document using SAX to produce an ApplicationInfo
-	// // instance.
-	// // parse(new ContentReader(this));
-	// }
+    // /**
+    // * Constructor.
+    // *
+    // * @param representation
+    // * The XML APISpark document.
+    // * @throws IOException
+    // */
+    // public APISparkRepresentation(Representation representation)
+    // throws IOException {
+    // super(representation);
+    // setMediaType(MediaType.APPLICATION_JSON);
+    //
+    // // Parse the given document using SAX to produce an ApplicationInfo
+    // // instance.
+    // // parse(new ContentReader(this));
+    // }
 
-	/**
-	 * Returns the root element of the APISpark document.
-	 * 
-	 * @return The root element of the APISpark document.
-	 */
-	public ApplicationInfo getApplication() {
-		return this.application;
-	}
+    /**
+     * Returns the root element of the APISpark document.
+     * 
+     * @return The root element of the APISpark document.
+     */
+    public ApplicationInfo getApplication() {
+        return this.application;
+    }
 
-	/**
-	 * Sets the root element of the APISpark document.
-	 * 
-	 * @param application
-	 *            The root element of the APISpark document.
-	 */
-	public void setApplication(ApplicationInfo application) {
-		this.application = application;
-	}
+    /**
+     * Sets the root element of the APISpark document.
+     * 
+     * @param application
+     *            The root element of the APISpark document.
+     */
+    public void setApplication(ApplicationInfo application) {
+        this.application = application;
+    }
 
 }

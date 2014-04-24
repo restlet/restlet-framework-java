@@ -55,122 +55,122 @@ import org.restlet.representation.Representation;
  */
 public class ApisparkComponent extends Component {
 
-	/**
-	 * Main method capable of configuring and starting a whole Restlet Component
-	 * based on a list of local APISpark documents URIs, for example
-	 * "file:///C:/YahooSearch.apispark".<br>
-	 * <br>
-	 * The necessary client connectors are automatically created.
-	 * 
-	 * @param args
-	 *            List of local APISpark document URIs.
-	 * @throws Exception
-	 */
-	public static void main(String[] args) throws Exception {
-		// Create a new APISpark-aware component
-		final ApisparkComponent component = new ApisparkComponent();
+    /**
+     * Main method capable of configuring and starting a whole Restlet Component
+     * based on a list of local APISpark documents URIs, for example
+     * "file:///C:/YahooSearch.apispark".<br>
+     * <br>
+     * The necessary client connectors are automatically created.
+     * 
+     * @param args
+     *            List of local APISpark document URIs.
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        // Create a new APISpark-aware component
+        final ApisparkComponent component = new ApisparkComponent();
 
-		// For each APISpark document URI attach a matching Application
-		for (final String arg : args) {
-			component.attach(arg);
-		}
+        // For each APISpark document URI attach a matching Application
+        for (final String arg : args) {
+            component.attach(arg);
+        }
 
-		// Start the component
-		component.start();
-	}
+        // Start the component
+        component.start();
+    }
 
-	/**
-	 * Default constructor.
-	 */
-	public ApisparkComponent() {
-	}
+    /**
+     * Default constructor.
+     */
+    public ApisparkComponent() {
+    }
 
-	/**
-	 * Constructor loading a APISpark description document at a given URI.<br>
-	 * <br>
-	 * The necessary client connectors are automatically created.
-	 * 
-	 * @param apisparkRef
-	 *            The URI reference to the APISpark description document.
-	 */
-	public ApisparkComponent(Reference apisparkRef) {
-		attach(apisparkRef);
-	}
+    /**
+     * Constructor loading a APISpark description document at a given URI.<br>
+     * <br>
+     * The necessary client connectors are automatically created.
+     * 
+     * @param apisparkRef
+     *            The URI reference to the APISpark description document.
+     */
+    public ApisparkComponent(Reference apisparkRef) {
+        attach(apisparkRef);
+    }
 
-	/**
-	 * Constructor based on a given APISpark description document.
-	 * 
-	 * @param apispark
-	 *            The APISpark description document.
-	 */
-	public ApisparkComponent(Representation apispark) {
-		attach(apispark);
-	}
+    /**
+     * Constructor based on a given APISpark description document.
+     * 
+     * @param apispark
+     *            The APISpark description document.
+     */
+    public ApisparkComponent(Representation apispark) {
+        attach(apispark);
+    }
 
-	/**
-	 * Constructor loading a APISpark description document at a given URI.<br>
-	 * <br>
-	 * The necessary client connectors are automatically created.
-	 * 
-	 * @param apisparkUri
-	 *            The URI to the APISpark description document.
-	 */
-	public ApisparkComponent(String apisparkUri) {
-		attach(apisparkUri);
-	}
+    /**
+     * Constructor loading a APISpark description document at a given URI.<br>
+     * <br>
+     * The necessary client connectors are automatically created.
+     * 
+     * @param apisparkUri
+     *            The URI to the APISpark description document.
+     */
+    public ApisparkComponent(String apisparkUri) {
+        attach(apisparkUri);
+    }
 
-	/**
-	 * Attaches an application created from a APISpark description document
-	 * available at a given URI reference.
-	 * 
-	 * @param apisparkRef
-	 *            The URI reference to the APISpark description document.
-	 * @return The created APISpark application.
-	 */
-	public ApisparkApplication attach(Reference apisparkRef) {
-		ApisparkApplication result = null;
+    /**
+     * Attaches an application created from a APISpark description document
+     * available at a given URI reference.
+     * 
+     * @param apisparkRef
+     *            The URI reference to the APISpark description document.
+     * @return The created APISpark application.
+     */
+    public ApisparkApplication attach(Reference apisparkRef) {
+        ApisparkApplication result = null;
 
-		// Adds some common client connectors to load the APISpark documents
-		if (!getClients().contains(apisparkRef.getSchemeProtocol())) {
-			getClients().add(apisparkRef.getSchemeProtocol());
-		}
+        // Adds some common client connectors to load the APISpark documents
+        if (!getClients().contains(apisparkRef.getSchemeProtocol())) {
+            getClients().add(apisparkRef.getSchemeProtocol());
+        }
 
-		// Get the APISpark document
-		final Response response = getContext().getClientDispatcher().handle(
-				new Request(Method.GET, apisparkRef));
+        // Get the APISpark document
+        final Response response = getContext().getClientDispatcher().handle(
+                new Request(Method.GET, apisparkRef));
 
-		if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
-			result = attach(response.getEntity());
-		}
+        if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
+            result = attach(response.getEntity());
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Attaches an application created from a APISpark description document to
-	 * the component.
-	 * 
-	 * @param apispark
-	 *            The APISpark description document.
-	 * @return The created APISpark application.
-	 */
-	public ApisparkApplication attach(Representation apispark) {
-		final ApisparkApplication result = new ApisparkApplication(getContext()
-				.createChildContext(), apispark);
-		result.attachToComponent(this);
-		return result;
-	}
+    /**
+     * Attaches an application created from a APISpark description document to
+     * the component.
+     * 
+     * @param apispark
+     *            The APISpark description document.
+     * @return The created APISpark application.
+     */
+    public ApisparkApplication attach(Representation apispark) {
+        final ApisparkApplication result = new ApisparkApplication(getContext()
+                .createChildContext(), apispark);
+        result.attachToComponent(this);
+        return result;
+    }
 
-	/**
-	 * Attaches an application created from a APISpark description document
-	 * available at a given URI.
-	 * 
-	 * @param apisparkUri
-	 *            The URI to the APISpark description document.
-	 * @return The created APISpark application.
-	 */
-	public ApisparkApplication attach(String apisparkUri) {
-		return attach(new Reference(apisparkUri));
-	}
+    /**
+     * Attaches an application created from a APISpark description document
+     * available at a given URI.
+     * 
+     * @param apisparkUri
+     *            The URI to the APISpark description document.
+     * @return The created APISpark application.
+     */
+    public ApisparkApplication attach(String apisparkUri) {
+        return attach(new Reference(apisparkUri));
+    }
 
 }

@@ -42,63 +42,63 @@ import java.util.List;
  */
 public class OptionInfo extends DocumentedInfo {
 
-	/** Value of this option element. */
-	private String value;
+    /** Value of this option element. */
+    private String value;
 
-	/**
-	 * Constructor.
-	 */
-	public OptionInfo() {
-		super();
-	}
+    /**
+     * Constructor.
+     */
+    public OptionInfo() {
+        super();
+    }
 
-	/**
-	 * Constructor with a single documentation element.
-	 * 
-	 * @param documentation
-	 *            A single documentation element.
-	 */
-	public OptionInfo(DocumentationInfo documentation) {
-		super(documentation);
-	}
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public OptionInfo(DocumentationInfo documentation) {
+        super(documentation);
+    }
 
-	/**
-	 * Constructor with a list of documentation elements.
-	 * 
-	 * @param documentations
-	 *            The list of documentation elements.
-	 */
-	public OptionInfo(List<DocumentationInfo> documentations) {
-		super(documentations);
-	}
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
+    public OptionInfo(List<DocumentationInfo> documentations) {
+        super(documentations);
+    }
 
-	/**
-	 * Constructor with a single documentation element.
-	 * 
-	 * @param documentation
-	 *            A single documentation element.
-	 */
-	public OptionInfo(String documentation) {
-		super(documentation);
-	}
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public OptionInfo(String documentation) {
+        super(documentation);
+    }
 
-	/**
-	 * Returns the value of this option element.
-	 * 
-	 * @return The value of this option element.
-	 */
-	public String getValue() {
-		return this.value;
-	}
+    /**
+     * Returns the value of this option element.
+     * 
+     * @return The value of this option element.
+     */
+    public String getValue() {
+        return this.value;
+    }
 
-	/**
-	 * Sets the value of this option element.
-	 * 
-	 * @param value
-	 *            The value of this option element.
-	 */
-	public void setValue(String value) {
-		this.value = value;
-	}
+    /**
+     * Sets the value of this option element.
+     * 
+     * @param value
+     *            The value of this option element.
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
 
 }

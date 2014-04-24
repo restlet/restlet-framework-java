@@ -43,115 +43,115 @@ import org.restlet.data.Reference;
  * @author Jerome Louvel
  */
 public class LinkInfo extends DocumentedInfo {
-	/**
-	 * Identifies the relationship of the resource identified by the link to the
-	 * resource whose representation the link is embedded in.
-	 */
-	private String relationship;
+    /**
+     * Identifies the relationship of the resource identified by the link to the
+     * resource whose representation the link is embedded in.
+     */
+    private String relationship;
 
-	/**
-	 * Defines the capabilities of the resource that the link identifies.
-	 */
-	private Reference resourceType;
+    /**
+     * Defines the capabilities of the resource that the link identifies.
+     */
+    private Reference resourceType;
 
-	/**
-	 * Identifies the relationship of the resource whose representation the link
-	 * is embedded in to the resource identified by the link.
-	 */
-	private String reverseRelationship;
+    /**
+     * Identifies the relationship of the resource whose representation the link
+     * is embedded in to the resource identified by the link.
+     */
+    private String reverseRelationship;
 
-	/**
-	 * Constructor.
-	 */
-	public LinkInfo() {
-		super();
-	}
+    /**
+     * Constructor.
+     */
+    public LinkInfo() {
+        super();
+    }
 
-	/**
-	 * Constructor with a single documentation element.
-	 * 
-	 * @param documentation
-	 *            A single documentation element.
-	 */
-	public LinkInfo(DocumentationInfo documentation) {
-		super(documentation);
-	}
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public LinkInfo(DocumentationInfo documentation) {
+        super(documentation);
+    }
 
-	/**
-	 * Constructor with a list of documentation elements.
-	 * 
-	 * @param documentations
-	 *            The list of documentation elements.
-	 */
-	public LinkInfo(List<DocumentationInfo> documentations) {
-		super(documentations);
-	}
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
+    public LinkInfo(List<DocumentationInfo> documentations) {
+        super(documentations);
+    }
 
-	/**
-	 * Constructor with a single documentation element.
-	 * 
-	 * @param documentation
-	 *            A single documentation element.
-	 */
-	public LinkInfo(String documentation) {
-		super(documentation);
-	}
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public LinkInfo(String documentation) {
+        super(documentation);
+    }
 
-	/**
-	 * Returns the relationship attribute value.
-	 * 
-	 * @return The relationship attribute value.
-	 */
-	public String getRelationship() {
-		return this.relationship;
-	}
+    /**
+     * Returns the relationship attribute value.
+     * 
+     * @return The relationship attribute value.
+     */
+    public String getRelationship() {
+        return this.relationship;
+    }
 
-	/**
-	 * Returns the reference to the resource type of the linked resource.
-	 * 
-	 * @return The reference to the resource type of the linked resource.
-	 */
-	public Reference getResourceType() {
-		return this.resourceType;
-	}
+    /**
+     * Returns the reference to the resource type of the linked resource.
+     * 
+     * @return The reference to the resource type of the linked resource.
+     */
+    public Reference getResourceType() {
+        return this.resourceType;
+    }
 
-	/**
-	 * Returns the reverse relationship attribute value.
-	 * 
-	 * @return The reverse relationship attribute value.
-	 */
-	public String getReverseRelationship() {
-		return this.reverseRelationship;
-	}
+    /**
+     * Returns the reverse relationship attribute value.
+     * 
+     * @return The reverse relationship attribute value.
+     */
+    public String getReverseRelationship() {
+        return this.reverseRelationship;
+    }
 
-	/**
-	 * Sets the relationship attribute value.
-	 * 
-	 * @param relationship
-	 *            The relationship attribute value.
-	 */
-	public void setRelationship(String relationship) {
-		this.relationship = relationship;
-	}
+    /**
+     * Sets the relationship attribute value.
+     * 
+     * @param relationship
+     *            The relationship attribute value.
+     */
+    public void setRelationship(String relationship) {
+        this.relationship = relationship;
+    }
 
-	/**
-	 * Sets the reference to the resource type of the linked resource.
-	 * 
-	 * @param resourceType
-	 *            The reference to the resource type of the linked resource.
-	 */
-	public void setResourceType(Reference resourceType) {
-		this.resourceType = resourceType;
-	}
+    /**
+     * Sets the reference to the resource type of the linked resource.
+     * 
+     * @param resourceType
+     *            The reference to the resource type of the linked resource.
+     */
+    public void setResourceType(Reference resourceType) {
+        this.resourceType = resourceType;
+    }
 
-	/**
-	 * Sets the reverse relationship attribute value.
-	 * 
-	 * @param reverseRelationship
-	 *            The reverse relationship attribute value.
-	 */
-	public void setReverseRelationship(String reverseRelationship) {
-		this.reverseRelationship = reverseRelationship;
-	}
+    /**
+     * Sets the reverse relationship attribute value.
+     * 
+     * @param reverseRelationship
+     *            The reverse relationship attribute value.
+     */
+    public void setReverseRelationship(String reverseRelationship) {
+        this.reverseRelationship = reverseRelationship;
+    }
 
 }

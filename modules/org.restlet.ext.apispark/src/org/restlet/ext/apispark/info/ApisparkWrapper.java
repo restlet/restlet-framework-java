@@ -45,38 +45,38 @@ import org.restlet.util.WrapperRestlet;
  * @author Thierry Boileau
  */
 public abstract class ApisparkWrapper extends WrapperRestlet implements
-		ApisparkDescribable {
+        ApisparkDescribable {
 
-	/** The description of the wrapped Restlet. */
-	private ResourceInfo resourceInfo;
+    /** The description of the wrapped Restlet. */
+    private ResourceInfo resourceInfo;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param wrappedRestlet
-	 *            The Restlet to wrap.
-	 */
-	public ApisparkWrapper(Restlet wrappedRestlet) {
-		super(wrappedRestlet);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param wrappedRestlet
+     *            The Restlet to wrap.
+     */
+    public ApisparkWrapper(Restlet wrappedRestlet) {
+        super(wrappedRestlet);
+    }
 
-	/**
-	 * Returns the description of the wrapped Restlet.
-	 * 
-	 * @return The ResourceInfo object of the wrapped Restlet.
-	 */
-	public ResourceInfo getResourceInfo() {
-		return this.resourceInfo;
-	}
+    /**
+     * Returns the description of the wrapped Restlet.
+     * 
+     * @return The ResourceInfo object of the wrapped Restlet.
+     */
+    public ResourceInfo getResourceInfo() {
+        return this.resourceInfo;
+    }
 
-	/**
-	 * Sets the description of the wrapped Restlet.
-	 * 
-	 * @param resourceInfo
-	 *            The ResourceInfo object of the wrapped Restlet.
-	 */
-	public void setResourceInfo(ResourceInfo resourceInfo) {
-		this.resourceInfo = resourceInfo;
-	}
+    /**
+     * Sets the description of the wrapped Restlet.
+     * 
+     * @param resourceInfo
+     *            The ResourceInfo object of the wrapped Restlet.
+     */
+    public void setResourceInfo(ResourceInfo resourceInfo) {
+        this.resourceInfo = resourceInfo;
+    }
 
 }

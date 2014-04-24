@@ -47,14 +47,14 @@ import org.restlet.resource.ServerResource;
  */
 public interface ApisparkDescribable {
 
-	/**
-	 * Returns a full documented {@link ResourceInfo} instance.
-	 * 
-	 * @param applicationInfo
-	 *            The parent APISpark application descriptor.
-	 * 
-	 * @return A full documented {@link ResourceInfo} instance.
-	 */
-	public ResourceInfo getResourceInfo(ApplicationInfo applicationInfo);
+    /**
+     * Returns a full documented {@link ResourceInfo} instance.
+     * 
+     * @param applicationInfo
+     *            The parent APISpark application descriptor.
+     * 
+     * @return A full documented {@link ResourceInfo} instance.
+     */
+    public ResourceInfo getResourceInfo(ApplicationInfo applicationInfo);
 
 }
