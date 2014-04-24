@@ -22,6 +22,7 @@ Changes log
         Reported and contributed by Jeremy Gustie.
       - Fixed CompositeHelper.handle fails when Component has no inbound filters. Issue #865.
         Reported and contributed by Jeremy Gustie.
+      - Internal HTTPS server isn't properly registered. Reported by Roy Olsen.
 
     - Misc
       - 

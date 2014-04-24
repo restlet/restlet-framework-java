@@ -50,7 +50,7 @@ import org.restlet.util.Series;
  *    return sslContext;
  * </pre>
  * 
- * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
+ * @author Bruno Harbulot
  * @see SSLContext
  */
 public abstract class SslContextFactory {

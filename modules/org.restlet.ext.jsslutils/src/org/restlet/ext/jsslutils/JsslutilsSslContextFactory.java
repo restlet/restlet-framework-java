@@ -44,7 +44,7 @@ import org.restlet.util.Series;
  * This SslContextFactory is a wrapper for the SSLContextFactory of <a
  * href="http://code.google.com/p/jsslutils/">jSSLutils</a>.
  * 
- * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
+ * @author Bruno Harbulot
  */
 public class JsslutilsSslContextFactory extends SslContextFactory {
     /**
