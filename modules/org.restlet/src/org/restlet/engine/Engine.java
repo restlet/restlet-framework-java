@@ -898,6 +898,8 @@ public class Engine {
 		// [ifndef gae, gwt]
 		getRegisteredServers().add(
 				new org.restlet.engine.connector.HttpServerHelper(null));
+		getRegisteredServers().add(
+				new org.restlet.engine.connector.HttpsServerHelper(null));
 		getRegisteredClients().add(
 				new org.restlet.engine.local.FileClientHelper(null));
 		getRegisteredClients().add(
