@@ -37,7 +37,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.data.Status;
@@ -45,7 +47,7 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.connector.ConnectorHelper;
 import org.restlet.ext.apispark.Body;
 import org.restlet.ext.apispark.Contract;
-import org.restlet.ext.apispark.Documentation;
+import org.restlet.ext.apispark.Definition;
 import org.restlet.ext.apispark.Method;
 import org.restlet.ext.apispark.Operation;
 import org.restlet.ext.apispark.Parameter;
@@ -62,12 +64,12 @@ import org.restlet.ext.jackson.JacksonRepresentation;
  * @author Jerome Louvel
  */
 public class ApisparkRepresentation extends
-        JacksonRepresentation<Documentation> {
+        JacksonRepresentation<Definition> {
 
-    private static Documentation toDocumentation(ApplicationInfo application) {
-        Documentation result = null;
+    private static Definition toDocumentation(ApplicationInfo application) {
+        Definition result = null;
         if (application != null) {
-            result = new Documentation();
+            result = new Definition();
             result.setVersion(application.getVersion());
             if (application.getResources().getBaseRef() != null) {
                 result.setEndpoint(application.getResources().getBaseRef()
@@ -78,6 +80,11 @@ public class ApisparkRepresentation extends
             result.setContract(contract);
             contract.setDescription(toString(application.getDocumentations()));
             contract.setName(application.getName());
+            if (contract.getName() == null || contract.getName().isEmpty()) {
+                contract.setName(application.getClass().getName());
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Please provide a name to your application, used " + contract.getName() + " by default.");
+            }
 
             // List of resources.
             // TODO Resource path/basePath?
@@ -162,15 +169,14 @@ public class ApisparkRepresentation extends
             if (ri.getMethods().isEmpty()) {
                 continue;
             }
-            
+
             resource.setPathVariables(new ArrayList<PathVariable>());
             for (ParameterInfo pi : ri.getParameters()) {
-                if (ParameterStyle.TEMPLATE
-                        .equals(pi.getStyle())) {
+                if (ParameterStyle.TEMPLATE.equals(pi.getStyle())) {
                     PathVariable pathVariable = new PathVariable();
 
-                    pathVariable.setDescription(toString(pi
-                            .getDocumentations()));
+                    pathVariable
+                            .setDescription(toString(pi.getDocumentations()));
                     pathVariable.setName(pi.getName());
 
                     resource.getPathVariables().add(pathVariable);
@@ -249,7 +255,8 @@ public class ApisparkRepresentation extends
                     // for Restlet one representation / several variants for
                     // APIspark
                     if (!mi.getResponse().getRepresentations().isEmpty()) {
-                        body.setRepresentation(mi.getResponse().getRepresentations().get(0).getIdentifier());
+                        body.setRepresentation(mi.getResponse()
+                                .getRepresentations().get(0).getIdentifier());
                     }
                     operation.setOutRepresentation(body);
 
@@ -268,6 +275,8 @@ public class ApisparkRepresentation extends
                             Response response = new Response();
                             response.setBody(body);
                             response.setCode(status.getCode());
+                            response.setName(toString(rio
+                                    .getDocumentations()));
                             response.setDescription(toString(rio
                                     .getDocumentations()));
                             response.setMessage(status.getDescription());
@@ -326,7 +335,7 @@ public class ApisparkRepresentation extends
      * @param documentation
      *            The description of the APISpark document.
      */
-    public ApisparkRepresentation(Documentation documentation) {
+    public ApisparkRepresentation(Definition documentation) {
         super(documentation);
         // Transform contract to ApplicationInfo
     }

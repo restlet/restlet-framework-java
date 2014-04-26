@@ -60,7 +60,7 @@ public class ReflectUtils {
             Field[] currentFields = currentType.getDeclaredFields();
             Collections.addAll(fields, currentFields);
             currentType = currentType.getSuperclass();
-            if (currentType.equals(Object.class)) {
+            if (currentType!=null && currentType.equals(Object.class)) {
                 currentType = null;
             }
         }

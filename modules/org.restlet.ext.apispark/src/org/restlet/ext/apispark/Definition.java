@@ -1,6 +1,6 @@
 package org.restlet.ext.apispark;
 
-public class Documentation {
+public class Definition {
 
     /** Any useful information for a user that plans to access to the API. */
     private String contact;

@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
+import org.restlet.data.Status;
 import org.restlet.engine.resource.AnnotationInfo;
 import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.representation.Variant;
@@ -150,6 +151,11 @@ public class MethodInfo extends DocumentedInfo {
                                     }
                                 }
                             }
+                        }
+                        
+                        if (info.getResponse().getStatuses().isEmpty()) {
+                            info.getResponse().getStatuses().add(Status.SUCCESS_OK);
+                            info.getResponse().setDocumentation("Success");
                         }
                     }
                 } catch (IOException e) {
