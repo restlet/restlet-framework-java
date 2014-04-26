@@ -50,374 +50,351 @@ import org.restlet.routing.Template;
  */
 public class ResourceInfo extends DocumentedInfo {
 
-    /**
-     * Returns a APISpark description of the current resource.
-     * 
-     * @param applicationInfo
-     *            The parent application.
-     * @param resource
-     *            The resource to describe.
-     * @param path
-     *            Path of the current resource.
-     * @param info
-     *            APISpark description of the current resource to update.
-     */
-    public static void describe(ApplicationInfo applicationInfo,
-            ResourceInfo info, Object resource, String path) {
-        if ((path != null) && path.startsWith("/")) {
-            path = path.substring(1);
-        }
+	/**
+	 * Returns a APISpark description of the current resource.
+	 * 
+	 * @param applicationInfo
+	 *            The parent application.
+	 * @param resource
+	 *            The resource to describe.
+	 * @param path
+	 *            Path of the current resource.
+	 * @param info
+	 *            APISpark description of the current resource to update.
+	 */
+	public static void describe(ApplicationInfo applicationInfo,
+			ResourceInfo info, Object resource, String path) {
+		if ((path != null) && path.startsWith("/")) {
+			path = path.substring(1);
+		}
 
-        info.setPath(path);
+		info.setPath(path);
 
-        // Try to extract the path variables
-        if (path != null) {
-            Template template = new Template(path);
-            for (String variable : template.getVariableNames()) {
-                ParameterInfo param = new ParameterInfo(variable,
-                        ParameterStyle.TEMPLATE, (String) null);
-                info.getParameters().add(param);
-            }
-        }
+		// Try to extract the path variables
+		if (path != null) {
+			Template template = new Template(path);
+			for (String variable : template.getVariableNames()) {
+				ParameterInfo param = new ParameterInfo(variable,
+						ParameterStyle.TEMPLATE, (String) null);
+				info.getParameters().add(param);
+			}
+		}
 
-        // Introspect the current resource to detect the allowed methods
-        List<Method> methodsList = new ArrayList<Method>();
+		// Introspect the current resource to detect the allowed methods
+		List<Method> methodsList = new ArrayList<Method>();
 
-        if (resource instanceof ServerResource) {
-            ((ServerResource) resource).updateAllowedMethods();
-            methodsList.addAll(((ServerResource) resource).getAllowedMethods());
+		if (resource instanceof ServerResource) {
+			((ServerResource) resource).updateAllowedMethods();
+			methodsList.addAll(((ServerResource) resource).getAllowedMethods());
+		} else if (resource instanceof Directory) {
+			Directory directory = (Directory) resource;
+			methodsList.add(Method.GET);
 
-            if (resource instanceof ApisparkServerResource) {
-                info.setParameters(((ApisparkServerResource) resource)
-                        .describeParameters());
+			if (directory.isModifiable()) {
+				methodsList.add(Method.DELETE);
+				methodsList.add(Method.PUT);
+			}
+		}
 
-                if (applicationInfo != null) {
-                    ((ApisparkServerResource) resource)
-                            .describe(applicationInfo);
-                }
-            }
-        } else if (resource instanceof Directory) {
-            Directory directory = (Directory) resource;
-            methodsList.add(Method.GET);
+		Method.sort(methodsList);
 
-            if (directory.isModifiable()) {
-                methodsList.add(Method.DELETE);
-                methodsList.add(Method.PUT);
-            }
-        }
+		// Update the resource info with the description of the allowed methods
+		List<MethodInfo> methods = info.getMethods();
+		MethodInfo methodInfo;
 
-        Method.sort(methodsList);
+		for (Method method : methodsList) {
+			methodInfo = new MethodInfo();
+			methods.add(methodInfo);
+			methodInfo.setName(method);
 
-        // Update the resource info with the description of the allowed methods
-        List<MethodInfo> methods = info.getMethods();
-        MethodInfo methodInfo;
+			if (resource instanceof ServerResource) {
+				MethodInfo.describeAnnotations(methodInfo,
+						(ServerResource) resource);
+			}
+		}
 
-        for (Method method : methodsList) {
-            methodInfo = new MethodInfo();
-            methods.add(methodInfo);
-            methodInfo.setName(method);
+		// Document the resource
+		String title = null;
+		String textContent = null;
 
-            if (resource instanceof ServerResource) {
-                if (resource instanceof ApisparkServerResource) {
-                    ApisparkServerResource wsResource = (ApisparkServerResource) resource;
+		if ((title != null) && !title.isEmpty()) {
+			DocumentationInfo doc = null;
 
-                    if (wsResource.canDescribe(method)) {
-                        wsResource.describeMethod(method, methodInfo);
-                    }
-                } else {
-                    MethodInfo.describeAnnotations(methodInfo,
-                            (ServerResource) resource);
-                }
-            }
-        }
+			if (info.getDocumentations().isEmpty()) {
+				doc = new DocumentationInfo();
+				info.getDocumentations().add(doc);
+			} else {
+				info.getDocumentations().get(0);
+			}
 
-        // Document the resource
-        String title = null;
-        String textContent = null;
+			doc.setTitle(title);
+			doc.setTextContent(textContent);
+		}
+	}
 
-        if (resource instanceof ApisparkServerResource) {
-            title = ((ApisparkServerResource) resource).getName();
-            textContent = ((ApisparkServerResource) resource).getDescription();
-        }
+	/** List of child resources. */
+	private List<ResourceInfo> childResources;
 
-        if ((title != null) && !"".equals(title)) {
-            DocumentationInfo doc = null;
+	/** Identifier for that element. */
+	private String identifier;
 
-            if (info.getDocumentations().isEmpty()) {
-                doc = new DocumentationInfo();
-                info.getDocumentations().add(doc);
-            } else {
-                info.getDocumentations().get(0);
-            }
+	/** List of supported methods. */
+	private List<MethodInfo> methods;
 
-            doc.setTitle(title);
-            doc.setTextContent(textContent);
-        }
-    }
+	/** List of parameters. */
+	private List<ParameterInfo> parameters;
 
-    /** List of child resources. */
-    private List<ResourceInfo> childResources;
+	/** URI template for the identifier of the resource. */
+	private String path;
 
-    /** Identifier for that element. */
-    private String identifier;
+	/** Media type for the query component of the resource URI. */
+	private MediaType queryType;
 
-    /** List of supported methods. */
-    private List<MethodInfo> methods;
+	/** List of references to resource type elements. */
+	private List<Reference> type;
 
-    /** List of parameters. */
-    private List<ParameterInfo> parameters;
+	/**
+	 * Constructor.
+	 */
+	public ResourceInfo() {
+		super();
+	}
 
-    /** URI template for the identifier of the resource. */
-    private String path;
+	/**
+	 * Constructor with a single documentation element.
+	 * 
+	 * @param documentation
+	 *            A single documentation element.
+	 */
+	public ResourceInfo(DocumentationInfo documentation) {
+		super(documentation);
+	}
 
-    /** Media type for the query component of the resource URI. */
-    private MediaType queryType;
+	/**
+	 * Constructor with a list of documentation elements.
+	 * 
+	 * @param documentations
+	 *            The list of documentation elements.
+	 */
+	public ResourceInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
 
-    /** List of references to resource type elements. */
-    private List<Reference> type;
+	/**
+	 * Constructor with a single documentation element.
+	 * 
+	 * @param documentation
+	 *            A single documentation element.
+	 */
+	public ResourceInfo(String documentation) {
+		super(documentation);
+	}
 
-    /**
-     * Constructor.
-     */
-    public ResourceInfo() {
-        super();
-    }
+	/**
+	 * Creates an application descriptor that wraps this resource descriptor.
+	 * The title of the resource, that is to say the title of its first
+	 * documentation tag is transfered to the title of the first documentation
+	 * tag of the main application tag.
+	 * 
+	 * @return The new application descriptor.
+	 */
+	public ApplicationInfo createApplication() {
+		ApplicationInfo result = new ApplicationInfo();
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ResourceInfo(DocumentationInfo documentation) {
-        super(documentation);
-    }
+		if (!getDocumentations().isEmpty()) {
+			String titleResource = getDocumentations().get(0).getTitle();
+			if (titleResource != null && !"".equals(titleResource)) {
+				DocumentationInfo doc = null;
 
-    /**
-     * Constructor with a list of documentation elements.
-     * 
-     * @param documentations
-     *            The list of documentation elements.
-     */
-    public ResourceInfo(List<DocumentationInfo> documentations) {
-        super(documentations);
-    }
+				if (result.getDocumentations().isEmpty()) {
+					doc = new DocumentationInfo();
+					result.getDocumentations().add(doc);
+				} else {
+					doc = result.getDocumentations().get(0);
+				}
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ResourceInfo(String documentation) {
-        super(documentation);
-    }
+				doc.setTitle(titleResource);
+			}
+		}
 
-    /**
-     * Creates an application descriptor that wraps this resource descriptor.
-     * The title of the resource, that is to say the title of its first
-     * documentation tag is transfered to the title of the first documentation
-     * tag of the main application tag.
-     * 
-     * @return The new application descriptor.
-     */
-    public ApplicationInfo createApplication() {
-        ApplicationInfo result = new ApplicationInfo();
+		ResourcesInfo resources = new ResourcesInfo();
+		result.setResources(resources);
+		resources.getResources().add(this);
+		return result;
+	}
 
-        if (!getDocumentations().isEmpty()) {
-            String titleResource = getDocumentations().get(0).getTitle();
-            if (titleResource != null && !"".equals(titleResource)) {
-                DocumentationInfo doc = null;
+	/**
+	 * Returns the list of child resources.
+	 * 
+	 * @return The list of child resources.
+	 */
+	public List<ResourceInfo> getChildResources() {
+		// Lazy initialization with double-check.
+		List<ResourceInfo> r = this.childResources;
+		if (r == null) {
+			synchronized (this) {
+				r = this.childResources;
+				if (r == null) {
+					this.childResources = r = new ArrayList<ResourceInfo>();
+				}
+			}
+		}
+		return r;
+	}
 
-                if (result.getDocumentations().isEmpty()) {
-                    doc = new DocumentationInfo();
-                    result.getDocumentations().add(doc);
-                } else {
-                    doc = result.getDocumentations().get(0);
-                }
+	/**
+	 * Returns the identifier for that element.
+	 * 
+	 * @return The identifier for that element.
+	 */
+	public String getIdentifier() {
+		return this.identifier;
+	}
 
-                doc.setTitle(titleResource);
-            }
-        }
+	/**
+	 * Returns the list of supported methods.
+	 * 
+	 * @return The list of supported methods.
+	 */
+	public List<MethodInfo> getMethods() {
+		// Lazy initialization with double-check.
+		List<MethodInfo> m = this.methods;
+		if (m == null) {
+			synchronized (this) {
+				m = this.methods;
 
-        ResourcesInfo resources = new ResourcesInfo();
-        result.setResources(resources);
-        resources.getResources().add(this);
-        return result;
-    }
+				if (m == null) {
+					this.methods = m = new ArrayList<MethodInfo>();
+				}
+			}
+		}
+		return m;
+	}
 
-    /**
-     * Returns the list of child resources.
-     * 
-     * @return The list of child resources.
-     */
-    public List<ResourceInfo> getChildResources() {
-        // Lazy initialization with double-check.
-        List<ResourceInfo> r = this.childResources;
-        if (r == null) {
-            synchronized (this) {
-                r = this.childResources;
-                if (r == null) {
-                    this.childResources = r = new ArrayList<ResourceInfo>();
-                }
-            }
-        }
-        return r;
-    }
+	/**
+	 * Returns the list of parameters.
+	 * 
+	 * @return The list of parameters.
+	 */
+	public List<ParameterInfo> getParameters() {
+		// Lazy initialization with double-check.
+		List<ParameterInfo> p = this.parameters;
+		if (p == null) {
+			synchronized (this) {
+				p = this.parameters;
+				if (p == null) {
+					this.parameters = p = new ArrayList<ParameterInfo>();
+				}
+			}
+		}
+		return p;
+	}
 
-    /**
-     * Returns the identifier for that element.
-     * 
-     * @return The identifier for that element.
-     */
-    public String getIdentifier() {
-        return this.identifier;
-    }
+	/**
+	 * Returns the URI template for the identifier of the resource.
+	 * 
+	 * @return The URI template for the identifier of the resource.
+	 */
+	public String getPath() {
+		return this.path;
+	}
 
-    /**
-     * Returns the list of supported methods.
-     * 
-     * @return The list of supported methods.
-     */
-    public List<MethodInfo> getMethods() {
-        // Lazy initialization with double-check.
-        List<MethodInfo> m = this.methods;
-        if (m == null) {
-            synchronized (this) {
-                m = this.methods;
+	/**
+	 * Returns the media type for the query component of the resource URI.
+	 * 
+	 * @return The media type for the query component of the resource URI.
+	 */
+	public MediaType getQueryType() {
+		return this.queryType;
+	}
 
-                if (m == null) {
-                    this.methods = m = new ArrayList<MethodInfo>();
-                }
-            }
-        }
-        return m;
-    }
+	/**
+	 * Returns the list of references to resource type elements.
+	 * 
+	 * @return The list of references to resource type elements.
+	 */
+	public List<Reference> getType() {
+		// Lazy initialization with double-check.
+		List<Reference> t = this.type;
+		if (t == null) {
+			synchronized (this) {
+				t = this.type;
+				if (t == null) {
+					this.type = t = new ArrayList<Reference>();
+				}
+			}
+		}
+		return t;
+	}
 
-    /**
-     * Returns the list of parameters.
-     * 
-     * @return The list of parameters.
-     */
-    public List<ParameterInfo> getParameters() {
-        // Lazy initialization with double-check.
-        List<ParameterInfo> p = this.parameters;
-        if (p == null) {
-            synchronized (this) {
-                p = this.parameters;
-                if (p == null) {
-                    this.parameters = p = new ArrayList<ParameterInfo>();
-                }
-            }
-        }
-        return p;
-    }
+	/**
+	 * Sets the list of child resources.
+	 * 
+	 * @param resources
+	 *            The list of child resources.
+	 */
+	public void setChildResources(List<ResourceInfo> resources) {
+		this.childResources = resources;
+	}
 
-    /**
-     * Returns the URI template for the identifier of the resource.
-     * 
-     * @return The URI template for the identifier of the resource.
-     */
-    public String getPath() {
-        return this.path;
-    }
+	/**
+	 * Sets the identifier for that element.
+	 * 
+	 * @param identifier
+	 *            The identifier for that element.
+	 */
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
 
-    /**
-     * Returns the media type for the query component of the resource URI.
-     * 
-     * @return The media type for the query component of the resource URI.
-     */
-    public MediaType getQueryType() {
-        return this.queryType;
-    }
+	/**
+	 * Sets the list of supported methods.
+	 * 
+	 * @param methods
+	 *            The list of supported methods.
+	 */
+	public void setMethods(List<MethodInfo> methods) {
+		this.methods = methods;
+	}
 
-    /**
-     * Returns the list of references to resource type elements.
-     * 
-     * @return The list of references to resource type elements.
-     */
-    public List<Reference> getType() {
-        // Lazy initialization with double-check.
-        List<Reference> t = this.type;
-        if (t == null) {
-            synchronized (this) {
-                t = this.type;
-                if (t == null) {
-                    this.type = t = new ArrayList<Reference>();
-                }
-            }
-        }
-        return t;
-    }
+	/**
+	 * Sets the list of parameters.
+	 * 
+	 * @param parameters
+	 *            The list of parameters.
+	 */
+	public void setParameters(List<ParameterInfo> parameters) {
+		this.parameters = parameters;
+	}
 
-    /**
-     * Sets the list of child resources.
-     * 
-     * @param resources
-     *            The list of child resources.
-     */
-    public void setChildResources(List<ResourceInfo> resources) {
-        this.childResources = resources;
-    }
+	/**
+	 * Sets the URI template for the identifier of the resource.
+	 * 
+	 * @param path
+	 *            The URI template for the identifier of the resource.
+	 */
+	public void setPath(String path) {
+		this.path = path;
+	}
 
-    /**
-     * Sets the identifier for that element.
-     * 
-     * @param identifier
-     *            The identifier for that element.
-     */
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
+	/**
+	 * Sets the media type for the query component of the resource URI.
+	 * 
+	 * @param queryType
+	 *            The media type for the query component of the resource URI.
+	 */
+	public void setQueryType(MediaType queryType) {
+		this.queryType = queryType;
+	}
 
-    /**
-     * Sets the list of supported methods.
-     * 
-     * @param methods
-     *            The list of supported methods.
-     */
-    public void setMethods(List<MethodInfo> methods) {
-        this.methods = methods;
-    }
-
-    /**
-     * Sets the list of parameters.
-     * 
-     * @param parameters
-     *            The list of parameters.
-     */
-    public void setParameters(List<ParameterInfo> parameters) {
-        this.parameters = parameters;
-    }
-
-    /**
-     * Sets the URI template for the identifier of the resource.
-     * 
-     * @param path
-     *            The URI template for the identifier of the resource.
-     */
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    /**
-     * Sets the media type for the query component of the resource URI.
-     * 
-     * @param queryType
-     *            The media type for the query component of the resource URI.
-     */
-    public void setQueryType(MediaType queryType) {
-        this.queryType = queryType;
-    }
-
-    /**
-     * Sets the list of references to resource type elements.
-     * 
-     * @param type
-     *            The list of references to resource type elements.
-     */
-    public void setType(List<Reference> type) {
-        this.type = type;
-    }
+	/**
+	 * Sets the list of references to resource type elements.
+	 * 
+	 * @param type
+	 *            The list of references to resource type elements.
+	 */
+	public void setType(List<Reference> type) {
+		this.type = type;
+	}
 
 }
