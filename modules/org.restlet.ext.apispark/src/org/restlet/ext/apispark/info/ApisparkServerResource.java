@@ -36,11 +36,11 @@ package org.restlet.ext.apispark.info;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.Header;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.engine.header.Header;
 import org.restlet.engine.header.HeaderConstants;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
