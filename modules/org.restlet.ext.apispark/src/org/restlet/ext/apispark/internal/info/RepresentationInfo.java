@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.info;
+package org.restlet.ext.apispark.internal.info;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.ext.apispark.Property;
 import org.restlet.ext.apispark.Representation;
-import org.restlet.ext.apispark.reflect.ReflectUtils;
+import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.representation.Variant;
 
 /**

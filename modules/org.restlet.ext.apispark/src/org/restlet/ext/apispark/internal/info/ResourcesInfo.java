@@ -31,28 +31,29 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.info;
+package org.restlet.ext.apispark.internal.info;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.Reference;
+
 /**
- * Describes the properties of a request associated to a parent method.
+ * Describes the root resources of an application.
  * 
  * @author Jerome Louvel
  */
-public class RequestInfo extends DocumentedInfo {
+public class ResourcesInfo extends DocumentedInfo {
+    /** Base URI for each child resource identifier. */
+    private Reference baseRef;
 
-    /** List of parameters. */
-    private List<ParameterInfo> parameters;
-
-    /** List of supported input representations. */
-    private List<RepresentationInfo> representations;
+    /** List of child resources. */
+    private List<ResourceInfo> resources;
 
     /**
      * Constructor.
      */
-    public RequestInfo() {
+    public ResourcesInfo() {
         super();
     }
 
@@ -62,7 +63,7 @@ public class RequestInfo extends DocumentedInfo {
      * @param documentation
      *            A single documentation element.
      */
-    public RequestInfo(DocumentationInfo documentation) {
+    public ResourcesInfo(DocumentationInfo documentation) {
         super(documentation);
     }
 
@@ -72,7 +73,7 @@ public class RequestInfo extends DocumentedInfo {
      * @param documentations
      *            The list of documentation elements.
      */
-    public RequestInfo(List<DocumentationInfo> documentations) {
+    public ResourcesInfo(List<DocumentationInfo> documentations) {
         super(documentations);
     }
 
@@ -82,42 +83,32 @@ public class RequestInfo extends DocumentedInfo {
      * @param documentation
      *            A single documentation element.
      */
-    public RequestInfo(String documentation) {
+    public ResourcesInfo(String documentation) {
         super(documentation);
     }
 
     /**
-     * Returns the list of parameters.
+     * Returns the base URI for each child resource identifier.
      * 
-     * @return The list of parameters.
+     * @return The base URI for each child resource identifier.
      */
-    public List<ParameterInfo> getParameters() {
-        // Lazy initialization with double-check.
-        List<ParameterInfo> p = this.parameters;
-        if (p == null) {
-            synchronized (this) {
-                p = this.parameters;
-                if (p == null) {
-                    this.parameters = p = new ArrayList<ParameterInfo>();
-                }
-            }
-        }
-        return p;
+    public Reference getBaseRef() {
+        return this.baseRef;
     }
 
     /**
-     * Returns the list of supported input representations.
+     * Returns the list of child resources.
      * 
-     * @return The list of supported input representations.
+     * @return The list of child resources.
      */
-    public List<RepresentationInfo> getRepresentations() {
+    public List<ResourceInfo> getResources() {
         // Lazy initialization with double-check.
-        List<RepresentationInfo> r = this.representations;
+        List<ResourceInfo> r = this.resources;
         if (r == null) {
             synchronized (this) {
-                r = this.representations;
+                r = this.resources;
                 if (r == null) {
-                    this.representations = r = new ArrayList<RepresentationInfo>();
+                    this.resources = r = new ArrayList<ResourceInfo>();
                 }
             }
         }
@@ -125,23 +116,23 @@ public class RequestInfo extends DocumentedInfo {
     }
 
     /**
-     * Sets the list of parameters.
+     * Sets the base URI for each child resource identifier.
      * 
-     * @param parameters
-     *            The list of parameters.
+     * @param baseRef
+     *            The base URI for each child resource identifier.
      */
-    public void setParameters(List<ParameterInfo> parameters) {
-        this.parameters = parameters;
+    public void setBaseRef(Reference baseRef) {
+        this.baseRef = baseRef;
     }
 
     /**
-     * Sets the list of supported input representations.
+     * Sets the list of child resources.
      * 
-     * @param representations
-     *            The list of supported input representations.
+     * @param resources
+     *            The list of child resources.
      */
-    public void setRepresentations(List<RepresentationInfo> representations) {
-        this.representations = representations;
+    public void setResources(List<ResourceInfo> resources) {
+        this.resources = resources;
     }
 
 }

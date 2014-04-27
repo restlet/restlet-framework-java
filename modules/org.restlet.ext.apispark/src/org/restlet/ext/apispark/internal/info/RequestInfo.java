@@ -31,35 +31,28 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.info;
+package org.restlet.ext.apispark.internal.info;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.data.Status;
-
 /**
- * Describes the properties of a response associated to a parent method.
+ * Describes the properties of a request associated to a parent method.
  * 
  * @author Jerome Louvel
  */
-public class ResponseInfo extends DocumentedInfo {
+public class RequestInfo extends DocumentedInfo {
 
     /** List of parameters. */
     private List<ParameterInfo> parameters;
 
-    /** List of representations. */
+    /** List of supported input representations. */
     private List<RepresentationInfo> representations;
-
-    /**
-     * List of statuses associated with this response representation.
-     */
-    private List<Status> statuses;
 
     /**
      * Constructor.
      */
-    public ResponseInfo() {
+    public RequestInfo() {
         super();
     }
 
@@ -69,7 +62,7 @@ public class ResponseInfo extends DocumentedInfo {
      * @param documentation
      *            A single documentation element.
      */
-    public ResponseInfo(DocumentationInfo documentation) {
+    public RequestInfo(DocumentationInfo documentation) {
         super(documentation);
     }
 
@@ -79,7 +72,7 @@ public class ResponseInfo extends DocumentedInfo {
      * @param documentations
      *            The list of documentation elements.
      */
-    public ResponseInfo(List<DocumentationInfo> documentations) {
+    public RequestInfo(List<DocumentationInfo> documentations) {
         super(documentations);
     }
 
@@ -89,7 +82,7 @@ public class ResponseInfo extends DocumentedInfo {
      * @param documentation
      *            A single documentation element.
      */
-    public ResponseInfo(String documentation) {
+    public RequestInfo(String documentation) {
         super(documentation);
     }
 
@@ -113,9 +106,9 @@ public class ResponseInfo extends DocumentedInfo {
     }
 
     /**
-     * Returns the list of representations
+     * Returns the list of supported input representations.
      * 
-     * @return The list of representations
+     * @return The list of supported input representations.
      */
     public List<RepresentationInfo> getRepresentations() {
         // Lazy initialization with double-check.
@@ -132,27 +125,6 @@ public class ResponseInfo extends DocumentedInfo {
     }
 
     /**
-     * Returns the list of statuses associated with this response
-     * representation.
-     * 
-     * @return The list of statuses associated with this response
-     *         representation.
-     */
-    public List<Status> getStatuses() {
-        // Lazy initialization with double-check.
-        List<Status> s = this.statuses;
-        if (s == null) {
-            synchronized (this) {
-                s = this.statuses;
-                if (s == null) {
-                    this.statuses = s = new ArrayList<Status>();
-                }
-            }
-        }
-        return s;
-    }
-
-    /**
      * Sets the list of parameters.
      * 
      * @param parameters
@@ -163,24 +135,13 @@ public class ResponseInfo extends DocumentedInfo {
     }
 
     /**
-     * Sets the list of representations
+     * Sets the list of supported input representations.
      * 
      * @param representations
-     *            The list of representations
+     *            The list of supported input representations.
      */
     public void setRepresentations(List<RepresentationInfo> representations) {
         this.representations = representations;
-    }
-
-    /**
-     * Sets the list of statuses associated with this response representation.
-     * 
-     * @param statuses
-     *            The list of statuses associated with this response
-     *            representation.
-     */
-    public void setStatuses(List<Status> statuses) {
-        this.statuses = statuses;
     }
 
 }

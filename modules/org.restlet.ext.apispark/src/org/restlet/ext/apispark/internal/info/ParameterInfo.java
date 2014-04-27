@@ -31,7 +31,7 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.info;
+package org.restlet.ext.apispark.internal.info;
 
 import java.util.ArrayList;
 import java.util.List;

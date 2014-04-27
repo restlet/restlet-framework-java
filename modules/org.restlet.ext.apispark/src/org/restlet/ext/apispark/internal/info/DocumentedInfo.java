@@ -31,29 +31,23 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.apispark.info;
+package org.restlet.ext.apispark.internal.info;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.data.Reference;
-
 /**
- * Describes the root resources of an application.
+ * Superclass of APISpark elements that supports dcumentation.
  * 
- * @author Jerome Louvel
  */
-public class ResourcesInfo extends DocumentedInfo {
-    /** Base URI for each child resource identifier. */
-    private Reference baseRef;
-
-    /** List of child resources. */
-    private List<ResourceInfo> resources;
+public abstract class DocumentedInfo {
+    /** Doc elements used to document that element. */
+    private List<DocumentationInfo> documentations;
 
     /**
      * Constructor.
      */
-    public ResourcesInfo() {
+    public DocumentedInfo() {
         super();
     }
 
@@ -63,8 +57,9 @@ public class ResourcesInfo extends DocumentedInfo {
      * @param documentation
      *            A single documentation element.
      */
-    public ResourcesInfo(DocumentationInfo documentation) {
-        super(documentation);
+    public DocumentedInfo(DocumentationInfo documentation) {
+        super();
+        getDocumentations().add(documentation);
     }
 
     /**
@@ -73,8 +68,9 @@ public class ResourcesInfo extends DocumentedInfo {
      * @param documentations
      *            The list of documentation elements.
      */
-    public ResourcesInfo(List<DocumentationInfo> documentations) {
-        super(documentations);
+    public DocumentedInfo(List<DocumentationInfo> documentations) {
+        super();
+        this.documentations = documentations;
     }
 
     /**
@@ -83,56 +79,58 @@ public class ResourcesInfo extends DocumentedInfo {
      * @param documentation
      *            A single documentation element.
      */
-    public ResourcesInfo(String documentation) {
-        super(documentation);
+    public DocumentedInfo(String documentation) {
+        this(new DocumentationInfo(documentation));
     }
 
     /**
-     * Returns the base URI for each child resource identifier.
+     * Returns the list of documentation elements.
      * 
-     * @return The base URI for each child resource identifier.
+     * @return The list of documentation elements.
      */
-    public Reference getBaseRef() {
-        return this.baseRef;
-    }
-
-    /**
-     * Returns the list of child resources.
-     * 
-     * @return The list of child resources.
-     */
-    public List<ResourceInfo> getResources() {
+    public List<DocumentationInfo> getDocumentations() {
         // Lazy initialization with double-check.
-        List<ResourceInfo> r = this.resources;
-        if (r == null) {
+        List<DocumentationInfo> d = this.documentations;
+        if (d == null) {
             synchronized (this) {
-                r = this.resources;
-                if (r == null) {
-                    this.resources = r = new ArrayList<ResourceInfo>();
+                d = this.documentations;
+                if (d == null) {
+                    this.documentations = d = new ArrayList<DocumentationInfo>();
                 }
             }
         }
-        return r;
+        return d;
     }
 
     /**
-     * Sets the base URI for each child resource identifier.
+     * Set the list of documentation elements with a single element.
      * 
-     * @param baseRef
-     *            The base URI for each child resource identifier.
+     * @param documentationInfo
+     *            A single documentation element.
      */
-    public void setBaseRef(Reference baseRef) {
-        this.baseRef = baseRef;
+    public void setDocumentation(DocumentationInfo documentationInfo) {
+        getDocumentations().clear();
+        getDocumentations().add(documentationInfo);
     }
 
     /**
-     * Sets the list of child resources.
+     * Set the list of documentation elements with a single element.
      * 
-     * @param resources
-     *            The list of child resources.
+     * @param documentation
+     *            A single documentation element.
      */
-    public void setResources(List<ResourceInfo> resources) {
-        this.resources = resources;
+    public void setDocumentation(String documentation) {
+        getDocumentations().clear();
+        getDocumentations().add(new DocumentationInfo(documentation));
     }
 
+    /**
+     * Sets the list of documentation elements.
+     * 
+     * @param doc
+     *            The list of documentation elements.
+     */
+    public void setDocumentations(List<DocumentationInfo> doc) {
+        this.documentations = doc;
+    }
 }
