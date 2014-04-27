@@ -259,7 +259,7 @@ public class Introspector {
 			} else {
 				doc = applicationInfo.getDocumentations().get(0);
 			}
-
+			applicationInfo.setName(application.getName());
 			doc.setTitle(application.getName());
 		}
 		applicationInfo.getResources().setBaseRef(baseRef);
@@ -512,6 +512,7 @@ public class Introspector {
 				System.out.println(cr.getLocationRef());
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		if (clazz == null) {
 			System.out
@@ -526,8 +527,7 @@ public class Introspector {
 		PrintStream o = System.out;
 
 		o.println("SYNOPSIS");
-		printSentence(o, Introspector.class.getCanonicalName(),
-				"[options] APPLICATION");
+		printSynopsis(o, Introspector.class, "[options] APPLICATION");
 		o.println("DESCRIPTION");
 		printSentence(
 				o,
@@ -615,6 +615,21 @@ public class Introspector {
 	 */
 	private static void printSentence(PrintStream o, String... strings) {
 		printSentence(o, 7, strings);
+	}
+
+	/**
+	 * Displays the command line.
+	 * 
+	 * @param o
+	 *            The console stream.
+	 * @param clazz
+	 *            The main class.
+	 * @param command
+	 *            The command line.
+	 */
+	private static void printSynopsis(PrintStream o, Class<?> clazz,
+			String command) {
+		printSentence(o, 7, clazz.getCanonicalName(), command);
 	}
 
 	/**
@@ -708,6 +723,7 @@ public class Introspector {
 		return d.toString();
 	}
 
+	/** The current Web API definition. */
 	private Definition definition;
 
 	/**
