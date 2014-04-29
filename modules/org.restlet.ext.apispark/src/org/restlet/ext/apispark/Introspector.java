@@ -988,13 +988,39 @@ public class Introspector {
                 Application app = getNextApplication(route.getNext());
                 if (app != null
                         && application.getClass().equals(app.getClass())) {
-                    String scheme = virtualHost.getHostScheme();
-                    String hostDomain = virtualHost.getHostDomain();
-                    String hostPort = virtualHost.getHostPort();
-                    if (route instanceof TemplateRoute) {
-                        System.out.println(((TemplateRoute)route).getTemplate().getPattern());                        
+                    String hostDomain = null;
+                    if (virtualHost.getHostDomain() != null
+                            && !".*".equals(virtualHost.getHostDomain())) {
+                        if (virtualHost.getHostDomain().contains("|")) {
+                            hostDomain = virtualHost.getHostDomain().split("|")[0];
+                        } else {
+                            hostDomain = virtualHost.getHostDomain();
+                        }
                     }
-                    // Concatenate in order to get the endpoint
+                    if (hostDomain != null) {
+                        Protocol scheme = null;
+                        if (!".*".equals(virtualHost.getHostScheme())) {
+                            scheme = Protocol.valueOf(virtualHost
+                                    .getHostScheme());
+                        }
+                        if (scheme == null) {
+                            scheme = Protocol.HTTP;
+                        }
+                        Reference ref = new Reference();
+                        ref.setProtocol(scheme);
+                        ref.setHostDomain(hostDomain);
+                        if (route instanceof TemplateRoute) {
+                            ref.addSegment(((TemplateRoute) route)
+                                    .getTemplate().getPattern());
+                        }
+                        try {
+                            ref.setHostPort(Integer.parseInt(virtualHost.getHostPort()));
+                        } catch (Exception e) {
+                            // Nothing
+                        }
+                        // Concatenate in order to get the endpoint
+                        result = ref.toString();
+                    }
                 }
             }
         }
