@@ -74,50 +74,57 @@ public class RepresentationInfo extends DocumentedInfo {
         RepresentationInfo result = null;
 
         if (representationClass != null) {
-            // Introspect the java class
-            result = new RepresentationInfo(variant);
+            result = introspect(representationClass, variant);
+        }
 
-            result.setIdentifier(representationClass.getName());
-            result.setName(representationClass.getSimpleName());
+        return result;
+    }
 
-            // TODO we don't introspect jdk's class
-            if (Representation.class.isAssignableFrom(representationClass)
-                    || isJdkClass(representationClass)) {
-                result.setRaw(true);
-            } else {
-                // TODO support parent types
-                if (representationClass.getSuperclass() != null
-                        && !isJdkClass(representationClass.getSuperclass())) {
-                    // TODO This type must introspected too, as it will reveal other representation
-                    result.setParentType(representationClass.getSuperclass()
-                            .getName());
-                }
+    public static RepresentationInfo introspect(Class<?> representationClass,
+            Variant variant) {
+        RepresentationInfo result;
+        // Introspect the java class
+        result = new RepresentationInfo(variant);
 
-                for (Field field : ReflectUtils
-                        .getAllDeclaredFields(representationClass)) {
-                    if (!"serialVersionUID".equals(field.getName())) {
-                        Property property = new Property();
-                        property.setName(field.getName());
-                        // TODO better : is primitive type?
-                        if (isJdkClass(field.getType())) {
-                            property.setType(field.getType().getSimpleName());
-                        } else {
-                            // TODO This type must introspected too, as it will reveal other representation
-                            property.setType(field.getType().getName());
-                        }
+        result.setIdentifier(representationClass.getName());
+        result.setName(representationClass.getSimpleName());
 
-                        property.setMinOccurs(0);
-                        if (ReflectUtils.isListType(field.getType())) {
-                            property.setMaxOccurs(-1);
-                        } else {
-                            property.setMaxOccurs(1);
-                        }
-                        result.getProperties().add(property);
+        // TODO we don't introspect jdk's class
+        if (Representation.class.isAssignableFrom(representationClass)
+                || isJdkClass(representationClass)) {
+            result.setRaw(true);
+        } else {
+            // TODO support parent types
+            if (representationClass.getSuperclass() != null
+                    && !isJdkClass(representationClass.getSuperclass())) {
+                // TODO This type must introspected too, as it will reveal other representation
+                result.setParentType(representationClass.getSuperclass()
+                        .getName());
+            }
+
+            for (Field field : ReflectUtils
+                    .getAllDeclaredFields(representationClass)) {
+                if (!"serialVersionUID".equals(field.getName())) {
+                    Property property = new Property();
+                    property.setName(field.getName());
+                    // TODO better : is primitive type?
+                    if (isJdkClass(field.getType())) {
+                        property.setType(field.getType().getSimpleName());
+                    } else {
+                        // TODO This type must introspected too, as it will reveal other representation
+                        property.setType(field.getType().getName());
                     }
+
+                    property.setMinOccurs(0);
+                    if (ReflectUtils.isListType(field.getType())) {
+                        property.setMaxOccurs(-1);
+                    } else {
+                        property.setMaxOccurs(1);
+                    }
+                    result.getProperties().add(property);
                 }
             }
         }
-
         return result;
     }
 

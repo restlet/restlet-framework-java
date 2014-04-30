@@ -329,6 +329,9 @@ public class Introspector {
         applicationInfo.getResources().setResources(
                 getResourceInfos(applicationInfo,
                         getNextRouter(application.getInboundRoot())));
+
+        //
+
         return applicationInfo;
     }
 
@@ -617,7 +620,7 @@ public class Introspector {
         String serviceUrl = null;
         String appName = null;
         String compName = null;
-        String definitionUrl = null;
+        String definitionId = null;
 
         LOGGER.fine("Get parameters");
         for (int i = 0; i < (args.length); i++) {
@@ -633,7 +636,7 @@ public class Introspector {
             } else if ("-c".equals(args[i])) {
                 compName = getParameter(args, ++i);
             } else if ("-d".equals(args[i])) {
-                definitionUrl = getParameter(args, ++i);
+                definitionId = getParameter(args, ++i);
             } else {
                 appName = args[i];
             }
@@ -675,8 +678,15 @@ public class Introspector {
                 LOGGER.fine("Generate documentation");
                 Definition definition = i.getDefinition();
 
-                LOGGER.fine("Send documentation");
-                cr.post(definition, MediaType.APPLICATION_JSON);
+                if (definitionId == null) {
+                    LOGGER.fine("Create a new documentation");
+                    cr.post(definition, MediaType.APPLICATION_JSON);
+                } else {
+                    cr.addSegment(definitionId);
+                    LOGGER.fine("Update the documentation of "
+                            + cr.getReference().toString());
+                    cr.put(definition, MediaType.APPLICATION_JSON);
+                }
 
                 LOGGER.fine("Display result");
                 // This is not printed by a logger which may be muted.
@@ -726,7 +736,7 @@ public class Introspector {
         printOption(
                 o,
                 "-d",
-                "The optional URL of an existing definition hosted by APISpark you want to update with this new documentation.");
+                "The optional identifier of an existing definition hosted by APISpark you want to update with this new documentation.");
         o.println("LOGGING");
         printSentence(
                 o,
@@ -886,6 +896,28 @@ public class Introspector {
             for (RepresentationInfo ri : application.getRepresentations()) {
                 if (!mapReps.containsKey(ri.getIdentifier())) {
                     mapReps.put(ri.getIdentifier(), ri);
+                }
+            }
+            // This first phase discovers representations related to annotations
+            // Let's cope with the inheritance chain, and complex properties
+            for (RepresentationInfo ri : mapReps.values()) {
+                String parentType = ri.getParentType();
+                while (parentType != null) {
+                    if (!mapReps.containsKey(parentType)) {
+                        try {
+                            RepresentationInfo r = RepresentationInfo
+                                    .introspect(
+                                            Class.forName(ri.getParentType()),
+                                            null);
+                            mapReps.put(r.getIdentifier(), r);
+                        } catch (ClassNotFoundException e) {
+                            LOGGER.warning("Cannot locate class "
+                                    + ri.getParentType()
+                                    + ", referenced by class "
+                                    + ri.getIdentifier());
+                        }
+                    }
+                    parentType = mapReps.get(parentType).getParentType();
                 }
             }
 
