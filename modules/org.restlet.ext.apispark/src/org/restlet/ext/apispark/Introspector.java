@@ -690,7 +690,7 @@ public class Introspector {
                 }
 
                 LOGGER.fine("Display result");
-                System.out.println("Process achevied.");
+                System.out.println("Process successfully achieved.");
                 // This is not printed by a logger which may be muted.
                 if (cr.getLocationRef() != null) {
                     System.out.println(cr.getLocationRef());
