@@ -73,7 +73,7 @@ public class MethodInfo extends DocumentedInfo {
         if (annotations != null && metadataService != null) {
             for (AnnotationInfo annotationInfo : annotations) {
                 try {
-                    if (info.getName()
+                    if (info.getMethod()
                             .equals(annotationInfo.getRestletMethod())) {
                         // Describe the request
                         Class<?>[] classes = annotationInfo.getJavaInputTypes();
@@ -149,7 +149,7 @@ public class MethodInfo extends DocumentedInfo {
     private String identifier;
 
     /** Name of the method. */
-    private Method name;
+    private Method method;
 
     /** Describes the input to the method. */
     private RequestInfo request;
@@ -207,13 +207,13 @@ public class MethodInfo extends DocumentedInfo {
     }
 
     /**
-     * Returns the name of the method.
+     * Returns the method.
      * 
-     * @return The name of the method.
+     * @return The method.
      */
 
-    public Method getName() {
-        return this.name;
+    public Method getMethod() {
+        return this.method;
     }
 
     /**
@@ -282,8 +282,8 @@ public class MethodInfo extends DocumentedInfo {
      * @param name
      *            The name of the method.
      */
-    public void setName(Method name) {
-        this.name = name;
+    public void setMethod(Method name) {
+        this.method = name;
     }
 
     /**

@@ -142,12 +142,12 @@ public class Introspector {
 
                 Operation operation = new Operation();
                 operation.setDescription(toString(mi.getDocumentations()));
-                operation.setName(mi.getName().getName());
+                operation.setName(mi.getMethod().getName());
                 // TODO complete Method class with mi.getName()
                 operation.setMethod(new org.restlet.ext.apispark.Method());
                 operation.getMethod().setDescription(
-                        mi.getName().getDescription());
-                operation.getMethod().setName(mi.getName().getName());
+                        mi.getMethod().getDescription());
+                operation.getMethod().setName(mi.getMethod().getName());
 
                 // Complete parameters
                 operation.setHeaders(new ArrayList<Parameter>());

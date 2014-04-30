@@ -105,7 +105,7 @@ public class ResourceInfo extends DocumentedInfo {
         for (Method method : methodsList) {
             methodInfo = new MethodInfo();
             methods.add(methodInfo);
-            methodInfo.setName(method);
+            methodInfo.setMethod(method);
 
             if (resource instanceof ServerResource) {
                 MethodInfo.describeAnnotations(methodInfo,
