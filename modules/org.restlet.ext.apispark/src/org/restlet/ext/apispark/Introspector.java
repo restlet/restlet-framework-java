@@ -52,7 +52,7 @@ import com.sun.istack.internal.logging.Logger;
 public class Introspector {
 
     /** Internal logger. */
-    private static Logger LOGGER = Logger.getLogger(Introspector.class);
+    protected static Logger LOGGER = Logger.getLogger(Introspector.class);
 
     /**
      * Completes a map of representations with a list of representations.
@@ -389,24 +389,6 @@ public class Introspector {
     }
 
     /**
-     * Returns the next router available.
-     * 
-     * @param current
-     *            The current Restlet to inspect.
-     * @return The first router available.
-     */
-    private static Router getNextRouter(Restlet current) {
-        Router result = null;
-        if (current instanceof Router) {
-            result = (Router) current;
-        } else if (current instanceof Filter) {
-            result = getNextRouter(((Filter) current).getNext());
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the next application available.
      * 
      * @param current
@@ -432,6 +414,33 @@ public class Introspector {
         return result;
     }
 
+    /**
+     * Returns the next router available.
+     * 
+     * @param current
+     *            The current Restlet to inspect.
+     * @return The first router available.
+     */
+    private static Router getNextRouter(Restlet current) {
+        Router result = null;
+        if (current instanceof Router) {
+            result = (Router) current;
+        } else if (current instanceof Filter) {
+            result = getNextRouter(((Filter) current).getNext());
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the value according to its index.
+     * 
+     * @param args
+     *            The argument table.
+     * @param index
+     *            The index of the argument.
+     * @return The value of the given argument.
+     */
     private static String getParameter(String[] args, int index) {
         if (index >= args.length) {
             return null;
@@ -439,6 +448,7 @@ public class Introspector {
             String value = args[index];
             if ("-s".equals(value) || "-u".equals(value) || "-p".equals(value)
                     || "-d".equals(value) || "-c".equals(value)) {
+                // In case the given value is actually an option, reset it.
                 value = null;
             }
             return value;
