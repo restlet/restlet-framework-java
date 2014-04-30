@@ -434,7 +434,7 @@ public class Introspector {
         } else {
             String value = args[index];
             if ("-s".equals(value) || "-u".equals(value) || "-p".equals(value)
-                    || "-s".equals(value) || "-c".equals(value)) {
+                    || "-d".equals(value) || "-c".equals(value)) {
                 value = null;
             }
             return value;
@@ -641,7 +641,10 @@ public class Introspector {
 
         LOGGER.fine("Check parameters");
         if (isEmpty(serviceUrl)) {
-            serviceUrl = "https://apispark.com/definitions";
+            serviceUrl = "https://apispark.com/";
+        }
+        if (!serviceUrl.endsWith("/")) {
+            serviceUrl += "/";
         }
 
         if (isEmpty(ulogin) || isEmpty(upwd) || isEmpty(appName)) {
@@ -665,7 +668,7 @@ public class Introspector {
             Introspector i = new Introspector(component, application);
 
             try {
-                ClientResource cr = new ClientResource(serviceUrl);
+                ClientResource cr = new ClientResource(serviceUrl + "definitions");
                 cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin,
                         upwd);
                 LOGGER.fine("Generate documentation");
@@ -681,7 +684,7 @@ public class Introspector {
                 // TODO Should we detail by status?
                 if (e.getStatus().isConnectorError()) {
                     LOGGER.severe("Cannot reach the remote service, could you check your network connection?");
-                    LOGGER.severe("Could you check that the following service is up?"
+                    LOGGER.severe("Could you check that the following service is up? "
                             + serviceUrl);
                 } else if (e.getStatus().isClientError()) {
                     LOGGER.severe("Check that you provide valid credentials.");
@@ -1014,7 +1017,8 @@ public class Introspector {
                                     .getTemplate().getPattern());
                         }
                         try {
-                            ref.setHostPort(Integer.parseInt(virtualHost.getHostPort()));
+                            ref.setHostPort(Integer.parseInt(virtualHost
+                                    .getHostPort()));
                         } catch (Exception e) {
                             // Nothing
                         }
