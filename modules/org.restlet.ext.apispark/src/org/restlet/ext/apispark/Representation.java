@@ -18,7 +18,7 @@ public class Representation {
 
     /** Indicates if the representation is structured or not. */
     private boolean raw;
-    
+
     /** List of variants available for this representation. */
     private List<Variant> variants;
 

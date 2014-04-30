@@ -50,86 +50,86 @@ import org.restlet.Context;
  */
 public class ReflectUtils {
 
-	/** The internal logger. */
-	private final static Logger logger = Context.getCurrentLogger();
+    /** The internal logger. */
+    private final static Logger logger = Context.getCurrentLogger();
 
-	@SuppressWarnings("rawtypes")
-	public static Field[] getAllDeclaredFields(Class type) {
-		List<Field> fields = new ArrayList<Field>();
-		Class currentType = type;
-		while (currentType != null) {
-			Field[] currentFields = currentType.getDeclaredFields();
-			Collections.addAll(fields, currentFields);
-			currentType = currentType.getSuperclass();
-			if (currentType != null && currentType.equals(Object.class)) {
-				currentType = null;
-			}
-		}
-		return fields.toArray(new Field[fields.size()]);
-	}
+    @SuppressWarnings("rawtypes")
+    public static Field[] getAllDeclaredFields(Class type) {
+        List<Field> fields = new ArrayList<Field>();
+        Class currentType = type;
+        while (currentType != null) {
+            Field[] currentFields = currentType.getDeclaredFields();
+            Collections.addAll(fields, currentFields);
+            currentType = currentType.getSuperclass();
+            if (currentType != null && currentType.equals(Object.class)) {
+                currentType = null;
+            }
+        }
+        return fields.toArray(new Field[fields.size()]);
+    }
 
-	@SuppressWarnings("rawtypes")
-	private static Field getDeclaredField(Class type, String fieldName) {
-		Field[] fields = getAllDeclaredFields(type);
-		for (Field field : fields) {
-			if (field.getName().equals(fieldName)) {
-				return field;
-			}
-		}
-		return null;
-	}
+    @SuppressWarnings("rawtypes")
+    private static Field getDeclaredField(Class type, String fieldName) {
+        Field[] fields = getAllDeclaredFields(type);
+        for (Field field : fields) {
+            if (field.getName().equals(fieldName)) {
+                return field;
+            }
+        }
+        return null;
+    }
 
-	@SuppressWarnings("rawtypes")
-	private static Field getField(Class type, String fieldName) {
-		Field[] fields = getAllDeclaredFields(type);
-		for (Field field : fields) {
-			if (field.getName().equals(fieldName)) {
-				return field;
-			}
-		}
-		return null;
-	}
+    @SuppressWarnings("rawtypes")
+    private static Field getField(Class type, String fieldName) {
+        Field[] fields = getAllDeclaredFields(type);
+        for (Field field : fields) {
+            if (field.getName().equals(fieldName)) {
+                return field;
+            }
+        }
+        return null;
+    }
 
-	@SuppressWarnings("rawtypes")
-	private static Class getFieldClass(Class clazz, String fieldName) {
-		try {
-			Field field = getDeclaredField(clazz, fieldName);
-			if (field != null) {
-				return getFieldClass(field);
-			}
-		} catch (Exception ex) {
-			logger.log(Level.INFO, "Error when getting type of field "
-					+ fieldName + " for class " + clazz.getCanonicalName(), ex);
-		}
-		return null;
-	}
+    @SuppressWarnings("rawtypes")
+    private static Class getFieldClass(Class clazz, String fieldName) {
+        try {
+            Field field = getDeclaredField(clazz, fieldName);
+            if (field != null) {
+                return getFieldClass(field);
+            }
+        } catch (Exception ex) {
+            logger.log(Level.INFO, "Error when getting type of field "
+                    + fieldName + " for class " + clazz.getCanonicalName(), ex);
+        }
+        return null;
+    }
 
-	@SuppressWarnings("rawtypes")
-	private static Class getFieldClass(Field field) {
-		return field.getType();
-	}
+    @SuppressWarnings("rawtypes")
+    private static Class getFieldClass(Field field) {
+        return field.getType();
+    }
 
-	@SuppressWarnings("rawtypes")
-	private static String getFieldType(Class clazz, String fieldName) {
-		try {
-			Field field = getDeclaredField(clazz, fieldName);
-			if (field != null) {
-				return getFieldType(field);
-			}
-		} catch (Exception ex) {
-			logger.log(Level.INFO, "Error when getting type of field "
-					+ fieldName + " for class " + clazz.getCanonicalName(), ex);
-		}
-		return null;
-	}
+    @SuppressWarnings("rawtypes")
+    private static String getFieldType(Class clazz, String fieldName) {
+        try {
+            Field field = getDeclaredField(clazz, fieldName);
+            if (field != null) {
+                return getFieldType(field);
+            }
+        } catch (Exception ex) {
+            logger.log(Level.INFO, "Error when getting type of field "
+                    + fieldName + " for class " + clazz.getCanonicalName(), ex);
+        }
+        return null;
+    }
 
-	@SuppressWarnings("rawtypes")
-	private static String getFieldType(Field field) {
-		Class type = field.getType();
-		return type.getCanonicalName();
-	}
+    @SuppressWarnings("rawtypes")
+    private static String getFieldType(Field field) {
+        Class type = field.getType();
+        return type.getCanonicalName();
+    }
 
-	public static boolean isListType(Class<?> type) {
-		return Collection.class.isAssignableFrom(type);
-	}
+    public static boolean isListType(Class<?> type) {
+        return Collection.class.isAssignableFrom(type);
+    }
 }

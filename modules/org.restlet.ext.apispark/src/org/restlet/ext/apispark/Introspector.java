@@ -194,7 +194,7 @@ public class Introspector {
                     // for Restlet one representation / several variants for
                     // APIspark
                     body.setRepresentation(mi.getRequest().getRepresentations()
-                            .get(0).getIdentifier());
+                            .get(0).getName());
 
                     operation.setInRepresentation(body);
                 }
@@ -209,7 +209,7 @@ public class Introspector {
                     // APIspark
                     if (!mi.getResponse().getRepresentations().isEmpty()) {
                         body.setRepresentation(mi.getResponse()
-                                .getRepresentations().get(0).getIdentifier());
+                                .getRepresentations().get(0).getName());
                     }
                     operation.setOutRepresentation(body);
 
@@ -668,7 +668,8 @@ public class Introspector {
             Introspector i = new Introspector(component, application);
 
             try {
-                ClientResource cr = new ClientResource(serviceUrl + "definitions");
+                ClientResource cr = new ClientResource(serviceUrl
+                        + "definitions");
                 cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, ulogin,
                         upwd);
                 LOGGER.fine("Generate documentation");
@@ -687,7 +688,7 @@ public class Introspector {
                     LOGGER.severe("Could you check that the following service is up? "
                             + serviceUrl);
                 } else if (e.getStatus().isClientError()) {
-                    LOGGER.severe("Check that you provide valid credentials.");
+                    LOGGER.severe("Check that you provide valid credentials, or valid service url.");
                 } else if (e.getStatus().isServerError()) {
                     LOGGER.severe("The server side encounters some issues, please try later.");
                 }
@@ -896,7 +897,7 @@ public class Introspector {
                 // Restlet
                 // one representation / several variants for APIspark
                 rep.setDescription(toString(ri.getDocumentations()));
-                rep.setName(ri.getIdentifier());
+                rep.setName(ri.getName());
                 Variant variant = new Variant();
                 variant.setDataType(ri.getMediaType().getName());
                 rep.setVariants(new ArrayList<Variant>());
