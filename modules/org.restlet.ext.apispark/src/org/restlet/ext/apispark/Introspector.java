@@ -1,5 +1,6 @@
 package org.restlet.ext.apispark;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -689,8 +690,20 @@ public class Introspector {
                 }
 
                 LOGGER.fine("Display result");
+                System.out.println("Process achevied.");
                 // This is not printed by a logger which may be muted.
-                System.out.println(cr.getLocationRef());
+                if (cr.getLocationRef() != null) {
+                    System.out.println(cr.getLocationRef());
+                }
+                if (cr.getResponseEntity() != null
+                        && cr.getResponseEntity().isAvailable()) {
+                    try {
+                        cr.getResponseEntity().write(System.out);
+                    } catch (IOException e) {
+                        // [PENDING] analysis
+                        LOGGER.warning("Request successfully achieved by the server, but it's response cannot be printed");
+                    }
+                }
             } catch (ResourceException e) {
                 // TODO Should we detail by status?
                 if (e.getStatus().isConnectorError()) {
