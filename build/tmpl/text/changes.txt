@@ -13,6 +13,8 @@ Changes log
         Reported by Emanuele Massara.
       - Fixed missing default values for DefaultSslContextFactory attributes,
         issue #903.
+      - Removed .properties files from the distributions, issue #892.
+
     - Misc
 
 - 2.2.0 (03/27/2014)
