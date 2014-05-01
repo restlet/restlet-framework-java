@@ -182,8 +182,11 @@ public class HttpMethodCall extends ClientCall {
      */
     @Override
     public String getReasonPhrase() {
-        return (getHttpResponse() == null) ? null : getHttpResponse()
-                .getStatusLine().getReasonPhrase();
+        if ((getHttpResponse() != null)
+                && (getHttpResponse().getStatusLine() != null)) {
+            return getHttpResponse().getStatusLine().getReasonPhrase();
+        }
+        return null;
     }
 
     @Override
@@ -273,10 +276,13 @@ public class HttpMethodCall extends ClientCall {
      */
     @Override
     public int getStatusCode() {
-        return (getHttpResponse() == null) ? null : getHttpResponse()
-                .getStatusLine().getStatusCode();
+        if (getHttpResponse() != null
+                && getHttpResponse().getStatusLine() != null) {
+            return getHttpResponse().getStatusLine().getStatusCode();
+        }
+        return Status.CONNECTOR_ERROR_COMMUNICATION.getCode();
     }
-
+    
     /**
      * Sends the request to the client. Commits the request line, headers and
      * optional entity and send them over the network.

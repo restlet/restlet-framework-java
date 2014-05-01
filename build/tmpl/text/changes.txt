@@ -14,6 +14,8 @@ Changes log
       - Fixed missing default values for DefaultSslContextFactory attributes,
         issue #903.
       - Removed .properties files from the distributions, issue #892.
+      - Prevented NPE in ore.httpclient.internal.HttpMethodCall.getStatusCode, issue #871.
+        Reported by Claus Ibsen.
 
     - Misc
 
