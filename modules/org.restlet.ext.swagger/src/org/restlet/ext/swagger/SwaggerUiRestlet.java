@@ -41,6 +41,7 @@ import java.util.Set;
 import javax.ws.rs.Path;
 
 import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Restlet;
@@ -49,6 +50,7 @@ import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.ext.jaxrs.JaxRsRestlet;
 import org.restlet.ext.swagger.internal.SwaggerJaxRsResourceGenerator;
 import org.restlet.ext.swagger.internal.SwaggerRestletIterable;
+import org.restlet.routing.Filter;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.core.Documentation;
@@ -81,8 +83,28 @@ public class SwaggerUiRestlet extends Restlet {
     /** The root Restlet to describe. */
     private String jsonPath;
 
-    /** The versio of Swagger. */
+    /** The version of Swagger. */
     private String swaggerVersion;
+
+    /**
+     * Default constructor.<br>
+     * Sets the {@link #swaggerVersion} to {@link SwaggerSpec#version()}.
+     */
+    public SwaggerUiRestlet() {
+        this(null);
+    }
+
+    /**
+     * Constructor.<br>
+     * Sets the {@link #swaggerVersion} to {@link SwaggerSpec#version()}.
+     * 
+     * @param context
+     *            The context.
+     */
+    public SwaggerUiRestlet(Context context) {
+        super(context);
+        swaggerVersion = SwaggerSpec.version();
+    }
 
     private Class<?> findJaxRsClass(JaxRsRestlet jaxRsRestlet, String path) {
         Set<Class<?>> classes = jaxRsRestlet.getRootResourceClasses();
@@ -90,12 +112,32 @@ public class SwaggerUiRestlet extends Restlet {
         for (Class<?> clazz : classes) {
             Api apiAnnotation = clazz.getAnnotation(Api.class);
             if (apiAnnotation != null) {
-                if (apiAnnotation.value().equals(path)) {
+                if (apiAnnotation.value() == null
+                        || apiAnnotation.value().isEmpty()) {
+                    if (path == null || path.isEmpty()) {
+                        return clazz;
+                    }
+                } else if (apiAnnotation.value().equals(path)) {
+                    return clazz;
+                } else if (apiAnnotation.value().startsWith("/")) {
+                    if (apiAnnotation.value().substring(1).equals(path)) {
+                        return clazz;
+                    }
+                } else if (apiAnnotation.value().equals(path.substring(1))) {
                     return clazz;
                 }
             }
         }
 
+        return null;
+    }
+
+    private JaxRsRestlet getNextJaxRsRestlet(Restlet restlet) {
+        if (restlet instanceof JaxRsRestlet) {
+            return (JaxRsRestlet) restlet;
+        } else if (restlet instanceof Filter) {
+            return getNextJaxRsRestlet(((Filter) restlet).getNext());
+        }
         return null;
     }
 
@@ -117,12 +159,44 @@ public class SwaggerUiRestlet extends Restlet {
             SwaggerRestletIterable crawler = new SwaggerRestletIterable(
                     apiInboundRoot);
             for (Restlet restlet : crawler) {
-                if (restlet instanceof JaxRsRestlet) {
-                    JaxRsRestlet jaxRsRestlet = (JaxRsRestlet) restlet;
+                JaxRsRestlet jaxRsRestlet = getNextJaxRsRestlet(restlet);
+                if (restlet != null) {
                     Collection<DocumentationEndPoint> endPoints = scan(
                             jaxRsRestlet, crawler.getCurrentPath());
                     for (DocumentationEndPoint endPoint : endPoints) {
-                        endPoint.setPath(jsonPath + "/" + endPoint.getPath());
+                        if (endPoint.getPath() != null) {
+                            if (jsonPath != null) {
+                                if (jsonPath.endsWith("/")) {
+                                    if (endPoint.getPath() != null
+                                            && endPoint.getPath().startsWith(
+                                                    "/")) {
+                                        endPoint.setPath(jsonPath
+                                                + endPoint.getPath().substring(
+                                                        1));
+                                    } else {
+                                        endPoint.setPath(jsonPath
+                                                + endPoint.getPath());
+                                    }
+                                } else {
+                                    if (endPoint.getPath() != null
+                                            && endPoint.getPath().startsWith(
+                                                    "/")) {
+                                        endPoint.setPath(jsonPath
+                                                + endPoint.getPath());
+                                    } else {
+                                        endPoint.setPath(jsonPath + "/"
+                                                + endPoint.getPath());
+                                    }
+                                }
+                            } else {
+                                endPoint.setPath(endPoint.getPath());
+                            }
+                        } else {
+                            if (jsonPath != null) {
+                                endPoint.setPath(jsonPath);
+                            }
+                        }
+
                         documentation.addApi(endPoint);
                     }
                 }
@@ -132,16 +206,11 @@ public class SwaggerUiRestlet extends Restlet {
                     documentation));
             return;
         } else {
-            if (resourcePath.startsWith("/")) {
-                resourcePath = resourcePath.substring(1);
-            }
-
             SwaggerRestletIterable crawler = new SwaggerRestletIterable(
                     apiInboundRoot);
             for (Restlet restlet : crawler) {
-                if (restlet instanceof JaxRsRestlet) {
-                    JaxRsRestlet jaxRsRestlet = (JaxRsRestlet) restlet;
-
+                JaxRsRestlet jaxRsRestlet = getNextJaxRsRestlet(restlet);
+                if (restlet != null) {
                     Class<?> clazz = findJaxRsClass(jaxRsRestlet, resourcePath);
 
                     if (clazz != null) {
@@ -241,9 +310,6 @@ public class SwaggerUiRestlet extends Restlet {
      * @param swaggerVersion
      */
     public void setSwaggerVersion(String swaggerVersion) {
-        if (swaggerVersion == null || swaggerVersion.isEmpty()) {
-            swaggerVersion = SwaggerSpec.version();
-        }
         this.swaggerVersion = swaggerVersion;
     }
 

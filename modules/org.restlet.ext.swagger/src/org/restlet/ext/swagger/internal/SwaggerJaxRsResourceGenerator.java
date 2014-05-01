@@ -301,11 +301,9 @@ public class SwaggerJaxRsResourceGenerator {
 
             Class<?> returnType = method.getReturnType();
             if (returnType != null) {
-                op.setResponseClass(returnType.getSimpleName()); // TODO "List["
-                                                                 // + name + "]"
-                                                                 // for
-                                                                 // Collections
-                                                                 // as Arrays
+                op.setResponseClass(returnType.getSimpleName());
+                // TODO "List[" + name + "]" 
+                // for Collections as Arrays
 
                 if (!returnType.isPrimitive()) { // TODO
                     DocumentationObject documentationObject = new DocumentationObject();

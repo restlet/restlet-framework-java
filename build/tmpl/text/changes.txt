@@ -18,7 +18,7 @@ Changes log
         Reported by Claus Ibsen.
       - Fixed CompositeHelper.handle fails when Component has no inbound filters. Issue #865.
         Reported and contributed by Jeremy Gustie.
-
+      - Stabilized Swagger documentation for JaxRs applications. Issue #827.
 
     - Misc
 

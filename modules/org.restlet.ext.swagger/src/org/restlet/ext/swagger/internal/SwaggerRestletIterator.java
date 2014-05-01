@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.routing.Filter;
 import org.restlet.routing.Route;
@@ -70,7 +71,7 @@ public class SwaggerRestletIterator implements Iterator<Restlet> {
             RouteList routeList = router.getRoutes();
             for (Route route : routeList) {
                 if (route instanceof TemplateRoute) {
-                    TemplateRoute templateRoute = (org.restlet.routing.TemplateRoute) route;
+                    TemplateRoute templateRoute = (TemplateRoute) route;
                     String templatePattern = templateRoute.getTemplate()
                             .getPattern();
 
@@ -79,6 +80,9 @@ public class SwaggerRestletIterator implements Iterator<Restlet> {
                     retVal.put(templateRoute.getNext(), path);
                 }
             }
+        } else if (restlet instanceof Application) {
+            Application app = (Application) restlet;
+            retVal.put(app.createInboundRoot(), currentPath);
         }
 
         return retVal;
