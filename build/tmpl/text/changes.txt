@@ -11,6 +11,8 @@ Changes log
         Reported by Roy Olsen.
       - Fixed forgotten traces to the console #911, #905, #904.
         Reported by Emanuele Massara.
+      - Fixed missing default values for DefaultSslContextFactory attributes,
+        issue #903.
     - Misc
 
 - 2.2.0 (03/27/2014)
