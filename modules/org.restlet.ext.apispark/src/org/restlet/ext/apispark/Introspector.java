@@ -702,17 +702,20 @@ public class Introspector {
                 LOGGER.fine("Display result");
                 System.out.println("Process successfully achieved.");
                 // This is not printed by a logger which may be muted.
-                if (cr.getLocationRef() != null) {
-                    System.out.println(cr.getLocationRef());
-                }
                 if (cr.getResponseEntity() != null
                         && cr.getResponseEntity().isAvailable()) {
                     try {
                         cr.getResponseEntity().write(System.out);
+                        System.out.println();
                     } catch (IOException e) {
                         // [PENDING] analysis
                         LOGGER.warning("Request successfully achieved by the server, but it's response cannot be printed");
                     }
+                }
+                if (cr.getLocationRef() != null) {
+                    System.out
+                            .println("Your API documentation is accessible at this URL: "
+                                    + cr.getLocationRef());
                 }
             } catch (ResourceException e) {
                 // TODO Should we detail by status?
@@ -749,8 +752,8 @@ public class Introspector {
                 "If the whole process is successfull, it displays the url of the corresponding documentation.");
         o.println("OPTIONS");
         printOption(o, "-h", "Prints this help.");
-        printOption(o, "-u", "The mandatory APISpark user login.");
-        printOption(o, "-p", "The mandatory APISpark user security token.");
+        printOption(o, "-u", "The mandatory APISpark user name.");
+        printOption(o, "-p", "The mandatory APISpark user secret key.");
         printOption(o, "-s",
                 "The optional APISpark platform URL (by default https://apispark.com).");
         printOption(o, "-c",
