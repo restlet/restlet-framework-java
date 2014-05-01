@@ -93,7 +93,6 @@ public class Introspector {
             Contract contract, List<ResourceInfo> resources, String basePath,
             Map<String, RepresentationInfo> mapReps) {
         for (ResourceInfo ri : resources) {
-            LOGGER.info("Resource " + ri.getIdentifier() + " added.");
             Resource resource = new Resource();
             resource.setDescription(toString(ri.getDocumentations()));
             resource.setName(ri.getIdentifier());
@@ -121,8 +120,10 @@ public class Introspector {
                 addResources(application, contract, ri.getChildResources(),
                         resource.getResourcePath(), mapReps);
             }
-
+            LOGGER.info("Resource " + ri.getPath() + " added.");
+            
             if (ri.getMethods().isEmpty()) {
+                LOGGER.warning("Resource " + ri.getIdentifier() + " has no methods.");
                 continue;
             }
 
