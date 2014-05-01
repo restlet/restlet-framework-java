@@ -64,4 +64,9 @@ public class ReflectUtils {
     public static boolean isListType(Class<?> type) {
         return Collection.class.isAssignableFrom(type);
     }
+    
+    public static boolean isJdkClass(Class<?> clazz) {
+        return (clazz.getPackage().getName().startsWith("java.") || clazz
+                .getPackage().getName().startsWith("javax."));
+    }
 }

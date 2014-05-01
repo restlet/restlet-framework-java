@@ -26,9 +26,11 @@ import org.restlet.ext.apispark.internal.info.DocumentationInfo;
 import org.restlet.ext.apispark.internal.info.MethodInfo;
 import org.restlet.ext.apispark.internal.info.ParameterInfo;
 import org.restlet.ext.apispark.internal.info.ParameterStyle;
+import org.restlet.ext.apispark.internal.info.PropertyInfo;
 import org.restlet.ext.apispark.internal.info.RepresentationInfo;
 import org.restlet.ext.apispark.internal.info.ResourceInfo;
 import org.restlet.ext.apispark.internal.info.ResponseInfo;
+import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Directory;
 import org.restlet.resource.Finder;
@@ -948,27 +950,68 @@ public class Introspector {
             }
             // This first phase discovers representations related to annotations
             // Let's cope with the inheritance chain, and complex properties
+            List<RepresentationInfo> toBeAdded = new ArrayList<RepresentationInfo>();
+            // Initialize the list of classes to be anaylized
             for (RepresentationInfo ri : mapReps.values()) {
-                String parentType = ri.getParentType();
-                while (parentType != null) {
-                    if (!mapReps.containsKey(parentType)) {
-                        try {
-                            RepresentationInfo r = RepresentationInfo
-                                    .introspect(
-                                            Class.forName(ri.getParentType()),
-                                            null);
-                            mapReps.put(r.getIdentifier(), r);
-                        } catch (ClassNotFoundException e) {
-                            LOGGER.warning("Cannot locate class "
-                                    + ri.getParentType()
-                                    + ", referenced by class "
-                                    + ri.getIdentifier());
-                        }
+                // Parent class
+                Class<?> parentType = ri.getParentType();
+                if (ri.getParentType() != null
+                        && !mapReps.containsKey(parentType.getName())) {
+                    RepresentationInfo r = new RepresentationInfo(
+                            ri.getMediaType());
+                    r.setType(parentType);
+                    toBeAdded.add(r);
+                }
+                for (PropertyInfo pi : ri.getProperties()) {
+                    if (pi.getType() != null
+                            && !mapReps.containsKey(pi.getType().getName())
+                            && !toBeAdded.contains(pi.getType())) {
+                        RepresentationInfo r = new RepresentationInfo(
+                                ri.getMediaType());
+                        r.setType(pi.getType());
+                        toBeAdded.add(r);
                     }
-                    parentType = mapReps.get(parentType).getParentType();
                 }
             }
-            // Analyze properties
+            // Second phase, discover classes and loop while classes are unkown
+            while (!toBeAdded.isEmpty()) {
+                RepresentationInfo[] tab = new RepresentationInfo[toBeAdded
+                        .size()];
+                toBeAdded.toArray(tab);
+                toBeAdded.clear();
+                for (int i = 0; i < tab.length; i++) {
+                    RepresentationInfo current = tab[i];
+                    if (!ReflectUtils.isJdkClass(current.getType())) {
+                        if (!mapReps.containsKey(current.getName())) {
+                            RepresentationInfo ri = RepresentationInfo
+                                    .introspect(current.getType(),
+                                            current.getMediaType());
+                            mapReps.put(ri.getIdentifier(), ri);
+                            // have a look at the parent type
+                            Class<?> parentType = ri.getParentType();
+                            if (parentType != null
+                                    && !mapReps.containsKey(parentType
+                                            .getName())) {
+                                RepresentationInfo r = new RepresentationInfo(
+                                        ri.getMediaType());
+                                r.setType(parentType);
+                                toBeAdded.add(r);
+                            }
+                            for (PropertyInfo prop : ri.getProperties()) {
+                                if (prop.getType() != null
+                                        && !mapReps.containsKey(prop.getType()
+                                                .getName())
+                                        && !toBeAdded.contains(prop.getType())) {
+                                    RepresentationInfo r = new RepresentationInfo(
+                                            ri.getMediaType());
+                                    r.setType(prop.getType());
+                                    toBeAdded.add(r);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             for (RepresentationInfo ri : mapReps.values()) {
                 Representation rep = new Representation();
@@ -979,12 +1022,34 @@ public class Introspector {
                 // one representation / several variants for APIspark
                 rep.setDescription(toString(ri.getDocumentations()));
                 rep.setName(ri.getName());
-                Variant variant = new Variant();
-                variant.setDataType(ri.getMediaType().getName());
-                rep.setVariants(new ArrayList<Variant>());
-                rep.getVariants().add(variant);
+                if (ri.getMediaType() != null) {
+                    Variant variant = new Variant();
+                    variant.setDataType(ri.getMediaType().getName());
+                    rep.setVariants(new ArrayList<Variant>());
+                    rep.getVariants().add(variant);
+                }
 
-                rep.setProperties(ri.getProperties());
+                rep.setProperties(new ArrayList<Property>());
+                for (PropertyInfo pi : ri.getProperties()) {
+                    Property p = new Property();
+                    p.setDefaultValue(pi.getDefaultValue());
+                    p.setDescription(pi.getDescription());
+                    p.setMax(pi.getMax());
+                    p.setMaxOccurs(pi.getMaxOccurs());
+                    p.setMin(pi.getMin());
+                    p.setMinOccurs(pi.getMinOccurs());
+                    p.setName(pi.getName());
+                    p.setPossibleValues(pi.getPossibleValues());
+                    if (pi.getType() != null) {
+                        // TODO: handle primitive type, etc
+                        p.setType(pi.getType().getSimpleName());
+                    }
+
+                    p.setUniqueItems(pi.isUniqueItems());
+
+                    rep.getProperties().add(p);
+                }
+
                 rep.setRaw(ri.isRaw());
                 contract.getRepresentations().add(rep);
             }

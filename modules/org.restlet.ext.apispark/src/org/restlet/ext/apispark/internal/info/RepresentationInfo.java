@@ -39,7 +39,6 @@ import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.ext.apispark.Property;
 import org.restlet.ext.apispark.Representation;
 import org.restlet.ext.apispark.internal.reflect.ReflectUtils;
 import org.restlet.representation.Variant;
@@ -74,7 +73,7 @@ public class RepresentationInfo extends DocumentedInfo {
         RepresentationInfo result = null;
 
         if (representationClass != null) {
-            result = introspect(representationClass, variant);
+            result = introspect(representationClass, variant.getMediaType());
         }
 
         return result;
@@ -92,41 +91,33 @@ public class RepresentationInfo extends DocumentedInfo {
      *         {@link RepresentationInfo}.
      */
     public static RepresentationInfo introspect(Class<?> representationClass,
-            Variant variant) {
+            MediaType mediaType) {
         // Introspect the java class
-        RepresentationInfo result = new RepresentationInfo(variant);
+        RepresentationInfo result = new RepresentationInfo(mediaType);
+        result.setType(representationClass);
         result.setIdentifier(representationClass.getName());
         result.setName(representationClass.getSimpleName());
 
         // TODO we don't introspect jdk's class
         if (Representation.class.isAssignableFrom(representationClass)
-                || isJdkClass(representationClass)) {
+                || ReflectUtils.isJdkClass(representationClass)) {
             result.setRaw(true);
         } else {
             // TODO support parent types
             if (representationClass.getSuperclass() != null
-                    && !isJdkClass(representationClass.getSuperclass())) {
+                    && !ReflectUtils.isJdkClass(representationClass
+                            .getSuperclass())) {
                 // TODO This type must introspected too, as it will reveal other
                 // representation
-                result.setParentType(representationClass.getSuperclass()
-                        .getName());
+                result.setParentType(representationClass.getSuperclass());
             }
 
             for (Field field : ReflectUtils
                     .getAllDeclaredFields(representationClass)) {
                 if (!"serialVersionUID".equals(field.getName())) {
-                    Property property = new Property();
+                    PropertyInfo property = new PropertyInfo();
                     property.setName(field.getName());
-                    // TODO better : is primitive type?
-                    // TODO take care of generic types, we must instrospect them also.
-                    if (isJdkClass(field.getType())) {
-                        property.setType(field.getType().getSimpleName());
-                    } else {
-                        // TODO This type must be introspected too, as it will
-                        // reveal other representation
-                        property.setType(field.getType().getName());
-                    }
-
+                    property.setType(field.getType());
                     property.setMinOccurs(0);
                     if (ReflectUtils.isListType(field.getType())) {
                         property.setMaxOccurs(-1);
@@ -138,11 +129,6 @@ public class RepresentationInfo extends DocumentedInfo {
             }
         }
         return result;
-    }
-
-    private static boolean isJdkClass(Class<?> clazz) {
-        return (clazz.getPackage().getName().startsWith("java.") || clazz
-                .getPackage().getName().startsWith("javax."));
     }
 
     /** Identifier for that element. */
@@ -158,20 +144,22 @@ public class RepresentationInfo extends DocumentedInfo {
     private List<ParameterInfo> parameters;
 
     /** Reference to its parent type if any. */
-    private String parentType;
+    private Class<?> parentType;
 
     /** List of locations of one or more meta data profiles. */
     private List<Reference> profiles;
 
-    // TODO review
     /** List of this representation's properties. */
-    private List<Property> properties;
+    private List<PropertyInfo> properties;
 
     /** Indicates if the representation is structured or not. */
     private boolean raw;
 
     /** Reference to a representation identifier. */
     private String reference;
+
+    /** Reference to its type if any. */
+    private Class<?> type;
 
     /**
      * Constructor.
@@ -271,7 +259,7 @@ public class RepresentationInfo extends DocumentedInfo {
         return p;
     }
 
-    public String getParentType() {
+    public Class<?> getParentType() {
         return parentType;
     }
 
@@ -294,14 +282,14 @@ public class RepresentationInfo extends DocumentedInfo {
         return p;
     }
 
-    public List<Property> getProperties() {
+    public List<PropertyInfo> getProperties() {
         // Lazy initialization with double-check.
-        List<Property> p = this.properties;
+        List<PropertyInfo> p = this.properties;
         if (p == null) {
             synchronized (this) {
                 p = this.properties;
                 if (p == null) {
-                    this.properties = p = new ArrayList<Property>();
+                    this.properties = p = new ArrayList<PropertyInfo>();
                 }
             }
         }
@@ -315,6 +303,10 @@ public class RepresentationInfo extends DocumentedInfo {
      */
     public String getReference() {
         return reference;
+    }
+
+    public Class<?> getType() {
+        return type;
     }
 
     public boolean isRaw() {
@@ -355,7 +347,7 @@ public class RepresentationInfo extends DocumentedInfo {
         this.parameters = parameters;
     }
 
-    public void setParentType(String parentType) {
+    public void setParentType(Class<?> parentType) {
         this.parentType = parentType;
     }
 
@@ -369,7 +361,7 @@ public class RepresentationInfo extends DocumentedInfo {
         this.profiles = profiles;
     }
 
-    public void setProperties(List<Property> properties) {
+    public void setProperties(List<PropertyInfo> properties) {
         this.properties = properties;
     }
 
@@ -385,6 +377,10 @@ public class RepresentationInfo extends DocumentedInfo {
      */
     public void setReference(String reference) {
         this.reference = reference;
+    }
+
+    public void setType(Class<?> type) {
+        this.type = type;
     }
 
 }
