@@ -152,8 +152,7 @@ public class Introspector {
                 // Complete parameters
                 operation.setHeaders(new ArrayList<Parameter>());
                 operation.setQueryParameters(new ArrayList<Parameter>());
-                if (mi.getRequest() != null
-                        && mi.getRequest().getParameters() != null) {
+                if (mi.getRequest() != null) {
                     for (ParameterInfo pi : mi.getRequest().getParameters()) {
                         if (ParameterStyle.HEADER.equals(pi.getStyle())) {
                             Parameter parameter = new Parameter();
@@ -178,8 +177,35 @@ public class Introspector {
                                     .setPossibleValues(new ArrayList<String>());
                             parameter.setRequired(pi.isRequired());
 
-                            operation.getHeaders().add(parameter);
+                            operation.getQueryParameters().add(parameter);
                         }
+                    }
+                }
+                for (ParameterInfo pi : mi.getParameters()) {
+                    if (ParameterStyle.HEADER.equals(pi.getStyle())) {
+                        Parameter parameter = new Parameter();
+                        parameter.setAllowMultiple(pi.isRepeating());
+                        parameter.setDefaultValue(pi.getDefaultValue());
+                        parameter.setDescription(toString(pi
+                                .getDocumentations()));
+                        parameter.setName(pi.getName());
+                        parameter
+                                .setPossibleValues(new ArrayList<String>());
+                        parameter.setRequired(pi.isRequired());
+
+                        operation.getHeaders().add(parameter);
+                    } else if (ParameterStyle.QUERY.equals(pi.getStyle())) {
+                        Parameter parameter = new Parameter();
+                        parameter.setAllowMultiple(pi.isRepeating());
+                        parameter.setDefaultValue(pi.getDefaultValue());
+                        parameter.setDescription(toString(pi
+                                .getDocumentations()));
+                        parameter.setName(pi.getName());
+                        parameter
+                                .setPossibleValues(new ArrayList<String>());
+                        parameter.setRequired(pi.isRequired());
+
+                        operation.getQueryParameters().add(parameter);
                     }
                 }
 

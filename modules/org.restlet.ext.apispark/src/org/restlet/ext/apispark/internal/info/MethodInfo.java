@@ -37,7 +37,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.Form;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.engine.resource.AnnotationInfo;
@@ -73,8 +75,8 @@ public class MethodInfo extends DocumentedInfo {
         if (annotations != null && metadataService != null) {
             for (AnnotationInfo annotationInfo : annotations) {
                 try {
-                    if (info.getMethod()
-                            .equals(annotationInfo.getRestletMethod())) {
+                    if (info.getMethod().equals(
+                            annotationInfo.getRestletMethod())) {
                         // Describe the request
                         Class<?>[] classes = annotationInfo.getJavaInputTypes();
                         Class<?> inputClass = (classes != null && classes.length > 0) ? classes[0]
@@ -102,6 +104,19 @@ public class MethodInfo extends DocumentedInfo {
                                     info.getRequest().getRepresentations()
                                             .add(representationInfo);
                                 }
+                            }
+                        }
+
+                        // Describe query parameters, if any.
+                        if (annotationInfo.getQuery() != null) {
+                            Form form = new Form(annotationInfo.getQuery());
+                            for (Parameter parameter : form) {
+                                ParameterInfo pi = new ParameterInfo(
+                                        parameter.getName(), true, null,
+                                        ParameterStyle.QUERY, "Value: "
+                                                + parameter.getValue());
+                                pi.setDefaultValue(parameter.getValue());
+                                info.getParameters().add(pi);
                             }
                         }
 
@@ -150,6 +165,9 @@ public class MethodInfo extends DocumentedInfo {
 
     /** Name of the method. */
     private Method method;
+
+    /** List of parameters. */
+    private List<ParameterInfo> parameters;
 
     /** Describes the input to the method. */
     private RequestInfo request;
@@ -214,6 +232,25 @@ public class MethodInfo extends DocumentedInfo {
 
     public Method getMethod() {
         return this.method;
+    }
+
+    /**
+     * Returns the list of parameters.
+     * 
+     * @return The list of parameters.
+     */
+    public List<ParameterInfo> getParameters() {
+        // Lazy initialization with double-check.
+        List<ParameterInfo> p = this.parameters;
+        if (p == null) {
+            synchronized (this) {
+                p = this.parameters;
+                if (p == null) {
+                    this.parameters = p = new ArrayList<ParameterInfo>();
+                }
+            }
+        }
+        return p;
     }
 
     /**
@@ -284,6 +321,16 @@ public class MethodInfo extends DocumentedInfo {
      */
     public void setMethod(Method name) {
         this.method = name;
+    }
+
+    /**
+     * Sets the list of parameters.
+     * 
+     * @param parameters
+     *            The list of parameters.
+     */
+    public void setParameters(List<ParameterInfo> parameters) {
+        this.parameters = parameters;
     }
 
     /**
