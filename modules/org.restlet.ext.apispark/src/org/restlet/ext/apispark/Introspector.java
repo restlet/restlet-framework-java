@@ -11,7 +11,6 @@ import java.util.logging.Level;
 
 import org.restlet.Application;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Request;
 import org.restlet.Restlet;
 import org.restlet.Server;
@@ -189,8 +188,7 @@ public class Introspector {
                         parameter.setDescription(toString(pi
                                 .getDocumentations()));
                         parameter.setName(pi.getName());
-                        parameter
-                                .setPossibleValues(new ArrayList<String>());
+                        parameter.setPossibleValues(new ArrayList<String>());
                         parameter.setRequired(pi.isRequired());
 
                         operation.getHeaders().add(parameter);
@@ -201,8 +199,7 @@ public class Introspector {
                         parameter.setDescription(toString(pi
                                 .getDocumentations()));
                         parameter.setName(pi.getName());
-                        parameter
-                                .setPossibleValues(new ArrayList<String>());
+                        parameter.setPossibleValues(new ArrayList<String>());
                         parameter.setRequired(pi.isRequired());
 
                         operation.getQueryParameters().add(parameter);
@@ -740,7 +737,7 @@ public class Introspector {
                 }
                 if (cr.getLocationRef() != null) {
                     System.out
-                            .println("Your API documentation is accessible at this URL: "
+                            .println("Your Web API documentation is accessible at this URL: "
                                     + cr.getLocationRef());
                 }
             } catch (ResourceException e) {
@@ -921,8 +918,7 @@ public class Introspector {
             contract.setName(application.getName());
             if (contract.getName() == null || contract.getName().isEmpty()) {
                 contract.setName(application.getClass().getName());
-                Context.getCurrentLogger().log(
-                        Level.WARNING,
+                LOGGER.log(Level.WARNING,
                         "Please provide a name to your application, used "
                                 + contract.getName() + " by default.");
             }
@@ -972,6 +968,7 @@ public class Introspector {
                     parentType = mapReps.get(parentType).getParentType();
                 }
             }
+            // Analyze properties
 
             for (RepresentationInfo ri : mapReps.values()) {
                 Representation rep = new Representation();

@@ -80,12 +80,21 @@ public class RepresentationInfo extends DocumentedInfo {
         return result;
     }
 
+    /**
+     * Returns the description of the given class as a
+     * {@link RepresentationInfo}.
+     * 
+     * @param representationClass
+     *            The class to document.
+     * @param variant
+     *            The current variant.
+     * @return The description of the given class as a
+     *         {@link RepresentationInfo}.
+     */
     public static RepresentationInfo introspect(Class<?> representationClass,
             Variant variant) {
-        RepresentationInfo result;
         // Introspect the java class
-        result = new RepresentationInfo(variant);
-
+        RepresentationInfo result = new RepresentationInfo(variant);
         result.setIdentifier(representationClass.getName());
         result.setName(representationClass.getSimpleName());
 
@@ -97,7 +106,8 @@ public class RepresentationInfo extends DocumentedInfo {
             // TODO support parent types
             if (representationClass.getSuperclass() != null
                     && !isJdkClass(representationClass.getSuperclass())) {
-                // TODO This type must introspected too, as it will reveal other representation
+                // TODO This type must introspected too, as it will reveal other
+                // representation
                 result.setParentType(representationClass.getSuperclass()
                         .getName());
             }
@@ -108,10 +118,12 @@ public class RepresentationInfo extends DocumentedInfo {
                     Property property = new Property();
                     property.setName(field.getName());
                     // TODO better : is primitive type?
+                    // TODO take care of generic types, we must instrospect them also.
                     if (isJdkClass(field.getType())) {
                         property.setType(field.getType().getSimpleName());
                     } else {
-                        // TODO This type must introspected too, as it will reveal other representation
+                        // TODO This type must be introspected too, as it will
+                        // reveal other representation
                         property.setType(field.getType().getName());
                     }
 
@@ -138,7 +150,7 @@ public class RepresentationInfo extends DocumentedInfo {
 
     /** Media type of that element. */
     private MediaType mediaType;
-    
+
     /** Name of that element. */
     private String name;
 
