@@ -9,6 +9,8 @@ Changes log
       - Fixed missing internal FTP client connector registration.
       - Fixed missing internal HTTPS server isn't properly registered.
         Reported by Roy Olsen.
+      - Fixed forgotten traces to the console #911, #905, #904.
+        Reported by Emanuele Massara.
     - Misc
 
 - 2.2.0 (03/27/2014)
