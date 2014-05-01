@@ -112,24 +112,6 @@ public class ResourceInfo extends DocumentedInfo {
                         (ServerResource) resource);
             }
         }
-
-        // Document the resource
-        String title = null;
-        String textContent = null;
-
-        if ((title != null) && !title.isEmpty()) {
-            DocumentationInfo doc = null;
-
-            if (info.getDocumentations().isEmpty()) {
-                doc = new DocumentationInfo();
-                info.getDocumentations().add(doc);
-            } else {
-                info.getDocumentations().get(0);
-            }
-
-            doc.setTitle(title);
-            doc.setTextContent(textContent);
-        }
     }
 
     /** List of child resources. */
