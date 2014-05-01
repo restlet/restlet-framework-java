@@ -915,10 +915,11 @@
 		<copy file="${tmpl}/text/readme.txt" tofile="${dist-classic}/readme.txt" />
 		<copy file="${tmpl}/text/trademarks.txt" tofile="${dist-classic}/trademarks.txt" />
 
-		<!-- Copy the build properties files. -->
+		<!-- Copy the build properties files.
 		<copy todir="${dist-classic}/src">
 			<fileset dir="${basedir}" includes="*.properties" />
 		</copy>
+		-->
 
 		<!-- Packages libraries -->
 		<for param="library" delimiter=" " list="${libraries-classic}">
