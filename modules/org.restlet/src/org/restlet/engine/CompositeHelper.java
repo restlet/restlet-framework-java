@@ -210,13 +210,18 @@ public abstract class CompositeHelper<T extends Restlet> extends
         if (getFirstInboundFilter() != null) {
             getFirstInboundFilter().handle(request, response);
         } else {
-            response.setStatus(Status.SERVER_ERROR_INTERNAL);
-            getHelped()
-                    .getLogger()
-                    .log(Level.SEVERE,
-                            "The "
-                                    + getHelped().getClass().getName()
-                                    + " class has no Restlet defined to process calls. Maybe it wasn't properly started.");
+            final Restlet next = this.inboundNext;
+            if (next != null) {
+                next.handle(request, response);
+            } else {
+                response.setStatus(Status.SERVER_ERROR_INTERNAL);
+                getHelped()
+                        .getLogger()
+                        .log(Level.SEVERE,
+                                "The "
+                                        + getHelped().getClass().getName()
+                                        + " class has no Restlet defined to process calls. Maybe it wasn't properly started.");
+            }
         }
     }
 

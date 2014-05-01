@@ -16,6 +16,9 @@ Changes log
       - Removed .properties files from the distributions, issue #892.
       - Prevented NPE in ore.httpclient.internal.HttpMethodCall.getStatusCode, issue #871.
         Reported by Claus Ibsen.
+      - Fixed CompositeHelper.handle fails when Component has no inbound filters. Issue #865.
+        Reported and contributed by Jeremy Gustie.
+
 
     - Misc
 
