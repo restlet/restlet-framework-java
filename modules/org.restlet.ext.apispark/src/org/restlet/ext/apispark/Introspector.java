@@ -93,6 +93,7 @@ public class Introspector {
             Contract contract, List<ResourceInfo> resources, String basePath,
             Map<String, RepresentationInfo> mapReps) {
         for (ResourceInfo ri : resources) {
+            LOGGER.info("Resource " + ri.getIdentifier() + " added.");
             Resource resource = new Resource();
             resource.setDescription(toString(ri.getDocumentations()));
             resource.setName(ri.getIdentifier());
@@ -140,7 +141,7 @@ public class Introspector {
 
             resource.setOperations(new ArrayList<Operation>());
             for (MethodInfo mi : ri.getMethods()) {
-
+                LOGGER.info("Method " + mi.getMethod().getName() + " added.");
                 Operation operation = new Operation();
                 operation.setDescription(toString(mi.getDocumentations()));
                 operation.setName(mi.getMethod().getName());
@@ -924,6 +925,7 @@ public class Introspector {
                         "Please provide a name to your application, used "
                                 + contract.getName() + " by default.");
             }
+            LOGGER.info("Contract " + contract.getName() + " added.");
 
             // List of resources.
             contract.setResources(new ArrayList<Resource>());
@@ -936,6 +938,8 @@ public class Introspector {
                     .getRegisteredServers()) {
                 for (Protocol protocol : helper.getProtocols()) {
                     if (!protocols.contains(protocol.getName())) {
+                        LOGGER.info("Protocol " + protocol.getName()
+                                + " added.");
                         protocols.add(protocol.getName());
                     }
                 }
@@ -1014,6 +1018,7 @@ public class Introspector {
             }
 
             for (RepresentationInfo ri : mapReps.values()) {
+                LOGGER.info("Representation " + ri.getName() + " added.");
                 Representation rep = new Representation();
 
                 // TODO analyze
@@ -1031,6 +1036,7 @@ public class Introspector {
 
                 rep.setProperties(new ArrayList<Property>());
                 for (PropertyInfo pi : ri.getProperties()) {
+                    LOGGER.info("Property " + pi.getName() + " added.");
                     Property p = new Property();
                     p.setDefaultValue(pi.getDefaultValue());
                     p.setDescription(pi.getDescription());
