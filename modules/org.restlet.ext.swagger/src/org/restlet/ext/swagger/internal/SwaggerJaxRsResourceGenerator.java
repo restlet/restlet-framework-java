@@ -26,12 +26,12 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://restlet.com/products/restlet-framework
+ * http://www.restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.swagger;
+package org.restlet.ext.swagger.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -54,52 +54,37 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
-import org.restlet.ext.swagger.internal.SwaggerUtils;
 
+import com.wordnik.swagger.annotations.ApiError;
+import com.wordnik.swagger.annotations.ApiErrors;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiParamImplicit;
+import com.wordnik.swagger.annotations.ApiParamsImplicit;
+import com.wordnik.swagger.core.Documentation;
+import com.wordnik.swagger.core.DocumentationEndPoint;
+import com.wordnik.swagger.core.DocumentationError;
+import com.wordnik.swagger.core.DocumentationObject;
+import com.wordnik.swagger.core.DocumentationOperation;
+import com.wordnik.swagger.core.DocumentationParameter;
+import com.wordnik.swagger.core.DocumentationSchema;
 
 /**
- * Parses a JAX-RS class and generates DocumentationEndPoint for it.<br>
- * TODO To be refactored using Swagger 2.10.
+ * Parses JaxRs Class and generates DocumentationEndPoint for it
  * 
  * @author Grzegorz Godlewski
  */
 public class SwaggerJaxRsResourceGenerator {
 
-    private Map<String, DocumentationEndPoint> apis;
+    private Map<String, DocumentationEndPoint> apis = new HashMap<String, DocumentationEndPoint>();
 
-    private Documentation documentation;
+    private Documentation documentation = new Documentation();
 
-    private Map<String, DocumentationSchema> models;
+    private Class<?> jaxRsClass;
 
-    private Class<?> resourceClass;
+    private Map<String, DocumentationSchema> models = new HashMap<String, DocumentationSchema>();
 
     private String resourcePath;
-
-    /**
-     * Default constructor.
-     */
-    public SwaggerJaxRsResourceGenerator() {
-        apis = new HashMap<String, DocumentationEndPoint>();
-        documentation = new Documentation();
-        models = new HashMap<String, DocumentationSchema>();
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param resourceClass
-     *            The root resource class.
-     * @param resourcePath
-     *            the root resource path.
-     */
-    public SwaggerJaxRsResourceGenerator(Class<?> resourceClass,
-            String resourcePath) {
-        this();
-        this.resourcePath = resourcePath;
-        this.resourceClass = resourceClass;
-    }
 
     private void addApiParamImplicit(List<DocumentationParameter> retVal,
             ApiParamImplicit implicitParam) {
@@ -177,18 +162,14 @@ public class SwaggerJaxRsResourceGenerator {
         return error;
     }
 
-    /**
-     * Parses the resource class methods, checking for JAX-RS annotations.
-     * 
-     * @return The Swagger documentation.
-     */
     public Documentation parse() {
-        for (Method method : resourceClass.getMethods()) {
+        for (Method method : jaxRsClass.getMethods()) {
             processMethod(method, GET.class);
             processMethod(method, PUT.class);
             processMethod(method, POST.class);
             processMethod(method, DELETE.class);
             processMethod(method, HEAD.class);
+
             // TODO add custom HTTP Method
         }
 
@@ -280,13 +261,7 @@ public class SwaggerJaxRsResourceGenerator {
         }
     }
 
-    /**
-     * 
-     * @param method
-     * @param httpMethodClass
-     */
-    private void processMethod(Method method,
-            Class<? extends Annotation> httpMethodClass) {
+    private void processMethod(Method method, Class httpMethodClass) {
         String methodPath = resourcePath;
         Path pathAnnotation = method.getAnnotation(Path.class);
         if (pathAnnotation != null) {
@@ -305,7 +280,7 @@ public class SwaggerJaxRsResourceGenerator {
                     .getSimpleName());
             op.setSummary(apiOperationAnnotation.value());
             op.setNotes(apiOperationAnnotation.notes());
-            op.setTags(SwaggerUtils.toObjectList(apiOperationAnnotation.tags()));
+            op.setTags(SwaggerUtils.toList(apiOperationAnnotation.tags()));
             op.setNickname(method.getName());
 
             ApiErrors apiErrors = method.getAnnotation(ApiErrors.class);
@@ -326,11 +301,9 @@ public class SwaggerJaxRsResourceGenerator {
 
             Class<?> returnType = method.getReturnType();
             if (returnType != null) {
-                op.setResponseClass(returnType.getSimpleName()); // TODO "List["
-                                                                 // + name + "]"
-                                                                 // for
-                                                                 // Collections
-                                                                 // as Arrays
+                op.setResponseClass(returnType.getSimpleName());
+                // TODO "List[" + name + "]" 
+                // for Collections as Arrays
 
                 if (!returnType.isPrimitive()) { // TODO
                     DocumentationObject documentationObject = new DocumentationObject();
@@ -349,17 +322,9 @@ public class SwaggerJaxRsResourceGenerator {
         }
     }
 
-    /**
-     * Sets both root resource class and path.
-     * 
-     * @param resourceClass
-     *            The root resource class.
-     * @param resourcePath
-     *            the root resource path.
-     */
-    public void setup(Class<?> resourceClass, String resourcePath) {
-        this.resourceClass = resourceClass;
+    public void setup(Class<?> jaxRsClass, String resourcePath) {
         this.resourcePath = resourcePath;
+        this.jaxRsClass = jaxRsClass;
     }
 
 }

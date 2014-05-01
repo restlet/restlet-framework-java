@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://restlet.com/products/restlet-framework
+ * http://www.restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -38,29 +38,17 @@ import java.util.Iterator;
 import org.restlet.Restlet;
 
 /**
- * An {@link Iterable} of Restlet.
+ * Restlet recursive iterable.
  * 
  * @author Grzegorz Godlewski
  */
 public class SwaggerRestletIterable implements Iterable<Restlet> {
-    /** The associated Restlet iterator. */
     private SwaggerRestletIterator iterator;
 
-    /**
-     * Constructor.
-     * 
-     * @param restlet
-     *            The root Restlet.
-     */
     public SwaggerRestletIterable(Restlet restlet) {
         this.iterator = new SwaggerRestletIterator(restlet);
     }
 
-    /**
-     * Returns the path associated to the current iterated Restlet.
-     * 
-     * @return The path associated to the current iterated Restlet.
-     */
     public String getCurrentPath() {
         return iterator.getCurrentPath();
     }
