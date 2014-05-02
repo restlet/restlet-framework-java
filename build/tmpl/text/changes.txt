@@ -36,7 +36,6 @@ Changes log
         Reported by Claus Ibsen.
       - Stabilized Swagger documentation for JAX-RS applications. Issue #827.
 
-
     - Misc
       - Removed unecessary ".properties" files from the distributions, issue #892.
       - Added mention of edition and version in Javadoc header.
