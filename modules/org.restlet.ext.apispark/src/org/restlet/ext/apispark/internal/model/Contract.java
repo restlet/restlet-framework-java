@@ -31,56 +31,61 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.nio.internal.connection;
+package org.restlet.ext.apispark.internal.model;
 
-import java.io.IOException;
-import java.util.logging.Level;
-
-import org.restlet.Connector;
-import org.restlet.engine.util.Pool;
-import org.restlet.ext.nio.ConnectionHelper;
+import java.util.List;
 
 /**
- * A connection pool to prevent to recreation of heavy byte buffers.
+ * TODO
  * 
- * @author Jerome Louvel
+ * @author
  */
-public class ConnectionPool<T extends Connector> extends Pool<Connection<T>> {
+public class Contract {
 
-    /** The parent helper. */
-    private ConnectionHelper<T> helper;
+    /** Textual description of the API. */
+    private String description;
+
+    /** Name of the API. */
+    private String name;
 
     /**
-     * Constructor.
-     * 
-     * @param helper
-     *            The parent helper.
-     * @param initialSize
-     *            The initial pool size.
+     * Representations available with this API Note: their "name" is used as a
+     * reference further in this description.
      */
-    public ConnectionPool(ConnectionHelper<T> helper, int initialSize) {
-        super();
-        this.helper = helper;
-        preCreate(initialSize);
+    private List<Representation> Representations;
+
+    /** Resources provided by the API. */
+    private List<Resource> resources;
+
+    public String getDescription() {
+        return description;
     }
 
-    @Override
-    protected void clear(Connection<T> connection) {
-        connection.clear();
+    public String getName() {
+        return name;
     }
 
-    @Override
-    protected Connection<T> createObject() {
-        Connection<T> result = null;
-
-        try {
-            result = this.helper.createConnection(false, null, null, null);
-        } catch (IOException e) {
-            helper.getLogger().log(Level.WARNING,
-                    "Unable to create a pool object", e);
-        }
-
-        return result;
+    public List<Representation> getRepresentations() {
+        return Representations;
     }
 
+    public List<Resource> getResources() {
+        return resources;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRepresentations(List<Representation> representations) {
+        Representations = representations;
+    }
+
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
+    }
 }

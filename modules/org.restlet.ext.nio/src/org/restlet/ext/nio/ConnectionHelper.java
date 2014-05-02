@@ -41,10 +41,15 @@ import java.nio.channels.SocketChannel;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+
 import org.restlet.Application;
 import org.restlet.Connector;
 import org.restlet.Context;
 import org.restlet.Response;
+import org.restlet.engine.ssl.DefaultSslContextFactory;
+import org.restlet.engine.ssl.SslContextFactory;
 import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.connection.ConnectionPool;
 import org.restlet.ext.nio.internal.controller.ConnectionController;
@@ -156,7 +161,17 @@ import org.restlet.routing.VirtualHost;
  * <td>0</td>
  * <td>Type of service to set in IP packets.</td>
  * </tr>
+ * <tr>
+ * <td>sslContextFactory</td>
+ * <td>String</td>
+ * <td>org.restlet.engine.ssl.DefaultSslContextFactory</td>
+ * <td>Let you specify a {@link SslContextFactory} qualified class name as a
+ * parameter, or an instance as an attribute for a more complete and flexible
+ * SSL context setting.</td>
+ * </tr>
  * </table>
+ * For the default SSL parameters see the Javadocs of the
+ * {@link DefaultSslContextFactory} class.
  * 
  * @author Jerome Louvel
  */
@@ -167,6 +182,9 @@ public abstract class ConnectionHelper<T extends Connector> extends
 
     /** The set of active connections. */
     private final List<Connection<T>> connections;
+
+    /** The SSL context. */
+    private volatile SSLContext sslContext;
 
     /**
      * Constructor.
@@ -180,6 +198,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
         super(connector, clientSide);
         this.connections = new CopyOnWriteArrayList<Connection<T>>();
         this.connectionPool = null;
+        this.sslContext = null;
     }
 
     /**
@@ -218,7 +237,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
     public void checkin(Connection<?> connection) {
         connection.clear();
 
-        if (isPooledConnection()) {
+        if (isPooledConnections()) {
             getConnectionPool().checkin((Connection<T>) connection);
         }
     }
@@ -226,6 +245,9 @@ public abstract class ConnectionHelper<T extends Connector> extends
     /**
      * Checks out a connection associated to the given socket from the pool.
      * 
+     * @param confidential
+     *            Indicates if messages will be exchanged confidentially, for
+     *            example via a SSL-secured connection.
      * @param socketChannel
      *            The underlying NIO socket channel.
      * @param controller
@@ -235,16 +257,17 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * @return The new connection.
      * @throws IOException
      */
-    public Connection<T> checkout(SocketChannel socketChannel,
-            ConnectionController controller, InetSocketAddress socketAddress)
-            throws IOException {
+    public Connection<T> checkout(boolean confidential,
+            SocketChannel socketChannel, ConnectionController controller,
+            InetSocketAddress socketAddress) throws IOException {
         Connection<T> result = null;
 
-        if (isPooledConnection()) {
+        if (isPooledConnections()) {
             result = getConnectionPool().checkout();
             result.reuse(socketChannel, controller, socketAddress);
         } else {
-            result = createConnection(socketChannel, controller, socketAddress);
+            result = createConnection(confidential, socketChannel, controller,
+                    socketAddress);
         }
 
         return result;
@@ -281,7 +304,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * @return The new connection.
      * @throws IOException
      */
-    public abstract Connection<T> createConnection(
+    public abstract Connection<T> createConnection(boolean confidential,
             SocketChannel socketChannel, ConnectionController controller,
             InetSocketAddress socketAddress) throws IOException;
 
@@ -289,7 +312,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * Creates the connection pool.
      */
     public void createConnectionPool() {
-        if (isPooledConnection()) {
+        if (isPooledConnections()) {
             this.connectionPool = new ConnectionPool<T>(this,
                     getInitialConnections());
         }
@@ -319,11 +342,32 @@ public abstract class ConnectionHelper<T extends Connector> extends
     public abstract OutboundWay createOutboundWay(Connection<T> connection,
             int bufferSize);
 
+    /**
+     * Creates a new SSL engine.
+     * 
+     * @param socketAddress
+     *            The target socket address.
+     * @return A new SSL engine.
+     */
+    protected SSLEngine createSslEngine(InetSocketAddress socketAddress) {
+        // Create the SSL engine
+        SSLEngine engine;
+
+        if (socketAddress != null) {
+            engine = getSslContext().createSSLEngine(
+                    socketAddress.getHostName(), socketAddress.getPort());
+        } else {
+            engine = getSslContext().createSSLEngine();
+        }
+
+        return engine;
+    }
+
     @Override
     protected void doFinishStop() {
         super.doFinishStop();
 
-        if (isPooledConnection()) {
+        if (isPooledConnections()) {
             this.connectionPool = null;
         }
     }
@@ -443,6 +487,15 @@ public abstract class ConnectionHelper<T extends Connector> extends
     }
 
     /**
+     * Returns the SSL context.
+     * 
+     * @return The SSL context.
+     */
+    protected SSLContext getSslContext() {
+        return sslContext;
+    }
+
+    /**
      * Indicates if persistent connections should be used if possible.
      * 
      * @return True if persistent connections should be used if possible.
@@ -468,7 +521,7 @@ public abstract class ConnectionHelper<T extends Connector> extends
      * 
      * @return True if the connection objects should be pooled.
      */
-    public boolean isPooledConnection() {
+    public boolean isPooledConnections() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "pooledConnections", "true"));
     }
@@ -527,5 +580,15 @@ public abstract class ConnectionHelper<T extends Connector> extends
     public boolean isSocketReuseAddress() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "socketReuseAddress", "true"));
+    }
+
+    /**
+     * Sets the SSL context.
+     * 
+     * @param sslContext
+     *            The SSL context.
+     */
+    protected void setSslContext(SSLContext sslContext) {
+        this.sslContext = sslContext;
     }
 }

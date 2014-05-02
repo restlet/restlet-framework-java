@@ -31,56 +31,36 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.nio.internal.connection;
-
-import java.io.IOException;
-import java.util.logging.Level;
-
-import org.restlet.Connector;
-import org.restlet.engine.util.Pool;
-import org.restlet.ext.nio.ConnectionHelper;
+package org.restlet.ext.apispark.internal.model;
 
 /**
- * A connection pool to prevent to recreation of heavy byte buffers.
  * 
- * @author Jerome Louvel
+ * @author
  */
-public class ConnectionPool<T extends Connector> extends Pool<Connection<T>> {
-
-    /** The parent helper. */
-    private ConnectionHelper<T> helper;
+public class Body {
 
     /**
-     * Constructor.
-     * 
-     * @param helper
-     *            The parent helper.
-     * @param initialSize
-     *            The initial pool size.
+     * Indicates whether you should provide an array of [type] or just one
+     * [type].
      */
-    public ConnectionPool(ConnectionHelper<T> helper, int initialSize) {
-        super();
-        this.helper = helper;
-        preCreate(initialSize);
+    private boolean array;
+
+    /** Reference of the representation in the body of the message. */
+    private String type;
+
+    public String getRepresentation() {
+        return type;
     }
 
-    @Override
-    protected void clear(Connection<T> connection) {
-        connection.clear();
+    public boolean isArray() {
+        return array;
     }
 
-    @Override
-    protected Connection<T> createObject() {
-        Connection<T> result = null;
-
-        try {
-            result = this.helper.createConnection(false, null, null, null);
-        } catch (IOException e) {
-            helper.getLogger().log(Level.WARNING,
-                    "Unable to create a pool object", e);
-        }
-
-        return result;
+    public void setArray(boolean array) {
+        this.array = array;
     }
 
+    public void setRepresentation(String representation) {
+        this.type = representation;
+    }
 }

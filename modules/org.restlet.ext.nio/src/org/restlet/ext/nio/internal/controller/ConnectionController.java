@@ -144,6 +144,7 @@ public class ConnectionController extends Controller implements Runnable,
     @Override
     protected void doInit() {
         this.selector = createSelector();
+        
         // Done in the controller for thread safety reason regarding the byte
         // buffers part of the pooled connections
         getHelper().createConnectionPool();

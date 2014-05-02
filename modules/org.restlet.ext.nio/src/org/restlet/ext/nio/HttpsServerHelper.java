@@ -33,22 +33,10 @@
 
 package org.restlet.ext.nio;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.channels.SocketChannel;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-
 import org.restlet.Request;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
-import org.restlet.engine.ssl.DefaultSslContextFactory;
-import org.restlet.engine.ssl.SslContextFactory;
-import org.restlet.engine.ssl.SslUtils;
 import org.restlet.ext.nio.internal.connection.Connection;
-import org.restlet.ext.nio.internal.connection.SslConnection;
-import org.restlet.ext.nio.internal.controller.ConnectionController;
 import org.restlet.ext.nio.internal.request.HttpsInboundRequest;
 import org.restlet.ext.nio.internal.way.HttpsServerInboundWay;
 import org.restlet.ext.nio.internal.way.HttpsServerOutboundWay;
@@ -56,33 +44,11 @@ import org.restlet.ext.nio.internal.way.InboundWay;
 import org.restlet.ext.nio.internal.way.OutboundWay;
 
 /**
- * HTTPS server helper based on NIO blocking sockets. Here is the list of SSL
- * related parameters that are also supported:
- * <table>
- * <tr>
- * <th>Parameter name</th>
- * <th>Value type</th>
- * <th>Default value</th>
- * <th>Description</th>
- * </tr>
- * <tr>
- * <td>sslContextFactory</td>
- * <td>String</td>
- * <td>org.restlet.engine.ssl.DefaultSslContextFactory</td>
- * <td>Let you specify a {@link SslContextFactory} qualified class name as a
- * parameter, or an instance as an attribute for a more complete and flexible
- * SSL context setting.</td>
- * </tr>
- * </table>
- * For the default SSL parameters see the Javadocs of the
- * {@link DefaultSslContextFactory} class.
+ * HTTPS server helper based on NIO blocking sockets.
  * 
  * @author Jerome Louvel
  */
 public class HttpsServerHelper extends HttpServerHelper {
-
-    /** The SSL context. */
-    private volatile SSLContext sslContext;
 
     /**
      * Constructor.
@@ -95,29 +61,11 @@ public class HttpsServerHelper extends HttpServerHelper {
     }
 
     @Override
-    public Connection<Server> createConnection(SocketChannel socketChannel,
-            ConnectionController controller, InetSocketAddress socketAddress)
-            throws IOException {
-        // Create the SSL engine
-        SSLEngine engine;
-
-        if (socketAddress != null) {
-            engine = getSslContext().createSSLEngine(
-                    socketAddress.getHostName(), socketAddress.getPort());
-        } else {
-            engine = getSslContext().createSSLEngine();
-        }
-
-        return new SslConnection<Server>(this, socketChannel, controller,
-                socketAddress, engine);
-    }
-
-    @Override
     public InboundWay createInboundWay(Connection<Server> connection,
             int bufferSize) {
         return new HttpsServerInboundWay(connection, bufferSize);
     }
-
+    
     @Override
     public OutboundWay createOutboundWay(Connection<Server> connection,
             int bufferSize) {
@@ -131,30 +79,9 @@ public class HttpsServerHelper extends HttpServerHelper {
                 resourceUri, protocol);
     }
 
-    /**
-     * Returns the SSL context.
-     * 
-     * @return The SSL context.
-     */
-    protected SSLContext getSslContext() {
-        return sslContext;
-    }
-
-    /**
-     * Sets the SSL context.
-     * 
-     * @param sslContext
-     *            The SSL context.
-     */
-    protected void setSslContext(SSLContext sslContext) {
-        this.sslContext = sslContext;
-    }
-
     @Override
-    public synchronized void start() throws Exception {
-        SslContextFactory factory = SslUtils.getSslContextFactory(this);
-        setSslContext(factory.createSslContext());
-        super.start();
+    public boolean isConfidential() {
+        return true;
     }
 
 }

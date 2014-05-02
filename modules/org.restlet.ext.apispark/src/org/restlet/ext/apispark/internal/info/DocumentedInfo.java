@@ -37,10 +37,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Superclass of APISpark elements that supports dcumentation.
+ * Superclass of APISpark elements that supports documentation.
  * 
+ * @author Thierry Boileau.
  */
 public abstract class DocumentedInfo {
+
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
@@ -58,7 +60,6 @@ public abstract class DocumentedInfo {
      *            A single documentation element.
      */
     public DocumentedInfo(DocumentationInfo documentation) {
-        super();
         getDocumentations().add(documentation);
     }
 
@@ -69,7 +70,6 @@ public abstract class DocumentedInfo {
      *            The list of documentation elements.
      */
     public DocumentedInfo(List<DocumentationInfo> documentations) {
-        super();
         this.documentations = documentations;
     }
 
@@ -91,6 +91,7 @@ public abstract class DocumentedInfo {
     public List<DocumentationInfo> getDocumentations() {
         // Lazy initialization with double-check.
         List<DocumentationInfo> d = this.documentations;
+
         if (d == null) {
             synchronized (this) {
                 d = this.documentations;

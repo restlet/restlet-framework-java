@@ -38,11 +38,13 @@ import org.restlet.data.Protocol;
 import org.restlet.ext.nio.internal.connection.Connection;
 import org.restlet.ext.nio.internal.way.HttpClientInboundWay;
 import org.restlet.ext.nio.internal.way.HttpClientOutboundWay;
+import org.restlet.ext.nio.internal.way.HttpsClientInboundWay;
+import org.restlet.ext.nio.internal.way.HttpsClientOutboundWay;
 import org.restlet.ext.nio.internal.way.InboundWay;
 import org.restlet.ext.nio.internal.way.OutboundWay;
 
 /**
- * HTTP client helper based on NIO blocking sockets.
+ * HTTP and HTTPS client helper based on NIO blocking sockets.
  * 
  * @author Jerome Louvel
  */
@@ -57,18 +59,23 @@ public class HttpClientHelper extends ClientConnectionHelper {
     public HttpClientHelper(Client client) {
         super(client);
         getProtocols().add(Protocol.HTTP);
+        getProtocols().add(Protocol.HTTPS);
     }
 
     @Override
     public InboundWay createInboundWay(Connection<Client> connection,
             int bufferSize) {
-        return new HttpClientInboundWay(connection, bufferSize);
+        return connection.isConfidential() ? new HttpsClientInboundWay(
+                connection, bufferSize) : new HttpClientInboundWay(connection,
+                bufferSize);
     }
 
     @Override
     public OutboundWay createOutboundWay(Connection<Client> connection,
             int bufferSize) {
-        return new HttpClientOutboundWay(connection, bufferSize);
+        return connection.isConfidential() ? new HttpsClientOutboundWay(
+                connection, bufferSize) : new HttpClientOutboundWay(connection,
+                bufferSize);
     }
 
 }

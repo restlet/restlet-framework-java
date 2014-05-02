@@ -59,27 +59,28 @@ import org.restlet.util.Series;
  * connectors configurations. (Modified for SSL support.)
  * 
  * @author Kevin Conaway
- * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
+ * @author Bruno Harbulot
+ * @author Jerome Louvel
  */
 public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private Component component;
 
-    private final boolean enabledClientApache = true;
+    private final boolean enabledClientApache = false;
 
-    private final boolean enabledClientInternal = true;
+    private final boolean enabledClientInternal = false;
 
-    private final boolean enabledClientJetty = true;
+    private final boolean enabledClientJetty = false;
 
-    private final boolean enabledClientNio = false;
+    private final boolean enabledClientNio = true;
 
     private final boolean enabledServerInternal = true;
 
-    private final boolean enabledServerJetty = true;
+    private final boolean enabledServerJetty = false;
 
     private final boolean enabledServerNio = false;
 
-    private final boolean enabledServerSimple = true;
+    private final boolean enabledServerSimple = false;
 
     private final File testDir = new File(System.getProperty("java.io.tmpdir"),
             "SslBaseConnectorsTestCase");
@@ -207,7 +208,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     public void testSslInternalAndNio() throws Exception {
         if (this.enabledServerInternal && this.enabledClientNio) {
             runTest(new org.restlet.engine.connector.HttpsServerHelper(null),
-                    new org.restlet.ext.nio.HttpsClientHelper(null));
+                    new org.restlet.ext.nio.HttpClientHelper(null));
         }
     }
 
@@ -263,7 +264,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     public void testSslNioAndNio() throws Exception {
         if (this.enabledServerNio && this.enabledClientNio) {
             runTest(new org.restlet.ext.nio.HttpsServerHelper(null),
-                    new org.restlet.ext.nio.HttpsClientHelper(null));
+                    new org.restlet.ext.nio.HttpClientHelper(null));
         }
     }
 
@@ -291,7 +292,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     public void testSslSimpleAndNio() throws Exception {
         if (this.enabledServerSimple && this.enabledClientNio) {
             runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
-                    new org.restlet.ext.nio.HttpsClientHelper(null));
+                    new org.restlet.ext.nio.HttpClientHelper(null));
         }
     }
 }

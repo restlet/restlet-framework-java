@@ -31,56 +31,47 @@
  * Restlet is a registered trademark of Restlet S.A.S.
  */
 
-package org.restlet.ext.nio.internal.connection;
+package org.restlet.ext.apispark.internal.model;
 
-import java.io.IOException;
-import java.util.logging.Level;
-
-import org.restlet.Connector;
-import org.restlet.engine.util.Pool;
-import org.restlet.ext.nio.ConnectionHelper;
+import org.restlet.data.Protocol;
 
 /**
- * A connection pool to prevent to recreation of heavy byte buffers.
+ * TODO
  * 
- * @author Jerome Louvel
+ * @author
  */
-public class ConnectionPool<T extends Connector> extends Pool<Connection<T>> {
+public class Endpoint {
 
-    /** The parent helper. */
-    private ConnectionHelper<T> helper;
+    /** The host's name. */
+    private String host;
 
-    /**
-     * Constructor.
-     * 
-     * @param helper
-     *            The parent helper.
-     * @param initialSize
-     *            The initial pool size.
-     */
-    public ConnectionPool(ConnectionHelper<T> helper, int initialSize) {
-        super();
-        this.helper = helper;
-        preCreate(initialSize);
+    /** The endpoint's port. */
+    private int port;
+
+    /** Protocol used for this endpoint. */
+    private Protocol protocol;
+
+    public String getHost() {
+        return host;
     }
 
-    @Override
-    protected void clear(Connection<T> connection) {
-        connection.clear();
+    public int getPort() {
+        return port;
     }
 
-    @Override
-    protected Connection<T> createObject() {
-        Connection<T> result = null;
-
-        try {
-            result = this.helper.createConnection(false, null, null, null);
-        } catch (IOException e) {
-            helper.getLogger().log(Level.WARNING,
-                    "Unable to create a pool object", e);
-        }
-
-        return result;
+    public Protocol getProtocol() {
+        return protocol;
     }
 
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
+    }
 }

@@ -46,7 +46,10 @@ import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.engine.ssl.SslContextFactory;
+import org.restlet.engine.ssl.SslUtils;
 import org.restlet.ext.nio.internal.connection.Connection;
+import org.restlet.ext.nio.internal.connection.SslConnection;
 import org.restlet.ext.nio.internal.controller.ConnectionController;
 import org.restlet.ext.nio.internal.state.ConnectionState;
 
@@ -98,11 +101,14 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
     }
 
     @Override
-    public Connection<Client> createConnection(SocketChannel socketChannel,
-            ConnectionController controller, InetSocketAddress socketAddress)
-            throws IOException {
-        return new Connection<Client>(this, socketChannel, controller,
-                socketAddress, getInboundBufferSize(), getOutboundBufferSize());
+    public Connection<Client> createConnection(boolean confidential,
+            SocketChannel socketChannel, ConnectionController controller,
+            InetSocketAddress socketAddress) throws IOException {
+        return confidential ? new SslConnection<Client>(this, socketChannel,
+                controller, socketAddress, createSslEngine(socketAddress))
+                : new Connection<Client>(this, socketChannel, controller,
+                        socketAddress, getInboundBufferSize(),
+                        getOutboundBufferSize());
     }
 
     @Override
@@ -116,18 +122,14 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      * when a new connection is to be created. By default, calls the
      * {@link #createSocketChannel(boolean, String, int)} method.
      * 
-     * @param secure
-     *            Indicates if messages will be exchanged confidentially, for
-     *            example via a SSL-secured connection.
      * @param socketAddress
      *            The holder of a host/port pair.
      * @return The created socket.
      * @throws UnknownHostException
      * @throws IOException
      */
-    protected SocketChannel createSocketChannel(boolean secure,
-            InetSocketAddress socketAddress) throws UnknownHostException,
-            IOException {
+    protected SocketChannel createSocketChannel(InetSocketAddress socketAddress)
+            throws UnknownHostException, IOException {
         SocketChannel result = SocketChannel.open();
         result.configureBlocking(false);
 
@@ -143,9 +145,6 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      * Creates the socket channel that will be used to send the request and get
      * the response.
      * 
-     * @param secure
-     *            Indicates if messages will be exchanged confidentially, for
-     *            example via a SSL-secured connection.
      * @param hostDomain
      *            The target host domain name.
      * @param hostPort
@@ -154,11 +153,9 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
      * @throws UnknownHostException
      * @throws IOException
      */
-    protected SocketChannel createSocketChannel(boolean secure,
-            String hostDomain, int hostPort) throws UnknownHostException,
-            IOException {
-        return createSocketChannel(secure, new InetSocketAddress(hostDomain,
-                hostPort));
+    protected SocketChannel createSocketChannel(String hostDomain, int hostPort)
+            throws UnknownHostException, IOException {
+        return createSocketChannel(new InetSocketAddress(hostDomain, hostPort));
     }
 
     @Override
@@ -252,7 +249,9 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                     .iterator(); !foundConn && iterator.hasNext();) {
                 Connection<Client> currConn = iterator.next();
 
-                if (socketAddress.equals(currConn.getSocketAddress())) {
+                if (socketAddress.equals(currConn.getSocketAddress())
+                        && (request.isConfidential() == currConn
+                                .isConfidential())) {
                     if (currConn.isAvailable()) {
                         result = currConn;
                         foundConn = true;
@@ -316,9 +315,9 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
                                     + socketAddress);
                 }
 
-                result = checkout(
-                        createSocketChannel(request.isConfidential(),
-                                socketAddress), getController(), socketAddress);
+                result = checkout(request.isConfidential(),
+                        createSocketChannel(socketAddress), getController(),
+                        socketAddress);
                 getConnections().add(result);
             }
         }
@@ -481,13 +480,17 @@ public abstract class ClientConnectionHelper extends ConnectionHelper<Client> {
 
     @Override
     public void start() throws Exception {
-        getLogger().info("Starting the internal " + getProtocols() + " client");
+        getLogger().info(
+                "Starting the Restlet NIO " + getProtocols() + " client");
+        SslContextFactory factory = SslUtils.getSslContextFactory(this);
+        setSslContext(factory.createSslContext());
         super.start();
     }
 
     @Override
     public void stop() throws Exception {
-        getLogger().info("Stopping the internal " + getProtocols() + " client");
+        getLogger().info(
+                "Stopping the Restlet NIO " + getProtocols() + " client");
         super.stop();
     }
 

@@ -50,6 +50,7 @@ public class ReflectUtils {
     public static Field[] getAllDeclaredFields(Class type) {
         List<Field> fields = new ArrayList<Field>();
         Class currentType = type;
+
         while (currentType != null) {
             Field[] currentFields = currentType.getDeclaredFields();
             Collections.addAll(fields, currentFields);
@@ -58,15 +59,29 @@ public class ReflectUtils {
                 currentType = null;
             }
         }
+
         return fields.toArray(new Field[fields.size()]);
     }
 
+    /**
+     * TODO: need Javadocs
+     * 
+     * @param type
+     * @return
+     */
     public static boolean isListType(Class<?> type) {
         return Collection.class.isAssignableFrom(type);
     }
-    
+
+    /**
+     * TODO: need Javadocs
+     * 
+     * @param clazz
+     * @return
+     */
     public static boolean isJdkClass(Class<?> clazz) {
         return (clazz.getPackage().getName().startsWith("java.") || clazz
                 .getPackage().getName().startsWith("javax."));
     }
+
 }
