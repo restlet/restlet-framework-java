@@ -4,23 +4,19 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-    - Enhancements
     - Bug fixed
       - Fixed missing internal FTP client connector registration.
       - Fixed missing internal HTTPS server isn't properly registered.
         Reported by Roy Olsen.
       - Fixed forgotten traces to the console #911, #905, #904.
         Reported by Emanuele Massara.
-      - Fixed missing default values for DefaultSslContextFactory attributes,
-        issue #903.
-      - Removed .properties files from the distributions, issue #892.
-      - Prevented NPE in ore.httpclient.internal.HttpMethodCall.getStatusCode, issue #871.
+      - Fixed missing default values for DefaultSslContextFactory attributes, issue #903.
+      - Removed unecessary ".properties" files from the distributions, issue #892.
+      - Prevented NPE in org.httpclient.internal.HttpMethodCall.getStatusCode, issue #871.
         Reported by Claus Ibsen.
       - Fixed CompositeHelper.handle fails when Component has no inbound filters. Issue #865.
         Reported and contributed by Jeremy Gustie.
-      - Stabilized Swagger documentation for JaxRs applications. Issue #827.
-
-    - Misc
+      - Stabilized Swagger documentation for JAX-RS applications. Issue #827.
 
 - 2.2.0 (03/27/2014)
     - Enhancements
