@@ -44,12 +44,8 @@ import java.util.logging.Level;
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.Server;
-import org.restlet.data.Protocol;
 import org.restlet.data.Status;
-import org.restlet.engine.ssl.SslContextFactory;
-import org.restlet.engine.ssl.SslUtils;
 import org.restlet.ext.nio.internal.connection.Connection;
-import org.restlet.ext.nio.internal.connection.SslConnection;
 import org.restlet.ext.nio.internal.controller.ConnectionController;
 import org.restlet.ext.nio.internal.controller.ServerConnectionController;
 import org.restlet.ext.nio.internal.request.InboundRequest;
@@ -120,14 +116,11 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
             Response response) throws IOException;
 
     @Override
-    public Connection<Server> createConnection(boolean confidential,
-            SocketChannel socketChannel, ConnectionController controller,
-            InetSocketAddress socketAddress) throws IOException {
-        return confidential ? new SslConnection<Server>(this, socketChannel,
-                controller, socketAddress, createSslEngine(socketAddress))
-                : new Connection<Server>(this, socketChannel, controller,
-                        socketAddress, getInboundBufferSize(),
-                        getOutboundBufferSize());
+    public Connection<Server> createConnection(SocketChannel socketChannel,
+            ConnectionController controller, InetSocketAddress socketAddress)
+            throws IOException {
+        return new Connection<Server>(this, socketChannel, controller,
+                socketAddress, getInboundBufferSize(), getOutboundBufferSize());
     }
 
     @Override
@@ -278,17 +271,6 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
         handleOutbound(response, true);
     }
 
-    /**
-     * Indicates if the connection is secure. Implemented based on the
-     * {@link Protocol#isConfidential()} method for the request's protocol
-     * returned by {@link #getProtocol()};
-     * 
-     * @return Indicates if the connection is secure.
-     */
-    public boolean isConfidential() {
-        return false;
-    }
-
     @Override
     public boolean isControllerDaemon() {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
@@ -346,10 +328,8 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
 
         // Start the controller
         getLogger().info(
-                "Starting the Restlet NIO " + getProtocols()
-                        + " server on port " + getHelped().getActualPort());
-        SslContextFactory factory = SslUtils.getSslContextFactory(this);
-        setSslContext(factory.createSslContext());
+                "Starting the internal " + getProtocols() + " server on port "
+                        + getHelped().getActualPort());
         super.start();
 
         // Wait for the listener to start up and count down the latch
@@ -367,8 +347,7 @@ public abstract class ServerConnectionHelper extends ConnectionHelper<Server> {
 
     @Override
     public synchronized void stop() throws Exception {
-        getLogger().info(
-                "Stopping the Restlet NIO " + getProtocols() + " server");
+        getLogger().info("Stopping the internal " + getProtocols() + " server");
 
         // Stop the controller
         super.stop();

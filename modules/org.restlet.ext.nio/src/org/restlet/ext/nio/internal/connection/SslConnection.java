@@ -69,9 +69,6 @@ import org.restlet.ext.nio.internal.state.IoState;
  */
 public class SslConnection<T extends Connector> extends Connection<T> {
 
-    /** Whether a handshake is in progress. */
-    private volatile boolean isHandshaking;
-
     /** The peer address. */
     private volatile InetSocketAddress peerAddress;
 
@@ -80,6 +77,9 @@ public class SslConnection<T extends Connector> extends Connection<T> {
 
     /** The engine result. */
     private volatile SSLEngineResult sslEngineResult;
+
+    /** Whether a handshake is in progress. */
+    private volatile boolean isHandshaking;
 
     /**
      * Constructor.
@@ -92,8 +92,9 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      *            The IO controller.
      * @param socketAddress
      *            The associated IP address.
-     * @param sslEngine
-     *            The SSL engine.
+     * 
+     * 
+     * 
      * @throws IOException
      */
     public SslConnection(ConnectionHelper<T> helper,
@@ -278,20 +279,16 @@ public class SslConnection<T extends Connector> extends Connection<T> {
         }
 
         if (isHandshaking && hs == HandshakeStatus.NOT_HANDSHAKING) {
-            // In some cases, on some platforms, the engine can go directly from
-            // a handshaking state to NOT_HANDSHAKING.
-            // We handle this situation as if it had returned FINISHED. See the
-            // following issues:
+            // In some cases, on some platforms, the engine can go directly from a handshaking state to NOT_HANDSHAKING.
+            // We handle this situation as if it had returned FINISHED. See the following issues:
             // https://github.com/restlet/restlet-framework-java/issues/852
             // and
             // https://github.com/restlet/restlet-framework-java/issues/862
             hs = HandshakeStatus.FINISHED;
 
             if (getLogger().isLoggable(Level.FINER)) {
-                getLogger().log(
-                        Level.FINER,
-                        "SSLEngine went directly from handshaking to NOT_HANDSHAKING, "
-                                + "treating as FINISHED.");
+                getLogger().log(Level.FINER, "SSLEngine went directly from handshaking to NOT_HANDSHAKING, " +
+                        "treating as FINISHED.");
             }
 
         }
@@ -378,11 +375,6 @@ public class SslConnection<T extends Connector> extends Connection<T> {
      */
     public void initSslEngine() throws SSLException {
         getSslEngine().beginHandshake();
-    }
-
-    @Override
-    public boolean isConfidential() {
-        return true;
     }
 
     /**

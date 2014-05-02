@@ -44,7 +44,6 @@ import java.util.logging.Logger;
 
 import org.restlet.Connector;
 import org.restlet.Response;
-import org.restlet.data.Protocol;
 import org.restlet.data.Status;
 import org.restlet.engine.io.ReadableSelectionChannel;
 import org.restlet.ext.nio.ConnectionHelper;
@@ -501,17 +500,6 @@ public class Connection<T extends Connector> implements SelectionListener {
     }
 
     /**
-     * Indicates if the connection is secure. Implemented based on the
-     * {@link Protocol#isConfidential()} method for the request's protocol
-     * returned by {@link #getProtocol()};
-     * 
-     * @return Indicates if the connection is secure.
-     */
-    public boolean isConfidential() {
-        return false;
-    }
-
-    /**
      * Indicates if the connection is empty of messages and bytes.
      * 
      * @return True if the connection is empty.
@@ -843,5 +831,4 @@ public class Connection<T extends Connector> implements SelectionListener {
 
         return result;
     }
-
 }

@@ -114,7 +114,7 @@ public class ServerConnectionController extends ConnectionController {
                     if ((getHelper().getMaxTotalConnections() == -1)
                             || (connectionsCount <= getHelper()
                                     .getMaxTotalConnections())) {
-                        Connection<Server> connection = getHelper().checkout(getHelper().isConfidential(),
+                        Connection<Server> connection = getHelper().checkout(
                                 socketChannel,
                                 this,
                                 (InetSocketAddress) socketChannel.socket()

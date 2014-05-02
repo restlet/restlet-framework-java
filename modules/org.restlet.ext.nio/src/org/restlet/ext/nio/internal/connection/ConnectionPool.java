@@ -74,7 +74,7 @@ public class ConnectionPool<T extends Connector> extends Pool<Connection<T>> {
         Connection<T> result = null;
 
         try {
-            result = this.helper.createConnection(false, null, null, null);
+            result = this.helper.createConnection(null, null, null);
         } catch (IOException e) {
             helper.getLogger().log(Level.WARNING,
                     "Unable to create a pool object", e);
