@@ -5,7 +5,11 @@ Changes log
 
 - @version-full@ (@release-date@)
     - New features
-      - 
+      - APISpark extension now includes an Introspector service (see main method) that
+        can analyze a Restlet Application, introspect its web API definition and push
+        it to APISpark.com PaaS for online and intuive documentation. Added user guide
+        page to describe the process and parameters. API contract can be created or
+        updated (replaced) remotely.
         
     - Enhancements
       - Added HTTPS support to Jetty connector. Issue #793.
@@ -22,10 +26,21 @@ Changes log
         Reported and contributed by Jeremy Gustie.
       - Fixed CompositeHelper.handle fails when Component has no inbound filters. Issue #865.
         Reported and contributed by Jeremy Gustie.
-      - Internal HTTPS server isn't properly registered. Reported by Roy Olsen.
+      - Fixed missing internal FTP client connector registration.
+      - Fixed missing internal HTTPS server isn't properly registered.
+        Reported by Roy Olsen.
+      - Fixed forgotten traces to the console #911, #905, #904.
+        Reported by Emanuele Massara.
+      - Fixed missing default values for DefaultSslContextFactory attributes, issue #903.
+      - Prevented NPE in org.httpclient.internal.HttpMethodCall.getStatusCode, issue #871.
+        Reported by Claus Ibsen.
+      - Stabilized Swagger documentation for JAX-RS applications. Issue #827.
+
 
     - Misc
-      - 
+      - Removed unecessary ".properties" files from the distributions, issue #892.
+      - Added mention of edition and version in Javadoc header.
+      - Lowered trace level from 'info' to 'fine' for OBAP pseudo client.
 
 - 2.3 Milestone 1 (03/27/2014)
     - New features
