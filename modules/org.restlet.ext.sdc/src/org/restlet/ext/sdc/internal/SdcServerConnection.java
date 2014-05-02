@@ -170,12 +170,14 @@ public class SdcServerConnection implements Dispatchable {
                     }
                 });
             } else {
-                System.out
-                        .println("Unable to authorize the connection. Wrong frame type received: "
+                getLogger().log(
+                        Level.WARNING,
+                        "Unable to authorize the connection. Wrong frame type received: "
                                 + frameInfo);
             }
         } catch (FramingException e) {
-            e.printStackTrace();
+            getLogger().log(Level.WARNING,
+                    "Unable to authorize the connection.", e);
         }
     }
 

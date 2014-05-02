@@ -72,7 +72,7 @@ import org.restlet.util.Series;
  * <tr>
  * <td>disabledProtocols</td>
  * <td>String (see Java Secure Socket Extension (JSSE) reference guide)</td>
- * <td>TLS</td>
+ * <td>null</td>
  * <td>Whitespace-separated list of disabled SSL/TLS protocol names and/or can
  * be specified multiple times. Used when creating SSL sockets and engines.</td>
  * </tr>
@@ -86,7 +86,7 @@ import org.restlet.util.Series;
  * <tr>
  * <td>enabledProtocols</td>
  * <td>String (see Java Secure Socket Extension (JSSE) reference guide)</td>
- * <td>TLS</td>
+ * <td>null</td>
  * <td>Whitespace-separated list of enabled SSL/TLS protocol names and/or can be
  * specified multiple times. Used when creating SSL sockets and engines.</td>
  * </tr>
@@ -99,7 +99,7 @@ import org.restlet.util.Series;
  * <tr>
  * <td>keyStorePath</td>
  * <td>String</td>
- * <td>${user.home}/.keystore</td>
+ * <td>System property "javax.net.ssl.keyStore" or ${user.home}/.keystore</td>
  * <td>SSL keystore path.</td>
  * </tr>
  * <tr>
@@ -111,7 +111,7 @@ import org.restlet.util.Series;
  * <tr>
  * <td>keyStoreType</td>
  * <td>String</td>
- * <td>JKS</td>
+ * <td>System property javax.net.ssl.keyStoreType or JKS</td>
  * <td>SSL keystore type</td>
  * </tr>
  * <tr>
@@ -208,7 +208,8 @@ public class DefaultSslContextFactory extends SslContextFactory {
     private volatile String[] enabledProtocols = null;
 
     /** The name of the KeyManager algorithm. */
-    private volatile String keyManagerAlgorithm = null;
+    private volatile String keyManagerAlgorithm = System.getProperty(
+            "ssl.KeyManagerFactory.algorithm", "SunX509");
 
     /** The password for the key in the keystore (as a String). */
     private volatile char[] keyStoreKeyPassword = (System.getProperty(
@@ -224,8 +225,12 @@ public class DefaultSslContextFactory extends SslContextFactory {
             .getProperty("javax.net.ssl.keyStorePassword").toCharArray() : null;
 
     /** The path to the KeyStore file. */
-    private volatile String keyStorePath = System
-            .getProperty("javax.net.ssl.keyStore");
+    private volatile String keyStorePath = System.getProperty(
+            "javax.net.ssl.keyStore",
+            (System.getProperty("user.home") != null) ? ((System
+                    .getProperty("user.home").endsWith("/")) ? System
+                    .getProperty("user.home") + ".keystore" : System
+                    .getProperty("user.home") + "/.keystore") : null);
 
     /** The name of the keystore provider. */
     private volatile String keyStoreProvider = System
@@ -233,7 +238,7 @@ public class DefaultSslContextFactory extends SslContextFactory {
 
     /** The keyStore type of the keystore. */
     private volatile String keyStoreType = System
-            .getProperty("javax.net.ssl.keyStoreType");
+            .getProperty("javax.net.ssl.keyStoreType", "JKS");
 
     /** Indicates if we require client certificate authentication. */
     private volatile boolean needClientAuthentication = false;
@@ -245,7 +250,8 @@ public class DefaultSslContextFactory extends SslContextFactory {
     private volatile String secureRandomAlgorithm = null;
 
     /** The name of the TrustManager algorithm. */
-    private volatile String trustManagerAlgorithm = null;
+    private volatile String trustManagerAlgorithm = System.getProperty(
+            "ssl.TrustManagerFactory.algorithm", "SunX509");
 
     /** The password for the trust store keystore. */
     private volatile char[] trustStorePassword = (System

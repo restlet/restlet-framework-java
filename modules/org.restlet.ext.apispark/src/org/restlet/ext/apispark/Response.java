@@ -1,71 +1,69 @@
 package org.restlet.ext.apispark;
 
+import org.restlet.data.Status;
+
 public class Response {
 
-	/**
-	 * Name of this response
-	 */
-	private String name;
-	
-	/**
-	 * Textual description of this response
-	 */
-	private String description;
-	
-	/**
-	 * HTTP code for the response
-	 * See: http://fr.wikipedia.org/wiki/Liste_des_codes_HTTP
-	 */
-	private Integer code;
-	
-	/**
-	 * Textual message associated with code in RCF
-	 * See: http://fr.wikipedia.org/wiki/Liste_des_codes_HTTP
-	 */
-	private String message;
-	
-	/**
-	 * Custom content of the body if any
-	 */
-	private Body body;
+    /** Custom content of the body if any. */
+    private Body body;
 
-	public String getName() {
-		return name;
-	}
+    /** Status code of the response */
+    private int code;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    /** Textual description of this response */
+    private String description;
 
-	public String getDescription() {
-		return description;
-	}
+    /** Status message of the response. */
+    private String message;
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    /** Name of this response */
+    private String name;
 
-	public Integer getCode() {
-		return code;
-	}
+    /**
+     * Constructor. The default status code is {@link Status#SUCCESS_OK}.
+     */
+    public Response() {
+        setCode(Status.SUCCESS_OK.getCode());
+        setMessage(Status.SUCCESS_OK.getDescription());
+    }
 
-	public void setCode(Integer code) {
-		this.code = code;
-	}
+    public Body getBody() {
+        return body;
+    }
 
-	public String getMessage() {
-		return message;
-	}
+    public int getCode() {
+        return code;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public Body getBody() {
-		return body;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public void setBody(Body body) {
-		this.body = body;
-	}
+    public String getName() {
+        return name;
+    }
+
+    public void setBody(Body body) {
+        this.body = body;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

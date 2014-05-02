@@ -26,7 +26,7 @@
  * 
  * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://restlet.com/products/restlet-framework
+ * http://www.restlet.com/products/restlet-framework
  * 
  * Restlet is a registered trademark of Restlet S.A.S.
  */
@@ -34,50 +34,34 @@
 package org.restlet.ext.swagger.internal;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import scala.actors.threadpool.Arrays;
+
 /**
- * Tooling library for the Swagger extension.
+ * Swagger tooling class.
  * 
  * @author Grzegorz Godlewski
  */
 public class SwaggerUtils {
 
-    /**
-     * Removes doubled "/" sequences from a given String.
-     * 
-     * @param path
-     *            The path to clean.
-     * @return A String cleaned from doubled "/" sequences.
-     */
     public static String cleanSlashes(String path) {
         path = path.replaceAll("/+", "/");
+
         return path;
     }
 
-    /**
-     * 
-     * @param path
-     * @return
-     */
     public static String leaveOnlyPathParamNames(String path) {
         path = path.replaceAll(":[^}]*\\}", "}");
 
         return path;
     }
 
-    /**
-     * Splits a coma separated list of strings, into an array. If the list is
-     * null or empty, it returns an empty array.
-     * 
-     * @param csvString
-     *            The coma separated list of String.
-     * @return The array of String.
-     */
-    public static List<String> toObjectList(String csvString) {
-        if (csvString == null || csvString.isEmpty())
+    @SuppressWarnings("unchecked")
+    public static List<String> toList(String csvString) {
+        if (csvString == null || csvString.isEmpty()) {
             return new ArrayList<String>();
+        }
         return Arrays.asList(csvString.split(","));
     }
 
@@ -85,6 +69,7 @@ public class SwaggerUtils {
      * Private constructor for tooling class.
      */
     private SwaggerUtils() {
+
     }
 
 }
