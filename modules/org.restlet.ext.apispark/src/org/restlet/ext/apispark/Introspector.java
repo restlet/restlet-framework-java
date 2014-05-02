@@ -1065,6 +1065,11 @@ public class Introspector {
             }
 
             for (RepresentationInfo ri : mapReps.values()) {
+                if (ReflectUtils.isJdkClass(ri.getType())) {
+                    // Filter the representations we want to expose.
+                    // TODO find a better way to express such filter
+                    continue;
+                }
                 LOGGER.info("Representation " + ri.getName() + " added.");
                 Representation rep = new Representation();
 

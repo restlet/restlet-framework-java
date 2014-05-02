@@ -33,7 +33,6 @@
 
 package org.restlet.ext.apispark.internal.model;
 
-
 /**
  * 
  * @author

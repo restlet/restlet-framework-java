@@ -34,10 +34,17 @@
 package org.restlet.ext.apispark.internal.reflect;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import org.restlet.ext.apispark.Introspector;
+
+import com.sun.istack.internal.logging.Logger;
 
 /**
  * Handles Java reflection operations.
@@ -63,14 +70,38 @@ public class ReflectUtils {
         return fields.toArray(new Field[fields.size()]);
     }
 
-    /**
-     * TODO: need Javadocs
-     * 
-     * @param type
-     * @return
-     */
-    public static boolean isListType(Class<?> type) {
-        return Collection.class.isAssignableFrom(type);
+    public static Class<?> getSimpleClass(Field field) {
+        Type genericFieldType = field.getGenericType();
+
+        if (genericFieldType != null) {
+            return getSimpleClass(genericFieldType);
+        }
+
+        return field.getType();
+    }
+
+    private static Class<?> getSimpleClass(java.lang.reflect.Type type) {
+        if (type instanceof Class<?>) {
+            Class<?> c = (Class<?>) type;
+            if (c.isArray()) {
+                return c.getComponentType();
+            } else {
+                return c;
+            }
+        } else if (type instanceof GenericArrayType) {
+            GenericArrayType gat = (GenericArrayType) type;
+            return getSimpleClass(gat.getGenericComponentType());
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType t = (ParameterizedType) type;
+            if (t.getActualTypeArguments().length == 1) {
+                return getSimpleClass(t.getActualTypeArguments()[0]);
+            } else {
+                Logger.getLogger(Introspector.class)
+                        .warning(
+                                "We don't support generic types with several arguments.");
+            }
+        }
+        return type.getClass();
     }
 
     /**
@@ -80,8 +111,88 @@ public class ReflectUtils {
      * @return
      */
     public static boolean isJdkClass(Class<?> clazz) {
-        return (clazz.getPackage().getName().startsWith("java.") || clazz
-                .getPackage().getName().startsWith("javax."));
+        if (clazz != null && clazz.getPackage() != null) {
+            return (clazz.getPackage().getName().startsWith("java.") || clazz
+                    .getPackage().getName().startsWith("javax."));
+
+        }
+        return false;
+    }
+
+    /**
+     * TODO: need Javadocs
+     * 
+     * @param type
+     * @return
+     */
+    public static boolean isListType(Class<?> type) {
+        return Collection.class.isAssignableFrom(type) || type.isArray();
+    }
+
+    /**
+     * Generates the name of the given parameter's type.
+     * 
+     * @param parameterType
+     *            the Java parameter's type.
+     * @param genericParameterType
+     *            I'ts
+     * @param parameterizedType
+     * @return
+     */
+    private String buildParameterTypeName(Class<?> parameterType,
+            java.lang.reflect.Type genericParameterType,
+            ParameterizedType parameterizedType) {
+        java.lang.reflect.Type type;
+        if (parameterizedType != null) {
+            type = parameterizedType.getActualTypeArguments()[0];
+        } else {
+            type = null;
+        }
+        StringBuilder sb = new StringBuilder();
+        if (type == null) {
+            buildTypeName(parameterType, sb);
+        } else {
+            buildTypeName(genericParameterType, sb);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Generates the name of the given type into the given StringBuilder.
+     * 
+     * @param type
+     *            The type.
+     * @param sb
+     *            The stringBuilder to complete.
+     */
+    private void buildTypeName(java.lang.reflect.Type type, StringBuilder sb) {
+        if (type instanceof Class<?>) {
+            if (((Class<?>) type).isArray()) {
+                buildTypeName(((Class<?>) type).getComponentType(), sb);
+                sb.append("[]");
+            } else {
+                sb.append(((Class<?>) type).getName());
+            }
+        } else if (type instanceof GenericArrayType) {
+            buildTypeName(((GenericArrayType) type).getGenericComponentType(),
+                    sb);
+            sb.append("[]");
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType t = (ParameterizedType) type;
+            buildTypeName(t.getRawType(), sb);
+            sb.append("<");
+            if (t.getActualTypeArguments().length >= 1) {
+                buildTypeName(t.getActualTypeArguments()[0], sb);
+                for (int i = 1; i < t.getActualTypeArguments().length; i++) {
+                    sb.append(", ");
+                    buildTypeName(t.getActualTypeArguments()[i], sb);
+                }
+            }
+
+            sb.append(">");
+        } else {
+            sb.append(type.toString());
+        }
     }
 
 }

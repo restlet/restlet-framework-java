@@ -83,41 +83,40 @@ public class RepresentationInfo extends DocumentedInfo {
      * Returns the description of the given class as a
      * {@link RepresentationInfo}.
      * 
-     * @param representationClass
+     * @param clazz
      *            The class to document.
      * @param variant
      *            The current variant.
      * @return The description of the given class as a
      *         {@link RepresentationInfo}.
      */
-    public static RepresentationInfo introspect(Class<?> representationClass,
+    public static RepresentationInfo introspect(Class<?> clazz,
             MediaType mediaType) {
         // Introspect the java class
         RepresentationInfo result = new RepresentationInfo(mediaType);
-        result.setType(representationClass);
-        result.setIdentifier(representationClass.getName());
-        result.setName(representationClass.getSimpleName());
+        result.setType(clazz);
+        result.setIdentifier(clazz.getName());
+        result.setName(clazz.getSimpleName());
 
         // TODO we don't introspect jdk's class
-        if (Representation.class.isAssignableFrom(representationClass)
-                || ReflectUtils.isJdkClass(representationClass)) {
+        if (Representation.class.isAssignableFrom(clazz)
+                || ReflectUtils.isJdkClass(clazz)) {
             result.setRaw(true);
         } else {
             // TODO support parent types
-            if (representationClass.getSuperclass() != null
-                    && !ReflectUtils.isJdkClass(representationClass
-                            .getSuperclass())) {
+            if (clazz.getSuperclass() != null
+                    && !ReflectUtils.isJdkClass(clazz.getSuperclass())) {
                 // TODO This type must introspected too, as it will reveal other
                 // representation
-                result.setParentType(representationClass.getSuperclass());
+                result.setParentType(clazz.getSuperclass());
             }
 
-            for (Field field : ReflectUtils
-                    .getAllDeclaredFields(representationClass)) {
+            for (Field field : ReflectUtils.getAllDeclaredFields(clazz)) {
                 if (!"serialVersionUID".equals(field.getName())) {
                     PropertyInfo property = new PropertyInfo();
                     property.setName(field.getName());
-                    property.setType(field.getType());
+                    // TODO how do we handle generics?
+                    property.setType(ReflectUtils.getSimpleClass(field));
                     property.setMinOccurs(0);
                     if (ReflectUtils.isListType(field.getType())) {
                         property.setMaxOccurs(-1);
