@@ -41,10 +41,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.restlet.ext.apispark.Introspector;
 
-import com.sun.istack.internal.logging.Logger;
 
 /**
  * Handles Java reflection operations.
@@ -96,7 +96,7 @@ public class ReflectUtils {
             if (t.getActualTypeArguments().length == 1) {
                 return getSimpleClass(t.getActualTypeArguments()[0]);
             } else {
-                Logger.getLogger(Introspector.class)
+                Logger.getLogger(Introspector.class.getName())
                         .warning(
                                 "We don't support generic types with several arguments.");
             }
