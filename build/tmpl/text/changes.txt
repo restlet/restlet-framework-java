@@ -3,7 +3,7 @@
 Changes log  
 ===========
 
-- @version-full@ (@release-date@)
+- 2.3 Milestone 2 (05/06/2014)
     - New features
       - APISpark extension now includes an Introspector service (see main method) that
         can analyze a Restlet Application, introspect its web API definition and push
