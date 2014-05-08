@@ -66,13 +66,13 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private Component component;
 
-    private final boolean enabledClientApache = false;
+    private final boolean enabledClientApache = true;
 
-    private final boolean enabledClientInternal = false;
+    private final boolean enabledClientInternal = true;
 
     private final boolean enabledClientJetty = false;
 
-    private final boolean enabledClientNio = true;
+    private final boolean enabledClientNio = false;
 
     private final boolean enabledServerInternal = true;
 
