@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Enhancements
+      - Updated agent.properties file with recent Opera user agent signature.
 
 - 2.3 Milestone 2 (05/06/2014)
     - New features
