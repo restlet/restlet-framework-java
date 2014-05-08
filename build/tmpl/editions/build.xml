@@ -82,7 +82,7 @@
 
 	<!-- Create the time stamp -->
 	<tstamp>
-		<format property="release-date" pattern="yyyy-MM-dd" />
+		<format property="release-date" pattern="MM/dd/yyyy" />
 	</tstamp>
 
 	<!-- Current year -->
