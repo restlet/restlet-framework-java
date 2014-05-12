@@ -178,7 +178,8 @@ public class CookieReader extends HeaderReader<Cookie> {
             }
         }
 
-        while ((pair != null) && (pair.getName().charAt(0) == '$')) {
+        while ((pair != null)
+                && (pair.getName().isEmpty() || pair.getName().charAt(0) == '$')) {
             // Unexpected special attribute
             // Silently ignore it as it may have been introduced by new
             // specifications
@@ -192,10 +193,11 @@ public class CookieReader extends HeaderReader<Cookie> {
             pair = readPair(true);
         }
 
-        while ((pair != null) && (pair.getName().charAt(0) == '$')) {
-            if (pair.getName().equalsIgnoreCase(NAME_PATH)) {
+        while ((pair != null)
+                && (pair.getName().isEmpty() || pair.getName().charAt(0) == '$')) {
+            if (NAME_PATH.equalsIgnoreCase(pair.getName())) {
                 result.setPath(pair.getValue());
-            } else if (pair.getName().equalsIgnoreCase(NAME_DOMAIN)) {
+            } else if (NAME_DOMAIN.equalsIgnoreCase(pair.getName())) {
                 result.setDomain(pair.getValue());
             } else {
                 // Unexpected special attribute
