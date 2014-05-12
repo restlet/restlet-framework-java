@@ -4,6 +4,10 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Enhancements
+      - Updated agent.properties file with recent Opera user agent signature.
+
+- 2.2.1 (05/06/2014)
     - Bug fixed
       - Fixed missing internal FTP client connector registration.
       - Fixed missing internal HTTPS server isn't properly registered.
