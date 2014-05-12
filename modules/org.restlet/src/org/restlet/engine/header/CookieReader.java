@@ -163,9 +163,9 @@ public class CookieReader extends HeaderReader<Cookie> {
         Cookie result = null;
         Parameter pair = readPair(false);
 
-        if (this.globalVersion == -1) {
+        if (pair != null && this.globalVersion == -1) {
             // Cookies version not yet detected
-            if (pair.getName().equalsIgnoreCase(NAME_VERSION)) {
+            if (NAME_VERSION.equalsIgnoreCase(pair.getName())) {
                 if (pair.getValue() != null) {
                     this.globalVersion = Integer.parseInt(pair.getValue());
                 } else {
