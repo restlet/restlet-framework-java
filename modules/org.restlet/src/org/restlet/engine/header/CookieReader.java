@@ -163,9 +163,9 @@ public class CookieReader extends HeaderReader<Cookie> {
         Cookie result = null;
         Parameter pair = readPair(false);
 
-        if (this.globalVersion == -1) {
+        if (pair != null && this.globalVersion == -1) {
             // Cookies version not yet detected
-            if (pair.getName().equalsIgnoreCase(NAME_VERSION)) {
+            if (NAME_VERSION.equalsIgnoreCase(pair.getName())) {
                 if (pair.getValue() != null) {
                     this.globalVersion = Integer.parseInt(pair.getValue());
                 } else {
@@ -178,7 +178,8 @@ public class CookieReader extends HeaderReader<Cookie> {
             }
         }
 
-        while ((pair != null) && (pair.getName().charAt(0) == '$')) {
+        while ((pair != null)
+                && (pair.getName().isEmpty() || pair.getName().charAt(0) == '$')) {
             // Unexpected special attribute
             // Silently ignore it as it may have been introduced by new
             // specifications
@@ -192,7 +193,8 @@ public class CookieReader extends HeaderReader<Cookie> {
             pair = readPair(true);
         }
 
-        while ((pair != null) && (pair.getName().charAt(0) == '$')) {
+        while ((pair != null)
+                && (pair.getName().isEmpty() || pair.getName().charAt(0) == '$')) {
             if (pair.getName().equalsIgnoreCase(NAME_PATH)) {
                 result.setPath(pair.getValue());
             } else if (pair.getName().equalsIgnoreCase(NAME_DOMAIN)) {
