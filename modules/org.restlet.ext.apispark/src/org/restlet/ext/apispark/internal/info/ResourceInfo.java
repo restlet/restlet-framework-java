@@ -39,6 +39,8 @@ import java.util.List;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
+import org.restlet.engine.resource.AnnotationInfo;
+import org.restlet.engine.resource.AnnotationUtils;
 import org.restlet.resource.Directory;
 import org.restlet.resource.ServerResource;
 import org.restlet.routing.Template;
@@ -84,8 +86,9 @@ public class ResourceInfo extends DocumentedInfo {
         List<Method> methodsList = new ArrayList<Method>();
 
         if (resource instanceof ServerResource) {
-            ((ServerResource) resource).updateAllowedMethods();
-            methodsList.addAll(((ServerResource) resource).getAllowedMethods());
+            ServerResource sr = (ServerResource) resource;
+            sr.updateAllowedMethods();
+            methodsList.addAll(sr.getAllowedMethods());
         } else if (resource instanceof Directory) {
             Directory directory = (Directory) resource;
             methodsList.add(Method.GET);
@@ -103,13 +106,24 @@ public class ResourceInfo extends DocumentedInfo {
         MethodInfo methodInfo;
 
         for (Method method : methodsList) {
-            methodInfo = new MethodInfo();
-            methods.add(methodInfo);
-            methodInfo.setMethod(method);
-
             if (resource instanceof ServerResource) {
-                MethodInfo.describeAnnotations(methodInfo,
-                        (ServerResource) resource);
+                ServerResource sr = (ServerResource) resource;
+                List<AnnotationInfo> annotations = sr.isAnnotated() ? AnnotationUtils
+                        .getInstance().getAnnotations(resource.getClass())
+                        : null;
+                for (AnnotationInfo annotationInfo : annotations) {
+                    if (method.equals(annotationInfo.getRestletMethod())) {
+                        methodInfo = new MethodInfo();
+                        methods.add(methodInfo);
+                        methodInfo.setMethod(method);
+                        MethodInfo.describeAnnotation(methodInfo,
+                                annotationInfo, sr);
+                    }
+                }
+            } else {
+                methodInfo = new MethodInfo();
+                methods.add(methodInfo);
+                methodInfo.setMethod(method);
             }
         }
     }

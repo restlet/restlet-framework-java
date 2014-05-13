@@ -45,7 +45,6 @@ import java.util.logging.Logger;
 
 import org.restlet.ext.apispark.Introspector;
 
-
 /**
  * Handles Java reflection operations.
  * 

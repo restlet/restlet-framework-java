@@ -62,96 +62,103 @@ public class MethodInfo extends DocumentedInfo {
      * 
      * @param info
      *            The method description to update.
+     * @param annotation
+     *            The associated annotation, if any.
      * @param resource
      *            The server resource to describe.
      */
-    public static void describeAnnotations(MethodInfo info,
-            ServerResource resource) {
+    public static void describeAnnotation(MethodInfo info,
+            AnnotationInfo annotation, ServerResource resource) {
         // Loop over the annotated Java methods
         MetadataService metadataService = resource.getMetadataService();
-        List<AnnotationInfo> annotations = resource.isAnnotated() ? AnnotationUtils
-                .getInstance().getAnnotations(resource.getClass()) : null;
 
-        if (annotations != null && metadataService != null) {
-            for (AnnotationInfo annotationInfo : annotations) {
-                try {
+        if (metadataService != null) {
+            AnnotationInfo ai = annotation;
+            if (ai == null) {
+                // Check if there is an annotation having the same method.
+                List<AnnotationInfo> annotations = resource.isAnnotated() ? AnnotationUtils
+                        .getInstance().getAnnotations(resource.getClass())
+                        : null;
+                for (AnnotationInfo annotationInfo : annotations) {
                     if (info.getMethod().equals(
                             annotationInfo.getRestletMethod())) {
-                        // Describe the request
-                        Class<?>[] classes = annotationInfo.getJavaInputTypes();
-                        Class<?> inputClass = (classes != null && classes.length > 0) ? classes[0]
-                                : null;
+                        ai = annotationInfo;
+                        break;
+                    }
+                }
+            }
+            if (ai != null) {
+                try {
+                    // Describe the request
+                    Class<?>[] classes = ai.getJavaInputTypes();
+                    Class<?> inputClass = (classes != null && classes.length > 0) ? classes[0]
+                            : null;
 
-                        List<Variant> requestVariants = annotationInfo
-                                .getRequestVariants(
+                    List<Variant> requestVariants = ai.getRequestVariants(
+                            resource.getMetadataService(),
+                            resource.getConverterService());
+
+                    if (requestVariants != null) {
+                        for (Variant variant : requestVariants) {
+                            if ((variant.getMediaType() != null)
+                                    && ((info.getRequest() == null) || !info
+                                            .getRequest().getRepresentations()
+                                            .contains(variant))) {
+                                if (info.getRequest() == null) {
+                                    info.setRequest(new RequestInfo());
+                                }
+
+                                RepresentationInfo representationInfo = RepresentationInfo
+                                        .describe(info, inputClass, variant);
+
+                                info.getRequest().getRepresentations()
+                                        .add(representationInfo);
+                            }
+                        }
+                    }
+
+                    // Describe query parameters, if any.
+                    if (ai.getQuery() != null) {
+                        Form form = new Form(ai.getQuery());
+                        for (Parameter parameter : form) {
+                            ParameterInfo pi = new ParameterInfo(
+                                    parameter.getName(), true, null,
+                                    ParameterStyle.QUERY, "Value: "
+                                            + parameter.getValue());
+                            pi.setDefaultValue(parameter.getValue());
+                            info.getParameters().add(pi);
+                        }
+                    }
+
+                    // Describe the response
+                    Class<?> outputClass = ai.getJavaOutputType();
+
+                    if (outputClass != null) {
+                        List<Variant> responseVariants = ai
+                                .getResponseVariants(
                                         resource.getMetadataService(),
                                         resource.getConverterService());
 
-                        if (requestVariants != null) {
-                            for (Variant variant : requestVariants) {
+                        if (responseVariants != null) {
+                            for (Variant variant : responseVariants) {
                                 if ((variant.getMediaType() != null)
-                                        && ((info.getRequest() == null) || !info
-                                                .getRequest()
+                                        && !info.getResponse()
                                                 .getRepresentations()
-                                                .contains(variant))) {
-                                    if (info.getRequest() == null) {
-                                        info.setRequest(new RequestInfo());
-                                    }
-
+                                                .contains(variant)) {
                                     RepresentationInfo representationInfo = RepresentationInfo
-                                            .describe(info, inputClass, variant);
+                                            .describe(info, outputClass,
+                                                    variant);
 
-                                    info.getRequest().getRepresentations()
+                                    info.getResponse().getRepresentations()
                                             .add(representationInfo);
                                 }
                             }
                         }
+                    }
 
-                        // Describe query parameters, if any.
-                        if (annotationInfo.getQuery() != null) {
-                            Form form = new Form(annotationInfo.getQuery());
-                            for (Parameter parameter : form) {
-                                ParameterInfo pi = new ParameterInfo(
-                                        parameter.getName(), true, null,
-                                        ParameterStyle.QUERY, "Value: "
-                                                + parameter.getValue());
-                                pi.setDefaultValue(parameter.getValue());
-                                info.getParameters().add(pi);
-                            }
-                        }
-
-                        // Describe the response
-                        Class<?> outputClass = annotationInfo
-                                .getJavaOutputType();
-
-                        if (outputClass != null) {
-                            List<Variant> responseVariants = annotationInfo
-                                    .getResponseVariants(
-                                            resource.getMetadataService(),
-                                            resource.getConverterService());
-
-                            if (responseVariants != null) {
-                                for (Variant variant : responseVariants) {
-                                    if ((variant.getMediaType() != null)
-                                            && !info.getResponse()
-                                                    .getRepresentations()
-                                                    .contains(variant)) {
-                                        RepresentationInfo representationInfo = RepresentationInfo
-                                                .describe(info, outputClass,
-                                                        variant);
-
-                                        info.getResponse().getRepresentations()
-                                                .add(representationInfo);
-                                    }
-                                }
-                            }
-                        }
-
-                        if (info.getResponse().getStatuses().isEmpty()) {
-                            info.getResponse().getStatuses()
-                                    .add(Status.SUCCESS_OK);
-                            info.getResponse().setDocumentation("Success");
-                        }
+                    if (info.getResponse().getStatuses().isEmpty()) {
+                        info.getResponse().getStatuses().add(Status.SUCCESS_OK);
+                        info.getResponse().setDocumentation("Success");
                     }
                 } catch (IOException e) {
                     throw new ResourceException(e);
@@ -159,6 +166,9 @@ public class MethodInfo extends DocumentedInfo {
             }
         }
     }
+
+    /** The corresponding annotation, if any. */
+    private AnnotationInfo annotation;
 
     /** Identifier for the method. */
     private String identifier;
@@ -213,6 +223,15 @@ public class MethodInfo extends DocumentedInfo {
      */
     public MethodInfo(String documentation) {
         super(documentation);
+    }
+
+    /**
+     * Returns the associated annotation, if any.
+     * 
+     * @return The associated annotation, if any.
+     */
+    public AnnotationInfo getAnnotation() {
+        return annotation;
     }
 
     /**
@@ -301,6 +320,16 @@ public class MethodInfo extends DocumentedInfo {
      */
     public Reference getTargetRef() {
         return this.targetRef;
+    }
+
+    /**
+     * Sets the associated annotation.
+     * 
+     * @param annotation
+     *            The annotation.
+     */
+    public void setAnnotation(AnnotationInfo annotation) {
+        this.annotation = annotation;
     }
 
     /**
