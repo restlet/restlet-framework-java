@@ -2094,15 +2094,34 @@ public class ClientResource extends Resource {
     // [ifndef gwt] method
     /**
      * Wraps the client resource to proxy calls to the given Java interface into
-     * Restlet method calls.
+     * Restlet method calls. Use the {@link org.restlet.engine.Engine}
+     * classloader in order to generate the proxy.
      * 
      * @param <T>
      * @param resourceInterface
      *            The annotated resource interface class to proxy.
      * @return The proxy instance.
      */
-    @SuppressWarnings("unchecked")
     public <T> T wrap(Class<? extends T> resourceInterface) {
+        return wrap(resourceInterface, org.restlet.engine.Engine.getInstance()
+                .getClassLoader());
+    }
+
+    // [ifndef gwt] method
+    /**
+     * Wraps the client resource to proxy calls to the given Java interface into
+     * Restlet method calls.
+     * 
+     * @param <T>
+     * @param resourceInterface
+     *            The annotated resource interface class to proxy.
+     * @param classLoader
+     *            The classloader used to instantiate the dynamic proxy.
+     * @return The proxy instance.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T wrap(Class<? extends T> resourceInterface,
+            ClassLoader classLoader) {
         T result = null;
 
         // Create the client resource proxy
@@ -2110,8 +2129,7 @@ public class ClientResource extends Resource {
                 this, resourceInterface);
 
         // Instantiate our dynamic proxy
-        result = (T) java.lang.reflect.Proxy.newProxyInstance(
-                org.restlet.engine.Engine.getInstance().getClassLoader(),
+        result = (T) java.lang.reflect.Proxy.newProxyInstance(classLoader,
                 new Class<?>[] { ClientProxy.class, resourceInterface }, h);
 
         return result;
