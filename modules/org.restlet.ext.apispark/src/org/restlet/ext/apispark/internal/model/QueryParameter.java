@@ -37,6 +37,6 @@ package org.restlet.ext.apispark.internal.model;
  * 
  * @author
  */
-public class QueryParameter {
+public class QueryParameter extends Parameter {
 
 }

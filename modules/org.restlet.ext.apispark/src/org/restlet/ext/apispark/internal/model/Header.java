@@ -33,66 +33,10 @@
 
 package org.restlet.ext.apispark.internal.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * TODO
  * 
  * @author
  */
-public class Contract {
+public class Header extends Parameter {
 
-	/** Textual description of the API. */
-	private String description;
-
-	/** Name of the API. */
-	private String name;
-
-	/**
-	 * Representations available with this API Note: their "name" is used as a
-	 * reference further in this description.
-	 */
-	private List<Representation> representations;
-
-	/** Resources provided by the API. */
-	private List<Resource> resources;
-
-	public String getDescription() {
-		return description;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public List<Representation> getRepresentations() {
-		if (representations == null) {
-			representations = new ArrayList<Representation>();
-		}
-		return representations;
-	}
-
-	public List<Resource> getResources() {
-		if (resources == null) {
-			resources = new ArrayList<Resource>();
-		}
-		return resources;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setRepresentations(List<Representation> representations) {
-		this.representations = representations;
-	}
-
-	public void setResources(List<Resource> resources) {
-		this.resources = resources;
-	}
 }
