@@ -52,7 +52,7 @@ public class Operation {
     private Body inRepresentation;
 
     /** HTTP method for this operation. */
-    private Method method;
+    private String method;
 
     /**
      * Unique name for this operation<br>
@@ -87,7 +87,7 @@ public class Operation {
         return inRepresentation;
     }
 
-    public Method getMethod() {
+    public String getMethod() {
         return method;
     }
 
@@ -125,7 +125,7 @@ public class Operation {
         this.inRepresentation = inRepresentation;
     }
 
-    public void setMethod(Method method) {
+    public void setMethod(String method) {
         this.method = method;
     }
 

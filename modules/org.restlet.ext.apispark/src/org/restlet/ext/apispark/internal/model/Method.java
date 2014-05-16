@@ -37,27 +37,19 @@ package org.restlet.ext.apispark.internal.model;
  * 
  * @author
  */
-public class Method {
-    /** Textual description of this method. */
-    private String description;
+public abstract class Method {
 
-    /** Name of this method. */
-    private String name;
+    public final static String GET = "GET";
 
-    public String getDescription() {
-        return description;
-    }
+    public final static String PUT = "PUT";
 
-    public String getName() {
-        return name;
-    }
+    public final static String POST = "POST";
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public final static String DELETE = "DELETE";
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public final static String OPTIONS = "OPTIONS";
 
+    public final static String HEAD = "HEAD";
+
+    public final static String PATCH = "PATCH";
 }
