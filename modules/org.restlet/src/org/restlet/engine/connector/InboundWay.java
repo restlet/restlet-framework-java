@@ -286,7 +286,7 @@ public abstract class InboundWay extends Way {
 
         if (result == -1) {
             // End of channel detected
-            getConnection().close(true);
+            getConnection().close(false);
         }
 
         return result;
