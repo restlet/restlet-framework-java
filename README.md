@@ -6,7 +6,7 @@ Do you want to blend your web services, web sites and web clients into unified w
 
 Leverage the open source Restlet Framework and its unique Java API available in six consistent editions: Java SE, Java EE, OSGi, GAE, Android and GWT! 
 
-http://restlet.org
+http://restlet.com
 
 Copyright 2014 Restlet
 
